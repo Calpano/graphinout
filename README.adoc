@@ -1,0 +1,60 @@
+= graphinout: graph in -> graph out
+
+* Convert between graph formats
+* Validate GraphML
+
+== Purpose
+Graphinout reads many common graph file formats and converts them to a common super-set.
+We use GraphML as the common format.
+
+== Features
+* Written in modern Java.
+* Parses input and either converts to valid GraphML file or
+* shows comprehensible validation errors.
+
+== Graph Format Features
+- directed vs undirected graphs
+- mixed graph: mix of directed and undirected edges
+- self-loops: An edge from a node A to itself
+- parallel edges aka multi-edges: Multiple edges from a node A to another node B
+
+A great 2015 paper on graph file formats: https://arxiv.org/pdf/1503.02781.pdf[]
+including links to graph data repositories -- time frames indicate when the format was/is used
+
+== Input Formats
+* GEXF (Graph Exchange XML Format). http://gexf.net/schema.html[specification], http://gexf.net/basic.html[examples]
+* LEDA, http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html[spec]
+* Pajek, http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf[spec]
+* GML Graph Modelling Language https://en.wikipedia.org/wiki/Graph_Modelling_Language[Wikipedia]
+* DOT language https://graphviz.org/doc/info/lang.html[spec]
+* TGF Trivial Graph Format https://en.wikipedia.org/wiki/Trivial_Graph_Format[Wikipedia]
+* GXL Graph eXchange Language https://en.wikipedia.org/wiki/GXL[Wikipedia]
+
+== Output Formats
+* link:src/main/doc/graphml.adoc[GraphML]
+
+== Ecosystem
+
+=== Graph Toolkits
+* NetworkX
+* ...
+
+=== Graph Databases
+* https://neo4j.com/[neo4j]
+* MemGraph
+
+=== Graph Drawing
+* GraphViz
+* Cytoscape
+* https://gephi.org/[Gephi]
+* yED
+
+=== Who reads what?
+
+----
+GEXF -> NetworkX
+GML -> NetworkX
+GraphML -> NetworkX
+LEDA -> NetworkX
+Pajek -> NetworkX
+----

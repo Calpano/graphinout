@@ -1,0 +1,8 @@
+= GraphML
+
+- XML-based
+
+.Refs
+- https://en.wikipedia.org/wiki/GraphML[]
+- http://graphml.graphdrawing.org/specification.html[specification]
+- http://graphml.graphdrawing.org/primer/graphml-primer.html[examples]
