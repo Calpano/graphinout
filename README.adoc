@@ -1,43 +1,116 @@
 = graphinout: graph in -> graph out
+:gio: graphinout
 
 * Convert between graph formats
 * Validate GraphML
 
 == Purpose
-Graphinout reads many common graph file formats and converts them to a common super-set.
-We use GraphML as the common format.
+Graphinout reads many common graph file formats and converts them losslessly to a common format: *GraphML*.
+
+There are many graph toolkits, graph databases and graph-based apps, which all implement their importers and map incoming graph to their internal APIs.
+As there are so many variants of graphs and even more kinds of internal APIs, there is no "common Java graph API" in sight.
+Instead, {gio} just reads all kinds of formats and converts them to a common graph file format, *GraphML*.
+
+.Benefits
+App developers:: of graph-related software can focus on core features. Need only to read *GraphML*.
+Converter developers:: easy to add more input formats
+Users:: can re-use their existing data effortlessly using almost any format their data producing software writes.
+
 
 == Features
 * Written in modern Java.
-* Parses input and either converts to valid GraphML file or
-* shows comprehensible validation errors.
+* Parses input and either converts to valid GraphML file, or
+* Shows comprehensible validation errors.
+* Easy to integrate into existing software.
 
-== Graph Format Features
-- directed vs undirected graphs
-- mixed graph: mix of directed and undirected edges
-- self-loops: An edge from a node A to itself
-- parallel edges aka multi-edges: Multiple edges from a node A to another node B
+.Non-Features
+* Java graph API
+* Convert relational data (CSV, Excel, databases) into graphs
+
+=== Output Format
+* link:src/main/doc/graphml.adoc[GraphML] (<- our notes about the format)
+
+Writing other formats could be a nice _future_ extension. This would turn {gio} into the 'https://pandoc.org/[pandoc] of graph file formats'.
+
+=== Input Formats
+* TGF Trivial Graph Format https://en.wikipedia.org/wiki/Trivial_Graph_Format[Wikipedia]
+* DOT language https://graphviz.org/doc/info/lang.html[spec]
+* GEXF (Graph Exchange XML Format). http://gexf.net/schema.html[specification], http://gexf.net/basic.html[examples]
+* GML Graph Modelling Language https://en.wikipedia.org/wiki/Graph_Modelling_Language[Wikipedia]; https://pdfs.semanticscholar.org/d0a5/6b07a59a29b48d6f957763add90e05925c2c.pdf[spec 1997] predecessor of GraphML
+
+* *RDF*, in N-Triples format
+* LEDA, http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html[spec]
+* Pajek, http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf[spec]
+* GXL Graph eXchange Language https://en.wikipedia.org/wiki/GXL[Wikipedia]
+* graph6 http://users.cecs.anu.edu.au/~bdm/data/formats.html[spec]
 
 A great 2015 paper on graph file formats: https://arxiv.org/pdf/1503.02781.pdf[]
 including links to graph data repositories -- time frames indicate when the format was/is used
 
-== Input Formats
-* GEXF (Graph Exchange XML Format). http://gexf.net/schema.html[specification], http://gexf.net/basic.html[examples]
-* LEDA, http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html[spec]
-* Pajek, http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf[spec]
-* GML Graph Modelling Language https://en.wikipedia.org/wiki/Graph_Modelling_Language[Wikipedia]
-* DOT language https://graphviz.org/doc/info/lang.html[spec]
-* TGF Trivial Graph Format https://en.wikipedia.org/wiki/Trivial_Graph_Format[Wikipedia]
-* GXL Graph eXchange Language https://en.wikipedia.org/wiki/GXL[Wikipedia]
+.Formats still in use today
+References from the paper
 
-== Output Formats
-* link:src/main/doc/graphml.adoc[GraphML]
+* bintsv4 [9] bintsv4 (GraphLab); since 2009
+* BioGRID TAB [10], [11] X BioGRID TAB 2.0 Format; since 2003
+* Dot [19] GraphVis Dot Language; since 2000
+* Graph::Easy [29] X Perl Graph::Easy format; since 2004
+* GraphML [33] X Graph Markup Language; since 2000
+* ITDK [41] X CAIDA Internet Topology Data Kit; since 2002
+* JSON Graph [42] json-graph-specification; since 2014
+* LGF [44], [45] LEMON Graph Format; since 2008
+* KrackPlot [49] X KrackPlot data format; since 1993
+* Matlab [50] Matlab saved workspace; since 1996
+* NNF [59], [60] Nested Network Format; since 2003
+* Nod [49] KrackPlot Node format; since 1993
+* OGDL [64] X Ordered Graph Data Language; since 2002
+* OGML [65], [66] Open Graph Markup Language; since 2012
+* Pajek (.net) [69]–[71] X Pajek Tool’s .net format; since 1996
+* Pajek (.paj) [69]–[71] X Pajek Tool project (.clu, .vec, .per, ...); since 1996
+* PSI MI [72] Protenomics Standards Initiative Molecular Interaction; since 2002
+* SIF [59], [60] Simple Interaction Format; since 2003
+* SNAP [81] X Stanford Network Analysis Platform; since 2005
+* SoNIA [82], [83] X So NIA Son format; since 2002
+* TEI [85] Text Encoding Initiative Graph Format (XML-compatible); since 2001
+* YGF [94] X Y Graph Format; since 2004
+
+
+== Usage
+Command line::
+{gio} can be used on the command line to read format X and write to GraphML.
+
+Library::
+{gio} can be used as a Java library to read format X and write to a GraphML file or `Writer`.
+
+== Introduction to Graphs
+A graph is first a mathematical concept. As it turns out, it is rather a family of concepts.
+A good introduction into the general idea can be found in https://en.wikipedia.org/wiki/Graph_theory[Wikipedia on Graph Theory].
+In computer science, a graph is an abstract data type, see https://en.wikipedia.org/wiki/Graph_(abstract_data_type)[Wikipedia].
+An exhausting https://en.wikipedia.org/wiki/Glossary_of_graph_theory[glossary of graph theory] explains all terms with a special meaning in a graph context.
+
+.Graph vs. Graph File Format
+NOTE: Don't confuse graph file format features with graph features.
+Graph features such as a __cycle-free graph__ do not depend on the file format.
+Graph features depend on the kind of data stored *in* a graph file format.
+A graph file format needs to be able to represent e.g. directed graphs.
+All formats which do can represent cycle-free directed graphs as well as graphs with cycles.
+There are many, many graph concepts, which are not required to understand or even know when converting graph input data is your job.
+
+== Graph File Format Features
+- undirected graphs
+- directed graphs https://en.wikipedia.org/wiki/Directed_graph[Wikipedia]
+- mixed graph: mix of directed and undirected edges
+- self-loops: An edge from a node A to itself
+- parallel edges aka multi-edges: Multiple edges from a node A to another node B
+- edge attributes (e.g. type of edge or weight)
+- node attributes (e.g. type of node or weight)
+- hyper-graphs: edges with more than 2 endpoints
 
 == Ecosystem
 
 === Graph Toolkits
-* NetworkX
-* ...
+* https://networkx.org/[NetworkX] <- GEXF, GML, GraphML, LEDA, Pajek
+* https://en.wikipedia.org/wiki/Boost_(C%2B%2B_libraries)[BOOST] C++ library <--> GraphML
+* https://graph-tool.skewed.de/[graph-tool] <-> GraphML, GML
 
 === Graph Databases
 * https://neo4j.com/[neo4j]
@@ -45,16 +118,24 @@ including links to graph data repositories -- time frames indicate when the form
 
 === Graph Drawing
 * GraphViz
-* Cytoscape
-* https://gephi.org/[Gephi]
-* yED
+* https://js.cytoscape.org/[Cytoscape.js]
+* https://gephi.org/[Gephi] <--> GraphML subset
+* yED <--> partial GraphML support
 
-=== Who reads what?
+=== Graph Datasets
+* https://networks.skewed.de/ -- GraphML and GML exports
+* https://snap.stanford.edu/data/ -- wide mix of data formats
 
-----
-GEXF -> NetworkX
-GML -> NetworkX
-GraphML -> NetworkX
-LEDA -> NetworkX
-Pajek -> NetworkX
-----
+
+== Road Map
+. [ ] Read X, write GraphML as Java standalone app
+. [ ] Create first importer: GEXF, to be XML-in/out first
+. [ ] Document usage as command line app
+. [ ] Import TGF to start parsing text-syntaxes
+. [ ] Import DOT
+. [ ] Generalize internal importer-API to make extending with more importers easy
+. [ ] Document internal API
+. [ ] Add API to allow app developers to embed {gio} as a library
+. [ ] Document external API
+. [ ] Create REST-ful API for converting graphs
+. [ ] Create web app to let users convert graphs with a simple UI
