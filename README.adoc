@@ -128,8 +128,10 @@ There are many, many graph concepts, which are not required to understand or eve
 
 
 == Road Map
-. [ ] Read X, write GraphML as Java standalone app
-. [ ] Create first importer: GEXF, to be XML-in/out first
+. [ ] Read GEXF, write GraphML as Java standalone app
+.. internal property graph model
+.. GEXF reader, based on XML
+.. GraphML writer, also based on XML
 . [ ] Document usage as command line app
 . [ ] Import TGF to start parsing text-syntaxes
 . [ ] Import DOT
