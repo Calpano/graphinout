@@ -128,16 +128,30 @@ There are many, many graph concepts, which are not required to understand or eve
 
 
 == Road Map
-. [ ] Read GEXF, write GraphML as Java standalone app
+.Milestone 1 -- Convert GEXF to GraphML on the command line
+. [ ] Read GraphML, write GraphML as Java standalone app
 .. internal property graph model
-.. GEXF reader, based on XML
-.. GraphML writer, also based on XML
+.. GraphML reader, based on XML
+.. GraphML writer, based on XML
+. [ ] Add GEXF reader, based on XML
 . [ ] Document usage as command line app
+
+.Milestone 2 -- Convert TGF and DOT to GraphML on the command line and become extensible
 . [ ] Import TGF to start parsing text-syntaxes
 . [ ] Import DOT
 . [ ] Generalize internal importer-API to make extending with more importers easy
 . [ ] Document internal API
+
+.Milestone 3 -- become a library
 . [ ] Add API to allow app developers to embed {gio} as a library
 . [ ] Document external API
+. [ ] Import RDF N-Triples
+. [ ] Add more relevant importers
+
+.Milestone 3 -- become a web service
 . [ ] Create REST-ful API for converting graphs
+. [ ] Add more relevant importers
+
+.Milestone 4 -- become a web UI
 . [ ] Create web app to let users convert graphs with a simple UI
+. [ ] Add more relevant importers
