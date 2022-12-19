@@ -18,7 +18,7 @@ Users:: can re-use their existing data effortlessly using almost any format thei
 
 
 == Features
-* Written in modern Java.
+* Written in modern Java (17).
 * Parses input and either converts to valid GraphML file, or
 * Shows comprehensible validation errors.
 * Easy to integrate into existing software.
