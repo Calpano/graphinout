@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<graphml>
+    <key attr.name="type" attr.type="string" id="type"/>
+    <graph edgedefault="directed" id="">
+        <node id="cat"><data key="label">cat</data></node>
+        <node id="ClaudiaStern"><data key="label">Claudia Stern</data></node>
+        <node id="ClaudiCat"><data key="label">ClaudiCat</data></node>
+        <node id="Company"><data key="label">Company</data></node>
+        <node id="DirkHagemann"><data key="label">Dirk Hagemann</data></node>
+        <node id="Person"><data key="label">Person</data></node>
+        <node id="SAP"><data key="label">SAP</data></node>
+
+        <edge source="SAP" target="Company"><data key="type">hasType</data></edge>
+        <edge source="DirkHagemann" target="SAP"><data key="type">worksAt</data></edge>
+        <edge source="DirkHagemann" target="Person"><data key="type">hasType</data></edge>
+        <edge source="ClaudiCat" target="SAP"><data key="type">worksAt</data></edge>
+        <edge source="ClaudiCat" target="cat"><data key="type">owns</data></edge>
+        <edge directed="false" source="ClaudiCat" target="DirkHagemann"><data key="type">knows</data></edge>
+        <edge directed="false" source="ClaudiCat" target="Person"><data key="type">hasType</data></edge>
+        <edge directed="false" source="ClaudiaStern" target="SAP"><data key="type">worksaAt</data></edge>
+        <edge directed="false" source="ClaudiaStern" target="DirkHagemann"><data key="type">knows</data></edge>
+        <edge directed="false" source="ClaudiaStern" target="cat"><data key="type">owns</data></edge>
+        <edge directed="false" source="ClaudiaStern" target="Person"><data key="type">hasType</data></edge>
+    </graph>
+</graphml>
