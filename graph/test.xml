@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><graphml>
+    <key attr.name="test1" attr.type="test1" id="test1"/>
+    <key attr.name="test2" attr.type="test2" id="test2"/>
+    <key attr.name="test3" attr.type="test3" id="test3"/>
+    <graph edgedefault="edgedefault" id="gioGraph1">
+        <node id="gioNode11">
+            <data key="dataString1">dataString1key</data>
+        </node>
+        <node id="gioNode12">
+            <data key="dataString2">dataString2key</data>
+        </node>
+        <node id="gioNode13">
+            <data key="dataString3">dataString2key</data>
+        </node>
+        <edge source="gioNode11" target="gioNode12" directed="Undirected">
+            <data key="test1">gioEdgeData1</data>
+        </edge>
+        <edge source="gioNode11" target="gioNode13" directed="Undirected">
+            <data key="test2">gioEdgeData2</data>
+        </edge>
+        <edge source="gioNode12" target="gioNode13" directed="Undirected">
+            <data key="test3">gioEdgeData3</data>
+        </edge>
+    </graph>
+</graphml>

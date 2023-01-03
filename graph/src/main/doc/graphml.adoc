@@ -1,0 +1,11 @@
+= GraphML
+
+The graph research community has been proposing and revising graph exchange formats for decades.
+The currently best format in terms of expressiveness is *GraphML*.
+
+- XML-based
+
+.Refs
+- https://en.wikipedia.org/wiki/GraphML[]
+- http://graphml.graphdrawing.org/specification.html[specification]
+- http://graphml.graphdrawing.org/primer/graphml-primer.html[examples]

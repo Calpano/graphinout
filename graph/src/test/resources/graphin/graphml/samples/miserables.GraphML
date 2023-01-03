@@ -1,0 +1,1090 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+<!-- Created by igraph -->
+  <key id="name" for="graph" attr.name="name" attr.type="string"/>
+  <key id="Citation" for="graph" attr.name="Citation" attr.type="string"/>
+  <key id="Author" for="graph" attr.name="Author" attr.type="string"/>
+  <key id="URL" for="graph" attr.name="URL" attr.type="string"/>
+  <key id="name" for="node" attr.name="name" attr.type="string"/>
+  <key id="Description" for="node" attr.name="Description" attr.type="string"/>
+  <key id="weight" for="edge" attr.name="weight" attr.type="double"/>
+  <graph id="G" edgedefault="undirected">
+    <data key="name">Les Miserables coappearance network</data>
+    <data key="Citation">Donald E. Knuth, The Stanford GraphBase: A Platform for Combinatorial Computing, Addison-Wesley, Reading, MA (1993)</data>
+    <data key="Author">Donald E. Knuth</data>
+    <data key="URL">http://www.ctan.org/tex-archive/support/graphbase/</data>
+    <node id="n0">
+      <data key="name">MY</data>
+      <data key="Description">Monsiuer Charles Fran\c{c}ois Bienvenu Myriel, Bishop of D--</data>
+    </node>
+    <node id="n1">
+      <data key="name">NP</data>
+      <data key="Description">Napoleon, Emperor of France</data>
+    </node>
+    <node id="n2">
+      <data key="name">MB</data>
+      <data key="Description">Mademoiselle Baptistine, sister of MY</data>
+    </node>
+    <node id="n3">
+      <data key="name">ME</data>
+      <data key="Description">Madame Magloire, housekeeper to MY</data>
+    </node>
+    <node id="n4">
+      <data key="name">CL</data>
+      <data key="Description">Countess de L\^o, distant relative of MY</data>
+    </node>
+    <node id="n5">
+      <data key="name">GE</data>
+      <data key="Description">G\&apos;eborand, retired merchant of D--</data>
+    </node>
+    <node id="n6">
+      <data key="name">MC</data>
+      <data key="Description">Marquis de Champtercier, ultra-royalist miser</data>
+    </node>
+    <node id="n7">
+      <data key="name">CV</data>
+      <data key="Description">Cravatte, mountain bandit</data>
+    </node>
+    <node id="n8">
+      <data key="name">SN</data>
+      <data key="Description">Count ***, `philosophic&apos; senator</data>
+    </node>
+    <node id="n9">
+      <data key="name">GG</data>
+      <data key="Description">G--, former member of National Convention</data>
+    </node>
+    <node id="n10">
+      <data key="name">JL</data>
+      <data key="Description">Jacquin Labarre, innkeeper of La Croix de Calbas</data>
+    </node>
+    <node id="n11">
+      <data key="name">JV</data>
+      <data key="Description">Jean Valjean, thief of bread</data>
+    </node>
+    <node id="n12">
+      <data key="name">MT</data>
+      <data key="Description">Marguerite, old lady who teaches FN to live poor</data>
+    </node>
+    <node id="n13">
+      <data key="name">MR</data>
+      <data key="Description">Madame de R--, Marquise de R--</data>
+    </node>
+    <node id="n14">
+      <data key="name">IS</data>
+      <data key="Description">Isabeau, baker</data>
+    </node>
+    <node id="n15">
+      <data key="name">PG</data>
+      <data key="Description">Petit Gervais, a small boy in D--</data>
+    </node>
+    <node id="n16">
+      <data key="name">FT</data>
+      <data key="Description">F\&apos;elix Tholomy\`es, Parisian student from Toulouse</data>
+    </node>
+    <node id="n17">
+      <data key="name">LI</data>
+      <data key="Description">Listolier, Parisian student from Cahors</data>
+    </node>
+    <node id="n18">
+      <data key="name">FA</data>
+      <data key="Description">Fameuil, Parisian student from Limoges</data>
+    </node>
+    <node id="n19">
+      <data key="name">BL</data>
+      <data key="Description">Blacheville, Parisian student from Montauban</data>
+    </node>
+    <node id="n20">
+      <data key="name">FV</data>
+      <data key="Description">Favourite, lover of BL</data>
+    </node>
+    <node id="n21">
+      <data key="name">DA</data>
+      <data key="Description">Dahlia, lover of LI</data>
+    </node>
+    <node id="n22">
+      <data key="name">ZE</data>
+      <data key="Description">Zephine, lover of FA</data>
+    </node>
+    <node id="n23">
+      <data key="name">FN</data>
+      <data key="Description">Fantine, lover of FT</data>
+    </node>
+    <node id="n24">
+      <data key="name">TM</data>
+      <data key="Description">Madame Th\&apos;enardier, wife of TH</data>
+    </node>
+    <node id="n25">
+      <data key="name">TH</data>
+      <data key="Description">Th\&apos;enardier, sergeant of Waterloo and keeper of a chophouse</data>
+    </node>
+    <node id="n26">
+      <data key="name">FF</data>
+      <data key="Description">Fauchelevent, aged notary of M-- sur M--</data>
+    </node>
+    <node id="n27">
+      <data key="name">JA</data>
+      <data key="Description">Javert, police officer of M-- sur M--</data>
+    </node>
+    <node id="n28">
+      <data key="name">BM</data>
+      <data key="Description">Monsieur Bamatabois, idler of M-- sur M--</data>
+    </node>
+    <node id="n29">
+      <data key="name">SP</data>
+      <data key="Description">Sister Perp\&apos;etue, stout nun at infirmary in M-- sur M--</data>
+    </node>
+    <node id="n30">
+      <data key="name">SS</data>
+      <data key="Description">Sister Simplice, saintly nun at infirmary in M-- sur M--</data>
+    </node>
+    <node id="n31">
+      <data key="name">SC</data>
+      <data key="Description">Monsieur Scaufflaire, keeper of horses and chaises in M-- sur M--</data>
+    </node>
+    <node id="n32">
+      <data key="name">PO</data>
+      <data key="Description">Old woman 1, portress of JV in M-- sur M--</data>
+    </node>
+    <node id="n33">
+      <data key="name">JU</data>
+      <data key="Description">Judge of Douai, judge at the court trying CH</data>
+    </node>
+    <node id="n34">
+      <data key="name">CH</data>
+      <data key="Description">Champmathieu, accused thief mistaken for JV</data>
+    </node>
+    <node id="n35">
+      <data key="name">BR</data>
+      <data key="Description">Brevet, convict in the galleys with JV</data>
+    </node>
+    <node id="n36">
+      <data key="name">CN</data>
+      <data key="Description">Chenildieu, convict in the galleys with JV</data>
+    </node>
+    <node id="n37">
+      <data key="name">CC</data>
+      <data key="Description">Cochepaille, convict in the galleys with JV</data>
+    </node>
+    <node id="n38">
+      <data key="name">GP</data>
+      <data key="Description">George Pontmercy, father of MA and son-in-law of GI</data>
+    </node>
+    <node id="n39">
+      <data key="name">BZ</data>
+      <data key="Description">Boulatruelle, former convict and road mender in Montfermeil</data>
+    </node>
+    <node id="n40">
+      <data key="name">CO</data>
+      <data key="Description">Cosette, daughter of FN and FT</data>
+    </node>
+    <node id="n41">
+      <data key="name">EP</data>
+      <data key="Description">Eponine, daughter of TH and TM</data>
+    </node>
+    <node id="n42">
+      <data key="name">AZ</data>
+      <data key="Description">Anzelma, daughter of TH and TM</data>
+    </node>
+    <node id="n43">
+      <data key="name">LL</data>
+      <data key="Description">Old woman 2, landlady of JV in Paris at Gorbeau House</data>
+    </node>
+    <node id="n44">
+      <data key="name">MI</data>
+      <data key="Description">Mother Innocent, prioress of Convent of Petite Rue Picpus</data>
+    </node>
+    <node id="n45">
+      <data key="name">GR</data>
+      <data key="Description">Gribier, new gravedigger at cemetery</data>
+    </node>
+    <node id="n46">
+      <data key="name">JD</data>
+      <data key="Description">Jondrette, father of GA</data>
+    </node>
+    <node id="n47">
+      <data key="name">BU</data>
+      <data key="Description">Madame Burgon, new landlady at Gorbeau House</data>
+    </node>
+    <node id="n48">
+      <data key="name">GA</data>
+      <data key="Description">Gavroche, young urchin living at Gorbeau House</data>
+    </node>
+    <node id="n49">
+      <data key="name">GI</data>
+      <data key="Description">Monsieur Luke Esprit Gillenormand, grand bourgeois</data>
+    </node>
+    <node id="n50">
+      <data key="name">MN</data>
+      <data key="Description">Magnon, servant of GI</data>
+    </node>
+    <node id="n51">
+      <data key="name">MG</data>
+      <data key="Description">Madamoiselle Gillenormand, unmarried daughter of GI</data>
+    </node>
+    <node id="n52">
+      <data key="name">MP</data>
+      <data key="Description">Madame Pontmercy, younger daughter of GI</data>
+    </node>
+    <node id="n53">
+      <data key="name">MV</data>
+      <data key="Description">Madamoiselle Vaubois, friend of MG</data>
+    </node>
+    <node id="n54">
+      <data key="name">TG</data>
+      <data key="Description">Lieutenant Theodule Gillenormand, soldier and grandnephew of GI</data>
+    </node>
+    <node id="n55">
+      <data key="name">MA</data>
+      <data key="Description">Marius, grandson of GI</data>
+    </node>
+    <node id="n56">
+      <data key="name">BT</data>
+      <data key="Description">Baroness of T--, friend of GI</data>
+    </node>
+    <node id="n57">
+      <data key="name">MM</data>
+      <data key="Description">Monsieur Mabeuf, prefect of church</data>
+    </node>
+    <node id="n58">
+      <data key="name">BO</data>
+      <data key="Description">Bossuet (Lesgle), `Friends of the ABC&apos; klutz</data>
+    </node>
+    <node id="n59">
+      <data key="name">CR</data>
+      <data key="Description">Courfeyrac, `Friends of the ABC&apos; center</data>
+    </node>
+    <node id="n60">
+      <data key="name">EN</data>
+      <data key="Description">Enjolras, `Friends of the ABC&apos; chief</data>
+    </node>
+    <node id="n61">
+      <data key="name">GT</data>
+      <data key="Description">Grantaire, `Friends of the ABC&apos; skeptic</data>
+    </node>
+    <node id="n62">
+      <data key="name">JO</data>
+      <data key="Description">Joly, `Friends of the ABC&apos; medic</data>
+    </node>
+    <node id="n63">
+      <data key="name">BA</data>
+      <data key="Description">Bahorel, `Friends of the ABC&apos; cutup</data>
+    </node>
+    <node id="n64">
+      <data key="name">CM</data>
+      <data key="Description">Combeferre, `Friends of the ABC&apos; guide</data>
+    </node>
+    <node id="n65">
+      <data key="name">PL</data>
+      <data key="Description">Mother Plutarch, maid of MM</data>
+    </node>
+    <node id="n66">
+      <data key="name">BB</data>
+      <data key="Description">Babet, tooth-pulling bandit of Paris</data>
+    </node>
+    <node id="n67">
+      <data key="name">GU</data>
+      <data key="Description">Gueulemer, Herculean bandit of Paris</data>
+    </node>
+    <node id="n68">
+      <data key="name">QU</data>
+      <data key="Description">Claquesous, night-like bandit of Paris</data>
+    </node>
+    <node id="n69">
+      <data key="name">MO</data>
+      <data key="Description">Montparnasse, genteel bandit of Paris</data>
+    </node>
+    <node id="n70">
+      <data key="name">TS</data>
+      <data key="Description">Toussaint, servant of JV at Rue Plumet</data>
+    </node>
+    <node id="n71">
+      <data key="name">XA</data>
+      <data key="Description">Child 1, son of TH sold to MN</data>
+    </node>
+    <node id="n72">
+      <data key="name">XB</data>
+      <data key="Description">Child 2, son of TH sold to MN</data>
+    </node>
+    <node id="n73">
+      <data key="name">BJ</data>
+      <data key="Description">Brujon, notorious criminal</data>
+    </node>
+    <node id="n74">
+      <data key="name">HL</data>
+      <data key="Description">Madame Hucheloup, keeper of Corinth Inn</data>
+    </node>
+    <node id="n75">
+      <data key="name">FE</data>
+      <data key="Description">Feuilly, `Friends of the ABC&apos; political idealist</data>
+    </node>
+    <node id="n76">
+      <data key="name">JP</data>
+      <data key="Description">Jean Prouvaire, `Friends of the ABC&apos; poet</data>
+    </node>
+    <edge source="n0" target="n1">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n0" target="n2">
+      <data key="weight">8</data>
+    </edge>
+    <edge source="n0" target="n3">
+      <data key="weight">10</data>
+    </edge>
+    <edge source="n0" target="n4">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n0" target="n5">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n0" target="n6">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n0" target="n7">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n0" target="n8">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n0" target="n9">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n0" target="n11">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n2" target="n3">
+      <data key="weight">6</data>
+    </edge>
+    <edge source="n2" target="n11">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n3" target="n11">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n10" target="n11">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n12">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n13">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n14">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n15">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n23">
+      <data key="weight">9</data>
+    </edge>
+    <edge source="n11" target="n24">
+      <data key="weight">7</data>
+    </edge>
+    <edge source="n11" target="n25">
+      <data key="weight">12</data>
+    </edge>
+    <edge source="n11" target="n26">
+      <data key="weight">8</data>
+    </edge>
+    <edge source="n11" target="n27">
+      <data key="weight">17</data>
+    </edge>
+    <edge source="n11" target="n28">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n11" target="n30">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n11" target="n31">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n32">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n11" target="n33">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n11" target="n34">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n11" target="n35">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n11" target="n36">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n11" target="n37">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n11" target="n40">
+      <data key="weight">31</data>
+    </edge>
+    <edge source="n11" target="n43">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n11" target="n44">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n48">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n49">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n11" target="n51">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n11" target="n55">
+      <data key="weight">19</data>
+    </edge>
+    <edge source="n11" target="n58">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n60">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n11" target="n66">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n67">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n68">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n69">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n11" target="n70">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n12" target="n23">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n16" target="n17">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n16" target="n18">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n16" target="n19">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n16" target="n20">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n16" target="n21">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n16" target="n22">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n16" target="n23">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n16" target="n40">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n16" target="n55">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n17" target="n18">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n17" target="n19">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n17" target="n20">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n17" target="n21">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n17" target="n22">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n17" target="n23">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n18" target="n19">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n18" target="n20">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n18" target="n21">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n18" target="n22">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n18" target="n23">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n19" target="n20">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n19" target="n21">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n19" target="n22">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n19" target="n23">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n20" target="n21">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n20" target="n22">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n20" target="n23">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n21" target="n22">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n21" target="n23">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n22" target="n23">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n23" target="n24">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n23" target="n25">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n23" target="n27">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n23" target="n28">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n23" target="n29">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n23" target="n30">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n24" target="n25">
+      <data key="weight">13</data>
+    </edge>
+    <edge source="n24" target="n27">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n24" target="n40">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n24" target="n41">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n24" target="n42">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n24" target="n50">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n24" target="n66">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n24" target="n67">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n24" target="n68">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n25" target="n27">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n25" target="n38">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n25" target="n39">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n25" target="n40">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n25" target="n41">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n25" target="n42">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n25" target="n48">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n25" target="n55">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n25" target="n66">
+      <data key="weight">6</data>
+    </edge>
+    <edge source="n25" target="n67">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n25" target="n68">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n25" target="n69">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n25" target="n73">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n26" target="n27">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n26" target="n44">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n26" target="n45">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n27" target="n28">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n27" target="n30">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n27" target="n32">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n27" target="n40">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n27" target="n43">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n27" target="n48">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n27" target="n60">
+      <data key="weight">6</data>
+    </edge>
+    <edge source="n27" target="n66">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n27" target="n67">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n27" target="n68">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n27" target="n69">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n27" target="n70">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n28" target="n33">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n28" target="n34">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n28" target="n35">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n28" target="n36">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n28" target="n37">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n29" target="n30">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n33" target="n34">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n33" target="n35">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n33" target="n36">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n33" target="n37">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n34" target="n35">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n34" target="n36">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n34" target="n37">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n35" target="n36">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n35" target="n37">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n36" target="n37">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n38" target="n52">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n38" target="n55">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n40" target="n43">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n40" target="n49">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n40" target="n51">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n40" target="n54">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n40" target="n55">
+      <data key="weight">21</data>
+    </edge>
+    <edge source="n40" target="n70">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n41" target="n42">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n41" target="n55">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n41" target="n57">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n41" target="n59">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n41" target="n66">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n41" target="n67">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n41" target="n68">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n41" target="n69">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n41" target="n73">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n46" target="n47">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n47" target="n48">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n48" target="n55">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n48" target="n57">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n48" target="n58">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n48" target="n59">
+      <data key="weight">7</data>
+    </edge>
+    <edge source="n48" target="n60">
+      <data key="weight">7</data>
+    </edge>
+    <edge source="n48" target="n61">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n48" target="n62">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n48" target="n63">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n48" target="n64">
+      <data key="weight">6</data>
+    </edge>
+    <edge source="n48" target="n66">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n48" target="n67">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n48" target="n69">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n48" target="n71">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n48" target="n72">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n48" target="n73">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n48" target="n74">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n48" target="n75">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n48" target="n76">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n49" target="n50">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n49" target="n51">
+      <data key="weight">9</data>
+    </edge>
+    <edge source="n49" target="n54">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n49" target="n55">
+      <data key="weight">12</data>
+    </edge>
+    <edge source="n49" target="n56">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n51" target="n52">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n51" target="n53">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n51" target="n54">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n51" target="n55">
+      <data key="weight">6</data>
+    </edge>
+    <edge source="n54" target="n55">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n55" target="n56">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n55" target="n57">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n55" target="n58">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n55" target="n59">
+      <data key="weight">9</data>
+    </edge>
+    <edge source="n55" target="n60">
+      <data key="weight">7</data>
+    </edge>
+    <edge source="n55" target="n62">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n55" target="n63">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n55" target="n64">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n55" target="n75">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n57" target="n58">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n57" target="n59">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n57" target="n60">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n57" target="n62">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n57" target="n63">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n57" target="n64">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n57" target="n65">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n57" target="n75">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n58" target="n59">
+      <data key="weight">12</data>
+    </edge>
+    <edge source="n58" target="n60">
+      <data key="weight">10</data>
+    </edge>
+    <edge source="n58" target="n61">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n58" target="n62">
+      <data key="weight">7</data>
+    </edge>
+    <edge source="n58" target="n63">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n58" target="n64">
+      <data key="weight">9</data>
+    </edge>
+    <edge source="n58" target="n74">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n58" target="n75">
+      <data key="weight">6</data>
+    </edge>
+    <edge source="n58" target="n76">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n59" target="n60">
+      <data key="weight">17</data>
+    </edge>
+    <edge source="n59" target="n61">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n59" target="n62">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n59" target="n63">
+      <data key="weight">6</data>
+    </edge>
+    <edge source="n59" target="n64">
+      <data key="weight">13</data>
+    </edge>
+    <edge source="n59" target="n74">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n59" target="n75">
+      <data key="weight">6</data>
+    </edge>
+    <edge source="n59" target="n76">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n60" target="n61">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n60" target="n62">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n60" target="n63">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n60" target="n64">
+      <data key="weight">15</data>
+    </edge>
+    <edge source="n60" target="n68">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n60" target="n74">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n60" target="n75">
+      <data key="weight">6</data>
+    </edge>
+    <edge source="n60" target="n76">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n61" target="n62">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n61" target="n63">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n61" target="n64">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n61" target="n74">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n61" target="n75">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n61" target="n76">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n62" target="n63">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n62" target="n64">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n62" target="n74">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n62" target="n75">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n62" target="n76">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n63" target="n64">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n63" target="n74">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n63" target="n75">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n63" target="n76">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n64" target="n75">
+      <data key="weight">5</data>
+    </edge>
+    <edge source="n64" target="n76">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n66" target="n67">
+      <data key="weight">6</data>
+    </edge>
+    <edge source="n66" target="n68">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n66" target="n69">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n66" target="n73">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n67" target="n68">
+      <data key="weight">4</data>
+    </edge>
+    <edge source="n67" target="n69">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n67" target="n73">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n68" target="n69">
+      <data key="weight">2</data>
+    </edge>
+    <edge source="n68" target="n73">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n69" target="n73">
+      <data key="weight">1</data>
+    </edge>
+    <edge source="n71" target="n72">
+      <data key="weight">3</data>
+    </edge>
+    <edge source="n75" target="n76">
+      <data key="weight">2</data>
+    </edge>
+  </graph>
+</graphml>

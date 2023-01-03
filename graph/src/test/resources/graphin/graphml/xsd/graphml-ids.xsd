@@ -1,0 +1,66 @@
+
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://graphml.graphdrawing.org/xmlns" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="graphml" type="xn:graphmlType" xmlns:xn="http://graphml.graphdrawing.org/xmlns"/>
+  <xs:complexType name="nodeType" mixed="true">
+    <xs:sequence>
+      <xs:element type="xn:portType" name="port" maxOccurs="unbounded" minOccurs="0" xmlns:xn="http://graphml.graphdrawing.org/xmlns"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="id" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="edgeType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="id" use="optional"/>
+        <xs:attribute type="xs:string" name="source" use="optional"/>
+        <xs:attribute type="xs:string" name="target" use="optional"/>
+        <xs:attribute type="xs:string" name="sourceport" use="optional"/>
+        <xs:attribute type="xs:string" name="targetport" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="endpointType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="node" use="optional"/>
+        <xs:attribute type="xs:string" name="type" use="optional"/>
+        <xs:attribute type="xs:string" name="port" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="hyperedgeType" mixed="true">
+    <xs:sequence>
+      <xs:element type="xn:endpointType" name="endpoint" maxOccurs="unbounded" minOccurs="0" xmlns:xn="http://graphml.graphdrawing.org/xmlns"/>
+      <xs:element type="xn:portType" name="port" maxOccurs="unbounded" minOccurs="0" xmlns:xn="http://graphml.graphdrawing.org/xmlns"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="id" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="portType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="graphType">
+    <xs:choice maxOccurs="unbounded" minOccurs="0">
+      <xs:element type="xn:nodeType" name="node" maxOccurs="unbounded" minOccurs="0" xmlns:xn="http://graphml.graphdrawing.org/xmlns"/>
+      <xs:element type="xn:edgeType" name="edge" maxOccurs="unbounded" minOccurs="0" xmlns:xn="http://graphml.graphdrawing.org/xmlns"/>
+      <xs:element type="xn:hyperedgeType" name="hyperedge" maxOccurs="unbounded" minOccurs="0" xmlns:xn="http://graphml.graphdrawing.org/xmlns">
+        <xs:annotation>
+          <xs:documentation> directions  node after edge; ports </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:choice>
+    <xs:attribute type="xs:string" name="id"/>
+    <xs:attribute type="xs:string" name="edgedefault"/>
+  </xs:complexType>
+  <xs:complexType name="graphmlType">
+    <xs:sequence>
+      <xs:element type="xn:graphType" name="graph" xmlns:xn="http://graphml.graphdrawing.org/xmlns">
+        <xs:annotation>
+          <xs:documentation> TODO test things with and without ids, as they are indexed differently in DataGraph  no edge cases of same names or ids yet </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

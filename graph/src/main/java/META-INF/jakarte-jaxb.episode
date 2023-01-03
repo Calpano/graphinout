@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bindings xmlns="https://jakarta.ee/xml/ns/jaxb" version="3.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" if-exists="true" >
+      
+      
+    <bindings xmlns:tns="http://graphml.graphdrawing.org/xmlns" if-exists="true" scd="x-schema::tns">
+            
+        <schemaBindings map="false">
+                  
+            <package name="com.calpano.graphinout.graph"/>
+                
+        </schemaBindings>
+            
+        <bindings if-exists="true" scd="~tns:graphml">
+                  
+            <class ref="com.calpano.graphinout.graph.GioGraphml"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:node">
+                  
+            <class ref="com.calpano.graphinout.graph.GioNode"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:edge">
+                  
+            <class ref="com.calpano.graphinout.graph.GioEdge"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:endpoint">
+                  
+            <class ref="com.calpano.graphinout.graph.GioEndpoint"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:hyperedgeType">
+                  
+            <class ref="com.calpano.graphinout.graph.HyperedgeType"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:port">
+                  
+            <class ref="com.calpano.graphinout.graph.GioPort"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:graph">
+                  
+            <class ref="com.calpano.graphinout.graph.GioGraph"/>
+                
+        </bindings>
+          
+    </bindings>
+    
+</bindings>
