@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+			http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+   <!-- Attributes for nodes -->
+   <key id="neuron_name" for="node" attr.name="name" attr.type="string">
+     <default>"neuron"</default>
+   </key>
+
+   <key id="neuron_class" for="graph" attr.name="type" attr.type="string">
+     <default>oscillator</default>
+   </key>
+
+   <key id="model" for="node" attr.name="model" attr.type="string">
+     <default>oscillator</default>
+   </key>
+
+   <key id="f" for="node" attr.name="f" attr.type="double">
+     <default>0.25</default>
+   </key>
+
+   <key id="R" for="node" attr.name="R" attr.type="double">
+     <default>1.</default>
+   </key>
+
+   <key id="a" for="node" attr.name="a" attr.type="double">
+     <default>1.</default>
+   </key>
+
+   <key id="phase0" for="node" attr.name="phase0" attr.type="double">
+     <default>0.</default>
+   </key>
+
+   <key id="amp0" for="node" attr.name="amp0" attr.type="double">
+     <default>0.</default>
+   </key>
+
+   <key id="neuron_type" for="node" attr.name="type" attr.type="string">
+     <default>oscillator</default>
+   </key>
+
+   <key id="ext_in" for="node" attr.name="is_ext" attr.type="boolean">
+     <default>false</default>
+   </key>
+
+   <key id="pos_x" for="node" attr.name="x" attr.type="float">
+     <default>0.0</default>
+   </key>
+
+   <key id="pos_y" for="node" attr.name="y" attr.type="float">
+     <default>0.0</default>
+   </key>
+
+   <key id="weight" for="edge" attr.name="weight" attr.type="double"/>
+   <key id="phi" for="edge" attr.name="phi" attr.type="double"/>
+
+  <graph id="CPG" edgedefault="directed">
+
+    <data key="neuron_class">oscillator</data>
+
+   <!-- CPG -->
+       <node id="N1">
+	 <data key="ext_in">false</data>
+	 <data key="model">oscillator</data>
+       </node>
+
+       <node id="N2">
+	 <data key="ext_in">false</data>
+	 <data key="model">oscillator</data>
+       </node>
+
+   <!-- EDGES -->
+       <edge source="N1" target="N2">
+         <data key="weight"> 1. </data>
+         <data key="phi">1.5</data>
+       </edge>
+       <edge source="N2" target="N1">
+          <data key="weight"> 1.5 </data>
+         <data key="phi">1.5</data>
+       </edge>
+  </graph>
+</graphml>

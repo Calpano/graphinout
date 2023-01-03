@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+			http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+   <!-- Attributes for nodes -->
+   <key id="neuron_name" for="node" attr.name="name" attr.type="string">
+     <default>"neuron"</default>
+   </key>
+
+   <key id="neuron_type" for="node" attr.name="model" attr.type="string">
+     <default>leaky</default>
+   </key>
+
+   <key id="ext_in" for="node" attr.name="is_ext" attr.type="boolean">
+     <default>true</default>
+   </key>
+
+   <key id="pos_x" for="node" attr.name="x" attr.type="float">
+     <default>0.0</default>
+   </key>
+
+   <key id="pos_y" for="node" attr.name="y" attr.type="float">
+     <default>0.0</default>
+   </key>
+
+   <key id="color" for="node" attr.name="color" attr.type="string">
+     <default>red</default>
+   </key>
+
+   <key id="tau" for="node" attr.name="tau" attr.type="float">
+     <default>0.1</default>
+   </key>
+
+   <key id="bias" for="node" attr.name="bias" attr.type="float">
+     <default>-2.75</default>
+   </key>
+
+   <key id="D" for="node" attr.name="D" attr.type="float">
+     <default>1.0</default>
+   </key>
+
+   <key id="x0" for="node" attr.name="x0" attr.type="float">
+     <default>0.0</default>
+   </key>
+
+   <!-- Attributes for edges -->
+   <key id="weight" for="edge" attr.name="weight" attr.type="double"/>
+
+  <graph id="CPG" edgedefault="directed">
+
+   <!-- CPG -->
+       <node id="N1">
+	 <data key="neuron_type">leaky</data>
+	 <data key="tau">0.02</data>
+	 <data key="bias">3.0</data>
+	 <data key="x0">5.</data>
+	 <data key="color">b</data>
+	 <data key="pos_x">1.0</data>
+	 <data key="pos_y">1.0</data>
+       </node>
+
+       <node id="N2">
+	 <data key="neuron_type">leaky</data>
+	 <data key="tau">0.02</data>
+	 <data key="bias">3.0</data>
+	 <data key="x0">2.</data>
+	 <data key="color">b</data>
+	 <data key="pos_x">2.0</data>
+	 <data key="pos_y">1.0</data>
+       </node>
+
+       <node id="N3">
+	 <data key="neuron_type">leaky</data>
+	 <data key="tau">0.1</data>
+	 <data key="bias">-3.0</data>
+	 <data key="x0">5.</data>
+	 <data key="color">y</data>
+	 <data key="pos_x">0.0</data>
+	 <data key="pos_y">2.0</data>
+       </node>
+
+       <node id="N4">
+	 <data key="neuron_type">leaky</data>
+	 <data key="tau">0.1</data>
+	 <data key="bias">-3.0</data>
+	 <data key="x0">2.</data>
+	 <data key="color">y</data>
+	 <data key="pos_x">3.0</data>
+	 <data key="pos_y">2.0</data>
+       </node>
+
+
+   <!-- EDGES -->
+       <edge source="N1" target="N2">
+          <data key="weight">-5</data>
+       </edge>
+       <edge source="N1" target="N4">
+          <data key="weight">-5</data>
+       </edge>
+       <edge source="N1" target="N3">
+          <data key="weight">5</data>
+       </edge>
+       <edge source="N2" target="N1">
+          <data key="weight">-5</data>
+       </edge>
+       <edge source="N2" target="N3">
+          <data key="weight">-5</data>
+       </edge>
+       <edge source="N2" target="N4">
+          <data key="weight">5</data>
+       </edge>
+       <edge source="N3" target="N1">
+          <data key="weight">-5</data>
+       </edge>
+       <edge source="N4" target="N2">
+          <data key="weight">-5</data>
+       </edge>
+  </graph>
+</graphml>
