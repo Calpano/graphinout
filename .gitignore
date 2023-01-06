@@ -5,3 +5,4 @@ nbproject
 /graph/target/
 /expansion-converter/standard-graphml/target/
 target
+*.iml
