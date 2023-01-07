@@ -64,8 +64,7 @@
             <version>2.4.0-b180830.0359</version>
             <type>jar</type>
         </dependency>
-        
-         
+     
     </dependencies>
 
     <build>
