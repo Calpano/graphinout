@@ -5,9 +5,8 @@
 package com.calpano.graphinout.exception;
 
 /**
- *
  * @author rbaba
  */
 public enum ErrorProvider {
-    SYSTEM,JAVA,VALIDATOR,BUSINESS;
+    SYSTEM, JAVA, VALIDATOR, BUSINESS;
 }

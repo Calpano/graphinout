@@ -12,7 +12,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- *
  * @author rbaba
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -33,5 +32,5 @@ public class GioEndpoint {
     protected GioPort port;
     @XmlAttribute
     protected String type;
-    
+
 }

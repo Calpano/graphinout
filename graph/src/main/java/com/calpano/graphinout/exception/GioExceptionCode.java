@@ -2,15 +2,14 @@
 package com.calpano.graphinout.exception;
 
 /**
- *
  * @author rbaba
  */
 public interface GioExceptionCode {
-    public String getErrorCode() ;
+    public String getErrorCode();
 
-    public String getErrorMessage() ;
+    public String getErrorMessage();
 
-    public ErrorPriority getPriority() ;
-    
+    public ErrorPriority getPriority();
+
     public ErrorProvider getProvider();
 }

@@ -3,10 +3,9 @@ package com.calpano.graphinout.graphml;
 import com.calpano.graphinout.exception.GioException;
 
 /**
- *
- * @author rbaba
  * @param <V> value
  * @param <T> Type
+ * @author rbaba
  */
 @FunctionalInterface
 public interface GraphMLValidator<V, T> {

@@ -4,10 +4,8 @@ package com.calpano.graphinout.exception;
 import lombok.Getter;
 
 /**
- *
  * @author rbaba
  */
-
 
 
 //ُTODO

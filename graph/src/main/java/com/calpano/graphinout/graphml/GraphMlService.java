@@ -3,9 +3,8 @@ package com.calpano.graphinout.graphml;
 import java.util.List;
 
 /**
- *
- * @author rbaba
  * @param <T>
+ * @author rbaba
  */
 public interface GraphMLService<T> {
 

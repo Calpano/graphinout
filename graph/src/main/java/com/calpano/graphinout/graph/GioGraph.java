@@ -1,6 +1,7 @@
 package com.calpano.graphinout.graph;
 
 import java.util.List;
+
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAttribute;
@@ -33,7 +34,7 @@ public class GioGraph {
     @Singular(ignoreNullCollections = true)
     protected List<GioHyperEdge> hyperEdges;
 
-    public GioGraph( String id,String edgedefault) {
+    public GioGraph(String id, String edgedefault) {
         this.edgedefault = edgedefault;
         this.id = id;
     }

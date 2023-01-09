@@ -1,69 +1,69 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xs:element name="graphml" type="GraphML"/>
+    <xs:element name="graphml" type="GraphML"/>
 
-  <xs:complexType name="GraphML">
-    <xs:sequence>
-      <xs:element name="key" type="key" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="graph" minOccurs="0" maxOccurs="unbounded">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="node" minOccurs="0" maxOccurs="unbounded">
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="data" type="GioDataString" minOccurs="0"/>
-                </xs:sequence>
-                <xs:attribute name="id" type="xs:ID" use="required"/>
-              </xs:complexType>
+    <xs:complexType name="GraphML">
+        <xs:sequence>
+            <xs:element name="key" type="key" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="graph" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="node" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="data" type="GioDataString" minOccurs="0"/>
+                                </xs:sequence>
+                                <xs:attribute name="id" type="xs:ID" use="required"/>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="edge" type="edge" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                    <xs:attribute name="edgedefault" type="xs:string"/>
+                    <xs:attribute name="id" type="xs:ID"/>
+                </xs:complexType>
             </xs:element>
-            <xs:element name="edge" type="edge" maxOccurs="unbounded"/>
-          </xs:sequence>
-          <xs:attribute name="edgedefault" type="xs:string"/>
-          <xs:attribute name="id" type="xs:ID"/>
-        </xs:complexType>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
+        </xs:sequence>
+    </xs:complexType>
 
-  <xs:complexType name="key">
-    <xs:sequence/>
-    <xs:attribute name="attr.name" type="xs:string" use="required"/>
-    <xs:attribute name="attr.type" type="xs:string" use="required"/>
-    <xs:attribute name="id" type="xs:ID" use="required"/>
-  </xs:complexType>
+    <xs:complexType name="key">
+        <xs:sequence/>
+        <xs:attribute name="attr.name" type="xs:string" use="required"/>
+        <xs:attribute name="attr.type" type="xs:string" use="required"/>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
 
-  <xs:complexType name="GioDataString">
-    <xs:simpleContent>
-      <xs:extension base="xs:string">
-        <xs:attribute name="key" type="xs:string"/>
-      </xs:extension>
-    </xs:simpleContent>
-  </xs:complexType>
+    <xs:complexType name="GioDataString">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="key" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
 
-  <xs:complexType name="edge">
-    <xs:sequence>
-      <xs:element name="data" type="GioDataRef"/>
-    </xs:sequence>
-    <xs:attribute name="source" type="xs:IDREF" use="required"/>
-    <xs:attribute name="target" type="xs:IDREF" use="required"/>
-    <xs:attribute name="directed" type="direction"/>
-  </xs:complexType>
+    <xs:complexType name="edge">
+        <xs:sequence>
+            <xs:element name="data" type="GioDataRef"/>
+        </xs:sequence>
+        <xs:attribute name="source" type="xs:IDREF" use="required"/>
+        <xs:attribute name="target" type="xs:IDREF" use="required"/>
+        <xs:attribute name="directed" type="direction"/>
+    </xs:complexType>
 
-  <xs:complexType name="GioDataRef">
-    <xs:simpleContent>
-      <xs:extension base="xs:string">
-        <xs:attribute name="key" type="xs:IDREF"/>
-      </xs:extension>
-    </xs:simpleContent>
-  </xs:complexType>
+    <xs:complexType name="GioDataRef">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="key" type="xs:IDREF"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
 
-  <xs:simpleType name="direction">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="In"/>
-      <xs:enumeration value="Out"/>
-      <xs:enumeration value="Undirected"/>
-    </xs:restriction>
-  </xs:simpleType>
+    <xs:simpleType name="direction">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="In"/>
+            <xs:enumeration value="Out"/>
+            <xs:enumeration value="Undirected"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>
 

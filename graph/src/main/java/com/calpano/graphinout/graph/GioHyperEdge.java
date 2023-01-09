@@ -6,7 +6,9 @@ import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlID;
 import jakarta.xml.bind.annotation.XmlType;
+
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +16,6 @@ import lombok.NoArgsConstructor;
 import lombok.Singular;
 
 /**
- *
  * @author rbaba
  */
 @XmlAccessorType(XmlAccessType.FIELD)

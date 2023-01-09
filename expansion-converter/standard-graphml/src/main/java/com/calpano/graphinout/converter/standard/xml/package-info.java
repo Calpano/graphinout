@@ -7,7 +7,7 @@
         attributeFormDefault = XmlNsForm.UNSET,
         elementFormDefault = XmlNsForm.QUALIFIED,
         xmlns
-        = @XmlNs(prefix = "aa", namespaceURI = "http://graphml.graphdrawing.org/xmlns")
+                = @XmlNs(prefix = "aa", namespaceURI = "http://graphml.graphdrawing.org/xmlns")
 )
 
 package com.calpano.graphinout.converter.standard.xml;

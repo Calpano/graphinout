@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
- *
  * @author rbaba
  */
 @XmlAccessorType(XmlAccessType.FIELD)

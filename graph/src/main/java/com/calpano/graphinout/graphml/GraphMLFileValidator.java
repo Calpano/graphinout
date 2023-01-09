@@ -7,9 +7,8 @@ package com.calpano.graphinout.graphml;
 import java.io.File;
 
 /**
- *
  * @author rbaba
  */
-public interface GraphMLFileValidator extends  GraphMLValidator<File, InputSourceStructure>{
-    
+public interface GraphMLFileValidator extends GraphMLValidator<File, InputSourceStructure> {
+
 }

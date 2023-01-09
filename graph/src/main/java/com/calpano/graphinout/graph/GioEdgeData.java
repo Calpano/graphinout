@@ -14,7 +14,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- *
  * @author rbaba
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -28,7 +27,7 @@ public class GioEdgeData {
     @XmlID
     @XmlAttribute
     protected String id;
-    
+
     @XmlValue
     protected String value;
 
@@ -36,6 +35,5 @@ public class GioEdgeData {
     @XmlAttribute
     private GioKey key;
 
-    
 
 }

@@ -5,10 +5,9 @@
 package com.calpano.graphinout;
 
 /**
- *
  * @author rbaba
  */
 public class GioGraphInOutConstants {
-    public static final String START_LOG="#####--------start-------";
-    public static final String END_LOG="--------End-------#####";
+    public static final String START_LOG = "#####--------start-------";
+    public static final String END_LOG = "--------End-------#####";
 }

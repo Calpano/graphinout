@@ -4,7 +4,6 @@ import com.calpano.graphinout.exception.GioException;
 import com.calpano.graphinout.graph.GioGraphML;
 
 /**
- *
  * @author rbaba
  */
 @FunctionalInterface

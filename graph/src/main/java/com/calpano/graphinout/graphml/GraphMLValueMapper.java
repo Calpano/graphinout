@@ -5,7 +5,6 @@
 package com.calpano.graphinout.graphml;
 
 /**
- *
  * @author rbaba
  */
 @FunctionalInterface

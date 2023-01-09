@@ -6,10 +6,10 @@ package com.calpano.graphinout.converter.standard;
 
 import java.util.Map;
 import java.util.TreeMap;
+
 import com.calpano.graphinout.graphml.GraphMLValueMapper;
 
 /**
- *
  * @author rbaba
  */
 public class SGMLValueMapper implements GraphMLValueMapper {

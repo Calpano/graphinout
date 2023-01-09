@@ -1,11 +1,12 @@
 package com.calpano.graphinout.converter.standard;
 
-import com.calpano.graphinout.converter.standard.xml.StandardGraphML;
 import com.calpano.graphinout.exception.GioException;
+import com.calpano.graphinout.graph.GioGraphML;
 import com.calpano.graphinout.graphml.GraphMLConverter;
 import com.calpano.graphinout.graphml.GraphMLFileValidator;
 import com.calpano.graphinout.graphml.GraphMLService;
 import com.calpano.graphinout.graphml.GraphMLValidator;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -20,21 +21,21 @@ import org.xml.sax.SAXException;
 
 import com.calpano.graphinout.graphml.GraphMLValueMapper;
 import com.calpano.graphinout.graphml.InputSourceStructure;
+
 import java.io.File;
 import java.util.ArrayList;
 
 /**
- *
  * @author rbaba
  */
-public class GioStandardGMLService implements GraphMLService<StandardGraphML> {
+public class GioStandardGMLService implements GraphMLService<GioGraphML> {
 
     private static final String ID = "graphml-xsd";
 
     private final GraphMLValueMapper graphMLValueMapper;
     private final InputSourceStructure<File, Void> inputSourceStructure;
     private final GraphMLFileValidator fileValidator;
-    private final GraphMLConverter<StandardGraphML> graphMLConverter;
+    private final GraphMLConverter<GioGraphML> graphMLConverter;
 
     public GioStandardGMLService() {
         this.inputSourceStructure = (inputStrucure) -> {
@@ -82,7 +83,7 @@ public class GioStandardGMLService implements GraphMLService<StandardGraphML> {
     }
 
     @Override
-    public GraphMLConverter<StandardGraphML> getConverter() {
+    public GraphMLConverter<GioGraphML> getConverter() {
         return graphMLConverter;
     }
 

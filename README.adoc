@@ -5,6 +5,7 @@
 * Validate GraphML
 
 == Purpose
+
 Graphinout reads many common graph file formats and converts them losslessly to a common format: *GraphML*.
 
 There are many graph toolkits, graph databases and graph-based apps, which all implement their importers and map incoming graph to their internal APIs.
@@ -12,12 +13,13 @@ As there are so many variants of graphs and even more kinds of internal APIs, th
 Instead, {gio} just reads all kinds of formats and converts them to a common graph file format, *GraphML*.
 
 .Benefits
-App developers:: of graph-related software can focus on core features. Need only to read *GraphML*.
+App developers:: of graph-related software can focus on core features.
+Need only to read *GraphML*.
 Converter developers:: easy to add more input formats
 Users:: can re-use their existing data effortlessly using almost any format their data producing software writes.
 
-
 == Features
+
 * Written in modern Java (17).
 * Parses input and either converts to valid GraphML file, or
 * Shows comprehensible validation errors.
@@ -28,11 +30,14 @@ Users:: can re-use their existing data effortlessly using almost any format thei
 * Convert relational data (CSV, Excel, databases) into graphs
 
 === Output Format
+
 * link:src/main/doc/graphml.adoc[GraphML] (<- our notes about the format)
 
-Writing other formats could be a nice _future_ extension. This would turn {gio} into the 'https://pandoc.org/[pandoc] of graph file formats'.
+Writing other formats could be a nice _future_ extension.
+This would turn {gio} into the 'https://pandoc.org/[pandoc] of graph file formats'.
 
 === Input Formats
+
 * TGF Trivial Graph Format https://en.wikipedia.org/wiki/Trivial_Graph_Format[Wikipedia]
 * DOT language https://graphviz.org/doc/info/lang.html[spec]
 * GEXF (Graph Exchange XML Format). http://gexf.net/schema.html[specification], http://gexf.net/basic.html[examples]
@@ -73,8 +78,8 @@ References from the paper
 * TEI [85] Text Encoding Initiative Graph Format (XML-compatible); since 2001
 * YGF [94] X Y Graph Format; since 2004
 
-
 == Usage
+
 Command line::
 {gio} can be used on the command line to read format X and write to GraphML.
 
@@ -82,7 +87,9 @@ Library::
 {gio} can be used as a Java library to read format X and write to a GraphML file or `Writer`.
 
 == Introduction to Graphs
-A graph is first a mathematical concept. As it turns out, it is rather a family of concepts.
+
+A graph is first a mathematical concept.
+As it turns out, it is rather a family of concepts.
 A good introduction into the general idea can be found in https://en.wikipedia.org/wiki/Graph_theory[Wikipedia on Graph Theory].
 In computer science, a graph is an abstract data type, see https://en.wikipedia.org/wiki/Graph_(abstract_data_type)[Wikipedia].
 An exhausting https://en.wikipedia.org/wiki/Glossary_of_graph_theory[glossary of graph theory] explains all terms with a special meaning in a graph context.
@@ -96,6 +103,7 @@ All formats which do can represent cycle-free directed graphs as well as graphs 
 There are many, many graph concepts, which are not required to understand or even know when converting graph input data is your job.
 
 == Graph File Format Features
+
 - undirected graphs
 - directed graphs https://en.wikipedia.org/wiki/Directed_graph[Wikipedia]
 - mixed graph: mix of directed and undirected edges
@@ -108,26 +116,30 @@ There are many, many graph concepts, which are not required to understand or eve
 == Ecosystem
 
 === Graph Toolkits
+
 * https://networkx.org/[NetworkX] <- GEXF, GML, GraphML, LEDA, Pajek
 * https://en.wikipedia.org/wiki/Boost_(C%2B%2B_libraries)[BOOST] C++ library <--> GraphML
 * https://graph-tool.skewed.de/[graph-tool] <-> GraphML, GML
 
 === Graph Databases
+
 * https://neo4j.com/[neo4j]
 * MemGraph
 
 === Graph Drawing
+
 * GraphViz
 * https://js.cytoscape.org/[Cytoscape.js]
 * https://gephi.org/[Gephi] <--> GraphML subset
 * yED <--> partial GraphML support
 
 === Graph Datasets
+
 * https://networks.skewed.de/ -- GraphML and GML exports
 * https://snap.stanford.edu/data/ -- wide mix of data formats
 
-
 == Road Map
+
 .Milestone 1 -- Convert GEXF to GraphML on the command line
 . [ ] Read GraphML, write GraphML as Java standalone app
 .. internal property graph model

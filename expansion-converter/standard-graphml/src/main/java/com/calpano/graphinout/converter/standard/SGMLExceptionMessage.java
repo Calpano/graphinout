@@ -10,15 +10,14 @@ import com.calpano.graphinout.exception.GioExceptionCode;
 import lombok.Getter;
 
 /**
- *
  * @author rbaba
  */
 @Getter
 public enum SGMLExceptionMessage implements GioExceptionCode {
-     SGML_FILE_INCOMPATIBLE("SGML_001", "The file is incompatible with the specified format", ErrorPriority.HIGH, ErrorProvider.VALIDATOR),
-  
+    SGML_FILE_INCOMPATIBLE("SGML_001", "The file is incompatible with the specified format", ErrorPriority.HIGH, ErrorProvider.VALIDATOR),
+
     XML_FILE_ERROR("GIO_003", "Marshal invalid", ErrorPriority.HIGH, ErrorProvider.JAVA),
-   ;
+    ;
     private final String errorCode;
     private final String errorMessage;
     private final ErrorPriority priority;

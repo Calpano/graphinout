@@ -32,15 +32,16 @@ public class ObjectFactory {
     public GioEdgeData createGioEdgeData() {
         return new GioEdgeData();
     }
-    public GioEndpoint creatreGioEndpoint(){
+
+    public GioEndpoint creatreGioEndpoint() {
         return new GioEndpoint();
     }
-    
-    public GioHyperEdge creatreGioHyperEdge(){
+
+    public GioHyperEdge creatreGioHyperEdge() {
         return new GioHyperEdge();
     }
-    
-    public GioPort creatreGioPort(){
+
+    public GioPort creatreGioPort() {
         return new GioPort();
     }
 

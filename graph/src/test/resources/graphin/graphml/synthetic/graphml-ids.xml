@@ -8,35 +8,35 @@
     <!-- no edge cases of same names or ids yet -->
     <graph id="id--graph" edgedefault="directed">
 
-        <node id="id--node1" />
-        <node id="id--node2" />
-        <node id="id--node3" />
+        <node id="id--node1"/>
+        <node id="id--node2"/>
+        <node id="id--node3"/>
 
-        <edge id="id--edge-12" source="id--node1" target="id--node2" />
-        <edge id="id--edge-4S6N" source="id--node4" sourceport="South" target="id--node6" targetport="North" />
+        <edge id="id--edge-12" source="id--node1" target="id--node2"/>
+        <edge id="id--edge-4S6N" source="id--node4" sourceport="South" target="id--node6" targetport="North"/>
         <!-- directions -->
         <hyperedge id="id--hyperedge-123">
-            <endpoint node="id--node1" type="in" />
+            <endpoint node="id--node1" type="in"/>
             <endpoint node="id--node2" type="out"/>
             <endpoint node="id--node3" type="undir"/>
         </hyperedge>
         <hyperedge id="id--hyperedge-4N56">
-            <endpoint node="id--node4" type="in" port="North" />
+            <endpoint node="id--node4" type="in" port="North"/>
             <endpoint node="id--node5" type="in"/>
             <endpoint node="id--node6" type="in"/>
         </hyperedge>
         <!-- node after edge; ports -->
-        <node id="id--node4" >
-            <port name="North" />
-            <port name="South" />
+        <node id="id--node4">
+            <port name="North"/>
+            <port name="South"/>
         </node>
-        <node id="id--node5" >
-            <port name="North" />
-            <port name="South" />
+        <node id="id--node5">
+            <port name="North"/>
+            <port name="South"/>
         </node>
-        <node id="id--node6" >
-            <port name="North" />
-            <port name="South" />
+        <node id="id--node6">
+            <port name="North"/>
+            <port name="South"/>
         </node>
     </graph>
 </graphml>

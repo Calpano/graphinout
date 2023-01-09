@@ -1,10 +1,9 @@
 package com.calpano.graphinout.graphml;
 
 /**
- *
- * @author rbaba
  * @param <T> inputFile Structure
  * @param <E> inputFile resource
+ * @author rbaba
  */
 @FunctionalInterface
 public interface InputSourceStructure<T, E> {

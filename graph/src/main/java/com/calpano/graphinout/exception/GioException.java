@@ -2,7 +2,6 @@
 package com.calpano.graphinout.exception;
 
 /**
- *
  * @author rbaba
  */
 public class GioException extends Exception {
