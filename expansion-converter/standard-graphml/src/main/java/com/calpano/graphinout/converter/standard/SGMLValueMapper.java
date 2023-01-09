@@ -4,15 +4,15 @@
  */
 package com.calpano.graphinout.converter.standard;
 
-import com.calpano.graphinout.xml.XMlValueMapper;
 import java.util.Map;
 import java.util.TreeMap;
+import com.calpano.graphinout.graphml.GraphMLValueMapper;
 
 /**
  *
  * @author rbaba
  */
-public class SGMLValueMapper implements XMlValueMapper {
+public class SGMLValueMapper implements GraphMLValueMapper {
 
     private final static Map<String, String> MAP_STORAGE = new TreeMap<>();
 

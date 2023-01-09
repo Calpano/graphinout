@@ -2,6 +2,7 @@ package com.calpano.graphinout.parser;
 
 import com.calpano.graphinout.exception.GioException;
 import com.calpano.graphinout.graph.GioGraphML;
+import java.io.File;
 
 /**
  *
@@ -10,5 +11,5 @@ import com.calpano.graphinout.graph.GioGraphML;
 @FunctionalInterface
 public interface Unmarshaller {
 
-    GioGraphML unmarshall(String fileName) throws GioException;
+    GioGraphML unmarshall(File sourceFile, String inputSourceStructureID) throws GioException;
 }

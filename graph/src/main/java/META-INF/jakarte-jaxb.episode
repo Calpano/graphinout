@@ -51,6 +51,16 @@
             <class ref="com.calpano.graphinout.graph.GioGraph"/>
                 
         </bindings>
+        <bindings if-exists="true" scd="~tns:data">
+                  
+            <class ref="com.calpano.graphinout.graph.GioNodeData"/>
+                
+        </bindings>
+        <bindings if-exists="true" scd="~tns:key">
+                  
+            <class ref="com.calpano.graphinout.graph.GioKey"/>
+                
+        </bindings>
           
     </bindings>
     

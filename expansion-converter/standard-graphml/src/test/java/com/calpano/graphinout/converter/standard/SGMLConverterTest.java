@@ -1,12 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
- */
 package com.calpano.graphinout.converter.standard;
 
 import com.calpano.graphinout.converter.standard.xml.StandardGraphML;
-import com.calpano.graphinout.exception.GioException;
-import com.calpano.graphinout.exception.GioExceptionMessage;
 import com.calpano.graphinout.graph.GioEdge;
 import com.calpano.graphinout.graph.GioEdgeData;
 import com.calpano.graphinout.graph.GioGraph;
@@ -14,8 +8,9 @@ import com.calpano.graphinout.graph.GioGraphML;
 import com.calpano.graphinout.graph.GioKey;
 import com.calpano.graphinout.graph.GioNode;
 import com.calpano.graphinout.graph.GioNodeData;
-import com.calpano.graphinout.parser.GraphMLParserImpl;
-import com.calpano.graphinout.xml.XMLService;
+
+
+import com.calpano.graphinout.graphml.GraphMLService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -62,7 +57,7 @@ public class SGMLConverterTest {
         System.out.println("convert");
         String xmlFile = Paths.get("src", "test", "resources", "graphin", "graphml", "synthetic").toString() + "/graphml-ids.xml";
 
-        XMLService xmlType = new GioStandardGMLService();
+        GraphMLService<StandardGraphML> xmlType = new GioStandardGMLService();
         SGMLConverter instance = new SGMLConverter();
         StandardGraphML expResult = null;
         StandardGraphML result = instance.convert(new File(xmlFile), xmlType);

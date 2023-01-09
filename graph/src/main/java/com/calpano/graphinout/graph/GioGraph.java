@@ -7,11 +7,7 @@ import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlID;
 import jakarta.xml.bind.annotation.XmlType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Singular;
+import lombok.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "graph")
@@ -19,6 +15,7 @@ import lombok.Singular;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 @Builder
 public class GioGraph {
 
@@ -36,4 +33,8 @@ public class GioGraph {
     @Singular(ignoreNullCollections = true)
     protected List<GioHyperEdge> hyperEdges;
 
+    public GioGraph( String id,String edgedefault) {
+        this.edgedefault = edgedefault;
+        this.id = id;
+    }
 }

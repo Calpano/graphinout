@@ -2,13 +2,10 @@ package com.calpano.graphinout.converter.standard;
 
 import com.calpano.graphinout.converter.standard.xml.StandardGraphML;
 import com.calpano.graphinout.exception.GioException;
-import com.calpano.graphinout.graph.GioGraphML;
-import com.calpano.graphinout.xml.XMLConverter;
-import com.calpano.graphinout.xml.XMLFileValidator;
-import com.calpano.graphinout.xml.XMLValidator;
-import com.calpano.graphinout.xml.XMlValueMapper;
-
-import com.calpano.graphinout.xml.XSD;
+import com.calpano.graphinout.graphml.GraphMLConverter;
+import com.calpano.graphinout.graphml.GraphMLFileValidator;
+import com.calpano.graphinout.graphml.GraphMLService;
+import com.calpano.graphinout.graphml.GraphMLValidator;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -20,26 +17,32 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
-import com.calpano.graphinout.xml.XMLService;
+
+import com.calpano.graphinout.graphml.GraphMLValueMapper;
+import com.calpano.graphinout.graphml.InputSourceStructure;
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  *
  * @author rbaba
  */
-public class GioStandardGMLService implements XMLService<StandardGraphML> {
+public class GioStandardGMLService implements GraphMLService<StandardGraphML> {
 
     private static final String ID = "graphml-xsd";
 
-    private final XSD myxsd;
-    private final XMLFileValidator myXMLFileValidator;
-    private final XMlValueMapper myXMlValueMapper;
-    private final XMLConverter<StandardGraphML> myXMLConverter;
+    private final GraphMLValueMapper graphMLValueMapper;
+    private final InputSourceStructure<File, Void> inputSourceStructure;
+    private final GraphMLFileValidator fileValidator;
+    private final GraphMLConverter<StandardGraphML> graphMLConverter;
 
     public GioStandardGMLService() {
-        this.myxsd = () -> Paths.get("src", "test", "resources", "graphin", "graphml", "synthetic").toString() + "/graphml.xsd";
-        this.myXMLFileValidator = (value, Type) -> {
+        this.inputSourceStructure = (inputStrucure) -> {
+            return Paths.get("src", "test", "resources", "graphin", "graphml", "synthetic", "graphml.xsd").toFile();
+        };// () -> Paths.get("src", "test", "resources", "graphin", "graphml", "synthetic").toString() + "/graphml.xsd";
+        this.fileValidator = (v, s) -> {
             try {
-                initValidator(Type.getFilePath()).validate(new StreamSource(value));
+                initValidator(s).validate(new StreamSource(v));
             } catch (SAXException ex) {
                 throw new GioException(SGMLExceptionMessage.SGML_FILE_INCOMPATIBLE, ex);
             } catch (IOException ex) {
@@ -47,8 +50,8 @@ public class GioStandardGMLService implements XMLService<StandardGraphML> {
             }
         };
 
-        this.myXMlValueMapper = new SGMLValueMapper();
-        this.myXMLConverter = new SGMLConverter();
+        this.graphMLValueMapper = new SGMLValueMapper();
+        this.graphMLConverter = new SGMLConverter();
     }
 
     @Override
@@ -57,39 +60,35 @@ public class GioStandardGMLService implements XMLService<StandardGraphML> {
     }
 
     @Override
-    public XSD getXsd() {
-        return myxsd;
+    public GraphMLValueMapper getXMlValueMapper() {
+        return graphMLValueMapper;
     }
 
-    @Override
-    public XMLFileValidator getXMLFileValidator() {
-        return myXMLFileValidator;
-    }
-
-    ;
-
-    
-
-    @Override
-    public List<XMLValidator> getXMLValidators() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public XMlValueMapper getXMlValueMapper() {
-        return myXMlValueMapper;
-    }
-
-    @Override
-    public XMLConverter<StandardGraphML> getConverter() {
-        return myXMLConverter;
-    }
-
-    private Validator initValidator(String xsdPath) throws SAXException {
+    private Validator initValidator(InputSourceStructure<File, Void> inputfile) throws SAXException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Source schemaFile = new StreamSource(xsdPath);
+        Source schemaFile = new StreamSource(inputfile.structure(null));
         Schema schema = factory.newSchema(schemaFile);
         return schema.newValidator();
+    }
+
+    @Override
+    public InputSourceStructure getInputSourceStructure() {
+        return inputSourceStructure;
+    }
+
+    @Override
+    public List<GraphMLValidator> getValueValidators() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public GraphMLConverter<StandardGraphML> getConverter() {
+        return graphMLConverter;
+    }
+
+    @Override
+    public GraphMLFileValidator getXMLFileValidator() {
+        return fileValidator;
     }
 
 }

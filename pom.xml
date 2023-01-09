@@ -12,6 +12,7 @@
         <module>graph</module>
         <module>expansion-converter</module>
         <module>integration</module>
+        <module>graph-ml-parser</module>
     </modules>
 
     <properties>

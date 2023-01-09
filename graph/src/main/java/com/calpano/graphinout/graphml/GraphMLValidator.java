@@ -1,4 +1,4 @@
-package com.calpano.graphinout.xml;
+package com.calpano.graphinout.graphml;
 
 import com.calpano.graphinout.exception.GioException;
 
@@ -9,7 +9,7 @@ import com.calpano.graphinout.exception.GioException;
  * @param <T> Type
  */
 @FunctionalInterface
-public interface XMLValidator<V, T> {
+public interface GraphMLValidator<V, T> {
 
     void validate(V value, T Type) throws GioException;
 }

@@ -1,14 +1,7 @@
 package com.calpano.graphinout.converter.standard.xml;
 
-import com.calpano.graphinout.graph.GioEdge;
-import com.calpano.graphinout.graph.GioEdgeData;
-import com.calpano.graphinout.graph.GioEndpoint;
-import com.calpano.graphinout.graph.GioGraph;
-import com.calpano.graphinout.graph.GioHyperEdge;
-import com.calpano.graphinout.graph.GioKey;
-import com.calpano.graphinout.graph.GioNode;
-import com.calpano.graphinout.graph.GioNodeData;
-import com.calpano.graphinout.graph.GioPort;
+import com.calpano.graphinout.graph.*;
+
 import jakarta.xml.bind.annotation.XmlRegistry;
 
 @XmlRegistry
