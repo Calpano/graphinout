@@ -42,7 +42,7 @@ public class SGMLConverterTest {
             GraphMLService<GioGraphML> myGMLService = new GioStandardGMLService();
             SGMLConverter instance = new SGMLConverter();
 
-            GioGraphML result = instance.convert(new File(xmlFile), myGMLService);
+            GioGraphML result = instance.convert(new File(xmlFile),new File("./output.xml"), myGMLService);
             assertNull(result.getId());
             assertNull(result.getKeys());
             assertEquals(1, result.getGraphs().size());
@@ -190,7 +190,7 @@ public class SGMLConverterTest {
             GraphMLService<GioGraphML> myGMLService = new GioStandardGMLService();
             SGMLConverter instance = new SGMLConverter();
 
-            GioGraphML result = instance.convert(new File(xmlFile), myGMLService);
+            GioGraphML result = instance.convert(new File(xmlFile), new File("./output.xml"),myGMLService);
 
               List<GioKey> keys =  result.getKeys();
               assertEquals(1,keys.size());
