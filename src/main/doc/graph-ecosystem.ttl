@@ -1,0 +1,168 @@
+    #
+# This syntax: https://www.w3.org/TR/turtle/
+#
+@base <https://raw.githubusercontent.com/Calpano/graphinout/main/src/main/doc/graph-ecosystem.ttl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dc:   <http://purl.org/dc/elements/1.1/> .
+@prefix ex:   <http://example.org/stuff/1.0/> .
+@prefix v:    <https://raw.githubusercontent.com/Calpano/graphinout/main/src/main/doc/graph-ecosystem.ttl#> .
+# == Vocabulary
+v:App
+    a rdfs:Class .
+
+v:claim
+    a rdf:Property .
+
+v:fileExt
+    a rdf:Property .
+
+v:license
+    a rdf:Property .
+
+v:language
+    a rdf:Property .
+
+v:url
+    a rdf:Property .
+
+v:reads
+    a rdf:Property .
+
+v:writes
+    a rdf:Property .
+
+v:Format
+    a rdfs:Class .
+
+#
+#
+# == Data  / Formats
+v:DOT
+    a           v:Format ;
+    v:wikipedia <https://en.wikipedia.org/wiki/DOT_(graph_description_language)> ;
+    v:spec      <https://graphviz.org/doc/info/lang.html> ;
+    v:fileExt   ".dot" .
+
+v:TGF
+    a        v:Format ;
+    dc:label "Trivial Graph Format" ;
+    v:url    <https://en.wikipedia.org/wiki/Trivial_Graph_Format> .
+
+v:GEXF
+    a        v:Format ;
+    dc:label "Graph Exchange XML Format" v:spec <http://gexf.net/schema.html>; v:examples <http://gexf.net/basic.html> .
+
+v:GML
+    a         v:Format ;
+    dc:label  "Graph Modelling Language" ;
+    v:url     <https://en.wikipedia.org/wiki/Graph_Modelling_Language> ;
+    v:spec    <https://pdfs.semanticscholar.org/d0a5/6b07a59a29b48d6f957763add90e05925c2c.pdf> ;
+    v:comment "predecessor of GraphML" .
+
+v:RDF_NTriples
+    a        v:Format ;
+    dc:label "RDF in N-Triples format" .
+
+v:LEDA
+    a      v:Format ;
+    v:spec <http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html> .
+
+v:Pajek
+    a      v:Format ;
+    v:spec <http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf> .
+
+v:GXL
+    a        v:Format ;
+    dc:label "Graph eXchange Language" v:url <https://en.wikipedia.org/wiki/GXL> .
+
+v:graph6
+    a      v:Format ;
+    v:spec <http://users.cecs.anu.edu.au/~bdm/data/formats.html> .
+
+
+#
+#
+# == Data / Apps
+<#https://github.com/visjs/vis-network>
+    a          v:App ;
+    v:language "js" ;
+    v:license  ( "MIT" "Apache" ) ;
+    v:reads    "custom JS" .
+
+<#NetworkX>
+    a          v:App ;
+    v:license  "BSD" ;
+    v:language "Python" ;
+    v:claim    "Visualization is not a focus on NetworkX, but it is a major feature for many users. We need to enhance the drawing tools for NetworkX." ;
+    v:url      <https://networkx.org/documentation/stable/index.html> .
+
+<#Gephi>
+    a         v:App ;
+    dc:title  "Gephi" ;
+    v:claim   "The Open Graph Viz Platform" ;
+    v:license "GPL" ;
+    v:url     <https://gephi.org/> ;
+    v:reads   v:DOT .
+
+
+<#Cytoscape>
+    a         v:App ;
+    v:claim   "" ;
+    v:license "" ;
+    v:url     <> .
+
+<#Graph-tool>
+    a         v:App ;
+    v:claim   "" ;
+    v:license "" ;
+    v:url     <> .
+
+<#Graphviz>
+    a         v:App ;
+    v:claim   "" ;
+    v:license "" ;
+    v:url     <> .
+
+<#Tulip>
+    a         v:App ;
+    v:claim   "" ;
+    v:license "" ;
+    v:url     <> .
+
+<#yEd>
+    a         v:App ;
+    v:claim   "" ;
+    v:license "" ;
+    v:url     <> .
+
+<#AllegroGraph>
+    a         v:App ;
+    v:claim   "" ;
+    v:license "" ;
+    v:url     <> .
+
+<#NetworkX>
+    a         v:App ;
+    v:claim   "" ;
+    v:license "" ;
+    v:url     <> .
+
+<#NodeXL>
+    a         v:App ;
+    v:claim   "" ;
+    v:license "" ;
+    v:url     <> .
+
+<#Pajek>
+    a         v:App ;
+    v:claim   "" ;
+    v:license "" ;
+    v:url     <> .
+
+<#NetMiner>
+    a         v:App ;
+    v:claim   "" ;
+    v:license "" ;
+    v:url     <> .
+
