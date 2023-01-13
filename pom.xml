@@ -8,11 +8,12 @@
     <artifactId>graphinout</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
     <modules>
         <module>graph</module>
-        <module>expansion-converter</module>
+        <module>readers</module>
         <module>integration</module>
-        <module>graph-ml-parser</module>
+        <module>engine</module>
     </modules>
 
     <properties>
@@ -26,6 +27,7 @@
         <mockito-all-version>1.10.19</mockito-all-version>
         <lombok-version>1.18.24</lombok-version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>

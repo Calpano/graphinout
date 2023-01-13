@@ -27,6 +27,7 @@ import lombok.Singular;
 @Builder
 public class GioNode {
 
+    // TODO allow multiple data elements
     @XmlElement
     protected GioNodeData data;
     @XmlID

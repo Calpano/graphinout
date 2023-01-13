@@ -14,23 +14,23 @@ import lombok.NoArgsConstructor;
 /**
  * @author rbaba
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "endpoint")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+// TODO remove all @Xml annotations from model
 public class GioEndpoint {
 
-    @XmlID
-    @XmlAttribute
     protected String id;
-    @XmlIDREF
+    // TODO we should refer to nodes by Id to make stream processing easier
+    // suggested: String nodeId;
     private GioNode node;
-    @XmlIDREF
-    @XmlAttribute
+    // TODO make optional
     protected GioPort port;
-    @XmlAttribute
+
+    // TODO make enum
     protected String type;
+
+    // TODO add data list
 
 }

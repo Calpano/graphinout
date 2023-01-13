@@ -7,6 +7,8 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlID;
 import jakarta.xml.bind.annotation.XmlType;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -16,20 +18,31 @@ import lombok.NoArgsConstructor;
 import lombok.Singular;
 
 /**
+ * Example:
+ * <pre>
+ *         <hyperedge id="id--hyperedge-4N56">
+ *             <endpoint node="id--node4" type="in" port="North"/>
+ *             <endpoint node="id--node5" type="in"/>
+ *             <endpoint node="id--node6" type="in"/>
+ *         </hyperedge>
+ * </pre>
+ *
  * @author rbaba
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "hyperedge")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class GioHyperEdge {
 
-    @XmlID
-    @XmlAttribute
     protected String id;
-    @XmlElement(name = "endpoint")
     @Singular(ignoreNullCollections = true)
     private List<GioEndpoint> endpoints;
+
+    public void toXML(Writer w) throws IOException {
+        w.write("<hyperedge id=");
+        w.write(id);
+        // TODO ... maybe like this?
+    }
+
 }

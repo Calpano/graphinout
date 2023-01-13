@@ -20,6 +20,7 @@ import lombok.*;
 @Builder
 public class GioGraph {
 
+    // TODO enum
     @XmlAttribute(name = "edgedefault")
     protected String edgedefault;
     @XmlID
@@ -28,6 +29,8 @@ public class GioGraph {
     @XmlElement(name = "node")
     @Singular(ignoreNullCollections = true)
     private List<GioNode> nodes;
+
+    // TODO remove
     @XmlElement(name = "edge", required = true)
     protected List<GioEdge> edges;
     @XmlElement(name = "hyperedge")
