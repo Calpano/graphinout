@@ -15,6 +15,7 @@ public enum GioExceptionMessage implements GioExceptionCode {
     UNMARSHALLING_ERROR("GIO_001", "Unmarshal failed ", ErrorPriority.HIGH, ErrorProvider.JAVA),
     MARSHALLING_ERROR("GIO_003", "Marshal invalid", ErrorPriority.HIGH, ErrorProvider.JAVA),
     XML_FILE_INVALID("GIO_004", "File invalid", ErrorPriority.HIGH, ErrorProvider.VALIDATOR),
+    temporary_exemption("0000","This is only temp and musst  replase case by case",ErrorPriority.CRITICAl,ErrorProvider.BUSINESS)
     ;
 
     private final String errorCode;

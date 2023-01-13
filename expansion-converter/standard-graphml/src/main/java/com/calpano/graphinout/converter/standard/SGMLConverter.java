@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
 public class SGMLConverter implements GraphMLConverter<GioGraphML> {
 
     @Override
-    public GioGraphML convert(File xmlFile, GraphMLService xmlType) throws GioException {
+    public GioGraphML convert(File xmlFile,File outputFile, GraphMLService graphMLService) throws GioException {
 
         try {
             //TODO File validation
@@ -34,7 +34,7 @@ public class SGMLConverter implements GraphMLConverter<GioGraphML> {
 
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
-            SGMSAXHandler mSAXHandler = new SGMSAXHandler();
+            SGMSAXHandler mSAXHandler = new SGMSAXHandler(outputFile);
             saxParser.parse(xmlFile, mSAXHandler);
             return mSAXHandler.getGioGraphML();
         } catch (ParserConfigurationException ex) {

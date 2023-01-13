@@ -8,5 +8,5 @@ package com.calpano.graphinout.graphml;
 @FunctionalInterface
 public interface InputSourceStructure<T, E> {
 
-    T structure(E inputStrucure);
+    T structure(E inputStructure);
 }

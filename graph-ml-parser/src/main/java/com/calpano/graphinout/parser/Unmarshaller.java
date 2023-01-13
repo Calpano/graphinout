@@ -11,5 +11,5 @@ import java.io.File;
 @FunctionalInterface
 public interface Unmarshaller {
 
-    GioGraphML unmarshall(File sourceFile, String inputSourceStructureID) throws GioException;
+    GioGraphML unmarshall(File sourceFile,File outputFile, String inputSourceStructureID) throws GioException;
 }

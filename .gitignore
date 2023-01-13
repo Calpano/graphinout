@@ -2,7 +2,7 @@
 .DS_Store
 .DS_Store-tmp
 nbproject
-/graph/target/
-/expansion-converter/standard-graphml/target/
 target
 *.iml
+*.tmp
+tmp

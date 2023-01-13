@@ -16,9 +16,9 @@ public final class GraphMLParser implements Unmarshaller {
 
 
     @Override
-    public GioGraphML unmarshall(File sourceFile, String inputSourceStructureID) throws GioException {
+    public GioGraphML unmarshall(File sourceFile,File outputFile,String inputSourceStructureID) throws GioException {
         graphMLService = GioGraphMLServiceFactory.instance(inputSourceStructureID);
-        return graphMLService.getConverter().convert(sourceFile, graphMLService);
+        return graphMLService.getConverter().convert(sourceFile, outputFile,graphMLService);
     }
 
 }

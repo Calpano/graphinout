@@ -10,6 +10,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.*;
 
 import lombok.Data;
@@ -20,6 +23,10 @@ import lombok.Data;
 @Data
 @Slf4j
 public class SGMSAXHandler extends DefaultHandler {
+
+
+    private final File outPutFile;
+    private final FileOutputStream fileOutputStream;
 
     private Stack<String> elementsNames = new Stack<>();
     private String currentElement;
@@ -32,6 +39,14 @@ public class SGMSAXHandler extends DefaultHandler {
     private GioHyperEdge currentGioHyperEdge;
 
     private List<GioNode> invalidNode = new ArrayList<>();
+
+    public SGMSAXHandler(File outPutFile) throws FileNotFoundException {
+        this.outPutFile = outPutFile;
+        fileOutputStream =  new FileOutputStream(outPutFile);
+    }
+
+
+
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -229,6 +244,8 @@ public class SGMSAXHandler extends DefaultHandler {
             //TODO manager error
         }
         elementsNames.pop();
+
+
         super.endElement(uri, localName, qName);
 
         log.debug("end process Elemen {}", qName);

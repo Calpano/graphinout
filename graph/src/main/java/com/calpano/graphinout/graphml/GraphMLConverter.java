@@ -11,6 +11,6 @@ import java.io.File;
 @FunctionalInterface
 public interface GraphMLConverter<T> {
 
-    T convert(File inputFile, GraphMLService graphMLService) throws GioException;
+    T convert(File inputFile, File outputFile,GraphMLService graphMLService)  throws GioException;
 
 }

@@ -2,11 +2,9 @@ package com.calpano.graphinout.converter.standard;
 
 import com.calpano.graphinout.exception.GioException;
 import com.calpano.graphinout.graph.GioGraphML;
-import com.calpano.graphinout.graphml.GraphMLConverter;
-import com.calpano.graphinout.graphml.GraphMLFileValidator;
-import com.calpano.graphinout.graphml.GraphMLService;
-import com.calpano.graphinout.graphml.GraphMLValidator;
+import com.calpano.graphinout.graphml.*;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -18,9 +16,6 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
-
-import com.calpano.graphinout.graphml.GraphMLValueMapper;
-import com.calpano.graphinout.graphml.InputSourceStructure;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,7 +33,7 @@ public class GioStandardGMLService implements GraphMLService<GioGraphML> {
     private final GraphMLConverter<GioGraphML> graphMLConverter;
 
     public GioStandardGMLService() {
-        this.inputSourceStructure = (inputStrucure) -> {
+        this.inputSourceStructure = (inputStructure) -> {
             return Paths.get("src", "test", "resources", "graphin", "graphml", "synthetic", "graphml.xsd").toFile();
         };// () -> Paths.get("src", "test", "resources", "graphin", "graphml", "synthetic").toString() + "/graphml.xsd";
         this.fileValidator = (v, s) -> {
@@ -65,9 +60,9 @@ public class GioStandardGMLService implements GraphMLService<GioGraphML> {
         return graphMLValueMapper;
     }
 
-    private Validator initValidator(InputSourceStructure<File, Void> inputfile) throws SAXException {
+    private Validator initValidator(InputSourceStructure<File, Void> inputFile) throws SAXException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Source schemaFile = new StreamSource(inputfile.structure(null));
+        Source schemaFile = new StreamSource(inputFile.structure(null));
         Schema schema = factory.newSchema(schemaFile);
         return schema.newValidator();
     }
@@ -86,6 +81,7 @@ public class GioStandardGMLService implements GraphMLService<GioGraphML> {
     public GraphMLConverter<GioGraphML> getConverter() {
         return graphMLConverter;
     }
+
 
     @Override
     public GraphMLFileValidator getXMLFileValidator() {
