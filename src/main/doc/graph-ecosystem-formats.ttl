@@ -1,0 +1,304 @@
+@base <https://raw.githubusercontent.com/Calpano/graphinout/main/src/main/doc/graph-ecosystem.ttl#>        .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>        .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>        .
+@prefix dc:   <http://purl.org/dc/elements/1.1/>        .
+@prefix v:    <./graph-ecosystem-vocab.ttl#>        .
+@prefix v:    <https://raw.githubusercontent.com/Calpano/graphinout/main/src/main/doc/graph-ecosystem-vocab.ttl#>        .
+@prefix f:    <https://raw.githubusercontent.com/Calpano/graphinout/main/src/main/doc/graph-ecosystem-formats.ttl#>        .
+# This syntax: https://www.w3.org/TR/turtle/
+#
+#
+# == Format
+f:Gram
+    a         v:Format ;
+    v:url     <https://neo4j.com/developer-blog/gram-a-data-graph-format/> ;
+    v:comment "invented by neo4j" ;
+    v:related v:Neo4j
+.
+
+f:CustomCsv
+    a         v:TextFormat ;
+    v:comment "often nodes file and edges file are used in some ad-hoc format"
+.
+
+f:DimacsFormat
+    a         v:Format ;
+    v:related v:DIMACS10 ;
+    dc:title  "DIMACS Graph Format" ;
+    v:spec    <http://dimacs.rutgers.edu/archive/pub/netflow/general-info/specs.tex>
+.
+# weird format, lots of different files
+f:JsonGraph
+    a         v:JsonFormat ;
+    v:url     <https://netflix.github.io/falcor/documentation/jsongraph.html> ;
+    v:comment "seems relevant"
+.
+
+f:TGF
+    a        v:Format ;
+    dc:title "Trivial Graph Format" ;
+    v:url    <https://en.wikipedia.org/wiki/Trivial_Graph_Format>
+.
+
+f:GEXF
+    a          v:Format ;
+    dc:title   "Graph Exchange XML Format" ;
+    v:spec     <http://gexf.net/schema.html> ;
+    v:examples <http://gexf.net/basic.html>
+.
+
+f:GML
+    a         v:Format ;
+    dc:title  "Graph Modelling Language" ;
+    v:url     <https://en.wikipedia.org/wiki/Graph_Modelling_Language> ;
+    v:spec    <https://pdfs.semanticscholar.org/d0a5/6b07a59a29b48d6f957763add90e05925c2c.pdf> ;
+    v:spec    <http://www.graphviewer.nl/misc/gmllanguage/gml-technical-report.pdf> ;
+    v:url     <https://gephi.org/users/supported-graph-formats/gml-format/> ;
+    v:fileExt ".gml" ;
+    v:comment "predecessor of GraphML"
+.
+
+f:GraphML
+    a           v:XmlFormat ;
+    v:comment   "since 2000" ;
+    v:wikipedia "https://en.wikipedia.org/wiki/GraphML" ;
+    dc:title    "Graph Markup Language" ;
+    v:spec      <http://graphml.graphdrawing.org/specification.html> ;
+    v:examples  <http://graphml.graphdrawing.org/primer/graphml-primer.html>
+.
+
+f:RDF_NTriples
+    a        v:Format ;
+    dc:title "RDF in N-Triples format"
+.
+
+f:LEDA
+    a         v:TextFormat ;
+    v:comment "today irrelevant, homepage last updated in 2006" ;
+    v:spec    <http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html>
+.
+
+f:PajekFormat
+    a         v:TextFormat ;
+    dc:title  "Pajekt NET format" ;
+    v:spec    <http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf> ;
+    v:url     <https://gephi.org/users/supported-graph-formats/pajek-net-format/> ;
+    v:fileExt ( ".net" ".paj" )
+.
+
+f:GXL
+    a         v:XmlFormat ;
+    dc:title  "Graph eXchange Language" ;
+    v:comment "homepage from 2002" ;
+    v:url     <https://userpages.uni-koblenz.de/~ist/GXL/index.php> ;
+    v:url     <https://en.wikipedia.org/wiki/GXL>
+.
+
+f:SparseGraph6
+    a         v:Format ;
+    v:comment "looks irrelevant" ;
+    v:spec    <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+.
+
+f:BioGridTab3
+    a           v:Format ;
+    dc:title    "BioGRID Tab 3.0 Format" ;
+    v:comment   "ca. 1 Mio edges in total in the database" ;
+    v:fileExt   ( ".tab3.txt" ".tab3.zip" ) ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:spec      <https://wiki.thebiogrid.org/doku.php/biogrid_tab_version_3.0>
+.
+
+f:PsiMiTab25
+    a           v:TextFormat ;
+    v:comment   "Protenomics Standards Initiative Molecular Interaction; since 2002" ;
+    v:spec      <https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-5-44> ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    dc:title    "PSI-MI Tab Version 2.5 Format"
+.
+
+f:PsiMiXml25
+    a           v:XmlFormat ;
+    v:comment   "Protenomics Standards Initiative Molecular Interaction; since 2002" ;
+    v:spec      <https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-5-44> ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    dc:title    "PSI-MI XML Version 2.5 Format"
+.
+
+f:bintsv4
+    a           v:BinaryFormat ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:comment   "deprecated; since 2009; internal format of discontinued GraphLab/PowerGraph tool?"
+.
+
+f:DOT
+    a           v:TextFormat ;
+    v:wikipedia <https://en.wikipedia.org/wiki/DOT_(graph_description_language)> ;
+    v:spec      <https://graphviz.org/doc/info/lang.html> ;
+    v:comment   "GraphVis Dot Language; since 2000" ;
+    dc:title    "DOT (graphviz syntax)" ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:fileExt   ( ".dot" ".gv" )
+.
+
+f:PerlGraphEasyFormat
+    a           v:TextFormat ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:comment   "Perl Graph::Easy format; since 2004; LOOKS IRRELEVANT TODAY"
+.
+
+
+f:ITDK
+    a           ( v:Format v:Dataset ) ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:comment   "[41] X CAIDA Internet Topology Data Kit; since 2002; very specific format (node file & edge file)"
+.
+
+
+f:JsonGraph
+    a           v:JsonFormat ;
+    v:spec      <https://github.com/jsongraph/json-graph-specification> ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:comment   "since 2014"
+.
+
+
+f:TEI
+    a           v:Format ;
+    dc:title    "Text Encoding Initiative Graph Format (XML-compatible)" ;
+    v:comment   "IRRELEVANT; since 2001" ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:spec      <https://tei-c.org/Vault/P4/doc/html/GD.html>
+.
+
+f:YGF
+    a           v:BinaryFormat ;
+    v:spec      <https://docs.yworks.com/yfiles/doc/developers-guide/ygf.html> ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:comment   "DEPRECATED yWorks/yEd Graph Format; since 2004"
+.
+
+
+f:Netdraw
+    a           v:TextFormat ;
+    dc:title    "Netdraw VNA format" ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:comment   "irrelevant"
+.
+
+f:UCINET
+    a         v:TextFormat ;
+    dc:title  "UCINET DL Format" ;
+    v:spec    <https://gephi.org/users/supported-graph-formats/ucinet-dl-format/> ;
+    v:comment "Unfortunately, a reference page or manual seems not to be available about UCINET file formats."
+.
+
+f:GUESS
+    a         v:TextFormat ;
+    dc:title  "GUESS format (GDF)" ;
+    v:comment "irrelevant" ;
+    v:spec    <http://guess.wikispot.org/The_GUESS_.gdf_format> ;
+    v:url     <https://gephi.org/users/supported-graph-formats/gdf-format/>
+.
+
+f:NNF
+    a           v:Format ;
+    v:fileExt   ".nnf" ;
+    dc:title    "Nested Network Format" ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:comment   "[59], [60] ; since 2003"
+.
+
+f:SIF
+    a           v:TextFormat ;
+    v:comment   "since 2003" ;
+    dc:title    "Simple Interaction Format" ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:fileExt   ".sif" ;
+    v:spec      <https://manual.cytoscape.org/en/stable/Supported_Network_File_Formats.html#sif-format>
+.
+
+
+
+f:XGMML
+    a           v:XmlFormat ;
+    v:related   v:GML ;
+    v:wikipedia <https://en.wikipedia.org/wiki/XGMML> ;
+    v:comment   "based on GML; "
+.
+
+f:SBML
+    a        v:XmlFormat ;
+    dc:title "Systems Biology Markup Language (SBML)" ;
+    v:claim  "format to describe biochemical networks" ;
+    v:spec   <http://sbml.org/documents/>
+.
+
+f:BioPAX
+    a        v:OwlFormat ;
+    dc:title "BioPAX (Biological PAthways eXchange) Format" ;
+    v:claim  "designed to exchange biological pathways data" ;
+    v:spec   <http://www.biopax.org/>
+.
+
+f:CytoscapeJsonFormat
+    a         v:Format ;
+    v:comment "export Cytoscape graphs to the browser" ;
+    v:spec    <https://manual.cytoscape.org/en/stable/Supported_Network_File_Formats.html#cytoscape-js-json> ;
+    v:related v:CytoscapeCX
+.
+
+f:CytoscapeCX
+    a         v:Format ;
+    v:spec    <https://manual.cytoscape.org/en/stable/Supported_Network_File_Formats.html#cytoscape-cx> ;
+    v:spec    <https://cytoscape.org/cx/> ;
+    v:comment "seems active and relevant"
+.
+
+f:OGDL
+    a           v:TextFormat ;
+    v:spec      <https://ogdl.org/> ;
+    dc:title    "Ordered Graph Data Language" ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:comment   "since 2002; seems mostly to be used as config files; see also Apache Shiro"
+.
+
+f:LGF
+    a           v:TextFormat ;
+    dc:title    "LEMON Graph Format" ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:comment   "since 2008" ;
+    v:spec      <http://lemon.cs.elte.hu/pub/tutorial/a00018.html>
+.
+
+f:OGML
+    a           v:Format ;
+    dc:title    "Open Graph Markup Language" ;
+    v:coveredIn v:PaperGraphExchangeFileFormats ;
+    v:comment   "seems to be proposed in 1 paper and forgotten since; since 2012" ;
+    v:url       <https://ogdf.github.io/doc/ogdf/files.html>
+.
+
+f:MATLAB
+    a         v:Format ;
+    v:fileExt ".mat"
+.
+
+f:RutherfordBoeing
+    a         v:Format ;
+    v:comment "looks irrelevant" ;
+    v:comment "for FORTRAN"
+.
+
+f:MatrixMarketFormat
+    a         v:Format ;
+    v:comment "the native format of Matrix Market; seems relevant" ;
+    v:fileExt ".mtx" ;
+    v:url     <https://networkx.org/documentation/stable/reference/readwrite/matrix_market.html> ;
+    v:spec    <https://math.nist.gov/MatrixMarket/formats.html#MMformat>
+.
+
+f:GDL
+    a         v:TextFormat ;
+    dc:title  "Graph Drawing Language" ;
+    v:comment "used by Perl:Easy" .
