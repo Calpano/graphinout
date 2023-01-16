@@ -2,9 +2,7 @@ package com.calpano.graphinout.converter.standard;
 
 import com.calpano.graphinout.GioGraphInOutConstants;
 import com.calpano.graphinout.graph.*;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlID;
-import jakarta.xml.bind.annotation.XmlIDREF;
+
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -34,7 +32,7 @@ public class SGMSAXHandler extends DefaultHandler {
     private GioGraph currentGioGraph;
     private GioNode currenGioNode;
     private GioEdge currentGioEdge;
-    private GioNodeData currentNodeData;
+    private GioData currentData;
 
     private GioHyperEdge currentGioHyperEdge;
 
@@ -139,9 +137,9 @@ public class SGMSAXHandler extends DefaultHandler {
     private void startElementNodeData(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
         String key = attributes.getValue("key");
-        currentNodeData = new GioNodeData();
-        currentNodeData.setKey(key);
-        currenGioNode.setData(currentNodeData);
+        currentData = new GioData();
+        currentData.setKey(key);
+        currenGioNode.addData(currentData);
 
     }
 
@@ -165,7 +163,7 @@ public class SGMSAXHandler extends DefaultHandler {
         String directed = attributes.getValue("directed");
         currentGioEdge = new GioEdge();
         currentGioEdge.setId(id);
-        currentGioEdge.setDirected(directed);
+        currentGioEdge.setDirected(Boolean.getBoolean(directed));
         String source = attributes.getValue("source");
         if (source != null) {
             currentGioEdge.setSource(findGioNodeInCurrentGraph(source));
@@ -187,10 +185,8 @@ public class SGMSAXHandler extends DefaultHandler {
             currentGioEdge.setSourcePort(findGioPortInCurrentGraph(port));
         }
 
-        if (currentGioGraph.getEdges() == null) {
-            currentGioGraph.setEdges(new ArrayList<>());
-        }
-        currentGioGraph.getEdges().add(currentGioGraph.getEdges().size(), currentGioEdge);
+
+        currentGioGraph.add(currentGioEdge);
 
     }
 
@@ -209,15 +205,15 @@ public class SGMSAXHandler extends DefaultHandler {
 
         String id = attributes.getValue("id");
         String type = attributes.getValue("type");
-        GioEndpoint gioEndpoint = GioEndpoint.builder().id(id).type(type).build();
+        GioEndpoint gioEndpoint = GioEndpoint.builder().id(id).type(Direction.getDirection(type)).build();
 
         String node = attributes.getValue("node");
         if(node!=null){
-        gioEndpoint.setNode(findGioNodeInCurrentGraph(node));
+        gioEndpoint.setNode(findGioNodeInCurrentGraph(node).getId());
        }
         String port = attributes.getValue("port");
         if(port!=null){
-            gioEndpoint.setPort(findGioPortInCurrentGraph(port));
+            gioEndpoint.setPort(findGioPortInCurrentGraph(port).getName());
         }
 
         if(currentGioHyperEdge.getEndpoints()==null ||
@@ -231,7 +227,7 @@ public class SGMSAXHandler extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (currentElement.equalsIgnoreCase("nodeData")) {
-            currentNodeData.setValue(new String(ch, start, length));
+            currentData.setValue(new String(ch, start, length));
         }
         super.characters(ch, start, length);
 

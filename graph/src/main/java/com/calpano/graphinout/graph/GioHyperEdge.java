@@ -1,14 +1,6 @@
 package com.calpano.graphinout.graph;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlID;
-import jakarta.xml.bind.annotation.XmlType;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -18,6 +10,14 @@ import lombok.NoArgsConstructor;
 import lombok.Singular;
 
 /**
+ * @author rbaba
+ * @version 0.0.1
+ * @implNote Hyperedges are a generalization of edges in the sense that they do not only relate two endpoints to each other,
+ * they express a relation between an arbitrary number of enpoints.
+ * Hyperedges are declared by a hyperedge element in GraphML.
+ * For each enpoint of the hyperedge, this hyperedge element contains an endpoint element.
+ * The endpoint element must have an XML-Attribute node, which contains the identifier of a node in the document.
+ * Note that edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
  * Example:
  * <pre>
  *         <hyperedge id="id--hyperedge-4N56">
@@ -26,8 +26,7 @@ import lombok.Singular;
  *             <endpoint node="id--node6" type="in"/>
  *         </hyperedge>
  * </pre>
- *
- * @author rbaba
+ * @see GioEdge {@link  GioEdge}
  */
 @Data
 @AllArgsConstructor
@@ -35,14 +34,13 @@ import lombok.Singular;
 @Builder
 public class GioHyperEdge {
 
-    protected String id;
+    /**
+     * This is an attribute that can be empty or null.
+     * </p>
+     * The name of this attribute in graph is <b>id</b>
+     */
+    private String id;
+
     @Singular(ignoreNullCollections = true)
     private List<GioEndpoint> endpoints;
-
-    public void toXML(Writer w) throws IOException {
-        w.write("<hyperedge id=");
-        w.write(id);
-        // TODO ... maybe like this?
-    }
-
 }
