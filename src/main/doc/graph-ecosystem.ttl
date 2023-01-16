@@ -1,319 +1,24 @@
-    #
-# This syntax: https://www.w3.org/TR/turtle/
-#
-@base <https://raw.githubusercontent.com/Calpano/graphinout/main/src/main/doc/graph-ecosystem.ttl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix dc:   <http://purl.org/dc/elements/1.1/> .
-@prefix ex:   <http://example.org/stuff/1.0/> .
-@prefix v:    <https://raw.githubusercontent.com/Calpano/graphinout/main/src/main/doc/graph-ecosystem.ttl#> .
-# == Vocabulary
-v:Dataset
-    a rdfs:Class .
-
-v:App
-    a rdfs:Class .
-
-v:Format
-    a rdfs:Class .
-
-v:BinaryFormat
-    a               rdfs:Class ;
-    rdfs:subClassOf v:Format .
-
-v:TextFormat
-    a               rdfs:Class ;
-    rdfs:subClassOf v:Format .
-
-v:TripleFormat
-    a               rdfs:Class ;
-    rdfs:subClassOf v:Format .
-
-v:XmlFormat
-    a               rdfs:Class ;
-    rdfs:subClassOf v:TextFormat .
-
-v:OwlFormat
-    a               rdfs:Class ;
-    rdfs:subClassOf v:TripleFormat .
-
-v:JsonFormat
-    a               rdfs:Class ;
-    rdfs:subClassOf v:TextFormat .
-
-v:claim
-    a           rdf:Property ;
-    rdfs:domain rdf:value .
-
-v:related
-    a           rdf:Property ;
-    rdfs:domain rdfs:Resource .
-
-v:includes
-    a           rdf:Property ;
-    v:comment   "one dataset my include another one" ;
-    rdfs:range  v:Dataset ;
-    rdfs:domain v:Dataset .
-
-v:examples
-    a           rdf:Property ;
-    rdfs:domain rdfs:Resource .
-
-v:fileExt
-    a           rdf:Property ;
-    rdfs:domain rdf:value .
-
-v:comment
-    a           rdf:Property ;
-    rdfs:domain rdf:value .
-
-
-v:license
-    a rdf:Property .
-
-v:spec
-    a rdf:Property .
-
-v:language
-    a rdf:Property .
-
-v:url
-    a rdf:Property .
-
-v:wikipedia
-    a rdf:Property .
-
-v:reads
-    a           rdf:Property ;
-    rdfs:domain v:Format .
-
-v:writes
-    a           rdf:Property ;
-    rdfs:domain v:Format .
-
+@base <https://raw.githubusercontent.com/Calpano/graphinout/main/src/main/doc/graph-ecosystem.ttl#> .
+@prefix v:    <https://raw.githubusercontent.com/Calpano/graphinout/main/src/main/doc/graph-ecosystem-vocab.ttl#> .
+@prefix f:    <https://raw.githubusercontent.com/Calpano/graphinout/main/src/main/doc/graph-ecosystem-formats.ttl#> .
+@prefix ds:    <https://raw.githubusercontent.com/Calpano/graphinout/main/src/main/doc/graph-ecosystem-datasets.ttl#> .
+# This syntax: https://www.w3.org/TR/turtle/
 
 #
 #
-# == Format
-v:TGF
-    a        v:Format ;
-    dc:title "Trivial Graph Format" ;
-    v:url    <https://en.wikipedia.org/wiki/Trivial_Graph_Format> .
-
-v:GEXF
-    a          v:Format ;
-    dc:title   "Graph Exchange XML Format" ;
-    v:spec     <http://gexf.net/schema.html> ;
-    v:examples <http://gexf.net/basic.html> .
-
-v:GML
-    a         v:Format ;
-    dc:title  "Graph Modelling Language" ;
-    v:url     <https://en.wikipedia.org/wiki/Graph_Modelling_Language> ;
-    v:spec    <https://pdfs.semanticscholar.org/d0a5/6b07a59a29b48d6f957763add90e05925c2c.pdf> ;
-    v:spec    <http://www.graphviewer.nl/misc/gmllanguage/gml-technical-report.pdf> ;
-    v:url     <https://gephi.org/users/supported-graph-formats/gml-format/> ;
-    v:fileExt ".gml" ;
-    v:comment "predecessor of GraphML" .
-
-v:GraphML
-    a           v:XmlFormat ;
-    v:comment   "since 2000" ;
-    v:wikipedia "https://en.wikipedia.org/wiki/GraphML" ;
-    dc:title    "Graph Markup Language" ;
-    v:spec      <http://graphml.graphdrawing.org/specification.html> ;
-    v:examples  <http://graphml.graphdrawing.org/primer/graphml-primer.html>
+# == Research
+v:PaperGraphExchangeFileFormats
+    a          v:Paper ;
+    v:url      <https://arxiv.org/pdf/1503.02781.pdf> ;
+    dc:title   "Unravelling Graph-Exchange File Formats" ;
+    dc:creator ( "Matthew Roughan" "Jonathan Tuke" ) ;
+    dc:date    "2015" ;
+    v:comment  "A great paper on graph file formats including links to graph data repositories -- time frames indicate when the format was/is used"
 .
 
-v:RDF_NTriples
-    a        v:Format ;
-    dc:title "RDF in N-Triples format" .
-
-v:LEDA
-    a      v:Format ;
-    v:spec <http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html> .
-
-v:PajekFormat
-    a         v:Format ;
-    dc:title  "Pajekt NET format" ;
-    v:spec    <http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf> ;
-    v:url     <https://gephi.org/users/supported-graph-formats/pajek-net-format/> ;
-    v:fileExt ( ".net" ".paj" )
-.
-
-v:GXL
-    a        v:Format ;
-    dc:title "Graph eXchange Language" ;
-    v:url    <https://en.wikipedia.org/wiki/GXL> .
-v:SparseGraph6
-    a         v:Format ;
-    v:comment "looks irrelevant" ;
-    v:spec    <http://users.cecs.anu.edu.au/~bdm/data/formats.html> .
-
-<#BioGridTab3>
-    a         v:Format ;
-    dc:title  "BioGRID Tab 3.0 Format" ;
-    v:comment "ca. 1 Mio edges in total in the database" ;
-    v:fileExt ( ".tab3.txt" ".tab3.zip" ) ;
-    v:spec    <https://wiki.thebiogrid.org/doku.php/biogrid_tab_version_3.0> .
-
-<#PsiMiTab25>
-    a         v:TextFormat ;
-    v:comment "Protenomics Standards Initiative Molecular Interaction; since 2002" ;
-    v:spec    <https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-5-44> ;
-    dc:title  "PSI-MI Tab Version 2.5 Format" .
-
-<#PsiMiXml25>
-    a         v:XmlFormat ;
-    v:comment "Protenomics Standards Initiative Molecular Interaction; since 2002" ;
-    v:spec    <https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-5-44> ;
-    dc:title  "PSI-MI XML Version 2.5 Format" .
-
-<#:bintsv4>
-    a         v:BinaryFormat ;
-    v:comment "deprecated; since 2009; internal format of discontinued GraphLab/PowerGraph tool?" .
-
-v:DOT
-    a           v:TextFormat ;
-    v:wikipedia <https://en.wikipedia.org/wiki/DOT_(graph_description_language)> ;
-    v:spec      <https://graphviz.org/doc/info/lang.html> ;
-    v:comment   "GraphVis Dot Language; since 2000" ;
-    dc:title    "DOT (graphviz syntax)" ;
-    v:fileExt   ( ".dot" ".gv" )
-.
-
-<#:PerlGraphEasyFormat>
-    a         v:TextFormat ;
-    v:comment "Perl Graph::Easy format; since 2004; LOOKS IRRELEVANT TODAY" .
-
-
-<#:ITDK>
-    a         ( v:Format v:Dataset ) ;
-    v:comment "[41] X CAIDA Internet Topology Data Kit; since 2002; very specific format (node file & edge file)" .
-
-<#:JsonGraph>
-    a         v:JsonFormat ;
-    v:spec    <https://github.com/jsongraph/json-graph-specification> ;
-    v:comment "since 2014" .
-
-
-<#:TEI>
-    a         v:Format ;
-    dc:title  "Text Encoding Initiative Graph Format (XML-compatible)" ;
-    v:comment "IRRELEVANT; since 2001" ;
-    v:spec    <https://tei-c.org/Vault/P4/doc/html/GD.html>
-.
-
-<#:YGF>
-    a         v:BinaryFormat ;
-    v:spec    <https://docs.yworks.com/yfiles/doc/developers-guide/ygf.html> ;
-    v:comment "DEPRECATED yWorks/yEd Graph Format; since 2004" .
-
-
-<#Netdraw>
-    a         v:TextFormat ;
-    dc:title  "Netdraw VNA format" ;
-    v:comment "irrelevant" .
-
-<#UCINET>
-    a         v:TextFormat ;
-    dc:title  "UCINET DL Format" ;
-    v:spec    <https://gephi.org/users/supported-graph-formats/ucinet-dl-format/> ;
-    v:comment "Unfortunately, a reference page or manual seems not to be available about UCINET file formats."
-.
-
-<#GUESS>
-    a         v:TextFormat ;
-    dc:title  "GUESS format (GDF)" ;
-    v:comment "irrelevant" ;
-    v:spec    <http://guess.wikispot.org/The_GUESS_.gdf_format> ;
-    v:url     <https://gephi.org/users/supported-graph-formats/gdf-format/>
-.
-
-v:NNF
-    a         v:Format ;
-    v:fileExt ".nnf" ;
-    dc:title  "Nested Network Format" ;
-    v:comment "[59], [60] ; since 2003" .
-
-v:SIF
-    a         v:TextFormat ;
-    v:comment "since 2003" ;
-    dc:title  "Simple Interaction Format" ;
-    v:fileExt ".sif" ;
-    v:spec    <https://manual.cytoscape.org/en/stable/Supported_Network_File_Formats.html#sif-format> .
-
-
-
-v:XGMML
-    a           v:XmlFormat ;
-    v:related   v:GML ;
-    v:wikipedia <https://en.wikipedia.org/wiki/XGMML> ;
-    v:comment   "based on GML; "
-.
-
-v:SBML
-    a        v:XmlFormat ;
-    dc:title "Systems Biology Markup Language (SBML)" ;
-    v:claim  "format to describe biochemical networks" ;
-    v:spec   <http://sbml.org/documents/>
-.
-
-v:BioPAX
-    a        v:OwlFormat ;
-    dc:title "BioPAX (Biological PAthways eXchange) Format" ;
-    v:claim  "designed to exchange biological pathways data" ;
-    v:spec   <http://www.biopax.org/> .
-
-v:CytoscapeJsonFormat
-    a         v:Format ;
-    v:comment "export Cytoscape graphs to the browser" ;
-    v:spec    <https://manual.cytoscape.org/en/stable/Supported_Network_File_Formats.html#cytoscape-js-json> ;
-    v:related v:CytoscapeCX
-.
-
-v:CytoscapeCX
-    a         v:Format ;
-    v:spec    <https://manual.cytoscape.org/en/stable/Supported_Network_File_Formats.html#cytoscape-cx> ;
-    v:spec    <https://cytoscape.org/cx/> ;
-    v:comment "seems active and relevant"
-.
-
-<#:OGDL>
-    a         v:TextFormat ;
-    v:spec    <https://ogdl.org/> ;
-    dc:title  "Ordered Graph Data Language" ;
-    v:comment "since 2002; seems mostly to be used as config files; see also Apache Shiro" .
-
-<v:LGF>
-    a         v:TextFormat ;
-    dc:title  "LEMON Graph Format" ;
-    v:comment "since 2008" ;
-    v:spec    <http://lemon.cs.elte.hu/pub/tutorial/a00018.html> .
-
-<#:OGML>
-    a         v:Format ;
-    dc:title  "Open Graph Markup Language" ;
-    v:comment "seems to be proposed in 1 paper and forgotten since; since 2012" ;
-    v:url     <https://ogdf.github.io/doc/ogdf/files.html>
-.
-
-v:MATLAB
-    a         v:Format ;
-    v:fileExt ".mat" .
-
-v:RutherfordBoeing
-    a         v:Format ;
-    v:comment "looks irrelevant" ;
-    v:comment "for FORTRAN" .
-
-v:MatrixMarketFormat
-    a         v:Format ;
-    v:comment "the native format of Matrix Market; seems relevant" ;
-    v:fileExt ".mtx" ;
-    v:url     <https://networkx.org/documentation/stable/reference/readwrite/matrix_market.html> ;
-    v:spec    <https://math.nist.gov/MatrixMarket/formats.html#MMformat> .
-#
 #
 #
 #
@@ -331,9 +36,9 @@ v:MatrixMarketFormat
     v:comment "academic" ;
     v:claim   "LEMON stands for Library for Efficient Modeling and Optimization in Networks. It is a C++ template library providing efficient implementations of common data structures and algorithms with focus on combinatorial optimization tasks connected mainly with graphs and networks." .
 
-<v:Maven>
+<#Maven>
     a         v:App ;
-    v:writes  ( v:DOT v:GraphML ) ;
+    v:writes  ( f:DOT f:GraphML ) ;
     v:url     <https://maven.apache.org/plugins/maven-dependency-plugin/tree-mojo.html> ;
     v:comment "'mvn dependency:tree -DoutputType=graphml'  (or 'dot')"
 .
@@ -342,16 +47,16 @@ v:MatrixMarketFormat
     a         v:App ;
     v:claim   "Analysis and visualization of very large networks" ;
     v:license "" ;
-    v:reads   v:PajekFormat ;
+    v:reads   f:PajekFormat ;
     v:url     <http://mrvar.fdv.uni-lj.si/pajek/> .
 
 <http://www.analytictech.com/netdraw/netdraw.htm>
     a       v:App ;
-    v:reads v:Netdraw .
+    v:reads f:Netdraw .
 
 <http://graphexploration.cond.org/>
     a         v:App ;
-    v:reads   v:GUESS ;
+    v:reads   f:GUESS ;
     v:comment "last update in 2007" ;
     v:claim   "GUESS is an exploratory data analysis and visualization tool for graphs and networks. " ;
     v:license "GPL"
@@ -368,7 +73,7 @@ v:MatrixMarketFormat
     v:license  "BSD" ;
     v:language "Python" ;
     v:claim    "Visualization is not a focus on NetworkX, but it is a major feature for many users. We need to enhance the drawing tools for NetworkX." ;
-    v:related  ( v:MatrixMarket v:GEXF v:GML v:GraphML v:LEDA v:SparseGraph6 v:PajekFormat ) ;
+    v:related  ( f:MatrixMarketFormat  f:GEXF f:GML f:GraphML f:LEDA f:SparseGraph6 f:PajekFormat ) ;
     v:url      <https://networkx.org/documentation/stable/index.html> .
 
 <#Gephi>
@@ -377,7 +82,7 @@ v:MatrixMarketFormat
     v:claim   "The Open Graph Viz Platform" ;
     v:license "GPL" ;
     v:url     <https://gephi.org/> ;
-    v:reads   v:DOT .
+    v:reads   f:DOT .
 
 
 <#Cytoscape>
@@ -386,7 +91,7 @@ v:MatrixMarketFormat
     v:license "" ;
     v:url     <https://cytoscape.org/> ;
     v:comment "yWorks has a plugin for it" ; ;
-    v:reads   ( v:SIF v:NNF v:GML v:XGMML v:SBML v:BioPAX v:GraphML v:CytoscapeJsonFormat )
+    v:reads   ( f:SIF f:NNF f:GML f:XGMML f:SBML f:BioPAX f:GraphML f:CytoscapeJsonFormat )
 .
 
 <#Graph-tool>
@@ -401,7 +106,7 @@ v:MatrixMarketFormat
     v:claim   "" ;
     v:license "" ;
     v:url     <https://graphviz.org/> ;
-    v:reads   <#DOT> .
+    v:reads   f:DOT .
 
 <#Tulip>
     a         v:App ;
@@ -415,20 +120,22 @@ v:MatrixMarketFormat
     v:claim   "" ;
     v:license "commercial/free" ;
     v:url     <https://www.yworks.com/products/yed> ;
-    v:reads   ( v:GraphML ) ;
-    v:related v:Graphity .
+    v:reads   ( f:GraphML ) ;
+    v:related <#Graphity> .
 
-<yEdLive>
+<#yEdLive>
     a     v:App ;
     v:url <https://www.yworks.com/yed-live/>
 .
-<v:SnapTool>
+
+<#SnapTool>
     a     v:App ;
     v:url <https://snap.stanford.edu/snap/index.html> ;
     v:claim
           "Stanford Network Analysis Platform (SNAP) is a general purpose, high performance system for analysis and manipulation of large networks."
 .
-v:Graphity
+
+<#Graphity>
     a       v:App ;
     v:claim "The diagram editor with automatic layouts" ;
     v:url   <https://www.graphity.com/> .
@@ -438,13 +145,14 @@ v:Graphity
     v:claim   "Entity Event Knowledge Graphs" ;
     v:license "commercial" ;
     v:url     <https://allegrograph.com/> ;
-    v:related <#Gruff> .
+    v:related <#Gruff>
+.
 
 <#Gruff>
     a     v:App ;
     v:url "https://allegrograph.com/products/gruff/" ;
-    v:claim
-          "The Industry's most advanced no-code Graph Visualization, Graphical Query Builder, and Knowledge Graph Explorer" .
+        v:claim
+        "The Industry's most advanced no-code Graph Visualization, Graphical Query Builder, and Knowledge Graph Explorer" .
 
 <#NetworkX>
     a         v:App ;
@@ -468,41 +176,24 @@ v:Graphity
     a        v:App ;
     v:url    <https://metacpan.org/pod/Graph::Easy> ;
     v:url    <http://bloodgate.com/perl/graph/manual/> ;
-    v:writes ( v:GraphML v:DOT v:GDL ) ;
-    v:reads  <#PerlGraphEasyFormat> .
-#
-#
-#
-#
-#
-# == Datasets
-#
-<#https://en.wikipedia.org/wiki/BioGRID>
-    a          v:Dataset ;
-    v:contains <https://thebiogrid.org/4383845/summary/severe-acute-respiratory-syndrome-coronavirus-2/e.html> .
+    v:writes ( f:GraphML f:DOT f:GDL ) ;
+    v:reads  f:PerlGraphEasyFormat .
 
-v:SnapDatasets
-    a         v:Dataset ;
-    dc:title  "Stanford Network Analysis Platform (SNAP)" ;
-    v:url     <https://snap.stanford.edu/data/index.html> ;
-    v:url     <https://sparse.tamu.edu/SNAP> ;
-    v:comment "since 2005; each graph is in a different format; normalized versions from https://sparse.tamu.edu/SNAP"
+<#GraphTool>
+    a          v:App ;
+    dc:title   "Graph-tool" ;
+    v:claim    "efficient network analysis" ;
+    v:url      <https://graph-tool.skewed.de/> ;
+    v:url      <https://git.skewed.de/count0/graph-tool> ;
+    v:language "Python" ;
+    v:comment  "modern, powerful"
 .
+#
+#
+#
 
-v:SuiteSparseMatrixCollection
-    a          v:Dataset ;
-    v:url      <https://sparse.tamu.edu> ;
-    v:comment  "very large" ;
-    v:includes v:SnapDatasets
-.
-
-v:MatrixMarket
-    a          v:Dataset ;
-    v:url      <https://math.nist.gov/MatrixMarket/> ;
-    v:writes   v:MatrixMarketFormat ;
-    v:includes v:SuiteSparseMatrixCollection
-.
-
+# == TODO
+v:Neo4j
+    a v:App .
 # Jupyter -- yWorks
 # neo4j -- yWorks
-# wikidata

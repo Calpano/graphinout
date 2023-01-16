@@ -37,46 +37,52 @@ Writing other formats could be a nice _future_ extension.
 This would turn {gio} into the 'https://pandoc.org/[pandoc] of graph file formats'.
 
 === Input Formats
-
-* TGF Trivial Graph Format https://en.wikipedia.org/wiki/Trivial_Graph_Format[Wikipedia]
-* DOT language https://graphviz.org/doc/info/lang.html[spec]
-* GEXF (Graph Exchange XML Format). http://gexf.net/schema.html[specification], http://gexf.net/basic.html[examples]
-* GML Graph Modelling Language https://en.wikipedia.org/wiki/Graph_Modelling_Language[Wikipedia]; https://pdfs.semanticscholar.org/d0a5/6b07a59a29b48d6f957763add90e05925c2c.pdf[spec 1997] predecessor of GraphML
-
-* *RDF*, in N-Triples format
-* LEDA, http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html[spec]
-* Pajek, http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf[spec]
-* GXL Graph eXchange Language https://en.wikipedia.org/wiki/GXL[Wikipedia]
-* graph6 http://users.cecs.anu.edu.au/~bdm/data/formats.html[spec]
-
 A great 2015 paper on graph file formats: https://arxiv.org/pdf/1503.02781.pdf[]
 including links to graph data repositories -- time frames indicate when the format was/is used
 
-.Formats still in use today
-References from the paper
+Text based::
+Diverse text syntaxes to encode graphs.
+Common formats:
 
-* bintsv4 [9] bintsv4 (GraphLab); since 2009
-* BioGRID TAB [10], [11] X BioGRID TAB 2.0 Format; since 2003
-* Dot [19] GraphVis Dot Language; since 2000
-* Graph::Easy [29] X Perl Graph::Easy format; since 2004
-* GraphML [33] X Graph Markup Language; since 2000
-* ITDK [41] X CAIDA Internet Topology Data Kit; since 2002
-* JSON Graph [42] json-graph-specification; since 2014
-* LGF [44], [45] LEMON Graph Format; since 2008
-* KrackPlot [49] X KrackPlot data format; since 1993
-* Matlab [50] Matlab saved workspace; since 1996
-* NNF [59], [60] Nested Network Format; since 2003
-* Nod [49] KrackPlot Node format; since 1993
-* OGDL [64] X Ordered Graph Data Language; since 2002
-* OGML [65], [66] Open Graph Markup Language; since 2012
-* Pajek (.net) [69]–[71] X Pajek Tool’s .net format; since 1996
-* Pajek (.paj) [69]–[71] X Pajek Tool project (.clu, .vec, .per, ...); since 1996
-* PSI MI [72] Protenomics Standards Initiative Molecular Interaction; since 2002
-* SIF [59], [60] Simple Interaction Format; since 2003
-* SNAP [81] X Stanford Network Analysis Platform; since 2005
-* SoNIA [82], [83] X So NIA Son format; since 2002
-* TEI [85] Text Encoding Initiative Graph Format (XML-compatible); since 2001
-* YGF [94] X Y Graph Format; since 2004
+* TGF Trivial Graph Format https://en.wikipedia.org/wiki/Trivial_Graph_Format[Wikipedia]
+* DOT language https://graphviz.org/doc/info/lang.html[spec]
+* Pajek, http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf[spec]
+* Nested Network Format
+* BioGRID Tab 3.0 Format https://wiki.thebiogrid.org/doku.php/biogrid_tab_version_3.0[spec]
+* PSI-MI Tab Version 2.5 Format https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-5-44[spec]
+* Matrix Market from the large 'Matrix Market' https://math.nist.gov/MatrixMarket/formats.html#MMformat[spec]
+
+XML based::
+Expressed as XML.
+Common formats:
+
+* link:src/main/doc/graphml.adoc[GraphML] (<- our notes about the format)
+* GEXF (Graph Exchange XML Format). http://gexf.net/schema.html[specification], http://gexf.net/basic.html[examples]
+* GML Graph Modelling Language https://en.wikipedia.org/wiki/Graph_Modelling_Language[Wikipedia]; http://www.graphviewer.nl/misc/gmllanguage/gml-technical-report.pdf[spec 1997] predecessor of GraphML
+* GXL Graph eXchange Language https://en.wikipedia.org/wiki/GXL[Wikipedia]
+* XGMML https://en.wikipedia.org/wiki/XGMML[spec]
+* Systems Biology Markup Language (SBML) http://sbml.org/documents/[spec]
+
+JSON based::
+In JSON format.
+Common formats:
+
+* JSON Graph https://netflix.github.io/falcor/documentation/jsongraph.html[spec]
+* Json Graph Format https://github.com/jsongraph/json-graph-specification[spec]
+* CytoscapeCX https://cytoscape.org/cx/[spec]
+
+Triple based::
+Triples (semantic web) can be encoded themselves as XML or text-based syntaxes.
+They are used for knowledge graphs, vocabularies, linked open data and ontologies.
+Common file types:
+
+* Turtle (text-based, `.ttl`)
+* RDF/XML (XML-based, `.rdf.xml`
+* N3 (text-based, `n3`)
+* N-Triples (text-based, `nt`)
+* Web Ontology Language (XML-based, `.owl.xml`)
+* BioPAX (OWL-based) BioPAX (Biological PAthways eXchange) Format http://www.biopax.org/[spec]
+
 
 == Usage
 
@@ -114,12 +120,14 @@ There are many, many graph concepts, which are not required to understand or eve
 - hyper-graphs: edges with more than 2 endpoints
 
 == Ecosystem
+* Domain Software engineering (2002) https://userpages.uni-koblenz.de/~ist/GXL/tools/tools.html[]
 
 === Graph Toolkits
 
 * https://networkx.org/[NetworkX] <- GEXF, GML, GraphML, LEDA, Pajek
 * https://en.wikipedia.org/wiki/Boost_(C%2B%2B_libraries)[BOOST] C++ library <--> GraphML
 * https://graph-tool.skewed.de/[graph-tool] <-> GraphML, GML
+
 
 === Graph Databases
 
