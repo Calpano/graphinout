@@ -27,6 +27,7 @@ public class GioGraph {
      * </p>
      * The name of this attribute in graph is <b>edgedefault</b>
      */
+    // TODO maybe a boolean?
     protected Direction edgedefault;
     /**
      * This is an attribute that can be empty or null.
