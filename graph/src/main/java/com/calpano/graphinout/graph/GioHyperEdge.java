@@ -1,6 +1,7 @@
 package com.calpano.graphinout.graph;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ import lombok.Singular;
  *             <endpoint node="id--node6" type="in"/>
  *         </hyperedge>
  * </pre>
- * @see GioEdge {@link  GioEdge}
+ *
  */
 @Data
 @AllArgsConstructor
@@ -43,4 +44,13 @@ public class GioHyperEdge {
 
     @Singular(ignoreNullCollections = true)
     private List<GioEndpoint> endpoints;
+
+    private List<GioData> datas;
+
+
+    public void addEndpoint(GioEndpoint gioEndpoint){
+        if(endpoints == null)
+            endpoints = new ArrayList<>();
+        endpoints.add(gioEndpoint);
+    }
 }

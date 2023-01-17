@@ -40,10 +40,8 @@ public class SGMSAXHandler extends DefaultHandler {
 
     public SGMSAXHandler(File outPutFile) throws FileNotFoundException {
         this.outPutFile = outPutFile;
-        fileOutputStream =  new FileOutputStream(outPutFile);
+        fileOutputStream = new FileOutputStream(outPutFile);
     }
-
-
 
 
     @Override
@@ -61,13 +59,7 @@ public class SGMSAXHandler extends DefaultHandler {
         } else if (qName.equalsIgnoreCase("node")) {
             startElementNode(uri, localName, qName, attributes);
         } else if (qName.equalsIgnoreCase("data")) {
-            if (elementsNames.peek().endsWith("node")) {
-                currentElement = "nodeData";
-                startElementNodeData(uri, localName, qName, attributes);
-
-            } else if (elementsNames.peek().endsWith("edge")) {
-                currentElement = "edgeData";
-            }
+            startElementNodeData(uri, localName, qName, attributes);
         } else if (qName.equalsIgnoreCase("port")) {
             if (elementsNames.peek().endsWith("node")) {
                 currentElement = "nodePort";
@@ -76,9 +68,9 @@ public class SGMSAXHandler extends DefaultHandler {
 
         } else if (qName.equalsIgnoreCase("edge")) {
             startElementEdge(uri, localName, qName, attributes);
-        } else if(qName.equalsIgnoreCase("hyperedge")){
+        } else if (qName.equalsIgnoreCase("hyperedge")) {
             startElementHyperEdge(uri, localName, qName, attributes);
-        }else if(qName.equalsIgnoreCase("endpoint")){
+        } else if (qName.equalsIgnoreCase("endpoint")) {
             startElementHyperEdgeEndpoint(uri, localName, qName, attributes);
         }
         elementsNames.add(qName.toLowerCase());
@@ -147,7 +139,7 @@ public class SGMSAXHandler extends DefaultHandler {
 
         String name = attributes.getValue("name");
         GioPort gioPort = new GioPort(name);
-        if (currenGioNode.getPorts() == null || currenGioNode.getPorts().isEmpty() ) {
+        if (currenGioNode.getPorts() == null || currenGioNode.getPorts().isEmpty()) {
             currenGioNode.setPorts(new ArrayList<>());
         }
         currenGioNode.getPorts().add(currenGioNode.getPorts().size(), gioPort);
@@ -156,9 +148,6 @@ public class SGMSAXHandler extends DefaultHandler {
 
     private void startElementEdge(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
-//    @XmlElement(required = true)
-//    protected GioEdgeData data;
-//   
         String id = attributes.getValue("id");
         String directed = attributes.getValue("directed");
         currentGioEdge = new GioEdge();
@@ -184,21 +173,23 @@ public class SGMSAXHandler extends DefaultHandler {
         if (port != null) {
             currentGioEdge.setSourcePort(findGioPortInCurrentGraph(port));
         }
+        if (currentGioGraph.getHyperEdges() == null) {
+            currentGioGraph.setHyperEdges(new ArrayList<>());
+        }
 
-
-        currentGioGraph.add(currentGioEdge);
+        currentGioGraph.getHyperEdges().add(currentGioGraph.getHyperEdges().size(), currentGioEdge.hyperEdge());
 
     }
 
 
     private void startElementHyperEdge(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         String id = attributes.getValue("id");
-        currentGioHyperEdge =  GioHyperEdge.builder().id(id).build();
+        currentGioHyperEdge = GioHyperEdge.builder().id(id).build();
 
-        if(currentGioGraph.getHyperEdges()==null){
+        if (currentGioGraph.getHyperEdges() == null) {
             currentGioGraph.setHyperEdges(new ArrayList<>());
         }
-        currentGioGraph.getHyperEdges().add(currentGioGraph.getHyperEdges().size(),currentGioHyperEdge);
+        currentGioGraph.getHyperEdges().add(currentGioGraph.getHyperEdges().size(), currentGioHyperEdge);
     }
 
     private void startElementHyperEdgeEndpoint(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -208,27 +199,24 @@ public class SGMSAXHandler extends DefaultHandler {
         GioEndpoint gioEndpoint = GioEndpoint.builder().id(id).type(Direction.getDirection(type)).build();
 
         String node = attributes.getValue("node");
-        if(node!=null){
-        gioEndpoint.setNode(findGioNodeInCurrentGraph(node).getId());
-       }
+        if (node != null) {
+            gioEndpoint.setNode(findGioNodeInCurrentGraph(node).getId());
+        }
         String port = attributes.getValue("port");
-        if(port!=null){
+        if (port != null) {
             gioEndpoint.setPort(findGioPortInCurrentGraph(port).getName());
         }
 
-        if(currentGioHyperEdge.getEndpoints()==null ||
-                currentGioHyperEdge.getEndpoints().isEmpty()) {
+        if (currentGioHyperEdge.getEndpoints() == null || currentGioHyperEdge.getEndpoints().isEmpty()) {
             currentGioHyperEdge.setEndpoints(new ArrayList<>());
         }
-        currentGioHyperEdge.getEndpoints().add(gioEndpoint);
+        currentGioHyperEdge.addEndpoint(gioEndpoint);
     }
 
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        if (currentElement.equalsIgnoreCase("nodeData")) {
-            currentData.setValue(new String(ch, start, length));
-        }
+        if (currentData != null) currentData.setValue(new String(ch, start, length));
         super.characters(ch, start, length);
 
     }
@@ -254,8 +242,7 @@ public class SGMSAXHandler extends DefaultHandler {
             GioNode tmp2 = GioNode.builder().id(node).build();
             invalidNode.add(tmp2);
             return tmp2;
-        }else
-        return tmp.get();
+        } else return tmp.get();
     }
 
     private GioPort findGioPortInCurrentGraph(String port) {

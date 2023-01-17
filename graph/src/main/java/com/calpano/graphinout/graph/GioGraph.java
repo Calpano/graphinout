@@ -5,7 +5,6 @@ import lombok.*;
 import java.util.List;
 
 
-
 /**
  * @author rbaba
  * @version 0.0.1
@@ -13,7 +12,6 @@ import java.util.List;
  * A node is declared with a node element and an edge with an edge element and a Hyperedge with a  Hyperedge element.
  * <p>
  * <b>In the output we avoid the edge and change them all to Hyperedge.</b>
- * @see GioEdge {@link GioEdge}
  * @see GioHyperEdge {@link GioHyperEdge}
  */
 @AllArgsConstructor
@@ -61,9 +59,4 @@ public class GioGraph {
         this.edgedefault = edgedefault;
         this.id = id;
     }
-
-    public void add(GioEdge gioEdge) {
-        //Convert gioEage to hyperedge
-    }
-
 }
