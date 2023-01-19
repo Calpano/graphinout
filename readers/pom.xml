@@ -26,6 +26,7 @@
 
     <modules>
         <module>reader-graphml</module>
+        <module>reader-dot</module>
     </modules>
 
 </project>
