@@ -28,13 +28,11 @@ public enum Direction {
                 return In;
             case "out":
                 return Out;
-            case "undirected":
-            case "undir":
-                return Undirected;
             case "directed":
             case "dir":
                 return Directed;
-
+            case "undirected":
+            case "undir":
             default:
                 return Undirected;
         }

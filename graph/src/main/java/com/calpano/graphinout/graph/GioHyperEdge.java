@@ -33,19 +33,31 @@ import lombok.Singular;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioHyperEdge {
+public class GioHyperEdge extends  GioGraphCommonElement{
 
     /**
      * This is an attribute that can be empty or null.
      * </p>
-     * The name of this attribute in graph is <b>id</b>
+     * The name of this attribute in hyperEdge is <b>id</b>
      */
     private String id;
+
+    /**
+     * User defined extra attributes for <hyperEdge> elements.
+     * <p>
+     * The name of this attribute in hyperEdge  is <b>hyperEdge.extra.attrib</b>
+     */
+    private String extraAttrib;
 
     @Singular(ignoreNullCollections = true)
     private List<GioEndpoint> endpoints;
 
-    private List<GioData> datas;
+    /**
+     * This is an Element that can be empty or null.
+     * </p>
+     * The name of this Element in hyperEdge is <b>graph</b>.
+     */
+    private GioGraph graph;
 
 
     public void addEndpoint(GioEndpoint gioEndpoint){

@@ -27,7 +27,7 @@ import lombok.Singular;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioGraphML {
+public class GioGraphML extends GioGraphCommonElement{
 
     /**
      * The graphml element, like all other GraphML elements, belongs to the namespace http://graphml.graphdrawing.org/xmlns.
@@ -54,23 +54,23 @@ public class GioGraphML {
     /**
      * This is an attribute that can be empty or null.
      * </p>
-     * The name of this attribute in graphMl is <b>id</b>
+     * The name of this attribute in graphML is <b>id</b>
      */
-    protected String id;
+    private String id;
 
     /**
      * This is an Element that can be empty or null.
      * </p>
-     * The name of this Element in graphMl is <b>key</b>
+     * The name of this Element in graphML is <b>key</b>
      */
     @Singular(ignoreNullCollections = true)
-    protected List<GioKey> keys;
+    private List<GioKey> keys;
 
     /**
      * This is an Element that can be <i>empty</i> or <i>null</i>.
      * </p>
-     * The name of this Element in graphMl is <b>graph</b>
+     * The name of this Element in graphML is <b>graph</b>
      */
     @Singular(ignoreNullCollections = true)
-    protected List<GioGraph> graphs;
+    private List<GioGraph> graphs;
 }

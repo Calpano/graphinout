@@ -33,7 +33,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Builder
-class GioEdge {
+class GioEdge extends GioGraphCommonElement {
 
     /**
      * This is an attribute that can be empty or null.
@@ -99,10 +99,19 @@ class GioEdge {
      */
     protected GioPort targetPort;
 
+    /**
+     * This is an Element that can be empty or null.
+     * </p>
+     * The name of this Element in edge is <b>graph</b>.
+     */
+    private GioGraph graph;
+
+
     GioHyperEdge hyperEdge() {
         GioHyperEdge gioHyperEdge = new GioHyperEdge();
         gioHyperEdge.setId(id);
         GioEndpoint gioEndpoint1 = new GioEndpoint();
+
         if (source != null) {
             gioEndpoint1.setNode(source.getId());
             gioEndpoint1.setType(Direction.In);

@@ -5,10 +5,8 @@ import com.calpano.graphinout.graphml.GraphMLService;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -53,23 +51,23 @@ public class SGMLConverterTest {
 
             GioNode gioNode1 = gioNodes.get(0);
             assertEquals("id--node1", gioNode1.getId());
-            assertNull(gioNode1.getDatas());
+            assertNull(gioNode1.getDataList());
             assertEquals(0, gioNode1.getPorts().size());
 
             GioNode gioNode2 = gioNodes.get(1);
             assertEquals("id--node2", gioNode2.getId());
-            assertNull(gioNode2.getDatas());
+            assertNull(gioNode2.getDataList());
             assertEquals(0, gioNode2.getPorts().size());
 
             GioNode gioNode3 = gioNodes.get(2);
             assertEquals("id--node3", gioNode3.getId());
-            assertNull(gioNode3.getDatas());
+            assertNull(gioNode3.getDataList());
             assertEquals(0, gioNode3.getPorts().size());
 
 
             GioNode gioNode4 = gioNodes.get(3);
             assertEquals("id--node4", gioNode4.getId());
-            assertNull(gioNode4.getDatas());
+            assertNull(gioNode4.getDataList());
             assertEquals(2, gioNode4.getPorts().size());
 
             GioPort gioPort41 = gioNode4.getPorts().get(0);
@@ -80,7 +78,7 @@ public class SGMLConverterTest {
 
             GioNode gioNode5 = gioNodes.get(4);
             assertEquals("id--node5", gioNode5.getId());
-            assertNull(gioNode5.getDatas());
+            assertNull(gioNode5.getDataList());
             assertEquals(2, gioNode5.getPorts().size());
 
             GioPort gioPort51 = gioNode5.getPorts().get(0);
@@ -91,7 +89,7 @@ public class SGMLConverterTest {
 
             GioNode gioNode6 = gioNodes.get(5);
             assertEquals("id--node6", gioNode6.getId());
-            assertNull(gioNode6.getDatas());
+            assertNull(gioNode6.getDataList());
             assertEquals(2, gioNode6.getPorts().size());
 
             GioPort gioPort61 = gioNode6.getPorts().get(0);
@@ -105,7 +103,7 @@ public class SGMLConverterTest {
             assertEquals(4, hyperEdges.size());
 
             GioHyperEdge gioHyperEdge1 = hyperEdges.get(0);
-            assertNull(gioHyperEdge1.getDatas());
+            assertNull(gioHyperEdge1.getDataList());
             assertEquals("id--edge-12", gioHyperEdge1.getId());
             List<GioEndpoint> gioEndpoints = gioHyperEdge1.getEndpoints();
             assertEquals(2, gioEndpoints.size());
@@ -118,7 +116,7 @@ public class SGMLConverterTest {
 
 
             GioHyperEdge gioHyperEdge2 = hyperEdges.get(1);
-            assertNull(gioHyperEdge2.getDatas());
+            assertNull(gioHyperEdge2.getDataList());
             assertEquals("id--edge-4S6N", gioHyperEdge2.getId());
             List<GioEndpoint> gioEndpoints2 = gioHyperEdge2.getEndpoints();
             assertEquals(2, gioEndpoints2.size());
@@ -216,7 +214,7 @@ public class SGMLConverterTest {
 
             GioNode gioNode0 = gioNodes.get(0);
             assertEquals("cat", gioNode0.getId());
-            List<GioData> datas = gioNode0.getDatas();
+            List<GioData> datas = gioNode0.getDataList();
             assertEquals(1, datas.size());
             GioData gioData1 = datas.get(0);
 
@@ -226,7 +224,7 @@ public class SGMLConverterTest {
 
             GioNode gioNode1 = gioNodes.get(1);
             assertEquals("ClaudiaStern", gioNode1.getId());
-            List<GioData> datas1 = gioNode1.getDatas();
+            List<GioData> datas1 = gioNode1.getDataList();
             assertEquals(1, datas1.size());
             GioData gioData11 = datas1.get(0);
 
@@ -236,14 +234,14 @@ public class SGMLConverterTest {
 
             GioNode gioNode2 = gioNodes.get(2);
             assertEquals("ClaudiCat", gioNode2.getId());
-            List<GioData> datas2 = gioNode2.getDatas();
+            List<GioData> datas2 = gioNode2.getDataList();
             assertEquals(1, datas2.size());
             GioData gioData12 = datas2.get(0);
             assertEquals("label", gioData12.getKey());
             assertEquals("ClaudiCat", gioData12.getValue());
 
             GioNode gioNode3 = gioNodes.get(3);
-            List<GioData> datas3 = gioNode3.getDatas();
+            List<GioData> datas3 = gioNode3.getDataList();
             assertEquals(1, datas3.size());
             GioData gioData13 = datas3.get(0);
             assertEquals("DirkHagemann", gioNode3.getId());
@@ -251,7 +249,7 @@ public class SGMLConverterTest {
             assertEquals("Dirk Hagemann", gioData13.getValue());
 
             GioNode gioNode4 = gioNodes.get(4);
-            List<GioData> datas4 = gioNode4.getDatas();
+            List<GioData> datas4 = gioNode4.getDataList();
             assertEquals(1, datas4.size());
             GioData gioData14 = datas3.get(0);
 
@@ -261,7 +259,7 @@ public class SGMLConverterTest {
 
 
             GioNode gioNode5 = gioNodes.get(5);
-            List<GioData> datas5 = gioNode5.getDatas();
+            List<GioData> datas5 = gioNode5.getDataList();
             assertEquals(1, datas5.size());
             GioData gioData15 = datas5.get(0);
             assertEquals("Person", gioNode5.getId());
@@ -270,7 +268,7 @@ public class SGMLConverterTest {
 
 
             GioNode gioNode6 = gioNodes.get(6);
-            List<GioData> datas6 = gioNode6.getDatas();
+            List<GioData> datas6 = gioNode6.getDataList();
             assertEquals(1, datas6.size());
             GioData gioData16 = datas6.get(0);
             assertEquals("SAP", gioNode6.getId());
@@ -292,7 +290,7 @@ public class SGMLConverterTest {
             assertEquals("Company", gioEndpoint12.getNode());
             assertEquals(Direction.Out, gioEndpoint12.getType());
 
-            List<GioData> gioDatas1 = hyperEdge1.getDatas();
+            List<GioData> gioDatas1 = hyperEdge1.getDataList();
             assertEquals("1", gioDatas1.size());
             GioData data11 = gioDatas1.get(0);
             assertEquals("type", data11.getKey());

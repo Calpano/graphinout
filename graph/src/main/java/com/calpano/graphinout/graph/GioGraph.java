@@ -18,20 +18,20 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Data
-public class GioGraph {
+public class GioGraph  extends  GioGraphCommonElement{
 
     /**
      * This is an attribute that can be empty or null.
      * </p>
      * The name of this attribute in graph is <b>edgedefault</b>
      */
-    protected Direction edgedefault;
+    private Direction edgedefault;
     /**
      * This is an attribute that can be empty or null.
      * </p>
      * The name of this attribute in graph is <b>id</b>
      */
-    protected String id;
+    private String id;
     /**
      * This is an Element that can be empty or null.
      * </p>
@@ -48,7 +48,14 @@ public class GioGraph {
      * All edges in the output will be converted to this element
      */
     @Singular(ignoreNullCollections = true)
-    protected List<GioHyperEdge> hyperEdges;
+    private List<GioHyperEdge> hyperEdges;
+
+    /**
+     * This is an Element that can be empty or null.
+     * <p/>
+     * The name of this Element in graph is <b>locator</b>
+     */
+    private GioLocator locator;
 
     public GioGraph(String id, String edgedefault) {
         this.edgedefault = Direction.getDirection(edgedefault);

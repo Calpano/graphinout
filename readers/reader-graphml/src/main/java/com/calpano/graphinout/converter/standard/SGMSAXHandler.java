@@ -89,8 +89,8 @@ public class SGMSAXHandler extends DefaultHandler {
         String name = attributes.getValue("attr.name");
         String type = attributes.getValue("attr.type");
         String id = attributes.getValue("id");
-        String defaultValue = attributes.getValue("default");
-        GioKey key = new GioKey(name, type, id, defaultValue);
+
+        GioKey key =  GioKey.builder().attrName(name).attrType(type).id(id).build();
         if (gioGraphML.getKeys() == null) {
             gioGraphML.setKeys(new ArrayList<>());
         }
@@ -138,7 +138,7 @@ public class SGMSAXHandler extends DefaultHandler {
     private void startElementNodePort(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
         String name = attributes.getValue("name");
-        GioPort gioPort = new GioPort(name);
+        GioPort gioPort =  GioPort.builder().name(name).build();
         if (currenGioNode.getPorts() == null || currenGioNode.getPorts().isEmpty()) {
             currenGioNode.setPorts(new ArrayList<>());
         }
@@ -246,6 +246,6 @@ public class SGMSAXHandler extends DefaultHandler {
     }
 
     private GioPort findGioPortInCurrentGraph(String port) {
-        return new GioPort(port);
+        return  GioPort.builder().name(port).build();
     }
 }
