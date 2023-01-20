@@ -25,6 +25,7 @@ public class GioGraph  extends  GioGraphCommonElement{
      * </p>
      * The name of this attribute in graph is <b>edgedefault</b>
      */
+    // TODO maybe a boolean?
     private Direction edgedefault;
     /**
      * This is an attribute that can be empty or null.

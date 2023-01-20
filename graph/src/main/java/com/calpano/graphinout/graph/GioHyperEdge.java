@@ -22,6 +22,7 @@ import lombok.Singular;
  * Example:
  * <pre>
  *         <hyperedge id="id--hyperedge-4N56">
+ *             <desc>bla bla</desc>
  *             <endpoint node="id--node4" type="in" port="North"/>
  *             <endpoint node="id--node5" type="in"/>
  *             <endpoint node="id--node6" type="in"/>
