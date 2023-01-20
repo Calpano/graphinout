@@ -1,0 +1,256 @@
+= Graphinout Architecture
+:toc:
+
+
+== Basic Idea
+.Basic Reader Idea
+[plantuml,basic-idea,svg]
+....
+hide empty members
+class Input
+class Output
+interface Reader
+Input -> Reader : one reader\n can read\n one file format
+Reader -> GraphML: interprets it\nas GraphML model
+GraphML -> Output: writes out
+....
+
+== Projects
+base:: Basic IO helpers, streaming Graph API, API for Readers.
+Converts an incoming Graph API stream to a GraphML/XML stream.
+
+reader-__X__:: Can read a certain file format __X__ and interpret as Graph API stream
+
+engine:: Bundles all readers together and orchestrates them
+
+integration-...:: Apps using the engine
+
+.Projects
+[plantuml,projects-overview,svg]
+....
+hide empty members
+package engine {
+
+package base {
+}
+package readerA {
+}
+package readerB {
+}
+package readerC {
+}
+base <|-- readerA
+base <|-- readerB
+base <|-- readerC
+
+class Engine
+Engine --> readerA
+Engine --> readerB
+Engine --> readerC
+}
+....
+
+.Projects Detailed
+[plantuml,projects-detailed,svg]
+....
+hide empty members
+package engine {
+
+package base {
+    interface Reader
+    class Filetype
+    class BasicIO
+}
+package readerA {
+    class ReaderA
+    Reader <|-- ReaderA
+}
+package readerB {
+    class ReaderB
+    Reader <|-- ReaderB
+}
+package readerC {
+    class ReaderC
+    Reader <|-- ReaderC
+}
+
+class Engine
+Engine --> ReaderA
+Engine --> ReaderB
+Engine --> ReaderC
+}
+
+class CmdLineApp
+class WebApp
+class AnotherApp
+CmdLineApp --> Engine
+WebApp --> Engine
+AnotherApp --> Engine
+....
+
+.Packages
+----
+com.calpano.graphinout
+    .base
+        .graph // graph API
+        .input // basic IO tools
+        .output // graph writer
+    .engine
+    .reader
+        .tgf
+        .dot
+    .app
+        .cmd
+        .web
+----
+
+== Base
+* **InputSource**: Unifies files and inputstreams
+* **OutputSink**: Unifies files and outputstreams
+* **FileFormat**: e.g. 'TGF'
+* **GraphWriter**: graph output stream
+* **ContentError**: Similar to a log message
+* **Resolver**: Resolves external entities and references, e.g. XML entity references or GraphML locators.
+
+[plantuml, base,svg]
+....
+hide empty members
+interface InputSource {
+    String name();
+    InputStream inputStream();
+}
+interface OutputSink {
+    OutputStream outputStream();
+}
+interface GraphWriter {
+    void startGraph( Metadata );
+    void startNode( GioNode node );
+}
+class FileFormat {
+    String id;
+    String name;
+}
+class ContentError {
+    LogLevel level;
+    String message;
+    Location location;
+}
+class Location {
+    int line;
+    int col;
+}
+class Resolver {
+    InputSource resolve( String reference );
+}
+ContentError o-- Location
+InputSource ..> FileFormat
+class GraphmlWriter {
+}
+GraphWriter <|-- GraphmlWriter
+GraphmlWriter --> XmlWriter
+class XmlWriter {
+    startElement(...)
+}
+XmlWriter --> OutputSink
+....
+
+
+== Reader
+
+[plantuml,reader,svg]
+....
+hide empty members
+interface InputSource {
+    String name();
+    InputStream inputStream();
+}
+interface OutputSink {
+    OutputStream outputStream();
+}
+interface GraphWriter {
+    void startGraph( Metadata );
+    void startNode( GioNode node );
+}
+class FileFormat {
+    String id;
+    String name;
+}
+enum ErrorLevel {
+    Warn, Error
+}
+class ContentError {
+    ErrorLevel level;
+    String message;
+    Location location;
+}
+class Location {
+    int line;
+    int col;
+}
+interface Reader {
+    FileFormat fileFormat();
+    void errorHandler(Consumer<ContentError> eh);
+    void resolver(Resolver r);
+    void read(InputSource in, GraphWriter out);
+    void configure( String serializedConfig )
+}
+class Resolver {
+    InputSource resolve( String reference );
+}
+ContentError o-- Location
+ContentError .. ErrorLevel
+Reader --> InputSource
+InputSource .> FileFormat
+Reader --> Resolver
+Reader --> FileFormat : what it\n can\n handle
+Reader --> ContentError
+Reader --> GraphWriter
+class GraphmlWriter {
+}
+GraphWriter <|-- GraphmlWriter
+GraphmlWriter --> XmlWriter
+class XmlWriter {
+    startElement(...)
+}
+XmlWriter --> OutputSink
+....
+
+== TODO
+We also need Service Lookup
+
+.TGF Reader Example
+[plantuml,tgf-reader-example,svg]
+....
+hide empty members
+Reader <|-- TgfReader
+....
+
+
+----
+interface Reader {
+    // optional
+    default void configure( String serializedConfig ) {}
+}
+
+class TgfReader {
+    FileFormat fileFormat() {
+        return fileformat("text/tgf","Trivial Graph Format");
+    }
+    // optional
+    void errorHandler(Consumer<ContentError> eh);
+    // optional
+    void resolver(Resolver r);
+    // optional
+    void configure( String serializedConfig ) {
+        this.tgfConfig = TgfConfig.parse( serializedConfig )
+    }
+
+    void read(InputSource in, GraphWriter out);
+
+}
+
+class TgfConfig {
+    boolean isHashMarkRequired;
+}
+----
+
