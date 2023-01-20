@@ -1,5 +1,6 @@
-package com.calpano.graphinout.graph;
+package com.calpano.graphinout.converter.standard;
 
+import com.calpano.graphinout.graph.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +33,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Builder
-public class GioEdge {
+class GioEdge extends GioGraphCommonElement {
 
     /**
      * This is an attribute that can be empty or null.
@@ -97,4 +98,37 @@ public class GioEdge {
      * which points to a port and the ID of the desired port is the value of this attribute.
      */
     protected GioPort targetPort;
+
+    /**
+     * This is an Element that can be empty or null.
+     * </p>
+     * The name of this Element in edge is <b>graph</b>.
+     */
+    private GioGraph graph;
+
+
+    GioHyperEdge hyperEdge() {
+        GioHyperEdge gioHyperEdge = new GioHyperEdge();
+        gioHyperEdge.setId(id);
+        GioEndpoint gioEndpoint1 = new GioEndpoint();
+
+        if (source != null) {
+            gioEndpoint1.setNode(source.getId());
+            gioEndpoint1.setType(Direction.In);
+        }
+        if (sourcePort != null) {
+            gioEndpoint1.setPort(sourcePort.getName());
+        }
+        GioEndpoint gioEndpoint2 = new GioEndpoint();
+        if (target != null) {
+            gioEndpoint2.setNode(target.getId());
+            gioEndpoint2.setType(Direction.Out);
+        }
+        if (targetPort != null) {
+            gioEndpoint2.setPort(targetPort.getName());
+        }
+        gioHyperEdge.addEndpoint(gioEndpoint1);
+        gioHyperEdge.addEndpoint(gioEndpoint2);
+        return gioHyperEdge;
+    }
 }

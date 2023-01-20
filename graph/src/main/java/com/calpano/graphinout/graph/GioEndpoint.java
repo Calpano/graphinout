@@ -22,21 +22,20 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-// TODO remove all @Xml annotations from model
 public class GioEndpoint {
 
     /**
      * This is an attribute that can be empty or null.
      * </p>
-     * The name of this attribute in graph is <b>id</b>
+     * The name of this attribute in endpoint is <b>id</b>
      */
-    protected String id;
+    private String id;
 
     /**
      * This is an attribute is optional but dependent to port.
      * In fact, one of the node or port values should be initialized.
      * </p>
-     * The name of this attribute in graph is <b>node</b>
+     * The name of this attribute in endpoint is <b>node</b>
      * The value of this attribute points to an existing  node, and the ID of the desired node must be stored in this field.
      */
     private String node;
@@ -45,20 +44,23 @@ public class GioEndpoint {
      * This is an attribute is optional but dependent to node.
      * In fact, one of the node or port values should be initialized.
      * </p>
-     * The name of this attribute in graph is <b>port</b>
+     * The name of this attribute in endpoint is <b>port</b>
      * The value of this attribute points to an existing  port, and the name of the desired port must be stored in this field.
      */
-    protected String port;
-
-    //TODO Check whether the existence of this attribute is true or not
-    protected Direction type;
+    private String port;
 
     /**
-     * This is an attribute that can be empty or null.
-     * </p>
-     * The name of this attribute in graph is <b>data</b>
+     * Defines the attribute for direction on this endpoint (undirected per default).
+     * <p>
+     * The name of this attribute in endpoint is <b>type</b>
      */
-    private List<GioData> datas;
+    private Direction type = Direction.Undirected;
+    /**
+     * This ia an Element That can be empty or null.
+     * <p>
+     * The name of this element in endpoint is <b>desc</b>
+     */
+    private GioDescription desc;
 
 
 }

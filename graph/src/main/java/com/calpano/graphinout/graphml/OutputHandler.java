@@ -1,9 +1,7 @@
 package com.calpano.graphinout.graphml;
 
 import com.calpano.graphinout.exception.GioException;
-import com.calpano.graphinout.graph.GioEdge;
-import com.calpano.graphinout.graph.GioHyperEdge;
-import com.calpano.graphinout.graph.GioNode;
+
 
 import java.util.Map;
 

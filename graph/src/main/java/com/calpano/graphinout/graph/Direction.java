@@ -11,7 +11,7 @@ package com.calpano.graphinout.graph;
  * Note that the default direction must be specified.
  */
 public enum Direction {
-    In(true), Out(true), Undirected(false);
+    In(true), Out(true), Undirected(false), Directed(true);
     private final boolean isDirection;
 
     private Direction(boolean isDirection) {
@@ -28,9 +28,11 @@ public enum Direction {
                 return In;
             case "out":
                 return Out;
+            case "directed":
+            case "dir":
+                return Directed;
             case "undirected":
             case "undir":
-                return Undirected;
             default:
                 return Undirected;
         }

@@ -24,7 +24,7 @@
             
         <bindings if-exists="true" scd="~tns:edge">
                   
-            <class ref="com.calpano.graphinout.graph.GioEdge"/>
+            <class ref="com.calpano.graphinout.converter.standard.GioEdge"/>
                 
         </bindings>
             

@@ -27,7 +27,7 @@ import lombok.Singular;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioNode {
+public class GioNode extends GioGraphCommonElement{
 
     /**
      * The identifier of a node is defined by the XML-Attribute id.
@@ -35,28 +35,28 @@ public class GioNode {
      * <p/>
      * The name of this attribute in graphMl is <b>id</b>.
      */
-    protected String id;
+    private String id;
 
     /**
      * This is an Element that can be empty or null.
      * </p>
-     * The name of this Element in graph is <b>data</b>.
-     */
-    protected List<GioData> datas;
-
-
-    /**
-     * This is an Element that can be empty or null.
-     * </p>
-     * The name of this Element in graph is <b>port</b>.
+     * The name of this Element in node is <b>port</b>.
      */
     @Singular(ignoreNullCollections = true)
-    protected List<GioPort> ports;
+    private List<GioPort> ports;
 
-    public void addData(GioData data){
-        if(datas==null)
-            datas=new ArrayList<>();
-        datas.add(data);
-    }
+    /**
+     * This is an Element that can be empty or null.
+     * </p>
+     * The name of this Element in node is <b>graph</b>.
+     */
+    private GioGraph graph;
+
+    /**
+     * This is an Element that can be empty or null.
+     * </p>
+     * The name of this Element in node is <b>locator</b>.
+     */
+    private GioLocator locator;
 
 }
