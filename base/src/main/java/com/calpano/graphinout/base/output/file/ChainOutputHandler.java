@@ -1,20 +1,20 @@
-package com.calpano.graphinout.base.output;
+package com.calpano.graphinout.base.output.file;
 
 import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.exception.GioExceptionMessage;
-import com.calpano.graphinout.base.graphml.OutputHandler;
+import com.calpano.graphinout.base.output.OutputHandler;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Stack;
 
 @Slf4j
-public abstract class ChainOutputHandler implements OutputHandler<File> {
+abstract class ChainOutputHandler implements OutputHandler<File> {
 
     protected Path outputFilepath;
     private FileWriter fileWriter;
@@ -74,7 +74,7 @@ public abstract class ChainOutputHandler implements OutputHandler<File> {
 
     @Override
     public void startElement(String name) throws GioException {
-        this.startElement(name, Collections.emptyMap());
+        this.startElement(name, new LinkedHashMap<>());
     }
 
     @Override

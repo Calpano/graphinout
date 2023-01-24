@@ -1,21 +1,24 @@
 package com.calpano.graphinout.base;
 
+import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author rbaba
- * @version  0.0.1
- * @implNote
- * A node may specify different logical locations for edges and hyperedges to connect.
+ * @version 0.0.1
+ * @implNote A node may specify different logical locations for edges and hyperedges to connect.
  * The logical locations are called "ports".
  * As an analogy, think of the graph as a motherboard, the nodes as integrated circuits and the edges as connecting wires.
  * Then the pins on the integrated circuits correspond to ports of a node.
- *<p>
+ * <p>
  * The ports of a node are declared by port elements as children of the corresponding node elements.
  * Note that port elements may be nested, i.e., they may contain port elements themselves.
  * Each port element must have an XML-Attribute name, which is an identifier for this port.
@@ -30,7 +33,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioPort {
+public class GioPort implements XMLValue {
 
     /**
      * This is an attribute that mandatory.
@@ -51,6 +54,33 @@ public class GioPort {
      * <p>
      * The name of this attribute in port is <b>port</b>
      */
-    private List<GioPort>  ports;
+    private List<GioPort> ports;
 
+    @Override
+    public String startTag() {
+
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+
+        if (name != null && !name.isEmpty()) attributes.put("name", name);
+
+
+        if (extraAttrib != null && !extraAttrib.isEmpty()) {
+            attributes.put("port.extra.attrib", extraAttrib);
+        }
+        return GIOUtil.makeStartElement("port",attributes);
+    }
+
+    @Override
+    public String valueTag() {
+        StringBuilder xmlValueData = new StringBuilder();
+        for (XMLValue xmlValue : ports) {
+            xmlValueData.append(xmlValue.fullTag());
+        }
+        return xmlValueData.toString();
+    }
+
+    @Override
+    public String endTag() {
+        return GIOUtil.makeEndElement("port");
+    }
 }

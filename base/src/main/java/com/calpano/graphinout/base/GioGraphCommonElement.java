@@ -1,11 +1,17 @@
 package com.calpano.graphinout.base;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Collections;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class GioGraphCommonElement {
     /**
      * This ia an Element That can be empty or null.
@@ -35,4 +41,6 @@ public class GioGraphCommonElement {
             dataList = Collections.EMPTY_LIST;
         dataList.add(dataList.size(), data);
     }
+
+
 }

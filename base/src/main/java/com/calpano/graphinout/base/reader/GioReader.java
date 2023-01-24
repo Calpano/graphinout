@@ -9,9 +9,7 @@ public interface GioReader {
      * Which file format can this reader read?
      * @return
      */
-    GioFileformat fileFormat();
-
-
+    GioFileFormat fileFormat();
 
     // inspect
 

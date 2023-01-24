@@ -1,15 +1,15 @@
-package com.calpano.graphinout.base.output;
+package com.calpano.graphinout.reader.graphml.output;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 import com.calpano.graphinout.base.GioGraphInOutConstants;
-import com.calpano.graphinout.base.graphml.OutputHandler;
-import com.calpano.graphinout.base.output.ElementHandler;
+import com.calpano.graphinout.base.output.OutputHandler;
+
+import com.calpano.graphinout.base.output.file.ElementHandler;
 import org.junit.jupiter.api.*;
 
 /**
@@ -51,22 +51,22 @@ public class DefaultFileOutputHandlerTest {
      */
     @Test
     public void testInitialize() throws Exception {
-        Map<String,String> testKeyMap= new HashMap<>();
+         LinkedHashMap<String,String> testKeyMap= new  LinkedHashMap<>();
         testKeyMap.put("attr.name","type");
         testKeyMap.put("attr.type","string");
         testKeyMap.put("id","type");
-        Map<String,String> testGraphMap= new HashMap<>();
+         LinkedHashMap<String,String> testGraphMap= new  LinkedHashMap<>();
         testGraphMap.put("edgedefault","directed");
         testGraphMap.put("id","");
 
-        Map<String,String> testNode1Map= new HashMap<>();
+         LinkedHashMap<String,String> testNode1Map= new  LinkedHashMap<>();
         testNode1Map.put("testNode1Map","kb");
         testNode1Map.put("testNode1Map","10");
 
-        Map<String,String> testNode2Map= new HashMap<>();
+         LinkedHashMap<String,String> testNode2Map= new  LinkedHashMap<>();
         testNode2Map.put("testNode2Map","kb");
         testNode2Map.put("testNode2Map","10");
-        Map<String,String> testEdgeMap= new HashMap<>();
+         LinkedHashMap<String,String> testEdgeMap= new  LinkedHashMap<>();
         testEdgeMap.put("ka","kb");
         testEdgeMap.put("kc","10");
 

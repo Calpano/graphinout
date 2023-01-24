@@ -4,10 +4,10 @@ import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.exception.GioExceptionMessage;
 
 public enum GioKeyForType {
-    All, Graph, Node, Edge, HyperEdge, Port , Endpoint;
+    All, Graph, Node, Edge, HyperEdge, Port, Endpoint;
 
     public static GioKeyForType keyForType(String keyForType) throws GioException {
-        switch(keyForType.toLowerCase()){
+        switch (keyForType.toLowerCase()) {
             case "all":
                 return All;
             case "graph":

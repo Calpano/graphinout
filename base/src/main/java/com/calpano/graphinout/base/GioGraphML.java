@@ -1,12 +1,17 @@
 package com.calpano.graphinout.base;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author rbaba
@@ -24,10 +29,8 @@ import lombok.Singular;
  * The name of this Element in XML File is  <b>graphml</b>
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class GioGraphML extends GioGraphCommonElement{
+@SuperBuilder
+public class GioGraphML extends GioGraphCommonElement implements XMLValue {
 
     /**
      * The graphml element, like all other GraphML elements, belongs to the namespace http://graphml.graphdrawing.org/xmlns.
@@ -73,4 +76,38 @@ public class GioGraphML extends GioGraphCommonElement{
      */
     @Singular(ignoreNullCollections = true)
     private List<GioGraph> graphs;
+
+
+    @Override
+    public String startTag() {
+
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+        attributes.put("xmlns", HEADER_XMLNS);
+        attributes.put("xmlns:xsi", HEADER_XMLNS_XSI);
+        attributes.put("xsi:schemaLocation", HEADER_XMLNS_XSI_SCHEMA_LOCATIOM);
+        if (id != null) attributes.put("id", id);
+        return GIOUtil.makeStartElement("graphml", attributes);
+    }
+
+
+    /**
+     * The graph must be stored in a different form, so it is not implemented here.
+     * For large files, we don't want to keep the entire graph object in memory.
+     *
+     * @return
+     */
+    @Override
+    public String valueTag() {
+        final StringBuilder xmlValueData = new StringBuilder();
+        if (desc != null) xmlValueData.append(desc.fullTag());
+        for (XMLValue key : getKeys())
+            xmlValueData.append(key.fullTag());
+        //HIT Graph
+        return xmlValueData.toString();
+    }
+
+    @Override
+    public String endTag() {
+        return GIOUtil.makeEndElement("graphml");
+    }
 }

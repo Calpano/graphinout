@@ -1,14 +1,15 @@
 package com.calpano.graphinout.base;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author rbaba
@@ -28,13 +29,12 @@ import lombok.Singular;
  *             <endpoint node="id--node6" type="in"/>
  *         </hyperedge>
  * </pre>
- *
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class GioHyperEdge extends  GioGraphCommonElement{
+@SuperBuilder
+public class GioHyperEdge extends GioGraphCommonElement implements XMLValue {
 
     /**
      * This is an attribute that can be empty or null.
@@ -61,9 +61,43 @@ public class GioHyperEdge extends  GioGraphCommonElement{
     private GioGraph graph;
 
 
-    public void addEndpoint(GioEndpoint gioEndpoint){
-        if(endpoints == null)
-            endpoints = new ArrayList<>();
+    public void addEndpoint(GioEndpoint gioEndpoint) {
+        if (endpoints == null) endpoints = new ArrayList<>();
         endpoints.add(gioEndpoint);
+    }
+
+    @Override
+    public String startTag() {
+
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+
+        if (id != null) attributes.put("id", id);
+
+        if (extraAttrib != null) attributes.put("hyperEdge.extra.attrib", extraAttrib);
+
+        return GIOUtil.makeStartElement("hyperEdge", attributes);
+    }
+
+    /**
+     * The graph must be stored in a different form, so it is not implemented here.
+     * For large files, we don't want to keep the entire graph object in memory.
+     *
+     * @return
+     */
+    @Override
+    public String valueTag() {
+        final StringBuilder xmlValueData = new StringBuilder();
+        if (desc != null) xmlValueData.append(desc.fullTag());
+        for (XMLValue data : getDataList())
+            xmlValueData.append(data.fullTag());
+        for (XMLValue endpoints : getEndpoints())
+            xmlValueData.append(endpoints.fullTag());
+        //HIT GRAPH
+        return xmlValueData.toString();
+    }
+
+    @Override
+    public String endTag() {
+        return GIOUtil.makeEndElement("hyperEdge");
     }
 }

@@ -1,13 +1,18 @@
 package com.calpano.graphinout.base;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 
+import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author rbaba
@@ -25,8 +30,8 @@ import lombok.Singular;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class GioNode extends GioGraphCommonElement{
+@SuperBuilder
+public class GioNode extends GioGraphCommonElement implements XMLValue {
 
     /**
      * The identifier of a node is defined by the XML-Attribute id.
@@ -58,4 +63,31 @@ public class GioNode extends GioGraphCommonElement{
      */
     private GioLocator locator;
 
+    @Override
+    public String startTag() {
+
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+
+        if (id != null) attributes.put("id", id);
+
+        return GIOUtil.makeStartElement("node", attributes);
+    }
+
+    @Override
+    public String valueTag() {
+        StringBuilder xmlValueData = new StringBuilder();
+
+        for (XMLValue xmlValue : ports) {
+            xmlValueData.append(xmlValue.fullTag());
+        }
+        //TODO GRAPH?
+
+        if (locator != null) xmlValueData.append(locator.fullTag());
+        return xmlValueData.toString();
+    }
+
+    @Override
+    public String endTag() {
+        return GIOUtil.makeEndElement("node");
+    }
 }

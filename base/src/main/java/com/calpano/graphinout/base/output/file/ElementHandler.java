@@ -1,4 +1,4 @@
-package com.calpano.graphinout.base.output;
+package com.calpano.graphinout.base.output.file;
 
 import com.calpano.graphinout.base.GioGraphInOutConstants;
 import com.calpano.graphinout.base.exception.GioException;
@@ -12,14 +12,14 @@ import java.nio.file.Files;
 import java.util.*;
 
 @Slf4j
-public class ElementHandler extends ChainOutputHandler {
+ class ElementHandler extends ChainOutputHandler {
 
     private final static Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 
 
     @Override
-    public void startElement(String name, Map<String, String> attributes) throws GioException {
+    public void startElement(String name, LinkedHashMap<String, String> attributes) throws GioException {
         log.debug("startElement {} with attribute [{}].", name, attributes.toString());
         if(nextOutputHandler!=null){
             nextOutputHandler.startElement(name,attributes);

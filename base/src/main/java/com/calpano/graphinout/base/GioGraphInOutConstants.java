@@ -10,7 +10,6 @@ package com.calpano.graphinout.base;
 public class GioGraphInOutConstants {
     public static final String START_LOG = "#####--------start-------";
     public static final String END_LOG = "--------End-------#####";
-
     public static final String EDGE_ELEMENT_NAME = "edge";
     public static final String ENDPOINT_ELEMENT_NAME = "endpoint";
     public static final String EDGE_DATA_ELEMENT_NAME = "data";
@@ -21,6 +20,7 @@ public class GioGraphInOutConstants {
     public static final String NODE_ELEMENT_NAME = "node";
     public static final String NODE_DATA_ELEMENT_NAME = "data";
     public static final String PORT_ELEMENT_NAME = "port";
+    public static final String NEW_LINE_SEPARATOR = System.getProperty("line.separator");
 
 
 }

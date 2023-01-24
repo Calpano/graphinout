@@ -1,9 +1,14 @@
 package com.calpano.graphinout.base;
 
+import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author rbaba
@@ -20,7 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioEndpoint {
+public class GioEndpoint implements XMLValue {
 
     /**
      * This is an attribute that can be empty or null.
@@ -52,6 +57,7 @@ public class GioEndpoint {
      * <p>
      * The name of this attribute in endpoint is <b>type</b>
      */
+    @Builder.Default
     private Direction type = Direction.Undirected;
     /**
      * This ia an Element That can be empty or null.
@@ -61,4 +67,35 @@ public class GioEndpoint {
     private GioDescription desc;
 
 
+    @Override
+    public String startTag() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+
+        if (id != null) attributes.put("id", id);
+
+        if (node != null) attributes.put("node", node);
+
+        if (port != null) attributes.put("port", port);
+
+        attributes.put("type", type.name());
+
+        if (desc == null) return GIOUtil.makeElement("endpoint", attributes);
+        else return GIOUtil.makeStartElement("endpoint", attributes);
+
+    }
+
+    @Override
+    public String valueTag() {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (desc != null) {
+            stringBuilder.append(desc.fullTag());
+        }
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public String endTag() {
+        if (desc == null) return "";
+        return GIOUtil.makeEndElement("endpoint");
+    }
 }

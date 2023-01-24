@@ -30,7 +30,7 @@ public class FileInputSource implements InputSource{
     }
 
     @Override
-    public Optional<String> fileFormat() {
+    public Optional<String> inputFormat() {
         return Optional.empty();
     }
 

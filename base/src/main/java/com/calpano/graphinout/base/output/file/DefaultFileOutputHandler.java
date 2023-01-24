@@ -1,9 +1,9 @@
-package com.calpano.graphinout.base.output;
+package com.calpano.graphinout.base.output.file;
 
 import com.calpano.graphinout.base.GioGraphInOutConstants;
 import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.exception.GioExceptionMessage;
-import com.calpano.graphinout.base.graphml.OutputHandler;
+import com.calpano.graphinout.base.output.OutputHandler;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,10 +73,10 @@ public class DefaultFileOutputHandler implements OutputHandler<File> {
 
     @Override
     public void startElement(String name) throws GioException {
-        startElement(name, Collections.emptyMap());
+        startElement(name, new LinkedHashMap<>());
     }
     @Override
-    public void startElement(String name, Map<String, String> attributes) throws GioException {
+    public void startElement(String name, LinkedHashMap<String, String> attributes) throws GioException {
         log.debug("startElement {} with attribute [{}].",name,attributes.toString());
         if (GioGraphInOutConstants.GRAPH_ELEMENT_NAME.equals(name)){
             defaultFileOutputHandlers.push(new DefaultFileOutputHandler(true));
@@ -94,7 +94,7 @@ public class DefaultFileOutputHandler implements OutputHandler<File> {
         elements.push(name);
     }
 
-    public void startGraphElement(String name, Map<String, String> attributes) throws GioException{
+    public void startGraphElement(String name, LinkedHashMap<String, String> attributes) throws GioException{
         log.debug("startGraphElement {} {}.",name,attributes.toString());
 
         writeToFile(GIOUtil.makeStartElement(name,attributes));
@@ -225,11 +225,11 @@ public class DefaultFileOutputHandler implements OutputHandler<File> {
         }
         @Override
         public void startElement(String name) throws GioException {
-            this.startElement(name, Collections.emptyMap());
+            this.startElement(name,new LinkedHashMap<>() );
         }
 
         @Override
-        public void startElement(String name, Map<String, String> attributes) throws GioException {
+        public void startElement(String name, LinkedHashMap<String, String> attributes) throws GioException {
             log.debug("startElement {} {}.",name,attributes);
             if (GioGraphInOutConstants.NODE_ELEMENT_NAME.equals(name) ||
                     GioGraphInOutConstants.EDGE_ELEMENT_NAME.equals(name) ||

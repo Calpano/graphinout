@@ -1,6 +1,6 @@
-package com.calpano.graphinout.base.output;
+package com.calpano.graphinout.base.output.file;
 
-import com.calpano.graphinout.base.GioGraphInOutConstants;
+import com.calpano.graphinout.base.*;
 import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.exception.GioExceptionMessage;
 import com.calpano.graphinout.base.util.GIOUtil;
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 @Slf4j
-public class GraphHandler extends ChainOutputHandler {
+ class GraphHandler extends ChainOutputHandler {
 
 
     Path outputFilepath;
@@ -45,7 +45,7 @@ public class GraphHandler extends ChainOutputHandler {
     }
 
     @Override
-    public void startElement(String name, Map<String, String> attributes) throws GioException {
+    public void startElement(String name, LinkedHashMap<String, String> attributes) throws GioException {
         log.debug("startElement {} {}.", name, attributes);
 
         if (nextOutputHandler != null) {
@@ -113,9 +113,58 @@ public class GraphHandler extends ChainOutputHandler {
     }
 
 
+    @Override
+    public void startGraphMl(GioGraphML gioGraphML) throws IOException {
 
+    }
 
+    @Override
+    public void startKey(GioKey gioKey) throws IOException {
 
+    }
 
+    @Override
+    public void end(GioKey gioKey) throws IOException {
 
+    }
+
+    @Override
+    public void startGraph(GioGraph gioGraph) throws IOException {
+
+    }
+
+    @Override
+    public void writeData(XMLValue value) throws IOException {
+
+    }
+
+    @Override
+    public void startNode(GioNode node) throws IOException {
+
+    }
+
+    @Override
+    public void endNode(GioNode node) throws IOException {
+
+    }
+
+    @Override
+    public void startEdge(GioHyperEdge edge) throws IOException {
+
+    }
+
+    @Override
+    public void endEdge(GioHyperEdge gioHyperEdge) throws IOException {
+
+    }
+
+    @Override
+    public void endGraph(GioGraph gioGraph) throws IOException {
+
+    }
+
+    @Override
+    public void endGraphMl(GioGraphML gioGraphML) throws IOException {
+
+    }
 }
