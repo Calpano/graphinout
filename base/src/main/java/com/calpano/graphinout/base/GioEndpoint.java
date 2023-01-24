@@ -69,8 +69,17 @@ public class GioEndpoint implements XMLValue {
 
     @Override
     public String startTag() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+        LinkedHashMap<String, String> attributes = getAttributes();
 
+        if (desc == null) return GIOUtil.makeElement("endpoint", attributes);
+        else return GIOUtil.makeStartElement("endpoint", attributes);
+
+    }
+
+
+    @Override
+    public LinkedHashMap<String, String> getAttributes() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
         if (id != null) attributes.put("id", id);
 
         if (node != null) attributes.put("node", node);
@@ -78,12 +87,8 @@ public class GioEndpoint implements XMLValue {
         if (port != null) attributes.put("port", port);
 
         attributes.put("type", type.name());
-
-        if (desc == null) return GIOUtil.makeElement("endpoint", attributes);
-        else return GIOUtil.makeStartElement("endpoint", attributes);
-
+        return attributes;
     }
-
     @Override
     public String valueTag() {
         StringBuilder stringBuilder = new StringBuilder();

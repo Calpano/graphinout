@@ -4,9 +4,11 @@ import java.util.LinkedHashMap;
 
 public interface XMLValue {
 
-     String getName();
+     default String getName(){
+         return this.getClass().getName().toLowerCase().replaceFirst("gio","");
+     }
      String startTag();
-     LinkedHashMap<String,String>
+     LinkedHashMap<String,String> getAttributes();
      String valueTag();
 
      String endTag();

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.LinkedHashMap;
+
 /**
  * @author rbaba
  * @version 0.0.1
@@ -32,6 +34,12 @@ public class GioDescription implements XMLValue {
         return value + GioGraphInOutConstants.NEW_LINE_SEPARATOR;
     }
 
+    @Override
+    public LinkedHashMap<String, String> getAttributes() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+
+        return attributes;
+    }
     @Override
     public String endTag() {
         if (value == null || value.isEmpty()) return "";

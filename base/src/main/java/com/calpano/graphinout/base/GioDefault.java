@@ -39,16 +39,20 @@ public class GioDefault implements XMLValue {
 
     @Override
     public String startTag() {
+        LinkedHashMap<String, String> attributes = getAttributes();
+
+        if (value == null || value.isEmpty()) return GIOUtil.makeElement("default", attributes);
+        else return GIOUtil.makeStartElement("default", attributes);
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
 
         if (defaultType != null) attributes.put("default.type", defaultType);
 
-        if (value == null || value.isEmpty()) return GIOUtil.makeElement("default", attributes);
-        else return GIOUtil.makeStartElement("default", attributes);
-
-
+        return attributes;
     }
-
     @Override
     public String valueTag() {
         if (value == null || value.isEmpty()) return "";

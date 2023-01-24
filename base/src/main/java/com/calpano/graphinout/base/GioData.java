@@ -45,15 +45,23 @@ public class GioData implements XMLValue {
 
     @Override
     public String startTag() {
+        LinkedHashMap<String, String> attributes = getAttributes();
+
+        if (value == null) return GIOUtil.makeElement("data", attributes);
+        else return GIOUtil.makeStartElement("data", attributes);
+
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
 
         if (id != null) attributes.put("id", id);
 
         if (key != null) attributes.put("key", key);
 
-        if (value == null) return GIOUtil.makeElement("data", attributes);
-        else return GIOUtil.makeStartElement("data", attributes);
 
+        return attributes;
     }
 
     @Override
