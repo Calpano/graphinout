@@ -1,13 +1,14 @@
 package com.calpano.graphinout.base.output.file;
 
 import com.calpano.graphinout.base.*;
-import com.calpano.graphinout.base.exception.GioException;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.output.GraphMlWriter;
-import com.calpano.graphinout.base.output.OutputHandler;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class GraphMlWriterToXml<File> implements GraphMlWriter {
 
@@ -19,7 +20,7 @@ public class GraphMlWriterToXml<File> implements GraphMlWriter {
 
 
     @Override
-    public void startGraphMl(GioGraphML gioGraphML) throws IOException {
+    public void startGraphMl(GioDocument gioGraphML) throws IOException {
         outputHandler.startElement();
     }
 
@@ -54,12 +55,12 @@ public class GraphMlWriterToXml<File> implements GraphMlWriter {
     }
 
     @Override
-    public void startEdge(GioHyperEdge edge) throws IOException {
+    public void startEdge(GioEdge edge) throws IOException {
 
     }
 
     @Override
-    public void endEdge(GioHyperEdge gioHyperEdge) throws IOException {
+    public void endEdge(GioEdge gioHyperEdge) throws IOException {
 
     }
 
@@ -69,7 +70,7 @@ public class GraphMlWriterToXml<File> implements GraphMlWriter {
     }
 
     @Override
-    public void endGraphMl(GioGraphML gioGraphML) throws IOException {
+    public void endGraphMl(GioDocument gioGraphML) throws IOException {
 
     }
 }

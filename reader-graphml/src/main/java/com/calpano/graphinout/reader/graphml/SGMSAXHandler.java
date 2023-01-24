@@ -1,11 +1,16 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.GioData;
-import com.calpano.graphinout.base.GioGraphInOutConstants;
-import com.calpano.graphinout.base.GioGraphML;
-import com.calpano.graphinout.base.GioNode;
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioEndpoint;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioGraphInOutConstants;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.*;
 
+import com.calpano.graphinout.base.gio.GioPort;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -31,13 +36,13 @@ public class SGMSAXHandler extends DefaultHandler {
 
     private Stack<String> elementsNames = new Stack<>();
     private String currentElement;
-    private GioGraphML gioGraphML = new GioGraphML();
+    private GioDocument gioGraphML = new GioDocument();
     private GioGraph currentGioGraph;
     private GioNode currenGioNode;
-    private GioEdge currentGioEdge;
+    private com.calpano.graphinout.reader.graphml.GioEdge currentGioEdge;
     private GioData currentData;
 
-    private GioHyperEdge currentGioHyperEdge;
+    private GioEdge currentGioHyperEdge;
 
     private List<GioNode> invalidNode = new ArrayList<>();
 
@@ -153,7 +158,7 @@ public class SGMSAXHandler extends DefaultHandler {
 
         String id = attributes.getValue("id");
         String directed = attributes.getValue("directed");
-        currentGioEdge = new GioEdge();
+        currentGioEdge = new com.calpano.graphinout.reader.graphml.GioEdge();
         currentGioEdge.setId(id);
         currentGioEdge.setDirected(Boolean.getBoolean(directed));
         String source = attributes.getValue("source");
@@ -187,7 +192,7 @@ public class SGMSAXHandler extends DefaultHandler {
 
     private void startElementHyperEdge(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         String id = attributes.getValue("id");
-        currentGioHyperEdge = GioHyperEdge.builder().id(id).build();
+        currentGioHyperEdge = GioEdge.builder().id(id).build();
 
         if (currentGioGraph.getHyperEdges() == null) {
             currentGioGraph.setHyperEdges(new ArrayList<>());

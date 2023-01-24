@@ -1,6 +1,11 @@
 package com.calpano.graphinout.base.output;
 
 import com.calpano.graphinout.base.*;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.gio.GioNode;
 
 import java.io.IOException;
 
@@ -11,7 +16,7 @@ import java.io.IOException;
 public interface GraphMlWriter {
 
 
-    void startGraphMl(GioGraphML gioGraphML) throws IOException;
+    void startGraphMl(GioDocument gioGraphML) throws IOException;
 
     void startKey(GioKey gioKey) throws IOException;
 
@@ -25,12 +30,12 @@ public interface GraphMlWriter {
 
     void endNode(GioNode node) throws IOException;
 
-    void startEdge(GioHyperEdge edge) throws IOException;
+    void startEdge(GioEdge edge) throws IOException;
 
-    void endEdge(GioHyperEdge gioHyperEdge) throws IOException;
+    void endEdge(GioEdge gioHyperEdge) throws IOException;
 
     void endGraph(GioGraph gioGraph) throws IOException;
 
-    void endGraphMl(GioGraphML gioGraphML) throws IOException;
+    void endGraphMl(GioDocument gioGraphML) throws IOException;
 
 }

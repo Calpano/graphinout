@@ -1,11 +1,11 @@
-package com.calpano.graphinout.base;
+package com.calpano.graphinout.base.gio;
 
 
 import java.util.*;
 
+import com.calpano.graphinout.base.XMLValue;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
@@ -34,7 +34,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class GioHyperEdge extends GioGraphCommonElement implements XMLValue {
+public class GioEdge extends GioGraphCommonElement {
 
     /**
      * This is an attribute that can be empty or null.

@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.output.file;
 
-import com.calpano.graphinout.base.GioGraphInOutConstants;
+import com.calpano.graphinout.base.gio.GioGraphInOutConstants;
 import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.extern.slf4j.Slf4j;

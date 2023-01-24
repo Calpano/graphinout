@@ -2,7 +2,7 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.exception.GioExceptionMessage;
-import com.calpano.graphinout.base.GioGraphML;
+import com.calpano.graphinout.base.gio.GioDocument;
 import com.calpano.graphinout.base.graphml.GraphMLConverter;
 import com.calpano.graphinout.base.graphml.GraphMLService;
 
@@ -19,10 +19,10 @@ import org.xml.sax.SAXException;
  * @author rbaba
  */
 @Slf4j
-public class SGMLConverter implements GraphMLConverter<GioGraphML> {
+public class SGMLConverter implements GraphMLConverter<GioDocument> {
 
     @Override
-    public GioGraphML convert(File xmlFile,File outputFile, GraphMLService graphMLService) throws GioException {
+    public GioDocument convert(File xmlFile, File outputFile, GraphMLService graphMLService) throws GioException {
 
         try {
             //TODO File validation

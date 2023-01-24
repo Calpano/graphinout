@@ -1,6 +1,12 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.*;
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioEndpoint;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioGraphCommonElement;
+import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioPort;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +32,7 @@ import java.util.List;
  * <p>
  * <b>In this class model, edge is used to read the file and then it is directly converted to HyperEdge .
  * It means that edge does not exist in the output file</b>
- * @see GioHyperEdge {@link GioHyperEdge}
+ * @see com.calpano.graphinout.base.gio.GioEdge {@link com.calpano.graphinout.base.gio.GioEdge}
  */
 
 @AllArgsConstructor
@@ -107,8 +113,8 @@ class GioEdge extends GioGraphCommonElement {
     private GioGraph graph;
 
 
-    GioHyperEdge hyperEdge() {
-        GioHyperEdge gioHyperEdge = new GioHyperEdge();
+    com.calpano.graphinout.base.gio.GioEdge hyperEdge() {
+        com.calpano.graphinout.base.gio.GioEdge gioHyperEdge = new com.calpano.graphinout.base.gio.GioEdge();
         gioHyperEdge.setId(id);
         GioEndpoint gioEndpoint1 = new GioEndpoint();
 

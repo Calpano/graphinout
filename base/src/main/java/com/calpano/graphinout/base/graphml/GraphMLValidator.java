@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.exception.GioException;
+import com.calpano.graphinout.base.exception.GraphmlException;
 
 /**
  * @param <V> value
@@ -10,5 +10,5 @@ import com.calpano.graphinout.base.exception.GioException;
 @FunctionalInterface
 public interface GraphMLValidator<V, T> {
 
-    void validate(V value, T Type) throws GioException;
+    void validate(V value, T Type) throws GraphmlException;
 }
