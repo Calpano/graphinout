@@ -1,13 +1,9 @@
-package com.calpano.graphinout.base;
+package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -17,12 +13,12 @@ import java.util.Map;
  * A node is declared with a node element and an edge with an edge element and a Hyperedge with a  Hyperedge element.
  * <p>
  * <b>In the output we avoid the edge and change them all to Hyperedge.</b>
- * @see GioHyperEdge {@link GioHyperEdge}
+ * @see GioEdge {@link GioEdge}
  */
 
 @SuperBuilder
 @Data
-public class GioGraph extends GioGraphCommonElement implements XMLValue {
+public class GioGraph extends GioGraphCommonElement  {
 
     /**
      * This is an attribute that can be empty or null.
@@ -53,7 +49,7 @@ public class GioGraph extends GioGraphCommonElement implements XMLValue {
      * All edges in the output will be converted to this element
      */
     @Singular(ignoreNullCollections = true)
-    private List<GioHyperEdge> hyperEdges;
+    private List<GioEdge> hyperEdges;
 
     /**
      * This is an Element that can be empty or null.
@@ -69,33 +65,4 @@ public class GioGraph extends GioGraphCommonElement implements XMLValue {
         this.id = id;
     }
 
-
-
-    @Override
-    public String startTag() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-        attributes.put("edgedefault",String.valueOf(edgedefault));
-        attributes.put("id",String.valueOf(id));
-
-        return GIOUtil.makeStartElement("graph",attributes);
-    }
-
-    @Override
-    public String valueTag() {
-        final StringBuilder xmlValueData = new StringBuilder();
-        if (desc != null) xmlValueData.append(desc.fullTag());
-        for (XMLValue data : dataList)
-            xmlValueData.append(data.fullTag());
-        for (XMLValue node : nodes)
-            xmlValueData.append(node.fullTag());
-        for (XMLValue hyperEdge : hyperEdges)
-            xmlValueData.append(hyperEdge.fullTag());
-        if (locator != null) xmlValueData.append(locator.fullTag());
-        return xmlValueData.toString();
-    }
-
-    @Override
-    public String endTag() {
-        return GIOUtil.makeEndElement("graph");
-    }
 }

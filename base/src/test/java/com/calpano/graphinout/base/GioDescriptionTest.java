@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base;
 
+import com.calpano.graphinout.base.gio.GioDescription;
+import com.calpano.graphinout.base.gio.GioGraphInOutConstants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;

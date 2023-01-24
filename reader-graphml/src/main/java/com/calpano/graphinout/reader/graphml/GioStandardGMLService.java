@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.exception.GioException;
-import com.calpano.graphinout.base.GioGraphML;
+import com.calpano.graphinout.base.gio.GioDocument;
 import com.calpano.graphinout.base.graphml.*;
 
 import java.io.IOException;
@@ -22,14 +22,14 @@ import java.util.ArrayList;
 /**
  * @author rbaba
  */
-public class GioStandardGMLService implements GraphMLService<GioGraphML> {
+public class GioStandardGMLService implements GraphMLService<GioDocument> {
 
     private static final String ID = "graphml-xsd";
 
     private final GraphMLValueMapper graphMLValueMapper;
     private final InputSourceStructure<File, Void> inputSourceStructure;
     private final GraphMLFileValidator fileValidator;
-    private final GraphMLConverter<GioGraphML> graphMLConverter;
+    private final GraphMLConverter<GioDocument> graphMLConverter;
 
     public GioStandardGMLService() {
         this.inputSourceStructure = (inputStructure) -> {
@@ -77,7 +77,7 @@ public class GioStandardGMLService implements GraphMLService<GioGraphML> {
     }
 
     @Override
-    public GraphMLConverter<GioGraphML> getConverter() {
+    public GraphMLConverter<GioDocument> getConverter() {
         return graphMLConverter;
     }
 

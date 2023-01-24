@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-import com.calpano.graphinout.base.GioGraphInOutConstants;
+import com.calpano.graphinout.base.gio.GioGraphInOutConstants;
 import com.calpano.graphinout.base.output.OutputHandler;
 
 import com.calpano.graphinout.base.output.file.ElementHandler;

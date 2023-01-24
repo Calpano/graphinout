@@ -1,16 +1,14 @@
-package com.calpano.graphinout.base;
+package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.base.XMLValue;
 import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * @author rbaba

@@ -1,5 +1,6 @@
-package com.calpano.graphinout.base;
+package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.base.XMLValue;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

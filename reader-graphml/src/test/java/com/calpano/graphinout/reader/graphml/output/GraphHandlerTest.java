@@ -1,6 +1,6 @@
 package com.calpano.graphinout.reader.graphml.output;
 
-import com.calpano.graphinout.base.GioGraphInOutConstants;
+import com.calpano.graphinout.base.gio.GioGraphInOutConstants;
 import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.output.OutputHandler;
 import com.calpano.graphinout.base.output.GraphHandler;

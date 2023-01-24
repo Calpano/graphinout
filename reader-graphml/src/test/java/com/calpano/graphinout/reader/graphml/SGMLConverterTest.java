@@ -1,14 +1,14 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.Direction;
-import com.calpano.graphinout.base.GioData;
-import com.calpano.graphinout.base.GioEndpoint;
-import com.calpano.graphinout.base.GioGraph;
-import com.calpano.graphinout.base.GioGraphML;
-import com.calpano.graphinout.base.GioHyperEdge;
-import com.calpano.graphinout.base.GioKey;
-import com.calpano.graphinout.base.GioNode;
-import com.calpano.graphinout.base.GioPort;
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioEndpoint;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.graphml.GraphMLService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -41,10 +41,10 @@ public class SGMLConverterTest {
 
             String xmlFile = Paths.get("src", "test", "resources", "graphin", "graphml", "synthetic").toString() + "/graphml-ids.xml";
 
-            GraphMLService<GioGraphML> myGMLService = new GioStandardGMLService();
+            GraphMLService<GioDocument> myGMLService = new GioStandardGMLService();
             SGMLConverter instance = new SGMLConverter();
 
-            GioGraphML result = instance.convert(new File(xmlFile), new File("./output.xml"), myGMLService);
+            GioDocument result = instance.convert(new File(xmlFile), new File("./output.xml"), myGMLService);
             assertNull(result.getId());
             assertNull(result.getKeys());
             assertEquals(1, result.getGraphs().size());
@@ -106,10 +106,10 @@ public class SGMLConverterTest {
             assertEquals("South", gioPort62.getName());
 
 
-            List<GioHyperEdge> hyperEdges = gioGraph.getHyperEdges();
+            List<GioEdge> hyperEdges = gioGraph.getHyperEdges();
             assertEquals(4, hyperEdges.size());
 
-            GioHyperEdge gioHyperEdge1 = hyperEdges.get(0);
+            GioEdge gioHyperEdge1 = hyperEdges.get(0);
             assertNull(gioHyperEdge1.getDataList());
             assertEquals("id--edge-12", gioHyperEdge1.getId());
             List<GioEndpoint> gioEndpoints = gioHyperEdge1.getEndpoints();
@@ -122,7 +122,7 @@ public class SGMLConverterTest {
             assertEquals(Direction.Out, gioEndpoint2.getType());
 
 
-            GioHyperEdge gioHyperEdge2 = hyperEdges.get(1);
+            GioEdge gioHyperEdge2 = hyperEdges.get(1);
             assertNull(gioHyperEdge2.getDataList());
             assertEquals("id--edge-4S6N", gioHyperEdge2.getId());
             List<GioEndpoint> gioEndpoints2 = gioHyperEdge2.getEndpoints();
@@ -137,7 +137,7 @@ public class SGMLConverterTest {
             assertEquals(Direction.Out, gioEndpoint22.getType());
 
 
-            GioHyperEdge gioHyperEdge3 = hyperEdges.get(2);
+            GioEdge gioHyperEdge3 = hyperEdges.get(2);
             assertEquals("id--hyperedge-123", gioHyperEdge3.getId());
 
             List<GioEndpoint> gioEndpoints31 = gioHyperEdge3.getEndpoints();
@@ -161,7 +161,7 @@ public class SGMLConverterTest {
             assertEquals(gioNode3.getId(), gioEndpoint113.getNode());
             assertNull(gioEndpoint113.getPort());
 
-            GioHyperEdge gioHyperEdge4 = hyperEdges.get(3);
+            GioEdge gioHyperEdge4 = hyperEdges.get(3);
             assertEquals("id--hyperedge-4N56", gioHyperEdge4.getId());
 
             List<GioEndpoint> gioEndpoints12 = gioHyperEdge4.getEndpoints();
@@ -195,10 +195,10 @@ public class SGMLConverterTest {
         public void testConvert_graph_a_graphml() throws Exception {
             String xmlFile = Paths.get("src", "test", "resources", "graphin", "graphml", "synthetic").toString() + "/graph-a.graphml";
 
-            GraphMLService<GioGraphML> myGMLService = new GioStandardGMLService();
+            GraphMLService<GioDocument> myGMLService = new GioStandardGMLService();
             SGMLConverter instance = new SGMLConverter();
 
-            GioGraphML result = instance.convert(new File(xmlFile), new File("./output.xml"), myGMLService);
+            GioDocument result = instance.convert(new File(xmlFile), new File("./output.xml"), myGMLService);
 
             List<GioKey> keys = result.getKeys();
             assertEquals(1, keys.size());
@@ -283,9 +283,9 @@ public class SGMLConverterTest {
             assertEquals("SAP", gioData16.getValue());
 
 
-            List<GioHyperEdge> gioHyperEdges = gioGraph.getHyperEdges();
+            List<GioEdge> gioHyperEdges = gioGraph.getHyperEdges();
             assertEquals(11, gioHyperEdges.size());
-            GioHyperEdge hyperEdge1 = gioHyperEdges.get(0);
+            GioEdge hyperEdge1 = gioHyperEdges.get(0);
             assertNull(hyperEdge1.getId());
             List<GioEndpoint> gioEndpoints1 = hyperEdge1.getEndpoints();
             assertEquals(2, gioEndpoints1.size());

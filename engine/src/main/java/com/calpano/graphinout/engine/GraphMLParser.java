@@ -1,6 +1,6 @@
 package com.calpano.graphinout.engine;
 
-import com.calpano.graphinout.base.GioGraphML;
+import com.calpano.graphinout.base.gio.GioDocument;
 import com.calpano.graphinout.base.exception.GioException;
 
 import java.io.File;
@@ -12,11 +12,11 @@ import com.calpano.graphinout.base.graphml.GraphMLService;
  */
 public final class GraphMLParser implements Unmarshaller {
 
-    private GraphMLService<GioGraphML> graphMLService;
+    private GraphMLService<GioDocument> graphMLService;
 
 
     @Override
-    public GioGraphML unmarshall(File sourceFile,File outputFile,String inputSourceStructureID) throws GioException {
+    public GioDocument unmarshall(File sourceFile, File outputFile, String inputSourceStructureID) throws GioException {
         graphMLService = GioGraphMLServiceFactory.instance(inputSourceStructureID);
         return graphMLService.getConverter().convert(sourceFile, outputFile,graphMLService);
     }

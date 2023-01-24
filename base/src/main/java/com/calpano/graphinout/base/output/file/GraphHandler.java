@@ -3,6 +3,12 @@ package com.calpano.graphinout.base.output.file;
 import com.calpano.graphinout.base.*;
 import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.exception.GioExceptionMessage;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioGraphInOutConstants;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -114,7 +120,7 @@ import java.util.*;
 
 
     @Override
-    public void startGraphMl(GioGraphML gioGraphML) throws IOException {
+    public void startGraphMl(GioDocument gioGraphML) throws IOException {
 
     }
 
@@ -149,12 +155,12 @@ import java.util.*;
     }
 
     @Override
-    public void startEdge(GioHyperEdge edge) throws IOException {
+    public void startEdge(GioEdge edge) throws IOException {
 
     }
 
     @Override
-    public void endEdge(GioHyperEdge gioHyperEdge) throws IOException {
+    public void endEdge(GioEdge gioHyperEdge) throws IOException {
 
     }
 
@@ -164,7 +170,7 @@ import java.util.*;
     }
 
     @Override
-    public void endGraphMl(GioGraphML gioGraphML) throws IOException {
+    public void endGraphMl(GioDocument gioGraphML) throws IOException {
 
     }
 }

@@ -1,7 +1,7 @@
 package com.calpano.graphinout.engine;
 
 import com.calpano.graphinout.base.exception.GioException;
-import com.calpano.graphinout.base.GioGraphML;
+import com.calpano.graphinout.base.gio.GioDocument;
 
 import java.io.File;
 
@@ -11,5 +11,5 @@ import java.io.File;
 @FunctionalInterface
 public interface Unmarshaller {
 
-    GioGraphML unmarshall(File sourceFile,File outputFile, String inputSourceStructureID) throws GioException;
+    GioDocument unmarshall(File sourceFile, File outputFile, String inputSourceStructureID) throws GioException;
 }

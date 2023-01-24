@@ -1,4 +1,4 @@
-package com.calpano.graphinout.base;
+package com.calpano.graphinout.base.gio;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +18,8 @@ public class GioGraphCommonElement {
      * <p>
      * The name of this element in graph is <b>desc</b>
      */
-    protected GioDescription desc;
+    protected String desc;
+
     /**
      * In GraphML there may be data-functions attached to graphs, nodes, ports, edges, hyperedges and endpoint and to
      * the whole collection of graphs described by the content of <graphml>. These functions are declared by <key> elements

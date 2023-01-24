@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.util;
 
-import com.calpano.graphinout.base.GioGraphInOutConstants;
+import com.calpano.graphinout.base.gio.GioGraphInOutConstants;
 import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.exception.GioExceptionMessage;
 
@@ -8,9 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class GIOUtil {
 

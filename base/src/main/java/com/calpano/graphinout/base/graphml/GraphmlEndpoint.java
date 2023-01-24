@@ -1,14 +1,14 @@
-package com.calpano.graphinout.base;
+package com.calpano.graphinout.base.graphml;
 
+import com.calpano.graphinout.base.Direction;
+import com.calpano.graphinout.base.XMLValue;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * @author rbaba
@@ -19,13 +19,13 @@ import java.util.Map;
  * For each enpoint of the hyperedge, this hyperedge element contains an endpoint element.
  * The endpoint element must have an XML-Attribute node, which contains the identifier of a node in the document.
  * Note that edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
- * @see GioHyperEdge {@link GioHyperEdge}
+ * @see GraphmlHyperEdge {@link GraphmlHyperEdge}
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioEndpoint implements XMLValue {
+public class GraphmlEndpoint implements XMLValue {
 
     /**
      * This is an attribute that can be empty or null.
@@ -64,7 +64,7 @@ public class GioEndpoint implements XMLValue {
      * <p>
      * The name of this element in endpoint is <b>desc</b>
      */
-    private GioDescription desc;
+    private GraphmlDescription desc;
 
 
     @Override

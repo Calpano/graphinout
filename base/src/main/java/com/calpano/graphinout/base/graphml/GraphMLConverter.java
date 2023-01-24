@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.exception.GioException;
+import com.calpano.graphinout.base.exception.GraphmlException;
 
 import java.io.File;
 
@@ -11,6 +11,6 @@ import java.io.File;
 @FunctionalInterface
 public interface GraphMLConverter<T> {
 
-    T convert(File inputFile, File outputFile,GraphMLService graphMLService)  throws GioException;
+    T convert(File inputFile, File outputFile,GraphMLService graphMLService)  throws GraphmlException;
 
 }
