@@ -1,13 +1,10 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.XMLValue;
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -32,7 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioPort implements XMLValue {
+public class GioPort{
 
     /**
      * This is an attribute that mandatory.
@@ -54,32 +51,4 @@ public class GioPort implements XMLValue {
      * The name of this attribute in port is <b>port</b>
      */
     private List<GioPort> ports;
-
-    @Override
-    public String startTag() {
-
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (name != null && !name.isEmpty()) attributes.put("name", name);
-
-
-        if (extraAttrib != null && !extraAttrib.isEmpty()) {
-            attributes.put("port.extra.attrib", extraAttrib);
-        }
-        return GIOUtil.makeStartElement("port",attributes);
-    }
-
-    @Override
-    public String valueTag() {
-        StringBuilder xmlValueData = new StringBuilder();
-        for (XMLValue xmlValue : ports) {
-            xmlValueData.append(xmlValue.fullTag());
-        }
-        return xmlValueData.toString();
-    }
-
-    @Override
-    public String endTag() {
-        return GIOUtil.makeEndElement("port");
-    }
 }

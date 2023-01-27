@@ -41,7 +41,7 @@ public class GioWriterImpl implements GioWriter {
     }
 
     @Override
-    public void startGraph() throws IOException {
+    public void startGraph(GioGraph gioGraph) throws IOException {
 
     }
 

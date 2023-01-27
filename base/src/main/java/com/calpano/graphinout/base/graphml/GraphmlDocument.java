@@ -1,15 +1,12 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.XMLValue;
-import com.calpano.graphinout.base.gio.GioKey;
-import com.calpano.graphinout.base.util.GIOUtil;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**

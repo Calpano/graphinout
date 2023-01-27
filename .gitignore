@@ -6,3 +6,5 @@ target
 *.iml
 *.tmp
 tmp
+*.cache
+*.svg

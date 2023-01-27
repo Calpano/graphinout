@@ -1,13 +1,9 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.XMLValue;
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.LinkedHashMap;
 
 /**
  * @author rbaba
@@ -22,7 +18,7 @@ import java.util.LinkedHashMap;
 @NoArgsConstructor
 @Data
 @Builder
-public class GioDefault implements XMLValue {
+public class GioDefault {
     /**
      * the default value for the corresponding function.
      */
@@ -36,31 +32,5 @@ public class GioDefault implements XMLValue {
      */
     private String defaultType;
 
-    @Override
-    public String startTag() {
-        LinkedHashMap<String, String> attributes = getAttributes();
 
-        if (value == null || value.isEmpty()) return GIOUtil.makeElement("default", attributes);
-        else return GIOUtil.makeStartElement("default", attributes);
-    }
-
-    @Override
-    public LinkedHashMap<String, String> getAttributes() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (defaultType != null) attributes.put("default.type", defaultType);
-
-        return attributes;
-    }
-    @Override
-    public String valueTag() {
-        if (value == null || value.isEmpty()) return "";
-        return value + GioGraphInOutConstants.NEW_LINE_SEPARATOR;
-    }
-
-    @Override
-    public String endTag() {
-        if (value == null || value.isEmpty()) return "";
-        else return GIOUtil.makeEndElement("default");
-    }
 }

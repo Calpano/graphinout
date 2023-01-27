@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.XMLValue;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -67,6 +66,19 @@ public class GraphmlPort implements XMLValue {
             attributes.put("port.extra.attrib", extraAttrib);
         }
         return GIOUtil.makeStartElement("port",attributes);
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getAttributes() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+
+        if (name != null && !name.isEmpty()) attributes.put("name", name);
+
+
+        if (extraAttrib != null && !extraAttrib.isEmpty()) {
+            attributes.put("port.extra.attrib", extraAttrib);
+        }
+        return  attributes;
     }
 
     @Override

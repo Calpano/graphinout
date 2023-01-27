@@ -4,10 +4,10 @@
  */
 package com.calpano.graphinout.reader.graphml;
 
+import com.calpano.graphinout.base.graphml.GraphMLValueMapper;
+
 import java.util.Map;
 import java.util.TreeMap;
-
-import com.calpano.graphinout.base.graphml.GraphMLValueMapper;
 
 /**
  * @author rbaba

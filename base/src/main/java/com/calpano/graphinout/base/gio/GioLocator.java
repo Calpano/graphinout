@@ -1,16 +1,11 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.XMLValue;
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * @author rbaba
@@ -24,7 +19,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Data
 @Builder
-public class GioLocator implements XMLValue {
+public class GioLocator {
 
     /**
      * points to the resource of this locator.
@@ -49,28 +44,4 @@ public class GioLocator implements XMLValue {
      * The name of this attribute is <b>locator.extra.attrib</b>
      */
     private String locatorExtraAttrib;
-
-    @Override
-    public String startTag() {
-
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (xLinkHref != null) attributes.put("xlink:herf", xLinkHref.toString());
-
-        if (xLinkType != null) attributes.put("xlink:type", xLinkType);
-
-        if (locatorExtraAttrib != null) attributes.put("locator.extra.attrib", locatorExtraAttrib);
-
-        return GIOUtil.makeStartElement("locator", attributes);
-    }
-
-    @Override
-    public String valueTag() {
-        return "";
-    }
-
-    @Override
-    public String endTag() {
-        return GIOUtil.makeEndElement("locator");
-    }
 }

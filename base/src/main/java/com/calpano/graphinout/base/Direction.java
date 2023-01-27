@@ -18,10 +18,6 @@ public enum Direction {
         this.isDirection = isDirection;
     }
 
-    public boolean isDirected() {
-        return isDirection;
-    }
-
     public static Direction getDirection(String strDirection) {
         switch (strDirection.toLowerCase()) {
             case "in":
@@ -36,5 +32,9 @@ public enum Direction {
             default:
                 return Undirected;
         }
+    }
+
+    public boolean isDirected() {
+        return isDirection;
     }
 }

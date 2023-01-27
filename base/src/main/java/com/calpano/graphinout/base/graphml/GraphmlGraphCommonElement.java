@@ -1,8 +1,6 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.gio.GraphmlData;
-import com.calpano.graphinout.base.gio.GraphmlDescription;
-import com.calpano.graphinout.base.gio.GraphmlKey;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

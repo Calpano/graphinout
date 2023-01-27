@@ -1,7 +1,8 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.util.GIOUtil;
-import com.calpano.graphinout.base.xml.XmlWriter;
+
+
+import com.calpano.graphinout.base.output.xml.XmlWriter;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;

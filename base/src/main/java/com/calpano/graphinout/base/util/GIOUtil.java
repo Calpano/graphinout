@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.util;
 
-import com.calpano.graphinout.base.gio.GioGraphInOutConstants;
 import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.exception.GioExceptionMessage;
 
@@ -12,10 +11,11 @@ import java.util.LinkedHashMap;
 
 public class GIOUtil {
 
+    private final static  String NEW_LINE_SEPARATOR =  System.lineSeparator();
     public static String makeElement(String name, LinkedHashMap<String, String> attributes) {
         final StringBuilder format = new StringBuilder("<").append(name);
         attributes.entrySet().stream().forEach(s -> format.append(String.format(" %s=\"%s\"", s.getKey(), s.getValue())));
-        format.append("/>").append(GioGraphInOutConstants.NEW_LINE_SEPARATOR);
+        format.append("/>").append(NEW_LINE_SEPARATOR);
         return format.toString();
     }
     public static String makeElement(String name){
@@ -24,7 +24,7 @@ public class GIOUtil {
     public static String makeStartElement(String name, LinkedHashMap<String, String> attributes) {
         final StringBuilder format = new StringBuilder("<").append(name);
         attributes.entrySet().stream().forEach(s -> format.append(String.format(" %s=\"%s\"", s.getKey(), s.getValue())));
-        format.append(">").append(GioGraphInOutConstants.NEW_LINE_SEPARATOR);
+        format.append(">").append(NEW_LINE_SEPARATOR);
         return format.toString();
     }
     public static String makeStartElement(String name){
@@ -32,7 +32,7 @@ public class GIOUtil {
     }
 
     public static String makeEndElement(String name) {
-        return "</" + name + ">"+GioGraphInOutConstants.NEW_LINE_SEPARATOR;
+        return "</" + name + ">"+NEW_LINE_SEPARATOR;
     }
 
     public static void copyFile(Path source, Path target) throws GioException {

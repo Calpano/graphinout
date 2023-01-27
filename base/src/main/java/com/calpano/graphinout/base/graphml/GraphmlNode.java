@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.XMLValue;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -68,6 +67,14 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
         if (id != null) attributes.put("id", id);
 
         return GIOUtil.makeStartElement("node", attributes);
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getAttributes() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+
+        if (id != null) attributes.put("id", id);
+        return  attributes;
     }
 
     @Override

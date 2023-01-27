@@ -1,9 +1,5 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.graphml.GraphmlDocument;
-import com.calpano.graphinout.base.graphml.GraphmlKey;
-import com.calpano.graphinout.base.graphml.GraphmlNode;
-
 import java.io.IOException;
 
 /**
@@ -11,15 +7,11 @@ import java.io.IOException;
  */
 public interface GioWriter {
 
-    void data(GioKey data) throws IOException;
-
-    void endDocument() throws IOException;
-
-    void endGraph() throws IOException;
-
     void startDocument(GioDocument document) throws IOException;
 
-    void startGraph() throws IOException;
+    void startGraph(GioGraph gioGraph) throws IOException;
+    void data(GioKey data) throws IOException;
+
 
     /**
      * May contain #startGraph
@@ -27,5 +19,9 @@ public interface GioWriter {
      * @throws IOException
      */
     void startNode(GioNode node) throws IOException;
+
+    void endGraph() throws IOException;
+
+   void endDocument() throws IOException;
 
 }

@@ -1,11 +1,6 @@
 package com.calpano.graphinout.base.output;
 
-import com.calpano.graphinout.base.*;
-import com.calpano.graphinout.base.gio.GioGraph;
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioEdge;
-import com.calpano.graphinout.base.gio.GioKey;
-import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.*;
 
 import java.io.IOException;
 
@@ -23,8 +18,6 @@ public interface GraphMlWriter {
     void end(GioKey gioKey) throws IOException;
 
     void startGraph(GioGraph gioGraph) throws IOException;
-
-    void writeData(XMLValue value) throws IOException;
 
     void startNode(GioNode node) throws IOException;
 

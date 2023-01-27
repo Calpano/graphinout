@@ -1,16 +1,11 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.*;
-import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioEndpoint;
-import com.calpano.graphinout.base.gio.GioGraph;
-import com.calpano.graphinout.base.gio.GioGraphCommonElement;
-import com.calpano.graphinout.base.gio.GioNode;
-import com.calpano.graphinout.base.gio.GioPort;
+import com.calpano.graphinout.base.Direction;
+import com.calpano.graphinout.base.gio.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -38,7 +33,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 class GioEdge extends GioGraphCommonElement {
 
     /**

@@ -1,13 +1,9 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.XMLValue;
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.LinkedHashMap;
 
 /**
  * @author rbaba
@@ -21,7 +17,7 @@ import java.util.LinkedHashMap;
 @NoArgsConstructor
 @Data
 @Builder
-public class GioData implements XMLValue {
+public class GioData {
 
     /**
      * This is an attribute that can be empty or null.
@@ -41,37 +37,4 @@ public class GioData implements XMLValue {
      * The name of this attribute in data is <b>key</b>
      */
     private String key;
-
-    @Override
-    public String startTag() {
-        LinkedHashMap<String, String> attributes = getAttributes();
-
-        if (value == null) return GIOUtil.makeElement("data", attributes);
-        else return GIOUtil.makeStartElement("data", attributes);
-
-    }
-
-    @Override
-    public LinkedHashMap<String, String> getAttributes() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (id != null) attributes.put("id", id);
-
-        if (key != null) attributes.put("key", key);
-
-
-        return attributes;
-    }
-
-    @Override
-    public String valueTag() {
-        if (value == null) return "";
-        return value + GioGraphInOutConstants.NEW_LINE_SEPARATOR;
-    }
-
-    @Override
-    public String endTag() {
-        if (value == null || value.isEmpty()) return "";
-        else return GIOUtil.makeEndElement("data");
-    }
-}
+      }

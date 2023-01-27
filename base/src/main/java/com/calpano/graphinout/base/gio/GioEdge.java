@@ -1,15 +1,14 @@
 package com.calpano.graphinout.base.gio;
 
 
-import java.util.*;
-
-import com.calpano.graphinout.base.XMLValue;
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author rbaba
@@ -66,38 +65,4 @@ public class GioEdge extends GioGraphCommonElement {
         endpoints.add(gioEndpoint);
     }
 
-    @Override
-    public String startTag() {
-
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (id != null) attributes.put("id", id);
-
-        if (extraAttrib != null) attributes.put("hyperEdge.extra.attrib", extraAttrib);
-
-        return GIOUtil.makeStartElement("hyperEdge", attributes);
-    }
-
-    /**
-     * The graph must be stored in a different form, so it is not implemented here.
-     * For large files, we don't want to keep the entire graph object in memory.
-     *
-     * @return
-     */
-    @Override
-    public String valueTag() {
-        final StringBuilder xmlValueData = new StringBuilder();
-        if (desc != null) xmlValueData.append(desc.fullTag());
-        for (XMLValue data : getDataList())
-            xmlValueData.append(data.fullTag());
-        for (XMLValue endpoints : getEndpoints())
-            xmlValueData.append(endpoints.fullTag());
-        //HIT GRAPH
-        return xmlValueData.toString();
-    }
-
-    @Override
-    public String endTag() {
-        return GIOUtil.makeEndElement("hyperEdge");
-    }
 }

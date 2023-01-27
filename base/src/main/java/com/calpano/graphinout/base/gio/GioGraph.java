@@ -1,6 +1,8 @@
 package com.calpano.graphinout.base.gio;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;

@@ -1,7 +1,5 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.XMLValue;
-import com.calpano.graphinout.base.exception.GraphmlException;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +29,7 @@ import java.util.LinkedHashMap;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class GraphmlKey extends GraphmlGraphCommonElement {
+public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
 
     /**
      * identifies this <key>
@@ -80,7 +78,7 @@ public class GraphmlKey extends GraphmlGraphCommonElement {
      */
     private GraphmlDefault defaultValue;
 
-    public void setForType(String forType) throws GraphmlException {
+    public void setForType(String forType) throws Exception {
         this.forType = GraphmlKeyForType.keyForType(forType);
     }
 
@@ -103,6 +101,23 @@ public class GraphmlKey extends GraphmlGraphCommonElement {
 
         return GIOUtil.makeStartElement("key", attributes);
 
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getAttributes() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+
+        if (id != null) attributes.put("id", id);
+
+        if (attrName != null && !attrName.isEmpty()) attributes.put("attr.name", attrName);
+
+        if (attrType != null && !attrType.isEmpty()) attributes.put("attr.type", attrType);
+
+        if (forType != null) attributes.put("for", forType.name());
+
+        if (extraAttrib != null) attributes.put("extra.attrib", extraAttrib);
+
+        return  attributes;
     }
 
     @Override

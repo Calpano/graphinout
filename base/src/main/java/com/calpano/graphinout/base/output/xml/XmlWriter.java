@@ -1,4 +1,4 @@
-package com.calpano.graphinout.base.xml;
+package com.calpano.graphinout.base.output.xml;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -9,7 +9,9 @@ import java.util.Map;
  */
 public interface XmlWriter {
 
-    void charaterData(String characterData);
+
+
+    void characterData(String characterData) throws IOException ;
 
     void endDocument() throws IOException;
 

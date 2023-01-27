@@ -1,12 +1,13 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.xml.XmlWriter;
+import com.calpano.graphinout.base.output.xml.XmlWriter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
 /**
  * @author rbaba
@@ -18,15 +19,34 @@ import java.io.IOException;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GraphmlDescription {
+public class GraphmlDescription  implements  XMLValue{
     private String value;
 
     public void writeXml(XmlWriter xmlWriter) throws IOException {
         if(value==null)
             return;
         xmlWriter.startElement("desc");
-        xmlWriter.charaterData(value);
+        xmlWriter.characterData(value);
         xmlWriter.endElement("desc");
     }
 
+    @Override
+    public String startTag() {
+        return null;
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getAttributes() {
+        return null;
+    }
+
+    @Override
+    public String valueTag() {
+        return null;
+    }
+
+    @Override
+    public String endTag() {
+        return null;
+    }
 }

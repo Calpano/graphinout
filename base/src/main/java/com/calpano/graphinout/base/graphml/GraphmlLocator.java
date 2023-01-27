@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.XMLValue;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -60,6 +59,19 @@ public class GraphmlLocator implements XMLValue {
         if (locatorExtraAttrib != null) attributes.put("locator.extra.attrib", locatorExtraAttrib);
 
         return GIOUtil.makeStartElement("locator", attributes);
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getAttributes() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+
+        if (xLinkHref != null) attributes.put("xlink:herf", xLinkHref.toString());
+
+        if (xLinkType != null) attributes.put("xlink:type", xLinkType);
+
+        if (locatorExtraAttrib != null) attributes.put("locator.extra.attrib", locatorExtraAttrib);
+
+        return  attributes;
     }
 
     @Override

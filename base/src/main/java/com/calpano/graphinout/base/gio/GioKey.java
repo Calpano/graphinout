@@ -1,14 +1,10 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.XMLValue;
 import com.calpano.graphinout.base.exception.GioException;
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import java.util.LinkedHashMap;
 
 /**
  * @author rbaba
@@ -31,7 +27,7 @@ import java.util.LinkedHashMap;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class GioKey extends GioGraphCommonElement implements XMLValue {
+public class GioKey extends GioGraphCommonElement {
 
     /**
      * identifies this <key>
@@ -66,12 +62,6 @@ public class GioKey extends GioGraphCommonElement implements XMLValue {
      * The name of this attribute in key is <b>key.extra.attrib</b>
      */
     private String extraAttrib;
-    /**
-     * This is an Element
-     *
-     * @see GioDescription {@link  GioDescription}
-     */
-    private GioDescription desc;
 
     /**
      * This is an Element
@@ -82,46 +72,6 @@ public class GioKey extends GioGraphCommonElement implements XMLValue {
 
     public void setForType(String forType) throws GioException {
         this.forType = GioKeyForType.keyForType(forType);
-    }
-
-    @Override
-    public String startTag() {
-
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (id != null) attributes.put("id", id);
-
-        if (attrName != null && !attrName.isEmpty()) attributes.put("attr.name", attrName);
-
-        if (attrType != null && !attrType.isEmpty()) attributes.put("attr.type", attrType);
-
-        if (forType != null) attributes.put("for", forType.name());
-
-        if (extraAttrib != null) attributes.put("extra.attrib", extraAttrib);
-
-        if (valueTag().isEmpty()) return GIOUtil.makeElement("key", attributes);
-
-        return GIOUtil.makeStartElement("key", attributes);
-
-    }
-
-    @Override
-    public String valueTag() {
-        StringBuilder xmlValueData = new StringBuilder();
-        if (desc != null) xmlValueData.append(desc.fullTag());
-        if (getDataList() != null) for (XMLValue data : getDataList())
-            xmlValueData.append(data.fullTag());
-        if (defaultValue != null) {
-            xmlValueData.append(defaultValue.fullTag());
-        }
-        //HIT GRAPH
-        return xmlValueData.toString();
-    }
-
-    @Override
-    public String endTag() {
-        if (valueTag().isEmpty()) return "";
-        return GIOUtil.makeEndElement("key");
     }
 }
 

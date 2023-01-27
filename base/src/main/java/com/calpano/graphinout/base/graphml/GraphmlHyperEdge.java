@@ -1,9 +1,6 @@
 package com.calpano.graphinout.base.graphml;
 
 
-import com.calpano.graphinout.base.gio.GraphmlEndpoint;
-import com.calpano.graphinout.base.gio.GraphmlGraph;
-import com.calpano.graphinout.base.XMLValue;
 import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,7 +35,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class GraphmlHyperEdge extends GraphmlGraphCommonElement {
+public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements  XMLValue{
 
     /**
      * This is an attribute that can be empty or null.
@@ -80,6 +77,16 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement {
         if (extraAttrib != null) attributes.put("hyperEdge.extra.attrib", extraAttrib);
 
         return GIOUtil.makeStartElement("hyperEdge", attributes);
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getAttributes() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+
+        if (id != null) attributes.put("id", id);
+
+        if (extraAttrib != null) attributes.put("hyperEdge.extra.attrib", extraAttrib);
+        return attributes;
     }
 
     /**
