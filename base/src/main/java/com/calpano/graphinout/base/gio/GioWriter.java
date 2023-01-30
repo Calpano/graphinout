@@ -20,6 +20,8 @@ public interface GioWriter {
      */
     void startNode(GioNode node) throws IOException;
 
+    void startEdge(GioEdge edge);
+
     void endGraph() throws IOException;
 
    void endDocument() throws IOException;
