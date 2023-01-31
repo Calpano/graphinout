@@ -21,15 +21,11 @@ public class GioGraphInOutXMLConstants {
     public static final String DESC_ELEMENT_NAME = "desc";
     public static final String DEFAULT_ELEMENT_NAME = "Default";
 
-    public static GraphMlWriter ofXML(XmlWriter xmlWriter) {
+    public static GraphMlWriter of(XmlWriter xmlWriter) {
         return new GraphMlXmlWriter(xmlWriter);
     }
 
-    public static XmlWriter ofFile(OutputSink outputSink) {
-        return new XMLFileWriter(outputSink);
-    }
-
-    public static GraphMlWriter ofXML(OutputSink outputSink) {
-        return ofXML(ofFile(outputSink));
+    public static GraphMlWriter of(OutputSink outputSink) {
+        return of(new XMLFileWriter(outputSink));
     }
 }
