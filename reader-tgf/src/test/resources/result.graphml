@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="label" for="node" attr.name="label" attr.type="string"/>
+  <graph id="G" edgedefault="directed">
+    <node id="1">
+      <data key="label">January</data>
+    </node>
+    <node id="2">
+      <data key="label">March</data>
+    </node>
+    <node id="3">
+      <data key="label">April</data>
+    </node>
+    <node id="4">
+      <data key="label">May</data>
+    </node>
+    <node id="5">
+      <data key="label">December</data>
+    </node>
+    <node id="6">
+      <data key="label">June</data>
+    </node>
+    <node id="7">
+      <data key="label">September</data>
+    </node>
+    <edge source="1" target="2"/>
+    <edge source="3" target="2"/>
+    <edge source="4" target="3"/>
+    <edge source="5" target="1" edge_label="Happy New Year!"/>
+    <edge source="5" target="3" edge_label="April Fools Day"/>
+    <edge source="6" target="3"/>
+    <edge source="6" target="1"/>
+    <edge source="7" target="5"/>
+    <edge source="7" target="6"/>
+    <edge source="7" target="1"/>
+  </graph>
+</graphml>

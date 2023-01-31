@@ -49,4 +49,9 @@ public class GioWriterImpl implements GioWriter {
     public void startNode(GioNode node) throws IOException {
 
     }
+
+    @Override
+    public void startEdge(GioEdge edge) {
+
+    }
 }
