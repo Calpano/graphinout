@@ -1,3 +1,10 @@
+package com.calpano.graphinout.reader.dot.xml;
+
+import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.input.InputSource;
+import com.calpano.graphinout.base.reader.GioFileFormat;
+import com.calpano.graphinout.base.reader.GioReader;
+
 import javax.xml.stream.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -6,7 +13,7 @@ import java.io.IOException;
 /**
  * This class converts a DOT file to a GraphML file using streams
  */
-public class DotReader {
+public class DotXmlReader implements GioReader {
 
     public static final String DIGRAPH = "digraph";
     public static final String GRAPH = "graph";
@@ -22,6 +29,16 @@ public class DotReader {
     public static final String KEY = "key";
     public static final String TAILPORT = "tailport";
     public static final String HEADPORT = "headport";
+
+    @Override
+    public GioFileFormat fileFormat() {
+        return new GioFileFormat("dot-text", "DOT/GraphViz Format, text");
+    }
+
+    @Override
+    public void read(InputSource inputSource, GioWriter writer) throws IOException {
+        // TODO integrate here
+    }
 
     /**
      * The main method converts the DOT file to GraphML file

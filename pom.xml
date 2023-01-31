@@ -13,6 +13,7 @@
         <module>base</module>
         <module>reader-graphml</module>
         <module>reader-tgf</module>
+        <module>reader-dot</module>
         <module>engine</module>
         <module>app-cmdline</module>
     </modules>
