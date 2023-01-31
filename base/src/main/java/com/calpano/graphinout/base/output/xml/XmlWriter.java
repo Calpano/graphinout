@@ -10,8 +10,7 @@ import java.util.Map;
 public interface XmlWriter {
 
 
-
-    void characterData(String characterData) throws IOException ;
+    void characterData(String characterData) throws IOException;
 
     void endDocument() throws IOException;
 
