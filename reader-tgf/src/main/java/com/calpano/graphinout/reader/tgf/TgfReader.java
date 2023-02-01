@@ -17,10 +17,10 @@ import java.util.function.Consumer;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class TgfReader implements GioReader {
-    private static final Logger log = getLogger(TgfReader.class);
     public static final String DELIMITER = " ";
     public static final String HASH = "#";
     public static final String LABEL = "label";
+    private static final Logger log = getLogger(TgfReader.class);
     /**
      * @Nullable TODO maybe make a true Optional
      */
@@ -52,6 +52,12 @@ public class TgfReader implements GioReader {
             String line = scanner.nextLine();
             lineCount++;
 
+            if (line.contains(HASH)) {
+                foundHash = true;
+                nodes = false;
+                continue;
+            }
+
             if (nodes) {
                 String[] nodeParts = line.split(DELIMITER);
 
@@ -64,10 +70,6 @@ public class TgfReader implements GioReader {
                         .dataList(gioDataList)
                         .build());
 
-            }
-            if (line.contains(HASH)) {
-                foundHash = true;
-                nodes = false;
             } else {
                 String[] edgeParts = line.split(DELIMITER);
                 GioEndpoint sourceEndpoint = GioEndpoint.builder().id(edgeParts[0]).build();
