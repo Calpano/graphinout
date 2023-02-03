@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 
 class DotTextReaderTest {
 
+    // TODO run on all available test files and check if parser crashes; later also validate GraphML?
     @Test
     void test() throws IOException {
         String resourceName = "/example.dot";
