@@ -17,10 +17,10 @@ import java.util.function.Consumer;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class TgfReader implements GioReader {
-    private static final Logger log = getLogger(TgfReader.class);
     public static final String DELIMITER = " ";
     public static final String HASH = "#";
     public static final String LABEL = "label";
+    private static final Logger log = getLogger(TgfReader.class);
     /**
      * @Nullable TODO maybe make a true Optional
      */
@@ -39,7 +39,7 @@ public class TgfReader implements GioReader {
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
         String content = IOUtils.toString(inputSource.inputStream());
 
-        boolean isValid = false;
+        boolean isValid = true;
         Scanner scanner = new Scanner(content);
         boolean foundHash = false;
         int lineCount = 0;
@@ -51,6 +51,12 @@ public class TgfReader implements GioReader {
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             lineCount++;
+
+            if (line.contains(HASH)) {
+                foundHash = true;
+                nodes = false;
+                continue;
+            }
 
             if (nodes) {
                 String[] nodeParts = line.split(DELIMITER);
@@ -64,10 +70,6 @@ public class TgfReader implements GioReader {
                         .dataList(gioDataList)
                         .build());
 
-            }
-            if (line.contains(HASH)) {
-                foundHash = true;
-                nodes = false;
             } else {
                 String[] edgeParts = line.split(DELIMITER);
                 GioEndpoint sourceEndpoint = GioEndpoint.builder().id(edgeParts[0]).build();
@@ -86,7 +88,7 @@ public class TgfReader implements GioReader {
         writer.endGraph();
         writer.endDocument();
         if (lineCount < 3 || !foundHash) {
-            isValid = true;
+            isValid = false;
         }
         scanner.close();
 
