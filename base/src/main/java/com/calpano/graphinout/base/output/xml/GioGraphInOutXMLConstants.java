@@ -2,7 +2,7 @@ package com.calpano.graphinout.base.output.xml;
 
 import com.calpano.graphinout.base.output.GraphMlWriter;
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.output.xml.file.XMLFileWriter;
+import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
 
 public class GioGraphInOutXMLConstants {
 
@@ -26,6 +26,6 @@ public class GioGraphInOutXMLConstants {
     }
 
     public static GraphMlWriter of(OutputSink outputSink) {
-        return of(new XMLFileWriter(outputSink));
+        return of(new SimpleXmlWriter(outputSink));
     }
 }

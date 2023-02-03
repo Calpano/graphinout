@@ -95,6 +95,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void startDocument(GraphmlDocument doc) throws IOException {
+        xmlWriter.startDocument();
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
         attributes.put("xmlns", HEADER_XMLNS);
         attributes.put("xmlns:xsi", HEADER_XMLNS_XSI);
@@ -110,7 +111,6 @@ public class GraphmlWriterImpl implements GraphmlWriter {
                 data(key);
 
         writerData(doc.getDataList());
-
     }
 
     @Override
