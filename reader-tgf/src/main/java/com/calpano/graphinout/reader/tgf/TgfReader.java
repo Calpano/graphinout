@@ -39,7 +39,7 @@ public class TgfReader implements GioReader {
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
         String content = IOUtils.toString(inputSource.inputStream());
 
-        boolean isValid = false;
+        boolean isValid = true;
         Scanner scanner = new Scanner(content);
         boolean foundHash = false;
         int lineCount = 0;
@@ -88,7 +88,7 @@ public class TgfReader implements GioReader {
         writer.endGraph();
         writer.endDocument();
         if (lineCount < 3 || !foundHash) {
-            isValid = true;
+            isValid = false;
         }
         scanner.close();
 
