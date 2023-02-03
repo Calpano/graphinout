@@ -1,4 +1,4 @@
-package com.calpano.graphinout.reader.dot.text;
+package com.calpano.graphinout.reader.dot;
 
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
