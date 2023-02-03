@@ -51,6 +51,7 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
      * </p>
      * The name of this Element in node is <b>graph</b>.
      */
+    // FIXME this is wrong in a streaming API
     private GraphmlGraph graph;
 
     /**
