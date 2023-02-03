@@ -5,7 +5,7 @@ import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.output.xml.file.XMLFileWriter;
+import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
 import com.calpano.graphinout.base.reader.GioReader;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class TgfReaderTest {
 
@@ -29,7 +32,7 @@ class TgfReaderTest {
         OutputSink outputSink = OutputSink.createMock();
 
         TgfReader tgfReader = new TgfReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XMLFileWriter(outputSink)));
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
         tgfReader.read(inputSource, gioWriter);
     }
 
@@ -41,7 +44,7 @@ class TgfReaderTest {
         OutputSink outputSink = OutputSink.createMock();
 
         TgfReader tgfReader = new TgfReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XMLFileWriter(outputSink)));
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
         tgfReader.read(inputSource, gioWriter);
     }
     
