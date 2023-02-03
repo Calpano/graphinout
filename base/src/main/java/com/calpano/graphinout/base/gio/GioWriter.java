@@ -10,6 +10,7 @@ public interface GioWriter {
     void startDocument(GioDocument document) throws IOException;
 
     void startGraph(GioGraph gioGraph) throws IOException;
+
     void data(GioKey data) throws IOException;
 
 
@@ -20,7 +21,7 @@ public interface GioWriter {
      */
     void startNode(GioNode node) throws IOException;
 
-    void startEdge(GioEdge edge);
+    void startEdge(GioEdge edge) throws IOException;
 
     void endGraph() throws IOException;
 

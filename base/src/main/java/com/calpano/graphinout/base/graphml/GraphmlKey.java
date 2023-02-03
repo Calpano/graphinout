@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 @SuperBuilder
 public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
 
+    public static final String TAGNAME = "key";
     /**
      * identifies this <key>
      * <p>

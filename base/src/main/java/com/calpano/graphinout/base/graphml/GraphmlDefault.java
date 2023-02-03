@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 @Data
 @Builder
 public class GraphmlDefault implements XMLValue {
+    public static final String TAGNAME = "default";
     /**
      * the default value for the corresponding function.
      */

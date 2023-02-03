@@ -37,6 +37,8 @@ import java.util.List;
 @SuperBuilder
 public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements  XMLValue{
 
+
+    public static final String TAGNAME = "hyperedge";
     /**
      * This is an attribute that can be empty or null.
      * </p>

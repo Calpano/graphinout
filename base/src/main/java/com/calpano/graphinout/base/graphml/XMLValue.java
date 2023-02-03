@@ -1,12 +1,13 @@
 package com.calpano.graphinout.base.graphml;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public interface XMLValue {
 
     public String startTag() ;
 
-    public LinkedHashMap<String, String> getAttributes() ;
+    public Map<String, String> getAttributes() ;
 
     public String valueTag() ;
 

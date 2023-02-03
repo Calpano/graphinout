@@ -8,3 +8,4 @@ target
 tmp
 *.cache
 *.svg
+/base/test_graph_output.xml

@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 @Builder
 public class GraphmlLocator implements XMLValue {
 
+    public static final String TAGNAME = "locator";
     /**
      * points to the resource of this locator.
      * This is a mandatory attribute.

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author rbaba
@@ -23,6 +24,7 @@ import java.util.LinkedHashMap;
 @Builder
 public class GraphmlData implements XMLValue {
 
+    public static final String TAGNAME = "data";
     /**
      * This is an attribute that can be empty or null.
      * </p>
@@ -44,7 +46,7 @@ public class GraphmlData implements XMLValue {
 
     @Override
     public String startTag() {
-        LinkedHashMap<String, String> attributes = getAttributes();
+        Map<String, String> attributes = getAttributes();
 
         if (value == null) return GIOUtil.makeElement("data", attributes);
         else return GIOUtil.makeStartElement("data", attributes);
@@ -52,8 +54,8 @@ public class GraphmlData implements XMLValue {
     }
 
     @Override
-    public LinkedHashMap<String, String> getAttributes() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+    public Map<String, String> getAttributes() {
+        Map<String, String> attributes = new LinkedHashMap<>();
 
         if (id != null) attributes.put("id", id);
 
