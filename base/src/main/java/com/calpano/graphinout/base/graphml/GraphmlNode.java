@@ -29,6 +29,7 @@ import java.util.List;
 @SuperBuilder
 public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
 
+    public static final String TAGNAME = "node";
     /**
      * The identifier of a node is defined by the XML-Attribute id.
      * <b>This Attribute is mandatory.</b>

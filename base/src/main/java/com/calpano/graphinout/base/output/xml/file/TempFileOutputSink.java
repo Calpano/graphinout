@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TempOutputSink implements OutputSink {
+public class TempFileOutputSink implements OutputSink {
 
 
     private static    Path tempDirectory;
@@ -26,7 +26,7 @@ public class TempOutputSink implements OutputSink {
     private final File  tmpFile ;
     private transient OutputStream out;
     private transient Writer w;
-    public TempOutputSink(String name)  {
+    public TempFileOutputSink(String name)  {
         try {
             tmpFile = Files.createTempFile(tempDirectory, new Date().toString().replace(" ","_")+"_"+ name+"_",".tmp").toFile();
         } catch (IOException e) {

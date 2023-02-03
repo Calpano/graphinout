@@ -20,7 +20,7 @@ class ElementWriter extends ChainXmlWriter {
         if(nextWriter !=null){
             nextWriter.startElement(name,attributes);
         } else if (GioGraphInOutXMLConstants.GRAPH_ELEMENT_NAME.equals(name)) {
-            nextWriter =  new GraphWriter(outputSink, new TempOutputSink("graph"));
+            nextWriter =  new GraphWriter(outputSink);
             nextWriter.startDocument();
             nextWriter.startElement(name,attributes);
         }else {

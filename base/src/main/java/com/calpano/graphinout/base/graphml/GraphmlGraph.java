@@ -25,6 +25,7 @@ import java.util.List;
 @Data
 public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue {
 
+    public static final String TAGNAME = "graph";
     /**
      * This is an attribute that can be empty or null.
      * </p>

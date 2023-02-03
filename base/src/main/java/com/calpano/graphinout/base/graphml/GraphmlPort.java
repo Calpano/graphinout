@@ -33,6 +33,8 @@ import java.util.List;
 @Builder
 public class GraphmlPort implements XMLValue {
 
+
+    public static final String TAGNAME = "port";
     /**
      * This is an attribute that mandatory.
      * </p>

@@ -28,7 +28,7 @@ public class XMLFileWriterTest {
 
     }
     @Test
-    void writeData_test() throws GioException, IOException {
+    void writeData_test() throws  IOException {
 
         Map<String,String> testKeyMap= new HashMap<>();
         testKeyMap.put("attr.name","type");
