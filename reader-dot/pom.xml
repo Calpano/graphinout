@@ -49,6 +49,11 @@
             <artifactId>digraph-parser</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>4.8.154</version>
+        </dependency>
     </dependencies>
 
     <build>

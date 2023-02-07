@@ -7,15 +7,19 @@ import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.output.xml.file.XMLFileWriter;
 import com.calpano.graphinout.base.reader.GioReader;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
@@ -24,11 +28,10 @@ class TgfReaderTest {
     public static final String EMPTY_FILE = "";
 
     @ParameterizedTest
-    // TODO add @MethodSource and use all *.tgf files in via https://github.com/classgraph/classgraph/wiki/Code-examples#finding-and-reading-resource-files
-    // requires classgraph as test dependency
-    @ValueSource(strings = {"/example.tgf", "/example2.tgf"})
+    @MethodSource("getResourceFilePaths")
     void shouldWorkAsIntended(String filePath) throws IOException {
-        String content = IOUtils.resourceToString(filePath, StandardCharsets.UTF_8);
+        URL resourceUrl = ClassLoader.getSystemResource(filePath);
+        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
         InputSource inputSource = InputSource.of(filePath, content);
         OutputSink outputSink = OutputSink.createMock();
 
@@ -49,5 +52,13 @@ class TgfReaderTest {
         tgfReader.read(inputSource, gioWriter);
 
         verify(errorConsumer).accept(any(GioReader.ContentError.class));
+    }
+
+    private static Stream<String> getResourceFilePaths() {
+        return new ClassGraph().scan()
+                .getAllResources()
+                .stream()
+                .map(Resource::getPath)
+                .filter(path -> path.endsWith(".tgf"));
     }
 }

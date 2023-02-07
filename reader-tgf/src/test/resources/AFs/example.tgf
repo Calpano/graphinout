@@ -1,8 +1,0 @@
-; A and B attack each other, and B attacks C
-A
-B
-C
-#
-A B
-B A
-B C
