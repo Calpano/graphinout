@@ -24,6 +24,8 @@ class TgfReaderTest {
     public static final String EMPTY_FILE = "";
 
     @ParameterizedTest
+    // TODO add @MethodSource and use all *.tgf files in via https://github.com/classgraph/classgraph/wiki/Code-examples#finding-and-reading-resource-files
+    // requires classgraph as test dependency
     @ValueSource(strings = {"/example.tgf", "/example2.tgf", "/example3.tgf", "/example4.tgf", "/example5.tgf", "/example6.tgf",
             "/example7.tgf", "/example8.tgf", "/example9.tgf", "/example10.tgf",})
     void shouldWorkAsIntended(String filePath) throws IOException {
