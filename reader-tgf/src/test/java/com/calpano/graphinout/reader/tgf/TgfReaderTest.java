@@ -26,6 +26,8 @@ import static org.mockito.Mockito.*;
 class TgfReaderTest {
 
     public static final String EMPTY_FILE = "";
+    public static final String NODES_ONLY = "1 First node\n2 Second node";
+    public static final String EDGES_ONLY = "#\n1 2 Edge between first and second\n2 3 Edge between second and third\"";
 
     @ParameterizedTest
     @MethodSource("getResourceFilePaths")
@@ -41,7 +43,7 @@ class TgfReaderTest {
     }
 
     @Test
-    public void shouldCallErrorConsumerWhenTGFIsNotValid() throws IOException {
+    public void shouldNotReturnErrorWhenTgfFileIsEmpty() throws IOException {
         Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
         TgfReader tgfReader = new TgfReader();
         tgfReader.errorHandler(errorConsumer);
@@ -49,6 +51,36 @@ class TgfReaderTest {
         GioWriter gioWriter = mock(GioWriter.class);
 
         when(inputSource.inputStream()).thenReturn(new ByteArrayInputStream(EMPTY_FILE.getBytes()));
+        tgfReader.read(inputSource, gioWriter);
+
+        verifyNoInteractions(errorConsumer);
+    }
+
+    @Test
+    public void shouldNotReturnErrorWhenTgfFileHasNoEdges() throws IOException{
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(NODES_ONLY.getBytes(StandardCharsets.UTF_8));
+        Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
+        TgfReader tgfReader = new TgfReader();
+        tgfReader.errorHandler(errorConsumer);
+        InputSource inputSource = mock(InputSource.class);
+        GioWriter gioWriter = mock(GioWriter.class);
+
+        when(inputSource.inputStream()).thenReturn(inputStream);
+        tgfReader.read(inputSource, gioWriter);
+
+        verifyNoInteractions(errorConsumer);
+    }
+
+    @Test
+    public void shouldReturnErrorWhenTgfFileHasOnlyEdges() throws IOException{
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(EDGES_ONLY.getBytes(StandardCharsets.UTF_8));
+        Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
+        TgfReader tgfReader = new TgfReader();
+        tgfReader.errorHandler(errorConsumer);
+        InputSource inputSource = mock(InputSource.class);
+        GioWriter gioWriter = mock(GioWriter.class);
+
+        when(inputSource.inputStream()).thenReturn(inputStream);
         tgfReader.read(inputSource, gioWriter);
 
         verify(errorConsumer).accept(any(GioReader.ContentError.class));
