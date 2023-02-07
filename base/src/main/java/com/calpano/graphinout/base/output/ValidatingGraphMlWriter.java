@@ -67,8 +67,9 @@ public class ValidatingGraphMlWriter implements GraphMlWriter{
     @Override
     public void endGraphMl(GioDocument gioGraphML) throws IOException {
         graphMlWriter.endGraphMl(gioGraphML);
-        validateGraphMlStructure(gioGraphML.toString());
     }
+
+    // TODO move inside GraphmValidator
     private void validateGraphMlStructure(String graphMLString) throws IOException {
         try {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
