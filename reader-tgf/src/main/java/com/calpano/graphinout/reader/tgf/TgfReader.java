@@ -38,27 +38,23 @@ public class TgfReader implements GioReader {
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
         String content = IOUtils.toString(inputSource.inputStream());
-
         boolean isValid = true;
         Scanner scanner = new Scanner(content);
-        boolean foundHash = false;
-        int lineCount = 0;
-        boolean nodes = true;
+        boolean edges = false;
+        boolean nodes = false;
 
         writer.startDocument(GioDocument.builder().build());
         writer.startGraph(GioGraph.builder().build());
 
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            lineCount++;
-
             if (line.contains(HASH)) {
-                foundHash = true;
-                nodes = false;
+                edges = true;
                 continue;
             }
-
-            if (nodes) {
+            if (!edges) {
+                nodes = true;
+                log.info("--- nodes:");
                 String[] nodeParts = line.split(DELIMITER);
 
                 List<GioData> gioDataList = new ArrayList<>();
@@ -69,8 +65,8 @@ public class TgfReader implements GioReader {
                         .id(nodeParts[0])
                         .dataList(gioDataList)
                         .build());
-
             } else {
+                log.info("--- edges:");
                 String[] edgeParts = line.split(DELIMITER);
                 GioEndpoint sourceEndpoint = GioEndpoint.builder().id(edgeParts[0]).build();
                 GioEndpoint targetEndpoint = GioEndpoint.builder().id(edgeParts[1]).build();
@@ -87,7 +83,7 @@ public class TgfReader implements GioReader {
         }
         writer.endGraph();
         writer.endDocument();
-        if (lineCount < 3 || !foundHash) {
+        if (edges && !nodes) {
             isValid = false;
         }
         scanner.close();
