@@ -9,6 +9,8 @@ import com.calpano.graphinout.base.output.xml.file.XMLFileWriter;
 import com.calpano.graphinout.base.reader.GioReader;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -21,23 +23,12 @@ class TgfReaderTest {
 
     public static final String EMPTY_FILE = "";
 
-    @Test
-    void shouldWorkAsIntended() throws IOException {
-        String resourceName = "/example.tgf";
-        String content = IOUtils.resourceToString(resourceName, StandardCharsets.UTF_8);
-        InputSource inputSource = InputSource.of(resourceName, content);
-        OutputSink outputSink = OutputSink.createMock();
-
-        TgfReader tgfReader = new TgfReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XMLFileWriter(outputSink)));
-        tgfReader.read(inputSource, gioWriter);
-    }
-
-    @Test
-    void shouldWorkAsIntendedWithAnotherFile() throws IOException {
-        String resourceName = "/example2.tgf";
-        String content = IOUtils.resourceToString(resourceName, StandardCharsets.UTF_8);
-        InputSource inputSource = InputSource.of(resourceName, content);
+    @ParameterizedTest
+    @ValueSource(strings = {"/example.tgf", "/example2.tgf", "/example3.tgf", "/example4.tgf", "/example5.tgf", "/example6.tgf",
+            "/example7.tgf", "/example8.tgf", "/example9.tgf","/example10.tgf",})
+    void shouldWorkAsIntended(String filePath) throws IOException {
+        String content = IOUtils.resourceToString(filePath, StandardCharsets.UTF_8);
+        InputSource inputSource = InputSource.of(filePath, content);
         OutputSink outputSink = OutputSink.createMock();
 
         TgfReader tgfReader = new TgfReader();
