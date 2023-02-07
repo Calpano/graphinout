@@ -25,7 +25,7 @@ class TgfReaderTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"/example.tgf", "/example2.tgf", "/example3.tgf", "/example4.tgf", "/example5.tgf", "/example6.tgf",
-            "/example7.tgf", "/example8.tgf", "/example9.tgf","/example10.tgf",})
+            "/example7.tgf", "/example8.tgf", "/example9.tgf", "/example10.tgf",})
     void shouldWorkAsIntended(String filePath) throws IOException {
         String content = IOUtils.resourceToString(filePath, StandardCharsets.UTF_8);
         InputSource inputSource = InputSource.of(filePath, content);
@@ -35,7 +35,7 @@ class TgfReaderTest {
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XMLFileWriter(outputSink)));
         tgfReader.read(inputSource, gioWriter);
     }
-    
+
     @Test
     public void shouldCallErrorConsumerWhenTGFIsNotValid() throws IOException {
         Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
