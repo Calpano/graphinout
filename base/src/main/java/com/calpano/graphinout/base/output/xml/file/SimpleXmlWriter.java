@@ -45,7 +45,6 @@ public class SimpleXmlWriter implements XmlWriter {
         writer.write("</");
         writer.write(name);
         writer.write(">");
-        writer.write(System.lineSeparator());
     }
 
     @Override
