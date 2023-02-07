@@ -5,6 +5,7 @@ import com.calpano.graphinout.base.graphml.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class GioWriterImpl implements GioWriter {
 
@@ -112,6 +113,11 @@ public class GioWriterImpl implements GioWriter {
     }
 
     @Override
+    public void endNode(Optional<GioLocator> locator) throws IOException {
+        // FIXME implement
+    }
+
+    @Override
     public void startEdge(GioEdge edge) throws IOException {
         GraphmlHyperEdge hyperEdge = GraphmlHyperEdge.builder()
                 .id(edge.getId())
@@ -134,5 +140,10 @@ public class GioWriterImpl implements GioWriter {
             hyperEdge.setEndpoints(endpoints);
         }
         graphmlWriter.makeEdge(hyperEdge);
+    }
+
+    @Override
+    public void endEdge() throws IOException {
+        // FIXME implement
     }
 }
