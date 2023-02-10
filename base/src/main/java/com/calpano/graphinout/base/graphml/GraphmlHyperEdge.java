@@ -37,6 +37,7 @@ import java.util.List;
 @SuperBuilder
 public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements  XMLValue{
 
+    // TODO add edge builder and allow only creation of hyperedges with >= 2 endpoints
 
     public static final String TAGNAME = "hyperedge";
     /**
