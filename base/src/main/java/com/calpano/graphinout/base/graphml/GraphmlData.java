@@ -47,9 +47,7 @@ public class GraphmlData implements XMLValue {
     @Override
     public String startTag() {
         Map<String, String> attributes = getAttributes();
-
-        if (value == null) return GIOUtil.makeElement("data", attributes);
-        else return GIOUtil.makeStartElement("data", attributes);
+        return  GIOUtil.makeStartElement("data", attributes);
 
     }
 
@@ -68,12 +66,11 @@ public class GraphmlData implements XMLValue {
     @Override
     public String valueTag() {
         if (value == null) return "";
-        return value + GraphmlGraphInOutConstants.NEW_LINE_SEPARATOR;
+        return value ;
     }
 
     @Override
     public String endTag() {
-        if (value == null || value.isEmpty()) return "";
-        else return GIOUtil.makeEndElement("data");
+     return GIOUtil.makeEndElement("data");
     }
 }
