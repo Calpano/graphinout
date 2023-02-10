@@ -1,98 +1,131 @@
 package com.calpano.graphinout.base.output;
 
-import com.calpano.graphinout.base.gio.*;
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.gio.GioNode;
 
 import java.io.IOException;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 public class ValidatingGraphMlWriter implements GraphMlWriter {
 
     private enum CurrentElement {
-        GRAPHML,
-        KEY,
-        GRAPH,
-        NODE,
-        EDGE
+        /**
+         * state before any token
+         */
+        EMPTY, GRAPHML, KEY, GRAPH, NODE, EDGE, HYPEREDGE, DESC, DATA, ENDPOINT;
+
+        static {
+            // TODO add other nesting rules
+            HYPEREDGE.allowedChildren = Set.of(DESC, DATA, ENDPOINT, GRAPH);
+        }
+
+        private Set<CurrentElement> allowedChildren = new HashSet<>();
+
+        public boolean isValidChild(CurrentElement childElement) {
+            return allowedChildren.contains(childElement);
+        }
     }
 
-    private CurrentElement currentElement = CurrentElement.GRAPHML;
-    private GraphMlWriter graphMlWriter;
+    /**
+     * remember elements we saw already; nesting order in stack
+     */
+    private final Deque<CurrentElement> currentElements;
+    private final GraphMlWriter graphMlWriter;
 
     public ValidatingGraphMlWriter(GraphMlWriter graphMlWriter) {
+        this.currentElements = new LinkedList<>();
+        // never deal with an empty stack
+        currentElements.push(CurrentElement.EMPTY);
         this.graphMlWriter = graphMlWriter;
     }
 
     @Override
+    public void end(GioKey gioKey) throws IOException {
+        ensureAllowedEnd(CurrentElement.KEY);
+        graphMlWriter.end(gioKey);
+    }
+
+    @Override
+    public void endEdge(GioEdge edge) throws IOException {
+        ensureAllowedEnd(CurrentElement.EDGE);
+        graphMlWriter.endEdge(edge);
+    }
+
+    @Override
+    public void endGraph(GioGraph gioGraph) throws IOException {
+        ensureAllowedEnd(CurrentElement.GRAPH);
+        graphMlWriter.endGraph(gioGraph);
+    }
+
+    @Override
+    public void endGraphMl(GioDocument gioGraphML) throws IOException {
+        ensureAllowedEnd(CurrentElement.GRAPHML);
+        graphMlWriter.endGraphMl(gioGraphML);
+    }
+
+    @Override
+    public void endNode(GioNode node) throws IOException {
+        ensureAllowedEnd(CurrentElement.NODE);
+        graphMlWriter.endNode(node);
+    }
+
+    @Override
+    public void startEdge(GioEdge edge) throws IOException {
+        ensureAllowedStart(CurrentElement.EDGE);
+        validateEdge(edge);
+        graphMlWriter.startEdge(edge);
+    }
+
+    @Override
+    public void startGraph(GioGraph gioGraph) throws IOException {
+        ensureAllowedStart(CurrentElement.GRAPH);
+        // TODO adapt next line once GioModel is simplified
+        validateGraph(gioGraph);
+        graphMlWriter.startGraph(gioGraph);
+    }
+
+    @Override
     public void startGraphMl(GioDocument gioGraphML) throws IOException {
-        if (currentElement != CurrentElement.GRAPHML) {
-            throw new IOException("Wrong order of elements, expected GRAPHML but found " + currentElement.name());
-        }
-        currentElement = CurrentElement.KEY;
+        ensureAllowedStart(CurrentElement.GRAPHML);
         validateGraphMl(gioGraphML);
         graphMlWriter.startGraphMl(gioGraphML);
     }
 
     @Override
     public void startKey(GioKey gioKey) throws IOException {
-        if (currentElement != CurrentElement.KEY) {
-            throw new IOException("Wrong order of elements, expected KEY but found " + currentElement.name());
-        }
-        currentElement = CurrentElement.GRAPH;
+        ensureAllowedStart(CurrentElement.KEY);
         validateKey(gioKey);
         graphMlWriter.startKey(gioKey);
     }
 
     @Override
-    public void end(GioKey gioKey) throws IOException {
-        if (currentElement != CurrentElement.GRAPH) {
-            throw new IOException("Wrong order of elements, expected GRAPH but found " + currentElement.name());
-        }
-        graphMlWriter.end(gioKey);
-    }
-
-    @Override
-    public void startGraph(GioGraph gioGraph) throws IOException {
-        if (currentElement != CurrentElement.GRAPH) {
-            throw new IOException("Wrong order of elements, expected GRAPH but found " + currentElement.name());
-        }
-        validateGraph(gioGraph);
-        currentElement = CurrentElement.NODE;
-        graphMlWriter.startGraph(gioGraph);
-    }
-
-    @Override
     public void startNode(GioNode node) throws IOException {
-        if (currentElement != CurrentElement.NODE) {
-            throw new IOException("Wrong order of elements, expected NODE but found " + currentElement.name());
-        }
-        graphMlWriter.startNode(node);
+        ensureAllowedStart(CurrentElement.NODE);
         validateNode(node);
         graphMlWriter.startNode(node);
     }
 
-    @Override
-    public void endNode(GioNode node) throws IOException {
-        graphMlWriter.endNode(node);
+    private void ensureAllowedEnd(CurrentElement element) throws IllegalStateException {
+        CurrentElement currentElement = currentElements.peek();
+        if (currentElement != element) {
+            throw new IllegalStateException("Wrong order of calls. Cannot END '" + element + "', last started element was " + currentElement);
+        }
+        currentElements.pop();
     }
 
-    @Override
-    public void startEdge(GioEdge edge) throws IOException {
-        validateEdge(edge);
-        graphMlWriter.startEdge(edge);
-    }
-
-    @Override
-    public void endEdge(GioEdge gioHyperEdge) throws IOException {
-        graphMlWriter.endEdge(gioHyperEdge);
-    }
-
-    @Override
-    public void endGraph(GioGraph gioGraph) throws IOException {
-        graphMlWriter.endGraph(gioGraph);
-    }
-
-    @Override
-    public void endGraphMl(GioDocument gioGraphML) throws IOException {
-        graphMlWriter.endGraphMl(gioGraphML);
+    private void ensureAllowedStart(CurrentElement childElement) throws IllegalStateException {
+        CurrentElement currentElement = currentElements.peek();
+        if (!currentElement.isValidChild(childElement)) {
+            throw new IllegalStateException("Wrong order of elements, expected one of " + currentElement.allowedChildren + " but found " + currentElement);
+        }
+        currentElements.push(childElement);
     }
 
     private void validateData(GioData gioData) throws IOException {
@@ -102,9 +135,9 @@ public class ValidatingGraphMlWriter implements GraphMlWriter {
         }
     }
 
-    private void validateNode(GioNode gioNode) throws IOException {
-        if (!gioNode.getDataList().isEmpty()) {
-            for (GioData gioData : gioNode.getDataList()) {
+    private void validateEdge(GioEdge gioEdge) throws IOException {
+        if (!gioEdge.getDataList().isEmpty()) {
+            for (GioData gioData : gioEdge.getDataList()) {
                 validateData(gioData);
             }
         }
@@ -136,17 +169,17 @@ public class ValidatingGraphMlWriter implements GraphMlWriter {
         }
     }
 
-    private void validateEdge(GioEdge gioEdge) throws IOException {
-        if (!gioEdge.getDataList().isEmpty()) {
-            for (GioData gioData : gioEdge.getDataList()) {
-                validateData(gioData);
-            }
-        }
-    }
-
     private void validateKey(GioKey gioKey) throws IOException {
         if (gioKey.getDataList().stream().anyMatch(existingKey -> existingKey.getId().equals(gioKey.getId()))) {
             throw new IOException("Key ID already exists: " + gioKey.getId() + ". ID must be unique.");
+        }
+    }
+
+    private void validateNode(GioNode gioNode) throws IOException {
+        if (!gioNode.getDataList().isEmpty()) {
+            for (GioData gioData : gioNode.getDataList()) {
+                validateData(gioData);
+            }
         }
     }
 }
