@@ -7,6 +7,7 @@ import com.calpano.graphinout.base.gio.GioGraph;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
+import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.base.reader.GioReader;
 import com.paypal.digraph.parser.GraphEdge;
@@ -37,13 +38,19 @@ public class DotTextReader implements GioReader {
     }
 
     @Override
-    public boolean isValid(InputSource inputSource) throws IOException {
-        return GioReader.super.isValid(inputSource);
+    public boolean isValid(SingleInputSource singleInputSource) throws IOException {
+        return GioReader.super.isValid(singleInputSource);
     }
 
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
-        GraphParser parser = new GraphParser(inputSource.inputStream());
+        if(inputSource.isMulti()) {
+            throw new IllegalArgumentException("Cannot handle multi-sources");
+        }
+        assert inputSource instanceof SingleInputSource;
+        SingleInputSource sis = (SingleInputSource) inputSource;
+
+        GraphParser parser = new GraphParser(sis.inputStream());
         Map<String, GraphNode> nodes = parser.getNodes();
         Map<String, GraphEdge> edges = parser.getEdges();
 

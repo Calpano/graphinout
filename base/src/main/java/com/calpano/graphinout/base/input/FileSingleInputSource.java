@@ -7,18 +7,18 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-public class FileInputSource implements InputSource{
+public class FileSingleInputSource implements SingleInputSource {
 
     final File file;
     Optional<Charset> encoding;
 
-    public FileInputSource(File file, Charset encoding) {
+    public FileSingleInputSource(File file, Charset encoding) {
         this.file = file;
         this.encoding = Optional.of( encoding );
     }
 
     /** Unknown encoding */
-    public FileInputSource(File file) {
+    public FileSingleInputSource(File file) {
         this.file = file;
         this.encoding = Optional.empty();
     }

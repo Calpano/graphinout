@@ -1,15 +1,15 @@
 package com.calpano.graphinout.base.output.xml;
 
-import com.calpano.graphinout.base.input.InputSource;
+import com.calpano.graphinout.base.input.SingleInputSource;
 
 public class GraphmlValidator {
 
     /**
      * For large files, this might not work
-     * @param inputSource
+     * @param singleInputSource
      * @return
      */
-    public static boolean isValidGraphml(InputSource inputSource) {
+    public static boolean isValidGraphml(SingleInputSource singleInputSource) {
         // TODO implement me
         return true;
     }
