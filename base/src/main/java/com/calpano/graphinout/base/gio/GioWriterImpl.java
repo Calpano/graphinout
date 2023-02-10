@@ -109,12 +109,22 @@ public class GioWriterImpl implements GioWriter {
             graphmlNode.setPorts(graphmlPorts);
         }
 
-
+        graphmlWriter.makeNode(graphmlNode);
     }
 
     @Override
     public void endNode(Optional<GioLocator> locator) throws IOException {
-        // FIXME implement
+        GraphmlLocator graphmlLocator =null;
+        if(locator.isPresent()){
+             graphmlLocator =  GraphmlLocator.builder()
+                    .locatorExtraAttrib(locator.get().getLocatorExtraAttrib())
+                    .xLinkHref(locator.get().getXLinkHref())
+                    .xLinkType(locator.get().getXLinkType())
+                    .build();
+
+        }
+        graphmlWriter.endNode(Optional.of(graphmlLocator));
+
     }
 
     @Override
@@ -143,7 +153,17 @@ public class GioWriterImpl implements GioWriter {
     }
 
     @Override
-    public void endEdge() throws IOException {
-        // FIXME implement
+    public void endEdge(Optional<GioLocator> locator) throws IOException {
+        GraphmlLocator graphmlLocator =null;
+        if(locator.isPresent()){
+            graphmlLocator =  GraphmlLocator.builder()
+                    .locatorExtraAttrib(locator.get().getLocatorExtraAttrib())
+                    .xLinkHref(locator.get().getXLinkHref())
+                    .xLinkType(locator.get().getXLinkType())
+                    .build();
+
+        }
+        graphmlWriter.endEdge(Optional.of(graphmlLocator));
+
     }
 }

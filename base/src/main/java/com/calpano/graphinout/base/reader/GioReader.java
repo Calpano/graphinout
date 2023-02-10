@@ -2,7 +2,6 @@ package com.calpano.graphinout.base.reader;
 
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
-import com.calpano.graphinout.base.output.GraphMlWriter;
 import lombok.AllArgsConstructor;
 
 import java.io.IOException;

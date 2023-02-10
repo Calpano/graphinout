@@ -24,7 +24,7 @@ public interface GioWriter {
 
     void startEdge(GioEdge edge) throws IOException;
 
-    void endEdge() throws IOException;
+    void endEdge(Optional<GioLocator> locator) throws IOException;
 
     void endGraph() throws IOException;
 
