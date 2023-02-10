@@ -80,17 +80,17 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void makeEdge(GraphmlHyperEdge edge) throws IOException {
+    public void startEdge(GraphmlHyperEdge edge) throws IOException {
         ensureAllowedStart(CurrentElement.EDGE);
         validateEdge(edge);
-        graphMlWriter.makeEdge(edge);
+        graphMlWriter.startEdge(edge);
     }
 
     @Override
-    public void makeNode(GraphmlNode node) throws IOException {
+    public void startNode(GraphmlNode node) throws IOException {
         ensureAllowedStart(CurrentElement.NODE);
         validateNode(node);
-        graphMlWriter.makeNode(node);
+        graphMlWriter.startNode(node);
     }
 
     @Override

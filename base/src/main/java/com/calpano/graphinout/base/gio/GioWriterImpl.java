@@ -109,7 +109,7 @@ public class GioWriterImpl implements GioWriter {
             graphmlNode.setPorts(graphmlPorts);
         }
 
-        graphmlWriter.makeNode(graphmlNode);
+        graphmlWriter.startNode(graphmlNode);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class GioWriterImpl implements GioWriter {
                     .desc(endpoint.getDesc() == null ? null : GraphmlDescription.builder().value(endpoint.getDesc().getValue()).build()).build()));
             hyperEdge.setEndpoints(endpoints);
         }
-        graphmlWriter.makeEdge(hyperEdge);
+        graphmlWriter.startEdge(hyperEdge);
     }
 
     @Override

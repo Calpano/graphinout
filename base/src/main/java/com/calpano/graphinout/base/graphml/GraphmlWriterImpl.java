@@ -47,7 +47,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     @Override
-    public void makeEdge(GraphmlHyperEdge edge) throws IOException {
+    public void startEdge(GraphmlHyperEdge edge) throws IOException {
         xmlWriter.startElement(GraphmlHyperEdge.TAGNAME, edge.getAttributes());
         if (edge.desc != null) {
             edge.desc.writeXml(xmlWriter);
@@ -76,7 +76,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     // TODO split into startNode and endNode to have the sub-graphs in between
     @Override
-    public void makeNode(GraphmlNode node) throws IOException {
+    public void startNode(GraphmlNode node) throws IOException {
         xmlWriter.startElement(GraphmlNode.TAGNAME, node.getAttributes());
         if (node.desc != null) {
             node.desc.writeXml(xmlWriter);

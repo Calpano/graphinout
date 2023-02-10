@@ -74,7 +74,7 @@ class GraphmlWriterTest {
         List<GraphmlData> graphmlDataList = new ArrayList<>();
         graphmlDataList.add(GraphmlData.builder().key("data").id("id").value("value").build());
 
-        graphmlWriter.makeNode(GraphmlNode.builder().desc(GraphmlDescription.builder().value("GraphmlDescription").build()).id("node ").dataList(graphmlDataList).ports(gioPortList).build());
+        graphmlWriter.startNode(GraphmlNode.builder().desc(GraphmlDescription.builder().value("GraphmlDescription").build()).id("node ").dataList(graphmlDataList).ports(gioPortList).build());
         assertEquals("::startElement->node->{id=node }::startElement->desc->{}::characterData->GraphmlDescription::endElement->desc::startElement->data->{id=id, key=data}::characterData->value::endElement->data::startElement->port->{name=port}::endElement->port", xmlWriterSpy.getOutPut().toString());
     }
 
@@ -93,7 +93,7 @@ class GraphmlWriterTest {
         List<GraphmlEndpoint> gioEndpoints = new ArrayList<>();
         gioEndpoints.add(GraphmlEndpoint.builder().id("GioEndpoint1").node("node1").type(Direction.In).port("port1").build());
         gioEndpoints.add(GraphmlEndpoint.builder().id("GioEndpoint2").node("node2").type(Direction.Out).port("port2").build());
-        graphmlWriter.makeEdge(GraphmlHyperEdge.builder().id("edge1").extraAttrib("extraAttrib").endpoints(gioEndpoints).build());
+        graphmlWriter.startEdge(GraphmlHyperEdge.builder().id("edge1").extraAttrib("extraAttrib").endpoints(gioEndpoints).build());
         assertEquals("::startElement->hyperedge->{id=edge1, hyperEdge.extra.attrib=extraAttrib}::startElement->endpoint->{id=GioEndpoint1, node=node1, port=port1, type=In}::endElement->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=Out}::endElement->endpoint::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
 
     }
