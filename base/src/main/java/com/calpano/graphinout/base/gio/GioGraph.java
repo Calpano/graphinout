@@ -35,31 +35,6 @@ public class GioGraph extends GioGraphCommonElement  {
      * The name of this attribute in graph is <b>id</b>
      */
     private String id;
-    /**
-     * This is an Element that can be empty or null.
-     * </p>
-     * The name of this Element in graph is <b>node</b>
-     */
-    @Singular(ignoreNullCollections = true)
-    private List<GioNode> nodes;
-
-    /**
-     * This is an Element that can be empty or null.
-     * <p/>
-     * The name of this Element in graph is <b>hyperedge</b>
-     * <p/>
-     * All edges in the output will be converted to this element
-     */
-    @Singular(ignoreNullCollections = true)
-    private List<GioEdge> hyperEdges;
-
-    /**
-     * This is an Element that can be empty or null.
-     * <p/>
-     * The name of this Element in graph is <b>locator</b>
-     */
-    private GioLocator locator;
-
 
     public GioGraph(String id, boolean edgedefault) {
        super();
