@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 @Builder
 public class GraphmlEndpoint implements XMLValue {
 
+    public static final String TAGNAME = "endpoint";
     /**
      * This is an attribute that can be empty or null.
      * </p>

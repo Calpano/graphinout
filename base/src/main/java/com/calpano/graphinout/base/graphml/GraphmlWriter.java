@@ -15,8 +15,10 @@ public interface GraphmlWriter {
 
     void startDocument(GraphmlDocument document) throws IOException;
 
-    void startGraph() throws IOException;
+    void startGraph(GraphmlGraph graphmlGraph) throws IOException;
 
-    void startNode(GraphmlNode node) throws IOException;
+    void makeNode(GraphmlNode node) throws IOException;
+
+    void makeEdge(GraphmlHyperEdge edge) throws IOException;
 
 }

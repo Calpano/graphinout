@@ -29,6 +29,7 @@ import java.util.List;
 @SuperBuilder
 public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
 
+    public static final String TAGNAME = "node";
     /**
      * The identifier of a node is defined by the XML-Attribute id.
      * <b>This Attribute is mandatory.</b>
@@ -50,6 +51,7 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
      * </p>
      * The name of this Element in node is <b>graph</b>.
      */
+    // FIXME this is wrong in a streaming API
     private GraphmlGraph graph;
 
     /**

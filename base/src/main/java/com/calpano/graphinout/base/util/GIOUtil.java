@@ -8,11 +8,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class GIOUtil {
 
     private final static  String NEW_LINE_SEPARATOR =  System.lineSeparator();
-    public static String makeElement(String name, LinkedHashMap<String, String> attributes) {
+    public static String makeElement(String name, Map<String, String> attributes) {
         final StringBuilder format = new StringBuilder("<").append(name);
         attributes.entrySet().stream().forEach(s -> format.append(String.format(" %s=\"%s\"", s.getKey(), s.getValue())));
         format.append("/>").append(NEW_LINE_SEPARATOR);
@@ -21,7 +22,7 @@ public class GIOUtil {
     public static String makeElement(String name){
         return makeElement(name,new LinkedHashMap<>());
     }
-    public static String makeStartElement(String name, LinkedHashMap<String, String> attributes) {
+    public static String makeStartElement(String name, Map<String, String> attributes) {
         final StringBuilder format = new StringBuilder("<").append(name);
         attributes.entrySet().stream().forEach(s -> format.append(String.format(" %s=\"%s\"", s.getKey(), s.getValue())));
         format.append(">").append(NEW_LINE_SEPARATOR);
