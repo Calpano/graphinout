@@ -56,11 +56,16 @@ public class DotTextReader implements GioReader {
             Map<String, Object> attributes = node.getAttributes();
             String nodeValue = String.valueOf(attributes.get("value"));
             String nodeKey = String.valueOf(attributes.get("key"));
-            GioData gioData = GioData.builder().key(nodeKey).value(nodeValue).build();
+            GioData gioData = GioData.builder()
+                    .key(nodeKey)
+                    .value(nodeValue)
+                    .build();
             gioDataList.add(gioData);
 
-            writer.startNode(GioNode.builder().id(node.getId()).dataList(gioDataList).build());
-
+            writer.startNode(GioNode.builder()
+                    .id(node.getId())
+                    .dataList(gioDataList)
+                    .build());
             log.info(node.getId() + " " + node.getAttributes());
         }
 
@@ -70,9 +75,16 @@ public class DotTextReader implements GioReader {
             Map<String, Object> attributes = edge.getAttributes();
             String edgeValue = String.valueOf(attributes.get("value"));
             String edgeKey = String.valueOf(attributes.get("key"));
-            GioData gioData = GioData.builder().key(edgeKey).value(edgeValue).build();
+            GioData gioData = GioData.builder()
+                    .key(edgeKey)
+                    .value(edgeValue)
+                    .build();
             gioDataList.add(gioData);
-            writer.startEdge(GioEdge.builder().id(edge.getId()).dataList(gioDataList).build());
+
+            writer.startEdge(GioEdge.builder()
+                    .id(edge.getId())
+                    .dataList(gioDataList)
+                    .build());
             log.info(edge.getNode1().getId() + "->" + edge.getNode2().getId() + " " + edge.getAttributes());
         }
         writer.endGraph();
