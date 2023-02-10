@@ -5,7 +5,7 @@ import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.output.xml.file.XMLFileWriter;
+import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
 import com.calpano.graphinout.base.reader.GioReader;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
@@ -38,7 +38,7 @@ class TgfReaderTest {
         OutputSink outputSink = OutputSink.createMock();
 
         TgfReader tgfReader = new TgfReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XMLFileWriter(outputSink)));
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
         tgfReader.read(inputSource, gioWriter);
     }
 
@@ -57,7 +57,7 @@ class TgfReaderTest {
     }
 
     @Test
-    public void shouldNotReturnErrorWhenTgfFileHasNoEdges() throws IOException{
+    public void shouldNotReturnErrorWhenTgfFileHasNoEdges() throws IOException {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(NODES_ONLY.getBytes(StandardCharsets.UTF_8));
         Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
         TgfReader tgfReader = new TgfReader();
@@ -72,7 +72,7 @@ class TgfReaderTest {
     }
 
     @Test
-    public void shouldReturnErrorWhenTgfFileHasOnlyEdges() throws IOException{
+    public void shouldReturnErrorWhenTgfFileHasOnlyEdges() throws IOException {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(EDGES_ONLY.getBytes(StandardCharsets.UTF_8));
         Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
         TgfReader tgfReader = new TgfReader();
