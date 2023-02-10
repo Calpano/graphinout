@@ -6,6 +6,7 @@ import com.calpano.graphinout.base.graphml.GraphmlDescription;
 import com.calpano.graphinout.base.graphml.GraphmlDocument;
 import com.calpano.graphinout.base.graphml.GraphmlEndpoint;
 import com.calpano.graphinout.base.graphml.GraphmlGraph;
+import com.calpano.graphinout.base.graphml.GraphmlGraphCommonElement;
 import com.calpano.graphinout.base.graphml.GraphmlHyperEdge;
 import com.calpano.graphinout.base.graphml.GraphmlKey;
 import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
@@ -14,7 +15,9 @@ import com.calpano.graphinout.base.graphml.GraphmlNode;
 import com.calpano.graphinout.base.graphml.GraphmlPort;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 
+import javax.swing.text.html.Option;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +31,37 @@ public class GioWriterImpl implements GioWriter {
     }
 
     @Override
-    public void data(GioKey gioKey) throws IOException {
+    public void endDocument() throws IOException {
+        graphmlWriter.endDocument();
+    }
+
+    @Override
+    public void endEdge(Optional<URL> locator) throws IOException {
+        graphmlWriter.endHyperEdge(locator(locator));
+    }
+
+    private Optional<GraphmlLocator> locator(Optional<URL> locator) {
+        return locator.map(url -> GraphmlLocator.builder().xLinkHref(url).build());
+    }
+
+    @Override
+    public void endGraph(Optional<URL> locator) throws IOException {
+        graphmlWriter.endGraph(locator(locator));
+    }
+
+    @Override
+    public void endNode(Optional<URL> locator) throws IOException {
+        graphmlWriter.endNode(locator(locator));
+
+    }
+
+    @Override
+    public void endPort() {
+        // TODO
+    }
+
+    @Override
+    public void key(GioKey gioKey) throws IOException {
         GraphmlKey graphmlKey = GraphmlKey.builder().id(gioKey.getId()).forType(GraphmlKeyForType.valueOf(gioKey.getForType().name())).attrName(gioKey.getAttrName()).attrType(gioKey.getAttrType()).extraAttrib(gioKey.getExtraAttrib()).build();
         if (gioKey.getDataList() != null) {
             List<GraphmlData> graphmlDataList = new ArrayList<>();
@@ -38,52 +71,17 @@ public class GioWriterImpl implements GioWriter {
         if (gioKey.getDefaultValue() != null)
             graphmlKey.setDefaultValue(GraphmlDefault.builder().value(gioKey.getDefaultValue().getValue()).defaultType(gioKey.getDefaultValue().getDefaultType()).build());
 
-        if (gioKey.getDesc() != null && !gioKey.getDesc().isEmpty())
-            graphmlKey.setDesc(GraphmlDescription.builder().value(gioKey.getDesc()).build());
+        desc(gioKey, graphmlKey);
         graphmlWriter.data(graphmlKey);
-    }
-
-    @Override
-    public void endDocument() throws IOException {
-        graphmlWriter.endDocument();
-    }
-
-    @Override
-    public void endEdge(Optional<GioLocator> locator) throws IOException {
-        GraphmlLocator graphmlLocator = null;
-        if (locator.isPresent()) {
-            graphmlLocator = GraphmlLocator.builder().locatorExtraAttrib(locator.get().getLocatorExtraAttrib()).xLinkHref(locator.get().getXLinkHref()).xLinkType(locator.get().getXLinkType()).build();
-
-        }
-        graphmlWriter.endHyperEdge(Optional.of(graphmlLocator));
-
-    }
-
-    @Override
-    public void endGraph() throws IOException {
-        graphmlWriter.endGraph();
-    }
-
-    @Override
-    public void endNode(Optional<GioLocator> locator) throws IOException {
-        GraphmlLocator graphmlLocator = null;
-        if (locator.isPresent()) {
-            graphmlLocator = GraphmlLocator.builder().locatorExtraAttrib(locator.get().getLocatorExtraAttrib()).xLinkHref(locator.get().getXLinkHref()).xLinkType(locator.get().getXLinkType()).build();
-
-        }
-        graphmlWriter.endNode(Optional.of(graphmlLocator));
-
     }
 
     @Override
     public void startDocument(GioDocument document) throws IOException {
         GraphmlDocument graphmlDocument = new GraphmlDocument();
-        if (document.desc != null) {
-            graphmlDocument.setDesc(new GraphmlDescription(document.desc));
-        }
+        desc(document, graphmlDocument);
         if (document.getKeys() != null) {
             for (GioKey gioKey : document.getKeys()) {
-                data(gioKey);
+                key(gioKey);
             }
         }
         if (document.getDataList() != null) if (document.getDataList() != null) {
@@ -114,10 +112,7 @@ public class GioWriterImpl implements GioWriter {
     @Override
     public void startGraph(GioGraph gioGraph) throws IOException {
         GraphmlGraph graphmlGraph = GraphmlGraph.builder().id(gioGraph.getId()).edgedefault(gioGraph.isEdgedefault()).build();
-
-        if (gioGraph.getDesc() != null && !gioGraph.getDesc().isEmpty())
-            graphmlGraph.setDesc(new GraphmlDescription(gioGraph.getDesc()));
-
+        desc(gioGraph, graphmlGraph);
 
         if (gioGraph.getDataList() != null) {
             List<GraphmlData> graphmlDataList = new ArrayList<>();
@@ -140,9 +135,7 @@ public class GioWriterImpl implements GioWriter {
     @Override
     public void startNode(GioNode gioNode) throws IOException {
         GraphmlNode graphmlNode = GraphmlNode.builder().id(gioNode.getId()).build();
-
-        if (gioNode.getDesc() != null && !gioNode.getDesc().isEmpty())
-            graphmlNode.setDesc(new GraphmlDescription(gioNode.getDesc()));
+        desc(gioNode, graphmlNode);
 
 
         if (gioNode.getDataList() != null) {
@@ -158,5 +151,17 @@ public class GioWriterImpl implements GioWriter {
         }
 
         graphmlWriter.startNode(graphmlNode);
+    }
+
+    @Override
+    public void startPort(GioPort port) {
+        // TODO
+    }
+
+    private void desc(GioElementWithDescription elementWithDescription, GraphmlGraphCommonElement graphmlGraphCommonElement) {
+        if (elementWithDescription.getDescription().isPresent())){
+            String desc = elementWithDescription.getDescription().get();
+            graphmlGraphCommonElement.setDesc(GraphmlDescription.builder().value(desc).build());
+        }
     }
 }

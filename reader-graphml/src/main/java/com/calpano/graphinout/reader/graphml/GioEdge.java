@@ -34,7 +34,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @SuperBuilder
-class GioEdge extends GioGraphCommonElement {
+class GioEdge extends GioElementWithDescription {
 
     /**
      * This is an attribute that can be empty or null.

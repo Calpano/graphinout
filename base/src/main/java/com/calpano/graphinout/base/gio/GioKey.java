@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Optional;
+
 /**
  * @author rbaba
  * @version 0.0.1
@@ -27,7 +29,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class GioKey extends GioGraphCommonElement {
+public class GioKey extends GioElementWithDescription {
 
     /**
      * identifies this <key>
@@ -35,17 +37,6 @@ public class GioKey extends GioGraphCommonElement {
      * The name of this attribute in key is <b>id</b>
      */
     private String id;
-    /**
-     * The name of the GraphML-Attribute is defined by the XML-Attribute attr.name and must be unique among all
-     * GraphML-Attributes declared in the document.
-     * <p/>
-     * * The name of this attribute in key is <b>attr.name</b>
-     */
-    private String attrName;
-    /**
-     * The name of this attribute in key is <b>attr.type</b>
-     */
-    private String attrType;
 
     /**
      * describes the domain of definition for the corresponding graph attribute.
@@ -57,18 +48,10 @@ public class GioKey extends GioGraphCommonElement {
      */
     private GioKeyForType forType;
     /**
-     * User defined extra attributes for <key> elements.
-     * <p>
-     * The name of this attribute in key is <b>key.extra.attrib</b>
+     * In XML, this is #PCDATA, so it may contain any mix of text and tags.
+     * Theoretically, this data could also be large. But in practice, this is at most used to store icons, maybe up to a few megabytes.
      */
-    private String extraAttrib;
-
-    /**
-     * This is an Element
-     * <p>
-     * The name of this attribute in key is <b>default</b>
-     */
-    private GioDefault defaultValue;
+    private Optional<String> defaultValue;
 
     public void setForType(String forType) throws GioException {
         this.forType = GioKeyForType.keyForType(forType);

@@ -2,10 +2,7 @@ package com.calpano.graphinout.base.gio;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Singular;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 
 /**
@@ -20,7 +17,9 @@ import java.util.List;
 
 @SuperBuilder
 @Data
-public class GioGraph extends GioGraphCommonElement  {
+public class GioGraph extends GioElementWithDescription {
+
+
 
     /**
      * This is an attribute that can be empty or null.

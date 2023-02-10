@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.net.URL;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author rbaba
@@ -40,48 +41,28 @@ public class GraphmlLocator implements XMLValue {
      */
     private String xLinkType;
 
-    /**
-     * user defined extra attributes for <locator> elements.
-     * This is an optional attribute.
-     * <p>
-     * The name of this attribute is <b>locator.extra.attrib</b>
-     */
-    private String locatorExtraAttrib;
-
     @Override
-    public String startTag() {
-
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (xLinkHref != null) attributes.put("xlink:herf", xLinkHref.toString());
-
-        if (xLinkType != null) attributes.put("xlink:type", xLinkType);
-
-        if (locatorExtraAttrib != null) attributes.put("locator.extra.attrib", locatorExtraAttrib);
-
-        return GIOUtil.makeStartElement("locator", attributes);
+    public String endTag() {
+        return GIOUtil.makeEndElement(TAGNAME);
     }
 
     @Override
-    public LinkedHashMap<String, String> getAttributes() {
+    public Map<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+        attributes.put("xlink:herf", xLinkHref.toExternalForm());
+        // TODO maybe can be omitted
+        attributes.put("xlink:type", "simple");
+        return attributes;
+    }
 
-        if (xLinkHref != null) attributes.put("xlink:herf", xLinkHref.toString());
-
-        if (xLinkType != null) attributes.put("xlink:type", xLinkType);
-
-        if (locatorExtraAttrib != null) attributes.put("locator.extra.attrib", locatorExtraAttrib);
-
-        return  attributes;
+    @Override
+    public String startTag() {
+        if (xLinkHref == null) throw new IllegalArgumentException();
+        return GIOUtil.makeStartElement("locator", getAttributes());
     }
 
     @Override
     public String valueTag() {
         return "";
-    }
-
-    @Override
-    public String endTag() {
-        return GIOUtil.makeEndElement("locator");
     }
 }

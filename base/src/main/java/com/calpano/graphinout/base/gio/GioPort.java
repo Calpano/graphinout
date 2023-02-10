@@ -29,7 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioPort{
+public class GioPort extends GioElementWithDescription {
 
     /**
      * This is an attribute that mandatory.
@@ -38,17 +38,4 @@ public class GioPort{
      */
     private String name;
 
-    /**
-     * User defined extra attributes for <port> elements.
-     * <p>
-     * The name of this attribute in port is <b>port.extra.attrib</b>
-     */
-    private String extraAttrib;
-
-    /**
-     * User defined ports for <port> elements.
-     * <p>
-     * The name of this attribute in port is <b>port</b>
-     */
-    private List<GioPort> ports;
 }

@@ -5,7 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 /**
+ * In GraphML there may be data-functions attached to graphs, nodes, ports, edges, hyperedges and endpoint and to
+ * the whole collection of graphs described by the content of <graphml>. These functions are declared by <key> elements
+ * (children of <graphml>) and defined by <data> elements.
+ * Occurence: <graphml>, <graph>, <node>, <port>, <edge>, <hyperedge>, and <endpoint>.
+ *
+ * @see GioKey {@link GioKey}
+ *
  * @author rbaba
  * @version 0.0.1
  * @implNote <p>
@@ -24,7 +33,7 @@ public class GioData {
      * </p>
      * The name of this attribute in data is <b>id</b>
      */
-    private String id;
+    private Optional<String> id;
 
     /**
      * the value for any data, which can be extended to complex models like SVG.
@@ -34,7 +43,9 @@ public class GioData {
     /**
      * This is an attribute is mandatory.
      * </p>
-     * The name of this attribute in data is <b>key</b>
+     * The name of this attribute in data is <b>key</b>.
+     *
+     * TODO validate: Must refer to a previously defined {@link GioKey#getId()}.
      */
     private String key;
-      }
+}

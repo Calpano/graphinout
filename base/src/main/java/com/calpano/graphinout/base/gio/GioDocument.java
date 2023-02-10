@@ -1,24 +1,23 @@
 package com.calpano.graphinout.base.gio;
 
 import lombok.Data;
-import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * The root document of a Gio model graph stream
+ * The root document of a Gio model graph stream.
  */
 @Data
 @SuperBuilder
-public class GioDocument extends GioGraphCommonElement  {
+public class GioDocument extends GioElementWithDescription {
 
     /**
-     * This is an Element that can be empty or null.
-     * </p>
-     * The name of this Element in graphML is <b>key</b>
+     * Define default type and default values.
+     * May be empty
      */
-    @Singular(ignoreNullCollections = true)
-    private List<GioKey> keys;
+    List<GioKey> keys;
+
 
 }

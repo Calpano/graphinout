@@ -56,7 +56,7 @@ class GioWriterTest {
 
     @Test
     void data() throws IOException {
-        gioWriter.data(GioKey.builder().id("test").attrName("attrName").attrType("attrType").forType(GioKeyForType.All).build());
+        gioWriter.key(GioKey.builder().id("test").attrName("attrName").attrType("attrType").forType(GioKeyForType.All).build());
         assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=attrType, for=All}::endElement->key", xmlWriterSpy.getOutPut().toString());
 
     }

@@ -33,7 +33,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class GioEdge extends GioGraphCommonElement {
+public class GioEdge extends GioElementWithDescription {
 
     /**
      * This is an attribute that can be empty or null.
@@ -42,23 +42,8 @@ public class GioEdge extends GioGraphCommonElement {
      */
     private String id;
 
-    /**
-     * User defined extra attributes for <hyperEdge> elements.
-     * <p>
-     * The name of this attribute in hyperEdge  is <b>hyperEdge.extra.attrib</b>
-     */
-    private String extraAttrib;
-
     @Singular(ignoreNullCollections = true)
     private List<GioEndpoint> endpoints;
-
-    /**
-     * This is an Element that can be empty or null.
-     * </p>
-     * The name of this Element in hyperEdge is <b>graph</b>.
-     */
-    private GioGraph graph;
-
 
     public void addEndpoint(GioEndpoint gioEndpoint) {
         if (endpoints == null) endpoints = new ArrayList<>();
