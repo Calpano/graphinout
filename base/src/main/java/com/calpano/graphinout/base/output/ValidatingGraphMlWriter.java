@@ -2,6 +2,7 @@ package com.calpano.graphinout.base.output;
 
 import com.calpano.graphinout.base.graphml.GraphmlData;
 import com.calpano.graphinout.base.graphml.GraphmlDocument;
+import com.calpano.graphinout.base.graphml.GraphmlEdge;
 import com.calpano.graphinout.base.graphml.GraphmlGraph;
 import com.calpano.graphinout.base.graphml.GraphmlHyperEdge;
 import com.calpano.graphinout.base.graphml.GraphmlKey;
@@ -22,7 +23,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         /**
          * state before any token
          */
-        EMPTY, GRAPHML, KEY, GRAPH, NODE, EDGE, HYPEREDGE, DESC, DATA, ENDPOINT;
+        EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, ENDPOINT, EDGE;
 
         static {
             // TODO add other nesting rules
@@ -49,10 +50,10 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         this.graphMlWriter = graphMlWriter;
     }
 
-    public void data(GraphmlKey gioKey) throws IOException {
+    public void data(GraphmlKey key) throws IOException {
         ensureAllowedStart(CurrentElement.KEY);
-        validateKey(gioKey);
-        graphMlWriter.data(gioKey);
+        validateKey(key);
+        graphMlWriter.data(key);
     }
 
     @Override
@@ -62,9 +63,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endEdge(Optional<GraphmlLocator> graphmlLocator) throws IOException {
-        ensureAllowedEnd(CurrentElement.EDGE);
-        graphMlWriter.endEdge(graphmlLocator);
+    public void endEdge() throws IOException {
+        // TODO ...
+        graphMlWriter.endEdge();
     }
 
     @Override
@@ -74,16 +75,44 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
+    public void endHyperEdge(Optional<GraphmlLocator> locator) throws IOException {
+        ensureAllowedEnd(CurrentElement.HYPEREDGE);
+        graphMlWriter.endHyperEdge(locator);
+    }
+
+    @Override
     public void endNode(Optional<GraphmlLocator> locator) throws IOException {
         ensureAllowedEnd(CurrentElement.NODE);
         graphMlWriter.endNode(locator);
     }
 
     @Override
-    public void startEdge(GraphmlHyperEdge edge) throws IOException {
+    public void startDocument(GraphmlDocument document) throws IOException {
+        ensureAllowedStart(CurrentElement.GRAPHML);
+        validateGraphMl(document);
+        graphMlWriter.startDocument(document);
+    }
+
+    @Override
+    public void startEdge(GraphmlEdge edge) throws IOException {
         ensureAllowedStart(CurrentElement.EDGE);
         validateEdge(edge);
         graphMlWriter.startEdge(edge);
+    }
+
+    @Override
+    public void startGraph(GraphmlGraph graph) throws IOException {
+        ensureAllowedStart(CurrentElement.GRAPH);
+        // TODO adapt next line once GraphmlModel is simplified
+        validateGraph(graph);
+        graphMlWriter.startGraph(graph);
+    }
+
+    @Override
+    public void startHyperEdge(GraphmlHyperEdge hyperEdge) throws IOException {
+        ensureAllowedStart(CurrentElement.HYPEREDGE);
+        validateEdge(hyperEdge);
+        graphMlWriter.startHyperEdge(hyperEdge);
     }
 
     @Override
@@ -91,21 +120,6 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         ensureAllowedStart(CurrentElement.NODE);
         validateNode(node);
         graphMlWriter.startNode(node);
-    }
-
-    @Override
-    public void startDocument(GraphmlDocument gioGraphML) throws IOException {
-        ensureAllowedStart(CurrentElement.GRAPHML);
-        validateGraphMl(gioGraphML);
-        graphMlWriter.startDocument(gioGraphML);
-    }
-
-    @Override
-    public void startGraph(GraphmlGraph gioGraph) throws IOException {
-        ensureAllowedStart(CurrentElement.GRAPH);
-        // TODO adapt next line once GraphmlModel is simplified
-        validateGraph(gioGraph);
-        graphMlWriter.startGraph(gioGraph);
     }
 
     private void ensureAllowedEnd(CurrentElement element) throws IllegalStateException {
@@ -124,56 +138,60 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         currentElements.push(childElement);
     }
 
-    private void validateData(GraphmlData gioData) throws IOException {
-        String key = gioData.getKey();
+    private void validateData(GraphmlData data) throws IOException {
+        String key = data.getKey();
         if (key == null || key.isEmpty()) {
             throw new IOException("GraphmlData key cannot be null or empty.");
         }
     }
 
-    private void validateEdge(GraphmlHyperEdge gioEdge) throws IOException {
-        if (!gioEdge.getDataList().isEmpty()) {
-            for (GraphmlData gioData : gioEdge.getDataList()) {
+    private void validateEdge(GraphmlEdge edge) {
+        // TODO validate
+    }
+
+    private void validateEdge(GraphmlHyperEdge hyperEdge) throws IOException {
+        if (!hyperEdge.getDataList().isEmpty()) {
+            for (GraphmlData gioData : hyperEdge.getDataList()) {
                 validateData(gioData);
             }
         }
     }
 
-    private void validateGraph(GraphmlGraph gioGraph) throws IOException {
-        if (!gioGraph.getNodes().isEmpty()) {
-            for (GraphmlNode gioNode : gioGraph.getNodes()) {
+    private void validateGraph(GraphmlGraph graph) throws IOException {
+        if (!graph.getNodes().isEmpty()) {
+            for (GraphmlNode gioNode : graph.getNodes()) {
                 validateNode(gioNode);
             }
         }
-        if (!gioGraph.getHyperEdges().isEmpty()) {
-            for (GraphmlHyperEdge gioEdge : gioGraph.getHyperEdges()) {
+        if (!graph.getHyperEdges().isEmpty()) {
+            for (GraphmlHyperEdge gioEdge : graph.getHyperEdges()) {
                 validateEdge(gioEdge);
             }
         }
     }
 
-    private void validateGraphMl(GraphmlDocument gioGraphMl) throws IOException {
-        if (!gioGraphMl.getKeys().isEmpty()) {
-            for (GraphmlKey gioKey : gioGraphMl.getKeys()) {
+    private void validateGraphMl(GraphmlDocument document) throws IOException {
+        if (!document.getKeys().isEmpty()) {
+            for (GraphmlKey gioKey : document.getKeys()) {
                 validateKey(gioKey);
             }
         }
-        if (!gioGraphMl.getDataList().isEmpty()) {
-            for (GraphmlData gioData : gioGraphMl.getDataList()) {
+        if (!document.getDataList().isEmpty()) {
+            for (GraphmlData gioData : document.getDataList()) {
                 validateData(gioData);
             }
         }
     }
 
-    private void validateKey(GraphmlKey gioKey) throws IOException {
-        if (gioKey.getDataList().stream().anyMatch(existingKey -> existingKey.getId().equals(gioKey.getId()))) {
-            throw new IOException("Key ID already exists: " + gioKey.getId() + ". ID must be unique.");
+    private void validateKey(GraphmlKey key) throws IOException {
+        if (key.getDataList().stream().anyMatch(existingKey -> existingKey.getId().equals(key.getId()))) {
+            throw new IOException("Key ID already exists: " + key.getId() + ". ID must be unique.");
         }
     }
 
-    private void validateNode(GraphmlNode gioNode) throws IOException {
-        if (!gioNode.getDataList().isEmpty()) {
-            for (GraphmlData gioData : gioNode.getDataList()) {
+    private void validateNode(GraphmlNode node) throws IOException {
+        if (!node.getDataList().isEmpty()) {
+            for (GraphmlData gioData : node.getDataList()) {
                 validateData(gioData);
             }
         }

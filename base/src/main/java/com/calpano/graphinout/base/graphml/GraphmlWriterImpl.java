@@ -42,57 +42,28 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     @Override
+    public void endEdge() throws IOException {
+        // TODO implement
+    }
+
+    @Override
     public void endGraph() throws IOException {
         xmlWriter.endElement(GraphmlGraph.TAGNAME);
     }
 
     @Override
-    public void startEdge(GraphmlHyperEdge edge) throws IOException {
-        xmlWriter.startElement(GraphmlHyperEdge.TAGNAME, edge.getAttributes());
-        if (edge.desc != null) {
-            edge.desc.writeXml(xmlWriter);
-        }
-        writerData(edge.getDataList());
-
-        if (edge.getEndpoints() != null) {
-            for (GraphmlEndpoint endpoint : edge.getEndpoints()) {
-                xmlWriter.startElement(GraphmlEndpoint.TAGNAME, endpoint.getAttributes());
-                xmlWriter.endElement(GraphmlEndpoint.TAGNAME);
-            }
-        }
-
-
-        xmlWriter.endElement(GraphmlHyperEdge.TAGNAME);
-    }
-
-    @Override
-    public void endEdge(Optional<GraphmlLocator> locator) throws IOException {
-        if(locator.isPresent()){
-            xmlWriter.startElement(GraphmlLocator.TAGNAME,locator.get().getAttributes());
+    public void endHyperEdge(Optional<GraphmlLocator> locator) throws IOException {
+        if (locator.isPresent()) {
+            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
         }
         xmlWriter.endElement(GraphmlHyperEdge.TAGNAME);
     }
 
-    // TODO split into startNode and endNode to have the sub-graphs in between
-    @Override
-    public void startNode(GraphmlNode node) throws IOException {
-        xmlWriter.startElement(GraphmlNode.TAGNAME, node.getAttributes());
-        if (node.desc != null) {
-            node.desc.writeXml(xmlWriter);
-        }
-        writerData(node.dataList);
-        if (node.getPorts() != null)
-            for (GraphmlPort port : node.getPorts()) {
-                xmlWriter.startElement(GraphmlPort.TAGNAME, port.getAttributes());
-                xmlWriter.endElement(GraphmlPort.TAGNAME);
-            }
-    }
-
     @Override
     public void endNode(Optional<GraphmlLocator> locator) throws IOException {
-        if(locator.isPresent()){
-            xmlWriter.startElement(GraphmlLocator.TAGNAME,locator.get().getAttributes());
+        if (locator.isPresent()) {
+            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
         }
         xmlWriter.endElement(GraphmlNode.TAGNAME);
@@ -111,11 +82,15 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             doc.desc.writeXml(xmlWriter);
         }
 
-        if (doc.getKeys() != null)
-            for (GraphmlKey key : doc.getKeys())
-                data(key);
+        if (doc.getKeys() != null) for (GraphmlKey key : doc.getKeys())
+            data(key);
 
         writerData(doc.getDataList());
+    }
+
+    @Override
+    public void startEdge(GraphmlEdge edge) throws IOException {
+        // TODO implement
     }
 
     @Override
@@ -128,6 +103,38 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     }
 
+    @Override
+    public void startHyperEdge(GraphmlHyperEdge edge) throws IOException {
+        xmlWriter.startElement(GraphmlHyperEdge.TAGNAME, edge.getAttributes());
+        if (edge.desc != null) {
+            edge.desc.writeXml(xmlWriter);
+        }
+        writerData(edge.getDataList());
+
+        if (edge.getEndpoints() != null) {
+            for (GraphmlEndpoint endpoint : edge.getEndpoints()) {
+                xmlWriter.startElement(GraphmlEndpoint.TAGNAME, endpoint.getAttributes());
+                xmlWriter.endElement(GraphmlEndpoint.TAGNAME);
+            }
+        }
+
+        xmlWriter.endElement(GraphmlHyperEdge.TAGNAME);
+    }
+
+    // TODO split into startNode and endNode to have the sub-graphs in between
+    @Override
+    public void startNode(GraphmlNode node) throws IOException {
+        xmlWriter.startElement(GraphmlNode.TAGNAME, node.getAttributes());
+        if (node.desc != null) {
+            node.desc.writeXml(xmlWriter);
+        }
+        writerData(node.dataList);
+        if (node.getPorts() != null) for (GraphmlPort port : node.getPorts()) {
+            xmlWriter.startElement(GraphmlPort.TAGNAME, port.getAttributes());
+            xmlWriter.endElement(GraphmlPort.TAGNAME);
+        }
+    }
+
     private void writerData(GraphmlData data) throws IOException {
         xmlWriter.startElement(GraphmlData.TAGNAME, data.getAttributes());
         xmlWriter.characterData(data.getValue());
@@ -135,9 +142,8 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     private void writerData(List<GraphmlData> datas) throws IOException {
-        if (datas != null)
-            for (GraphmlData data : datas) {
-                writerData(data);
-            }
+        if (datas != null) for (GraphmlData data : datas) {
+            writerData(data);
+        }
     }
 }

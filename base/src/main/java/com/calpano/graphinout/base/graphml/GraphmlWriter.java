@@ -12,17 +12,21 @@ public interface GraphmlWriter {
 
     void endDocument() throws IOException;
 
-    void endEdge(Optional<GraphmlLocator> graphmlLocator) throws IOException;
+    void endEdge() throws IOException;
 
     void endGraph() throws IOException;
+
+    void endHyperEdge(Optional<GraphmlLocator> graphmlLocator) throws IOException;
 
     void endNode(Optional<GraphmlLocator> locator) throws IOException;
 
     void startDocument(GraphmlDocument document) throws IOException;
 
-    void startEdge(GraphmlHyperEdge edge) throws IOException;
+    void startEdge(GraphmlEdge edge) throws IOException;
 
     void startGraph(GraphmlGraph graphmlGraph) throws IOException;
+
+    void startHyperEdge(GraphmlHyperEdge edge) throws IOException;
 
     void startNode(GraphmlNode node) throws IOException;
 }

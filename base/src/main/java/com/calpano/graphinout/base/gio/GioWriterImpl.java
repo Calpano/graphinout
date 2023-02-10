@@ -149,7 +149,7 @@ public class GioWriterImpl implements GioWriter {
                     .desc(endpoint.getDesc() == null ? null : GraphmlDescription.builder().value(endpoint.getDesc().getValue()).build()).build()));
             hyperEdge.setEndpoints(endpoints);
         }
-        graphmlWriter.startEdge(hyperEdge);
+        graphmlWriter.startHyperEdge(hyperEdge);
     }
 
     @Override
@@ -163,7 +163,7 @@ public class GioWriterImpl implements GioWriter {
                     .build();
 
         }
-        graphmlWriter.endEdge(Optional.of(graphmlLocator));
+        graphmlWriter.endHyperEdge(Optional.of(graphmlLocator));
 
     }
 }
