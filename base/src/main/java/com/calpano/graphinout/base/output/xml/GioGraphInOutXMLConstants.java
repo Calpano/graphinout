@@ -1,6 +1,7 @@
 package com.calpano.graphinout.base.output.xml;
 
-import com.calpano.graphinout.base.output.GraphMlWriter;
+import com.calpano.graphinout.base.graphml.GraphmlWriter;
+import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
 
@@ -21,11 +22,11 @@ public class GioGraphInOutXMLConstants {
     public static final String DESC_ELEMENT_NAME = "desc";
     public static final String DEFAULT_ELEMENT_NAME = "Default";
 
-    public static GraphMlWriter of(XmlWriter xmlWriter) {
-        return new GraphMlXmlWriter(xmlWriter);
+    public static GraphmlWriter of(XmlWriter xmlWriter) {
+        return new GraphmlWriterImpl(xmlWriter);
     }
 
-    public static GraphMlWriter of(OutputSink outputSink) {
+    public static GraphmlWriter of(OutputSink outputSink) {
         return of(new SimpleXmlWriter(outputSink));
     }
 }

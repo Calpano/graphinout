@@ -2,7 +2,7 @@ package com.calpano.graphinout.base.reader;
 
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
-import com.calpano.graphinout.base.output.GraphMlWriter;
+import com.calpano.graphinout.base.input.SingleInputSource;
 import lombok.AllArgsConstructor;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public interface GioReader {
      */
     GioFileFormat fileFormat();
 
-    default boolean isValid(InputSource inputSource) throws IOException {
+    default boolean isValid(SingleInputSource singleInputSource) throws IOException {
         AtomicBoolean valid = new AtomicBoolean(true);
         errorHandler((error) -> {
             if (error.level == ContentError.ErrorLevel.Error) {
@@ -49,7 +49,7 @@ public interface GioReader {
             }
         });
         // TODO dont use null, use a dummy do-nothing-writer
-        read(inputSource, null);
+        read(singleInputSource, null);
         return valid.get();
     }
 

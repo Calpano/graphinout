@@ -1,6 +1,7 @@
 package com.calpano.graphinout.base.output.xml;
 
 import com.calpano.graphinout.base.input.InputSource;
+import com.calpano.graphinout.base.input.SingleInputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -20,12 +21,14 @@ public class GraphmlValidator {
      * @return
      */
     public static boolean isValidGraphml(InputSource inputSource) throws IOException {
+        if (inputSource.isMulti()) throw new IllegalArgumentException("can only handle SingleInputSource");
+        SingleInputSource singleInputSource = (SingleInputSource) inputSource;
         try {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Source schemaFile = new StreamSource(new StringReader("<!DOCTYPE graphml SYSTEM \"http://graphml.graphdrawing.org/dtds/1.0rc/graphml.dtd\">"));
             Schema schema = factory.newSchema(schemaFile);
             Validator validator = schema.newValidator();
-            Source source = new SAXSource(new org.xml.sax.InputSource(inputSource.inputStream()));
+            Source source = new SAXSource(new org.xml.sax.InputSource(singleInputSource.inputStream()));
             validator.validate(source);
             return true;
         } catch (SAXException e) {

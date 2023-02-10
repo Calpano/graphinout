@@ -2,12 +2,14 @@ package com.calpano.graphinout.reader.tgf;
 
 import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.input.InputSource;
+import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.base.reader.GioReader;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +39,13 @@ public class TgfReader implements GioReader {
 
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
-        String content = IOUtils.toString(inputSource.inputStream());
+        if(inputSource.isMulti()) {
+            throw new IllegalArgumentException("Cannot handle multi-sources");
+        }
+        assert inputSource instanceof SingleInputSource;
+        SingleInputSource sis = (SingleInputSource) inputSource;
+        String content = IOUtils.toString(sis.inputStream(), StandardCharsets.UTF_8);
+
         boolean isValid = true;
         Scanner scanner = new Scanner(content);
         boolean edges = false;

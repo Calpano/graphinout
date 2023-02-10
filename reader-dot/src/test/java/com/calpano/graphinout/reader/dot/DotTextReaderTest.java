@@ -3,7 +3,7 @@ package com.calpano.graphinout.reader.dot;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
-import com.calpano.graphinout.base.input.InputSource;
+import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
 import io.github.classgraph.ClassGraph;
@@ -25,12 +25,12 @@ class DotTextReaderTest {
     void shouldWorkAsIntended(String filePath) throws IOException {
         URL resourceUrl = ClassLoader.getSystemResource(filePath);
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-        InputSource inputSource = InputSource.of(filePath, content);
+        SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
         OutputSink outputSink = OutputSink.createMock();
 
         DotTextReader dotTextReader = new DotTextReader();
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
-        dotTextReader.read(inputSource, gioWriter);
+        dotTextReader.read(singleInputSource, gioWriter);
     }
 
     private static Stream<String> getResourceFilePaths() {

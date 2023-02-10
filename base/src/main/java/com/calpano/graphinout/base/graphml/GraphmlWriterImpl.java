@@ -6,6 +6,7 @@ import com.calpano.graphinout.base.output.xml.XmlWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
 import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS;
 import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI;
@@ -37,6 +38,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     @Override
     public void endDocument() throws IOException {
         xmlWriter.endElement(GraphmlDocument.TAGNAME);
+        xmlWriter.endDocument();
     }
 
     @Override
@@ -58,10 +60,17 @@ public class GraphmlWriterImpl implements GraphmlWriter {
                 xmlWriter.endElement(GraphmlEndpoint.TAGNAME);
             }
         }
-        //TODO What do I do?:
-        // When the graph is out of sync with the node and we have to wait for the graph body to be parsed.
-        // One of the solutions is a separate start and end Edge
 
+
+        xmlWriter.endElement(GraphmlHyperEdge.TAGNAME);
+    }
+
+    @Override
+    public void endEdge(Optional<GraphmlLocator> locator) throws IOException {
+        if(locator.isPresent()){
+            xmlWriter.startElement(GraphmlLocator.TAGNAME,locator.get().getAttributes());
+            xmlWriter.endElement(GraphmlLocator.TAGNAME);
+        }
         xmlWriter.endElement(GraphmlHyperEdge.TAGNAME);
     }
 
@@ -78,18 +87,14 @@ public class GraphmlWriterImpl implements GraphmlWriter {
                 xmlWriter.startElement(GraphmlPort.TAGNAME, port.getAttributes());
                 xmlWriter.endElement(GraphmlPort.TAGNAME);
             }
-        //TODO What do I do?:
-        // When the graph is out of sync with the node and we have to wait for the graph body to be parsed.
-        // One of the solutions is a separate locator and separate start and end node
+    }
 
-        // TODO needs to be its own method, writeLocator ?
-        if (node.getLocator() != null) {
-            xmlWriter.startElement(GraphmlLocator.TAGNAME, node.getLocator().getAttributes());
+    @Override
+    public void endNode(Optional<GraphmlLocator> locator) throws IOException {
+        if(locator.isPresent()){
+            xmlWriter.startElement(GraphmlLocator.TAGNAME,locator.get().getAttributes());
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
         }
-
-        // TODO split here ----------------
-
         xmlWriter.endElement(GraphmlNode.TAGNAME);
     }
 

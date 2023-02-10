@@ -3,7 +3,7 @@ package com.calpano.graphinout.reader.tgf;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
-import com.calpano.graphinout.base.input.InputSource;
+import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
 import com.calpano.graphinout.base.reader.GioReader;
@@ -34,24 +34,36 @@ class TgfReaderTest {
     void shouldWorkAsIntended(String filePath) throws IOException {
         URL resourceUrl = ClassLoader.getSystemResource(filePath);
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-        InputSource inputSource = InputSource.of(filePath, content);
+        SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
         OutputSink outputSink = OutputSink.createMock();
 
         TgfReader tgfReader = new TgfReader();
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
-        tgfReader.read(inputSource, gioWriter);
+        tgfReader.read(singleInputSource, gioWriter);
     }
 
     @Test
-    public void shouldNotReturnErrorWhenTgfFileIsEmpty() throws IOException {
+    void shouldWorkAsIntendedWithAnotherFile() throws IOException {
+        String resourceName = "/example2.tgf";
+        String content = IOUtils.resourceToString(resourceName, StandardCharsets.UTF_8);
+        SingleInputSource singleInputSource = SingleInputSource.of(resourceName, content);
+        OutputSink outputSink = OutputSink.createMock();
+
+        TgfReader tgfReader = new TgfReader();
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
+        tgfReader.read(singleInputSource, gioWriter);
+    }
+    
+    @Test
+    public void shouldCallErrorConsumerWhenTGFIsNotValid() throws IOException {
         Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
         TgfReader tgfReader = new TgfReader();
         tgfReader.errorHandler(errorConsumer);
-        InputSource inputSource = mock(InputSource.class);
+        SingleInputSource singleInputSource = mock(SingleInputSource.class);
         GioWriter gioWriter = mock(GioWriter.class);
 
-        when(inputSource.inputStream()).thenReturn(new ByteArrayInputStream(EMPTY_FILE.getBytes()));
-        tgfReader.read(inputSource, gioWriter);
+        when(singleInputSource.inputStream()).thenReturn(new ByteArrayInputStream(EMPTY_FILE.getBytes()));
+        tgfReader.read(singleInputSource, gioWriter);
 
         verifyNoInteractions(errorConsumer);
     }
@@ -62,7 +74,7 @@ class TgfReaderTest {
         Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
         TgfReader tgfReader = new TgfReader();
         tgfReader.errorHandler(errorConsumer);
-        InputSource inputSource = mock(InputSource.class);
+        SingleInputSource inputSource = mock(SingleInputSource.class);
         GioWriter gioWriter = mock(GioWriter.class);
 
         when(inputSource.inputStream()).thenReturn(inputStream);
@@ -77,7 +89,7 @@ class TgfReaderTest {
         Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
         TgfReader tgfReader = new TgfReader();
         tgfReader.errorHandler(errorConsumer);
-        InputSource inputSource = mock(InputSource.class);
+        SingleInputSource inputSource = mock(SingleInputSource.class);
         GioWriter gioWriter = mock(GioWriter.class);
 
         when(inputSource.inputStream()).thenReturn(inputStream);
