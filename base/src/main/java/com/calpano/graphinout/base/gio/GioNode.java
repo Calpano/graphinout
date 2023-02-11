@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class GioNode extends GioElementWithDescription {
+public class GioNode extends GioElementWithData {
 
     /**
      * The identifier of a node is defined by the XML-Attribute id.
@@ -40,7 +41,7 @@ public class GioNode extends GioElementWithDescription {
      * </p>
      * The name of this Element in node is <b>port</b>.
      */
-    @Singular(ignoreNullCollections = true)
-    private List<GioPort> ports;
+    @Singular
+    private List<GioPort> ports = Collections.emptyList();
 
 }

@@ -1,5 +1,4 @@
-package com.calpano.graphinout.base.graphml;
-
+package com.calpano.graphinout.base.gio;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,22 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
-// TODO split into GraphmlElementWithData and GraphmlElementWithDesc
+// graph, doc, edge, node, port,
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class GraphmlGraphCommonElement extends GraphmlElement {
-    /**
-     * This ia an Element That can be empty or null.
-     * <p>
-     * The name of this element in graph is <b>desc</b>
-     */
-    protected GraphmlDescription desc;
+public abstract class GioElementWithData extends GioElementWithDescription {
 
     /**
      * In GraphML there may be data-functions attached to graphs, nodes, ports, edges, hyperedges and endpoint and to
@@ -30,23 +22,22 @@ public class GraphmlGraphCommonElement extends GraphmlElement {
      * (children of <graphml>) and defined by <data> elements.
      * Occurence: <graphml>, <graph>, <node>, <port>, <edge>, <hyperedge>, and <endpoint>.
      *
-     * @see GraphmlKey {@link GraphmlKey}
+     * @see GioKey {@link GioKey}
      * This is a list of elements that can be empty or null.
      * </p>
      * The name of this element is <b>data</b>
      */
-    protected List<GraphmlData> dataList;
+    protected List<GioData> dataList = Collections.emptyList();
 
     public void addData(String key, String data) {
-        addData(GraphmlData.builder().key(key).value(data).build());
+        addData(GioData.builder().key(key).value(data).build());
     }
 
-    public void addData(GraphmlData data) {
+    public void addData(GioData data) {
         if (dataList == null)
-            dataList = Collections.emptyList();
+            dataList = Collections.EMPTY_LIST;
         dataList.add(dataList.size(), data);
     }
-
 
 
 }

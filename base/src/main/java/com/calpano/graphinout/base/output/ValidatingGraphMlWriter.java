@@ -71,9 +71,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endGraph() throws IOException {
+    public void endGraph(Optional<GraphmlLocator> locator) throws IOException {
         ensureAllowedEnd(CurrentElement.GRAPH);
-        graphMlWriter.endGraph();
+        graphMlWriter.endGraph(locator);
     }
 
     @Override

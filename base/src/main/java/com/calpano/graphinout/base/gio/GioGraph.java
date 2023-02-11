@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @Data
-public class GioGraph extends GioElementWithDescription {
+public class GioGraph extends GioElementWithData {
 
 
 

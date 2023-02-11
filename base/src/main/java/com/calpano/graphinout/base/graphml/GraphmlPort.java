@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,8 +31,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class GraphmlPort implements XMLValue {
+@SuperBuilder
+public class GraphmlPort extends GraphmlElement implements XMLValue {
 
 
     public static final String TAGNAME = "port";
@@ -43,13 +44,6 @@ public class GraphmlPort implements XMLValue {
     private String name;
 
     /**
-     * User defined extra attributes for <port> elements.
-     * <p>
-     * The name of this attribute in port is <b>port.extra.attrib</b>
-     */
-    private String extraAttrib;
-
-    /**
      * User defined ports for <port> elements.
      * <p>
      * The name of this attribute in port is <b>port</b>
@@ -58,28 +52,15 @@ public class GraphmlPort implements XMLValue {
 
     @Override
     public String startTag() {
-
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (name != null && !name.isEmpty()) attributes.put("name", name);
-
-
-        if (extraAttrib != null && !extraAttrib.isEmpty()) {
-            attributes.put("port.extra.attrib", extraAttrib);
-        }
+        LinkedHashMap<String, String> attributes = getAttributes();
         return GIOUtil.makeStartElement("port",attributes);
     }
 
     @Override
     public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
         if (name != null && !name.isEmpty()) attributes.put("name", name);
-
-
-        if (extraAttrib != null && !extraAttrib.isEmpty()) {
-            attributes.put("port.extra.attrib", extraAttrib);
-        }
+        attributes.putAll(getExtraAttrib());
         return  attributes;
     }
 

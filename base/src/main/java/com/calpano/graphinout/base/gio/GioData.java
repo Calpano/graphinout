@@ -26,7 +26,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @Data
 @Builder
-public class GioData {
+public class GioData extends GioElement {
 
     /**
      * This is an attribute that can be empty or null.

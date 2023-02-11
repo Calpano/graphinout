@@ -22,7 +22,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioEndpoint  {
+public class GioEndpoint extends GioElement  {
 
     /**
      * This is an attribute that can be empty or null.

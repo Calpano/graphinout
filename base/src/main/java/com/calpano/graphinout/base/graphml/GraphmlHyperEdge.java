@@ -47,13 +47,6 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements  XMLV
      */
     private String id;
 
-    /**
-     * User defined extra attributes for <hyperEdge> elements.
-     * <p>
-     * The name of this attribute in hyperEdge  is <b>hyperEdge.extra.attrib</b>
-     */
-    private String extraAttrib;
-
     @Singular(ignoreNullCollections = true)
     private List<GraphmlEndpoint> endpoints;
 
@@ -72,23 +65,15 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements  XMLV
 
     @Override
     public String startTag() {
-
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (id != null) attributes.put("id", id);
-
-        if (extraAttrib != null) attributes.put("hyperEdge.extra.attrib", extraAttrib);
-
+        LinkedHashMap<String, String> attributes = getAttributes();
         return GIOUtil.makeStartElement("hyperEdge", attributes);
     }
 
     @Override
     public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
         if (id != null) attributes.put("id", id);
-
-        if (extraAttrib != null) attributes.put("hyperEdge.extra.attrib", extraAttrib);
+        attributes.putAll(getExtraAttrib());
         return attributes;
     }
 

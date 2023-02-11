@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioPort extends GioElementWithDescription {
+public class GioPort extends GioElementWithData {
 
     /**
      * This is an attribute that mandatory.
@@ -37,5 +38,15 @@ public class GioPort extends GioElementWithDescription {
      * The name of this attribute in graph is <b>name</b>
      */
     private String name;
+
+    /**
+     * Port can be recursively nested.
+     *
+     * This is an Element that can be empty or null.
+     * </p>
+     * The name of this Element in node is <b>port</b>.
+     */
+    @Singular(ignoreNullCollections = true)
+    private List<GioPort> ports;
 
 }

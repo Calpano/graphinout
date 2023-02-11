@@ -9,18 +9,6 @@ import java.util.Optional;
  */
 public interface GioWriter {
 
-    void data(GioData data) throws IOException;
-
-    /**
-     * Convenience method to add data
-     *
-     * @param key
-     * @param data
-     * @throws IOException
-     */
-    default void data(String key, String data) throws IOException {
-        data(GioData.builder().key(key).value(data).build());
-    }
 
     void endDocument() throws IOException;
 
@@ -30,7 +18,7 @@ public interface GioWriter {
 
     void endNode(Optional<URL> locator) throws IOException;
 
-    void endPort();
+    void key(GioKey gioKey) throws IOException;
 
     void startDocument(GioDocument document) throws IOException;
 
@@ -43,6 +31,5 @@ public interface GioWriter {
      */
     void startNode(GioNode node) throws IOException;
 
-    void startPort(GioPort port);
 
 }

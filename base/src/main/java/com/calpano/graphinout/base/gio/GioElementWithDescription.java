@@ -11,7 +11,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public abstract class GioElementWithDescription {
+public abstract class GioElementWithDescription extends GioElement {
 
     /**
      * This ia an Element That can be empty or null.
@@ -19,6 +19,5 @@ public abstract class GioElementWithDescription {
      * The name of this element in graph is <b>desc</b>
      */
     protected Optional<String> description;
-
 
 }

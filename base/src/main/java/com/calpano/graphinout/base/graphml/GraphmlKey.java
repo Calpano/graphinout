@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author rbaba
@@ -60,12 +62,6 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
      */
     private GraphmlKeyForType forType;
     /**
-     * User defined extra attributes for <key> elements.
-     * <p>
-     * The name of this attribute in key is <b>key.extra.attrib</b>
-     */
-    private String extraAttrib;
-    /**
      * This is an Element
      *
      * @see GraphmlDescription {@link  GraphmlDescription}
@@ -85,23 +81,9 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
 
     @Override
     public String startTag() {
-
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (id != null) attributes.put("id", id);
-
-        if (attrName != null && !attrName.isEmpty()) attributes.put("attr.name", attrName);
-
-        if (attrType != null && !attrType.isEmpty()) attributes.put("attr.type", attrType);
-
-        if (forType != null) attributes.put("for", forType.name());
-
-        if (extraAttrib != null) attributes.put("extra.attrib", extraAttrib);
-
+        LinkedHashMap<String, String> attributes = getAttributes();
         if (valueTag().isEmpty()) return GIOUtil.makeElement("key", attributes);
-
         return GIOUtil.makeStartElement("key", attributes);
-
     }
 
     @Override
@@ -116,7 +98,7 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
 
         if (forType != null) attributes.put("for", forType.name());
 
-        if (extraAttrib != null) attributes.put("extra.attrib", extraAttrib);
+        attributes.putAll(extraAttrib);
 
         return  attributes;
     }

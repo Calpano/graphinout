@@ -56,5 +56,20 @@ public class GioKey extends GioElementWithDescription {
     public void setForType(String forType) throws GioException {
         this.forType = GioKeyForType.keyForType(forType);
     }
+
+    /**
+     * GraphML Type data / attribute extension
+     */
+    Optional<String> attributeName;
+
+    /**
+     * GraphML Type data / attribute extension
+     */
+    private Optional<GioDataType> attributeType;
+
+    public GioDataType dataType() {
+        return attributeType.orElse(GioDataType.typeString);
+    }
+
 }
 
