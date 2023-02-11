@@ -1,5 +1,8 @@
 package com.calpano.graphinout.base.gio;
 
+/**
+ * Data types for {@link GioData} values, define in corresponding {@link GioKey}.
+ */
 public enum GioDataType {
 
     typeBoolean("boolean", boolean.class), //

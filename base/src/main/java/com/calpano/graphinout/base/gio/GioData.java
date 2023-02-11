@@ -39,9 +39,7 @@ public class GioData extends GioElement {
      */
     private String value;
     /**
-     * This is an attribute is mandatory.
-     * </p>
-     * The name of this attribute in data is <b>key</b>.
+     * Links this data instance to a definition given in a {@link GioKey} element
      * <p>
      * TODO validate: Must refer to a previously defined {@link GioKey#getId()}.
      */

@@ -39,18 +39,11 @@ public class GioKey extends GioElementWithDescription {
     @Nullable
     String attributeName;
     /**
-     * identifies this <key>
-     * <p>
-     * The name of this attribute in key is <b>id</b>
+     * ID of this element. Is refered to by {@link GioData#getKey()}.
      */
     private @NonNull String id;
     /**
      * describes the domain of definition for the corresponding graph attribute.
-     * <p>
-     * Simple type for the for attribute of <key>.
-     * key.for.type is a restriction of xs:NMTOKEN Allowed values: all, graph, node, edge, hyperedge, port and endpoint.
-     * <p>
-     * The name of this attribute in key is <b>for</b>
      */
     private @NonNull GioKeyForType forType;
     /**
