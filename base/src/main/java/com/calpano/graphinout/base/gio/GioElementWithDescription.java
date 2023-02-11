@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 @Data
@@ -18,6 +19,10 @@ public abstract class GioElementWithDescription extends GioElement {
      * <p>
      * The name of this element in graph is <b>desc</b>
      */
-    protected Optional<String> description;
+    protected @Nullable String description;
+
+    public Optional<String> description() {
+        return Optional.ofNullable(description);
+    }
 
 }

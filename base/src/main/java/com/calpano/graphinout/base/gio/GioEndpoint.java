@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -47,7 +48,7 @@ public class GioEndpoint extends GioElement  {
      * The name of this attribute in endpoint is <b>port</b>
      * The value of this attribute points to an existing  port, and the name of the desired port must be stored in this field.
      */
-    private Optional<String> port;
+    private @Nullable String port;
 
     /**
      * Defines the attribute for direction on this endpoint (undirected per default).

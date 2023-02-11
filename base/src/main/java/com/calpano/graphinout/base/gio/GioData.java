@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -13,13 +14,12 @@ import java.util.Optional;
  * (children of <graphml>) and defined by <data> elements.
  * Occurence: <graphml>, <graph>, <node>, <port>, <edge>, <hyperedge>, and <endpoint>.
  *
- * @see GioKey {@link GioKey}
- *
  * @author rbaba
  * @version 0.0.1
  * @implNote <p>
  * Structured content can be added within the data element.
  * If you want to add structured content to graph elements you should use the key/data extension mechanism of GraphML.
+ * @see GioKey {@link GioKey}
  */
 
 @AllArgsConstructor
@@ -33,19 +33,21 @@ public class GioData extends GioElement {
      * </p>
      * The name of this attribute in data is <b>id</b>
      */
-    private Optional<String> id;
-
+    private @Nullable String id;
     /**
      * the value for any data, which can be extended to complex models like SVG.
      */
     private String value;
-
     /**
      * This is an attribute is mandatory.
      * </p>
      * The name of this attribute in data is <b>key</b>.
-     *
+     * <p>
      * TODO validate: Must refer to a previously defined {@link GioKey#getId()}.
      */
     private String key;
+
+    public Optional<String> id() {
+        return Optional.ofNullable(id);
+    }
 }

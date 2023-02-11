@@ -1,6 +1,12 @@
 package com.calpano.graphinout.reader.tgf;
 
-import com.calpano.graphinout.base.gio.*;
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioEndpoint;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.GioFileFormat;
@@ -28,18 +34,18 @@ public class TgfReader implements GioReader {
      */
     private Consumer<ContentError> errorConsumer;
 
-    @Override
-    public GioFileFormat fileFormat() {
-        return new GioFileFormat("tfg", "Trivial Graph Format");
-    }
-
     public void errorHandler(Consumer<ContentError> errorConsumer) {
         this.errorConsumer = errorConsumer;
     }
 
     @Override
+    public GioFileFormat fileFormat() {
+        return new GioFileFormat("tfg", "Trivial Graph Format");
+    }
+
+    @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
-        if(inputSource.isMulti()) {
+        if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
         assert inputSource instanceof SingleInputSource;
@@ -84,12 +90,12 @@ public class TgfReader implements GioReader {
                 endpointList.add(targetEndpoint);
                 if (edgeParts.length == 3) {
                     writer.startEdge(GioEdge.builder().endpoints(endpointList)
-                            .description(Optional.of(edgeParts[2])).build());
+                            .description(edgeParts[2]).build());
                 }
                 writer.startEdge(GioEdge.builder().endpoints(endpointList).build());
             }
         }
-        writer.endGraph(Optional.empty());
+        writer.endGraph(null);
         writer.endDocument();
         if (edges && !nodes) {
             isValid = false;

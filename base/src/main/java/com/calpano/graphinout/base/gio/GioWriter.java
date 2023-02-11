@@ -1,5 +1,6 @@
 package com.calpano.graphinout.base.gio;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -12,11 +13,11 @@ public interface GioWriter {
 
     void endDocument() throws IOException;
 
-    void endEdge(Optional<URL> locator) throws IOException;
+    void endEdge(@Nullable URL locator) throws IOException;
 
-    void endGraph(Optional<URL> locator) throws IOException;
+    void endGraph(@Nullable URL locator) throws IOException;
 
-    void endNode(Optional<URL> locator) throws IOException;
+    void endNode(@Nullable URL locator) throws IOException;
 
     void key(GioKey gioKey) throws IOException;
 

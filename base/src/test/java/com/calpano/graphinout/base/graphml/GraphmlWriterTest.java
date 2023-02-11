@@ -66,12 +66,12 @@ class GraphmlWriterTest {
                 .xLinkHref(new URL("http:\\127.0.0.1"))
                 .build();
         graphmlWriter.endGraph(Optional.of(locator));
-        assertEquals("::endElement->graph", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
 
     }
 
     @Test
-    void makeNode() throws IOException {
+    void startNode() throws IOException {
         List<GraphmlPort> gioPortList = new ArrayList<>();
         gioPortList.add(GraphmlPort.builder().name("port").build());
         List<GraphmlData> graphmlDataList = new ArrayList<>();
@@ -85,19 +85,19 @@ class GraphmlWriterTest {
     void endNode() throws IOException {
         GraphmlLocator locator = GraphmlLocator.builder()
                 .xLinkHref(new URL("http:\\127.0.0.1"))
-                .xLinkType("http").build();
+                .build();
         locator.getAttributes().put("locator.extra.attrib","local");
         graphmlWriter.endNode(Optional.of(locator));
-        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=http, locator.extra.attrib=local}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
     }
 
     @Test
-    void makeEdge() throws IOException {
+    void startEdge() throws IOException {
         List<GraphmlEndpoint> gioEndpoints = new ArrayList<>();
         gioEndpoints.add(GraphmlEndpoint.builder().id("GioEndpoint1").node("node1").type(Direction.In).port("port1").build());
         gioEndpoints.add(GraphmlEndpoint.builder().id("GioEndpoint2").node("node2").type(Direction.Out).port("port2").build());
         graphmlWriter.startHyperEdge(GraphmlHyperEdge.builder().id("edge1").endpoints(gioEndpoints).build());
-        assertEquals("::startElement->hyperedge->{id=edge1, hyperEdge.extra.attrib=extraAttrib}::startElement->endpoint->{id=GioEndpoint1, node=node1, port=port1, type=In}::endElement->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=Out}::endElement->endpoint::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->hyperedge->{id=edge1}::startElement->endpoint->{id=GioEndpoint1, node=node1, port=port1, type=In}::endElement->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=Out}::endElement->endpoint::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
 
     }
 
@@ -105,9 +105,9 @@ class GraphmlWriterTest {
     void endEdge() throws IOException {
         GraphmlLocator locator = GraphmlLocator.builder()
                 .xLinkHref(new URL("http:\\127.0.0.1"))
-                .xLinkType("http").build();
+                .build();
         graphmlWriter.endHyperEdge(Optional.of(locator));
-        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=http, locator.extra.attrib=local}::endElement->locator::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
 
     }
 

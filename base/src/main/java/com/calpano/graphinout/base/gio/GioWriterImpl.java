@@ -17,6 +17,7 @@ import com.calpano.graphinout.base.graphml.GraphmlNode;
 import com.calpano.graphinout.base.graphml.GraphmlPort;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,17 +40,17 @@ public class GioWriterImpl implements GioWriter {
     }
 
     @Override
-    public void endEdge(Optional<URL> locator) throws IOException {
+    public void endEdge(@Nullable URL locator) throws IOException {
         graphmlWriter.endHyperEdge(locator(locator));
     }
 
     @Override
-    public void endGraph(Optional<URL> locator) throws IOException {
+    public void endGraph(@Nullable URL locator) throws IOException {
         graphmlWriter.endGraph(locator(locator));
     }
 
     @Override
-    public void endNode(Optional<URL> locator) throws IOException {
+    public void endNode(@Nullable URL locator) throws IOException {
         graphmlWriter.endNode(locator(locator));
 
     }
@@ -60,9 +61,9 @@ public class GioWriterImpl implements GioWriter {
                 .id(gioKey.getId())//
                 .forType(GraphmlKeyForType.valueOf(gioKey.getForType().name()))//
                 .build();
-        gioKey.getDefaultValue().ifPresent(defaultValue -> graphmlKey.setDefaultValue(GraphmlDefault.builder().value(defaultValue).build()));
-        gioKey.getAttributeName().ifPresent(graphmlKey::setAttrName);
-        gioKey.getAttributeType().ifPresent(attType -> graphmlKey.setAttrType(attType.graphmlName));
+        gioKey.defaultValue().ifPresent(defaultValue -> graphmlKey.setDefaultValue(GraphmlDefault.builder().value(defaultValue).build()));
+        gioKey.attributeName().ifPresent(graphmlKey::setAttrName);
+        gioKey.attributeType().ifPresent(attType -> graphmlKey.setAttrType(attType.graphmlName));
         customAttributes(gioKey, graphmlKey);
         desc(gioKey, graphmlKey);
         graphmlWriter.data(graphmlKey);
@@ -125,28 +126,31 @@ public class GioWriterImpl implements GioWriter {
 
     private void customAttributes(GioElement gioElement, GraphmlElement graphmlElement) {
         // TODO validate in GraphmlWriter we dont overwrite the already defined attributes
-        if (graphmlElement.getExtraAttrib() == null)
-            graphmlElement.setExtraAttrib(new HashMap<>());
-        graphmlElement.getExtraAttrib().putAll(gioElement.getCustomAttributes());
+        if (graphmlElement.getExtraAttrib() == null) graphmlElement.setExtraAttrib(new HashMap<>());
+        if (gioElement.getCustomAttributes() != null) {
+            graphmlElement.getExtraAttrib().putAll(gioElement.getCustomAttributes());
+        }
     }
 
     private void data(GioElementWithData gioElementWithData, GraphmlGraphCommonElement graphmlElement) {
-        List<GraphmlData> graphmlDataList = new ArrayList<>();
-        gioElementWithData.getDataList().forEach(gioData -> {
-            GraphmlData graphmlData = GraphmlData.builder().key(gioData.getKey()).value(gioData.getValue()).build();
-            gioData.getId().ifPresent(graphmlData::setId);
-            graphmlDataList.add(graphmlData);
-        });
-        graphmlElement.setDataList(graphmlDataList);
+        if (gioElementWithData.getDataList() != null) {
+            List<GraphmlData> graphmlDataList = new ArrayList<>();
+            gioElementWithData.getDataList().forEach(gioData -> {
+                GraphmlData graphmlData = GraphmlData.builder().key(gioData.getKey()).value(gioData.getValue()).build();
+                gioData.id().ifPresent(graphmlData::setId);
+                graphmlDataList.add(graphmlData);
+            });
+            graphmlElement.setDataList(graphmlDataList);
+        }
     }
 
     private void desc(GioElementWithDescription elementWithDescription, GraphmlGraphCommonElement graphmlGraphCommonElement) {
-        elementWithDescription.getDescription().ifPresent(desc -> graphmlGraphCommonElement.setDesc(GraphmlDescription.builder().value(desc).build()));
+        elementWithDescription.description().ifPresent(desc -> graphmlGraphCommonElement.setDesc(GraphmlDescription.builder().value(desc).build()));
     }
 
     private GraphmlEndpoint graphmlEndpoint(GioEndpoint endpoint) {
         GraphmlEndpoint graphmlEndpoint = GraphmlEndpoint.builder().id(endpoint.getId()).node(endpoint.getNode()).build();
-        endpoint.getPort().ifPresent(graphmlEndpoint::setPort);
+        Optional.ofNullable(endpoint.getPort()).ifPresent(graphmlEndpoint::setPort);
         Direction dir = switch (endpoint.getType()) {
             case In -> Direction.In;
             case Out -> Direction.Out;
@@ -156,8 +160,8 @@ public class GioWriterImpl implements GioWriter {
         return graphmlEndpoint;
     }
 
-    private Optional<GraphmlLocator> locator(Optional<URL> locator) {
-        return locator.map(url -> GraphmlLocator.builder().xLinkHref(url).build());
+    private Optional<GraphmlLocator> locator(@Nullable URL locator) {
+        return Optional.ofNullable(locator).map(url -> GraphmlLocator.builder().xLinkHref(url).build());
     }
 
     private GraphmlPort port(GioPort gioPort) {

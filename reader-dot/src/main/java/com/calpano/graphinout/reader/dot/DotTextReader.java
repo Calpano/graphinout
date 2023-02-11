@@ -95,7 +95,7 @@ public class DotTextReader implements GioReader {
                     .build());
             log.info(edge.getNode1().getId() + "->" + edge.getNode2().getId() + " " + edge.getAttributes());
         }
-        writer.endGraph(Optional.empty());
+        writer.endGraph(null);
         writer.endDocument();
     }
 }

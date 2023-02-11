@@ -33,15 +33,6 @@ public class GraphmlLocator implements XMLValue {
      */
     private URL xLinkHref;
 
-    /**
-     * Type of the hyperlink (fixed as simple).
-     * This is an optional attribute.
-     * <p>
-     * The name of this attribute is <b>xlink:type</b>
-     */
-    @Deprecated
-    private String xLinkType;
-
     @Override
     public String endTag() {
         return GIOUtil.makeEndElement(TAGNAME);

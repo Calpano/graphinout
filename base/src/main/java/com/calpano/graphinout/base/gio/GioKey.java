@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -33,12 +34,16 @@ import java.util.Optional;
 public class GioKey extends GioElementWithDescription {
 
     /**
+     * GraphML Type data / attribute extension
+     */
+    @Nullable
+    String attributeName;
+    /**
      * identifies this <key>
      * <p>
      * The name of this attribute in key is <b>id</b>
      */
     private @NonNull String id;
-
     /**
      * describes the domain of definition for the corresponding graph attribute.
      * <p>
@@ -52,24 +57,30 @@ public class GioKey extends GioElementWithDescription {
      * In XML, this is #PCDATA, so it may contain any mix of text and tags.
      * Theoretically, this data could also be large. But in practice, this is at most used to store icons, maybe up to a few megabytes.
      */
-    private @NonNull Optional<String> defaultValue;
+    private @Nullable String defaultValue;
+    /**
+     * GraphML Type data / attribute extension
+     */
+    private @Nullable GioDataType attributeType;
+
+    public Optional<String> attributeName() {
+        return Optional.ofNullable(attributeName);
+    }
+
+    public Optional<GioDataType> attributeType() {
+        return Optional.ofNullable(attributeType);
+    }
+
+    public GioDataType dataType() {
+        return Optional.ofNullable(attributeType).orElse(GioDataType.typeString);
+    }
+
+    public Optional<String> defaultValue() {
+        return Optional.ofNullable(defaultValue);
+    }
 
     public void setForType(String forType) throws GioException {
         this.forType = GioKeyForType.keyForType(forType);
-    }
-
-    /**
-     * GraphML Type data / attribute extension
-     */
-    @NonNull Optional<String> attributeName;
-
-    /**
-     * GraphML Type data / attribute extension
-     */
-    private @NonNull Optional<GioDataType> attributeType;
-
-    public GioDataType dataType() {
-        return attributeType.orElse(GioDataType.typeString);
     }
 
 }

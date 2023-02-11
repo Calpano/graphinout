@@ -98,7 +98,8 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
 
         if (forType != null) attributes.put("for", forType.name());
 
-        attributes.putAll(extraAttrib);
+        if(extraAttrib!=null)
+            attributes.putAll(extraAttrib);
 
         return  attributes;
     }
