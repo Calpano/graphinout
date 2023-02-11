@@ -4,6 +4,7 @@ import com.calpano.graphinout.base.exception.GioException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Optional;
@@ -36,7 +37,7 @@ public class GioKey extends GioElementWithDescription {
      * <p>
      * The name of this attribute in key is <b>id</b>
      */
-    private String id;
+    private @NonNull String id;
 
     /**
      * describes the domain of definition for the corresponding graph attribute.
@@ -46,12 +47,12 @@ public class GioKey extends GioElementWithDescription {
      * <p>
      * The name of this attribute in key is <b>for</b>
      */
-    private GioKeyForType forType;
+    private @NonNull GioKeyForType forType;
     /**
      * In XML, this is #PCDATA, so it may contain any mix of text and tags.
      * Theoretically, this data could also be large. But in practice, this is at most used to store icons, maybe up to a few megabytes.
      */
-    private Optional<String> defaultValue;
+    private @NonNull Optional<String> defaultValue;
 
     public void setForType(String forType) throws GioException {
         this.forType = GioKeyForType.keyForType(forType);
@@ -60,12 +61,12 @@ public class GioKey extends GioElementWithDescription {
     /**
      * GraphML Type data / attribute extension
      */
-    Optional<String> attributeName;
+    @NonNull Optional<String> attributeName;
 
     /**
      * GraphML Type data / attribute extension
      */
-    private Optional<GioDataType> attributeType;
+    private @NonNull Optional<GioDataType> attributeType;
 
     public GioDataType dataType() {
         return attributeType.orElse(GioDataType.typeString);

@@ -84,12 +84,12 @@ public class TgfReader implements GioReader {
                 endpointList.add(targetEndpoint);
                 if (edgeParts.length == 3) {
                     writer.startEdge(GioEdge.builder().endpoints(endpointList)
-                            .desc(edgeParts[2]).build());
+                            .description(Optional.of(edgeParts[2])).build());
                 }
                 writer.startEdge(GioEdge.builder().endpoints(endpointList).build());
             }
         }
-        writer.endGraph();
+        writer.endGraph(Optional.empty());
         writer.endDocument();
         if (edges && !nodes) {
             isValid = false;

@@ -20,4 +20,8 @@ public abstract class GioElement {
      */
     Map<String,String> customAttributes = new HashMap<>();
 
+    public void customAttribute( String attributeName, String attributeValue) {
+        customAttributes.put(attributeName, attributeValue);
+    }
+
 }

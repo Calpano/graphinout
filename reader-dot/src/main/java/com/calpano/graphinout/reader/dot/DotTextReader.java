@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -94,7 +95,7 @@ public class DotTextReader implements GioReader {
                     .build());
             log.info(edge.getNode1().getId() + "->" + edge.getNode2().getId() + " " + edge.getAttributes());
         }
-        writer.endGraph();
+        writer.endGraph(Optional.empty());
         writer.endDocument();
     }
 }

@@ -20,6 +20,7 @@ import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -124,6 +125,8 @@ public class GioWriterImpl implements GioWriter {
 
     private void customAttributes(GioElement gioElement, GraphmlElement graphmlElement) {
         // TODO validate in GraphmlWriter we dont overwrite the already defined attributes
+        if (graphmlElement.getExtraAttrib() == null)
+            graphmlElement.setExtraAttrib(new HashMap<>());
         graphmlElement.getExtraAttrib().putAll(gioElement.getCustomAttributes());
     }
 

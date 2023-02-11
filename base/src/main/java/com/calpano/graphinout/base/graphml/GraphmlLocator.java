@@ -39,6 +39,7 @@ public class GraphmlLocator implements XMLValue {
      * <p>
      * The name of this attribute is <b>xlink:type</b>
      */
+    @Deprecated
     private String xLinkType;
 
     @Override
