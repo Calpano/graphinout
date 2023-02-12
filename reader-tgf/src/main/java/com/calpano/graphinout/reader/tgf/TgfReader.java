@@ -89,7 +89,7 @@ public class TgfReader implements GioReader {
                 writer.startEdge(GioEdge.builder().endpoints(endpointList).build());
             }
         }
-        writer.endGraph();
+        writer.endGraph(null);
         writer.endDocument();
         if (edges && !nodes) {
             isValid = false;

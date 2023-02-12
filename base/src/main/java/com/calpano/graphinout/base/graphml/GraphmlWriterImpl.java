@@ -47,7 +47,11 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     @Override
-    public void endGraph() throws IOException {
+    public void endGraph(Optional<GraphmlLocator> locator) throws IOException {
+        if (locator.isPresent()) {
+            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
+            xmlWriter.endElement(GraphmlLocator.TAGNAME);
+        }
         xmlWriter.endElement(GraphmlGraph.TAGNAME);
     }
 

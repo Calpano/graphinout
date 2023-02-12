@@ -26,6 +26,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, ENDPOINT, EDGE;
 
         static {
+            EMPTY.allowedChildren = Set.of(GRAPHML);
+            GRAPHML.allowedChildren = Set.of(DESC, KEY,DATA,GRAPH);
             // TODO add other nesting rules
             HYPEREDGE.allowedChildren = Set.of(DESC, DATA, ENDPOINT, GRAPH);
         }
@@ -69,9 +71,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endGraph() throws IOException {
+    public void endGraph(Optional<GraphmlLocator> locator) throws IOException {
         ensureAllowedEnd(CurrentElement.GRAPH);
-        graphMlWriter.endGraph();
+        graphMlWriter.endGraph(locator);
     }
 
     @Override
