@@ -1,29 +1,22 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.exception.GioException;
-import com.calpano.graphinout.base.exception.GioExceptionMessage;
-
 public enum GioKeyForType {
-    All, Graph, Node, Edge, HyperEdge, Port, Endpoint;
 
-    public static GioKeyForType keyForType(String keyForType) throws GioException {
-        switch (keyForType.toLowerCase()) {
-            case "all":
-                return All;
-            case "graph":
-                return Graph;
-            case "node":
-                return Node;
-            case "edge":
-                return Edge;
-            case "hyperedge":
-                return HyperEdge;
-            case "port":
-                return Port;
-            case "endpoint":
-                return Endpoint;
-            default:
-                throw new GioException(GioExceptionMessage.temporary_exemption);
+    All("all"), Graph("graph"), Node("node"), Edge("edge"), HyperEdge("hyperedge"), Port("port"), Endpoint("endpoint");
+
+    public final String value;
+
+    GioKeyForType(String value) {
+        this.value = value;
+    }
+
+    public static GioKeyForType keyForType(String keyForType) throws IllegalArgumentException {
+        if (keyForType == null)
+            // default value
+            return GioKeyForType.All;
+        for (GioKeyForType v : values()) {
+            if (v.value.equals(keyForType)) return v;
         }
+        throw new IllegalArgumentException();
     }
 }
