@@ -1,7 +1,6 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.Direction;
-import com.calpano.graphinout.base.graphml.*;
+import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.output.xml.XmlWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,10 +12,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import static com.calpano.graphinout.base.graphml.GraphmlDocument.builder;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GioWriterTest {
     @Spy
@@ -49,15 +46,15 @@ class GioWriterTest {
 
     @Test
     void endGraph() throws IOException {
-        gioWriter.endGraph();
-        assertEquals("::endElement->graph", xmlWriterSpy.getOutPut().toString());
+        gioWriter.endGraph(new URL("http:\\127.0.0.1"));
+        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
 
     }
 
     @Test
     void data() throws IOException {
-        gioWriter.data(GioKey.builder().id("test").attrName("attrName").attrType("attrType").forType(GioKeyForType.All).build());
-        assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=attrType, for=All}::endElement->key", xmlWriterSpy.getOutPut().toString());
+        gioWriter.key(GioKey.builder().id("test").attributeName("attrName").attributeType(GioDataType.typeInt).forType(GioKeyForType.All).build());
+        assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=int, for=All}::endElement->key", xmlWriterSpy.getOutPut().toString());
 
     }
 
@@ -67,41 +64,38 @@ class GioWriterTest {
         gioPortList.add(GioPort.builder().name("port").build());
         List<GioData> gioDataList = new ArrayList<>();
         gioDataList.add(GioData.builder().key("data").id("id").value("value").build());
-        gioWriter.startNode(GioNode.builder().desc("GraphmlDescription").id("node ").dataList(gioDataList).ports(gioPortList).build());
+        gioWriter.startNode(GioNode.builder().description("GraphmlDescription").id("node ").dataList(gioDataList).ports(gioPortList).build());
         assertEquals("::startElement->node->{id=node }::startElement->desc->{}::characterData->GraphmlDescription::endElement->desc::startElement->data->{id=id, key=data}::characterData->value::endElement->data::startElement->port->{name=port}::endElement->port", xmlWriterSpy.getOutPut().toString());
 
     }
 
     @Test
     void endNode() throws IOException {
-        GioLocator locator = GioLocator.builder()
-                .xLinkHref(new URL("http:\\127.0.0.1"))
-                .locatorExtraAttrib("local")
-                .xLinkType("http").build();
-        gioWriter.endNode(Optional.of(locator));
-        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=http, locator.extra.attrib=local}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
+        gioWriter.endNode(new URL("http:\\127.0.0.1"));
+        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
 
     }
 
     @Test
     void startEdge() throws IOException {
         List<GioEndpoint> gioEndpoints = new ArrayList<>();
-        gioEndpoints.add(GioEndpoint.builder().id("GioEndpoint1").node("node1").type(Direction.In).port("port1").build());
-        gioEndpoints.add(GioEndpoint.builder().id("GioEndpoint2").node("node2").type(Direction.Out).port("port2").build());
-        gioWriter.startEdge(GioEdge.builder().id("edge1").extraAttrib("extraAttrib").endpoints(gioEndpoints).build());
-        assertEquals("::startElement->hyperedge->{id=edge1, hyperEdge.extra.attrib=extraAttrib}::startElement->endpoint->{id=GioEndpoint1, node=node1, port=port1, type=In}::endElement->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=Out}::endElement->endpoint::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
+        gioEndpoints.add(GioEndpoint.builder().id("GioEndpoint1").node("node1").type(GioEndpointDirecton.In).port("port1").build());
+        gioEndpoints.add(GioEndpoint.builder().id("GioEndpoint2").node("node2").type(GioEndpointDirecton.Out).port("port2").build());
+        GioEdge edge = GioEdge.builder().id("edge1").endpoints(gioEndpoints).build();
+        edge.customAttribute("foo","bar");
+        gioWriter.startEdge(edge);
+        assertEquals("::startElement->hyperedge" +
+                "->{id=edge1, foo=bar}::startElement->endpoint" +
+                "->{id=GioEndpoint1, node=node1, port=port1, type=In}::endElement" +
+                "->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=Out}::endElement" +
+                "->endpoint::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
 
     }
 
     @Test
     void endEdge() throws IOException {
-        GioLocator locator = GioLocator.builder()
-                .xLinkHref(new URL("http:\\127.0.0.1"))
-                .locatorExtraAttrib("local")
-                .xLinkType("http").build();
-        gioWriter.endEdge(Optional.of(locator));
-        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=http, locator.extra.attrib=local}::endElement->locator::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
-
+        gioWriter.endEdge(new URL("http:\\127.0.0.1"));
+        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
     }
 
 
@@ -113,9 +107,9 @@ class GioWriterTest {
 
     }
 
-    class XmlWriterSpy implements XmlWriter {
+    static class XmlWriterSpy implements XmlWriter {
 
-        private StringBuilder outPut = new StringBuilder();
+        private final StringBuilder outPut = new StringBuilder();
 
         @Override
         public void characterData(String characterData) throws IOException {
