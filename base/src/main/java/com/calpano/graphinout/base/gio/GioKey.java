@@ -4,7 +4,11 @@ import com.calpano.graphinout.base.exception.GioException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * @author rbaba
@@ -27,51 +31,50 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class GioKey extends GioGraphCommonElement {
+public class GioKey extends GioElementWithDescription {
 
     /**
-     * identifies this <key>
-     * <p>
-     * The name of this attribute in key is <b>id</b>
+     * GraphML Type data / attribute extension
      */
-    private String id;
+    @Nullable
+    String attributeName;
     /**
-     * The name of the GraphML-Attribute is defined by the XML-Attribute attr.name and must be unique among all
-     * GraphML-Attributes declared in the document.
-     * <p/>
-     * * The name of this attribute in key is <b>attr.name</b>
+     * ID of this element. Is refered to by {@link GioData#getKey()}.
      */
-    private String attrName;
-    /**
-     * The name of this attribute in key is <b>attr.type</b>
-     */
-    private String attrType;
-
+    private @NonNull String id;
     /**
      * describes the domain of definition for the corresponding graph attribute.
-     * <p>
-     * Simple type for the for attribute of <key>.
-     * key.for.type is a restriction of xs:NMTOKEN Allowed values: all, graph, node, edge, hyperedge, port and endpoint.
-     * <p>
-     * The name of this attribute in key is <b>for</b>
      */
-    private GioKeyForType forType;
+    private @NonNull GioKeyForType forType;
     /**
-     * User defined extra attributes for <key> elements.
-     * <p>
-     * The name of this attribute in key is <b>key.extra.attrib</b>
+     * In XML, this is #PCDATA, so it may contain any mix of text and tags.
+     * Theoretically, this data could also be large. But in practice, this is at most used to store icons, maybe up to a few megabytes.
      */
-    private String extraAttrib;
+    private @Nullable String defaultValue;
+    /**
+     * GraphML Type data / attribute extension
+     */
+    private @Nullable GioDataType attributeType;
 
-    /**
-     * This is an Element
-     * <p>
-     * The name of this attribute in key is <b>default</b>
-     */
-    private GioDefault defaultValue;
+    public Optional<String> attributeName() {
+        return Optional.ofNullable(attributeName);
+    }
+
+    public Optional<GioDataType> attributeType() {
+        return Optional.ofNullable(attributeType);
+    }
+
+    public GioDataType dataType() {
+        return Optional.ofNullable(attributeType).orElse(GioDataType.typeString);
+    }
+
+    public Optional<String> defaultValue() {
+        return Optional.ofNullable(defaultValue);
+    }
 
     public void setForType(String forType) throws GioException {
         this.forType = GioKeyForType.keyForType(forType);
     }
+
 }
 

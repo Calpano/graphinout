@@ -1,10 +1,12 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.Direction;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * @author rbaba
@@ -21,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioEndpoint  {
+public class GioEndpoint extends GioElement  {
 
     /**
      * This is an attribute that can be empty or null.
@@ -46,7 +48,7 @@ public class GioEndpoint  {
      * The name of this attribute in endpoint is <b>port</b>
      * The value of this attribute points to an existing  port, and the name of the desired port must be stored in this field.
      */
-    private String port;
+    private @Nullable String port;
 
     /**
      * Defines the attribute for direction on this endpoint (undirected per default).
@@ -54,11 +56,5 @@ public class GioEndpoint  {
      * The name of this attribute in endpoint is <b>type</b>
      */
     @Builder.Default
-    private Direction type = Direction.Undirected;
-    /**
-     * This ia an Element That can be empty or null.
-     * <p>
-     * The name of this element in endpoint is <b>desc</b>
-     */
-    private GioDescription desc;
+    private GioEndpointDirecton type = GioEndpointDirecton.Undirected;
 }
