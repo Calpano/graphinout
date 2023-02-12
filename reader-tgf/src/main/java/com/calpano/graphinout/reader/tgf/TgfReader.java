@@ -45,7 +45,7 @@ public class TgfReader implements GioReader {
 
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
-        if(inputSource.isMulti()) {
+        if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
         assert inputSource instanceof SingleInputSource;
@@ -90,7 +90,7 @@ public class TgfReader implements GioReader {
                 endpointList.add(targetEndpoint);
                 if (edgeParts.length == 3) {
                     writer.startEdge(GioEdge.builder().endpoints(endpointList)
-                            .desc(edgeParts[2]).build());
+                            .description(edgeParts[2]).build());
                 }
                 writer.startEdge(GioEdge.builder().endpoints(endpointList).build());
             }
