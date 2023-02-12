@@ -35,7 +35,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements  XMLValue{
+public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements XMLValue {
 
     // TODO add edge builder and allow only creation of hyperedges with >= 2 endpoints
 
@@ -64,26 +64,23 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements  XMLV
     }
 
     @Override
-    public String startTag() {
-
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (id != null) attributes.put("id", id);
-
-        if (extraAttrib != null) attributes.put("hyperEdge.extra.attrib", extraAttrib);
-
-        return GIOUtil.makeStartElement("hyperEdge", attributes);
+    public String endTag() {
+        return GIOUtil.makeEndElement("hyperEdge");
     }
 
     @Override
     public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
         if (id != null) attributes.put("id", id);
-
         if (getExtraAttrib() != null)
             attributes.putAll(getExtraAttrib());
         return attributes;
+    }
+
+    @Override
+    public String startTag() {
+        LinkedHashMap<String, String> attributes = getAttributes();
+        return GIOUtil.makeStartElement("hyperEdge", attributes);
     }
 
     /**
@@ -102,10 +99,5 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements  XMLV
             xmlValueData.append(endpoints.fullTag());
         //HIT GRAPH
         return xmlValueData.toString();
-    }
-
-    @Override
-    public String endTag() {
-        return GIOUtil.makeEndElement("hyperEdge");
     }
 }
