@@ -7,13 +7,16 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+// TODO split into GraphmlElementWithData and GraphmlElementWithDesc
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class GraphmlGraphCommonElement {
+public class GraphmlGraphCommonElement extends GraphmlElement {
     /**
      * This ia an Element That can be empty or null.
      * <p>
@@ -40,9 +43,10 @@ public class GraphmlGraphCommonElement {
 
     public void addData(GraphmlData data) {
         if (dataList == null)
-            dataList = Collections.EMPTY_LIST;
+            dataList = Collections.emptyList();
         dataList.add(dataList.size(), data);
     }
+
 
 
 }

@@ -30,8 +30,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class GraphmlPort implements XMLValue {
+@SuperBuilder
+public class GraphmlPort extends GraphmlElement implements XMLValue {
 
 
     public static final String TAGNAME = "port";
@@ -41,13 +41,6 @@ public class GraphmlPort implements XMLValue {
      * The name of this attribute in graph is <b>name</b>
      */
     private String name;
-
-    /**
-     * User defined extra attributes for <port> elements.
-     * <p>
-     * The name of this attribute in port is <b>port.extra.attrib</b>
-     */
-    private String extraAttrib;
 
     /**
      * User defined ports for <port> elements.
@@ -77,9 +70,8 @@ public class GraphmlPort implements XMLValue {
         if (name != null && !name.isEmpty()) attributes.put("name", name);
 
 
-        if (extraAttrib != null && !extraAttrib.isEmpty()) {
-            attributes.put("port.extra.attrib", extraAttrib);
-        }
+        if (getExtraAttrib() != null)
+            attributes.putAll(getExtraAttrib());
         return  attributes;
     }
 

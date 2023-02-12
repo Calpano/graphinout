@@ -60,12 +60,6 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
      */
     private GraphmlKeyForType forType;
     /**
-     * User defined extra attributes for <key> elements.
-     * <p>
-     * The name of this attribute in key is <b>key.extra.attrib</b>
-     */
-    private String extraAttrib;
-    /**
      * This is an Element
      *
      * @see GraphmlDescription {@link  GraphmlDescription}
@@ -116,7 +110,8 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
 
         if (forType != null) attributes.put("for", forType.name());
 
-        if (extraAttrib != null) attributes.put("extra.attrib", extraAttrib);
+        if(extraAttrib!=null)
+            attributes.putAll(extraAttrib);
 
         return  attributes;
     }

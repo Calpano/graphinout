@@ -47,13 +47,6 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements  XMLV
      */
     private String id;
 
-    /**
-     * User defined extra attributes for <hyperEdge> elements.
-     * <p>
-     * The name of this attribute in hyperEdge  is <b>hyperEdge.extra.attrib</b>
-     */
-    private String extraAttrib;
-
     @Singular(ignoreNullCollections = true)
     private List<GraphmlEndpoint> endpoints;
 
@@ -88,7 +81,8 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements  XMLV
 
         if (id != null) attributes.put("id", id);
 
-        if (extraAttrib != null) attributes.put("hyperEdge.extra.attrib", extraAttrib);
+        if (getExtraAttrib() != null)
+            attributes.putAll(getExtraAttrib());
         return attributes;
     }
 
