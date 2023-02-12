@@ -7,18 +7,14 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+// graph, doc, edge, node, port,
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class GioGraphCommonElement {
-    /**
-     * This ia an Element That can be empty or null.
-     * <p>
-     * The name of this element in graph is <b>desc</b>
-     */
-    protected String desc;
+public abstract class GioElementWithData extends GioElementWithDescription {
 
     /**
      * In GraphML there may be data-functions attached to graphs, nodes, ports, edges, hyperedges and endpoint and to
@@ -31,7 +27,7 @@ public class GioGraphCommonElement {
      * </p>
      * The name of this element is <b>data</b>
      */
-    protected List<GioData> dataList;
+    protected List<GioData> dataList = Collections.emptyList();
 
     public void addData(String key, String data) {
         addData(GioData.builder().key(key).value(data).build());
