@@ -4,6 +4,7 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import java.util.function.Consumer;
 public interface GioReader {
 
     @AllArgsConstructor
+    @Builder
     class ContentError {
         public enum ErrorLevel {
             Warn, Error
