@@ -1,21 +1,9 @@
 package com.calpano.graphinout.base.output;
 
-import com.calpano.graphinout.base.graphml.GraphmlData;
-import com.calpano.graphinout.base.graphml.GraphmlDocument;
-import com.calpano.graphinout.base.graphml.GraphmlEdge;
-import com.calpano.graphinout.base.graphml.GraphmlGraph;
-import com.calpano.graphinout.base.graphml.GraphmlHyperEdge;
-import com.calpano.graphinout.base.graphml.GraphmlKey;
-import com.calpano.graphinout.base.graphml.GraphmlLocator;
-import com.calpano.graphinout.base.graphml.GraphmlNode;
-import com.calpano.graphinout.base.graphml.GraphmlWriter;
+import com.calpano.graphinout.base.graphml.*;
 
 import java.io.IOException;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class ValidatingGraphMlWriter implements GraphmlWriter {
 
@@ -23,13 +11,20 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         /**
          * state before any token
          */
-        EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, ENDPOINT, EDGE;
+        EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, ENDPOINT, EDGE, DEFAULT, PORT, LABEL_GRAPH,
+        LABEL_NODE, LABEL_EDGE, LABEL_HYPEREDGE, LABEL_ENDPOINT;
 
         static {
             EMPTY.allowedChildren = Set.of(GRAPHML);
-            GRAPHML.allowedChildren = Set.of(DESC, KEY,DATA,GRAPH);
-            // TODO add other nesting rules
-            HYPEREDGE.allowedChildren = Set.of(DESC, DATA, ENDPOINT, GRAPH);
+            GRAPHML.allowedChildren = Set.of(KEY, DATA, GRAPH, DESC, LABEL_GRAPH);
+            KEY.allowedChildren = Set.of(DESC, DEFAULT, LABEL_GRAPH);
+            DEFAULT.allowedChildren = Set.of(DATA, LABEL_GRAPH);
+            GRAPH.allowedChildren = Set.of(DATA, NODE, EDGE, HYPEREDGE, PORT, DESC, LABEL_GRAPH);
+            NODE.allowedChildren = Set.of(DATA, PORT, DESC, LABEL_NODE);
+            EDGE.allowedChildren = Set.of(DATA, ENDPOINT, PORT, DESC, LABEL_EDGE);
+            HYPEREDGE.allowedChildren = Set.of(DATA, PORT, DESC, LABEL_HYPEREDGE);
+            ENDPOINT.allowedChildren = Set.of(DATA, PORT, DESC, LABEL_ENDPOINT);
+            PORT.allowedChildren = Set.of(DATA, LABEL_GRAPH, LABEL_NODE, LABEL_EDGE, LABEL_HYPEREDGE, LABEL_ENDPOINT);
         }
 
         private Set<CurrentElement> allowedChildren = new HashSet<>();
@@ -66,7 +61,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
 
     @Override
     public void endEdge() throws IOException {
-        // TODO ...
+        ensureAllowedEnd(CurrentElement.EDGE);
         graphMlWriter.endEdge();
     }
 
@@ -147,8 +142,15 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         }
     }
 
-    private void validateEdge(GraphmlEdge edge) {
-        // TODO validate
+    private void validateEdge(GraphmlEdge edge) throws IOException {
+        if (edge.getSource() == null || edge.getTarget() == null) {
+            throw new IOException("Edge must have a source and a target.");
+        }
+        if (!edge.getData().isEmpty()) {
+            for (GraphmlData gioData : edge.getData()) {
+                validateData(gioData);
+            }
+        }
     }
 
     private void validateEdge(GraphmlHyperEdge hyperEdge) throws IOException {
