@@ -143,7 +143,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     private void resolveEdges(Set<String> nodeIds, Set<String> usedEdgeIds, Set<String> edgesReferences) throws IOException {
         for (String edgeRef : edgesReferences) {
             if (!usedEdgeIds.contains(edgeRef)) {
-                throw new IOException("GraphmlEdge refers to non-existing edge with id " + edgeRef);
+                throw new IOException("Edge refers to a non-existing edge ID: " + edgeRef);
             }
         }
     }
@@ -151,7 +151,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     private void validateData(GraphmlData data) throws IOException {
         String key = data.getKey();
         if (key == null || key.isEmpty()) {
-            throw new IOException("GraphmlData key cannot be null or empty.");
+            throw new IOException("Data key cannot be null or empty.");
         }
     }
 
@@ -178,6 +178,10 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             for (GraphmlData gioData : hyperEdge.getDataList()) {
                 validateData(gioData);
             }
+        }
+        List<GraphmlEndpoint> endpoints = hyperEdge.getEndpoints();
+        if (endpoints == null || endpoints.size() < 2) {
+            throw new IOException("Hyper edge must have at least 2 endpoints.");
         }
     }
 
