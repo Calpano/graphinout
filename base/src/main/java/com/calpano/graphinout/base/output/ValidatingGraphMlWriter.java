@@ -39,6 +39,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
      */
     private final Deque<CurrentElement> currentElements;
     private final GraphmlWriter graphMlWriter;
+    private final Set<String> existingNodeIds = new HashSet<>();
+    private final Set<String> existingEdgeIds = new HashSet<>();
+    private final Set<String> edgeReferences = new HashSet<>();
 
     public ValidatingGraphMlWriter(GraphmlWriter graphMlWriter) {
         this.currentElements = new LinkedList<>();
@@ -56,6 +59,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void endDocument() throws IOException {
         ensureAllowedEnd(CurrentElement.GRAPHML);
+        resolveEdges(existingNodeIds, existingEdgeIds, edgeReferences);
         graphMlWriter.endDocument();
     }
 
@@ -93,6 +97,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void startEdge(GraphmlEdge edge) throws IOException {
         ensureAllowedStart(CurrentElement.EDGE);
+        existingEdgeIds.add(edge.getId());
         validateEdge(edge);
         graphMlWriter.startEdge(edge);
     }
@@ -108,7 +113,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void startHyperEdge(GraphmlHyperEdge hyperEdge) throws IOException {
         ensureAllowedStart(CurrentElement.HYPEREDGE);
-        validateEdge(hyperEdge);
+        validateHyperEdge(hyperEdge);
         graphMlWriter.startHyperEdge(hyperEdge);
     }
 
@@ -135,6 +140,14 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         currentElements.push(childElement);
     }
 
+    private void resolveEdges(Set<String> nodeIds, Set<String> usedEdgeIds, Set<String> edgesReferences) throws IOException {
+        for (String edgeRef : edgesReferences) {
+            if (!usedEdgeIds.contains(edgeRef)) {
+                throw new IOException("GraphmlEdge refers to non-existing edge with id " + edgeRef);
+            }
+        }
+    }
+
     private void validateData(GraphmlData data) throws IOException {
         String key = data.getKey();
         if (key == null || key.isEmpty()) {
@@ -143,10 +156,15 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     private void validateEdge(GraphmlEdge edge) throws IOException {
-        GraphmlNode source = edge.getSource();
-        GraphmlNode target = edge.getTarget();
-        if (source == null || target == null || source.getId().isEmpty() || target.getId().isEmpty()) {
-            throw new IOException("Edge must have a source and a target.");
+        String sourceId = edge.getSource().getId();
+        String targetId = edge.getTarget().getId();
+        String edgeId = edge.getId();
+        if (sourceId == null || targetId == null || sourceId.isEmpty() || targetId.isEmpty() ||
+                !existingNodeIds.contains(sourceId) || !existingNodeIds.contains(targetId)) {
+            throw new IOException("Edge must have a source and target that refers to a node.");
+        }
+        if (edgeId == null || edgeId.isEmpty() || existingEdgeIds.contains(edgeId)) {
+            throw new IOException("Edge must have a unique ID.");
         }
         if (!edge.getData().isEmpty()) {
             for (GraphmlData gioData : edge.getData()) {
@@ -155,7 +173,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         }
     }
 
-    private void validateEdge(GraphmlHyperEdge hyperEdge) throws IOException {
+    private void validateHyperEdge(GraphmlHyperEdge hyperEdge) throws IOException {
         if (!hyperEdge.getDataList().isEmpty()) {
             for (GraphmlData gioData : hyperEdge.getDataList()) {
                 validateData(gioData);
@@ -171,7 +189,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         }
         if (!graph.getHyperEdges().isEmpty()) {
             for (GraphmlHyperEdge gioEdge : graph.getHyperEdges()) {
-                validateEdge(gioEdge);
+                validateHyperEdge(gioEdge);
             }
         }
     }
