@@ -60,7 +60,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void endDocument() throws IOException {
         ensureAllowedEnd(CurrentElement.GRAPHML);
-        resolveEdges(existingNodeIds, existingEdgeIds, edgeReferences);
+        resolveEdges(existingEdgeIds, edgeReferences);
         graphMlWriter.endDocument();
     }
 
@@ -145,7 +145,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         currentElements.push(childElement);
     }
 
-    private void resolveEdges(Set<String> nodeIds, Set<String> usedEdgeIds, Set<String> edgesReferences) throws IOException {
+    private void resolveEdges(Set<String> usedEdgeIds, Set<String> edgesReferences) throws IOException {
         for (String edgeRef : edgesReferences) {
             if (!usedEdgeIds.contains(edgeRef)) {
                 throw new IOException("Edge refers to a non-existing edge ID: " + edgeRef);
