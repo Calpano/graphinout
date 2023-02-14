@@ -67,12 +67,15 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void endEdge() throws IOException {
         ensureAllowedEnd(CurrentElement.EDGE);
+        // check edge, if all endpoint nodes are already defined => fine
+        // if not => remember edge references (uses costly memory :-)
         graphMlWriter.endEdge();
     }
 
     @Override
     public void endGraph(Optional<GraphmlLocator> locator) throws IOException {
         ensureAllowedEnd(CurrentElement.GRAPH);
+        // validate all open references here
         graphMlWriter.endGraph(locator);
     }
 
@@ -85,6 +88,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void endNode(Optional<GraphmlLocator> locator) throws IOException {
         ensureAllowedEnd(CurrentElement.NODE);
+        // TODO call validation checks
         graphMlWriter.endNode(locator);
     }
 
