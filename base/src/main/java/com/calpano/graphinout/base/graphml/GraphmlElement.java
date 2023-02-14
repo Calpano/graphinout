@@ -16,9 +16,8 @@ import java.util.Map;
 public class GraphmlElement {
 
     /**
-     * User defined extra attributes for <key> elements.
-     * <p>
-     * The name of this attribute in key is <b>key.extra.attrib</b>
+     * "Users can add attributes to all GraphML elements.".
+     * User defined extra attributes, see http://graphml.graphdrawing.org/specification.html, bottom of page
      */
     protected Map<String,String> extraAttrib = new HashMap<>();
 

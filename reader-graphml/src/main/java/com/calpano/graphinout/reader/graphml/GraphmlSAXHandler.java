@@ -30,8 +30,9 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-
-        if (GraphmlConstant.GRAPHML_ELEMENT_NAME.equals(qName)) {
+        // validate URI once, should be "http://graphml.graphdrawing.org/xmlns"; all other URIs: verbatim data, no interpretation, still resolve URI + localName
+        /// TODO warn about wrong URI
+        if (GraphmlConstant.GRAPHML_ELEMENT_NAME.equals(localName)) {
             startGraphmlElement(uri, localName, attributes);
         } else if (GraphmlConstant.DESC_ELEMENT_NAME.equals(qName)) {
             startDescElement(uri, localName, attributes);
