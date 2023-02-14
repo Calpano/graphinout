@@ -1,9 +1,6 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioElementWithDescription;
-import com.calpano.graphinout.base.gio.GioKey;
-import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.reader.GioReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,15 +52,16 @@ class GraphmlSAXHandlerTest {
         assertNull(((GioDocument)saxHandler.getCurrentEntity().getEntity()).getDataList());
         assertNull(((GioDocument)saxHandler.getCurrentEntity().getEntity()).getDescription());
         verify(gioWriter,times(0)).startDocument(any());
-        qName=GraphmlConstant.DESC_ELEMENT_NAME;
 
+       //ADD Desc
+        qName=GraphmlConstant.DESC_ELEMENT_NAME;
         saxHandler.startElement(uri,localName,qName,attributes);
         assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription);
         verify(gioWriter,times(0)).startDocument(any());
 
-        saxHandler.characters("this is desc".toCharArray(),0,12);
+        saxHandler.characters("this is desc for Graphml".toCharArray(),0,24);
         assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription);
-        assertEquals("this is desc",((GioElementWithDescription)saxHandler.getCurrentEntity().getEntity()).description().get());
+        assertEquals("this is desc for Graphml",((GioElementWithDescription)saxHandler.getCurrentEntity().getEntity()).description().get());
         verify(gioWriter,times(0)).startDocument(any());
 
         saxHandler.endElement(uri,localName,qName);
@@ -72,6 +70,8 @@ class GraphmlSAXHandlerTest {
         assertNull(((GioDocument)saxHandler.getCurrentEntity().getEntity()).getKeys());
         assertNull(((GioDocument)saxHandler.getCurrentEntity().getEntity()).getDataList());
         assertNotNull(((GioDocument)saxHandler.getCurrentEntity().getEntity()).getDescription());
+
+        //ADD Key
         reset(attributes);
         qName=GraphmlConstant.KEY_ELEMENT_NAME;
         when(attributes.getLength()).thenReturn(2);
@@ -92,15 +92,15 @@ class GraphmlSAXHandlerTest {
         assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription);
         verify(gioWriter,times(0)).startDocument(any());
 
-        saxHandler.characters("this is desc".toCharArray(),0,12);
+        saxHandler.characters("this is desc for key".toCharArray(),0,19);
         assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription);
-        assertEquals("this is desc",((GioElementWithDescription)saxHandler.getCurrentEntity().getEntity()).description().get());
+        assertEquals("this is desc for key",((GioElementWithDescription)saxHandler.getCurrentEntity().getEntity()).description().get());
         verify(gioWriter,times(0)).startDocument(any());
 
         saxHandler.endElement(uri,localName,qName);
         verify(gioWriter,times(0)).startDocument(any());
         assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioKey);
-        assertEquals("this is desc",((GioElementWithDescription)saxHandler.getCurrentEntity().getEntity()).description().get());
+        assertEquals("this is desc for key",((GioElementWithDescription)saxHandler.getCurrentEntity().getEntity()).description().get());
 
         qName=GraphmlConstant.KEY_ELEMENT_NAME;
         saxHandler.endElement(uri,localName,qName);
@@ -111,7 +111,29 @@ class GraphmlSAXHandlerTest {
         assertNotNull(((GioDocument)saxHandler.getCurrentEntity().getEntity()).getDescription());
 
 
+        //ADD data
+        reset(attributes);
+        qName=GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+        when(attributes.getLength()).thenReturn(2);
+        when(attributes.getType(0)).thenReturn("id");
+        when(attributes.getType(1)).thenReturn("key");
+        when(attributes.getValue(0)).thenReturn("id");
+        when(attributes.getValue(1)).thenReturn("key");
 
+        saxHandler.startElement(uri,localName,qName,attributes);
+        assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioData);
+        verify(gioWriter,times(0)).startDocument(any());
+        verify(attributes,times(2)).getType(anyInt());
+        verify(attributes,times(1)).getLength();
+        reset(attributes);
+
+        qName=GraphmlConstant.KEY_ELEMENT_NAME;
+        saxHandler.endElement(uri,localName,qName);
+        verify(gioWriter,times(0)).startDocument(any());
+        assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioDocument);
+        assertNotNull(((GioDocument)saxHandler.getCurrentEntity().getEntity()).getKeys());
+        assertNotNull(((GioDocument)saxHandler.getCurrentEntity().getEntity()).getDataList());
+        assertNotNull(((GioDocument)saxHandler.getCurrentEntity().getEntity()).getDescription());
 
 
 

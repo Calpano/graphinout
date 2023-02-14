@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.graphml;
 
+import com.calpano.graphinout.base.gio.GioData;
 import com.calpano.graphinout.base.gio.GioDocument;
 import com.calpano.graphinout.base.gio.GioKey;
 
@@ -30,6 +31,10 @@ public class GioDocumentEntity implements GraphmlEntity<GioDocument>{
           if(gioDocument.getKeys()==null)
               gioDocument.setKeys(new ArrayList<>());
           gioDocument.getKeys().add((GioKey)graphmlEntity.getEntity());
+      } else if (GraphmlConstant.NODE_DATA_ELEMENT_NAME.equals(graphmlEntity.getName())) {
+          if(gioDocument.getDataList()==null)
+              gioDocument.setDataList(new ArrayList<>());
+          gioDocument.getDataList().add((GioData)graphmlEntity.getEntity());
       }else{
           throw new RuntimeException("Graphml has not "+graphmlEntity.getName()+" element.");
       }

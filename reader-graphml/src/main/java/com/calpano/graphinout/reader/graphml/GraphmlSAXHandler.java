@@ -1,10 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioKey;
-import com.calpano.graphinout.base.gio.GioKeyForType;
-import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.reader.GioReader;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
@@ -38,8 +35,10 @@ class GraphmlSAXHandler extends DefaultHandler {
             startGraphmlElement(uri, localName, attributes);
         } else if (GraphmlConstant.DESC_ELEMENT_NAME.equals(qName)) {
             startDescElement(uri, localName, attributes);
-        }else if (GraphmlConstant.KEY_ELEMENT_NAME.equals(qName)) {
+        } else if (GraphmlConstant.KEY_ELEMENT_NAME.equals(qName)) {
             startKeyElement(uri, localName, attributes);
+        }else if (GraphmlConstant.NODE_DATA_ELEMENT_NAME.equals(qName)) {
+            startNodeDataElement(uri, localName, attributes);
         }
 
     }
@@ -50,8 +49,10 @@ class GraphmlSAXHandler extends DefaultHandler {
             endGraphmlElement();
         } else if (GraphmlConstant.DESC_ELEMENT_NAME.equals(qName)) {
             endDescElement();
-        }else if (GraphmlConstant.KEY_ELEMENT_NAME.equals(qName)) {
+        } else if (GraphmlConstant.KEY_ELEMENT_NAME.equals(qName)) {
             endKeyElement();
+        } else if (GraphmlConstant.NODE_DATA_ELEMENT_NAME.equals(qName)) {
+            endNodeDataElement();
         }
     }
 
@@ -75,15 +76,12 @@ class GraphmlSAXHandler extends DefaultHandler {
         super.fatalError(e);
     }
 
-
     private void startGraphmlElement(String uri, String localName, Attributes attributes) {
 
         Map<String, String> customAttributes = new LinkedHashMap<>();
         for (int i = 0; i < attributes.getLength(); i++) {
             customAttributes.put(attributes.getType(i), attributes.getValue(i));
         }
-
-
         currentEntity = new GioDocumentEntity(GioDocument.builder().customAttributes(customAttributes).build());
     }
 
@@ -93,7 +91,6 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startDescElement(String uri, String localName, Attributes attributes) {
         stack.push(currentEntity);
-
         currentEntity = new GioDescriptionEntity();
     }
 
@@ -101,15 +98,20 @@ class GraphmlSAXHandler extends DefaultHandler {
         stack.peek().addEntity(currentEntity);
         currentEntity = stack.pop();
     }
+
     private void startKeyElement(String uri, String localName, Attributes attributes) {
         stack.push(currentEntity);
         GioKey.GioKeyBuilder builder = GioKey.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
-        int attributesLength=attributes.getLength();
-        for (int i = 0; i <attributesLength; i++) {
-            switch(attributes.getType(i)){
-                case "id": builder.id( attributes.getValue(i));break;
-                case "for":  builder.forType(GioKeyForType.valueOf(attributes.getValue(i)));break;
+        int attributesLength = attributes.getLength();
+        for (int i = 0; i < attributesLength; i++) {
+            switch (attributes.getType(i)) {
+                case "id":
+                    builder.id(attributes.getValue(i));
+                    break;
+                case "for":
+                    builder.forType(GioKeyForType.valueOf(attributes.getValue(i)));
+                    break;
                 default:
                     customAttributes.put(attributes.getType(i), attributes.getValue(i));
             }
@@ -118,7 +120,34 @@ class GraphmlSAXHandler extends DefaultHandler {
         builder.customAttributes(customAttributes);
         currentEntity = new GioKeyEntity(builder.build());
     }
-    private void  endKeyElement() {
+
+    private void endKeyElement() {
+        stack.peek().addEntity(currentEntity);
+        currentEntity = stack.pop();
+    }
+
+    private void startNodeDataElement(String uri, String localName, Attributes attributes) {
+        stack.push(currentEntity);
+        GioData.GioDataBuilder builder = GioData.builder();
+        Map<String, String> customAttributes = new LinkedHashMap<>();
+        int attributesLength = attributes.getLength();
+        for (int i = 0; i < attributesLength; i++) {
+            switch (attributes.getType(i)) {
+                case "id":
+                    builder.id(attributes.getValue(i));
+                    break;
+                case "key":
+                    builder.key(attributes.getValue(i));
+                    break;
+                default:
+                    customAttributes.put(attributes.getType(i), attributes.getValue(i));
+            }
+
+        }
+           currentEntity = new GioDataEntity(builder.build());
+       }
+
+    private void endNodeDataElement() {
         stack.peek().addEntity(currentEntity);
         currentEntity = stack.pop();
     }
@@ -126,7 +155,6 @@ class GraphmlSAXHandler extends DefaultHandler {
     public GraphmlEntity getCurrentEntity() {
         return currentEntity;
     }
-
 
 
 }
