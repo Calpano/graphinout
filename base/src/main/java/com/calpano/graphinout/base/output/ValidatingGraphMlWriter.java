@@ -42,7 +42,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     private final GraphmlWriter graphMlWriter;
     private final Set<String> existingNodeIds = new HashSet<>();
     private final Set<String> existingEdgeIds = new HashSet<>();
-    private final Set<String> edgeReferences = new HashSet<>();
+    private final Set<GraphmlEdge> edgeReferences = new HashSet<>();
+    private final Set<GraphmlHyperEdge> hyperEdgeReferences = new HashSet<>();
 
     public ValidatingGraphMlWriter(GraphmlWriter graphMlWriter) {
         this.currentElements = new LinkedList<>();
@@ -60,16 +61,17 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void endDocument() throws IOException {
         ensureAllowedEnd(CurrentElement.GRAPHML);
-        resolveEdges(existingEdgeIds, edgeReferences);
+        for (GraphmlEdge edge : edgeReferences) {
+            if (!resolveEdges(edge)) throw new IllegalStateException("Edge references to a non-existent node ID");
+        }
         graphMlWriter.endDocument();
     }
 
     @Override
-    public void endEdge() throws IOException {
+    public void endEdge(GraphmlEdge graphmlEdge) throws IOException {
         ensureAllowedEnd(CurrentElement.EDGE);
-        // check edge, if all endpoint nodes are already defined => fine
-        // if not => remember edge references (uses costly memory :-)
-        graphMlWriter.endEdge();
+        resolveEdges(graphmlEdge);
+        graphMlWriter.endEdge(graphmlEdge);
     }
 
     @Override
@@ -102,8 +104,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void startEdge(GraphmlEdge edge) throws IOException {
         ensureAllowedStart(CurrentElement.EDGE);
-        existingEdgeIds.add(edge.getId());
         validateEdge(edge);
+        existingEdgeIds.add(edge.getId());
         graphMlWriter.startEdge(edge);
     }
 
@@ -119,6 +121,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     public void startHyperEdge(GraphmlHyperEdge hyperEdge) throws IOException {
         ensureAllowedStart(CurrentElement.HYPEREDGE);
         validateHyperEdge(hyperEdge);
+        existingEdgeIds.add(hyperEdge.getId());
         graphMlWriter.startHyperEdge(hyperEdge);
     }
 
@@ -126,6 +129,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     public void startNode(GraphmlNode node) throws IOException {
         ensureAllowedStart(CurrentElement.NODE);
         validateNode(node);
+        existingNodeIds.add(node.getId());
         graphMlWriter.startNode(node);
     }
 
@@ -145,31 +149,42 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         currentElements.push(childElement);
     }
 
-    private void resolveEdges(Set<String> usedEdgeIds, Set<String> edgesReferences) throws IOException {
-        for (String edgeRef : edgesReferences) {
-            if (!usedEdgeIds.contains(edgeRef)) {
-                throw new IOException("Edge refers to a non-existing edge ID: " + edgeRef);
-            }
-        }
-    }
-
-    private void validateData(GraphmlData data) throws IOException {
-        String key = data.getKey();
-        if (key == null || key.isEmpty()) {
-            throw new IOException("Data key cannot be null or empty.");
-        }
-    }
-
-    private void validateEdge(GraphmlEdge edge) throws IOException {
+    private boolean resolveEdges(GraphmlEdge edge) {
         String sourceId = edge.getSource().getId();
         String targetId = edge.getTarget().getId();
-        String edgeId = edge.getId();
-        if (sourceId == null || targetId == null || sourceId.isEmpty() || targetId.isEmpty() ||
-                !existingNodeIds.contains(sourceId) || !existingNodeIds.contains(targetId)) {
-            throw new IOException("Edge must have a source and target that refers to a node.");
+        if (!existingNodeIds.contains(sourceId)) {
+            edgeReferences.add(edge);
+            return false;
         }
+        if (!existingNodeIds.contains(targetId)) {
+            edgeReferences.add(edge);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean resolveHyperEdges(GraphmlHyperEdge hyperEdge) {
+        List<GraphmlEndpoint> endpoints = hyperEdge.getEndpoints();
+        for (GraphmlEndpoint endpoint : endpoints) {
+            if (!existingNodeIds.contains(endpoint.getNode())) {
+                hyperEdgeReferences.add(hyperEdge);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void validateData(GraphmlData data) throws IllegalStateException {
+        String key = data.getKey();
+        if (key == null || key.isEmpty()) {
+            throw new IllegalStateException("Data key cannot be null or empty.");
+        }
+    }
+
+    private void validateEdge(GraphmlEdge edge) throws IllegalStateException {
+        String edgeId = edge.getId();
         if (edgeId == null || edgeId.isEmpty() || existingEdgeIds.contains(edgeId)) {
-            throw new IOException("Edge must have a unique ID.");
+            throw new IllegalStateException("Edge must have a unique ID.");
         }
         if (!edge.getData().isEmpty()) {
             for (GraphmlData gioData : edge.getData()) {
@@ -178,19 +193,19 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         }
     }
 
-    private void validateHyperEdge(GraphmlHyperEdge hyperEdge) throws IOException {
+    private void validateHyperEdge(GraphmlHyperEdge hyperEdge) throws IllegalStateException {
         if (!hyperEdge.getDataList().isEmpty()) {
             for (GraphmlData gioData : hyperEdge.getDataList()) {
                 validateData(gioData);
             }
         }
-        List<GraphmlEndpoint> endpoints = hyperEdge.getEndpoints();
-        if (endpoints == null || endpoints.size() < 2) {
-            throw new IOException("Hyper edge must have at least 2 endpoints.");
-        }
+        List<GraphmlEndpoint> hyperEdgeEndpoints = hyperEdge.getEndpoints();
+        String hyperEdgeId = hyperEdge.getId();
+        if (hyperEdgeId == null || hyperEdgeId.isEmpty() || hyperEdgeEndpoints == null || hyperEdgeEndpoints.size() < 2)
+            throw new IllegalStateException("Hyper edge must have at least 2 endpoints.");
     }
 
-    private void validateGraph(GraphmlGraph graph) throws IOException {
+    private void validateGraph(GraphmlGraph graph) throws IllegalStateException {
         if (!graph.getNodes().isEmpty()) {
             for (GraphmlNode gioNode : graph.getNodes()) {
                 validateNode(gioNode);
@@ -203,7 +218,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         }
     }
 
-    private void validateGraphMl(GraphmlDocument document) throws IOException {
+    private void validateGraphMl(GraphmlDocument document) {
         if (!document.getKeys().isEmpty()) {
             for (GraphmlKey gioKey : document.getKeys()) {
                 validateKey(gioKey);
@@ -216,17 +231,21 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         }
     }
 
-    private void validateKey(GraphmlKey key) throws IOException {
+    private void validateKey(GraphmlKey key) throws IllegalStateException {
         if (key.getDataList().stream().anyMatch(existingKey -> existingKey.getId().equals(key.getId()))) {
-            throw new IOException("Key ID already exists: " + key.getId() + ". ID must be unique.");
+            throw new IllegalStateException("Key ID already exists: " + key.getId() + ". ID must be unique.");
         }
     }
 
-    private void validateNode(GraphmlNode node) throws IOException {
+    private void validateNode(GraphmlNode node) throws IllegalStateException {
         if (!node.getDataList().isEmpty()) {
             for (GraphmlData gioData : node.getDataList()) {
                 validateData(gioData);
             }
+        }
+        String nodeId = node.getId();
+        if (nodeId == null || nodeId.isEmpty()) {
+            throw new IllegalStateException("Node must have an ID.");
         }
     }
 }
