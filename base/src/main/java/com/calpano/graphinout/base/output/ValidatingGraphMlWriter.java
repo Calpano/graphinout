@@ -143,7 +143,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     private void validateEdge(GraphmlEdge edge) throws IOException {
-        if (edge.getSource() == null || edge.getTarget() == null) {
+        GraphmlNode source = edge.getSource();
+        GraphmlNode target = edge.getTarget();
+        if (source == null || target == null || source.getId().isEmpty() || target.getId().isEmpty()) {
             throw new IOException("Edge must have a source and a target.");
         }
         if (!edge.getData().isEmpty()) {
