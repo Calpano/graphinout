@@ -20,5 +20,8 @@ public class GraphmlConstant {
     public static final String PORT_ELEMENT_NAME = "port";
     public static final String DESC_ELEMENT_NAME = "desc";
 
+    public static final String LOCATOR_ELEMENT_NAME = "locator";
+
+
 
 }

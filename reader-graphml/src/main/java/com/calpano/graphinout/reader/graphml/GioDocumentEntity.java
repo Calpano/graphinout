@@ -1,8 +1,6 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.gio.GioData;
 import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioKey;
 
 import java.util.ArrayList;
 
@@ -20,20 +18,17 @@ public class GioDocumentEntity implements GraphmlEntity<GioDocument> {
 
     @Override
     public void addEntity(GraphmlEntity graphmlEntity) {
-        // TODO consider this style
-        //      if(graphmlEntity instanceof  GioDescriptionEntity g) {
-        //          gioDocument.setDescription(g.getEntity().getDescription());
-        //      }
-        if (GraphmlConstant.DESC_ELEMENT_NAME.equals(graphmlEntity.getName()))
-            gioDocument.setDescription(((GioDescriptionEntity) graphmlEntity).getEntity().getDescription());
-        else if (GraphmlConstant.KEY_ELEMENT_NAME.equals(graphmlEntity.getName())) {
+
+        if (graphmlEntity instanceof GioDescriptionEntity g) {
+            gioDocument.setDescription(g.getEntity().getDescription());
+        } else if (graphmlEntity instanceof GioKeyEntity g) {
             if (gioDocument.getKeys() == null)
                 gioDocument.setKeys(new ArrayList<>());
-            gioDocument.getKeys().add((GioKey) graphmlEntity.getEntity());
-        } else if (GraphmlConstant.NODE_DATA_ELEMENT_NAME.equals(graphmlEntity.getName())) {
+            gioDocument.getKeys().add(g.getEntity());
+        } else if (graphmlEntity instanceof GioDataEntity g) {
             if (gioDocument.getDataList() == null)
                 gioDocument.setDataList(new ArrayList<>());
-            gioDocument.getDataList().add((GioData) graphmlEntity.getEntity());
+            gioDocument.getDataList().add(g.getEntity());
         } else {
             throw new RuntimeException("Graphml has not " + graphmlEntity.getName() + " element.");
         }
