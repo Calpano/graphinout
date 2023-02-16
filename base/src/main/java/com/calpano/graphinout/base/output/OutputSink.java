@@ -29,6 +29,7 @@ public interface OutputSink {
     /** can be called once. Users need to close {@link OutputStream after usage */
     OutputStream outputStream() throws IOException;
 
+    // TODO why this?
     List<String> readAllData() throws IOException;
 
     Map<String, Object> outputInfo() ;
