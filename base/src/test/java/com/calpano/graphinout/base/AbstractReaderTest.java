@@ -17,6 +17,7 @@ import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,7 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public abstract class AbstractReaderTest {
+
+    private static final Logger log = getLogger(AbstractReaderTest.class);
 
     /**
      * @param inputSource
@@ -62,13 +67,14 @@ public abstract class AbstractReaderTest {
     protected abstract GioReader createReader();
 
     void testReadResourceToGraph(String resourcePath) throws IOException {
+        GioReader gioReader = createReader();
         URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
+        log.info("Reading " + resourceUrl + " as " + gioReader.fileFormat());
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
 
         byte[] graphmlBytes;
         {
             SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
-            GioReader gioReader = createReader();
             InMemoryOutputSink outputSink = new InMemoryOutputSink();
             List<ContentError> contentErrors = readTo(inputSource, gioReader, outputSink, true, true, true);
             // TODO find a way to list expected contentErrors? static Map<resourcePath,List<ContentError>>

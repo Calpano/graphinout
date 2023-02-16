@@ -11,9 +11,17 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GioFileFormat {
 
-    /** an ID unique in GIO; Only [a-z0-9_] in the id String. */
-   private String id;
-    /** A human-readable name */
-   private String label;
+    /**
+     * an ID unique in GIO; Only [a-z0-9_] in the id String.
+     */
+    private String id;
+    /**
+     * A human-readable name
+     */
+    private String label;
 
+    @Override
+    public String toString() {
+        return "'" + label + "' [" + id + "]";
+    }
 }
