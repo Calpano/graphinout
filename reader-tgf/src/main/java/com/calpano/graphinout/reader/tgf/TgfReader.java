@@ -86,6 +86,7 @@ public class TgfReader implements GioReader {
                         .id(nodeParts[0])
                         .dataList(gioDataList)
                         .build());
+                writer.endNode(null);
             } else {
                 log.info("--- edges:");
                 String[] edgeParts = line.split(DELIMITER);
@@ -100,6 +101,7 @@ public class TgfReader implements GioReader {
                             .description(edgeParts[2]).build());
                 }
                 writer.startEdge(GioEdge.builder().endpoints(endpointList).build());
+                writer.endEdge(null);
             }
         }
         writer.endGraph(null);
