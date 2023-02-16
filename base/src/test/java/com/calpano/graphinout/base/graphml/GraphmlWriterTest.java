@@ -66,7 +66,7 @@ class GraphmlWriterTest {
                 .xLinkHref(new URL("http:\\127.0.0.1"))
                 .build();
         graphmlWriter.endGraph(Optional.of(locator));
-        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
 
     }
 
@@ -88,7 +88,7 @@ class GraphmlWriterTest {
                 .build();
         locator.getAttributes().put("locator.extra.attrib","local");
         graphmlWriter.endNode(Optional.of(locator));
-        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
     }
 
     @Test
@@ -107,7 +107,7 @@ class GraphmlWriterTest {
                 .xLinkHref(new URL("http:\\127.0.0.1"))
                 .build();
         graphmlWriter.endHyperEdge(Optional.of(locator));
-        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
 
     }
 

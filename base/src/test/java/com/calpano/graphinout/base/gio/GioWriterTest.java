@@ -47,7 +47,7 @@ class GioWriterTest {
     @Test
     void endGraph() throws IOException {
         gioWriter.endGraph(new URL("http:\\127.0.0.1"));
-        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
 
     }
 
@@ -72,7 +72,7 @@ class GioWriterTest {
     @Test
     void endNode() throws IOException {
         gioWriter.endNode(new URL("http:\\127.0.0.1"));
-        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
 
     }
 
@@ -95,7 +95,7 @@ class GioWriterTest {
     @Test
     void endEdge() throws IOException {
         gioWriter.endEdge(new URL("http:\\127.0.0.1"));
-        assertEquals("::startElement->locator->{xlink:herf=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
     }
 
 
