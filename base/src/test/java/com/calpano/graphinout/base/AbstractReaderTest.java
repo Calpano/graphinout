@@ -16,8 +16,7 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URL;
@@ -62,9 +61,7 @@ public abstract class AbstractReaderTest {
 
     protected abstract GioReader createReader();
 
-    @ParameterizedTest
-    @MethodSource("getResourceFilePaths")
-    void testReadToGraph(String resourcePath) throws IOException {
+    void testReadResourceToGraph(String resourcePath) throws IOException {
         URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
 
@@ -88,6 +85,17 @@ public abstract class AbstractReaderTest {
             // graphmlBytes = outputSink.getByteBuffer().toByteArray();
         }
         // TODO compare byte arrays (as strings)
+    }
+
+    @Test
+    void testResources() {
+        getResourceFilePaths().filter(this::canRead).forEach(resourcePath -> {
+            try {
+                testReadResourceToGraph(resourcePath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private Stream<String> getResourceFilePaths() {
