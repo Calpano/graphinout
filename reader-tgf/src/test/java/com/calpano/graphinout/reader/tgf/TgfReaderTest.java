@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.tgf;
 
+import com.calpano.graphinout.base.AbstractReaderTest;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
@@ -23,7 +24,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
-class TgfReaderTest {
+class TgfReaderTest extends AbstractReaderTest {
 
     public static final String EMPTY_FILE = "";
     public static final String NODES_ONLY = "1 First node\n2 Second node";
@@ -96,6 +97,16 @@ class TgfReaderTest {
         tgfReader.read(inputSource, gioWriter);
 
         verify(errorConsumer).accept(any(GioReader.ContentError.class));
+    }
+
+    @Override
+    protected boolean canRead(String resourcePath) {
+        return resourcePath.endsWith(".tgf");
+    }
+
+    @Override
+    protected GioReader createReader() {
+        return new TgfReader();
     }
 
     private static Stream<String> getResourceFilePaths() {
