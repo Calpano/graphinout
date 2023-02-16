@@ -31,6 +31,7 @@ import java.util.List;
 @Builder
 public class GraphmlEdge {
 
+    public static final String TAGNAME = "edge";
     /**
      * This is an attribute that can be empty or null.
      * </p>

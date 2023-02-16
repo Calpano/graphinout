@@ -44,6 +44,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     @Override
     public void endEdge() throws IOException {
         // TODO implement
+        xmlWriter.endElement(GraphmlEdge.TAGNAME);
     }
 
     @Override
