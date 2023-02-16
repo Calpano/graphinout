@@ -135,7 +135,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     private void ensureAllowedStart(CurrentElement childElement) throws IllegalStateException {
         CurrentElement currentElement = currentElements.peek();
         if (!currentElement.isValidChild(childElement)) {
-            throw new IllegalStateException("Wrong order of elements, expected one of " + currentElement.allowedChildren + " but found " + currentElement);
+            throw new IllegalStateException("Wrong order of elements. In element "+currentElement
+                    +" expected one of " + currentElement.allowedChildren + " but found " + childElement);
         }
         currentElements.push(childElement);
     }
@@ -173,12 +174,12 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     private void validateGraphMl(GraphmlDocument document) throws IOException {
-        if (!document.getKeys().isEmpty()) {
+        if (document.getKeys()!=null) {
             for (GraphmlKey gioKey : document.getKeys()) {
                 validateKey(gioKey);
             }
         }
-        if (!document.getDataList().isEmpty()) {
+        if (document.getDataList()!=null) {
             for (GraphmlData gioData : document.getDataList()) {
                 validateData(gioData);
             }
