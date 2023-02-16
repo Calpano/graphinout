@@ -9,11 +9,13 @@ import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
+import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.base.reader.GioReader;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -25,18 +27,23 @@ import java.util.function.Consumer;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class TgfReader implements GioReader {
+
+    private @Nullable Consumer<ContentError> errorHandler;
+
+    /**
+     * Set error handler
+     * @param errorHandler
+     */
+    public void errorHandler(Consumer<ContentError> errorHandler) {
+        this.errorHandler = errorHandler;
+    }
+
+
     public static final String DELIMITER = " ";
     public static final String HASH = "#";
     public static final String LABEL = "label";
     private static final Logger log = getLogger(TgfReader.class);
-    /**
-     * @Nullable TODO maybe make a true Optional
-     */
-    private Consumer<ContentError> errorConsumer;
 
-    public void errorHandler(Consumer<ContentError> errorConsumer) {
-        this.errorConsumer = errorConsumer;
-    }
 
     @Override
     public GioFileFormat fileFormat() {
@@ -102,8 +109,8 @@ public class TgfReader implements GioReader {
         }
         scanner.close();
 
-        if (!isValid && errorConsumer != null) {
-            errorConsumer.accept(new ContentError(ContentError.ErrorLevel.Error, "TGF file is not valid.", Optional.empty()));
+        if (!isValid && errorHandler != null) {
+            errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "TGF file is not valid.", Optional.empty()));
         }
     }
 }

@@ -7,6 +7,7 @@ import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
+import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
@@ -24,7 +25,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
-class TgfReaderTest extends AbstractReaderTest {
+class TgfReaderTest {
 
     public static final String EMPTY_FILE = "";
     public static final String NODES_ONLY = "1 First node\n2 Second node";
@@ -56,8 +57,8 @@ class TgfReaderTest extends AbstractReaderTest {
     }
     
     @Test
-    public void shouldCallErrorConsumerWhenTGFIsNotValid() throws IOException {
-        Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
+    void shouldCallErrorConsumerWhenTGFIsNotValid() throws IOException {
+        Consumer<ContentError> errorConsumer = mock(Consumer.class);
         TgfReader tgfReader = new TgfReader();
         tgfReader.errorHandler(errorConsumer);
         SingleInputSource singleInputSource = mock(SingleInputSource.class);
@@ -70,9 +71,9 @@ class TgfReaderTest extends AbstractReaderTest {
     }
 
     @Test
-    public void shouldNotReturnErrorWhenTgfFileHasNoEdges() throws IOException {
+    void shouldNotReturnErrorWhenTgfFileHasNoEdges() throws IOException {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(NODES_ONLY.getBytes(StandardCharsets.UTF_8));
-        Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
+        Consumer<ContentError> errorConsumer = mock(Consumer.class);
         TgfReader tgfReader = new TgfReader();
         tgfReader.errorHandler(errorConsumer);
         SingleInputSource inputSource = mock(SingleInputSource.class);
@@ -85,9 +86,9 @@ class TgfReaderTest extends AbstractReaderTest {
     }
 
     @Test
-    public void shouldReturnErrorWhenTgfFileHasOnlyEdges() throws IOException {
+    void shouldReturnErrorWhenTgfFileHasOnlyEdges() throws IOException {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(EDGES_ONLY.getBytes(StandardCharsets.UTF_8));
-        Consumer<GioReader.ContentError> errorConsumer = mock(Consumer.class);
+        Consumer<ContentError> errorConsumer = mock(Consumer.class);
         TgfReader tgfReader = new TgfReader();
         tgfReader.errorHandler(errorConsumer);
         SingleInputSource inputSource = mock(SingleInputSource.class);
@@ -96,17 +97,7 @@ class TgfReaderTest extends AbstractReaderTest {
         when(inputSource.inputStream()).thenReturn(inputStream);
         tgfReader.read(inputSource, gioWriter);
 
-        verify(errorConsumer).accept(any(GioReader.ContentError.class));
-    }
-
-    @Override
-    protected boolean canRead(String resourcePath) {
-        return resourcePath.endsWith(".tgf");
-    }
-
-    @Override
-    protected GioReader createReader() {
-        return new TgfReader();
+        verify(errorConsumer).accept(any(ContentError.class));
     }
 
     private static Stream<String> getResourceFilePaths() {

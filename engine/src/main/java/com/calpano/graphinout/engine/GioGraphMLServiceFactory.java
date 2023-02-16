@@ -1,6 +1,5 @@
 package com.calpano.graphinout.engine;
 
-import com.calpano.graphinout.base.exception.GioException;
 import com.calpano.graphinout.base.gio.GioDocument;
 import com.calpano.graphinout.base.graphml.GraphMLService;
 import com.calpano.graphinout.base.output.xml.GioGraphInOutXMLConstants;
@@ -23,12 +22,12 @@ public final class GioGraphMLServiceFactory {
         loadService();
     }
 
-    public static GraphMLService<GioDocument> instance(String xmlTypeID) throws GioException {
+    public static GraphMLService<GioDocument> instance(String xmlTypeID)  {
 
         return graphMLServiceFactory.graphMLServiceStorage.get(xmlTypeID);
     }
 
-    public static GraphMLService<GioDocument> newInstance(String xmlTypeID) throws GioException {
+    public static GraphMLService<GioDocument> newInstance(String xmlTypeID)  {
         //TODO Validate
         //TODO Create and add new Instance to graphMLServiceStorage
 

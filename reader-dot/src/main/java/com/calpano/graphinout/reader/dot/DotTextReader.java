@@ -8,6 +8,7 @@ import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
+import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.base.reader.GioReader;
 import com.paypal.digraph.parser.GraphEdge;
@@ -19,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -27,10 +27,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class DotTextReader implements GioReader {
 
     private static final Logger log = getLogger(DotTextReader.class);
+    private Consumer<ContentError> errorHandler;
 
     @Override
-    public void errorHandler(Consumer<ContentError> errorConsumer) {
-        GioReader.super.errorHandler(errorConsumer);
+    public void errorHandler(Consumer<ContentError> errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
     @Override

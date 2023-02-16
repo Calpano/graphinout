@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.exception.GioException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -72,7 +71,7 @@ public class GioKey extends GioElementWithDescription {
         return Optional.ofNullable(defaultValue);
     }
 
-    public void setForType(String forType) throws GioException {
+    public void setForType(String forType) throws IllegalArgumentException {
         this.forType = GioKeyForType.keyForType(forType);
     }
 

@@ -10,22 +10,37 @@ import com.calpano.graphinout.base.output.ValidatingGraphMlWriter;
 import com.calpano.graphinout.base.output.xml.XmlWriter;
 import com.calpano.graphinout.base.output.xml.file.InMemoryOutputSink;
 import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
+import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public abstract class AbstractReaderTest {
 
-    public static void readTo(SingleInputSource inputSource, GioReader gioReader, OutputSink outputSink, //
-                              boolean validateXml, boolean validateGraphml, boolean validateGio) throws IOException {
+    /**
+     * @param inputSource
+     * @param gioReader
+     * @param outputSink
+     * @param validateXml
+     * @param validateGraphml
+     * @param validateGio
+     * @return all content errors reported
+     * @throws IOException
+     */
+    public static List<ContentError> readTo(SingleInputSource inputSource, GioReader gioReader, OutputSink outputSink, //
+                                            boolean validateXml, boolean validateGraphml, boolean validateGio) throws IOException {
+        List<ContentError> contentErrors = new ArrayList<>();
         XmlWriter xmlWriter = new SimpleXmlWriter(outputSink);
         if (validateXml) {
             // TODO        xmlWriter = new ValidatingXmlWriter( xmlWriter );
@@ -38,7 +53,9 @@ public abstract class AbstractReaderTest {
         if (validateGio) {
             // TODO        gioWriter = new ValidatingGioWriter( gioWriter );
         }
+        gioReader.errorHandler(contentErrors::add);
         gioReader.read(inputSource, gioWriter);
+        return contentErrors;
     }
 
     protected abstract boolean canRead(String resourcePath);
@@ -56,7 +73,9 @@ public abstract class AbstractReaderTest {
             SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
             GioReader gioReader = createReader();
             InMemoryOutputSink outputSink = new InMemoryOutputSink();
-            readTo(inputSource, gioReader, outputSink, true, true, true);
+            List<ContentError> contentErrors = readTo(inputSource, gioReader, outputSink, true, true, true);
+            // TODO find a way to list expected contentErrors? static Map<resourcePath,List<ContentError>>
+            Assertions.assertTrue(contentErrors.isEmpty());
             graphmlBytes = outputSink.getByteBuffer().toByteArray();
         }
         byte[] graphmlBytes2;
@@ -65,7 +84,7 @@ public abstract class AbstractReaderTest {
             // TODO read with graphml reader into memory again
             // GioReader gioReader = null;
             // InMemoryOutputSink outputSink = new InMemoryOutputSink();
-            // readTo(inputSource, gioReader, outputSink, true, true, true);
+            // List<ContentError> contentErrors = readTo(inputSource, gioReader, outputSink, true, true, true);
             // graphmlBytes = outputSink.getByteBuffer().toByteArray();
         }
         // TODO compare byte arrays (as strings)

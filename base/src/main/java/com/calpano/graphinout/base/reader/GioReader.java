@@ -3,36 +3,19 @@ package com.calpano.graphinout.base.reader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
-import lombok.AllArgsConstructor;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public interface GioReader {
 
-    @AllArgsConstructor
-    class ContentError {
-        public enum ErrorLevel {
-            Warn, Error
-        }
-
-        public class Location {
-            int line;
-            int col;
-        }
-        final ErrorLevel level;
-        final String message;
-        final Optional<Location> location;
-    }
-
-    // inspect
-
-    // validate
-
-    default void errorHandler(Consumer<ContentError> errorConsumer) {
-    }
+    /**
+     * Set error handler to the reader. Reader will use it to report errors while parsing.
+     * IOExceptions remain normal IOExceptions.
+     * @param errorHandler
+     */
+    void errorHandler(Consumer<ContentError> errorHandler);
 
     /**
      * Which file format can this reader read?
@@ -41,6 +24,12 @@ public interface GioReader {
      */
     GioFileFormat fileFormat();
 
+    /**
+     * Inspect input
+     * @param singleInputSource
+     * @return
+     * @throws IOException
+     */
     default boolean isValid(SingleInputSource singleInputSource) throws IOException {
         AtomicBoolean valid = new AtomicBoolean(true);
         errorHandler((error) -> {
