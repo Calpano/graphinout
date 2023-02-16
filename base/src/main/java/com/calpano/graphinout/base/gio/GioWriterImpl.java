@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 public class GioWriterImpl implements GioWriter {
 
     final GraphmlWriter graphmlWriter;
+    private @Nullable GraphmlElement currentElement;
 
     public GioWriterImpl(GraphmlWriter graphmlWriter) {
         this.graphmlWriter = graphmlWriter;
@@ -41,7 +42,12 @@ public class GioWriterImpl implements GioWriter {
 
     @Override
     public void endEdge(@Nullable URL locator) throws IOException {
-        graphmlWriter.endHyperEdge(locator(locator));
+        if (currentElement instanceof GraphmlHyperEdge) {
+            graphmlWriter.endHyperEdge(locator(locator));
+        } else {
+            graphmlWriter.endEdge();
+        }
+        this.currentElement = null;
     }
 
     @Override
@@ -88,12 +94,14 @@ public class GioWriterImpl implements GioWriter {
 
     @Override
     public void startEdge(GioEdge gioEdge) throws IOException {
+        // TODO if less than 2 endpoints, create normal edge
         GraphmlHyperEdge graphmlHyperEdge = GraphmlHyperEdge.builder().id(gioEdge.getId()).build();
         customAttributes(gioEdge, graphmlHyperEdge);
         data(gioEdge, graphmlHyperEdge);
         assert gioEdge.getEndpoints() != null;
         graphmlHyperEdge.setEndpoints(gioEdge.getEndpoints().stream().map(this::graphmlEndpoint).collect(Collectors.toList()));
         graphmlWriter.startHyperEdge(graphmlHyperEdge);
+        this.currentElement = graphmlHyperEdge;
     }
 
     @Override
