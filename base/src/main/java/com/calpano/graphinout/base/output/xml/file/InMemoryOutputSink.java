@@ -18,6 +18,10 @@ public class InMemoryOutputSink implements OutputSink {
         buffer = new ByteArrayOutputStream();
     }
 
+    public ByteArrayOutputStream getByteBuffer() {
+        return buffer;
+    }
+
     @Override
     public Map<String, Object> outputInfo() {
         Map<String, Object> info = new HashMap<>();
