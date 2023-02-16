@@ -11,9 +11,14 @@ class ContentError {
         Warn, Error
     }
 
-    public class Location {
+    public static class Location {
         int line;
         int col;
+
+        public Location(int lineNumber, int columnNumber) {
+            this.line = lineNumber;
+            this.col = columnNumber;
+        }
     }
 
     final ErrorLevel level;
