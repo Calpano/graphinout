@@ -194,15 +194,15 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     private void validateHyperEdge(GraphmlHyperEdge hyperEdge) throws IllegalStateException {
-        if (!hyperEdge.getDataList().isEmpty()) {
+        if (hyperEdge.getDataList()!=null) {
             for (GraphmlData gioData : hyperEdge.getDataList()) {
                 validateData(gioData);
             }
         }
         List<GraphmlEndpoint> hyperEdgeEndpoints = hyperEdge.getEndpoints();
-        String hyperEdgeId = hyperEdge.getId();
-        if (hyperEdgeId == null || hyperEdgeId.isEmpty() || hyperEdgeEndpoints == null || hyperEdgeEndpoints.size() < 2)
-            throw new IllegalStateException("Hyper edge must have at least 2 endpoints.");
+        // id is optional
+        if (hyperEdgeEndpoints == null || hyperEdgeEndpoints.size() < 2)
+            throw new IllegalStateException("Hyper edge must have at least 2 endpoints: "+hyperEdge);
     }
 
     private void validateGraph(GraphmlGraph graph) throws IllegalStateException {
