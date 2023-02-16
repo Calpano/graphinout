@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +36,7 @@ public class GraphmlGraphCommonElement extends GraphmlElement {
      * </p>
      * The name of this element is <b>data</b>
      */
-    protected List<GraphmlData> dataList;
+    protected @Nullable List<GraphmlData> dataList;
 
     public void addData(String key, String data) {
         addData(GraphmlData.builder().key(key).value(data).build());

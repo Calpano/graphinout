@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -58,7 +59,7 @@ public class GraphmlDocument extends GraphmlGraphCommonElement {
      * The name of this Element in graphML is <b>key</b>
      */
     @Singular(ignoreNullCollections = true)
-    private List<GraphmlKey> keys;
+    private @Nullable List<GraphmlKey> keys;
 
 
 }
