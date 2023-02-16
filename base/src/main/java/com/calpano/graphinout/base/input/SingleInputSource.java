@@ -35,6 +35,31 @@ public interface SingleInputSource extends InputSource {
         };
     }
 
+    static SingleInputSource of(byte[] bytes) {
+       return new SingleInputSource() {
+           @Override
+           public Optional<Charset> encoding() {
+               return Optional.empty();
+           }
+
+           @Override
+           public Optional<String> inputFormat() {
+               return Optional.empty();
+           }
+
+           @Override
+           public InputStream inputStream() throws IOException {
+               return new ByteArrayInputStream(bytes);
+           }
+
+           @Override
+           public String name() {
+               return "InMemory";
+           }
+
+       };
+    }
+
     /**
      * can be called repeatedly, but users need to close {@link InputStream after each usage
      */
