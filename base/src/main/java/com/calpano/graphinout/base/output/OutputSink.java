@@ -26,6 +26,30 @@ public interface OutputSink {
         };
     }
 
+    static OutputSink createNoop() {
+        return new OutputSink(){
+            @Override
+            public OutputStream outputStream() throws IOException {
+                return new OutputStream() {
+                    @Override
+                    public void write(int b) throws IOException {
+                        // no-op
+                    }
+                };
+            }
+
+            @Override
+            public List<String> readAllData() throws IOException {
+                return null;
+            }
+
+            @Override
+            public Map<String, Object> outputInfo() {
+                return null;
+            }
+        };
+    }
+
     /** can be called once. Users need to close {@link OutputStream after usage */
     OutputStream outputStream() throws IOException;
 
