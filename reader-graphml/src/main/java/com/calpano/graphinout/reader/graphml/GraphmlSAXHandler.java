@@ -2,6 +2,7 @@ package com.calpano.graphinout.reader.graphml;
 
 
 import com.calpano.graphinout.base.gio.*;
+import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
@@ -14,20 +15,21 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.function.Consumer;
 
 @Slf4j
 class GraphmlSAXHandler extends DefaultHandler {
     private final GioWriter gioWriter;
-    private final GioReader.ContentError contentError;
+    private final Consumer<ContentError> errorHandler;
 
     private GraphmlEntity currentEntity;
 
     private Stack<GraphmlEntity> stack = new Stack<>();
 
 
-    public GraphmlSAXHandler(GioWriter gioWriter, GioReader.ContentError contentError) {
+    public GraphmlSAXHandler(GioWriter gioWriter, Consumer<ContentError> errorHandler) {
         this.gioWriter = gioWriter;
-        this.contentError = contentError;
+        this.errorHandler = errorHandler;
     }
 
     @Override

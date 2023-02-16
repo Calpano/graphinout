@@ -1,6 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.*;
+import com.calpano.graphinout.base.reader.ContentErrors;
 import com.calpano.graphinout.base.reader.GioReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +35,7 @@ class GraphmlSAXHandlerTest {
         @BeforeEach
         void setUp() {
             MockitoAnnotations.openMocks(this);
-            saxHandler = new GraphmlSAXHandler(gioWriter, GioReader.ContentError.builder().build());
+            saxHandler = new GraphmlSAXHandler(gioWriter, ContentErrors.defaultErrorHandler());
         }
 
         @DisplayName("Only GioDocument  start and End Element  successfully pass.")

@@ -3,6 +3,7 @@ package com.calpano.graphinout.reader.graphml;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
+import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.base.reader.GioReader;
 
@@ -10,9 +11,11 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 public class GraphmlReader implements GioReader {
+    private Consumer<ContentError> errorHandler;
+
     @Override
-    public void errorHandler(Consumer<ContentError> errorConsumer) {
-        GioReader.super.errorHandler(errorConsumer);
+    public void errorHandler(Consumer<ContentError> errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
     @Override
