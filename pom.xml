@@ -134,5 +134,16 @@
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
         </dependency>
+        <!-- these dependencies let IntelliJ (almost) run all tests from umbrella project -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
