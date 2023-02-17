@@ -5,16 +5,19 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public interface SingleInputSource extends InputSource {
 
     static SingleInputSource of(String name, String content) {
+        return new SingleInputSourceOfString(name, content);
+    }
+
+    static SingleInputSource of(byte[] bytes) {
         return new SingleInputSource() {
             @Override
             public Optional<Charset> encoding() {
-                return Optional.of(StandardCharsets.UTF_8);
+                return Optional.empty();
             }
 
             @Override
@@ -24,40 +27,15 @@ public interface SingleInputSource extends InputSource {
 
             @Override
             public InputStream inputStream() throws IOException {
-                return
-                        new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+                return new ByteArrayInputStream(bytes);
             }
 
             @Override
             public String name() {
-                return name;
+                return "InMemory";
             }
+
         };
-    }
-
-    static SingleInputSource of(byte[] bytes) {
-       return new SingleInputSource() {
-           @Override
-           public Optional<Charset> encoding() {
-               return Optional.empty();
-           }
-
-           @Override
-           public Optional<String> inputFormat() {
-               return Optional.empty();
-           }
-
-           @Override
-           public InputStream inputStream() throws IOException {
-               return new ByteArrayInputStream(bytes);
-           }
-
-           @Override
-           public String name() {
-               return "InMemory";
-           }
-
-       };
     }
 
     /**
