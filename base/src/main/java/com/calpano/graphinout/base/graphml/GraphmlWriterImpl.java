@@ -44,6 +44,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     @Override
     public void endEdge() throws IOException {
         xmlWriter.endElement(GraphmlEdge.TAGNAME);
+        xmlWriter.lineBreak();
     }
 
     @Override
@@ -53,11 +54,13 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
         }
         xmlWriter.endElement(GraphmlGraph.TAGNAME);
+        xmlWriter.lineBreak();
     }
 
     @Override
     public void endHyperEdge() throws IOException {
         xmlWriter.endElement(GraphmlHyperEdge.TAGNAME);
+        xmlWriter.lineBreak();
     }
 
     @Override
@@ -67,6 +70,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
         }
         xmlWriter.endElement(GraphmlNode.TAGNAME);
+        xmlWriter.lineBreak();
     }
 
     @Override
@@ -78,6 +82,8 @@ public class GraphmlWriterImpl implements GraphmlWriter {
         attributes.put("xsi:schemaLocation", HEADER_XMLNS_XSI_SCHEMA_LOCATIOM);
 
         xmlWriter.startElement(GraphmlDocument.TAGNAME, attributes);
+        xmlWriter.lineBreak();
+
         if (doc.desc != null) {
             doc.desc.writeXml(xmlWriter);
         }
@@ -86,6 +92,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             data(key);
 
         writerData(doc.getDataList());
+        xmlWriter.lineBreak();
     }
 
     @Override
@@ -100,7 +107,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             graphmlGraph.desc.writeXml(xmlWriter);
         }
         writerData(graphmlGraph.getDataList());
-
+        xmlWriter.lineBreak();
     }
 
     @Override
