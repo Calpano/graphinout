@@ -3,16 +3,14 @@ package com.calpano.graphinout.reader.tgf;
 import com.calpano.graphinout.base.AbstractReaderTest;
 import com.calpano.graphinout.base.reader.GioReader;
 
+import java.util.Arrays;
+import java.util.List;
+
 class TgfReaderTest2 extends AbstractReaderTest {
 
     @Override
-    protected boolean canRead(String resourcePath) {
-        return resourcePath.endsWith(".tgf");
-    }
-
-    @Override
-    protected GioReader createReader() {
-        return new TgfReader();
+    protected List<GioReader> readersToTest() {
+        return Arrays.asList(new TgfReader());
     }
 
 }
