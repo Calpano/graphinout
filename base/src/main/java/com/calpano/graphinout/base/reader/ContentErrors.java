@@ -13,7 +13,7 @@ public class ContentErrors {
     private static String buildMessage(ContentError contentError) {
         StringBuilder b = new StringBuilder();
         b.append(contentError.message);
-        contentError.location.ifPresent(loc -> b.append("@" + loc.line + ":" + loc.col));
+        contentError.location().ifPresent(loc -> b.append("@" + loc.line + ":" + loc.col));
         return b.toString();
     }
 

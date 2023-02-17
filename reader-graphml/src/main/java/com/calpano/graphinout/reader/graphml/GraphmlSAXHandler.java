@@ -228,12 +228,12 @@ class GraphmlSAXHandler extends DefaultHandler {
         }
     }
 
-    private Optional<ContentError.Location> location() {
-        return Optional.of(new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber()));
+    private ContentError.Location location() {
+        return new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber());
     }
 
-    private Optional<ContentError.Location> location(SAXParseException e) {
-        return Optional.of(new ContentError.Location(e.getLineNumber(), e.getColumnNumber()));
+    private ContentError.Location location(SAXParseException e) {
+        return new ContentError.Location(e.getLineNumber(), e.getColumnNumber());
     }
 
     private void startDescElement(String uri, String localName, Attributes attributes) {

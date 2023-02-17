@@ -112,7 +112,7 @@ public class TgfReader implements GioReader {
         scanner.close();
 
         if (!isValid && errorHandler != null) {
-            errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "TGF file is not valid.", Optional.empty()));
+            errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "TGF file is not valid.", null));
         }
     }
 }

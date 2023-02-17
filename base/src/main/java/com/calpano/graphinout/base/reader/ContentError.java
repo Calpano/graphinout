@@ -2,6 +2,7 @@ package com.calpano.graphinout.base.reader;
 
 import lombok.AllArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -23,5 +24,10 @@ class ContentError {
 
     final ErrorLevel level;
     final String message;
-    final Optional<Location> location;
+    final @Nullable Location location;
+
+    public Optional<Location> location() {
+        return Optional.of(location);
+    }
+
 }
