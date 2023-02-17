@@ -1,0 +1,26 @@
+== JGraphT
+
+.Docs
+- https://jgrapht.org/guide/UserOverview
+- JavaDocs https://jgrapht.org/javadoc-SNAPSHOT/org.jgrapht.io/org/jgrapht/nio/graph6/Graph6Sparse6Importer.html
+
+.Supported io modules
+[%header]
+|===
+| Module | Name | Spec
+|csv |  |
+|dimacs |  |
+|dot |  |
+|gexf |  |
+|gml |  |
+|graph6 |  |
+|graphml |  |
+|json |  |
+|lemon |  |
+|matrix |  |
+|tsplib | TSPLIB95 | http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/
+|===
+
+== TSPLIB
+This implementation does not cover the full TSPLIB95 standard.
+See https://jgrapht.org/javadoc-SNAPSHOT/org.jgrapht.io/org/jgrapht/nio/tsplib/TSPLIBImporter.html[] for details.
