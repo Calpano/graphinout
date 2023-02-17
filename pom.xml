@@ -54,6 +54,18 @@
                 <version>${logback-classic-version}</version>
             </dependency>
             <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.11.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok-version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>${junit-jupiter.version}</version>
@@ -77,7 +89,6 @@
                 <version>${junit-jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-all</artifactId>
@@ -95,19 +106,6 @@
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>${mockito-junit-jupiter-version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.11.0</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok-version}</version>
-                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
