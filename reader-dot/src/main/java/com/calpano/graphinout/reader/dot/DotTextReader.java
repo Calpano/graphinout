@@ -36,7 +36,7 @@ public class DotTextReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("dot", "DOT Text Format");
+        return new GioFileFormat("dot", "DOT Text Format",".dot",".gv");
     }
 
     @Override

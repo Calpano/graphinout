@@ -1,27 +1,44 @@
 package com.calpano.graphinout.base.reader;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-@Builder
 public class GioFileFormat {
 
     /**
      * an ID unique in GIO; Only [a-z0-9_] in the id String.
      */
-    private String id;
+    private final String id;
     /**
      * A human-readable name
      */
-    private String label;
+    private final String label;
+    private final Set<String> fileExtensions;
+
+    /**
+     * @param extensions handled file extensions (optional), should be listed as ".foo" (with dot)
+     */
+    public GioFileFormat(String id, String label, String... extensions) {
+        this.id = id;
+        this.label = label;
+        this.fileExtensions = extensions == null ? new HashSet<>() : new HashSet<>(Arrays.asList(extensions));
+    }
 
     @Override
     public String toString() {
         return "'" + label + "' [" + id + "]";
+    }
+
+    public String id() {
+        return id;
+    }
+
+    public String label() {
+        return label;
+    }
+
+    public Set<String> fileExtensions() {
+        return fileExtensions;
     }
 }

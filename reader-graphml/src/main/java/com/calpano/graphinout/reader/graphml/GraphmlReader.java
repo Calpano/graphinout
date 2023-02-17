@@ -20,7 +20,7 @@ public class GraphmlReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return null;
+        return new GioFileFormat("graphml", "GraphML",".graphml",".graphml.xml");
     }
 
     @Override
