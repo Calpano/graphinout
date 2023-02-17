@@ -37,6 +37,22 @@ public class ReaderTests {
         return gioReader.fileFormat().fileExtensions().stream().anyMatch(resourcePath::endsWith);
     }
 
+    public static GioWriter createWriter(OutputSink outputSink, boolean validateXml, boolean validateGraphml, boolean validateGio) {
+        XmlWriter xmlWriter = new XmlWriterImpl(outputSink);
+        if (validateXml) {
+            xmlWriter = new ValidatingXmlWriter(xmlWriter);
+        }
+        GraphmlWriter graphmlWriter = new GraphmlWriterImpl(xmlWriter);
+        if (validateGraphml) {
+            graphmlWriter = new ValidatingGraphMlWriter(graphmlWriter);
+        }
+        GioWriter gioWriter = new GioWriterImpl(graphmlWriter);
+        if (validateGio) {
+            // TODO        gioWriter = new ValidatingGioWriter( gioWriter );
+        }
+        return gioWriter;
+    }
+
     public static void forEachReadableResource(GioReader gioReader, Consumer<String> resourcePathConsumer) {
         getAllTestResourceFilePaths().filter(resourcePath -> canRead(gioReader, resourcePath)).forEach(resourcePathConsumer);
     }
@@ -67,18 +83,7 @@ public class ReaderTests {
     public static List<ContentError> readTo(SingleInputSource inputSource, GioReader gioReader, OutputSink outputSink, //
                                             boolean validateXml, boolean validateGraphml, boolean validateGio) throws IOException {
         List<ContentError> contentErrors = new ArrayList<>();
-        XmlWriter xmlWriter = new SimpleXmlWriter(outputSink);
-        if (validateXml) {
-            xmlWriter = new ValidatingXmlWriter(xmlWriter);
-        }
-        GraphmlWriter graphmlWriter = new GraphmlWriterImpl(xmlWriter);
-        if (validateGraphml) {
-            graphmlWriter = new ValidatingGraphMlWriter(graphmlWriter);
-        }
-        GioWriter gioWriter = new GioWriterImpl(graphmlWriter);
-        if (validateGio) {
-            // TODO        gioWriter = new ValidatingGioWriter( gioWriter );
-        }
+        GioWriter gioWriter = createWriter(outputSink, validateXml, validateGraphml, validateGio);
         gioReader.errorHandler(contentErrors::add);
         gioReader.read(inputSource, gioWriter);
         return contentErrors;
