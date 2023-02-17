@@ -100,8 +100,8 @@ public class ReaderTests {
             // graphmlBytes = outputSink.getByteBuffer().toByteArray();
         }
         String graphml1 = new String(graphmlBytes1, StandardCharsets.UTF_8);
-        String graphml2 = new String(graphmlBytes2, StandardCharsets.UTF_8);
         // TODO enable when ready
+        //String graphml2 = new String(graphmlBytes2, StandardCharsets.UTF_8);
         // Assertions.assertEquals(graphml1, graphml2);
     }
 
