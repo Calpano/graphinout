@@ -50,7 +50,6 @@ public class GraphmlDocument extends GraphmlGraphCommonElement {
      * xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd" ,
      * defines the XML Schema location for all elements in the GraphML namespace.
      */
-
     public static final String HEADER_XMLNS_XSI_SCHEMA_LOCATIOM = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
 
     /**
