@@ -5,14 +5,21 @@ import java.util.Map;
 
 public interface XMLValue {
 
+    @Deprecated
     public String startTag() ;
 
-    public Map<String, String> getAttributes() ;
+    /**
+     * The full map of all attributes, built-in and 'extra attributes'
+     */
+    Map<String, String> getAttributes() ;
 
+    @Deprecated
     public String valueTag() ;
 
+    @Deprecated
     public String endTag() ;
 
+    @Deprecated
     default String fullTag(){
         StringBuilder builder =  new StringBuilder();
         builder.append(startTag());
