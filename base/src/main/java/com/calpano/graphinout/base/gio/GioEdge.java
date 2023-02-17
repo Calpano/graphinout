@@ -43,9 +43,15 @@ public class GioEdge extends GioElementWithData {
      */
     private String id;
 
+    /**
+     * By convention, a simple directed edge should FIRST have the source, then the target endpoint.
+     */
     @Singular
     private List<GioEndpoint> endpoints = Collections.emptyList();
 
+    /**
+     * By convention, a simple directed edge should FIRST have the source, then the target endpoint.
+     */
     public void addEndpoint(GioEndpoint gioEndpoint) {
         if (endpoints == null) endpoints = new ArrayList<>();
         endpoints.add(gioEndpoint);

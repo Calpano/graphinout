@@ -23,6 +23,18 @@ import java.util.List;
  * Optionally an identifier for the edge can be specified with the XML Attribute id.
  * When it is necessary to reference the edge, the id XML-Attribute is used.
  * @see GraphmlHyperEdge {@link GraphmlHyperEdge}
+ *
+ * <pre>
+ *     <!ELEMENT edge (desc?,data*,graph?)>
+ * <!ATTLIST edge
+ *           id         ID           #IMPLIED
+ *           source     IDREF        #REQUIRED
+ *           sourceport NMTOKEN      #IMPLIED
+ *           target     IDREF        #REQUIRED
+ *           targetport NMTOKEN      #IMPLIED
+ *           directed   (true|false) #IMPLIED
+ * >
+ * </pre>
  */
 
 @AllArgsConstructor

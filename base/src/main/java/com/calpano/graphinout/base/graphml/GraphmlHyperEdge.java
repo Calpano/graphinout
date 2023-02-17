@@ -30,6 +30,8 @@ import java.util.List;
  *             <endpoint node="id--node6" type="in"/>
  *         </hyperedge>
  * </pre>
+ *
+ * See also {@link GraphmlEdge}
  */
 @Data
 @AllArgsConstructor

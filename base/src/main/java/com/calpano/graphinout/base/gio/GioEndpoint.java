@@ -19,13 +19,15 @@ import java.util.Optional;
  * Note that edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
  * @see GioEdge {@link GioEdge}
  */
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Data
 public class GioEndpoint extends GioElement  {
 
     /**
+     * Edge id. Don't confuse with {@link #node}.
+     *
      * This is an attribute that can be empty or null.
      * </p>
      * The name of this attribute in endpoint is <b>id</b>
