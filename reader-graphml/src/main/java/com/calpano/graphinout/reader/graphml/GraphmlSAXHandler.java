@@ -81,6 +81,7 @@ class GraphmlSAXHandler extends DefaultHandler {
         return currentEntity;
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
         this.locator = locator;
     }
@@ -247,7 +248,7 @@ class GraphmlSAXHandler extends DefaultHandler {
             gioWriter.startGraph(g);
         } else if (currentEntity != null) stack.push(currentEntity);
 
-        GioEdge.GioEdgeBuilder builder = GioEdge.builder();
+        GioEdge.GioEdgeBuilder<?,?> builder = GioEdge.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {

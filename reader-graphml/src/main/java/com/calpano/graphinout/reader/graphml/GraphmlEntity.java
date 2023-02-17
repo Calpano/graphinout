@@ -7,7 +7,7 @@ public interface GraphmlEntity<E> {
 
     String getName();
 
-    void addEntity(GraphmlEntity graphmlEntity);
+    void addEntity(GraphmlEntity<?> graphmlEntity);
 
     void addData(String data);
 

@@ -21,7 +21,7 @@ public class GioDataEntity implements  GraphmlEntity<GioData> {
     }
 
     @Override
-    public void addEntity(GraphmlEntity graphmlEntity) {
+    public void addEntity(GraphmlEntity<?> graphmlEntity) {
       throw new RuntimeException("Data has not any inner element.");
     }
 

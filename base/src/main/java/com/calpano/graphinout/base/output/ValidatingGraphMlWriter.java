@@ -76,7 +76,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void endGraph(Optional<GraphmlLocator> locator) throws IOException {
         ensureAllowedEnd(CurrentElement.GRAPH);
-        // validate all open references here
+        // TODO validate all open edgeReferences here
         graphMlWriter.endGraph(locator);
     }
 
@@ -153,6 +153,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         String sourceId = edge.getSource().getId();
         String targetId = edge.getTarget().getId();
         if (!existingNodeIds.contains(sourceId)) {
+            // IMPROVE remember just just the undefined nodeId? remember whole edge: better error reporting
             edgeReferences.add(edge);
             return false;
         }
@@ -183,6 +184,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
 
     private void validateEdge(GraphmlEdge edge) throws IllegalStateException {
         String edgeId = edge.getId();
+        // TODO verify: edges must have id?
         if (edgeId == null || edgeId.isEmpty() || existingEdgeIds.contains(edgeId)) {
             throw new IllegalStateException("Edge must have a unique ID.");
         }
