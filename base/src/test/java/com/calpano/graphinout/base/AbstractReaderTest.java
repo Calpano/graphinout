@@ -48,7 +48,7 @@ public abstract class AbstractReaderTest {
         List<ContentError> contentErrors = new ArrayList<>();
         XmlWriter xmlWriter = new SimpleXmlWriter(outputSink);
         if (validateXml) {
-            xmlWriter = new ValidatingXmlWriter( xmlWriter );
+            xmlWriter = new ValidatingXmlWriter(xmlWriter);
         }
         GraphmlWriter graphmlWriter = new GraphmlWriterImpl(xmlWriter);
         if (validateGraphml) {
@@ -79,25 +79,28 @@ public abstract class AbstractReaderTest {
         log.info("Reading " + resourceUrl + " as " + gioReader.fileFormat());
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
 
-        byte[] graphmlBytes;
+        byte[] graphmlBytes1;
         {
             SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
             InMemoryOutputSink outputSink = new InMemoryOutputSink();
             List<ContentError> contentErrors = readTo(inputSource, gioReader, outputSink, true, true, true);
             // TODO find a way to list expected contentErrors? static Map<resourcePath,List<ContentError>>
             Assertions.assertTrue(contentErrors.isEmpty());
-            graphmlBytes = outputSink.getByteBuffer().toByteArray();
+            graphmlBytes1 = outputSink.getByteBuffer().toByteArray();
         }
-        byte[] graphmlBytes2;
+        byte[] graphmlBytes2 = null;
         {
-            SingleInputSource inputSource = SingleInputSource.of(graphmlBytes);
+            SingleInputSource inputSource = SingleInputSource.of(graphmlBytes1);
             // TODO read with graphml reader into memory again
             // GioReader gioReader = null;
             // InMemoryOutputSink outputSink = new InMemoryOutputSink();
             // List<ContentError> contentErrors = readTo(inputSource, gioReader, outputSink, true, true, true);
             // graphmlBytes = outputSink.getByteBuffer().toByteArray();
         }
-        // TODO compare byte arrays (as strings)
+        String graphml1 = new String(graphmlBytes1, StandardCharsets.UTF_8);
+        String graphml2 = new String(graphmlBytes2, StandardCharsets.UTF_8);
+        // TODO enable when ready
+        // Assertions.assertEquals(graphml1, graphml2);
     }
 
     @Test
