@@ -162,7 +162,7 @@ class GraphmlSAXHandler extends DefaultHandler {
         if (currentEntity != null) {
             if (currentEntity.getEntity() instanceof GioEdge g) {
                 gioWriter.startEdge(g);
-                gioWriter.endEdge(null);
+                gioWriter.endEdge();
             } else if (currentEntity.getEntity() instanceof URL g) {
                 gioWriter.endNode(g);
             }

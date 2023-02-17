@@ -16,7 +16,7 @@ public interface GraphmlWriter {
 
     void endGraph(Optional<GraphmlLocator> graphmlLocator) throws IOException;
 
-    void endHyperEdge(Optional<GraphmlLocator> graphmlLocator) throws IOException;
+    void endHyperEdge() throws IOException;
 
     void endNode(Optional<GraphmlLocator> locator) throws IOException;
 

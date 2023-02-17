@@ -103,11 +103,8 @@ class GraphmlWriterTest {
 
     @Test
     void endEdge() throws IOException {
-        GraphmlLocator locator = GraphmlLocator.builder()
-                .xLinkHref(new URL("http:\\127.0.0.1"))
-                .build();
-        graphmlWriter.endHyperEdge(Optional.of(locator));
-        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
+        graphmlWriter.endHyperEdge();
+        assertEquals("::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
 
     }
 

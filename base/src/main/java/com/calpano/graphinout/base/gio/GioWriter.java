@@ -3,7 +3,6 @@ package com.calpano.graphinout.base.gio;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 
 /**
  * For large files, we don't want to keep the entire graph object in memory.
@@ -13,7 +12,7 @@ public interface GioWriter {
 
     void endDocument() throws IOException;
 
-    void endEdge(@Nullable URL locator) throws IOException;
+    void endEdge() throws IOException;
 
     void endGraph(@Nullable URL locator) throws IOException;
 

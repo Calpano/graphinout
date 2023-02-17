@@ -94,8 +94,8 @@ class GioWriterTest {
 
     @Test
     void endEdge() throws IOException {
-        gioWriter.endEdge(new URL("http:\\127.0.0.1"));
-        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
+        gioWriter.endEdge();
+        assertEquals("::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
     }
 
 

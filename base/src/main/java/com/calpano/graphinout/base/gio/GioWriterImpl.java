@@ -41,9 +41,9 @@ public class GioWriterImpl implements GioWriter {
     }
 
     @Override
-    public void endEdge(@Nullable URL locator) throws IOException {
+    public void endEdge() throws IOException {
         if (currentElement instanceof GraphmlHyperEdge) {
-            graphmlWriter.endHyperEdge(locator(locator));
+            graphmlWriter.endHyperEdge();
         } else {
             graphmlWriter.endEdge();
         }

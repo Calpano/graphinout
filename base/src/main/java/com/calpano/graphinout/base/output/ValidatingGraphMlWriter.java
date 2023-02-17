@@ -81,9 +81,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endHyperEdge(Optional<GraphmlLocator> locator) throws IOException {
+    public void endHyperEdge() throws IOException {
         ensureAllowedEnd(CurrentElement.HYPEREDGE);
-        graphMlWriter.endHyperEdge(locator);
+        graphMlWriter.endHyperEdge();
     }
 
     @Override

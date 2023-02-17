@@ -101,7 +101,7 @@ public class TgfReader implements GioReader {
                             .description(edgeParts[2]).build());
                 }
                 writer.startEdge(GioEdge.builder().endpoints(endpointList).build());
-                writer.endEdge(null);
+                writer.endEdge();
             }
         }
         writer.endGraph(null);

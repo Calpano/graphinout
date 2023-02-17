@@ -57,11 +57,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     @Override
-    public void endHyperEdge(Optional<GraphmlLocator> locator) throws IOException {
-        if (locator.isPresent()) {
-            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
-            xmlWriter.endElement(GraphmlLocator.TAGNAME);
-        }
+    public void endHyperEdge() throws IOException {
         xmlWriter.endElement(GraphmlHyperEdge.TAGNAME);
     }
 
