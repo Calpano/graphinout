@@ -49,7 +49,7 @@ public class GraphmlEdge {
      * </p>
      * The name of this attribute in graph is <b>id</b>
      */
-    protected String id;
+    protected @Nullable String id;
 
     /**
      * This is an attribute that can be true or false or null ot empty.

@@ -3,10 +3,10 @@ package com.calpano.graphinout.base.gio;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 /**
  * @author rbaba
@@ -23,6 +23,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @Builder
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class GioEndpoint extends GioElement  {
 
     /**
@@ -32,7 +33,7 @@ public class GioEndpoint extends GioElement  {
      * </p>
      * The name of this attribute in endpoint is <b>id</b>
      */
-    private String id;
+    private @Nullable String id;
 
     /**
      * This is an attribute is optional but dependent to port.

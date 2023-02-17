@@ -3,6 +3,7 @@ package com.calpano.graphinout.base.gio;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
@@ -34,6 +35,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class GioEdge extends GioElementWithData {
 
     /**
@@ -47,7 +49,7 @@ public class GioEdge extends GioElementWithData {
      * By convention, a simple directed edge should FIRST have the source, then the target endpoint.
      */
     @Singular
-    private List<GioEndpoint> endpoints = Collections.emptyList();
+    private List<GioEndpoint> endpoints;
 
     /**
      * By convention, a simple directed edge should FIRST have the source, then the target endpoint.
