@@ -30,6 +30,6 @@ public class GraphmlReader implements GioReader {
 
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
-
+        //TODO use SAX-based reader in here
     }
 }

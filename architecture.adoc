@@ -321,4 +321,44 @@ class TgfConfig {
 == TODO
 We also need Service Lookup
 
+== INBOX
+
+FileFormat
+extension ".tgf"
+
+FileFormat "DOT"
+id
+label
+extension ".dot", ".gv"
+
+TgfReader
+
+
+"reader-FOOO" Maven project
+multiple GioReader
+
+Reader 1:1 FileFormat
+
+Engine
+service lookup -> SOMETHINGS
+SOMETHING -> Reader -> ext
+
+
+one jar: "reader-six"
+graph6
+sparse6
+digraph6
+xxx
+
+
+GioService
+used in service lookup
+
+one GioService will contain multiple GioReader
+
+
+
+
+
+
 

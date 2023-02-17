@@ -104,7 +104,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     public void startEdge(GraphmlEdge edge) throws IOException {
         ensureAllowedStart(CurrentElement.EDGE);
         validateEdge(edge);
-        existingEdgeIds.add(edge.getId());
+        resolveEdges(edge);
+        if(edge.getId()!=null)
+            existingEdgeIds.add(edge.getId());
         graphMlWriter.startEdge(edge);
     }
 

@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.output;
 
+import com.calpano.graphinout.base.input.MultiInputSource;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -53,9 +55,10 @@ public interface OutputSink {
     /** can be called once. Users need to close {@link OutputStream after usage */
     OutputStream outputStream() throws IOException;
 
-    // TODO why this?
+    @Deprecated
     List<String> readAllData() throws IOException;
 
+    @Deprecated
     Map<String, Object> outputInfo() ;
 
 }

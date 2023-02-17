@@ -11,7 +11,7 @@ import java.util.Stack;
  * A chaining, validating {@link XmlWriter}.
  */
 @Slf4j
-abstract class ValidatingXmlWriter implements XmlWriter {
+public class ValidatingXmlWriter implements XmlWriter {
 
     protected final XmlWriter sink;
     private final Stack<String> elements = new Stack<>();

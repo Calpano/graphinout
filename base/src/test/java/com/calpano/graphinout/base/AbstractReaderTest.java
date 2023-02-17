@@ -10,6 +10,7 @@ import com.calpano.graphinout.base.output.ValidatingGraphMlWriter;
 import com.calpano.graphinout.base.output.xml.XmlWriter;
 import com.calpano.graphinout.base.output.xml.file.InMemoryOutputSink;
 import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
+import com.calpano.graphinout.base.output.xml.file.ValidatingXmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
 import io.github.classgraph.ClassGraph;
@@ -47,7 +48,7 @@ public abstract class AbstractReaderTest {
         List<ContentError> contentErrors = new ArrayList<>();
         XmlWriter xmlWriter = new SimpleXmlWriter(outputSink);
         if (validateXml) {
-            // TODO        xmlWriter = new ValidatingXmlWriter( xmlWriter );
+            xmlWriter = new ValidatingXmlWriter( xmlWriter );
         }
         GraphmlWriter graphmlWriter = new GraphmlWriterImpl(xmlWriter);
         if (validateGraphml) {
@@ -66,6 +67,12 @@ public abstract class AbstractReaderTest {
 
     protected abstract GioReader createReader();
 
+    /**
+     * We read some inputFormat X into GraphML, write GraphML (1), read that GraphML, write to GraphML again (2); compare (1) and (2)
+     *
+     * @param resourcePath
+     * @throws IOException
+     */
     void testReadResourceToGraph(String resourcePath) throws IOException {
         GioReader gioReader = createReader();
         URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
