@@ -1,4 +1,4 @@
-package com.calpano.graphinout.base.output.xml;
+package com.calpano.graphinout.base.xml;
 
 import java.io.IOException;
 import java.util.Collections;

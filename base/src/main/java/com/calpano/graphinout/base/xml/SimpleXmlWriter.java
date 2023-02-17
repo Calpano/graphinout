@@ -1,7 +1,6 @@
-package com.calpano.graphinout.base.output.xml.file;
+package com.calpano.graphinout.base.xml;
 
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.output.xml.XmlWriter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -26,13 +25,13 @@ public class SimpleXmlWriter implements XmlWriter {
 
     @Override
     public void characterData(String characterData) throws IOException {
-        log.debug("characterData [{}].", characterData);
+        log.trace("characterData [{}]", characterData);
         writer.write(characterData);
     }
 
     @Override
     public void endDocument() throws IOException {
-        log.debug("endDocument.");
+        log.trace("endDocument");
         this.writer.flush();
         this.out.flush();
         this.writer.close();
@@ -41,7 +40,7 @@ public class SimpleXmlWriter implements XmlWriter {
 
     @Override
     public void endElement(String name) throws IOException {
-        log.debug("endElement [{}].", name);
+        log.trace("endElement [{}]", name);
         writer.write("</");
         writer.write(name);
         writer.write(">");
@@ -49,12 +48,14 @@ public class SimpleXmlWriter implements XmlWriter {
 
     @Override
     public void startDocument() throws IOException {
+        log.trace("startDocument");
         this.out = outputSink.outputStream();
         this.writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
     }
 
     @Override
     public void startElement(String name, Map<String, String> attributes) throws IOException {
+        log.trace("startElement [{}]", name);
         writer.write("<");
         writer.write(name);
         for (Map.Entry<String, String> entry : attributes.entrySet()) {

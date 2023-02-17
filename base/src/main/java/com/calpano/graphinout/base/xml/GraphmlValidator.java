@@ -1,4 +1,4 @@
-package com.calpano.graphinout.base.output.xml;
+package com.calpano.graphinout.base.xml;
 
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;

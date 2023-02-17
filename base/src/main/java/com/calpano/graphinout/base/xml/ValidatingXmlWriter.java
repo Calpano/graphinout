@@ -1,6 +1,5 @@
-package com.calpano.graphinout.base.output.xml.file;
+package com.calpano.graphinout.base.xml;
 
-import com.calpano.graphinout.base.output.xml.XmlWriter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -34,7 +33,7 @@ public class ValidatingXmlWriter implements XmlWriter {
     public void endElement(String name) throws IOException {
         String expected = elements.pop();
         if (expected == null || !expected.equals(name)) {
-            throw new IllegalStateException("Expected close of element " + expected + " but got " + name);
+            throw new IllegalStateException("XML nesting: Expected close of element '" + expected + "' but got '" + name+"'. Stack: "+this.elements);
         }
         sink.endElement(name);
     }

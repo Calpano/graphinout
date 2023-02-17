@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
-import com.calpano.graphinout.base.output.xml.XmlWriter;
+import com.calpano.graphinout.base.xml.XmlWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;

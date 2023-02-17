@@ -7,10 +7,10 @@ import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.output.ValidatingGraphMlWriter;
-import com.calpano.graphinout.base.output.xml.XmlWriter;
-import com.calpano.graphinout.base.output.xml.file.InMemoryOutputSink;
-import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
-import com.calpano.graphinout.base.output.xml.file.ValidatingXmlWriter;
+import com.calpano.graphinout.base.xml.XmlWriter;
+import com.calpano.graphinout.base.output.InMemoryOutputSink;
+import com.calpano.graphinout.base.xml.SimpleXmlWriter;
+import com.calpano.graphinout.base.xml.ValidatingXmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
 import io.github.classgraph.ClassGraph;
@@ -24,6 +24,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -36,8 +37,21 @@ public class ReaderTests {
         return gioReader.fileFormat().fileExtensions().stream().anyMatch(resourcePath::endsWith);
     }
 
+    public static void forEachReadableResource(GioReader gioReader, Consumer<String> resourcePathConsumer) {
+        getAllTestResourceFilePaths().filter(resourcePath -> canRead(gioReader, resourcePath)).forEach(resourcePathConsumer);
+    }
+
     private static Stream<String> getAllTestResourceFilePaths() {
         return new ClassGraph().scan().getAllResources().stream().map(Resource::getPath);
+    }
+
+    public static List<ContentError> readResourceToSink(GioReader gioReader, String resourcePath, OutputSink outputSink, boolean validateXml, boolean validateGraphml, boolean validateGio) throws IOException {
+        URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
+        log.info("Reading " + resourceUrl + " as " + gioReader.fileFormat());
+        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
+        SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
+        List<ContentError> contentErrors = readTo(inputSource, gioReader, outputSink, validateXml, validateGraphml, validateGio);
+        return contentErrors;
     }
 
     /**
@@ -77,15 +91,12 @@ public class ReaderTests {
      * @throws IOException
      */
     public static void testReadResourceToGraph(GioReader gioReader, String resourcePath) throws IOException {
-        URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
-        log.info("Reading " + resourceUrl + " as " + gioReader.fileFormat());
-        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
 
         byte[] graphmlBytes1;
         {
-            SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
             InMemoryOutputSink outputSink = new InMemoryOutputSink();
-            List<ContentError> contentErrors = readTo(inputSource, gioReader, outputSink, true, true, true);
+            List<ContentError> contentErrors = readResourceToSink(gioReader, resourcePath, outputSink, true, true, true);
+
             // TODO find a way to list expected contentErrors? static Map<resourcePath,List<ContentError>>
             Assertions.assertTrue(contentErrors.isEmpty());
             graphmlBytes1 = outputSink.getByteBuffer().toByteArray();
@@ -106,7 +117,7 @@ public class ReaderTests {
     }
 
     public static void testWithAllResource(GioReader gioReader) {
-        getAllTestResourceFilePaths().filter(resourcePath -> canRead(gioReader, resourcePath)).forEach(resourcePath -> {
+        forEachReadableResource(gioReader, resourcePath -> {
             try {
                 testReadResourceToGraph(gioReader, resourcePath);
             } catch (IOException e) {

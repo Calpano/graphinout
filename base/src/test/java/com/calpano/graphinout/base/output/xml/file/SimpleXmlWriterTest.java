@@ -1,7 +1,8 @@
 package com.calpano.graphinout.base.output.xml.file;
 
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.output.xml.GioGraphInOutXMLConstants;
+import com.calpano.graphinout.base.xml.GioGraphInOutXMLConstants;
+import com.calpano.graphinout.base.xml.SimpleXmlWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

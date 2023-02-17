@@ -2,12 +2,18 @@ package com.calpano.graphinout.base.output;
 
 import com.calpano.graphinout.base.input.MultiInputSource;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
 public interface OutputSink {
+
+    static InMemoryOutputSink createInMemory() {
+        return new InMemoryOutputSink();
+    }
 
     static OutputSink createMock() {
         return new OutputSink() {

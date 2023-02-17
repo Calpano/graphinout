@@ -6,13 +6,10 @@ import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
+import com.calpano.graphinout.base.xml.SimpleXmlWriter;
 import com.calpano.graphinout.base.reader.ContentErrors;
 import com.calpano.graphinout.base.reader.GioReader;
 import com.calpano.graphinout.base.reader.InMemoryErrorHandler;
-import com.calpano.graphinout.reader.dot.DotTextReader;
-import com.calpano.graphinout.reader.graphml.GraphmlReader;
-import com.calpano.graphinout.reader.tgf.TgfReader;
 import org.slf4j.Logger;
 
 import java.io.IOException;
