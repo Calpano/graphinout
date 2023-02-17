@@ -15,6 +15,7 @@
         <module>reader-graphml</module>
         <module>reader-tgf</module>
         <module>reader-dot</module>
+        <module>reader-example</module>
         <module>engine</module>
         <module>app-cmdline</module>
     </modules>
@@ -137,6 +138,12 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>4.8.154</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
