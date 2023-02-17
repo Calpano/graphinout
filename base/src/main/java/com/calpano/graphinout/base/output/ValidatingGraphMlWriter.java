@@ -146,7 +146,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         CurrentElement currentElement = currentElements.peek();
         if (!currentElement.isValidChild(childElement)) {
             throw new IllegalStateException("Wrong order of elements. In element "+currentElement
-                    +" expected one of " + currentElement.allowedChildren + " but found " + childElement);
+                    +" expected one of " + currentElement.allowedChildren + " but found " + childElement+". Stack (leaf-to-root): "+this.currentElements);
         }
         currentElements.push(childElement);
     }
