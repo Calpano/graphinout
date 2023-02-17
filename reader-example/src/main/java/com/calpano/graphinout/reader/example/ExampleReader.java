@@ -48,8 +48,11 @@ public class ExampleReader implements GioReader {
         writer.startGraph(GioGraph.builder().build());
 
         writer.startNode(GioNode.builder().id("myNode1").build());
+        writer.endNode(null);
         writer.startNode(GioNode.builder().id("myNode2").build());
+        writer.endNode(null);
         writer.startEdge(GioEdge.builder().endpoints(Arrays.asList(GioEndpoint.builder().id("myNode1").build(), GioEndpoint.builder().id("myNode2").build())).build());
+        writer.endEdge();
 
         // content errors can be signaled like this
         errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, " To be honest, we did not really read the input :-)", new ContentError.Location(1, 1)));
