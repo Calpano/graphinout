@@ -16,6 +16,7 @@
         <module>reader-tgf</module>
         <module>reader-dot</module>
         <module>reader-example</module>
+        <module>reader-jgrapht</module>
         <module>engine</module>
         <module>app-cmdline</module>
     </modules>
