@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
@@ -90,8 +89,8 @@ public class TgfReader implements GioReader {
             } else {
                 log.info("--- edges:");
                 String[] edgeParts = line.split(DELIMITER);
-                GioEndpoint sourceEndpoint = GioEndpoint.builder().id(edgeParts[0]).build();
-                GioEndpoint targetEndpoint = GioEndpoint.builder().id(edgeParts[1]).build();
+                GioEndpoint sourceEndpoint = GioEndpoint.builder().node(edgeParts[0]).build();
+                GioEndpoint targetEndpoint = GioEndpoint.builder().node(edgeParts[1]).build();
 
                 List<GioEndpoint> endpointList = new ArrayList<>();
                 endpointList.add(sourceEndpoint);
