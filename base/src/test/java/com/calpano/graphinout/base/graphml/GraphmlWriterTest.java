@@ -129,7 +129,7 @@ class GraphmlWriterTest {
 
     @Test
     void startGraph() throws IOException {
-        graphmlWriter.startGraph(GraphmlGraph.builder().id("graph").edgedefault(true).build());
+        graphmlWriter.startGraph(GraphmlGraph.builder().id("graph").edgedefault(GraphmlGraph.EdgeDefault.directed).build());
         assertEquals("::startElement->graph->{id=graph, edgedefault=true}", xmlWriterSpy.getOutPut().toString());
 
     }

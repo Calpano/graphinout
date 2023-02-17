@@ -16,7 +16,7 @@ public class SyntheticGio {
 
     public static void writeSmallDocument(GioWriter gioWriter) throws IOException {
         gioWriter.startDocument(GioDocument.builder().description("the doc").build());
-        gioWriter.startGraph(GioGraph.builder().edgedefault(true).build());
+        gioWriter.startGraph(GioGraph.builder().edgedefaultDirected(true).build());
         gioWriter.startNode(GioNode.builder().id("node1").build());
         gioWriter.endNode(null);
         gioWriter.startNode(GioNode.builder().id("node2").build());

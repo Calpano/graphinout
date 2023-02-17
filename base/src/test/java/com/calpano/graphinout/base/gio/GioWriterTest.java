@@ -123,7 +123,7 @@ class GioWriterTest {
 
     @Test
     void startGraph() throws IOException {
-        gioWriter.startGraph(GioGraph.builder().id("graph").edgedefault(true).build());
+        gioWriter.startGraph(GioGraph.builder().id("graph").edgedefaultDirected(true).build());
         assertEquals("::startElement->graph->{id=graph, edgedefault=true}", xmlWriterSpy.getOutPut().toString());
 
     }

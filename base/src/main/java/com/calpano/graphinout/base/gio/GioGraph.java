@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
+import javax.annotation.Nullable;
+
 
 /**
  * @author rbaba
@@ -27,17 +29,17 @@ public class GioGraph extends GioElementWithData {
      * The name of this attribute in graph is <b>edgedefault</b>
      */
     @Builder.Default
-    private boolean edgedefault = false;
+    private boolean edgedefaultDirected = false;
     /**
      * This is an attribute that can be empty or null.
      * </p>
      * The name of this attribute in graph is <b>id</b>
      */
-    private String id;
+    private @Nullable String id;
 
-    public GioGraph(String id, boolean edgedefault) {
+    public GioGraph(@Nullable String id, boolean edgedefaultDirected) {
        super();
-        this.edgedefault = edgedefault;
+        this.edgedefaultDirected = edgedefaultDirected;
         this.id = id;
     }
 

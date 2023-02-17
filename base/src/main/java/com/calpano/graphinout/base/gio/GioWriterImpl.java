@@ -108,15 +108,15 @@ public class GioWriterImpl implements GioWriter {
                 // edge can only be represented as hyper-edge
                 directed = null;
             }
-            if(directed != null) {
+            if (directed != null) {
                 GraphmlEdge edge = new GraphmlEdge();
                 edge.setDirected(directed);
                 edge.setSourceId(s.getNode());
                 edge.setTargetId(t.getNode());
-                if(s.getPort() != null) {
+                if (s.getPort() != null) {
                     edge.setSourcePortId(s.getPort());
                 }
-                if(t.getPort() != null) {
+                if (t.getPort() != null) {
                     edge.setTargetPortId(t.getPort());
                 }
                 graphmlWriter.startEdge(edge);
@@ -136,7 +136,7 @@ public class GioWriterImpl implements GioWriter {
 
     @Override
     public void startGraph(GioGraph gioGraph) throws IOException {
-        GraphmlGraph graphmlGraph = GraphmlGraph.builder().id(gioGraph.getId()).edgedefault(gioGraph.isEdgedefault()).build();
+        GraphmlGraph graphmlGraph = GraphmlGraph.builder().id(gioGraph.getId()).edgedefault(gioGraph.isEdgedefaultDirected() ? GraphmlGraph.EdgeDefault.directed : GraphmlGraph.EdgeDefault.undirected).build();
         desc(gioGraph, graphmlGraph);
         data(gioGraph, graphmlGraph);
 

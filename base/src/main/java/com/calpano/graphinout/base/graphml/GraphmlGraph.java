@@ -25,14 +25,17 @@ import java.util.List;
 @Data
 public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue {
 
+    public enum EdgeDefault {
+        directed,undirected
+    }
+
     public static final String TAGNAME = "graph";
     /**
      * This is an attribute that can be empty or null.
      * </p>
      * The name of this attribute in graph is <b>edgedefault</b>
      */
-    @Builder.Default
-    private boolean edgedefault = false;
+    private EdgeDefault edgedefault;
     /**
      * This is an attribute that can be empty or null.
      * </p>
@@ -65,7 +68,7 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
     private GraphmlLocator locator;
 
 
-    public GraphmlGraph(String id, boolean edgedefault) {
+    public GraphmlGraph(String id, EdgeDefault edgedefault) {
        super();
         this.edgedefault = edgedefault;
         this.id = id;

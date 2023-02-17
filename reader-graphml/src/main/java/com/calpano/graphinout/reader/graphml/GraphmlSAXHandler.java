@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Stack;
 import java.util.function.Consumer;
 
@@ -279,7 +278,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                     builder.id(attributes.getValue(i));
                     break;
                 case "edgedefault":
-                    builder.edgedefault(Boolean.valueOf(attributes.getValue(i)));
+                    builder.edgedefaultDirected(Boolean.valueOf(attributes.getValue(i)));
                     break;
                 default:
                     customAttributes.put(attributes.getType(i), attributes.getValue(i));
