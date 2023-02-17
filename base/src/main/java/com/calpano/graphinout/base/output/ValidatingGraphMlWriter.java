@@ -242,7 +242,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     private void validateNode(GraphmlNode node) throws IllegalStateException {
-        if (!node.getDataList().isEmpty()) {
+        if (node.getDataList()!=null) {
             for (GraphmlData gioData : node.getDataList()) {
                 validateData(gioData);
             }
