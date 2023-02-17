@@ -5,7 +5,7 @@ import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.xml.SimpleXmlWriter;
+import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import com.calpano.graphinout.base.reader.ContentError;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
@@ -38,7 +38,7 @@ class TgfReaderTest {
         OutputSink outputSink = OutputSink.createMock();
 
         TgfReader tgfReader = new TgfReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         tgfReader.read(singleInputSource, gioWriter);
     }
 
@@ -50,7 +50,7 @@ class TgfReaderTest {
         OutputSink outputSink = OutputSink.createMock();
 
         TgfReader tgfReader = new TgfReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         tgfReader.read(singleInputSource, gioWriter);
     }
     

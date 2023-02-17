@@ -14,12 +14,12 @@ import java.util.Map;
  * Just writes out, no validation, no chaining.
  */
 @Slf4j
-public class SimpleXmlWriter implements XmlWriter {
+public class XmlWriterImpl implements XmlWriter {
     protected final OutputSink outputSink;
     protected transient OutputStream out;
     protected transient Writer writer;
 
-    public SimpleXmlWriter(OutputSink outputSink) {
+    public XmlWriterImpl(OutputSink outputSink) {
         this.outputSink = outputSink;
     }
 

@@ -1,8 +1,8 @@
-package com.calpano.graphinout.base.output.xml.file;
+package com.calpano.graphinout.base.xml;
 
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.xml.GioGraphInOutXMLConstants;
-import com.calpano.graphinout.base.xml.SimpleXmlWriter;
+import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleXmlWriterTest {
+class XmlWriterTest {
 
     class OutputSinkMock implements OutputSink {
         private final File tmpFile;
@@ -89,7 +89,7 @@ public class SimpleXmlWriterTest {
         testEdgeMap.put("kc", "10");
 
         File file = new File("./" + FILE_NAME);
-        SimpleXmlWriter instance = new SimpleXmlWriter(new OutputSinkMock(file));
+        XmlWriterImpl instance = new XmlWriterImpl(new OutputSinkMock(file));
         instance.startDocument();
 
 

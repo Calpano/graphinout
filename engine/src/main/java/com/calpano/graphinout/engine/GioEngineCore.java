@@ -6,7 +6,7 @@ import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.xml.SimpleXmlWriter;
+import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import com.calpano.graphinout.base.reader.ContentErrors;
 import com.calpano.graphinout.base.reader.GioReader;
 import com.calpano.graphinout.base.reader.InMemoryErrorHandler;
@@ -35,7 +35,7 @@ public class GioEngineCore {
         List<GioReader> readerCandidates = selectReaders(inputSource);
         // we expect only one of them to be able to read it without throwing exceptions or reporting contentErrors
         OutputSink noop = OutputSink.createNoop();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(noop)));
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(noop)));
         for (GioReader reader : readerCandidates) {
             InMemoryErrorHandler errorHandler = ContentErrors.createInMemory();
             reader.errorHandler(errorHandler);
@@ -44,7 +44,7 @@ public class GioEngineCore {
             }
             if (errorHandler.hasNoErrors()) {
                 // parsing worked, now for real
-                gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
+                gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
                 return;
             }
         }

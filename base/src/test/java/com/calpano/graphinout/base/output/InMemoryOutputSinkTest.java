@@ -1,4 +1,4 @@
-package com.calpano.graphinout.base.output.xml.file;
+package com.calpano.graphinout.base.output;
 
 import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import org.junit.jupiter.api.AfterEach;
