@@ -49,4 +49,10 @@ public class ValidatingXmlWriter implements XmlWriter {
         sink.startElement(name, attributes);
     }
 
+    @Override
+    public void lineBreak() throws IOException {
+        // TODO where do we *allow* line breaks?
+        sink.lineBreak();
+    }
+
 }

@@ -29,5 +29,10 @@ public interface XmlWriter {
         startElement(name, Collections.emptyMap());
     }
 
+    /**
+     * Write a \n to the output
+     */
+    void lineBreak() throws IOException;
+
 
 }

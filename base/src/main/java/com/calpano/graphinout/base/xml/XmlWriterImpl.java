@@ -32,6 +32,7 @@ public class XmlWriterImpl implements XmlWriter {
     @Override
     public void endDocument() throws IOException {
         log.trace("endDocument");
+        writer.write(System.lineSeparator());
         this.writer.flush();
         this.out.flush();
         this.writer.close();
@@ -62,8 +63,12 @@ public class XmlWriterImpl implements XmlWriter {
             writer.write(" " + entry.getKey() + "=\"" + entry.getValue() + "\"");
         }
         writer.write('>');
-        writer.write(System.lineSeparator());
         writer.flush();
+    }
+
+    @Override
+    public void lineBreak() throws IOException {
+        writer.write("\n");
     }
 
 }
