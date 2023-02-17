@@ -5,6 +5,7 @@ import com.calpano.graphinout.base.graphml.GraphmlData;
 import com.calpano.graphinout.base.graphml.GraphmlDefault;
 import com.calpano.graphinout.base.graphml.GraphmlDescription;
 import com.calpano.graphinout.base.graphml.GraphmlDocument;
+import com.calpano.graphinout.base.graphml.GraphmlEdge;
 import com.calpano.graphinout.base.graphml.GraphmlElement;
 import com.calpano.graphinout.base.graphml.GraphmlEndpoint;
 import com.calpano.graphinout.base.graphml.GraphmlGraph;
@@ -94,12 +95,41 @@ public class GioWriterImpl implements GioWriter {
 
     @Override
     public void startEdge(GioEdge gioEdge) throws IOException {
-        // TODO if less than 2 endpoints, create normal edge
+        assert gioEdge.isValid();
+        if (gioEdge.getEndpoints().size() == 2) {
+            GioEndpoint s = gioEdge.getEndpoints().get(0);
+            GioEndpoint t = gioEdge.getEndpoints().get(0);
+            Boolean directed;
+            if (s.getType().isDirected() && t.getType().isDirected()) {
+                directed = true;
+            } else if (s.getType().isUndirected() && t.getType().isUndirected()) {
+                directed = false;
+            } else {
+                // edge can only be represented as hyper-edge
+                directed = null;
+            }
+            if(directed != null) {
+                GraphmlEdge edge = new GraphmlEdge();
+                edge.setDirected(directed);
+                edge.setSourceId(s.getNode());
+                edge.setTargetId(t.getNode());
+                if(s.getPort() != null) {
+                    edge.setSourcePortId(s.getPort());
+                }
+                if(t.getPort() != null) {
+                    edge.setTargetPortId(t.getPort());
+                }
+                graphmlWriter.startEdge(edge);
+                this.currentElement = edge;
+                return;
+            }
+        }
+        // default case: hyperedge
         GraphmlHyperEdge graphmlHyperEdge = GraphmlHyperEdge.builder().id(gioEdge.getId()).build();
         customAttributes(gioEdge, graphmlHyperEdge);
         data(gioEdge, graphmlHyperEdge);
         assert gioEdge.getEndpoints() != null;
-        graphmlHyperEdge.setEndpoints(gioEdge.getEndpoints().stream().map(this::graphmlEndpoint).collect(Collectors.toList()));
+        graphmlHyperEdge.setEndpoints(gioEdge.getEndpoints().stream().map(this::graphmlEndpoint).toList());
         graphmlWriter.startHyperEdge(graphmlHyperEdge);
         this.currentElement = graphmlHyperEdge;
     }

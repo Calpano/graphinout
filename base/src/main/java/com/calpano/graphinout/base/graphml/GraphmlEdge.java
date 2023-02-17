@@ -1,11 +1,13 @@
 package com.calpano.graphinout.base.graphml;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import java.util.List;
+import javax.annotation.Nullable;
+import java.util.LinkedHashMap;
 
 /**
  * @author rbaba
@@ -40,8 +42,9 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
-@Builder
-public class GraphmlEdge {
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
+public class GraphmlEdge extends GraphmlGraphCommonElement implements XMLValue {
 
     public static final String TAGNAME = "edge";
     /**
@@ -62,19 +65,12 @@ public class GraphmlEdge {
     protected Boolean directed;
 
     /**
-     * This is an Element that can be empty or null.
-     * </p>
-     * The name of this Element in graph is <b>data</b>
-     */
-    protected List<GraphmlData> data;
-
-    /**
      * This is an attribute that can be empty or null.
      * </p>
      * The name of this attribute in graph is <b>source</b>
      * which points to a node and the ID of the desired node is the value of this attribute.
      */
-    protected GraphmlNode source;
+    protected String sourceId;
 
     /**
      * This is an attribute that can be empty or null.
@@ -82,15 +78,7 @@ public class GraphmlEdge {
      * The name of this attribute in graph is <b>target</b>
      * which points to a node and the ID of the desired node is the value of this attribute.
      */
-    protected GraphmlNode target;
-
-    /**
-     * This is an attribute that can be empty or null.
-     * </p>
-     * The name of this attribute in graph is <b>port</b>
-     * which points to a port and the ID of the desired port is the value of this attribute.
-     */
-    protected GraphmlPort port;
+    protected String targetId;
 
     /**
      * This is an attribute that can be empty or null.
@@ -98,7 +86,7 @@ public class GraphmlEdge {
      * The name of this attribute in graph is <b>sourceport</b>
      * which points to a port and the ID of the desired port is the value of this attribute.
      */
-    protected GraphmlPort sourcePort;
+    protected String sourcePortId;
 
     /**
      * This is an attribute that can be empty or null.
@@ -106,5 +94,38 @@ public class GraphmlEdge {
      * The name of this attribute in graph is <b>targetport</b>
      * which points to a port and the ID of the desired port is the value of this attribute.
      */
-    protected GraphmlPort targetPort;
+    protected String targetPortId;
+
+    @Override
+    public String startTag() {
+        return null;
+    }
+
+    @Override
+    public LinkedHashMap<String, String> getAttributes() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+        if (id != null) attributes.put("id", id);
+        attributes.put("source", getSourceId());
+        attributes.put("target", getTargetId());
+        attributes.put("directed", ""+ getDirected());
+        if(getSourcePortId() != null) {
+            attributes.put("sourceport", getSourcePortId());
+        }
+        if(getTargetPortId() != null) {
+            attributes.put("targetport", getTargetPortId());
+        }
+        if (getExtraAttrib() != null)
+            attributes.putAll(getExtraAttrib());
+        return attributes;
+    }
+
+    @Override
+    public String valueTag() {
+        return null;
+    }
+
+    @Override
+    public String endTag() {
+        return null;
+    }
 }
