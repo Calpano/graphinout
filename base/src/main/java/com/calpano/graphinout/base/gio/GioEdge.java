@@ -59,4 +59,8 @@ public class GioEdge extends GioElementWithData {
         endpoints.add(gioEndpoint);
     }
 
+    public boolean isValid() {
+        assert getEndpoints().size() >= 2 && getEndpoints().stream().allMatch(GioEndpoint::isValid);
+        return true;
+    }
 }
