@@ -8,7 +8,7 @@ import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
 import com.calpano.graphinout.base.reader.ContentErrors;
 import com.calpano.graphinout.base.reader.GioReader;
-import com.calpano.graphinout.base.reader.InMemoryContentHandler;
+import com.calpano.graphinout.base.reader.InMemoryErrorHandler;
 import com.calpano.graphinout.reader.dot.DotTextReader;
 import com.calpano.graphinout.reader.graphml.GraphmlReader;
 import com.calpano.graphinout.reader.tgf.TgfReader;
@@ -34,7 +34,7 @@ public class GioEngineCore {
         OutputSink noop = OutputSink.createNoop();
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(noop)));
         for(GioReader reader: readerCandidates) {
-            InMemoryContentHandler errorHandler = ContentErrors.createInMemory();
+            InMemoryErrorHandler errorHandler = ContentErrors.createInMemory();
             reader.errorHandler(errorHandler);
            if (reader.isValid(inputSource)) {
                reader.read(inputSource, gioWriter);

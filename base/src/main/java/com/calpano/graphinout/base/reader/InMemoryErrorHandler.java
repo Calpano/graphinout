@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class InMemoryContentHandler implements Consumer<ContentError> {
+public class InMemoryErrorHandler implements Consumer<ContentError> {
     List<ContentError> list = new ArrayList<>();
 
     @Override

@@ -17,8 +17,8 @@ public class ContentErrors {
         return b.toString();
     }
 
-    public static InMemoryContentHandler createInMemory() {
-        return new InMemoryContentHandler();
+    public static InMemoryErrorHandler createInMemory() {
+        return new InMemoryErrorHandler();
     }
 
     public static Consumer<ContentError> defaultErrorHandler() {
