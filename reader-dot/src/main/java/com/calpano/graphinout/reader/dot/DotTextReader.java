@@ -3,6 +3,7 @@ package com.calpano.graphinout.reader.dot;
 import com.calpano.graphinout.base.gio.GioData;
 import com.calpano.graphinout.base.gio.GioDocument;
 import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioEndpoint;
 import com.calpano.graphinout.base.gio.GioGraph;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
@@ -36,7 +37,7 @@ public class DotTextReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("dot", "DOT Text Format",".dot",".gv");
+        return new GioFileFormat("dot", "DOT Text Format", ".dot", ".gv");
     }
 
     @Override
@@ -46,7 +47,7 @@ public class DotTextReader implements GioReader {
 
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
-        if(inputSource.isMulti()) {
+        if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
         assert inputSource instanceof SingleInputSource;
@@ -79,9 +80,9 @@ public class DotTextReader implements GioReader {
         }
 
         log.info("--- edges:");
-        for (GraphEdge edge : edges.values()) {
+        for (GraphEdge dotEdge : edges.values()) {
             List<GioData> gioDataList = new ArrayList<>();
-            Map<String, Object> attributes = edge.getAttributes();
+            Map<String, Object> attributes = dotEdge.getAttributes();
             String edgeValue = String.valueOf(attributes.get("value"));
             String edgeKey = String.valueOf(attributes.get("key"));
             GioData gioData = GioData.builder()
@@ -90,11 +91,14 @@ public class DotTextReader implements GioReader {
                     .build();
             gioDataList.add(gioData);
 
+
             writer.startEdge(GioEdge.builder()
-                    .id(edge.getId())
+                    .id(dotEdge.getId())
                     .dataList(gioDataList)
+                    .endpoint(GioEndpoint.builder().node(dotEdge.getNode1().getId()).build())
+                    .endpoint(GioEndpoint.builder().node(dotEdge.getNode2().getId()).build())
                     .build());
-            log.info(edge.getNode1().getId() + "->" + edge.getNode2().getId() + " " + edge.getAttributes());
+            log.info(dotEdge.getNode1().getId() + "->" + dotEdge.getNode2().getId() + " " + dotEdge.getAttributes());
         }
         writer.endGraph(null);
         writer.endDocument();
