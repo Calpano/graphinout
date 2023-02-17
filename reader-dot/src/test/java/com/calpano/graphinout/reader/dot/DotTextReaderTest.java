@@ -4,6 +4,7 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
+import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import io.github.classgraph.ClassGraph;
@@ -26,7 +27,7 @@ class DotTextReaderTest {
         URL resourceUrl = ClassLoader.getSystemResource(filePath);
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
         SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
-        OutputSink outputSink = OutputSink.createMock();
+        InMemoryOutputSink outputSink = OutputSink.createInMemory();
 
         DotTextReader dotTextReader = new DotTextReader();
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));

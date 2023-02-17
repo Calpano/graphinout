@@ -1,7 +1,5 @@
 package com.calpano.graphinout.base.output;
 
-import com.calpano.graphinout.base.output.OutputSink;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,9 +12,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class TempFileOutputSink implements OutputSink {
 
@@ -43,25 +38,11 @@ public class TempFileOutputSink implements OutputSink {
     }
 
     @Override
-    public Map<String, Object> outputInfo() {
-        Map<String, Object> info = new HashMap<>();
-        info.put("type", "tmp file");
-        info.put("name", tmpFile.getName());
-        info.put("path", tmpFile.getAbsolutePath());
-        return info;
-    }
-
-    @Override
     public OutputStream outputStream() throws IOException {
         if (out == null) {
             out = new FileOutputStream(tmpFile, true);
         }
         return out;
-    }
-
-    @Override
-    public List<String> readAllData() throws IOException {
-        return Files.readAllLines(tmpFile.toPath());
     }
 
     public void removeTemp() {

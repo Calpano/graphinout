@@ -35,7 +35,7 @@ class TgfReaderTest {
         URL resourceUrl = ClassLoader.getSystemResource(filePath);
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
         SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
-        OutputSink outputSink = OutputSink.createMock();
+        InMemoryOutputSink outputSink = OutputSink.createInMemory();
 
         TgfReader tgfReader = new TgfReader();
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
@@ -47,7 +47,7 @@ class TgfReaderTest {
         String resourceName = "/example2.tgf";
         String content = IOUtils.resourceToString(resourceName, StandardCharsets.UTF_8);
         SingleInputSource singleInputSource = SingleInputSource.of(resourceName, content);
-        OutputSink outputSink = OutputSink.createMock();
+        InMemoryOutputSink outputSink = OutputSink.createInMemory();
 
         TgfReader tgfReader = new TgfReader();
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));

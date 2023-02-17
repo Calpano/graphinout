@@ -1,8 +1,6 @@
 package com.calpano.graphinout.base.xml;
 
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.xml.GioGraphInOutXMLConstants;
-import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,10 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 class XmlWriterTest {
@@ -30,24 +26,10 @@ class XmlWriterTest {
         }
 
         @Override
-        public Map<String, Object> outputInfo() {
-            Map<String, Object> info = new HashMap<>();
-            info.put("type", "tmp file");
-            info.put("name", tmpFile.getName());
-            info.put("path", tmpFile.getAbsolutePath());
-            return info;
-        }
-
-        @Override
         public OutputStream outputStream() throws IOException {
             if (out == null)
                 out = new FileOutputStream(tmpFile);
             return out;
-        }
-
-        @Override
-        public List<String> readAllData() throws IOException {
-            return Files.readAllLines(tmpFile.toPath());
         }
 
     }

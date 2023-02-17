@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class InMemoryOutputSink implements OutputSink {
 
@@ -26,18 +24,10 @@ public class InMemoryOutputSink implements OutputSink {
     }
 
     @Override
-    public Map<String, Object> outputInfo() {
-        Map<String, Object> info = new HashMap<>();
-        info.put("type", "ByteArrayOutputStream");
-        return info;
-    }
-
-    @Override
     public OutputStream outputStream() throws IOException {
         return buffer;
     }
 
-    @Override
     public List<String> readAllData() throws IOException {
         return Collections.singletonList(buffer.toString());
     }
