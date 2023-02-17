@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>reader-graphml</artifactId>
+    <name>reader-graphml</name>
 
     <dependencies>
         <dependency>
@@ -19,7 +20,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -29,5 +29,4 @@
         </dependency>
     </dependencies>
 
-    <name>standard-graphml</name>
 </project>

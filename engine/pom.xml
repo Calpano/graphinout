@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>engine</artifactId>
-    <name>graph-ml-parser</name>
+    <name>engine</name>
 
     <dependencies>
         <dependency>
