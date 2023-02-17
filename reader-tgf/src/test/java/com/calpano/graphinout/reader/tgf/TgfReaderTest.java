@@ -50,7 +50,7 @@ class TgfReaderTest {
         InMemoryOutputSink outputSink = OutputSink.createInMemory();
 
         TgfReader tgfReader = new TgfReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        GioWriter gioWriter = ReaderTests.createWriter(outputSink, true,true,true);
         tgfReader.read(singleInputSource, gioWriter);
     }
     
