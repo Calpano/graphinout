@@ -119,7 +119,6 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             }
         }
 
-        xmlWriter.endElement(GraphmlHyperEdge.TAGNAME);
     }
 
     // TODO split into startNode and endNode to have the sub-graphs in between
