@@ -95,7 +95,7 @@ class GioWriterTest {
     @Test
     void endEdge() throws IOException {
         gioWriter.endEdge();
-        assertEquals("::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::endElement->edge", xmlWriterSpy.getOutPut().toString());
     }
 
 
