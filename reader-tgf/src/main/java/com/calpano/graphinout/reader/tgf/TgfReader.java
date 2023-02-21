@@ -95,12 +95,16 @@ public class TgfReader implements GioReader {
                 List<GioEndpoint> endpointList = new ArrayList<>();
                 endpointList.add(sourceEndpoint);
                 endpointList.add(targetEndpoint);
-                if (edgeParts.length == 3) {
-                    writer.startEdge(GioEdge.builder().endpoints(endpointList)
-                            .description(edgeParts[2]).build());
+                if (edgeParts.length == 2 || edgeParts.length == 3) {
+                    GioEdge gioEdge = GioEdge.builder().endpoints(endpointList).build();
+                    if(edgeParts.length == 3) {
+                        gioEdge.setDescription(edgeParts[2]);
+                    }
+                    writer.startEdge(gioEdge);
+                    writer.endEdge();
+                } else {
+                    // TODO warn contenterror
                 }
-                writer.startEdge(GioEdge.builder().endpoints(endpointList).build());
-                writer.endEdge();
             }
         }
         writer.endGraph(null);
