@@ -100,6 +100,8 @@ class TgfReaderTest {
         verify(errorConsumer).accept(any(ContentError.class));
     }
 
+    // TODO add test with e.g. 3 nodes and 2 edges (with and without label), verify that this goes into Gio-stream -> mock
+
     private static Stream<String> getResourceFilePaths() {
         return new ClassGraph().scan()
                 .getAllResources()
