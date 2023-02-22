@@ -11,8 +11,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         /**
          * state before any token
          */
-        EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, ENDPOINT, EDGE, DEFAULT, PORT, LOCATOR, XLINKHREF,
-        LABEL_GRAPH, LABEL_NODE, LABEL_EDGE, LABEL_HYPEREDGE, LABEL_ENDPOINT;
+        EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, EDGE, DEFAULT, PORT, LOCATOR,
+        LABEL_GRAPH;
 
         static {
             EMPTY.allowedChildren = Set.of(GRAPHML);
@@ -20,12 +20,6 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             KEY.allowedChildren = Set.of(DESC, DEFAULT, LABEL_GRAPH);
             DEFAULT.allowedChildren = Set.of(DATA, LABEL_GRAPH);
             GRAPH.allowedChildren = Set.of(DATA, NODE, EDGE, HYPEREDGE, PORT, DESC, LOCATOR, LABEL_GRAPH);
-            LOCATOR.allowedChildren = Set.of(XLINKHREF);
-            NODE.allowedChildren = Set.of(DATA, PORT, DESC, LABEL_NODE);
-            EDGE.allowedChildren = Set.of(DATA, ENDPOINT, PORT, DESC, LABEL_EDGE);
-            HYPEREDGE.allowedChildren = Set.of(DATA, PORT, DESC, LABEL_HYPEREDGE);
-            ENDPOINT.allowedChildren = Set.of(DATA, PORT, DESC, LABEL_ENDPOINT);
-            PORT.allowedChildren = Set.of(DATA, LABEL_GRAPH, LABEL_NODE, LABEL_EDGE, LABEL_HYPEREDGE, LABEL_ENDPOINT);
         }
 
         private Set<CurrentElement> allowedChildren = new HashSet<>();
@@ -63,6 +57,10 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         ensureAllowedEnd(CurrentElement.GRAPHML);
         for (GraphmlEdge edge : edgeReferences) {
             if (!resolveEdges(edge)) throw new IllegalStateException("Edge [" + edge +
+                    "] references to a non-existent node ID");
+        }
+        for (GraphmlHyperEdge hyperEdge : hyperEdgeReferences) {
+            if (!resolveHyperEdges(hyperEdge)) throw new IllegalStateException("Hyper edge [" + hyperEdge +
                     "] references to a non-existent node ID");
         }
         graphMlWriter.endDocument();
@@ -256,9 +254,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             }
         }
         String nodeId = node.getId();
-        if (nodeId == null || nodeId.isEmpty()) {
-            throw new IllegalStateException("Node must have an ID.");
-        }
+        if (nodeId == null || nodeId.isEmpty()) throw new IllegalStateException("Node must have an ID.");
+        if (existingNodeIds.contains(nodeId)) throw new IllegalStateException("Node ID must be unique.");
         if (node.getPorts() != null) {
             for (GraphmlPort port : node.getPorts()) {
                 if (port.getName() == null || port.getName().isEmpty()) {
