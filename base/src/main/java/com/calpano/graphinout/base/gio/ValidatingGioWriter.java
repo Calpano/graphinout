@@ -31,9 +31,9 @@ public class ValidatingGioWriter implements GioWriter {
     @Override
     public void endGraph(@Nullable URL locator) throws IOException {
         if (!nodesIds.containsAll(endpointsNode))
-            throw new IllegalStateException("All Edge endpoints should refer to an existing Node ID.");
+            throw new IllegalStateException("All GioEdge endpoints should refer to an existing GioNode ID.");
         if (!nodePortName.isEmpty() && !nodePortName.containsAll(endpointsPort))
-            throw new IllegalStateException("All Edge endpoints should refer to an existing Node ID.");
+            throw new IllegalStateException("All GioEdge Endpoint Port should refer to an existing GioNode Port.");
         gioWriter.endGraph(locator);
     }
 
@@ -45,7 +45,7 @@ public class ValidatingGioWriter implements GioWriter {
     @Override
     public void key(GioKey gioKey) throws IOException {
         if (keysIds.contains(gioKey.getId())) {
-            throw new IllegalStateException("Key ID must be unique: " + gioKey.getId());
+            throw new IllegalStateException("GioKey ID must be unique: " + gioKey.getId());
         }
         keysIds.add(gioKey.getId());
         gioWriter.key(gioKey);
@@ -59,8 +59,9 @@ public class ValidatingGioWriter implements GioWriter {
     @Override
     public void startEdge(GioEdge edge) throws IOException {
         if (edgesIds.contains(edge.getId())) {
-            throw new IllegalStateException("Edge ID must be unique: " + edge.getId());
+            throw new IllegalStateException("GioEdge ID must be unique: " + edge.getId());
         }
+        if (edge.getEndpoints().size() < 2) throw new IllegalStateException("GioEdge must have at least 2 endpoints.");
         for (GioEndpoint endpoint : edge.getEndpoints()) {
             endpointsNode.add(endpoint.getNode());
             endpointsPort.add(endpoint.getPort());
@@ -74,7 +75,7 @@ public class ValidatingGioWriter implements GioWriter {
     public void startGraph(GioGraph gioGraph) throws IOException {
         for (GioData data : gioGraph.getDataList()) {
             if (!keysIds.contains(data.getId()))
-                throw new IllegalStateException("Data should refer to an existing Key ID.");
+                throw new IllegalStateException("GioData should refer to an existing Key ID.");
         }
         gioWriter.startGraph(gioGraph);
 
@@ -82,8 +83,10 @@ public class ValidatingGioWriter implements GioWriter {
 
     @Override
     public void startNode(GioNode node) throws IOException {
+        if (node.getId() == null || node.getId().isEmpty())
+            throw new IllegalStateException("GioNode must have and ID.");
         if (nodesIds.contains(node.getId())) {
-            throw new IllegalStateException("Node ID must be unique: " + node.getId());
+            throw new IllegalStateException("GioNode ID must be unique: " + node.getId());
         }
         nodesIds.add(node.getId());
         if (node.getPorts() != null) {
@@ -91,7 +94,7 @@ public class ValidatingGioWriter implements GioWriter {
                 String portName = port.getName();
                 nodePortName.add(portName);
                 if (portName == null || portName.isEmpty()) {
-                    throw new IllegalStateException("Port name cannot be null or empty.");
+                    throw new IllegalStateException("GioPort name cannot be null or empty.");
                 }
             }
         }
