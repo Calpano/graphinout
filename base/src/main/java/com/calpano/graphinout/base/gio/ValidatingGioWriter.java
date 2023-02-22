@@ -32,7 +32,7 @@ public class ValidatingGioWriter implements GioWriter {
     public void endGraph(@Nullable URL locator) throws IOException {
         if (!nodesIds.containsAll(endpointsNode))
             throw new IllegalStateException("All Edge endpoints should refer to an existing Node ID.");
-        if (!nodePortName.containsAll(endpointsPort))
+        if (!nodePortName.isEmpty() && !nodePortName.containsAll(endpointsPort))
             throw new IllegalStateException("All Edge endpoints should refer to an existing Node ID.");
         gioWriter.endGraph(locator);
     }
@@ -58,9 +58,6 @@ public class ValidatingGioWriter implements GioWriter {
 
     @Override
     public void startEdge(GioEdge edge) throws IOException {
-        if (!edge.isValid()) {
-            throw new IllegalStateException("GioEdge is not valid: " + edge);
-        }
         if (edgesIds.contains(edge.getId())) {
             throw new IllegalStateException("Edge ID must be unique: " + edge.getId());
         }
