@@ -128,9 +128,7 @@ public class ValidatingGraphMlWriterTest {
     void shouldThrowExceptionWhenElementsHaveWrongOrder() throws IOException {
         underTest.startDocument(mockDocument);
 
-        assertThrows(IllegalStateException.class, () -> {
-            underTest.startNode(mockNode);
-        });
+        assertThrows(IllegalStateException.class, () -> underTest.startNode(mockNode));
     }
 
     @Test
@@ -138,9 +136,7 @@ public class ValidatingGraphMlWriterTest {
         underTest.startDocument(mockDocument);
         underTest.startGraph(mockGraph);
 
-        assertThrows(IllegalStateException.class, () -> {
-            underTest.startHyperEdge(mockHyperEdge);
-        });
+        assertThrows(IllegalStateException.class, () -> underTest.startHyperEdge(mockHyperEdge));
     }
 
     @Test
@@ -163,9 +159,7 @@ public class ValidatingGraphMlWriterTest {
         underTest.startNode(mockNode);
         underTest.endNode(Optional.of(mockLocator));
 
-        assertThrows(IllegalStateException.class, () -> {
-            underTest.startNode(mockNode2);
-        });
+        assertThrows(IllegalStateException.class, () -> underTest.startNode(mockNode2));
     }
 
     @Test
@@ -181,9 +175,7 @@ public class ValidatingGraphMlWriterTest {
         underTest.endHyperEdge();
         underTest.endGraph(Optional.of(mockLocator));
 
-        assertThrows(IllegalStateException.class, () -> {
-            underTest.endDocument();
-        });
+        assertThrows(IllegalStateException.class, () -> underTest.endDocument());
     }
 
     @Test
@@ -195,8 +187,6 @@ public class ValidatingGraphMlWriterTest {
         underTest.startNode(mockNode);
         underTest.endNode(Optional.of(mockLocator));
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            underTest.startEdge(mockEdge);
-        });
+        assertThrows(IllegalArgumentException.class, () -> underTest.startEdge(mockEdge));
     }
 }
