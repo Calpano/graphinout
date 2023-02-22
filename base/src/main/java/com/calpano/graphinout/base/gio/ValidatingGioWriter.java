@@ -10,12 +10,13 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 public class ValidatingGioWriter implements GioWriter {
-
-
     private final GioWriterImpl gioWriter;
     private final Set<String> nodesIds = new HashSet<>();
     private final Set<String> edgesIds = new HashSet<>();
     private final Set<String> keysIds = new HashSet<>();
+    private final Set<String> endpointsNode = new HashSet<>();
+    private final Set<String> endpointsPort = new HashSet<>();
+    private final Set<String> nodePortName = new HashSet<>();
 
     @Override
     public void endDocument() throws IOException {
@@ -29,6 +30,10 @@ public class ValidatingGioWriter implements GioWriter {
 
     @Override
     public void endGraph(@Nullable URL locator) throws IOException {
+        if (!nodesIds.containsAll(endpointsNode))
+            throw new IllegalStateException("All Edge endpoints should refer to an existing Node ID.");
+        if (!nodePortName.containsAll(endpointsPort))
+            throw new IllegalStateException("All Edge endpoints should refer to an existing Node ID.");
         gioWriter.endGraph(locator);
     }
 
@@ -57,7 +62,11 @@ public class ValidatingGioWriter implements GioWriter {
             throw new IllegalStateException("GioEdge is not valid: " + edge);
         }
         if (edgesIds.contains(edge.getId())) {
-            throw new IllegalStateException("Edge ID must be unique " + edge.getId());
+            throw new IllegalStateException("Edge ID must be unique: " + edge.getId());
+        }
+        for (GioEndpoint endpoint : edge.getEndpoints()) {
+            endpointsNode.add(endpoint.getNode());
+            endpointsPort.add(endpoint.getPort());
         }
         edgesIds.add(edge.getId());
         gioWriter.startEdge(edge);
@@ -66,10 +75,10 @@ public class ValidatingGioWriter implements GioWriter {
 
     @Override
     public void startGraph(GioGraph gioGraph) throws IOException {
-        //TODO get the nodeID from gioGraph, validate if the set contains, throw error and add if not
-
-        //TODO get hyperEdgeID from gioGraph, validate if the set contains, throw error and add if not
-
+        for (GioData data : gioGraph.getDataList()) {
+            if (!keysIds.contains(data.getId()))
+                throw new IllegalStateException("Data should refer to an existing Key ID.");
+        }
         gioWriter.startGraph(gioGraph);
 
     }
@@ -82,7 +91,9 @@ public class ValidatingGioWriter implements GioWriter {
         nodesIds.add(node.getId());
         if (node.getPorts() != null) {
             for (GioPort port : node.getPorts()) {
-                if (port.getName() == null || port.getName().isEmpty()) {
+                String portName = port.getName();
+                nodePortName.add(portName);
+                if (portName == null || portName.isEmpty()) {
                     throw new IllegalStateException("Port name cannot be null or empty.");
                 }
             }
