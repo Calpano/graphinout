@@ -96,7 +96,6 @@ class ValidatingGioWriterTest {
     @Test
     void shouldWorkAsIntendedWithEdge() throws IOException {
         GioNode mockNode2 = mock(GioNode.class);
-
         when(mockNode.getId()).thenReturn(NODE_ID_1);
         when(mockNode2.getId()).thenReturn(NODE_ID_2);
         when(mockEdge.getId()).thenReturn(EDGE_ID_1);
@@ -135,7 +134,6 @@ class ValidatingGioWriterTest {
     @Test
     void shouldThrowExceptionWhenNodeIdIsNotUnique() throws IOException {
         GioNode mockNode2 = mock(GioNode.class);
-
         when(mockNode.getId()).thenReturn(NODE_ID_1);
         when(mockNode2.getId()).thenReturn(NODE_ID_1);
 
@@ -177,7 +175,6 @@ class ValidatingGioWriterTest {
     @Test
     void shouldThrowExceptionWhenKeyIsNotUnique() throws IOException {
         GioKey mockKey2 = mock(GioKey.class);
-
         when(mockKey.getId()).thenReturn(KEY_ID_1);
         when(mockKey2.getId()).thenReturn(KEY_ID_1);
 
