@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 public class GioEndpoint extends GioElement  {
 
     /**
-     * Edge id. Don't confuse with {@link #node}.
+     * Endpoint id. Don't confuse with {@link #node}.
      *
      * This is an attribute that can be empty or null.
      * </p>
