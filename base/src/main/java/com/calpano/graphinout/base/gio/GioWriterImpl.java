@@ -20,10 +20,7 @@ import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GioWriterImpl implements GioWriter {
@@ -59,7 +56,7 @@ public class GioWriterImpl implements GioWriter {
     public void key(GioKey gioKey) throws IOException {
         GraphmlKey graphmlKey = GraphmlKey.builder()//
                 .id(gioKey.getId())//
-                .forType(GraphmlKeyForType.valueOf(gioKey.getForType().name()))//
+                .forType(GraphmlKeyForType.keyForType(gioKey.getForType().name()))//
                 .build();
         gioKey.defaultValue().ifPresent(defaultValue -> graphmlKey.setDefaultValue(GraphmlDefault.builder().value(defaultValue).build()));
         gioKey.attributeName().ifPresent(graphmlKey::setAttrName);
@@ -73,9 +70,22 @@ public class GioWriterImpl implements GioWriter {
     public void startDocument(GioDocument document) throws IOException {
         GraphmlDocument graphmlDocument = new GraphmlDocument();
         desc(document, graphmlDocument);
+
+
         if (document.getKeys() != null) {
+            if(graphmlDocument.getKeys()==null)
+                graphmlDocument.setKeys(new ArrayList<>());
             for (GioKey gioKey : document.getKeys()) {
-                key(gioKey);
+                GraphmlKey graphmlKey = GraphmlKey.builder()//
+                        .id(gioKey.getId())//
+                        .forType(GraphmlKeyForType.keyForType(gioKey.getForType().name()))//
+                        .build();
+                gioKey.defaultValue().ifPresent(defaultValue -> graphmlKey.setDefaultValue(GraphmlDefault.builder().value(defaultValue).build()));
+                gioKey.attributeName().ifPresent(graphmlKey::setAttrName);
+                gioKey.attributeType().ifPresent(attType -> graphmlKey.setAttrType(attType.graphmlName));
+                customAttributes(gioKey, graphmlKey);
+                desc(gioKey, graphmlKey);
+                graphmlDocument.getKeys().add(graphmlKey);
             }
         }
         if (document.getDataList() != null) {

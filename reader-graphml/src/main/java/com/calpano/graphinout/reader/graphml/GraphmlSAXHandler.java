@@ -14,61 +14,79 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.function.Consumer;
 
 @Slf4j
 class GraphmlSAXHandler extends DefaultHandler {
+    private final static String GRAPHML_STANDARD_NAME_SPACE = "http://graphml.graphdrawing.org/xmlns";
     private final GioWriter gioWriter;
-    private final GioReader.ContentError contentError;
+    private final Consumer<GioReader.ContentError> errorConsumer;
 
     private GraphmlEntity currentEntity;
 
     private Stack<GraphmlEntity> stack = new Stack<>();
 
 
-    public GraphmlSAXHandler(GioWriter gioWriter, GioReader.ContentError contentError) {
+    public GraphmlSAXHandler(GioWriter gioWriter, Consumer<GioReader.ContentError> errorConsumer) {
         this.gioWriter = gioWriter;
-        this.contentError = contentError;
+        this.errorConsumer = errorConsumer;
+
     }
+
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        log.debug("startElement [{}].", qName);
+        String tagName = localName;
+        if (!GRAPHML_STANDARD_NAME_SPACE.equals(uri) || uri.isEmpty())
+            tagName = qName;
+        else if (tagName.isEmpty()) {
+            tagName = qName;
+        }
+
+
         // validate URI once, should be "http://graphml.graphdrawing.org/xmlns"; all other URIs: verbatim data, no interpretation, still resolve URI + localName
         /// TODO warn about wrong URI
         try {
-            switch (localName) {
+            switch (tagName) {
                 case GraphmlConstant.GRAPHML_ELEMENT_NAME:
-                    startGraphmlElement(uri, localName, attributes);
+                    startGraphmlElement(uri, tagName, attributes);
                     break;
 
                 case GraphmlConstant.DESC_ELEMENT_NAME:
-                    startDescElement(uri, localName, attributes);
+                    startDescElement(uri, tagName, attributes);
                     break;
 
                 case GraphmlConstant.KEY_ELEMENT_NAME:
-                    startKeyElement(uri, localName, attributes);
+                    startKeyElement(uri, tagName, attributes);
                     break;
 
                 case GraphmlConstant.NODE_DATA_ELEMENT_NAME:
-                    startNodeDataElement(uri, localName, attributes);
+                    startNodeDataElement(uri, tagName, attributes);
                     break;
 
                 case GraphmlConstant.GRAPH_ELEMENT_NAME:
-                    startGraphElement(uri, localName, attributes);
+                    startGraphElement(uri, tagName, attributes);
                     break;
                 case GraphmlConstant.NODE_ELEMENT_NAME:
-                    startNodeElement(uri, localName, attributes);
+                    startNodeElement(uri, tagName, attributes);
                     break;
                 case GraphmlConstant.EDGE_ELEMENT_NAME:
-                    startEdgeElement(uri, localName, attributes);
+                    startEdgeElement(uri, tagName, attributes);
+                    break;
+
+                case GraphmlConstant.LOCATOR_ELEMENT_NAME:
+                    startLocatorElement(uri, tagName, attributes);
                     break;
                 default:
                     //TODO Does it need to log?
                     //TODO Dose have to control qName and uri?
-                    createStartXMlElement(localName, attributes);
+                    createStartXMlElement(qName, attributes);
 
             }
         } catch (Exception e) {
             //TODO manage Exception
+            throw new RuntimeException(e);
         }
 
 
@@ -76,8 +94,18 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
+        log.debug("endElement [{}].", qName);
+        String tagName = localName;
+        if (!GRAPHML_STANDARD_NAME_SPACE.equals(uri) || uri.isEmpty())
+            tagName = qName;
+        else if (tagName.isEmpty()) {
+            tagName = qName;
+        }
+        if (localName.isEmpty()) {
+            tagName = qName;
+        }
         try {
-            switch (localName) {
+            switch (tagName) {
                 case GraphmlConstant.GRAPHML_ELEMENT_NAME:
                     endGraphmlElement();
                     break;
@@ -103,20 +131,27 @@ class GraphmlSAXHandler extends DefaultHandler {
                 case GraphmlConstant.EDGE_ELEMENT_NAME:
                     endEdgeElement();
                     break;
+                case GraphmlConstant.LOCATOR_ELEMENT_NAME:
+                    endLocatorElement();
+                    break;
                 default:
                     //TODO Does it need to log?
                     //TODO Dose have to control qName and uri?
-                    createEndXMlElement(localName);
+                    createEndXMlElement(qName);
 
             }
         } catch (Exception e) {
+            throw new RuntimeException(e);
             //TODO manage Exception
         }
     }
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        currentEntity.addData(new String(ch));
+        log.debug("characters [{}].", new String(ch, start, length));
+        if (currentEntity != null)
+            currentEntity.addData(new String(ch, start, length));
+
     }
 
     @Override
@@ -137,7 +172,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     private void startGraphmlElement(String uri, String localName, Attributes attributes) {
         Map<String, String> customAttributes = new LinkedHashMap<>();
         for (int i = 0; i < attributes.getLength(); i++) {
-            customAttributes.put(attributes.getType(i), attributes.getValue(i));
+            customAttributes.put(attributes.getQName(i), attributes.getValue(i));
         }
         currentEntity = new GioDocumentEntity(GioDocument.builder().customAttributes(customAttributes).build());
     }
@@ -171,15 +206,15 @@ class GraphmlSAXHandler extends DefaultHandler {
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
-            switch (attributes.getType(i)) {
+            switch (attributes.getQName(i)) {
                 case "id":
                     builder.id(attributes.getValue(i));
                     break;
                 case "for":
-                    builder.forType(GioKeyForType.valueOf(attributes.getValue(i)));
+                    builder.forType(GioKeyForType.keyForType(attributes.getValue(i).toLowerCase()));
                     break;
                 default:
-                    customAttributes.put(attributes.getType(i), attributes.getValue(i));
+                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
 
         }
@@ -202,7 +237,7 @@ class GraphmlSAXHandler extends DefaultHandler {
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
-            switch (attributes.getType(i)) {
+            switch (attributes.getQName(i)) {
                 case "id":
                     builder.id(attributes.getValue(i));
                     break;
@@ -210,11 +245,12 @@ class GraphmlSAXHandler extends DefaultHandler {
                     builder.key(attributes.getValue(i));
                     break;
                 default:
-                    customAttributes.put(attributes.getType(i), attributes.getValue(i));
+                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
 
         }
         currentEntity = new GioDataEntity(builder.build());
+
     }
 
     private void endNodeDataElement() throws IOException {
@@ -234,7 +270,7 @@ class GraphmlSAXHandler extends DefaultHandler {
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
-            switch (attributes.getType(i)) {
+            switch (attributes.getQName(i)) {
                 case "id":
                     builder.id(attributes.getValue(i));
                     break;
@@ -242,7 +278,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                     builder.edgedefault(Boolean.valueOf(attributes.getValue(i)));
                     break;
                 default:
-                    customAttributes.put(attributes.getType(i), attributes.getValue(i));
+                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
 
         }
@@ -279,12 +315,12 @@ class GraphmlSAXHandler extends DefaultHandler {
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
-            switch (attributes.getType(i)) {
+            switch (attributes.getQName(i)) {
                 case "id":
                     builder.id(attributes.getValue(i));
                     break;
                 default:
-                    customAttributes.put(attributes.getType(i), attributes.getValue(i));
+                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
 
         }
@@ -292,7 +328,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void endNodeElement() throws IOException {
-     if (currentEntity != null) {
+        if (currentEntity != null) {
             if (currentEntity.getEntity() instanceof GioNode g) {
                 gioWriter.startNode(g);
                 gioWriter.endNode(null);
@@ -301,8 +337,8 @@ class GraphmlSAXHandler extends DefaultHandler {
             }
             currentEntity = null;
         } else {
-         gioWriter.endNode(null);
-     }
+            gioWriter.endNode(null);
+        }
 
     }
 
@@ -316,12 +352,12 @@ class GraphmlSAXHandler extends DefaultHandler {
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
-            switch (attributes.getType(i)) {
+            switch (attributes.getQName(i)) {
                 case "id":
                     builder.id(attributes.getValue(i));
                     break;
                 default:
-                    customAttributes.put(attributes.getType(i), attributes.getValue(i));
+                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
 
         }
@@ -342,6 +378,35 @@ class GraphmlSAXHandler extends DefaultHandler {
         }
 
     }
+
+    private void startLocatorElement(String uri, String localName, Attributes attributes) throws IOException {
+
+        if (currentEntity != null) stack.push(currentEntity);
+
+        //TODO locator customAttributes doese need to process that
+        URL url = null;
+        Map<String, String> customAttributes = new LinkedHashMap<>();
+        int attributesLength = attributes.getLength();
+        for (int i = 0; i < attributesLength; i++) {
+            switch (attributes.getQName(i)) {
+                case "xlink:href":
+                    url = new URL(attributes.getValue(i));
+                    break;
+                default:
+                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+            }
+
+        }
+        currentEntity = new GioLocatorEntity(url);
+    }
+
+    private void endLocatorElement() throws IOException {
+        if (currentEntity == null || !(currentEntity.getEntity() instanceof URL)) {
+            throw new IOException("Invalid Structure format.");
+        }
+
+    }
+
     public GraphmlEntity getCurrentEntity() {
         return currentEntity;
     }
@@ -352,11 +417,12 @@ class GraphmlSAXHandler extends DefaultHandler {
         builder.append(name);
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
-            builder.append(" " + attributes.getType(i) + "=\"" + attributes.getValue(i) + "\"");
+            builder.append(" " + attributes.getQName(i) + "=\"" + attributes.getValue(i) + "\"");
         }
 
         builder.append('>');
-        characters(builder.toString().toCharArray(), 0, builder.length());
+        // characters(builder.toString().toCharArray(), 0, builder.length());
+        currentEntity.addData(builder.toString());
     }
 
     private void createEndXMlElement(String name) throws SAXException {
@@ -364,7 +430,9 @@ class GraphmlSAXHandler extends DefaultHandler {
         builder.append("</");
         builder.append(name);
         builder.append('>');
-        characters(builder.toString().toCharArray(), 0, builder.length());
+
+        currentEntity.addData(builder.toString());
+        //    characters(builder.toString().toCharArray(), 0, builder.length());
     }
 
 

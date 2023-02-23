@@ -22,6 +22,11 @@ public class SimpleXmlWriter implements XmlWriter {
 
     public SimpleXmlWriter(OutputSink outputSink) {
         this.outputSink = outputSink;
+        try {
+            startDocument();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -49,12 +54,15 @@ public class SimpleXmlWriter implements XmlWriter {
 
     @Override
     public void startDocument() throws IOException {
-        this.out = outputSink.outputStream();
-        this.writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+        if(this.out ==null) {
+            this.out = outputSink.outputStream();
+            this.writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+        }
     }
 
     @Override
     public void startElement(String name, Map<String, String> attributes) throws IOException {
+        log.debug("startElement [{}].", name);
         writer.write("<");
         writer.write(name);
         for (Map.Entry<String, String> entry : attributes.entrySet()) {

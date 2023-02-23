@@ -2,7 +2,7 @@ package com.calpano.graphinout.base.gio;
 
 public enum GioKeyForType {
 
-    All("all"), Graph("graph"), Node("node"), Edge("edge"), HyperEdge("hyperedge"), Port("port"), Endpoint("endpoint");
+    Graphml("graphml"),  All("all"), Graph("graph"), Node("node"), Edge("edge"), HyperEdge("hyperedge"), Port("port"), Endpoint("endpoint");
 
     public final String value;
 
