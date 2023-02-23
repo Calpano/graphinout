@@ -19,19 +19,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
 class TgfReaderTest {
-    public static final String NODE_ID_1 = "node1";
-    public static final String NODE_ID_2 = "node2";
-    public static final String NODE_ID_3 = "node3";
-    public static final GioEndpoint ENDPOINT_1 = GioEndpoint.builder().node(NODE_ID_1).build();
-    public static final GioEndpoint ENDPOINT_2 = GioEndpoint.builder().node(NODE_ID_2).build();
-    public static final GioEndpoint ENDPOINT_3 = GioEndpoint.builder().node(NODE_ID_3).build();
     public static final String EMPTY_FILE = "";
     public static final String NODES_ONLY = "1 First node\n2 Second node";
     public static final String EDGES_ONLY = "#\n1 2 Edge between first and second\n2 3 Edge between second and third\"";
@@ -45,10 +38,6 @@ class TgfReaderTest {
     private SingleInputSource mockInputSrc;
     @Mock
     private Consumer<ContentError> mockErrorConsumer;
-    @Mock
-    private GioNode mockNode;
-    @Mock
-    private GioEdge mockEdge;
 
     @BeforeEach
     void setUp() {
@@ -103,18 +92,11 @@ class TgfReaderTest {
         verify(mockErrorConsumer).accept(any(ContentError.class));
     }
 
-    @Test
-    void shouldWorkAsIntendedAndCallGioWriter() throws IOException {
-        GioNode mockNode2 = mock(GioNode.class);
-        GioNode mockNode3 = mock(GioNode.class);
-        GioEdge mockEdge2 = mock(GioEdge.class);
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(THREE_NODES_TWO_EDGES_WITH_LABEL.getBytes(StandardCharsets.UTF_8));
+    @ParameterizedTest
+    @MethodSource("tgfSources")
+    void shouldWorkAsIntendedAndCallGioWriter(String source) throws IOException {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8));
         when(mockInputSrc.inputStream()).thenReturn(byteArrayInputStream);
-        when(mockNode.getId()).thenReturn(NODE_ID_1);
-        when(mockNode2.getId()).thenReturn(NODE_ID_2);
-        when(mockNode3.getId()).thenReturn(NODE_ID_3);
-        when(mockEdge.getEndpoints()).thenReturn(List.of(ENDPOINT_1, ENDPOINT_2));
-        when(mockEdge2.getEndpoints()).thenReturn(List.of(ENDPOINT_2, ENDPOINT_3));
 
         underTest.errorHandler(TgfReaderTest.this.mockErrorConsumer);
         underTest.read(mockInputSrc, mockGioWriter);
@@ -131,5 +113,9 @@ class TgfReaderTest {
 
     private static Stream<String> getResourceFilePaths() {
         return new ClassGraph().scan().getAllResources().stream().map(Resource::getPath).filter(path -> path.endsWith(".tgf"));
+    }
+
+    private static Stream<String> tgfSources() {
+        return Stream.of(THREE_NODES_TWO_EDGES_WITH_LABEL, THREE_NODES_TWO_EDGES);
     }
 }
