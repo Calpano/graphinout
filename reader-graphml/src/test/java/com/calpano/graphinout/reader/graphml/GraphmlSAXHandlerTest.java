@@ -1,6 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.*;
+import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.ContentErrors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,13 +36,13 @@ class GraphmlSAXHandlerTest {
         @Mock
         Attributes attributes;
 
-        private final List<GioReader.ContentError> storage= new ArrayList<>();
+        private final List<ContentError> storage= new ArrayList<>();
 
         @BeforeEach
         void setUp() {
             MockitoAnnotations.openMocks(this);
             saxHandler = new GraphmlSAXHandler(gioWriter, ContentErrors.defaultErrorHandler());
-            Consumer<GioReader.ContentError> errorConsumer = contentError -> storage.add(contentError);
+            Consumer<ContentError> errorConsumer = contentError -> storage.add(contentError);
             saxHandler = new GraphmlSAXHandler(gioWriter, errorConsumer);
         }
 
@@ -782,7 +783,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
             reset(attributes);
 
             qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
@@ -798,7 +799,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
 
             //ADD data 2
             reset(attributes);
@@ -821,7 +822,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
             reset(attributes);
 
             qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
@@ -837,7 +838,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
 
             qName = GraphmlConstant.NODE_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
@@ -1000,7 +1001,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
             reset(attributes);
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
@@ -1013,7 +1014,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
         }
 
         @Test
@@ -1038,12 +1039,12 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
             reset(attributes);
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
                     () -> assertInstanceOf(URL.class, saxHandler.getCurrentEntity().getEntity()),
-                    () -> assertEquals("http://test.co.de", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
+                    () -> assertEquals("http://example.com", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -1051,7 +1052,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
             qName = GraphmlConstant.GRAPH_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
@@ -1063,7 +1064,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(1)).endGraph(new URL("http://test.co.de")),
                     () -> verify(gioWriter, times(0)).endNode(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
         }
 
         @Test
@@ -1088,7 +1089,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
             reset(attributes);
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
@@ -1101,7 +1102,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
             qName = GraphmlConstant.NODE_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
@@ -1113,7 +1114,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endDocument(),
                     () -> verify(gioWriter, times(1)).endNode(new URL("http://test.co.de")),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
-                    () -> verify(gioWriter, times(0)).endEdge(any()));
+                    () -> verify(gioWriter, times(0)).endEdge());
         }
 
         @Test

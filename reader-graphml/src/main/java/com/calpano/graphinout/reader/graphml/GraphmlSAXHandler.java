@@ -10,9 +10,9 @@ import com.calpano.graphinout.base.gio.GioKeyForType;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.base.reader.GioReader;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -28,62 +28,17 @@ import java.util.function.Consumer;
 class GraphmlSAXHandler extends DefaultHandler {
     private final static String GRAPHML_STANDARD_NAME_SPACE = "http://graphml.graphdrawing.org/xmlns";
     private final GioWriter gioWriter;
-    private final Consumer<ContentError> errorHandler;
-    private Locator locator;
-    private GraphmlEntity<?> currentEntity;
-    private Stack<GraphmlEntity<?>> stack = new Stack<>();
+    private final Consumer<ContentError> errorConsumer;
 
-    public GraphmlSAXHandler(GioWriter gioWriter, Consumer<ContentError> errorHandler) {
+    private GraphmlEntity currentEntity;
+
+    private Stack<GraphmlEntity> stack = new Stack<>();
+
+
+    public GraphmlSAXHandler(GioWriter gioWriter, Consumer<ContentError> errorConsumer) {
         this.gioWriter = gioWriter;
-        this.errorHandler = errorHandler;
-    }
+        this.errorConsumer = errorConsumer;
 
-    @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
-        currentEntity.addData(new String(ch));
-    }
-
-    @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
-        try {
-            switch (localName) {
-                case GraphmlConstant.GRAPHML_ELEMENT_NAME -> endGraphmlElement();
-                case GraphmlConstant.DESC_ELEMENT_NAME -> endDescElement();
-                case GraphmlConstant.KEY_ELEMENT_NAME -> endKeyElement();
-                case GraphmlConstant.NODE_DATA_ELEMENT_NAME -> endNodeDataElement();
-                case GraphmlConstant.GRAPH_ELEMENT_NAME -> endGraphElement();
-                case GraphmlConstant.NODE_ELEMENT_NAME -> endNodeElement();
-                case GraphmlConstant.EDGE_ELEMENT_NAME -> endEdgeElement();
-                default ->
-                    //TODO Does it need to log?
-                    //TODO Dose have to control qName and uri?
-                        createEndXMlElement(localName);
-            }
-        } catch (Exception e) {
-            //TODO manage Exception
-        }
-    }
-
-    @Override
-    public void error(SAXParseException e) throws SAXException {
-        ContentError ce = new ContentError(ContentError.ErrorLevel.Error, "XML error " + e.getMessage(), location(e));
-        this.errorHandler.accept(ce);
-
-        super.error(e);
-    }
-
-    @Override
-    public void fatalError(SAXParseException e) throws SAXException {
-        super.fatalError(e);
-    }
-
-    public GraphmlEntity getCurrentEntity() {
-        return currentEntity;
-    }
-
-    @Override
-    public void setDocumentLocator(Locator locator) {
-        this.locator = locator;
     }
 
 
@@ -134,39 +89,89 @@ class GraphmlSAXHandler extends DefaultHandler {
                 default:
                     //TODO Does it need to log?
                     //TODO Dose have to control qName and uri?
-                    createStartXMlElement(localName, attributes);
+                    createStartXMlElement(qName, attributes);
+
             }
         } catch (Exception e) {
             //TODO manage Exception
             throw new RuntimeException(e);
         }
+
+
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        log.debug("endElement [{}].", qName);
+        String tagName = localName;
+        if (!GRAPHML_STANDARD_NAME_SPACE.equals(uri) || uri.isEmpty())
+            tagName = qName;
+        else if (tagName.isEmpty()) {
+            tagName = qName;
+        }
+        if (localName.isEmpty()) {
+            tagName = qName;
+        }
+        try {
+            switch (tagName) {
+                case GraphmlConstant.GRAPHML_ELEMENT_NAME:
+                    endGraphmlElement();
+                    break;
+
+                case GraphmlConstant.DESC_ELEMENT_NAME:
+                    endDescElement();
+                    break;
+
+                case GraphmlConstant.KEY_ELEMENT_NAME:
+                    endKeyElement();
+                    break;
+
+                case GraphmlConstant.NODE_DATA_ELEMENT_NAME:
+                    endNodeDataElement();
+                    break;
+
+                case GraphmlConstant.GRAPH_ELEMENT_NAME:
+                    endGraphElement();
+                    break;
+                case GraphmlConstant.NODE_ELEMENT_NAME:
+                    endNodeElement();
+                    break;
+                case GraphmlConstant.EDGE_ELEMENT_NAME:
+                    endEdgeElement();
+                    break;
+                case GraphmlConstant.LOCATOR_ELEMENT_NAME:
+                    endLocatorElement();
+                    break;
+                default:
+                    //TODO Does it need to log?
+                    //TODO Dose have to control qName and uri?
+                    createEndXMlElement(qName);
+
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+            //TODO manage Exception
+        }
+    }
+
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        log.debug("characters [{}].", new String(ch, start, length));
+        if (currentEntity != null)
+            currentEntity.addData(new String(ch, start, length));
+
     }
 
     @Override
     public void warning(SAXParseException e) throws SAXException {
         super.warning(e);
     }
-    
+
     @Override
     public void error(SAXParseException e) throws SAXException {
         super.error(e);
     }
 
-    private void createEndXMlElement(String name) throws SAXException {
-        StringBuilder builder = new StringBuilder();
-        builder.append("</");
-        builder.append(name);
-        builder.append('>');
-        characters(builder.toString().toCharArray(), 0, builder.length());
-    }
-
-    private void createStartXMlElement(String name, Attributes attributes) throws SAXException {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<");
-        builder.append(name);
-        int attributesLength = attributes.getLength();
-        for (int i = 0; i < attributesLength; i++) {
-            builder.append(" " + attributes.getType(i) + "=\"" + attributes.getValue(i) + "\"");
     @Override
     public void fatalError(SAXParseException e) throws SAXException {
         super.fatalError(e);
@@ -177,47 +182,7 @@ class GraphmlSAXHandler extends DefaultHandler {
         for (int i = 0; i < attributes.getLength(); i++) {
             customAttributes.put(attributes.getQName(i), attributes.getValue(i));
         }
-
-        builder.append('>');
-        characters(builder.toString().toCharArray(), 0, builder.length());
-    }
-
-    private void endDescElement() throws IOException {
-        if (stack.isEmpty()) throw new IOException("Invalid Structure format.");
-        stack.peek().addEntity(currentEntity);
-        currentEntity = stack.pop();
-    }
-
-    private void endEdgeElement() throws IOException {
-        if (currentEntity != null) {
-            if (currentEntity.getEntity() instanceof GioEdge g) {
-                gioWriter.startEdge(g);
-                gioWriter.endEdge();
-            } else if (currentEntity.getEntity() instanceof URL g) {
-                gioWriter.endNode(g);
-            }
-            currentEntity = null;
-        } else {
-            gioWriter.endNode(null);
-        }
-
-    }
-
-    private void endGraphElement() throws IOException {
-        if (currentEntity != null) {
-            if (currentEntity.getEntity() instanceof GioGraph g) {
-                gioWriter.startGraph(g);
-                gioWriter.endGraph(null);
-            } else if (currentEntity.getEntity() instanceof URL g) {
-                gioWriter.endGraph(g);
-            } else {
-                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "Invalid Structure format.", location()));
-                throw new IllegalStateException("Invalid Structure format.");
-            }
-        } else {
-            gioWriter.endGraph(null);
-        }
-        currentEntity = null;
+        currentEntity = new GioDocumentEntity(GioDocument.builder().customAttributes(customAttributes).build());
     }
 
     private void endGraphmlElement() throws IOException {
@@ -239,102 +204,6 @@ class GraphmlSAXHandler extends DefaultHandler {
         if (stack.isEmpty()) throw new IOException("Invalid Structure format.");
         stack.peek().addEntity(currentEntity);
         currentEntity = stack.pop();
-    }
-    
-    private void endKeyElement() throws IOException {
-        if (stack.isEmpty() || !(stack.peek() instanceof GioDocumentEntity))
-            throw new IOException("Invalid Structure format.");
-
-        stack.peek().addEntity(currentEntity);
-        currentEntity = stack.pop();
-    }
-
-    private void endNodeDataElement() throws IOException {
-        if (stack.isEmpty()) throw new IOException("Invalid Structure format.");
-        stack.peek().addEntity(currentEntity);
-        currentEntity = stack.pop();
-    }
-
-    private void endNodeElement() throws IOException {
-        if (currentEntity != null) {
-            if (currentEntity.getEntity() instanceof GioNode g) {
-                gioWriter.startNode(g);
-                gioWriter.endNode(null);
-            } else if (currentEntity.getEntity() instanceof URL g) {
-                gioWriter.endNode(g);
-            }
-            currentEntity = null;
-        } else {
-            gioWriter.endNode(null);
-        }
-    }
-
-    private ContentError.Location location() {
-        return new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber());
-    }
-
-    private ContentError.Location location(SAXParseException e) {
-        return new ContentError.Location(e.getLineNumber(), e.getColumnNumber());
-    }
-
-    private void startDescElement(String uri, String localName, Attributes attributes) {
-        stack.push(currentEntity);
-        currentEntity = new GioDescriptionEntity();
-    }
-
-    private void startEdgeElement(String uri, String localName, Attributes attributes) throws IOException {
-
-        if (currentEntity != null && currentEntity.getEntity() instanceof GioGraph g) {
-            gioWriter.startGraph(g);
-        } else if (currentEntity != null) stack.push(currentEntity);
-
-        GioEdge.GioEdgeBuilder<?,?> builder = GioEdge.builder();
-        Map<String, String> customAttributes = new LinkedHashMap<>();
-        int attributesLength = attributes.getLength();
-        for (int i = 0; i < attributesLength; i++) {
-            switch (attributes.getType(i)) {
-                case "id":
-                    builder.id(attributes.getValue(i));
-                    break;
-                default:
-                    customAttributes.put(attributes.getType(i), attributes.getValue(i));
-            }
-
-        }
-        currentEntity = new GioEdgeEntity(builder.build());
-    }
-
-    private void startGraphElement(String uri, String localName, Attributes attributes) throws IOException {
-
-        if (currentEntity != null && currentEntity.getEntity() instanceof GioDocument g) {
-            gioWriter.startDocument(g);
-        } else if (currentEntity != null) stack.push(currentEntity);
-
-        GioGraph.GioGraphBuilder builder = GioGraph.builder();
-        Map<String, String> customAttributes = new LinkedHashMap<>();
-        int attributesLength = attributes.getLength();
-        for (int i = 0; i < attributesLength; i++) {
-            switch (attributes.getType(i)) {
-                case "id":
-                    builder.id(attributes.getValue(i));
-                    break;
-                case "edgedefault":
-                    builder.edgedefaultDirected(Boolean.valueOf(attributes.getValue(i)));
-                    break;
-                default:
-                    customAttributes.put(attributes.getType(i), attributes.getValue(i));
-            }
-
-        }
-        currentEntity = new GioGraphEntity(builder.build());
-    }
-
-    private void startGraphmlElement(String uri, String localName, Attributes attributes) {
-        Map<String, String> customAttributes = new LinkedHashMap<>();
-        for (int i = 0; i < attributes.getLength(); i++) {
-            customAttributes.put(attributes.getType(i), attributes.getValue(i));
-        }
-        currentEntity = new GioDocumentEntity(GioDocument.builder().customAttributes(customAttributes).build());
     }
 
     private void startKeyElement(String uri, String localName, Attributes attributes) throws IOException {
@@ -360,8 +229,8 @@ class GraphmlSAXHandler extends DefaultHandler {
         builder.customAttributes(customAttributes);
         currentEntity = new GioKeyEntity(builder.build());
     }
-    
-   private void endKeyElement() throws IOException {
+
+    private void endKeyElement() throws IOException {
         if (stack.isEmpty() || !(stack.peek() instanceof GioDocumentEntity))
             throw new IOException("Invalid Structure format.");
 
@@ -414,7 +283,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                     builder.id(attributes.getValue(i));
                     break;
                 case "edgedefault":
-                    builder.edgedefault(Boolean.valueOf(attributes.getValue(i)));
+                    builder.edgedefaultDirected(Boolean.valueOf(attributes.getValue(i)));
                     break;
                 default:
                     customAttributes.put(attributes.getQName(i), attributes.getValue(i));
@@ -507,7 +376,7 @@ class GraphmlSAXHandler extends DefaultHandler {
         if (currentEntity != null) {
             if (currentEntity.getEntity() instanceof GioEdge g) {
                 gioWriter.startEdge(g);
-                gioWriter.endEdge(null);
+                gioWriter.endEdge();
             } else if (currentEntity.getEntity() instanceof URL g) {
                 gioWriter.endNode(g);
             }

@@ -43,7 +43,7 @@ public class GraphmlReader implements GioReader {
             factory.setNamespaceAware(true);
             SAXParser saxParser = factory.newSAXParser();
 
-        GraphmlSAXHandler saxHandler  =  new GraphmlSAXHandler(writer,this.errorConsumer);
+        GraphmlSAXHandler saxHandler  =  new GraphmlSAXHandler(writer,this.errorHandler);
         if(inputSource.isSingle())
         saxParser.parse(((SingleInputSource)inputSource).inputStream(),saxHandler);
         } catch (ParserConfigurationException e) {

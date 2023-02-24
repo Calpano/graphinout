@@ -4,9 +4,9 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
+import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.output.xml.file.InMemoryOutputSink;
-import com.calpano.graphinout.base.output.xml.file.SimpleXmlWriter;
+import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,7 @@ class GraphmlReaderTest {
         OutputSink outputSink = new InMemoryOutputSink();
 
         GraphmlReader graphmlReader = new GraphmlReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
     }
 
@@ -67,19 +66,10 @@ class GraphmlReaderTest {
                 return new FileOutputStream(outputSource.toFile());
             }
 
-            @Override
-            public List<String> readAllData() throws IOException {
-                return Collections.EMPTY_LIST;
-            }
-
-            @Override
-            public Map<String, Object> outputInfo() {
-                return Collections.EMPTY_MAP;
-            }
         };
 
         GraphmlReader graphmlReader = new GraphmlReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
      //   outputSink.readAllData().forEach(s -> log.info(s));
 
@@ -101,19 +91,10 @@ class GraphmlReaderTest {
                 return new FileOutputStream(outputSource.toFile());
             }
 
-            @Override
-            public List<String> readAllData() throws IOException {
-                return Collections.EMPTY_LIST;
-            }
-
-            @Override
-            public Map<String, Object> outputInfo() {
-                return Collections.EMPTY_MAP;
-            }
         };
 
         GraphmlReader graphmlReader = new GraphmlReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new SimpleXmlWriter(outputSink)));
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
         //   outputSink.readAllData().forEach(s -> log.info(s));
 
