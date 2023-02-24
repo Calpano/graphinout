@@ -27,6 +27,11 @@ public class GioDataEntity implements  GraphmlEntity<GioData> {
 
     @Override
     public void addData(String data) {
+           StringBuilder builder ;
+           if(gioData.getValue()!=null)
+               gioData.setValue(gioData.getValue()+data);
+           else
+               gioData.setValue(data);
 
     }
 

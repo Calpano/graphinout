@@ -8,10 +8,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
-import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS;
-import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI;
-import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI_SCHEMA_LOCATIOM;
+import static com.calpano.graphinout.base.graphml.GraphmlDocument.*;
 
+@Slf4j
 public class GraphmlWriterImpl implements GraphmlWriter {
 
     final XmlWriter xmlWriter;
@@ -22,6 +21,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void data(GraphmlKey data) throws IOException {
+        log.debug("data [{}]", data);
         xmlWriter.startElement(GraphmlKey.TAGNAME, data.getAttributes());
         if (data.getDesc() != null) {
             data.getDesc().writeXml(xmlWriter);
@@ -37,6 +37,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void endDocument() throws IOException {
+        log.debug("endDocument");
         xmlWriter.endElement(GraphmlDocument.TAGNAME);
         xmlWriter.endDocument();
     }
@@ -49,6 +50,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void endGraph(Optional<GraphmlLocator> locator) throws IOException {
+        log.debug("endGraph [{}]", locator.isPresent() ? locator.get() : null);
         if (locator.isPresent()) {
             xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
@@ -65,6 +67,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void endNode(Optional<GraphmlLocator> locator) throws IOException {
+        log.debug("endNode [{}]", locator.isPresent() ? locator.get() : null);
         if (locator.isPresent()) {
             xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
@@ -75,6 +78,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void startDocument(GraphmlDocument doc) throws IOException {
+        log.debug("startDocument [{}]", doc);
         xmlWriter.startDocument();
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
         attributes.put("xmlns", HEADER_XMLNS);
@@ -102,6 +106,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void startGraph(GraphmlGraph graphmlGraph) throws IOException {
+        log.debug("startGraph [{}]", graphmlGraph);
         xmlWriter.startElement(GraphmlGraph.TAGNAME, graphmlGraph.getAttributes());
         if (graphmlGraph.desc != null) {
             graphmlGraph.desc.writeXml(xmlWriter);
@@ -112,6 +117,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void startHyperEdge(GraphmlHyperEdge edge) throws IOException {
+        log.debug("startHyperEdge [{}]", edge);
         xmlWriter.startElement(GraphmlHyperEdge.TAGNAME, edge.getAttributes());
         if (edge.desc != null) {
             edge.desc.writeXml(xmlWriter);
@@ -130,6 +136,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     // TODO split into startNode and endNode to have the sub-graphs in between
     @Override
     public void startNode(GraphmlNode node) throws IOException {
+        log.debug("startNode [{}]", node);
         xmlWriter.startElement(GraphmlNode.TAGNAME, node.getAttributes());
         if (node.desc != null) {
             node.desc.writeXml(xmlWriter);
@@ -142,8 +149,10 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     private void writerData(GraphmlData data) throws IOException {
+        log.debug("writerData [{}]", data);
         xmlWriter.startElement(GraphmlData.TAGNAME, data.getAttributes());
-        xmlWriter.characterData(data.getValue());
+        if (data != null && data.getValue()!=null)
+            xmlWriter.characterData(data.getValue());
         xmlWriter.endElement(GraphmlData.TAGNAME);
     }
 
