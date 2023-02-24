@@ -1,29 +1,26 @@
 package com.calpano.graphinout.base.graphml;
 
-import java.io.IOException;
-
 public enum GraphmlKeyForType {
-    All, Graph, Node, Edge, HyperEdge, Port, Endpoint;
 
-    public static GraphmlKeyForType keyForType(String keyForType) throws IOException {
-        switch (keyForType.toLowerCase()) {
-            case "all":
-            case "graphml":
-                return All;
-            case "graph":
-                return Graph;
-            case "node":
-                return Node;
-            case "edge":
-                return Edge;
-            case "hyperedge":
-                return HyperEdge;
-            case "port":
-                return Port;
-            case "endpoint":
-                return Endpoint;
-            default:
-                throw new IOException("No enum constant  "+ keyForType+" .");
-        }
+    Graphml("graphml","all"),  All("all"), Graph("graph"), Node("node"), Edge("edge"), HyperEdge("hyperedge"), Port("port"), Endpoint("endpoint");
+
+    public final String[] values;
+
+    GraphmlKeyForType(String ... values) {
+        this.values = values;
     }
+
+    public static GraphmlKeyForType keyForType(String keyForType) throws IllegalArgumentException {
+        if (keyForType == null)
+            // default value
+            return GraphmlKeyForType.All;
+        for (GraphmlKeyForType v : values()) {
+            for(String s : v.values) {
+                if(s.equals(keyForType))
+                    return v;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant  "+ keyForType+" .");
+    }
+
 }

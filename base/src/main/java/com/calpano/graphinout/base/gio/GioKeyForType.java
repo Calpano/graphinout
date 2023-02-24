@@ -2,12 +2,12 @@ package com.calpano.graphinout.base.gio;
 
 public enum GioKeyForType {
 
-    Graphml("graphml"),  All("all"), Graph("graph"), Node("node"), Edge("edge"), HyperEdge("hyperedge"), Port("port"), Endpoint("endpoint");
+    Graphml("graphml","all"),  All("all"), Graph("graph"), Node("node"), Edge("edge"), HyperEdge("hyperedge"), Port("port"), Endpoint("endpoint");
 
-    public final String value;
+    public final String[] values;
 
-    GioKeyForType(String value) {
-        this.value = value;
+    GioKeyForType(String ... values) {
+        this.values = values;
     }
 
     public static GioKeyForType keyForType(String keyForType) throws IllegalArgumentException {
@@ -15,8 +15,11 @@ public enum GioKeyForType {
             // default value
             return GioKeyForType.All;
         for (GioKeyForType v : values()) {
-            if (v.value.equals(keyForType)) return v;
+            for(String s : v.values) {
+                if(s.equals(keyForType))
+                    return v;
+            }
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("No enum constant  "+ keyForType+" .");
     }
 }
