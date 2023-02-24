@@ -1,12 +1,6 @@
 package com.calpano.graphinout.reader.dot;
 
-import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioEdge;
-import com.calpano.graphinout.base.gio.GioEndpoint;
-import com.calpano.graphinout.base.gio.GioGraph;
-import com.calpano.graphinout.base.gio.GioNode;
-import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
@@ -76,6 +70,7 @@ public class DotTextReader implements GioReader {
                     .id(node.getId())
                     .dataList(gioDataList)
                     .build());
+            writer.endNode(null);
             log.info(node.getId() + " " + node.getAttributes());
         }
 
@@ -91,13 +86,13 @@ public class DotTextReader implements GioReader {
                     .build();
             gioDataList.add(gioData);
 
-
             writer.startEdge(GioEdge.builder()
                     .id(dotEdge.getId())
                     .dataList(gioDataList)
                     .endpoint(GioEndpoint.builder().node(dotEdge.getNode1().getId()).build())
                     .endpoint(GioEndpoint.builder().node(dotEdge.getNode2().getId()).build())
                     .build());
+            writer.endEdge();
             log.info(dotEdge.getNode1().getId() + "->" + dotEdge.getNode2().getId() + " " + dotEdge.getAttributes());
         }
         writer.endGraph(null);
