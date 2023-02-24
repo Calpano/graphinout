@@ -2,13 +2,16 @@ package com.calpano.graphinout.base.graphml;
 
 
 import com.calpano.graphinout.base.xml.XmlWriter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
-import static com.calpano.graphinout.base.graphml.GraphmlDocument.*;
+import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS;
+import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI;
+import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI_SCHEMA_LOCATIOM;
 
 @Slf4j
 public class GraphmlWriterImpl implements GraphmlWriter {
@@ -92,8 +95,11 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             doc.desc.writeXml(xmlWriter);
         }
 
-        if (doc.getKeys() != null) for (GraphmlKey key : doc.getKeys())
-            data(key);
+        if (doc.getKeys() != null) {
+            for (GraphmlKey key : doc.getKeys()) {
+                data(key);
+            }
+        }
 
         writerData(doc.getDataList());
         xmlWriter.lineBreak();
@@ -151,8 +157,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     private void writerData(GraphmlData data) throws IOException {
         log.debug("writerData [{}]", data);
         xmlWriter.startElement(GraphmlData.TAGNAME, data.getAttributes());
-        if (data != null && data.getValue()!=null)
-            xmlWriter.characterData(data.getValue());
+        if (data != null && data.getValue() != null) xmlWriter.characterData(data.getValue());
         xmlWriter.endElement(GraphmlData.TAGNAME);
     }
 
