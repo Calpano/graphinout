@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.graphml;
 
+import java.util.Arrays;
+
 public enum GraphmlKeyForType {
 
     Graphml("graphml","all"),  All("all"), Graph("graph"), Node("node"), Edge("edge"), HyperEdge("hyperedge"), Port("port"), Endpoint("endpoint");
@@ -17,11 +19,11 @@ public enum GraphmlKeyForType {
         for (GraphmlKeyForType v : values()) {
             for(String s : v.values) {
                 for(String inputValue:keyForType)
-                if(s.equals(inputValue.trim()))
+                if(s.equals(inputValue.toLowerCase().trim()))
                     return v;
             }
         }
-        throw new IllegalArgumentException("No enum constant  ["+ keyForType+"].");
+        throw new IllegalArgumentException("No enum constant  "+ Arrays.toString(keyForType)+".");
     }
 
 }

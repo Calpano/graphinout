@@ -1,13 +1,7 @@
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-<key id="d0" for="All" yfiles.type="resources">
-</key><key id="d1" for="Port" yfiles.type="portgraphics">
-</key><key id="d2" for="Port" yfiles.type="portgeometry">
-</key><graph id="G" edgedefault="false">
-<data key="d7">
-</data><node id="n0">
-<data key="d5">
-</data><data key="d6">
-
+<key id="d0" for="Graphml" yfiles.type="resources"></key><key id="d1" for="Port" yfiles.type="portgraphics"></key><key id="d2" for="Port" yfiles.type="portgeometry"></key>
+<graph id="G" edgedefault="undirected"><data key="d7"></data>
+<node id="n0"><data key="d5"></data><data key="d6">
         <y:ShapeNode>
           <y:Geometry height="10.0" width="10.0" x="515.1918443648668" y="149.65505642226702"></y:Geometry>
           <y:Fill color="#FF00FF" transparent="false"></y:Fill>
@@ -21,23 +15,5 @@
           </y:NodeLabel>
           <y:Shape type="ellipse"></y:Shape>
         </y:ShapeNode>
-      </data></node><node id="n1">
-<data key="d5">
-</data><data key="d6">
-
-        <y:ShapeNode>
-          <y:Geometry height="10.0" width="10.0" x="52.896829576714424" y="282.6926857087842"></y:Geometry>
-          <y:Fill color="#FF00FF" transparent="false"></y:Fill>
-          <y:BorderStyle color="#000000" type="line" width="1.0"></y:BorderStyle>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="custom" textColor="#000000" visible="false" width="11.587890625" x="-0.7939453125" y="-4.06640625">2<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"></y:SmartNodeLabelModel>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"></y:SmartNodeLabelModelParameter>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:Shape type="ellipse"></y:Shape>
-        </y:ShapeNode>
-      </data></node><hyperedge id="e0">
-</hyperedge></hyperedge><hyperedge id="e1">
-</hyperedge></hyperedge></graph></graphml>
+      </data></node>
+<node id="n1"><data key="d5"></data><data key="d6">

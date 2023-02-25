@@ -29,14 +29,12 @@ class GraphmlSAXHandlerTest {
     @Nested
     class successfulTest {
 
+        private final List<ContentError> storage = new ArrayList<>();
         GraphmlSAXHandler saxHandler;
-
         @Mock
         GioWriter gioWriter;
         @Mock
         Attributes attributes;
-
-        private final List<ContentError> storage= new ArrayList<>();
 
         @BeforeEach
         void setUp() {
@@ -120,11 +118,11 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
                     () -> verify(gioWriter, times(0)).endEdge());
-
-            saxHandler.characters("this is desc for Graphml".toCharArray(), 0, 24);
+            String descGraphml = "this is desc for Graphml";
+            saxHandler.characters(descGraphml.toCharArray(), 0, descGraphml.length());
             assertAll("",
                     () -> assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription),
-                    () -> assertEquals("this is desc for Graphml", ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
+                    () -> assertEquals(descGraphml, ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -169,7 +167,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
                     () -> verify(gioWriter, times(0)).endEdge(),
-                    () -> verify(attributes, times(2)).getType(anyInt()),
+                    () -> verify(attributes, times(2)).getQName(anyInt()),
                     () -> verify(attributes, times(1)).getLength());
             reset(attributes);
             qName = GraphmlConstant.DESC_ELEMENT_NAME;
@@ -185,11 +183,11 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
                     () -> verify(gioWriter, times(0)).endEdge());
-
-            saxHandler.characters("this is desc for key".toCharArray(), 0, 19);
+            String descKey = "this is desc for key";
+            saxHandler.characters(descKey.toCharArray(), 0, descKey.length());
             assertAll("",
                     () -> assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription),
-                    () -> assertEquals("this is desc for key", ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
+                    () -> assertEquals(descKey, ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -210,7 +208,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endNode(any()),
                     () -> verify(gioWriter, times(0)).endEdge(),
                     () -> assertInstanceOf(GioKey.class, saxHandler.getCurrentEntity().getEntity()),
-                    () -> assertEquals("this is desc for key", ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()));
+                    () -> assertEquals(descKey, ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()));
 
             qName = GraphmlConstant.KEY_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
@@ -265,11 +263,11 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
                     () -> verify(gioWriter, times(0)).endEdge());
-
-            saxHandler.characters("this is desc for key2".toCharArray(), 0, 19);
+            String descKey2 = "this is desc for key2";
+            saxHandler.characters(descKey2.toCharArray(), 0, descKey2.length());
             assertAll("",
                     () -> assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription),
-                    () -> assertEquals("this is desc for key2", ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
+                    () -> assertEquals(descKey2, ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -419,7 +417,7 @@ class GraphmlSAXHandlerTest {
         @DisplayName("Only GioDocument  End Element successfully pass.")
         @Test
         void endGioDocument() throws SAXException, IOException {
-            String uri = "uri", qName= GraphmlConstant.GRAPHML_ELEMENT_NAME, localName  = "";
+            String uri = "uri", qName = GraphmlConstant.GRAPHML_ELEMENT_NAME, localName = "";
             assertNull(saxHandler.getCurrentEntity());
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
@@ -523,11 +521,11 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
                     () -> verify(gioWriter, times(0)).endEdge());
-
-            saxHandler.characters("this is desc for Graph".toCharArray(), 0, 24);
+            String descGraph = "this is desc for Graph";
+            saxHandler.characters(descGraph.toCharArray(), 0, descGraph.length());
             assertAll("",
                     () -> assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription),
-                    () -> assertEquals("this is desc for Graph", ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
+                    () -> assertEquals(descGraph, ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
                     () -> verify(gioWriter, times(0)).startDocument(any()));
 
             saxHandler.endElement(uri, localName, qName);
@@ -577,7 +575,7 @@ class GraphmlSAXHandlerTest {
             assertAll("",
                     () -> assertInstanceOf(GioGraph.class, saxHandler.getCurrentEntity().getEntity()),
                     () -> assertEquals(1, ((GioGraph) saxHandler.getCurrentEntity().getEntity()).getDataList().size()),
-                    () -> assertEquals("this is desc for Graph", ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
+                    () -> assertEquals(descGraph, ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -618,7 +616,7 @@ class GraphmlSAXHandlerTest {
 
                     () -> assertInstanceOf(GioGraph.class, saxHandler.getCurrentEntity().getEntity()),
                     () -> assertEquals(2, ((GioGraph) saxHandler.getCurrentEntity().getEntity()).getDataList().size()),
-                    () -> assertEquals("this is desc for Graph", ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
+                    () -> assertEquals(descGraph, ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -731,11 +729,11 @@ class GraphmlSAXHandlerTest {
             assertAll("",
                     () -> assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription),
                     () -> verify(gioWriter, times(0)).startNode(any()));
-
-            saxHandler.characters("this is desc for Node".toCharArray(), 0, 24);
+            String descNode = "this is desc for Node";
+            saxHandler.characters(descNode.toCharArray(), 0, descNode.length());
             assertAll("",
                     () -> assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription),
-                    () -> assertEquals("this is desc for Node", ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
+                    () -> assertEquals(descNode, ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -936,11 +934,11 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endNode(any()),
                     () -> verify(gioWriter, times(0)).endEdge());
-
-            saxHandler.characters("this is desc for Edge".toCharArray(), 0, 24);
+            String descEdge = "this is desc for Edge";
+            saxHandler.characters(descEdge.toCharArray(), 0, descEdge.length());
             assertAll("",
                     () -> assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription),
-                    () -> assertEquals("this is desc for Edge", ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
+                    () -> assertEquals(descEdge, ((GioElementWithDescription) saxHandler.getCurrentEntity().getEntity()).description().get()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -989,11 +987,11 @@ class GraphmlSAXHandlerTest {
 
             when(attributes.getLength()).thenReturn(1);
             when(attributes.getQName(0)).thenReturn("xlink:href");
-            when(attributes.getValue(0)).thenReturn("http://test.co.de");
+            when(attributes.getValue(0)).thenReturn("http://example.com");
             saxHandler.startElement(uri, localName, qName, attributes);
             assertAll("",
                     () -> assertInstanceOf(URL.class, saxHandler.getCurrentEntity().getEntity()),
-                    () -> assertEquals("http://test.co.de", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
+                    () -> assertEquals("http://example.com", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -1006,7 +1004,7 @@ class GraphmlSAXHandlerTest {
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
                     () -> assertInstanceOf(URL.class, saxHandler.getCurrentEntity().getEntity()),
-                    () -> assertEquals("http://test.co.de", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
+                    () -> assertEquals("http://example.com", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -1027,11 +1025,11 @@ class GraphmlSAXHandlerTest {
 
             when(attributes.getLength()).thenReturn(1);
             when(attributes.getQName(0)).thenReturn("xlink:href");
-            when(attributes.getValue(0)).thenReturn("http://test.co.de");
+            when(attributes.getValue(0)).thenReturn("http://example.com");
             saxHandler.startElement(uri, localName, qName, attributes);
             assertAll("",
                     () -> assertInstanceOf(URL.class, saxHandler.getCurrentEntity().getEntity()),
-                    () -> assertEquals("http://test.co.de", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
+                    () -> assertEquals("http://example.com", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -1062,7 +1060,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).startNode(any()),
                     () -> verify(gioWriter, times(0)).startEdge(any()),
                     () -> verify(gioWriter, times(0)).endDocument(),
-                    () -> verify(gioWriter, times(1)).endGraph(new URL("http://test.co.de")),
+                    () -> verify(gioWriter, times(1)).endGraph(new URL("http://example.com")),
                     () -> verify(gioWriter, times(0)).endNode(any()),
                     () -> verify(gioWriter, times(0)).endEdge());
         }
@@ -1077,11 +1075,11 @@ class GraphmlSAXHandlerTest {
 
             when(attributes.getLength()).thenReturn(1);
             when(attributes.getQName(0)).thenReturn("xlink:href");
-            when(attributes.getValue(0)).thenReturn("http://test.co.de");
+            when(attributes.getValue(0)).thenReturn("http://example.com");
             saxHandler.startElement(uri, localName, qName, attributes);
             assertAll("",
                     () -> assertInstanceOf(URL.class, saxHandler.getCurrentEntity().getEntity()),
-                    () -> assertEquals("http://test.co.de", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
+                    () -> assertEquals("http://example.com", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -1094,7 +1092,7 @@ class GraphmlSAXHandlerTest {
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
                     () -> assertInstanceOf(URL.class, saxHandler.getCurrentEntity().getEntity()),
-                    () -> assertEquals("http://test.co.de", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
+                    () -> assertEquals("http://example.com", ((URL) saxHandler.getCurrentEntity().getEntity()).toString()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
                     () -> verify(gioWriter, times(0)).startNode(any()),
@@ -1112,7 +1110,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).startNode(any()),
                     () -> verify(gioWriter, times(0)).startEdge(any()),
                     () -> verify(gioWriter, times(0)).endDocument(),
-                    () -> verify(gioWriter, times(1)).endNode(new URL("http://test.co.de")),
+                    () -> verify(gioWriter, times(1)).endNode(new URL("http://example.com")),
                     () -> verify(gioWriter, times(0)).endGraph(any()),
                     () -> verify(gioWriter, times(0)).endEdge());
         }
@@ -1137,11 +1135,11 @@ class GraphmlSAXHandlerTest {
             saxHandler.startElement(uri, localName, qName, attributes);
             assertAll("",
                     () -> assertInstanceOf(GioData.class, saxHandler.getCurrentEntity().getEntity()),
-                    () -> assertEquals("<y:SVGNode>",((GioData)saxHandler.getCurrentEntity().getEntity()).getValue()));
+                    () -> assertEquals("<y:SVGNode>", ((GioData) saxHandler.getCurrentEntity().getEntity()).getValue()));
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
                     () -> assertInstanceOf(GioData.class, saxHandler.getCurrentEntity().getEntity()),
-                    () -> assertEquals("<y:SVGNode></y:SVGNode>",((GioData)saxHandler.getCurrentEntity().getEntity()).getValue()));
+                    () -> assertEquals("<y:SVGNode></y:SVGNode>", ((GioData) saxHandler.getCurrentEntity().getEntity()).getValue()));
             qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
             qName = GraphmlConstant.NODE_ELEMENT_NAME;
