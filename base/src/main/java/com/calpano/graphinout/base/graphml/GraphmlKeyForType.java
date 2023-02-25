@@ -10,17 +10,18 @@ public enum GraphmlKeyForType {
         this.values = values;
     }
 
-    public static GraphmlKeyForType keyForType(String keyForType) throws IllegalArgumentException {
-        if (keyForType == null)
+    public static GraphmlKeyForType keyForType(String ... keyForType) throws IllegalArgumentException {
+        if (keyForType == null || keyForType.length==0)
             // default value
             return GraphmlKeyForType.All;
         for (GraphmlKeyForType v : values()) {
             for(String s : v.values) {
-                if(s.equals(keyForType))
+                for(String inputValue:keyForType)
+                if(s.equals(inputValue.trim()))
                     return v;
             }
         }
-        throw new IllegalArgumentException("No enum constant  "+ keyForType+" .");
+        throw new IllegalArgumentException("No enum constant  ["+ keyForType+"].");
     }
 
 }
