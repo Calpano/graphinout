@@ -77,14 +77,10 @@ public class TgfReader implements GioReader {
                 log.info("--- nodes:");
                 String[] nodeParts = line.split(DELIMITER);
 
-                List<GioData> gioDataList = new ArrayList<>();
-                GioData gioData = GioData.builder().key(LABEL).value(nodeParts[1]).build();
-                gioDataList.add(gioData);
-
                 writer.startNode(GioNode.builder()
                         .id(nodeParts[0])
-                        .dataList(gioDataList)
                         .build());
+                writer.data(GioData.builder().key(LABEL).value(nodeParts[1]).build());
                 writer.endNode(null);
             } else {
                 log.info("--- edges:");

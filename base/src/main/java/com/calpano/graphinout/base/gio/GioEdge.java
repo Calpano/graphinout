@@ -36,7 +36,7 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class GioEdge extends GioElementWithData {
+public class GioEdge extends GioElementWithDescription {
 
     /**
      * This is an attribute that can be empty or null.

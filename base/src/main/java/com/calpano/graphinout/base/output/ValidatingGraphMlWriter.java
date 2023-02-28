@@ -134,6 +134,11 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         graphMlWriter.startNode(node);
     }
 
+    @Override
+    public void data(GraphmlData data) throws IOException {
+        // TODO implement
+    }
+
     private void ensureAllowedEnd(CurrentElement element) throws IllegalStateException {
         CurrentElement currentElement = currentElements.peek();
         if (currentElement != element) {
@@ -240,7 +245,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     private void validateKey(GraphmlKey key) throws IllegalStateException {
-        if (key.getDataList()
+        if (key.getDataList() != null && key.getDataList()
                 .stream()
                 .anyMatch(existingKey -> existingKey.getId().equals(key.getId()))) {
             throw new IllegalStateException("Key ID already exists: " + key.getId() + ". ID must be unique.");

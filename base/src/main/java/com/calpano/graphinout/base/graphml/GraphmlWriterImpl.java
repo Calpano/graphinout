@@ -154,6 +154,11 @@ public class GraphmlWriterImpl implements GraphmlWriter {
         }
     }
 
+    @Override
+    public void data(GraphmlData data) throws IOException {
+        // TODO implement
+    }
+
     private void writerData(GraphmlData data) throws IOException {
         log.debug("writerData [{}]", data);
         xmlWriter.startElement(GraphmlData.TAGNAME, data.getAttributes());

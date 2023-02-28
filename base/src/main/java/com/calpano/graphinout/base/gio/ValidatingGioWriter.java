@@ -19,6 +19,12 @@ public class ValidatingGioWriter implements GioWriter {
     private final Set<String> nodePortName = new HashSet<>();
 
     @Override
+    public void data(GioData data) throws IOException {
+        if (!keysIds.contains(data.getId()))
+            throw new IllegalStateException("GioData should refer to an existing Key ID.");
+    }
+
+    @Override
     public void endDocument() throws IOException {
         gioWriter.endDocument();
     }
@@ -73,10 +79,6 @@ public class ValidatingGioWriter implements GioWriter {
 
     @Override
     public void startGraph(GioGraph gioGraph) throws IOException {
-        for (GioData data : gioGraph.getDataList()) {
-            if (!keysIds.contains(data.getId()))
-                throw new IllegalStateException("GioData should refer to an existing Key ID.");
-        }
         gioWriter.startGraph(gioGraph);
 
     }

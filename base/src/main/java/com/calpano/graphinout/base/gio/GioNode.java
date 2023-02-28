@@ -26,7 +26,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class GioNode extends GioElementWithData {
+public class GioNode extends GioElementWithDescription {
 
     /**
      * The identifier of a node is defined by the XML-Attribute id.

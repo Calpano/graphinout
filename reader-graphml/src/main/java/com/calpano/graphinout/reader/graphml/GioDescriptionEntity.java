@@ -1,11 +1,10 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.gio.GioElementWithData;
 import com.calpano.graphinout.base.gio.GioElementWithDescription;
 
 public class GioDescriptionEntity implements GraphmlEntity<GioElementWithDescription>{
 
-   private GioElementWithDescription gioElementWithDescription= new GioElementWithData() {
+   private GioElementWithDescription gioElementWithDescription= new GioElementWithDescription() {
    };
     @Override
     public GioElementWithDescription getEntity() {

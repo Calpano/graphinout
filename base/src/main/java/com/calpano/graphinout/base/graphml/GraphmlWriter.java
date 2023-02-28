@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.graphml;
 
+import com.calpano.graphinout.base.gio.GioData;
+
 import java.io.IOException;
 import java.util.Optional;
 
@@ -29,4 +31,7 @@ public interface GraphmlWriter {
     void startHyperEdge(GraphmlHyperEdge edge) throws IOException;
 
     void startNode(GraphmlNode node) throws IOException;
+
+    void data(GraphmlData data) throws IOException;
+
 }

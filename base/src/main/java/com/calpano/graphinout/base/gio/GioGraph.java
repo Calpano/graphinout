@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 
 @SuperBuilder
 @Data
-public class GioGraph extends GioElementWithData {
+public class GioGraph extends GioElementWithDescription {
 
 
 

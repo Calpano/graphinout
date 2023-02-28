@@ -1,7 +1,6 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioElementWithData;
 
 public class GioDataEntity implements  GraphmlEntity<GioData> {
     private final GioData gioData;

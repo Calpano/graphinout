@@ -30,7 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GioPort extends GioElementWithData {
+public class GioPort extends GioElementWithDescription {
 
     /**
      * This is an attribute that mandatory.

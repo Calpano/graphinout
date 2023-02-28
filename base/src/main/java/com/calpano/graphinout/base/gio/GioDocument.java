@@ -11,7 +11,7 @@ import java.util.Optional;
  */
 @Data
 @SuperBuilder
-public class GioDocument extends GioElementWithData {
+public class GioDocument extends GioElementWithDescription {
 
     /**
      * Define default type and default values.

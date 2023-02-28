@@ -20,6 +20,8 @@ public interface GioWriter {
 
     void key(GioKey gioKey) throws IOException;
 
+    void data(GioData data) throws IOException;
+
     void startDocument(GioDocument document) throws IOException;
 
     void startEdge(GioEdge edge) throws IOException;

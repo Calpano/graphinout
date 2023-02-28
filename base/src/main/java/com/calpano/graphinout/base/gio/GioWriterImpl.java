@@ -74,6 +74,15 @@ public class GioWriterImpl implements GioWriter {
     }
 
     @Override
+    public void data(GioData gioData) throws IOException {
+        GraphmlData graphmlData = GraphmlData.builder().key(gioData.getKey()).value(gioData.getValue()).build();
+        gioData.id().ifPresent(graphmlData::setId);
+        graphmlWriter.data(graphmlData);
+    }
+
+
+
+    @Override
     public void startDocument(GioDocument document) throws IOException {
         GraphmlDocument graphmlDocument = new GraphmlDocument();
         desc(document, graphmlDocument);
@@ -94,11 +103,6 @@ public class GioWriterImpl implements GioWriter {
                 desc(gioKey, graphmlKey);
                 graphmlDocument.getKeys().add(graphmlKey);
             }
-        }
-        if (document.getDataList() != null) {
-            List<GraphmlData> graphmlDataList = new ArrayList<>();
-            graphmlDocument.getDataList().forEach(gioData -> graphmlDataList.add(GraphmlData.builder().id(gioData.getId()).key(gioData.getKey()).value(gioData.getValue()).build()));
-            graphmlDocument.setDataList(graphmlDataList);
         }
         graphmlWriter.startDocument(graphmlDocument);
     }
@@ -137,7 +141,6 @@ public class GioWriterImpl implements GioWriter {
         // default case: hyperedge
         GraphmlHyperEdge graphmlHyperEdge = GraphmlHyperEdge.builder().id(gioEdge.getId()).build();
         customAttributes(gioEdge, graphmlHyperEdge);
-        data(gioEdge, graphmlHyperEdge);
         assert gioEdge.getEndpoints() != null;
         graphmlHyperEdge.setEndpoints(gioEdge.getEndpoints().stream().map(this::graphmlEndpoint).toList());
         graphmlWriter.startHyperEdge(graphmlHyperEdge);
@@ -148,7 +151,6 @@ public class GioWriterImpl implements GioWriter {
     public void startGraph(GioGraph gioGraph) throws IOException {
         GraphmlGraph graphmlGraph = GraphmlGraph.builder().id(gioGraph.getId()).edgedefault(gioGraph.isEdgedefaultDirected() ? GraphmlGraph.EdgeDefault.directed : GraphmlGraph.EdgeDefault.undirected).build();
         desc(gioGraph, graphmlGraph);
-        data(gioGraph, graphmlGraph);
 
         graphmlWriter.startGraph(graphmlGraph);
         // TODO instead, remember all nodes ids of the stream, also node ids refered to in edges -> ValidatingGioWriter
@@ -167,7 +169,6 @@ public class GioWriterImpl implements GioWriter {
     public void startNode(GioNode gioNode) throws IOException {
         GraphmlNode graphmlNode = GraphmlNode.builder().id(gioNode.getId()).build();
         desc(gioNode, graphmlNode);
-        data(gioNode, graphmlNode);
         graphmlNode.setPorts(gioNode.getPorts().stream().map(this::port).collect(Collectors.toList()));
         graphmlWriter.startNode(graphmlNode);
     }
@@ -180,17 +181,6 @@ public class GioWriterImpl implements GioWriter {
         }
     }
 
-    private void data(GioElementWithData gioElementWithData, GraphmlGraphCommonElement graphmlElement) {
-        if (gioElementWithData.getDataList() != null) {
-            List<GraphmlData> graphmlDataList = new ArrayList<>();
-            gioElementWithData.getDataList().forEach(gioData -> {
-                GraphmlData graphmlData = GraphmlData.builder().key(gioData.getKey()).value(gioData.getValue()).build();
-                gioData.id().ifPresent(graphmlData::setId);
-                graphmlDataList.add(graphmlData);
-            });
-            graphmlElement.setDataList(graphmlDataList);
-        }
-    }
 
     private void desc(GioElementWithDescription elementWithDescription, GraphmlGraphCommonElement graphmlGraphCommonElement) {
         elementWithDescription.description().ifPresent(desc -> graphmlGraphCommonElement.setDesc(GraphmlDescription.builder().value(desc).build()));
