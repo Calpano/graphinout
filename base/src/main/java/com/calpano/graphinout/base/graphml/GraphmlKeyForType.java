@@ -16,11 +16,12 @@ public enum GraphmlKeyForType {
             return GraphmlKeyForType.All;
         for (GraphmlKeyForType v : values()) {
             for(String s : v.values) {
-                if(s.equals(keyForType))
+                // design decision: we don't warn on wrong casing of attribute values
+                if(s.equalsIgnoreCase(keyForType))
                     return v;
             }
         }
-        throw new IllegalArgumentException("No enum constant  "+ keyForType+" .");
+        throw new IllegalArgumentException("No enum constant '"+ keyForType+"'.");
     }
 
 }
