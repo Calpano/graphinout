@@ -25,8 +25,6 @@ public class GraphmlReader implements GioReader {
     @Override
     public GioFileFormat fileFormat() {
         return new GioFileFormat("graphml", "GraphML",".graphml",".graphml.xml");
-        //TODO @Maxwe need multi types files support for example "xml graphml "
-        // return new GioFileFormat("xml"/*,"graphml"*/, "XML Graph Format.");
     }
 
     @Override
