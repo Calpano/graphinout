@@ -39,6 +39,14 @@
             <version>2.11.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.calpano.graphinout</groupId>
+            <artifactId>base</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
