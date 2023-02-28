@@ -173,6 +173,16 @@ public class GioWriterImpl implements GioWriter {
         graphmlWriter.startNode(graphmlNode);
     }
 
+    @Override
+    public void startPort(GioPort port) throws IOException {
+        // TODO
+    }
+
+    @Override
+    public void endPort() throws IOException {
+        //TODO
+    }
+
     private void customAttributes(GioElement gioElement, GraphmlElement graphmlElement) {
         // TODO validate in GraphmlWriter we dont overwrite the already defined attributes
         if (graphmlElement.getExtraAttrib() == null) graphmlElement.setExtraAttrib(new HashMap<>());

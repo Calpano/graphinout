@@ -33,5 +33,8 @@ public interface GioWriter {
      */
     void startNode(GioNode node) throws IOException;
 
+    void startPort(GioPort port) throws IOException;
+    void endPort() throws IOException;
+
 
 }

@@ -44,6 +44,7 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
      * The name of this Element in node is <b>port</b>.
      */
     @Singular(ignoreNullCollections = true)
+    @Deprecated
     private List<GraphmlPort> ports;
 
     /**
