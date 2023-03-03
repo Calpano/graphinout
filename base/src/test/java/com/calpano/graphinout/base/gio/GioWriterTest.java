@@ -71,7 +71,7 @@ class GioWriterTest {
     @Test
     void data() throws IOException {
         gioWriter.key(GioKey.builder().id("test").attributeName("attrName").attributeType(GioDataType.typeInt).forType(GioKeyForType.All).build());
-        assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=int, for=All}::endElement->key", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=int, for=Graphml}::endElement->key", xmlWriterSpy.getOutPut().toString());
 
     }
 
