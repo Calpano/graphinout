@@ -91,15 +91,19 @@ public class ValidatingGioWriter implements GioWriter {
             throw new IllegalStateException("GioNode ID must be unique: " + node.getId());
         }
         nodesIds.add(node.getId());
-        if (node.getPorts() != null) {
-            for (GioPort port : node.getPorts()) {
-                String portName = port.getName();
-                nodePortName.add(portName);
-                if (portName == null || portName.isEmpty()) {
-                    throw new IllegalStateException("GioPort name cannot be null or empty.");
-                }
-            }
-        }
         gioWriter.startNode(node);
     }
+
+    public void startPort(GioPort port) throws IOException{
+        String portName = port.getName();
+        nodePortName.add(portName);
+        if (portName == null || portName.isEmpty()) {
+            throw new IllegalStateException("GioPort name cannot be null or empty.");
+        }
+        gioWriter.startPort(port);
+    }
+    public void endPort() throws IOException{
+        gioWriter.endPort();
+    }
+
 }

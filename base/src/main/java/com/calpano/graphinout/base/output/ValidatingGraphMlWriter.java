@@ -139,6 +139,16 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         // TODO implement
     }
 
+    @Override
+    public void startPort(GraphmlPort port) throws IOException {
+        // TODO implement
+    }
+
+    @Override
+    public void endPort() throws IOException {
+        graphMlWriter.endPort();
+    }
+
     private void ensureAllowedEnd(CurrentElement element) throws IllegalStateException {
         CurrentElement currentElement = currentElements.peek();
         if (currentElement != element) {

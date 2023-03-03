@@ -47,7 +47,6 @@ public class GraphmlPort extends GraphmlElement implements XMLValue {
      * <p>
      * The name of this attribute in port is <b>port</b>
      */
-    private List<GraphmlPort> ports;
 
     @Override
     public String endTag() {
@@ -72,9 +71,9 @@ public class GraphmlPort extends GraphmlElement implements XMLValue {
     @Override
     public String valueTag() {
         StringBuilder xmlValueData = new StringBuilder();
-        for (XMLValue xmlValue : ports) {
-            xmlValueData.append(xmlValue.fullTag());
-        }
+//        for (XMLValue xmlValue : ports) {
+//            xmlValueData.append(xmlValue.fullTag());
+//        }
         return xmlValueData.toString();
     }
 }

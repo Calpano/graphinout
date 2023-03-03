@@ -130,9 +130,9 @@ class GioWriterTest {
 
     @Test
     void startNode() throws IOException {
-        List<GioPort> gioPortList = new ArrayList<>();
-        gioPortList.add(GioPort.builder().name("port").build());
-        gioWriter.startNode(GioNode.builder().description("GraphmlDescription").id("node ").ports(gioPortList).build());
+        gioWriter.startNode(GioNode.builder().description("GraphmlDescription").id("node ").build());
+        gioWriter.startPort(GioPort.builder().name("port").build());
+        gioWriter.endPort();
         gioWriter.data(GioData.builder().key("data").id("id").value("value").build());
         assertEquals("::startElement->node->{id=node }::startElement->desc->{}::characterData->GraphmlDescription::endElement->desc::startElement->data->{id=id, key=data}::characterData->value::endElement->data::startElement->port->{name=port}::endElement->port", xmlWriterSpy.getOutPut().toString());
     }

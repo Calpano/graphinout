@@ -56,7 +56,6 @@ public class DotTextReader implements GioReader {
 
         log.info("--- nodes:");
         for (GraphNode node : nodes.values()) {
-            List<GioData> gioDataList = new ArrayList<>();
             Map<String, Object> attributes = node.getAttributes();
             String nodeValue = String.valueOf(attributes.get("value"));
             String nodeKey = String.valueOf(attributes.get("key"));
@@ -64,19 +63,17 @@ public class DotTextReader implements GioReader {
                     .key(nodeKey)
                     .value(nodeValue)
                     .build();
-            gioDataList.add(gioData);
 
             writer.startNode(GioNode.builder()
                     .id(node.getId())
-                    .dataList(gioDataList)
                     .build());
+            writer.data(gioData);
             writer.endNode(null);
             log.info(node.getId() + " " + node.getAttributes());
         }
 
         log.info("--- edges:");
         for (GraphEdge dotEdge : edges.values()) {
-            List<GioData> gioDataList = new ArrayList<>();
             Map<String, Object> attributes = dotEdge.getAttributes();
             String edgeValue = String.valueOf(attributes.get("value"));
             String edgeKey = String.valueOf(attributes.get("key"));
@@ -84,14 +81,13 @@ public class DotTextReader implements GioReader {
                     .key(edgeKey)
                     .value(edgeValue)
                     .build();
-            gioDataList.add(gioData);
 
             writer.startEdge(GioEdge.builder()
                     .id(dotEdge.getId())
-                    .dataList(gioDataList)
                     .endpoint(GioEndpoint.builder().node(dotEdge.getNode1().getId()).build())
                     .endpoint(GioEndpoint.builder().node(dotEdge.getNode2().getId()).build())
                     .build());
+            writer.data(gioData);
             writer.endEdge();
             log.info(dotEdge.getNode1().getId() + "->" + dotEdge.getNode2().getId() + " " + dotEdge.getAttributes());
         }

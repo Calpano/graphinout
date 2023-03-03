@@ -26,9 +26,10 @@ public class GioDocumentEntity implements GraphmlEntity<GioDocument> {
                 gioDocument.setKeys(new ArrayList<>());
             gioDocument.getKeys().add(g.getEntity());
         } else if (graphmlEntity instanceof GioDataEntity g) {
-            if (gioDocument.getDataList() == null)
-                gioDocument.setDataList(new ArrayList<>());
-            gioDocument.getDataList().add(g.getEntity());
+            // TODO rasul implement
+//            if (gioDocument.getDataList() == null)
+//                gioDocument.setDataList(new ArrayList<>());
+//            gioDocument.getDataList().add(g.getEntity());
         } else {
             throw new RuntimeException("Graphml has not " + graphmlEntity.getName() + " element.");
         }

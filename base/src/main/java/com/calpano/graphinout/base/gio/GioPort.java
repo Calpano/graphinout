@@ -39,14 +39,5 @@ public class GioPort extends GioElementWithDescription {
      */
     private String name;
 
-    /**
-     * Port can be recursively nested.
-     *
-     * This is an Element that can be empty or null.
-     * </p>
-     * The name of this Element in node is <b>port</b>.
-     */
-    @Singular(ignoreNullCollections = true)
-    private List<GioPort> ports;
 
 }

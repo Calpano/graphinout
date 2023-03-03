@@ -159,6 +159,16 @@ public class GraphmlWriterImpl implements GraphmlWriter {
         // TODO implement
     }
 
+    @Override
+    public void startPort(GraphmlPort port) throws IOException {
+        // TODO implement
+    }
+
+    @Override
+    public void endPort() throws IOException {
+        // TODO implement
+    }
+
     private void writerData(GraphmlData data) throws IOException {
         log.debug("writerData [{}]", data);
         xmlWriter.startElement(GraphmlData.TAGNAME, data.getAttributes());

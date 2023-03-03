@@ -1,6 +1,7 @@
 package com.calpano.graphinout.base.graphml;
 
 import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioPort;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -33,5 +34,9 @@ public interface GraphmlWriter {
     void startNode(GraphmlNode node) throws IOException;
 
     void data(GraphmlData data) throws IOException;
+
+    void startPort(GraphmlPort port) throws IOException;
+    void endPort() throws IOException;
+
 
 }

@@ -36,13 +36,4 @@ public class GioNode extends GioElementWithDescription {
      */
     private String id;
 
-    /**
-     * This is an Element that can be empty or null.
-     * </p>
-     * The name of this Element in node is <b>port</b>.
-     */
-    @Singular
-    @Deprecated
-    private List<GioPort> ports = Collections.emptyList();
-
 }

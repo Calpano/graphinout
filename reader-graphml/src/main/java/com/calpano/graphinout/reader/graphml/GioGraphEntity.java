@@ -27,9 +27,10 @@ public class GioGraphEntity implements GraphmlEntity<GioGraph> {
         if (graphmlEntity instanceof GioDescriptionEntity g) {
             gioGraph.setDescription(g.getEntity().getDescription());
         } else if (graphmlEntity instanceof GioDataEntity g) {
-            if (gioGraph.getDataList() == null)
-                gioGraph.setDataList(new ArrayList<>());
-            gioGraph.getDataList().add(g.getEntity());
+            // TODO rasul
+            //if (gioGraph.getDataList() == null)
+                //gioGraph.setDataList(new ArrayList<>());
+            //gioGraph.getDataList().add(g.getEntity());
         } else {
             throw new RuntimeException("Graph has not " + graphmlEntity.getName() + " element.");
         }

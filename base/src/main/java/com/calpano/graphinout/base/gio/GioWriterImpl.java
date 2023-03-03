@@ -169,18 +169,17 @@ public class GioWriterImpl implements GioWriter {
     public void startNode(GioNode gioNode) throws IOException {
         GraphmlNode graphmlNode = GraphmlNode.builder().id(gioNode.getId()).build();
         desc(gioNode, graphmlNode);
-        graphmlNode.setPorts(gioNode.getPorts().stream().map(this::port).collect(Collectors.toList()));
         graphmlWriter.startNode(graphmlNode);
     }
 
     @Override
     public void startPort(GioPort port) throws IOException {
-        // TODO
+        graphmlWriter.startPort(new GraphmlPort(port.getName()));
     }
 
     @Override
     public void endPort() throws IOException {
-        //TODO
+        graphmlWriter.endPort();
     }
 
     private void customAttributes(GioElement gioElement, GraphmlElement graphmlElement) {
