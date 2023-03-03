@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -22,7 +23,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 
 class DotTextReaderTest {
     public static final String EXAMPLE_DOT_PATH = "/example.dot";
@@ -63,14 +63,29 @@ class DotTextReaderTest {
         underTest.read(inputSource, mockGioWriter);
         underTest.errorHandler(mockErrorConsumer);
 
-        verify(mockGioWriter).startDocument(any(GioDocument.class));
-        verify(mockGioWriter).startGraph(any(GioGraph.class));
-        Mockito.verify(mockGioWriter, Mockito.times(6)).startNode(any(GioNode.class));
-        Mockito.verify(mockGioWriter, Mockito.times(6)).endNode(Mockito.any());
-        Mockito.verify(mockGioWriter, Mockito.times(7)).startEdge(any(GioEdge.class));
-        Mockito.verify(mockGioWriter, Mockito.times(7)).endEdge();
-        verify(mockGioWriter).endGraph(Mockito.any());
-        verify(mockGioWriter).endDocument();
+        InOrder inOrder = Mockito.inOrder(mockGioWriter);
+        inOrder.verify(mockGioWriter).startDocument(any(GioDocument.class));
+        inOrder.verify(mockGioWriter).startGraph(any(GioGraph.class));
+        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
+        inOrder.verify(mockGioWriter).endEdge();
+        inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
+        inOrder.verify(mockGioWriter).endEdge();
+        inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
+        inOrder.verify(mockGioWriter).endEdge();
+        inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
+        inOrder.verify(mockGioWriter).endEdge();
+        inOrder.verify(mockGioWriter).endGraph(Mockito.any());
+        inOrder.verify(mockGioWriter).endDocument();
     }
 
     private static Stream<String> getResourceFilePaths() {

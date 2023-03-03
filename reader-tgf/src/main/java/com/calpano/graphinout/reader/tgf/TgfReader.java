@@ -94,6 +94,7 @@ public class TgfReader implements GioReader {
                 if (edgeParts.length == 2 || edgeParts.length == 3) {
                     GioEdge gioEdge = GioEdge.builder().endpoints(endpointList).build();
                     if(edgeParts.length == 3) {
+                        // TODO use gioData here instead of description
                         gioEdge.setDescription(edgeParts[2]);
                     }
                     writer.startEdge(gioEdge);

@@ -23,8 +23,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -95,15 +97,15 @@ public class ReaderTests {
      * @param resourcePath
      * @throws IOException
      */
-    public static void testReadResourceToGraph(GioReader gioReader, String resourcePath) throws IOException {
+    public static void testReadResourceToGraph(GioReader gioReader, String resourcePath, List<ContentError> expectedErrors) throws IOException {
 
         byte[] graphmlBytes1;
         {
             InMemoryOutputSink outputSink = new InMemoryOutputSink();
             List<ContentError> contentErrors = readResourceToSink(gioReader, resourcePath, outputSink, true, true, true);
 
-            // TODO find a way to list expected contentErrors? static Map<resourcePath,List<ContentError>>
-            Assertions.assertTrue(contentErrors.isEmpty());
+            Assertions.assertEquals(expectedErrors.toString(), contentErrors.toString(),"expected="+ expectedErrors+" actual="+contentErrors);
+            Assertions.assertEquals(expectedErrors, contentErrors,"expected="+ expectedErrors+" actual="+contentErrors);
             graphmlBytes1 = outputSink.getByteBuffer().toByteArray();
         }
         byte[] graphmlBytes2 = null;
@@ -121,10 +123,10 @@ public class ReaderTests {
         // Assertions.assertEquals(graphml1, graphml2);
     }
 
-    public static void testWithAllResource(GioReader gioReader) {
+    public static void testWithAllResource(GioReader gioReader, Function<String,List<ContentError>> expectedErrorsFun) {
         forEachReadableResource(gioReader, resourcePath -> {
             try {
-                testReadResourceToGraph(gioReader, resourcePath);
+                testReadResourceToGraph(gioReader, resourcePath,expectedErrorsFun.apply(resourcePath));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
