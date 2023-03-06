@@ -1,16 +1,8 @@
 package com.calpano.graphinout.reader.graphml;
 
 
-import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioEdge;
-import com.calpano.graphinout.base.gio.GioGraph;
-import com.calpano.graphinout.base.gio.GioKey;
-import com.calpano.graphinout.base.gio.GioKeyForType;
-import com.calpano.graphinout.base.gio.GioNode;
-import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.reader.ContentError;
-import com.calpano.graphinout.base.reader.GioReader;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -187,7 +179,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void endGraphmlElement() throws IOException {
         if (!stack.isEmpty() || (currentEntity != null && !(currentEntity instanceof GioDocumentEntity)))
-            throw new IOException("Invalid Structure format.");
+            throw new IOException("Invalid Structure format at end graph.");
         else if (currentEntity != null && (currentEntity instanceof GioDocumentEntity g))
             gioWriter.startDocument(g.getEntity());
         currentEntity = null;
@@ -201,14 +193,14 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void endDescElement() throws IOException {
-        if (stack.isEmpty()) throw new IOException("Invalid Structure format.");
+        if (stack.isEmpty()) throw new IOException("Invalid Structure format at end description.");
         stack.peek().addEntity(currentEntity);
         currentEntity = stack.pop();
     }
 
     private void startKeyElement(String uri, String localName, Attributes attributes) throws IOException {
         if (currentEntity == null || !(currentEntity instanceof GioDocumentEntity))
-            throw new IOException("Invalid Structure format.");
+            throw new IOException("Invalid Structure format at start key.");
         stack.push(currentEntity);
         GioKey.GioKeyBuilder builder = GioKey.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
@@ -232,14 +224,14 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void endKeyElement() throws IOException {
         if (stack.isEmpty() || !(stack.peek() instanceof GioDocumentEntity))
-            throw new IOException("Invalid Structure format.");
+            throw new IOException("Invalid Structure format at end key.");
 
         stack.peek().addEntity(currentEntity);
         currentEntity = stack.pop();
     }
 
     private void startNodeDataElement(String uri, String localName, Attributes attributes) throws IOException {
-        if (currentEntity == null) throw new IOException("Invalid Structure format.");
+        if (currentEntity == null) throw new IOException("Invalid Structure format at start node data.");
         stack.push(currentEntity);
         GioData.GioDataBuilder builder = GioData.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
@@ -262,7 +254,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void endNodeDataElement() throws IOException {
-        if (stack.isEmpty()) throw new IOException("Invalid Structure format.");
+        if (stack.isEmpty()) throw new IOException("Invalid Structure format at end node data.");
         stack.peek().addEntity(currentEntity);
         currentEntity = stack.pop();
     }
@@ -302,7 +294,7 @@ class GraphmlSAXHandler extends DefaultHandler {
             } else if (currentEntity.getEntity() instanceof URL g) {
                 gioWriter.endGraph(g);
             } else {
-                throw new IOException("Invalid Structure format.");
+                throw new IOException("Invalid Structure format at end graph.");
             }
 
         } else {
@@ -410,7 +402,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void endLocatorElement() throws IOException {
         if (currentEntity == null || !(currentEntity.getEntity() instanceof URL)) {
-            throw new IOException("Invalid Structure format.");
+            throw new IOException("Invalid Structure format at end locator");
         }
 
     }
