@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.graphml;
 
+import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
@@ -97,7 +98,6 @@ class GraphmlReaderTest {
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
         //   outputSink.readAllData().forEach(s -> log.info(s));
-
 
     }
 

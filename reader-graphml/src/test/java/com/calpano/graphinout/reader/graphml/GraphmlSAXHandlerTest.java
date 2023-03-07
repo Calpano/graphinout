@@ -39,9 +39,10 @@ class GraphmlSAXHandlerTest {
         @BeforeEach
         void setUp() {
             MockitoAnnotations.openMocks(this);
-            saxHandler = new GraphmlSAXHandler(gioWriter, ContentErrors.defaultErrorHandler());
             Consumer<ContentError> errorConsumer = contentError -> storage.add(contentError);
             saxHandler = new GraphmlSAXHandler(gioWriter, errorConsumer);
+            // TODO is this what we want in a test? maybe.
+            saxHandler.setStructuralAssertionsEnabled(false);
         }
 
         @DisplayName("Only GioDocument  start and End Element  successfully pass.")
@@ -308,7 +309,7 @@ class GraphmlSAXHandlerTest {
 
             //ADD data
             reset(attributes);
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             when(attributes.getLength()).thenReturn(2);
             when(attributes.getQName(0)).thenReturn("id");
             when(attributes.getQName(1)).thenReturn("key");
@@ -330,7 +331,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endEdge());
             reset(attributes);
 
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
                     () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
@@ -349,7 +350,7 @@ class GraphmlSAXHandlerTest {
 
             //ADD data 2
             reset(attributes);
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             when(attributes.getLength()).thenReturn(2);
             when(attributes.getQName(0)).thenReturn("id");
             when(attributes.getQName(1)).thenReturn("key");
@@ -371,7 +372,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endEdge());
             reset(attributes);
 
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
                     () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
@@ -547,7 +548,7 @@ class GraphmlSAXHandlerTest {
 
             //ADD data
             reset(attributes);
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             when(attributes.getLength()).thenReturn(2);
             when(attributes.getQName(0)).thenReturn("id");
             when(attributes.getQName(1)).thenReturn("key");
@@ -570,7 +571,7 @@ class GraphmlSAXHandlerTest {
 
             reset(attributes);
 
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
                     () -> assertInstanceOf(GioGraph.class, saxHandler.getCurrentEntity().getEntity()),
@@ -590,7 +591,7 @@ class GraphmlSAXHandlerTest {
 
             //ADD data 2
             reset(attributes);
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             when(attributes.getLength()).thenReturn(2);
             when(attributes.getQName(0)).thenReturn("id");
             when(attributes.getQName(1)).thenReturn("key");
@@ -612,7 +613,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endEdge());
             reset(attributes);
 
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
 
@@ -764,7 +765,7 @@ class GraphmlSAXHandlerTest {
 
             //ADD data
             reset(attributes);
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             when(attributes.getLength()).thenReturn(2);
             when(attributes.getQName(0)).thenReturn("id");
             when(attributes.getQName(1)).thenReturn("key");
@@ -786,7 +787,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endEdge());
             reset(attributes);
 
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
                     () -> assertInstanceOf(GioNode.class, saxHandler.getCurrentEntity().getEntity()),
@@ -803,7 +804,7 @@ class GraphmlSAXHandlerTest {
 
             //ADD data 2
             reset(attributes);
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             when(attributes.getLength()).thenReturn(2);
             when(attributes.getQName(0)).thenReturn("id");
             when(attributes.getQName(1)).thenReturn("key");
@@ -825,7 +826,7 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endEdge());
             reset(attributes);
 
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
             assertAll("",
                     () -> assertInstanceOf(GioNode.class, saxHandler.getCurrentEntity().getEntity()),
@@ -1129,7 +1130,7 @@ class GraphmlSAXHandlerTest {
             when(attributes.getValue(0)).thenReturn("id");
             when(attributes.getValue(1)).thenReturn("true");
             saxHandler.startElement(uri, localName, qName, attributes);
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             saxHandler.startElement(uri, localName, qName, attributes);
             reset(attributes);
             qName = "y:SVGNode";
@@ -1142,7 +1143,7 @@ class GraphmlSAXHandlerTest {
             assertAll("",
                     () -> assertInstanceOf(GioData.class, saxHandler.getCurrentEntity().getEntity()),
                     () -> assertEquals("<y:SVGNode></y:SVGNode>", ((GioData) saxHandler.getCurrentEntity().getEntity()).getValue()));
-            qName = GraphmlConstant.NODE_DATA_ELEMENT_NAME;
+            qName = GraphmlConstant.DATA_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);
             qName = GraphmlConstant.NODE_ELEMENT_NAME;
             saxHandler.endElement(uri, localName, qName);

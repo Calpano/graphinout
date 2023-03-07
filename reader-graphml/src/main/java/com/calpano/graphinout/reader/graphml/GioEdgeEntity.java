@@ -3,7 +3,7 @@ package com.calpano.graphinout.reader.graphml;
 import com.calpano.graphinout.base.gio.GioEdge;
 import com.calpano.graphinout.base.gio.GioElementWithDescription;
 
-public class GioEdgeEntity implements  GraphmlEntity<GioEdge>{
+public class GioEdgeEntity extends AbstractGraphmlEntity<GioEdge> implements  GraphmlEntity<GioEdge>{
     private final GioEdge gioEdge;
 
     public GioEdgeEntity(GioEdge gioEdge) {
@@ -21,19 +21,18 @@ public class GioEdgeEntity implements  GraphmlEntity<GioEdge>{
     }
 
     @Override
+    @Deprecated
+    public void addData(String data) {
+
+    }
+
+    @Override
     public void addEntity(GraphmlEntity graphmlEntity) {
         if(graphmlEntity.getEntity() instanceof GioElementWithDescription g){
             gioEdge.setDescription(g.getDescription());
         }
     }
 
-    @Override
-    public void addData(String data) {
 
-    }
 
-    @Override
-    public boolean mustSendToStream(String newElementName) {
-        return false;
-    }
 }

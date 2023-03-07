@@ -1,8 +1,9 @@
 package com.calpano.graphinout.reader.graphml;
 
+import com.calpano.graphinout.base.gio.GioEdge;
 import com.calpano.graphinout.base.gio.GioKey;
 
-public class GioKeyEntity implements GraphmlEntity<GioKey>{
+public class GioKeyEntity extends AbstractGraphmlEntity<GioKey> implements GraphmlEntity<GioKey>{
     private final GioKey gioKey;
 
     public GioKeyEntity(GioKey gioKey) {
@@ -31,8 +32,4 @@ public class GioKeyEntity implements GraphmlEntity<GioKey>{
 
     }
 
-    @Override
-    public boolean mustSendToStream(String newElementName) {
-        return false;
-    }
 }

@@ -1,8 +1,9 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioEdge;
 
-public class GioDataEntity implements  GraphmlEntity<GioData> {
+public class GioDataEntity extends AbstractGraphmlEntity<GioData> implements  GraphmlEntity<GioData> {
     private final GioData gioData;
 
     public GioDataEntity(GioData gioData) {
@@ -34,8 +35,4 @@ public class GioDataEntity implements  GraphmlEntity<GioData> {
 
     }
 
-    @Override
-    public boolean mustSendToStream(String newElementName) {
-        return false;
-    }
 }

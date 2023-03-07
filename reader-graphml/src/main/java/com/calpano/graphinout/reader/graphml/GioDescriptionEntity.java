@@ -1,8 +1,9 @@
 package com.calpano.graphinout.reader.graphml;
 
+import com.calpano.graphinout.base.gio.GioEdge;
 import com.calpano.graphinout.base.gio.GioElementWithDescription;
 
-public class GioDescriptionEntity implements GraphmlEntity<GioElementWithDescription>{
+public class GioDescriptionEntity extends AbstractGraphmlEntity<GioElementWithDescription>  implements GraphmlEntity<GioElementWithDescription>{
 
    private GioElementWithDescription gioElementWithDescription= new GioElementWithDescription() {
    };
@@ -26,8 +27,4 @@ public class GioDescriptionEntity implements GraphmlEntity<GioElementWithDescrip
         gioElementWithDescription.setDescription(data);
     }
 
-    @Override
-    public boolean mustSendToStream(String newElementName) {
-        return false;
-    }
 }

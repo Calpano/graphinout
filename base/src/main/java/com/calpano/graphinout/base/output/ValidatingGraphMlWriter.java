@@ -11,15 +11,14 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         /**
          * state before any token
          */
-        EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, EDGE, DEFAULT, PORT, LOCATOR,
-        LABEL_GRAPH;
+        EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, EDGE, PORT, LOCATOR;
 
         static {
             EMPTY.allowedChildren = Set.of(GRAPHML);
-            GRAPHML.allowedChildren = Set.of(KEY, DATA, GRAPH, DESC, LABEL_GRAPH);
-            KEY.allowedChildren = Set.of(DESC, DEFAULT, LABEL_GRAPH);
-            DEFAULT.allowedChildren = Set.of(DATA, LABEL_GRAPH);
-            GRAPH.allowedChildren = Set.of(DATA, NODE, EDGE, HYPEREDGE, PORT, DESC, LOCATOR, LABEL_GRAPH);
+            GRAPHML.allowedChildren = Set.of(KEY, DATA, GRAPH, DESC);
+            KEY.allowedChildren = Set.of(DESC);
+            NODE.allowedChildren = Set.of(GRAPH);
+            GRAPH.allowedChildren = Set.of(DATA, NODE, EDGE, HYPEREDGE, PORT, DESC, LOCATOR);
         }
 
         private Set<CurrentElement> allowedChildren = new HashSet<>();
@@ -46,10 +45,11 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         this.graphMlWriter = graphMlWriter;
     }
 
-    public void data(GraphmlKey key) throws IOException {
+    public void key(GraphmlKey key) throws IOException {
         ensureAllowedStart(CurrentElement.KEY);
         validateKey(key);
-        graphMlWriter.data(key);
+        graphMlWriter.key(key);
+        ensureAllowedEnd(CurrentElement.KEY);
     }
 
     @Override
@@ -136,16 +136,22 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
 
     @Override
     public void data(GraphmlData data) throws IOException {
-        // TODO implement
+        ensureAllowedStart(CurrentElement.DATA);
+        ensureAllowedEnd(CurrentElement.DATA);
+        // TODO implement validation
+        graphMlWriter.data(data);
     }
 
     @Override
     public void startPort(GraphmlPort port) throws IOException {
-        // TODO implement
+        ensureAllowedStart(CurrentElement.PORT);
+        // TODO implement validation
+        graphMlWriter.startPort(port);
     }
 
     @Override
     public void endPort() throws IOException {
+        ensureAllowedEnd(CurrentElement.PORT);
         graphMlWriter.endPort();
     }
 

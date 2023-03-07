@@ -23,8 +23,8 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     @Override
-    public void data(GraphmlKey data) throws IOException {
-        log.debug("data [{}]", data);
+    public void key(GraphmlKey data) throws IOException {
+        log.trace("data [{}]", data);
         xmlWriter.startElement(GraphmlKey.TAGNAME, data.getAttributes());
         if (data.getDesc() != null) {
             data.getDesc().writeXml(xmlWriter);
@@ -40,7 +40,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void endDocument() throws IOException {
-        log.debug("endDocument");
+        log.trace("endDocument");
         xmlWriter.endElement(GraphmlDocument.TAGNAME);
         xmlWriter.endDocument();
     }
@@ -53,7 +53,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void endGraph(Optional<GraphmlLocator> locator) throws IOException {
-        log.debug("endGraph [{}]", locator.isPresent() ? locator.get() : null);
+        log.trace("endGraph [{}]", locator.isPresent() ? locator.get() : null);
         if (locator.isPresent()) {
             xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
@@ -70,7 +70,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void endNode(Optional<GraphmlLocator> locator) throws IOException {
-        log.debug("endNode [{}]", locator.isPresent() ? locator.get() : null);
+        log.trace("endNode [{}]", locator.isPresent() ? locator.get() : null);
         if (locator.isPresent()) {
             xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
@@ -81,7 +81,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void startDocument(GraphmlDocument doc) throws IOException {
-        log.debug("startDocument [{}]", doc);
+        log.trace("startDocument [{}]", doc);
         xmlWriter.startDocument();
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
         attributes.put("xmlns", HEADER_XMLNS);
@@ -97,7 +97,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
         if (doc.getKeys() != null) {
             for (GraphmlKey key : doc.getKeys()) {
-                data(key);
+                key(key);
             }
         }
 
@@ -112,7 +112,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void startGraph(GraphmlGraph graphmlGraph) throws IOException {
-        log.debug("startGraph [{}]", graphmlGraph);
+        log.trace("startGraph [{}]", graphmlGraph);
         xmlWriter.startElement(GraphmlGraph.TAGNAME, graphmlGraph.getAttributes());
         if (graphmlGraph.desc != null) {
             graphmlGraph.desc.writeXml(xmlWriter);
@@ -123,7 +123,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void startHyperEdge(GraphmlHyperEdge edge) throws IOException {
-        log.debug("startHyperEdge [{}]", edge);
+        log.trace("startHyperEdge [{}]", edge);
         xmlWriter.startElement(GraphmlHyperEdge.TAGNAME, edge.getAttributes());
         if (edge.desc != null) {
             edge.desc.writeXml(xmlWriter);
@@ -142,7 +142,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     // TODO split into startNode and endNode to have the sub-graphs in between
     @Override
     public void startNode(GraphmlNode node) throws IOException {
-        log.debug("startNode [{}]", node);
+        log.trace("startNode [{}]", node);
         xmlWriter.startElement(GraphmlNode.TAGNAME, node.getAttributes());
         if (node.desc != null) {
             node.desc.writeXml(xmlWriter);
@@ -170,7 +170,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     private void writerData(GraphmlData data) throws IOException {
-        log.debug("writerData [{}]", data);
+        log.trace("writerData [{}]", data);
         xmlWriter.startElement(GraphmlData.TAGNAME, data.getAttributes());
         if (data != null && data.getValue() != null) xmlWriter.characterData(data.getValue());
         xmlWriter.endElement(GraphmlData.TAGNAME);

@@ -56,7 +56,7 @@ public class GioWriterImpl implements GioWriter {
         gioKey.attributeType().ifPresent(attType -> graphmlKey.setAttrType(attType.graphmlName));
         customAttributes(gioKey, graphmlKey);
         desc(gioKey, graphmlKey);
-        graphmlWriter.data(graphmlKey);
+        graphmlWriter.key(graphmlKey);
     }
 
     @Override

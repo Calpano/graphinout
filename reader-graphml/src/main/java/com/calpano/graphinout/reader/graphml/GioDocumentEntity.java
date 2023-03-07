@@ -1,10 +1,11 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
 
 import java.util.ArrayList;
 
-public class GioDocumentEntity implements GraphmlEntity<GioDocument> {
+public class GioDocumentEntity extends AbstractGraphmlEntity<GioDocument> implements GraphmlEntity<GioDocument> {
     private final GioDocument gioDocument;
 
     public GioDocumentEntity(GioDocument gioDocument) {
@@ -45,8 +46,4 @@ public class GioDocumentEntity implements GraphmlEntity<GioDocument> {
         return GraphmlConstant.GRAPHML_ELEMENT_NAME;
     }
 
-    @Override
-    public boolean mustSendToStream(String newElementName) {
-        return GraphmlConstant.GRAPH_ELEMENT_NAME.equals(newElementName);
-    }
 }

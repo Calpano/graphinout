@@ -1,12 +1,16 @@
 package com.calpano.graphinout.reader.graphml;
 
+import com.calpano.graphinout.base.gio.GioEdge;
 import com.calpano.graphinout.base.gio.GioElementWithDescription;
 import com.calpano.graphinout.base.gio.GioNode;
 
-import java.util.ArrayList;
+import javax.annotation.Nullable;
+import java.net.URL;
 
-public class GioNodeEntity implements GraphmlEntity<GioNode>{
+public class GioNodeEntity extends AbstractGraphmlEntity<GioNode> implements GraphmlEntity<GioNode>{
     private final GioNode gioNode;
+
+    public @Nullable URL url;
 
     public GioNodeEntity(GioNode gioNode) {
         this.gioNode = gioNode;
@@ -42,8 +46,4 @@ public class GioNodeEntity implements GraphmlEntity<GioNode>{
 
     }
 
-    @Override
-    public boolean mustSendToStream(String newElementName) {
-        return false;
-    }
 }

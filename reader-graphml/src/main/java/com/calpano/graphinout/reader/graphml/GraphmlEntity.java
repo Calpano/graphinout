@@ -1,7 +1,5 @@
 package com.calpano.graphinout.reader.graphml;
 
-import java.util.Map;
-
 public interface GraphmlEntity<E> {
     E getEntity();
 
@@ -11,5 +9,7 @@ public interface GraphmlEntity<E> {
 
     void addData(String data);
 
-    boolean  mustSendToStream(String newElementName);
+    void markAsSent();
+
+    boolean isSent();
 }
