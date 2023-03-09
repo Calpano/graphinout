@@ -79,7 +79,7 @@ public class TgfReader implements GioReader {
                 writer.endNode(null);
             } else {
                 log.info("--- edges:");
-                String[] edgeParts = line.split(DELIMITER);
+                String[] edgeParts = line.split(DELIMITER, 3);
                 GioEndpoint sourceEndpoint = GioEndpoint.builder().node(edgeParts[0]).build();
                 GioEndpoint targetEndpoint = GioEndpoint.builder().node(edgeParts[1]).build();
 
@@ -91,15 +91,15 @@ public class TgfReader implements GioReader {
                     if (edgeParts.length == 3) {
                         GioData.builder().value(edgeParts[2]).build();
                     }
+                    if (!nodes) {
+                        log.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + "Required nodes have been created.");
+                        writer.startNode(GioNode.builder().id(edgeParts[0]).build());
+                        writer.endNode(null);
+                        writer.startNode(GioNode.builder().id(edgeParts[1]).build());
+                        writer.endNode(null);
+                    }
                     writer.startEdge(gioEdge);
                     writer.endEdge();
-                }
-                if (!nodes) {
-                    log.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + "Required nodes have been created.");
-                    writer.startNode(GioNode.builder().id(edgeParts[0]).build());
-                    writer.endNode(null);
-                    writer.startNode(GioNode.builder().id(edgeParts[1]).build());
-                    writer.endNode(null);
                 }
             }
         }
