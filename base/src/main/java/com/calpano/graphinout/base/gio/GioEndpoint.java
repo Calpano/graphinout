@@ -59,7 +59,7 @@ public class GioEndpoint extends GioElement  {
      * The name of this attribute in endpoint is <b>type</b>
      */
     @Builder.Default
-    private GioEndpointDirecton type = GioEndpointDirecton.Undirected;
+    private GioEndpointDirection type = GioEndpointDirection.Undirected;
 
     public boolean isValid() {
         assert this.node != null :"node is null";

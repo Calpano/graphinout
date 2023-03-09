@@ -75,25 +75,25 @@ class XmlWriterTest {
         instance.startDocument();
 
 
-        instance.startElement(GioGraphInOutXMLConstants.GRAPHML_ELEMENT_NAME);
-        instance.startElement(GioGraphInOutXMLConstants.GRAPH_ELEMENT_NAME, testGraphMap);
+        instance.startElement(GioGraphInOutXMLConstants.GRAPHML);
+        instance.startElement(GioGraphInOutXMLConstants.GRAPH, testGraphMap);
 
-        instance.startElement(GioGraphInOutXMLConstants.NODE_ELEMENT_NAME, testNode1Map);
-        instance.endElement(GioGraphInOutXMLConstants.NODE_ELEMENT_NAME);
+        instance.startElement(GioGraphInOutXMLConstants.NODE, testNode1Map);
+        instance.endElement(GioGraphInOutXMLConstants.NODE);
 
-        instance.startElement(GioGraphInOutXMLConstants.EDGE_ELEMENT_NAME, testEdgeMap);
-        instance.endElement(GioGraphInOutXMLConstants.EDGE_ELEMENT_NAME);
+        instance.startElement(GioGraphInOutXMLConstants.EDGE, testEdgeMap);
+        instance.endElement(GioGraphInOutXMLConstants.EDGE);
 
-        instance.startElement(GioGraphInOutXMLConstants.NODE_ELEMENT_NAME, testNode2Map);
-        instance.endElement(GioGraphInOutXMLConstants.NODE_ELEMENT_NAME);
+        instance.startElement(GioGraphInOutXMLConstants.NODE, testNode2Map);
+        instance.endElement(GioGraphInOutXMLConstants.NODE);
 
-        instance.startElement(GioGraphInOutXMLConstants.HYPER_EDGE_ELEMENT_NAME, testNode2Map);
-        instance.startElement(GioGraphInOutXMLConstants.ENDPOINT_ELEMENT_NAME, testNode2Map);
-        instance.endElement(GioGraphInOutXMLConstants.ENDPOINT_ELEMENT_NAME);
-        instance.endElement(GioGraphInOutXMLConstants.HYPER_EDGE_ELEMENT_NAME);
+        instance.startElement(GioGraphInOutXMLConstants.HYPER_EDGE, testNode2Map);
+        instance.startElement(GioGraphInOutXMLConstants.ENDPOINT, testNode2Map);
+        instance.endElement(GioGraphInOutXMLConstants.ENDPOINT);
+        instance.endElement(GioGraphInOutXMLConstants.HYPER_EDGE);
 
-        instance.endElement(GioGraphInOutXMLConstants.GRAPH_ELEMENT_NAME);
-        instance.endElement(GioGraphInOutXMLConstants.GRAPHML_ELEMENT_NAME);
+        instance.endElement(GioGraphInOutXMLConstants.GRAPH);
+        instance.endElement(GioGraphInOutXMLConstants.GRAPHML);
 
         instance.endDocument();
     }

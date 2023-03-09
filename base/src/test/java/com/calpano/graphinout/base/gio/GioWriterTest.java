@@ -112,8 +112,8 @@ class GioWriterTest {
     @Test
     void startEdge() throws IOException {
         List<GioEndpoint> gioEndpoints = new ArrayList<>();
-        gioEndpoints.add(GioEndpoint.builder().id("GioEndpoint1").node("node1").type(GioEndpointDirecton.In).port("port1").build());
-        gioEndpoints.add(GioEndpoint.builder().id("GioEndpoint2").node("node2").type(GioEndpointDirecton.Out).port("port2").build());
+        gioEndpoints.add(GioEndpoint.builder().id("GioEndpoint1").node("node1").type(GioEndpointDirection.In).port("port1").build());
+        gioEndpoints.add(GioEndpoint.builder().id("GioEndpoint2").node("node2").type(GioEndpointDirection.Out).port("port2").build());
         GioEdge edge = GioEdge.builder().id("edge1").endpoints(gioEndpoints).build();
         edge.customAttribute("foo", "bar");
         gioWriter.startEdge(edge);

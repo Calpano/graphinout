@@ -1,7 +1,22 @@
 package com.calpano.graphinout.base.gio;
 
 import com.calpano.graphinout.base.Direction;
-import com.calpano.graphinout.base.graphml.*;
+import com.calpano.graphinout.base.graphml.GraphmlData;
+import com.calpano.graphinout.base.graphml.GraphmlDefault;
+import com.calpano.graphinout.base.graphml.GraphmlDescription;
+import com.calpano.graphinout.base.graphml.GraphmlDocument;
+import com.calpano.graphinout.base.graphml.GraphmlEdge;
+import com.calpano.graphinout.base.graphml.GraphmlElement;
+import com.calpano.graphinout.base.graphml.GraphmlEndpoint;
+import com.calpano.graphinout.base.graphml.GraphmlGraph;
+import com.calpano.graphinout.base.graphml.GraphmlGraphCommonElement;
+import com.calpano.graphinout.base.graphml.GraphmlHyperEdge;
+import com.calpano.graphinout.base.graphml.GraphmlKey;
+import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
+import com.calpano.graphinout.base.graphml.GraphmlLocator;
+import com.calpano.graphinout.base.graphml.GraphmlNode;
+import com.calpano.graphinout.base.graphml.GraphmlPort;
+import com.calpano.graphinout.base.graphml.GraphmlWriter;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -13,10 +28,17 @@ import java.util.Optional;
 public class GioWriterImpl implements GioWriter {
 
     final GraphmlWriter graphmlWriter;
-    private @Nullable GraphmlElement currentElement;
+    private @Nullable GraphmlElement openEdge;
 
     public GioWriterImpl(GraphmlWriter graphmlWriter) {
         this.graphmlWriter = graphmlWriter;
+    }
+
+    @Override
+    public void data(GioData gioData) throws IOException {
+        GraphmlData graphmlData = GraphmlData.builder().key(gioData.getKey()).value(gioData.getValue()).build();
+        gioData.id().ifPresent(graphmlData::setId);
+        graphmlWriter.data(graphmlData);
     }
 
     @Override
@@ -26,12 +48,14 @@ public class GioWriterImpl implements GioWriter {
 
     @Override
     public void endEdge() throws IOException {
-        if (currentElement instanceof GraphmlHyperEdge) {
+        assert this.openEdge != null : "openEdge may not be null when ending an edge";
+        assert this.openEdge instanceof GraphmlHyperEdge | this.openEdge instanceof GraphmlEdge;
+        if (openEdge instanceof GraphmlHyperEdge) {
             graphmlWriter.endHyperEdge();
         } else {
             graphmlWriter.endEdge();
         }
-        this.currentElement = null;
+        this.openEdge = null;
     }
 
     @Override
@@ -46,6 +70,11 @@ public class GioWriterImpl implements GioWriter {
     }
 
     @Override
+    public void endPort() throws IOException {
+        graphmlWriter.endPort();
+    }
+
+    @Override
     public void key(GioKey gioKey) throws IOException {
         GraphmlKey graphmlKey = GraphmlKey.builder()//
                 .id(gioKey.getId())//
@@ -57,13 +86,6 @@ public class GioWriterImpl implements GioWriter {
         customAttributes(gioKey, graphmlKey);
         desc(gioKey, graphmlKey);
         graphmlWriter.key(graphmlKey);
-    }
-
-    @Override
-    public void data(GioData gioData) throws IOException {
-        GraphmlData graphmlData = GraphmlData.builder().key(gioData.getKey()).value(gioData.getValue()).build();
-        gioData.id().ifPresent(graphmlData::setId);
-        graphmlWriter.data(graphmlData);
     }
 
     @Override
@@ -107,6 +129,8 @@ public class GioWriterImpl implements GioWriter {
             }
             if (directed != null) {
                 GraphmlEdge edge = new GraphmlEdge();
+                if (gioEdge.getId() != null)
+                    edge.setId(gioEdge.getId());
                 edge.setDirected(directed);
                 edge.setSourceId(s.getNode());
                 edge.setTargetId(t.getNode());
@@ -118,17 +142,18 @@ public class GioWriterImpl implements GioWriter {
                 }
                 assert gioEdge.isValid();
                 graphmlWriter.startEdge(edge);
-                this.currentElement = edge;
+                this.openEdge = edge;
                 return;
             }
         }
+        assert gioEdge.getEndpoints() != null;
+        assert gioEdge.getEndpoints().size() > 2;
         // default case: hyperedge
         GraphmlHyperEdge graphmlHyperEdge = GraphmlHyperEdge.builder().id(gioEdge.getId()).build();
         customAttributes(gioEdge, graphmlHyperEdge);
-        assert gioEdge.getEndpoints() != null;
         graphmlHyperEdge.setEndpoints(gioEdge.getEndpoints().stream().map(this::graphmlEndpoint).toList());
         graphmlWriter.startHyperEdge(graphmlHyperEdge);
-        this.currentElement = graphmlHyperEdge;
+        this.openEdge = graphmlHyperEdge;
     }
 
     @Override
@@ -159,11 +184,6 @@ public class GioWriterImpl implements GioWriter {
     @Override
     public void startPort(GioPort port) throws IOException {
         graphmlWriter.startPort(new GraphmlPort(port.getName()));
-    }
-
-    @Override
-    public void endPort() throws IOException {
-        graphmlWriter.endPort();
     }
 
     private void customAttributes(GioElement gioElement, GraphmlElement graphmlElement) {

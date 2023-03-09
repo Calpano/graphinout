@@ -24,7 +24,7 @@ public class GraphmlReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("graphml", "GraphML",".graphml",".graphml.xml");
+        return new GioFileFormat("graphml", "GraphML", ".graphml", ".graphml.xml");
     }
 
     @Override
@@ -39,16 +39,22 @@ public class GraphmlReader implements GioReader {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         try {
             factory.setNamespaceAware(true);
-            SAXParser saxParser = factory.newSAXParser();
-
-        GraphmlSAXHandler saxHandler  =  new GraphmlSAXHandler(writer,this.errorHandler);
-        if(inputSource.isSingle())
-        saxParser.parse(((SingleInputSource)inputSource).inputStream(),saxHandler);
-        } catch (ParserConfigurationException e) {
-            throw new IOException(e);
-        } catch (SAXException e) {
-            throw new IOException(e);
+            SAXParser saxParser;
+            GraphmlSAXHandler saxHandler;
+            try {
+                saxParser = factory.newSAXParser();
+                saxHandler = new GraphmlSAXHandler(writer, this.errorHandler);
+            } catch (ParserConfigurationException e) {
+                throw new IOException(e);
+            }
+            try {
+                if (inputSource.isSingle())
+                    saxParser.parse(((SingleInputSource) inputSource).inputStream(), saxHandler);
+            } catch (SAXException e) {
+                throw new IOException(e);
+            }
+        } catch (Throwable t) {
+            throw new RuntimeException("Failed reading '" + inputSource.name() + "'", t);
         }
-
     }
 }

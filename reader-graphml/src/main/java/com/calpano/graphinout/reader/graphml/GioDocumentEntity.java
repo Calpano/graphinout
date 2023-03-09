@@ -1,7 +1,6 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioEdge;
 
 import java.util.ArrayList;
 
@@ -13,13 +12,12 @@ public class GioDocumentEntity extends AbstractGraphmlEntity<GioDocument> implem
     }
 
     @Override
-    public void addData(String data) {
+    public void addCharacters(String characters) {
 
     }
 
     @Override
-    public void addEntity(GraphmlEntity graphmlEntity) {
-
+    public void addEntity(GraphmlEntity<?> graphmlEntity) {
         if (graphmlEntity instanceof GioDescriptionEntity g) {
             gioDocument.setDescription(g.getEntity().getDescription());
         } else if (graphmlEntity instanceof GioKeyEntity g) {
@@ -43,7 +41,7 @@ public class GioDocumentEntity extends AbstractGraphmlEntity<GioDocument> implem
 
     @Override
     public String getName() {
-        return GraphmlConstant.GRAPHML_ELEMENT_NAME;
+        return GraphmlElement.GRAPHML;
     }
 
 }

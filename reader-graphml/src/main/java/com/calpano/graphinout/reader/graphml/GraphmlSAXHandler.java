@@ -3,13 +3,13 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioData;
 import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioEdge;
 import com.calpano.graphinout.base.gio.GioEndpoint;
-import com.calpano.graphinout.base.gio.GioEndpointDirecton;
+import com.calpano.graphinout.base.gio.GioEndpointDirection;
 import com.calpano.graphinout.base.gio.GioGraph;
 import com.calpano.graphinout.base.gio.GioKey;
 import com.calpano.graphinout.base.gio.GioKeyForType;
 import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import lombok.extern.slf4j.Slf4j;
@@ -23,24 +23,27 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Stack;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
 class GraphmlSAXHandler extends DefaultHandler {
-    private final static String GRAPHML_STANDARD_NAME_SPACE = "http://graphml.graphdrawing.org/xmlns";
+    private static final String GRAPHML_STANDARD_NAME_SPACE = "http://graphml.graphdrawing.org/xmlns";
     private final GioWriter gioWriter;
     private final Consumer<ContentError> errorConsumer;
-    private boolean structuralAssertionsEnabled = true;
     /**
-     * this stack always represents (A) all currently open Gio-elements, (B) the parents of all currently open
-     * Gio-elements, (C) ... ?
-     * TODO answer this and delete wrong options :-)
+     * This stack represents all currently open GioWriter-entites, collecting more data before they are ready to be sent
+     * to GioWriter
      */
-    private Stack<GraphmlEntity> openEntities = new Stack<>();
+    private final Deque<GraphmlEntity<?>> openEntities = new LinkedList<>();
+    private boolean structuralAssertionsEnabled = true;
     private Locator locator;
 
     public GraphmlSAXHandler(GioWriter gioWriter, Consumer<ContentError> errorConsumer) {
@@ -63,49 +66,40 @@ class GraphmlSAXHandler extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         log.trace("characters [{}].", new String(ch, start, length));
-        if (openEntities.isEmpty()) throw new IllegalStateException("No open element to add characters to");
-        openEntities.peek().addData(new String(ch, start, length));
+        if (openEntities.isEmpty()) {
+            String s = new String(ch, start, length);
+            if (s.trim().length() == 0) {
+                // ignore whitespace
+            } else {
+                throw new IllegalStateException("No open element to add characters to.");
+            }
+        } else {
+            openEntities.peek().addCharacters(new String(ch, start, length));
+        }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        log.trace("endElement [{}].", qName);
+        log.debug("XML </{}>. Stack before: {}", qName, stackAsString());
         String tagName = tagName(uri, localName, qName);
         try {
             switch (tagName) {
-                case GraphmlConstant.GRAPHML_ELEMENT_NAME:
-                    endGraphmlElement();
-                    break;
-
-                case GraphmlConstant.DESC_ELEMENT_NAME:
-                    endDescElement();
-                    break;
-
-                case GraphmlConstant.KEY_ELEMENT_NAME:
-                    endKeyElement();
-                    break;
-
-                case GraphmlConstant.DATA_ELEMENT_NAME:
-                    endDataElement();
-                    break;
-
-                case GraphmlConstant.GRAPH_ELEMENT_NAME:
-                    endGraphElement();
-                    break;
-                case GraphmlConstant.NODE_ELEMENT_NAME:
-                    endNodeElement();
-                    break;
-                case GraphmlConstant.EDGE_ELEMENT_NAME:
-                    endEdgeElement();
-                    break;
-                case GraphmlConstant.LOCATOR_ELEMENT_NAME:
-                    endLocatorElement();
-                    break;
-                default:
+                case GraphmlElement.DATA -> endDataElement();
+                case GraphmlElement.DEFAULT -> endDefaultElement();
+                case GraphmlElement.DESC -> endDescElement();
+                case GraphmlElement.EDGE -> endEdgeElement();
+                case GraphmlElement.ENDPOINT -> endEndpointElement();
+                case GraphmlElement.GRAPH -> endGraphElement();
+                case GraphmlElement.GRAPHML -> endGraphmlElement();
+                case GraphmlElement.HYPER_EDGE -> endHyperedgeElement();
+                case GraphmlElement.KEY -> endKeyElement();
+                case GraphmlElement.LOCATOR -> endLocatorElement();
+                case GraphmlElement.NODE -> endNodeElement();
+                case GraphmlElement.PORT -> endPortElement();
+                default ->
                     //TODO Does it need to log?
                     //TODO Dose have to control qName and uri?
-                    createEndXMlElement(qName);
-
+                        createEndXMlElement(qName);
             }
         } catch (Exception e) {
             throw buildException(e);
@@ -138,7 +132,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        log.trace("startElement [{}].", qName);
+        log.debug("XML <{}>.  Stack before: {}.", qName, stackAsString());
         String tagName = tagName(uri, localName, qName);
 
 
@@ -146,39 +140,22 @@ class GraphmlSAXHandler extends DefaultHandler {
         /// TODO warn about wrong URI
         try {
             switch (tagName) {
-                case GraphmlConstant.GRAPHML_ELEMENT_NAME:
-                    startGraphmlElement(attributes);
-                    break;
-
-                case GraphmlConstant.DESC_ELEMENT_NAME:
-                    startDescElement(attributes);
-                    break;
-
-                case GraphmlConstant.KEY_ELEMENT_NAME:
-                    startKeyElement(attributes);
-                    break;
-
-                case GraphmlConstant.DATA_ELEMENT_NAME:
-                    startDataElement(attributes);
-                    break;
-
-                case GraphmlConstant.GRAPH_ELEMENT_NAME:
-                    startGraphElement(attributes);
-                    break;
-                case GraphmlConstant.NODE_ELEMENT_NAME:
-                    startNodeElement(attributes);
-                    break;
-                case GraphmlConstant.EDGE_ELEMENT_NAME:
-                    startEdgeElement(attributes);
-                    break;
-                case GraphmlConstant.LOCATOR_ELEMENT_NAME:
-                    startLocatorElement(attributes);
-                    break;
-                default:
+                case GraphmlElement.DATA -> startDataElement(attributes);
+                case GraphmlElement.DEFAULT -> startDefaultElement(attributes);
+                case GraphmlElement.DESC -> startDescElement(attributes);
+                case GraphmlElement.EDGE -> startEdgeElement(attributes);
+                case GraphmlElement.ENDPOINT -> startEndpointElement(attributes);
+                case GraphmlElement.GRAPH -> startGraphElement(attributes);
+                case GraphmlElement.GRAPHML -> startGraphmlElement(attributes);
+                case GraphmlElement.HYPER_EDGE -> startHyperedgeElement(attributes);
+                case GraphmlElement.KEY -> startKeyElement(attributes);
+                case GraphmlElement.LOCATOR -> startLocatorElement(attributes);
+                case GraphmlElement.NODE -> startNodeElement(attributes);
+                case GraphmlElement.PORT -> startPortElement(attributes);
+                default ->
                     //TODO Does it need to log?
                     //TODO Dose have to control qName and uri?
-                    createStartXMlElement(qName, attributes);
-
+                        createStartXMlElement(qName, attributes);
             }
         } catch (Exception e) {
             throw buildException(e);
@@ -191,11 +168,12 @@ class GraphmlSAXHandler extends DefaultHandler {
         super.warning(e);
     }
 
+    /** Just looks at the stack */
     private void assertCurrent(String location, @Nullable Class<?>... expectedCurrentEntities) {
         if (!structuralAssertionsEnabled) return;
         if (expectedCurrentEntities != null && expectedCurrentEntities.length > 0) {
             if (openEntities.isEmpty()) {
-                throw new IllegalStateException("No current element at '" + location + "'. Expected current=" + Arrays.asList(expectedCurrentEntities).stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
+                throw new IllegalStateException("No current element at '" + location + "'. Expected current=" + Arrays.stream(expectedCurrentEntities).map(Class::getSimpleName).collect(Collectors.joining(", ")));
             } else {
                 if (!Arrays.asList(expectedCurrentEntities).stream().anyMatch(c -> c.equals(openEntities.peek().getClass()))) {
                     throw new IllegalStateException("Unexpected current element at '" + location + "': " + openEntities.peek().getClass().getSimpleName() + ". Expected current=" + Arrays.asList(expectedCurrentEntities).stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
@@ -207,16 +185,12 @@ class GraphmlSAXHandler extends DefaultHandler {
     private RuntimeException buildException(Exception e) {
         //TODO manage Exception
         String location = locator == null ? "N/A" : locator.getLineNumber() + ":" + locator.getColumnNumber();
-        return new RuntimeException("While parsing " + location + "\n" + e.getMessage(), e);
+        return new RuntimeException("While parsing " + location + "\n" + "Stack: " + stackAsString() + "\n" + "Message: " + e.getMessage(), e);
     }
 
     private void createEndXMlElement(String name) throws SAXException {
-        StringBuilder builder = new StringBuilder();
-        builder.append("</");
-        builder.append(name);
-        builder.append('>');
-
-        getCurrentEntity().addData(builder.toString());
+        String builder = "</" + name + '>';
+        getCurrentEntity().addCharacters(builder);
         //    characters(builder.toString().toCharArray(), 0, builder.length());
     }
 
@@ -231,47 +205,64 @@ class GraphmlSAXHandler extends DefaultHandler {
 
         builder.append('>');
         // characters(builder.toString().toCharArray(), 0, builder.length());
-        getCurrentEntity().addData(builder.toString());
+        getCurrentEntity().addCharacters(builder.toString());
     }
 
     private void endDataElement() throws IOException {
         assertCurrent("endData", GioDataEntity.class);
-        gioWriter.data(((GioDataEntity) openEntities.pop()).getEntity());
+        gioWriter.data((pop(GioDataEntity.class)).getEntity());
+    }
+
+    private void endDefaultElement() {
+        assertCurrent("endDefault", GioDefaultEntity.class);
+        GioDefaultEntity gioDefaultEntity = pop(GioDefaultEntity.class);
+        peek(GioKeyEntity.class).addEntity(gioDefaultEntity);
     }
 
     private void endDescElement() throws IOException {
-        assertCurrent("endDesc", GioDocumentEntity.class, GioGraphEntity.class, GioNodeEntity.class, GioEdgeEntity.class, GioKeyEntity.class, GioPortEntity.class);
-        GioDescriptionEntity gioDescriptionEntity = (GioDescriptionEntity) openEntities.pop();
+        assertCurrent("endDesc", GioDescriptionEntity.class);
+        GioDescriptionEntity gioDescriptionEntity = pop(GioDescriptionEntity.class);
         getCurrentEntity().addEntity(gioDescriptionEntity);
         // TODO fire parent element.start to GioWriter
     }
 
     private void endEdgeElement() throws IOException {
         assertCurrent("endEdge", GioEdgeEntity.class);
-        GioEdgeEntity gioEdgeEntity = (GioEdgeEntity) openEntities.pop();
-        gioWriter.startEdge(gioEdgeEntity.getEntity());
+        sendStartThisOrParentMaybe(GraphmlElement.EDGE);
         gioWriter.endEdge();
+        pop(GioEdgeEntity.class);
     }
 
+    private void endEndpointElement() {
+        assertCurrent("startEndpoint", GioEdgeEntity.class);
+    }
 
     private void endGraphElement() throws IOException {
         assertCurrent("endGraph", GioGraphEntity.class);
-        GioGraphEntity gioGraphEntity = (GioGraphEntity) openEntities.pop();
-        sendStartGraphMaybe(gioGraphEntity);
-        gioWriter.endGraph(gioGraphEntity.url);
+        sendStartThisOrParentMaybe(GraphmlElement.GRAPH);
+        @Nullable URL url = peekOptional(GioLocatorEntity.class).map(GioLocatorEntity::getEntity).orElse(null);
+        gioWriter.endGraph(url);
+        pop(GioGraphEntity.class);
     }
 
     private void endGraphmlElement() throws IOException {
         assertCurrent("endGraphML", GioDocumentEntity.class);
-        sendStartGraphmlDocumentMaybe((GioDocumentEntity) openEntities.peek());
+        sendStartThisOrParentMaybe(GraphmlElement.GRAPHML);
         gioWriter.endDocument();
-        openEntities.pop();
+        pop(GioDocumentEntity.class);
+    }
+
+    private void endHyperedgeElement() throws IOException {
+        assertCurrent("endHyperedge", GioEdgeEntity.class);
+        sendStartThisOrParentMaybe(GraphmlElement.HYPER_EDGE);
+        gioWriter.endEdge();
+        pop(GioEdgeEntity.class);
     }
 
     private void endKeyElement() throws IOException {
         assertCurrent("endKey", GioKeyEntity.class);
-        GioKey gioKey = ((GioKeyEntity) openEntities.pop()).getEntity();
-        gioWriter.key(gioKey);
+        GioKeyEntity gioKeyEntity = pop(GioKeyEntity.class);
+        peek(GioDocumentEntity.class).addEntity(gioKeyEntity);
     }
 
     private void endLocatorElement() throws IOException {
@@ -280,47 +271,103 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void endNodeElement() throws IOException {
         assertCurrent("endNode", GioNodeEntity.class);
-        GioNodeEntity gioNodeEntity = (GioNodeEntity) openEntities.pop();
-        GioNode gioNode = gioNodeEntity.getEntity();
-        gioWriter.startNode(gioNode);
-        gioWriter.endNode(gioNodeEntity.url);
+        sendStartThisOrParentMaybe(GraphmlElement.NODE);
+        @Nullable URL url = peekOptional(GioLocatorEntity.class).map(GioLocatorEntity::getEntity).orElse(null);
+        gioWriter.endNode(url);
+        pop(GioNodeEntity.class);
+    }
+
+    private void endPortElement() throws IOException {
+        assertCurrent("endPort", GioPortEntity.class, GioNodeEntity.class);
+        sendStartThisOrParentMaybe(GraphmlElement.PORT);
+        gioWriter.endPort();
+        pop(GioPortEntity.class);
+    }
+
+    private <T extends GraphmlEntity<?>> T peek(Class<T> entity) {
+        return (T) openEntities.peek();
     }
 
     /**
-     * Send graph to gioWriter, if not already sent
+     * The optional only contains something if the top of the stack is not empty and has the requested type
+     *
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    private <T extends GraphmlEntity<?>> Optional<T> peekOptional(Class<T> clazz) {
+        if (openEntities.isEmpty()) return Optional.empty();
+        GraphmlEntity<?> element = openEntities.peek();
+        if (element.getClass().equals(clazz)) {
+            return Optional.of((T) element);
+        }
+        return Optional.empty();
+    }
+
+    private <T extends GraphmlEntity<?>> T pop(Class<T> clazz) {
+        T element = (T) openEntities.pop();
+        assert element.getClass().equals(clazz) : "Expected to pop " + clazz.getSimpleName() + " but got " + element.getClass().getSimpleName();
+        return element;
+    }
+
+    private <T extends GraphmlEntity<?>> void push(T entity) {
+        openEntities.push(entity);
+    }
+
+    private void sendStart(String name, GraphmlEntity<?> entity) throws IOException {
+        switch (name) {
+            case GraphmlElement.GRAPHML -> gioWriter.startDocument((GioDocument) entity.getEntity());
+            case GraphmlElement.GRAPH -> gioWriter.startGraph((GioGraph) entity.getEntity());
+            case GraphmlElement.NODE -> gioWriter.startNode((GioNode) entity.getEntity());
+            case GraphmlElement.PORT -> gioWriter.startPort( (GioPort) entity.getEntity());
+            case GraphmlElement.EDGE, GraphmlElement.HYPER_EDGE ->
+                    gioWriter.startEdge(((GioEdgeEntity) entity).buildEdge());
+            default -> throw new AssertionError("Element " + name + " should have been sent");
+        }
+    }
+
+    /**
+     * Send start of parent element, if not already sent.
      * <p>
-     * There are several possible XML event flows, each having their own time point when we can be sure we collected all
-     * data for the gioWriter.startGraph (i.e. the description, if there was any)
+     * Many elements in GioWriter require additional data. E.g. the description ("&lt;desc&gt;...&lt;/desc&gt;") of a
+     * node. Hence when reading start-element('node') from XML we cannot yet emit GioWriter.startNode. We need to await
+     * the description. But, as soon as (A) an element starts which is another GioWriter call, or (B) the node ends, we
+     * can emit the GioWriter.start.
+     * <p>
+     * In {@link Graphml#isXmlChildElementWithIndependentGioWriterCall(String, String)} we can query this.
      *
-     * <li>startGraph,startDesc,endDesc,endGraph(=>gioWriter.startGraph) </li>
-     * <li>startGraph,startNode(=>gioWriter.startGraph),endNode,endGraph </li>
-     * <li>startGraph,startEdge(=>gioWriter.startGraph),endEdge,endGraph </li>
-     * <li>startGraph,startDesc,endDesc,startNode(=>gioWriter.startGraph),endNode,endGraph </li>
-     * <li>startGraph,startDesc,endDesc,startEdge(=>gioWriter.startGraph),endEdge,endGraph </li>
-     *
-     * @param gioGraphEntity
+     * @param currentElement about to start, not yet on the stack
      * @throws IOException
      */
-    private void sendStartGraphMaybe(GioGraphEntity gioGraphEntity) throws IOException {
-        if (!gioGraphEntity.isSent()) {
-            gioGraphEntity.markAsSent();
-            gioWriter.startGraph(gioGraphEntity.getEntity());
+    private void sendStartThisOrParentMaybe(String currentElement) throws IOException {
+        GraphmlEntity<?> openEntity = openEntities.peek();
+
+        // parent not yet sent AND current element signals end of parent?
+        if (!openEntity.isSent() && Graphml.isXmlChildElementWithIndependentGioWriterCall(openEntity.getName(), currentElement)) {
+            sendStart(openEntity.getName(), openEntity);
+            openEntity.markAsSent();
+            assert openEntities.stream().allMatch(GraphmlEntity::isSent);
         }
+
+        // we are closing X, so its really time to signal start of X
+        if (!openEntity.isSent() && openEntity.resultsInGraphmlElement(currentElement)) {
+            sendStart(openEntity.getName(), openEntity);
+            openEntity.markAsSent();
+            assert openEntities.stream().allMatch(GraphmlEntity::isSent);
+        }
+
     }
 
-    private void sendStartGraphmlDocumentMaybe(GioDocumentEntity gioDocumentEntity) throws IOException {
-        if (!gioDocumentEntity.isSent()) {
-            gioDocumentEntity.markAsSent();
-            gioWriter.startDocument(gioDocumentEntity.getEntity());
-        }
+    private String stackAsString() {
+        if (openEntities.isEmpty()) return "-empty-";
+        List<String> list = openEntities.stream().map(graphmlEntity -> graphmlEntity.getName() + (graphmlEntity.isSent() ? "" : "[PENDING]")).map(s -> "<" + s + ">").collect(Collectors.toList());
+        Collections.reverse(list);
+        return String.join("|", list);
     }
-
 
     private void startDataElement(Attributes attributes) throws IOException {
         assertCurrent("startData", GioDocumentEntity.class, GioGraphEntity.class, GioNodeEntity.class, GioEdgeEntity.class, GioPortEntity.class);
-        if (openEntities.peek() instanceof GioDocumentEntity) {
-            sendStartGraphmlDocumentMaybe((GioDocumentEntity) openEntities.peek());
-        }
+        sendStartThisOrParentMaybe(GraphmlElement.DATA);
         GioData.GioDataBuilder builder = GioData.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -338,44 +385,62 @@ class GraphmlSAXHandler extends DefaultHandler {
 
         }
         GioDataEntity gioDataEntity = new GioDataEntity(builder.build());
-        openEntities.push(gioDataEntity);
+        push(gioDataEntity);
+    }
+
+    private void startDefaultElement(Attributes attributes) {
+        push(new GioDefaultEntity());
     }
 
     private void startDescElement(Attributes attributes) {
-        openEntities.push(new GioDescriptionEntity());
+        push(new GioDescriptionEntity());
     }
 
     private void startEdgeElement(Attributes attributes) throws IOException {
         assertCurrent("startEdge", GioGraphEntity.class);
-        GioGraphEntity gioGraphEntity = (GioGraphEntity) openEntities.peek();
-        sendStartGraphMaybe(gioGraphEntity);
-
-        GioEdge.GioEdgeBuilder builder = GioEdge.builder();
+        sendStartThisOrParentMaybe(GraphmlElement.EDGE);
+        GioEdgeEntity gioEdgeEntity = new GioEdgeEntity();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
             switch (attributes.getQName(i)) {
                 case "id":
-                    builder.id(attributes.getValue(i));
+                    gioEdgeEntity.id = attributes.getValue(i);
                     break;
                 case "source":
-                    builder.endpoint(GioEndpoint.builder().type(GioEndpointDirecton.In).node(attributes.getValue(i)).build());
+                    gioEdgeEntity.addEndpoint(GioEndpoint.builder().type(GioEndpointDirection.In).node(attributes.getValue(i)).build());
                     break;
                 case "target":
-                    builder.endpoint(GioEndpoint.builder().type(GioEndpointDirecton.Out).node(attributes.getValue(i)).build());
+                    gioEdgeEntity.addEndpoint(GioEndpoint.builder().type(GioEndpointDirection.Out).node(attributes.getValue(i)).build());
                     break;
                 default:
                     customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
         }
-        openEntities.push(new GioEdgeEntity(builder.build()));
+        push(gioEdgeEntity);
+    }
+
+    private void startEndpointElement(Attributes attributes) {
+        assertCurrent("startEndpoint", GioEdgeEntity.class);
+
+        GioEndpoint.GioEndpointBuilder b = GioEndpoint.builder();
+        Map<String, String> customAttributes = new LinkedHashMap<>();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            switch (attributes.getQName(i)) {
+                case "id" -> b.id(attributes.getValue(i));
+                case "type" -> b.type(GioEndpointDirection.of(attributes.getValue(i)));
+                case "node" -> b.node(attributes.getValue(i));
+                // optional
+                case "port" -> b.port(attributes.getValue(i));
+                default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+            }
+        }
+        peek(GioEdgeEntity.class).addEndpoint(b.build());
     }
 
     private void startGraphElement(Attributes attributes) throws IOException {
         assertCurrent("startGraph", GioDocumentEntity.class, GioNodeEntity.class);
-        if (openEntities.peek() instanceof GioDocumentEntity) {
-            sendStartGraphmlDocumentMaybe((GioDocumentEntity) openEntities.peek());
-        }
+        sendStartThisOrParentMaybe(GraphmlElement.GRAPH);
         GioGraph.GioGraphBuilder builder = GioGraph.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -390,10 +455,9 @@ class GraphmlSAXHandler extends DefaultHandler {
                 default:
                     customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
-
         }
         GioGraphEntity gioGraphEntity = new GioGraphEntity(builder.build());
-        openEntities.push(gioGraphEntity);
+        push(gioGraphEntity);
     }
 
     private void startGraphmlElement(Attributes attributes) {
@@ -402,12 +466,29 @@ class GraphmlSAXHandler extends DefaultHandler {
             customAttributes.put(attributes.getQName(i), attributes.getValue(i));
         }
         GioDocumentEntity gioDocumentEntity = new GioDocumentEntity(GioDocument.builder().customAttributes(customAttributes).build());
-        openEntities.push(gioDocumentEntity);
+        push(gioDocumentEntity);
+    }
+
+    private void startHyperedgeElement(Attributes attributes) throws IOException {
+        assertCurrent("startHyperedge", GioGraphEntity.class);
+        sendStartThisOrParentMaybe(GraphmlElement.HYPER_EDGE);
+        GioEdgeEntity gioEdgeEntity = new GioEdgeEntity();
+        Map<String, String> customAttributes = new LinkedHashMap<>();
+        int attributesLength = attributes.getLength();
+        for (int i = 0; i < attributesLength; i++) {
+            switch (attributes.getQName(i)) {
+                case "id":
+                    gioEdgeEntity.id = attributes.getValue(i);
+                    break;
+                default:
+                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+            }
+        }
+        push(gioEdgeEntity);
     }
 
     private void startKeyElement(Attributes attributes) throws IOException {
         assertCurrent("startKey", GioDocumentEntity.class);
-        sendStartGraphmlDocumentMaybe((GioDocumentEntity) openEntities.peek());
         GioKey.GioKeyBuilder builder = GioKey.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -430,7 +511,7 @@ class GraphmlSAXHandler extends DefaultHandler {
         }
         builder.customAttributes(customAttributes);
         GioKeyEntity gioKeyEntity = new GioKeyEntity(builder.build());
-        openEntities.push(gioKeyEntity);
+        push(gioKeyEntity);
     }
 
     private void startLocatorElement(Attributes attributes) throws IOException {
@@ -450,20 +531,13 @@ class GraphmlSAXHandler extends DefaultHandler {
 
         }
         // NOTE: we are throwing away custom attributes on <locator>-element
-        GraphmlEntity entity = openEntities.peek();
-        if (entity instanceof GioGraphEntity) {
-            GioGraphEntity e = (GioGraphEntity) entity;
-            e.url = url;
-        } else {
-            GioNodeEntity e = (GioNodeEntity) entity;
-            e.url = url;
-        }
+        GioLocatorEntity gioLocatorEntity = new GioLocatorEntity(url);
+        push(gioLocatorEntity);
     }
 
     private void startNodeElement(Attributes attributes) throws IOException {
         assertCurrent("startNode", GioGraphEntity.class);
-        GioGraphEntity gioGraphEntity = (GioGraphEntity) openEntities.peek();
-        sendStartGraphMaybe(gioGraphEntity);
+        sendStartThisOrParentMaybe(GraphmlElement.NODE);
         GioNode.GioNodeBuilder builder = GioNode.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -477,7 +551,27 @@ class GraphmlSAXHandler extends DefaultHandler {
             }
 
         }
-        openEntities.push(new GioNodeEntity(builder.build()));
+        push(new GioNodeEntity(builder.build()));
+    }
+
+    private void startPortElement(Attributes attributes) throws IOException {
+        assertCurrent("startPort", GioNodeEntity.class);
+        sendStartThisOrParentMaybe(GraphmlElement.PORT);
+        GioPort.GioPortBuilder b = GioPort.builder();
+        String portName;
+        Map<String, String> customAttributes = new LinkedHashMap<>();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            switch (attributes.getQName(i)) {
+                case "name":
+                    b.name(attributes.getValue(i));
+                    break;
+                default:
+                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+            }
+        }
+        GioPort gioPort = b.build();
+        GioPortEntity gioPortEntity = new GioPortEntity(gioPort);
+        push(gioPortEntity);
     }
 
 

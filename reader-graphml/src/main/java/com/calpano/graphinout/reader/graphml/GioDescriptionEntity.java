@@ -1,12 +1,17 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.gio.GioEdge;
 import com.calpano.graphinout.base.gio.GioElementWithDescription;
 
-public class GioDescriptionEntity extends AbstractGraphmlEntity<GioElementWithDescription>  implements GraphmlEntity<GioElementWithDescription>{
+public class GioDescriptionEntity extends AbstractGraphmlEntity<GioElementWithDescription> implements GraphmlEntity<GioElementWithDescription> {
 
-   private GioElementWithDescription gioElementWithDescription= new GioElementWithDescription() {
-   };
+    private GioElementWithDescription gioElementWithDescription = new GioElementWithDescription() {};
+
+    @Override
+    public void addCharacters(String characters) {
+        // FIXME ADD chars, not replace
+        gioElementWithDescription.setDescription(characters);
+    }
+
     @Override
     public GioElementWithDescription getEntity() {
         return gioElementWithDescription;
@@ -14,17 +19,7 @@ public class GioDescriptionEntity extends AbstractGraphmlEntity<GioElementWithDe
 
     @Override
     public String getName() {
-        return GraphmlConstant.DESC_ELEMENT_NAME;
-    }
-
-    @Override
-    public void addEntity(GraphmlEntity graphmlEntity) {
-       throw  new RuntimeException("Description has not any inner element.");
-    }
-
-    @Override
-    public void addData(String data) {
-        gioElementWithDescription.setDescription(data);
+        return GraphmlElement.DESC;
     }
 
 }

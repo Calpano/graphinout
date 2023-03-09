@@ -2,37 +2,56 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioEdge;
 import com.calpano.graphinout.base.gio.GioElementWithDescription;
+import com.calpano.graphinout.base.gio.GioEndpoint;
 
-public class GioEdgeEntity extends AbstractGraphmlEntity<GioEdge> implements  GraphmlEntity<GioEdge>{
-    private final GioEdge gioEdge;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
-    public GioEdgeEntity(GioEdge gioEdge) {
-        this.gioEdge = gioEdge;
+public class GioEdgeEntity extends AbstractGraphmlEntity<List<GioEndpoint>> implements GraphmlEntity<List<GioEndpoint>> {
+    public final List<GioEndpoint> endpoints = new ArrayList<>();
+    public @Nullable String id;
+    public @Nullable String desc;
+
+    public GioEdgeEntity() {
     }
 
-    @Override
-    public GioEdge getEntity() {
-        return gioEdge;
+    public void addCharacters(String characters) {
+        allowOnlyWhitespace(characters);
     }
 
-    @Override
-    public String getName() {
-        return GraphmlConstant.EDGE_ELEMENT_NAME;
-    }
-
-    @Override
-    @Deprecated
-    public void addData(String data) {
-
+    public void addEndpoint(GioEndpoint gioEndpoint) {
+        this.endpoints.add(gioEndpoint);
     }
 
     @Override
     public void addEntity(GraphmlEntity graphmlEntity) {
-        if(graphmlEntity.getEntity() instanceof GioElementWithDescription g){
-            gioEdge.setDescription(g.getDescription());
+        if (graphmlEntity.getEntity() instanceof GioElementWithDescription g) {
+            this.desc = g.getDescription();
         }
     }
 
+    public GioEdge buildEdge() {
+        GioEdge.GioEdgeBuilder<?, ?> b = GioEdge.builder();
+        if (id != null) b.id(id);
+        if (desc != null) b.description(desc);
+        b.endpoints(endpoints);
+        return b.build();
+    }
+
+    @Override
+    public List<GioEndpoint> getEntity() {
+        return endpoints;
+    }
+
+    @Override
+    public String getName() {
+        return GraphmlElement.EDGE;
+    }
+
+    public boolean resultsInGraphmlElement(String graphmlElementName) {
+        return getName().equals(GraphmlElement.EDGE) || getName().equals(GraphmlElement.HYPER_EDGE);
+    }
 
 
 }
