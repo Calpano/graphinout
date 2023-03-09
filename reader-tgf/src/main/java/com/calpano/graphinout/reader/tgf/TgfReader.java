@@ -54,6 +54,10 @@ public class TgfReader implements GioReader {
         SingleInputSource sis = (SingleInputSource) inputSource;
         String content = IOUtils.toString(sis.inputStream(), StandardCharsets.UTF_8);
 
+        if (content.isEmpty()) {
+            return;
+        }
+
         Scanner scanner = new Scanner(content);
         boolean edges = false;
         boolean nodes = false;
