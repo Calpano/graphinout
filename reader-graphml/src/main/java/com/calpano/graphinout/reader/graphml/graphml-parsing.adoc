@@ -1,0 +1,120 @@
+= GraphML Parsing
+
+
+== GraphML XML Element Nesting
+
+.Nesting
+[plantuml]
+....
+hide empty members
+hide circles
+class graphml
+
+graphml --> desc
+graphml --> key
+graphml ..> graph
+graphml ..> data
+
+graph --> desc
+graph ..> data
+graph ..> node
+graph ..> edge
+graph ..> hyperedge
+graph --> locator
+
+node --> desc
+node ..> data
+node ..> port
+node ..> graph
+node --> locator
+
+port --> desc
+port ..> data
+port ..> port
+
+edge --> desc
+edge ..> data
+edge ..> graph
+
+hyperedge --> desc
+hyperedge ..> data
+hyperedge --> endpoint
+hyperedge ..> graph
+
+endpoint --> desc
+
+key --> desc
+key --> default
+....
+
+.Structural Nesting in GioWriter
+[plantuml]
+....
+hide empty members
+hide circles
+class graphml
+
+graphml ..> graph
+graphml ..> data
+
+graph ..> data
+graph ..> node
+graph ..> edge
+graph ..> hyperedge
+
+node ..> data
+node ..> port
+node ..> graph
+
+port ..> data
+port ..> port
+
+edge ..> data
+edge ..> graph
+
+hyperedge ..> data
+hyperedge ..> graph
+....
+
+TIP: When any one of these children is observed, the start-element is complete.
+
+.Buffered Elements
+- desc
+- endpoint
+- key
+- locator
+- default
+
+== Parsing
+The incoming XML stream needs to be mapped to calls on _GioWriter_.
+
+[%header,cols="2,4"]
+|===
+| XML event | Reaction
+
+2+h| Structural
+| Document start | Buffer <key>, <desc>; later: `startDocument(GioDocument document)`
+| <graphml> | buffer incoming <desc>, <key>
+| <graph ...> | `startGraph(GioGraph gioGraph)`
+| <node ...> | `startNode(GioNode node)`
+| </node> | `endNode(@Nullable URL locator)`
+| <edge ...> | `startEdge(GioEdge edge)`
+| </edge> | `endEdge()`
+| </graph> | `endGraph(@Nullable URL locator)`
+| </graphml> |
+| Document end | `endDocument()`
+
+| <port> | `startPort(GioPort port)`
+| </port> | `endPort()`
+| <key>  | `key(GioKey gioKey)`
+| </key> | --
+
+| <data> | Buffer incoming characters
+| </data> | `data(GioData data)`
+
+2+h| Partial
+| <locator> | Assign data to entity
+| </locator> | --
+|===
+
+
