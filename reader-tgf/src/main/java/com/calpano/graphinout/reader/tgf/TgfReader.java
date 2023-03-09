@@ -110,7 +110,14 @@ public class TgfReader implements GioReader {
         writer.endGraph(null);
         writer.endDocument();
         scanner.close();
-
+        if (!edges) {
+            if (!nodes) {
+                log.warn("No nodes found in the file.");
+            } else {
+                log.warn("No edges found in the file.");
+            }
+            return;
+        }
         if (errorHandler != null) {
             errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "TGF file is not valid.", null));
         }
