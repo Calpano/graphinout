@@ -1,9 +1,0 @@
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-
-<key id="d0" for="Graphml" yfiles.type="resources"></key><key id="d1" for="Port" yfiles.type="portgraphics"></key><key id="d2" for="Port" yfiles.type="portgeometry"></key><graph id="G" edgedefault="undirected">
-<node id="n0"></node>
-<node id="n1"></node>
-<edge source="n1" target="n1" directed="true"></edge>
-<edge source="n0" target="n0" directed="true"></edge>
-</graph>
-</graphml>
