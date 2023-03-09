@@ -61,7 +61,7 @@ class TgfReaderTest {
     }
 
     @Test
-    void shouldCallErrorConsumerWhenTGFIsNotValid() throws IOException {
+    void shouldNotCallErrorConsumerWhenTGFIsEmpty() throws IOException {
         when(mockInputSrc.inputStream()).thenReturn(new ByteArrayInputStream(EMPTY_FILE.getBytes()));
 
         underTest.errorHandler(mockErrorConsumer);
@@ -82,14 +82,26 @@ class TgfReaderTest {
     }
 
     @Test
-    void shouldReturnErrorWhenTgfFileHasOnlyEdges() throws IOException {
+    void shouldCreateNodesWhenTgfFileHasOnlyEdges() throws IOException {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(EDGES_ONLY.getBytes(StandardCharsets.UTF_8));
         when(mockInputSrc.inputStream()).thenReturn(inputStream);
 
         underTest.errorHandler(mockErrorConsumer);
         underTest.read(mockInputSrc, mockGioWriter);
 
-        verify(mockErrorConsumer).accept(any(ContentError.class));
+        InOrder inOrder = Mockito.inOrder(mockGioWriter);
+        inOrder.verify(mockGioWriter).startDocument(any(GioDocument.class));
+        inOrder.verify(mockGioWriter).startGraph(any(GioGraph.class));
+        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
+        inOrder.verify(mockGioWriter).endEdge();
+        inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
+        inOrder.verify(mockGioWriter).endEdge();
+        inOrder.verify(mockGioWriter).endGraph(Mockito.any());
+        inOrder.verify(mockGioWriter).endDocument();
     }
 
     @Test
