@@ -1,12 +1,6 @@
 package com.calpano.graphinout.reader.tgf;
 
-import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioEdge;
-import com.calpano.graphinout.base.gio.GioEndpoint;
-import com.calpano.graphinout.base.gio.GioGraph;
-import com.calpano.graphinout.base.gio.GioNode;
-import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
@@ -19,6 +13,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Consumer;
@@ -31,6 +26,7 @@ public class TgfReader implements GioReader {
 
     /**
      * Set error handler
+     *
      * @param errorHandler
      */
     public void errorHandler(Consumer<ContentError> errorHandler) {
@@ -46,7 +42,7 @@ public class TgfReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("tfg", "Trivial Graph Format",".tgf");
+        return new GioFileFormat("tfg", "Trivial Graph Format", ".tgf");
     }
 
     @Override
@@ -58,7 +54,6 @@ public class TgfReader implements GioReader {
         SingleInputSource sis = (SingleInputSource) inputSource;
         String content = IOUtils.toString(sis.inputStream(), StandardCharsets.UTF_8);
 
-        boolean isValid = true;
         Scanner scanner = new Scanner(content);
         boolean edges = false;
         boolean nodes = false;
@@ -93,25 +88,26 @@ public class TgfReader implements GioReader {
                 endpointList.add(targetEndpoint);
                 if (edgeParts.length == 2 || edgeParts.length == 3) {
                     GioEdge gioEdge = GioEdge.builder().endpoints(endpointList).build();
-                    if(edgeParts.length == 3) {
-                        // TODO use gioData here instead of description
-                        gioEdge.setDescription(edgeParts[2]);
+                    if (edgeParts.length == 3) {
+                        GioData.builder().value(edgeParts[2]).build();
                     }
                     writer.startEdge(gioEdge);
                     writer.endEdge();
-                } else {
-                    // TODO warn contenterror
+                }
+                if (!nodes) {
+                    log.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + "Required nodes have been created.");
+                    writer.startNode(GioNode.builder().id(edgeParts[0]).build());
+                    writer.endNode(null);
+                    writer.startNode(GioNode.builder().id(edgeParts[1]).build());
+                    writer.endNode(null);
                 }
             }
         }
         writer.endGraph(null);
         writer.endDocument();
-        if (edges && !nodes) {
-            isValid = false;
-        }
         scanner.close();
 
-        if (!isValid && errorHandler != null) {
+        if (errorHandler != null) {
             errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "TGF file is not valid.", null));
         }
     }
