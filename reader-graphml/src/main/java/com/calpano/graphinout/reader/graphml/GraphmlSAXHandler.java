@@ -368,14 +368,9 @@ class GraphmlSAXHandler extends DefaultHandler {
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
             switch (attributes.getQName(i)) {
-                case "id":
-                    builder.id(attributes.getValue(i));
-                    break;
-                case "key":
-                    builder.key(attributes.getValue(i));
-                    break;
-                default:
-                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+                case "id" -> builder.id(attributes.getValue(i));
+                case "key" -> builder.key(attributes.getValue(i));
+                default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
 
         }
@@ -399,17 +394,12 @@ class GraphmlSAXHandler extends DefaultHandler {
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
             switch (attributes.getQName(i)) {
-                case "id":
-                    gioEdgeEntity.id = attributes.getValue(i);
-                    break;
-                case "source":
-                    gioEdgeEntity.addEndpoint(GioEndpoint.builder().type(GioEndpointDirection.In).node(attributes.getValue(i)).build());
-                    break;
-                case "target":
-                    gioEdgeEntity.addEndpoint(GioEndpoint.builder().type(GioEndpointDirection.Out).node(attributes.getValue(i)).build());
-                    break;
-                default:
-                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+                case "id" -> gioEdgeEntity.id = attributes.getValue(i);
+                case "source" ->
+                        gioEdgeEntity.addEndpoint(GioEndpoint.builder().type(GioEndpointDirection.In).node(attributes.getValue(i)).build());
+                case "target" ->
+                        gioEdgeEntity.addEndpoint(GioEndpoint.builder().type(GioEndpointDirection.Out).node(attributes.getValue(i)).build());
+                default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
         }
         push(gioEdgeEntity);
@@ -441,14 +431,9 @@ class GraphmlSAXHandler extends DefaultHandler {
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
             switch (attributes.getQName(i)) {
-                case "id":
-                    builder.id(attributes.getValue(i));
-                    break;
-                case "edgedefault":
-                    builder.edgedefaultDirected(Boolean.valueOf(attributes.getValue(i)));
-                    break;
-                default:
-                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+                case "id" -> builder.id(attributes.getValue(i));
+                case "edgedefault" -> builder.edgedefaultDirected(Boolean.valueOf(attributes.getValue(i)));
+                default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
         }
         GioGraphEntity gioGraphEntity = new GioGraphEntity(builder.build());
@@ -472,11 +457,8 @@ class GraphmlSAXHandler extends DefaultHandler {
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
             switch (attributes.getQName(i)) {
-                case "id":
-                    gioEdgeEntity.id = attributes.getValue(i);
-                    break;
-                default:
-                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+                case "id" -> gioEdgeEntity.id = attributes.getValue(i);
+                default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
         }
         push(gioEdgeEntity);
@@ -490,15 +472,12 @@ class GraphmlSAXHandler extends DefaultHandler {
         boolean isForDefined = false;
         for (int i = 0; i < attributesLength; i++) {
             switch (attributes.getQName(i)) {
-                case "id":
-                    builder.id(attributes.getValue(i));
-                    break;
-                case "for":
+                case "id" -> builder.id(attributes.getValue(i));
+                case "for" -> {
                     builder.forType(GioKeyForType.keyForType(attributes.getValue(i).toLowerCase()));
                     isForDefined = true;
-                    break;
-                default:
-                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+                }
+                default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
         }
         if (!isForDefined) {
@@ -517,11 +496,8 @@ class GraphmlSAXHandler extends DefaultHandler {
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
             switch (attributes.getQName(i)) {
-                case "xlink:href":
-                    url = new URL(attributes.getValue(i));
-                    break;
-                default:
-                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+                case "xlink:href" -> url = new URL(attributes.getValue(i));
+                default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
 
         }
@@ -538,11 +514,8 @@ class GraphmlSAXHandler extends DefaultHandler {
         int attributesLength = attributes.getLength();
         for (int i = 0; i < attributesLength; i++) {
             switch (attributes.getQName(i)) {
-                case "id":
-                    builder.id(attributes.getValue(i));
-                    break;
-                default:
-                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+                case "id" -> builder.id(attributes.getValue(i));
+                default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
 
         }
@@ -557,11 +530,8 @@ class GraphmlSAXHandler extends DefaultHandler {
         Map<String, String> customAttributes = new LinkedHashMap<>();
         for (int i = 0; i < attributes.getLength(); i++) {
             switch (attributes.getQName(i)) {
-                case "name":
-                    b.name(attributes.getValue(i));
-                    break;
-                default:
-                    customAttributes.put(attributes.getQName(i), attributes.getValue(i));
+                case "name" -> b.name(attributes.getValue(i));
+                default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
         }
         GioPort gioPort = b.build();
