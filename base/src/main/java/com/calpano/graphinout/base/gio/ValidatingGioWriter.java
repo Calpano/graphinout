@@ -39,6 +39,7 @@ public class ValidatingGioWriter implements GioWriter {
         if (!nodesIds.containsAll(endpointsNode))
             throw new IllegalStateException("All GioEdge endpoints should refer to an existing GioNode ID.");
         if (!nodePortName.isEmpty() && !nodePortName.containsAll(endpointsPort))
+            // TODO add to error message: which port was wrong?
             throw new IllegalStateException("All GioEdge Endpoint Port should refer to an existing GioNode Port.");
         gioWriter.endGraph(locator);
     }
