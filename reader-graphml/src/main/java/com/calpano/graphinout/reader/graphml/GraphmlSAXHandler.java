@@ -532,14 +532,12 @@ class GraphmlSAXHandler extends DefaultHandler {
         }
         GioPort gioPort = b.build();
         GioPortEntity gioPortEntity = new GioPortEntity(gioPort);
-        GioPortEntity parentPort = new GioPortEntity(b.build());
-        if (openPorts.isEmpty()) {
-            push(gioPortEntity);
-        } else {
-            parentPort = openPorts.peek();
+
+        if ((openEntities.peek() instanceof GioPort)) {
+            GioPortEntity parentPort = (GioPortEntity) openEntities.peek();
             parentPort.addEntity(gioPortEntity);
-            push(parentPort);
+        } else {
+            openEntities.push(gioPortEntity);
         }
-        openPorts.push(parentPort);
     }
 }
