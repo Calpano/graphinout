@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph id="D" edgedefault="directed">
+    <node id="task_menu">
+        <data key="label">done</data>
+    </node>
+    <node id="task_ingredients">
+        <data key="label">done</data>
+    </node>
+    <node id="task_invitation">
+        <data key="label">done</data>
+    </node>
+    <node id="task_cook">
+        <data key="label">
+    </node>
+    <node id="task_table">
+        <data key="label">
+    </node>
+    <node id="task_eat">
+        <data key="label">
+    </node>
+    <edge source="task_menu" target="task_ingredients"/>
+    <edge source="task_ingredients" target="task_cook"/>
+    <edge source="task_invitation" target="task_cook"/>
+    <edge source="task_table" target="task_eat"/>
+    <edge source="task_cook" target="task_eat"/>
+  </graph>
+</graphml>

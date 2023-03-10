@@ -1,0 +1,364 @@
+= Graphinout Architecture
+:toc:
+
+
+== Basic Idea
+.Basic Reader Idea
+[plantuml,basic-idea,svg]
+....
+hide empty members
+class Input
+class Output
+interface Reader
+Input -> Reader : one reader\n can read\n one file format
+Reader -> GioModel: interprets it\nas Gio model
+GioModel -> GraphML: maps to GraphML
+GraphML -> Output: writes out
+....
+
+== Projects and Packages
+base:: Basic IO helpers, streaming Graph API (`Gio...`), API for Readers.
+Converts an incoming Graph API stream (`GioWriter`) to a GraphML/XML stream (`GraphmlWriter`).
+
+reader-__X__:: Can read a certain file format __X__ and interpret as Graph API stream
+
+engine:: Bundles all readers together and orchestrates them
+
+app-__X__:: Apps using the engine, e.g. `app-cmdline` and `app-restapi`
+
+.Projects
+[plantuml,projects-overview,svg]
+....
+hide empty members
+package engine {
+
+package base {
+}
+package readerA {
+}
+package readerB {
+}
+package readerC {
+}
+base <|-- readerA
+base <|-- readerB
+base <|-- readerC
+
+class Engine
+Engine --> readerA
+Engine --> readerB
+Engine --> readerC
+}
+....
+
+.Projects Detailed
+[plantuml,projects-detailed,svg]
+....
+hide empty members
+package engine {
+
+package base {
+    interface Reader
+    class Filetype
+    class BasicIO
+}
+package readerA {
+    class ReaderA
+    Reader <|-- ReaderA
+}
+package readerB {
+    class ReaderB
+    Reader <|-- ReaderB
+}
+package readerC {
+    class ReaderC
+    Reader <|-- ReaderC
+}
+
+class Engine
+Engine --> ReaderA
+Engine --> ReaderB
+Engine --> ReaderC
+}
+
+class CmdLineApp
+class RestApiApp
+class AnotherApp
+CmdLineApp --> Engine
+RestApiApp --> Engine
+AnotherApp --> Engine
+....
+
+.Packages
+----
+com.calpano.graphinout
+    .base
+        .gio // our graph API
+        .graphml // GraphML spec as classes for in/out
+        .input // InputSource
+        .output // OutputSink
+    .engine
+    .reader
+        .graphml
+        .tgf
+        .dot
+    .app
+        .cmdline
+        .restapi
+----
+
+== Base
+
+base.graphml:: Strict model following GraphML specification; All classes contain GraphML documentation.
+
+- `GraphMlWriter`: writes GraphML objects (`GraphmlNode`) to valid XML, following the GraphML spec.
+
+NOTE: A corresponding `GraphMlReader` is in project `reader-graphml` and can re-use the `base.graphml` classes.
+
+base.gio::: Unified model for all kinds of graphs, inspired by GraphML model, clear mapping to/from GraphML (no round-trip assertions)
+
+- GioWriter: Knows how to map to GraphML model and calls `GraphmlWriter`
+
+.Package `com.calpano.graphinout.base`
+[plantuml,project-base,svg]
+----
+hide empty members
+package base.gio {
+    class GioWriter
+    class GioNode
+    class GioEdge
+}
+package base.graphml {
+    class GraphmlWriter
+    class GraphmlNode
+    class GraphmlEdge
+    class GraphmlHyperEdge
+}
+class GioEdge {
+    String edgeLabel
+}
+GioNode .> GraphmlNode : maps to
+GioEdge .> GraphmlEdge : maps to
+GioEdge .> GraphmlHyperEdge : maps to
+GioWriter -> GraphmlWriter : calls
+GioWriter ..> GioNode : uses in\nmethod\nsignatures
+GioWriter ...> GioEdge
+GraphmlWriter ..> GraphmlNode : uses in\nmethod\nsignatures
+GraphmlWriter ...> GraphmlEdge
+GraphmlWriter ....> GraphmlHyperEdge
+
+----
+
+* **InputSource**: Unifies files and inputstreams
+* **OutputSink**: Unifies files and outputstreams
+* **FileFormat**: e.g. 'TGF'
+* **GioWriter**: graph output stream
+* **ContentError**: Similar to a log message
+* **Resolver**: Resolves external entities and references, e.g. XML entity references or GraphML locators.
+
+[plantuml, base,svg]
+....
+hide empty members
+interface InputSource {
+    String name();
+    InputStream inputStream();
+}
+interface OutputSink {
+    OutputStream outputStream();
+}
+interface GioWriter {
+    void startGraph( Metadata );
+    void startNode( GioNode node );
+    void startEdge( GioEdge edge );
+}
+class FileFormat {
+    String id;
+    String name;
+}
+class ContentError {
+    LogLevel level;
+    String message;
+    Location location;
+}
+class Location {
+    int line;
+    int col;
+}
+class Resolver {
+    InputSource resolve( String reference );
+}
+ContentError o-- Location
+InputSource ..> FileFormat
+class GraphmlWriter {
+    startGraph( ...)
+    startNode( GraphmlNode );
+    startEdge( GraphmlEdge );
+    startHyperEdge( GraphmlHyperEdge );
+}
+GioWriter <|-- GraphmlWriter
+GraphmlWriter --> XmlWriter
+class XmlWriter {
+    startElement(...)
+}
+XmlWriter --> OutputSink
+....
+
+
+== Reader
+
+[plantuml,reader,svg]
+....
+hide empty members
+interface InputSource {
+    String name();
+    InputStream inputStream();
+}
+interface OutputSink {
+    OutputStream outputStream();
+}
+interface GioWriter {
+    void startGraph( Metadata );
+    void startNode( GioNode node );
+}
+class FileFormat {
+    String id;
+    String name;
+}
+enum ErrorLevel {
+    Warn, Error
+}
+class ContentError {
+    ErrorLevel level;
+    String message;
+    Location location;
+}
+class Location {
+    int line;
+    int col;
+}
+interface Reader {
+    FileFormat fileFormat();
+    void errorHandler(Consumer<ContentError> eh);
+    void resolver(Resolver r);
+    void read(InputSource in, GioWriter out);
+    void configure( String serializedConfig )
+}
+class Resolver {
+    InputSource resolve( String reference );
+}
+ContentError o-- Location
+ContentError .. ErrorLevel
+Reader --> InputSource
+InputSource .> FileFormat
+Reader --> Resolver
+Reader --> FileFormat : what it\n can\n handle
+Reader --> ContentError
+Reader --> GioWriter
+class GraphmlWriter {
+}
+GioWriter <|-- GraphmlWriter
+GraphmlWriter --> XmlWriter
+class XmlWriter {
+    startElement(...)
+}
+XmlWriter --> OutputSink
+....
+
+[source,java]
+----
+interface Reader {
+    /** One reader handles exactly one file format */
+    FileFormat fileFormat();
+    /** Optional. For reporting issues during input parsing.
+     * Normal log messages are just sent to a logger.
+     */
+    default void errorHandler(Consumer<ContentError> eh) {}
+    /** Optional. If present, external entities (XML entities, URIs) can be resolved */
+    default void resolver(Resolver r) {}
+    /** Optional. A reader-specific config can be supplied */
+    default void configure( String serializedConfig ) {}
+    /** Main method. Reads from input,
+     * reports errors, maybe resolves references,
+     * writes to GioWriter.
+     */
+    void read(InputSource in, GioWriter out);
+}
+----
+
+=== Reader Example
+.TGF Reader Example
+[source,java]
+----
+class TgfReader implements Reader {
+    public FileFormat fileFormat() {
+        return fileformat("text/tgf","Trivial Graph Format");
+    }
+
+    private TgfConfig config = TfgConfig.createDefault();
+
+    public void configure( String serializedConfig ) {
+        this.config = TgfConfig.parse( serializedConfig );
+    }
+
+    public void read(InputSource in, GioWriter out) {
+        // get java.util.Reader
+        out.startGraph( GioGraph.of(...) );
+        // for each node
+        out.startNode( GioNode.of(...));
+        out.endNode();
+        // edges ..
+        out.endGraph();
+    }
+
+}
+
+class TgfConfig {
+    String charset;
+    boolean isHashMarkRequired;
+}
+----
+
+== TODO
+We also need Service Lookup
+
+== INBOX
+
+FileFormat
+extension ".tgf"
+
+FileFormat "DOT"
+id
+label
+extension ".dot", ".gv"
+
+TgfReader
+
+
+"reader-FOOO" Maven project
+multiple GioReader
+
+Reader 1:1 FileFormat
+
+Engine
+service lookup -> SOMETHINGS
+SOMETHING -> Reader -> ext
+
+
+one jar: "reader-six"
+graph6
+sparse6
+digraph6
+xxx
+
+
+GioService
+used in service lookup
+
+one GioService will contain multiple GioReader
+
+
+
+
+
+
+

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+    <!-- each type once -->
+    <key id="id--key-graph-boolean" for="node" attr.name="name--key-graph-boolean" attr.type="boolean">
+        <default>false</default>
+    </key>
+    <key id="id--key-graph-int" for="node" attr.name="name--key-graph-int" attr.type="int">
+        <default>1</default>
+    </key>
+    <key id="id--key-graph-long" for="node" attr.name="name--key-graph-long" attr.type="long">
+        <default>10</default>
+    </key>
+    <key id="id--key-graph-float" for="node" attr.name="name--key-graph-float" attr.type="float">
+        <default>100.99</default>
+    </key>
+    <key id="id--key-graph-double" for="node" attr.name="name--key-graph-double" attr.type="double">
+        <default>1000.99</default>
+    </key>
+    <key id="id--key-graph-string" for="node" attr.name="name--key-graph-string" attr.type="string">
+        <default>default--key-graph-string</default>
+    </key>
+
+    <!-- string also for each location besides graph -->
+    <key id="id--key-node-string" for="node" attr.name="name--key-node-string" attr.type="string">
+        <default>default--key-node-string</default>
+    </key>
+    <key id="id--key-edge-string" for="edge" attr.name="name--key-edge-string" attr.type="string">
+        <default>default--key-edge-string</default>
+    </key>
+    <key id="id--key-graphml-string" for="graphml" attr.name="name--key-graphml-string" attr.type="string">
+        <default>default--key-graphml-string</default>
+    </key>
+    <key id="id--key-endpoint-string" for="endpoint" attr.name="name--key-endpoint-string" attr.type="string">
+        <default>default--key-endpoint-string</default>
+    </key>
+    <key id="id--key-all-string" for="all" attr.name="name--key-all-string" attr.type="string">
+        <default>default--key-all-string</default>
+    </key>
+    <key id="id--key-hyperedge-string" for="hyperedge" attr.name="name--key-hyperedge-string" attr.type="string">
+        <default>default--key-hyperedge-string</default>
+    </key>
+    <key id="id--key-port-string" for="port" attr.name="name--key-port-string" attr.type="string">
+        <default>default--key-port-string</default>
+    </key>
+
+    <!-- no edge cases of same names or ids yet -->
+    <graph id="id--graph" edgedefault="directed">
+
+        <node id="id--node1">
+            <!-- has no values -->
+        </node>
+
+        <node id="id--node2">
+            <!-- overwrites default values -->
+            <data key="id--key-graph-boolean">true</data>
+            <data key="id--key-graph-int">2</data>
+            <data key="id--key-graph-long">12</data>
+            <data key="id--key-graph-float">102.99</data>
+            <data key="id--key-graph-double">1002.99</data>
+            <data key="id--key-graph-string">value--key-graph-string</data>
+            <data key="id--key-node-string">value--key-node-string</data>
+            <data key="id--key-all-string">value--key-all-string</data>
+            <!-- the following assignments result in NO VALUE set, because these keys are not defined for nodes -->
+            <data key="id--key-edge-string">value--key-edge-string</data>
+            <data key="id--key-graphml-string">value--key-graphml-string</data>
+            <data key="id--key-endpoint-string">value--key-endpoint-string</data>
+            <data key="id--key-hyperedge-string">value--key-hyperedge-string</data>
+            <data key="id--key-port-string">value--key-port-string</data>
+        </node>
+
+        <node id="id--node3"/>
+
+        <edge id="id--edge-12" source="id--node1" target="id--node2"/>
+        <edge id="id--edge-4S6N" source="id--node4" sourceport="South" target="id--node6" targetport="North"/>
+        <!-- directions -->
+        <hyperedge id="id--hyperedge-123">
+            <endpoint node="id--node1" type="in"/>
+            <endpoint node="id--node2" type="out"/>
+            <endpoint node="id--node3" type="undir"/>
+        </hyperedge>
+        <hyperedge id="id--hyperedge-4N56">
+            <endpoint node="id--node4" type="in" port="North"/>
+            <endpoint node="id--node5" type="in"/>
+            <endpoint node="id--node6" type="in"/>
+        </hyperedge>
+        <!-- node after edge; ports -->
+        <node id="id--node4">
+            <port name="North"/>
+            <port name="South"/>
+        </node>
+        <node id="id--node5">
+            <port name="North"/>
+            <port name="South"/>
+        </node>
+        <node id="id--node6">
+            <port name="North"/>
+            <port name="South"/>
+        </node>
+    </graph>
+</graphml>

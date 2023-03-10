@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+    <graph id="id--graph1" edgedefault="directed">
+        <node id="id--graph1-node1"/>
+        <node id="id--graph1-node2"/>
+        <node id="id--graph1-node3"/>
+
+        <!-- edge inside -->
+        <edge id="id--graph1-edge-1" source="id--graph1-node1" target="id--graph1-node2"/>
+        <!-- edge to other graph -->
+        <edge id="id--graph1-edge-2" source="id--graph1-node1" target="id--graph2-node1"/>
+        <!-- edge to and from another graph, not recommended in GraphML, but allowed -->
+        <edge id="id--graph1-edge-2" source="id--graph2-node1" target="id--graph3-node1"/>
+    </graph>
+
+    <graph id="id--graph2" edgedefault="directed">
+        <node id="id--graph2-node1"/>
+    </graph>
+
+    <graph id="id--graph3" edgedefault="undirected">
+        <node id="id--graph3-node1"/>
+        <!-- edges between levels of subgraphs -->
+        <edge id="id--graph3-edge1" source="id--graph5-node1" target="id--graph5-node1-graph1-node1-graph1-node1"/>
+    </graph>
+
+    <!-- empty graph -->
+    <graph id="id--graph4" edgedefault="undirected"/>
+
+    <!--  graph with subgraph -->
+    <graph id="id--graph5" edgedefault="undirected">
+        <node id="id--graph5-node1">
+            <graph id="id--graph5-node1-graph1">
+                <node id="id--graph5-node1-graph1-node1">
+                    <graph id="id--graph5-node1-graph1-node1-graph1">
+                        <node id="id--graph5-node1-graph1-node1-graph1-node1"/>
+                    </graph>
+                </node>
+                <node id="id--graph5-node1-graph1-node2"/>
+            </graph>
+        </node>
+        <node id="id--graph5-node2"/>
+    </graph>
+
+</graphml>

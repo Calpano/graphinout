@@ -1,0 +1,158 @@
+<!-- ====================================================================== -->
+<!-- file: graphml.dtd ====================================================== 
+
+  This is the Document Type Definition for the release candidate of 
+  GraphML version 1.0 and represents a (necessarily) looser specification 
+  than the corresponding XML Schema.  It's use is discouraged, though it
+  may be necessary for some systems.
+
+  Usage:
+
+            SYSTEM "http://graphml.graphdrawing.org/dtds/1.0rc/graphml.dtd"
+
+            xmlns="http://graphml.graphdrawing.org/xmlns/1.0rc"
+
+    ====================================================================== -->
+
+<!-- ===============================================================-->
+<!--Parameter entity for data content -->
+<!--================================================================-->
+
+<!ENTITY % GRAPHML.data.content "(#PCDATA)">
+
+<!-- ===============================================================-->
+<!--Parameter entities for attribute list extensions -->
+<!--================================================================-->
+
+<!ENTITY % GRAPHML.graphml.attrib "">
+<!ENTITY % GRAPHML.locator.attrib "">
+<!ENTITY % GRAPHML.graph.attrib "">
+<!ENTITY % GRAPHML.node.attrib "">
+<!ENTITY % GRAPHML.port.attrib "">
+<!ENTITY % GRAPHML.edge.attrib "">
+<!ENTITY % GRAPHML.hyperedge.attrib "">
+<!ENTITY % GRAPHML.endpoint.attrib "">
+<!ENTITY % GRAPHML.key.attrib "">
+<!ENTITY % GRAPHML.data.attrib "">
+<!ENTITY % GRAPHML.default.attrib "">
+
+<!--============================================================-->
+<!--Attributes used by each GRAPHML element-->
+<!--============================================================-->
+
+<!ENTITY % GRAPHML.common.attrib
+           ""
+>
+
+<!--================================================================-->
+<!--the graphml elements-->
+<!--================================================================-->
+
+<!ELEMENT data  %GRAPHML.data.content;>
+<!ATTLIST data 
+                key            IDREF   #REQUIRED
+                id             ID      #IMPLIED
+                %GRAPHML.data.attrib;
+                %GRAPHML.common.attrib;
+>
+
+<!ELEMENT default  %GRAPHML.data.content;>
+<!ATTLIST default 
+                %GRAPHML.default.attrib;
+                %GRAPHML.common.attrib;
+>
+
+<!ELEMENT key (desc?,default?)>
+<!ATTLIST key 
+              id  ID       #REQUIRED
+              for (graph|node|edge|hyperedge|port|endpoint|all) "all"
+              %GRAPHML.key.attrib;
+              %GRAPHML.common.attrib;
+>   
+
+
+
+<!ELEMENT graphml  (desc?,key*,(data|graph)*)>
+<!ATTLIST graphml  
+                   %GRAPHML.graphml.attrib;
+                   %GRAPHML.common.attrib;
+>
+
+
+
+<!ELEMENT graph    (desc?,(((data|node|edge|hyperedge)*)|locator))>
+<!ATTLIST graph    
+                   id       ID           #IMPLIED
+                   edgedefault (directed|undirected) #REQUIRED
+                   %GRAPHML.graph.attrib;
+                   %GRAPHML.common.attrib;
+>   
+
+<!ELEMENT node   (desc?,((((data|port)*,graph?))|locator))>
+<!ATTLIST node   
+                 id        ID      #REQUIRED
+                 %GRAPHML.node.attrib;
+                 %GRAPHML.common.attrib;
+>
+  
+<!ELEMENT port (desc?,(data|port)*)>
+<!ATTLIST port
+               name    NMTOKEN  #REQUIRED
+               %GRAPHML.port.attrib;
+               %GRAPHML.common.attrib;
+>
+
+
+<!ELEMENT edge (desc?,data*,graph?)>
+<!ATTLIST edge 
+               id         ID           #IMPLIED
+               source     IDREF        #REQUIRED
+               sourceport NMTOKEN      #IMPLIED
+               target     IDREF        #REQUIRED
+               targetport NMTOKEN      #IMPLIED
+               directed   (true|false) #IMPLIED
+               %GRAPHML.edge.attrib;
+               %GRAPHML.common.attrib;
+>
+
+
+<!ELEMENT hyperedge  (desc?,(data|endpoint)*,graph?)>
+<!ATTLIST hyperedge 
+                    id     ID      #IMPLIED
+                    %GRAPHML.hyperedge.attrib;
+                    %GRAPHML.common.attrib;
+>
+
+<!ELEMENT endpoint (desc?)>
+<!ATTLIST endpoint 
+                   id    ID       #IMPLIED
+                   node  IDREF    #REQUIRED
+                   port  NMTOKEN  #IMPLIED
+                   type  (in|out|undir) "undir"
+                   %GRAPHML.endpoint.attrib;
+                   %GRAPHML.common.attrib;
+>
+
+<!ELEMENT locator EMPTY>
+<!ATTLIST locator 
+                   xmlns:xlink   CDATA   #FIXED  "http://www.w3.org/TR/2000/PR-xlink-20001220/"
+                   xlink:href     CDATA    #REQUIRED
+                   xlink:type     (simple) #FIXED    "simple"
+                   %GRAPHML.locator.attrib;
+                   %GRAPHML.common.attrib; 
+>
+
+<!ELEMENT desc (#PCDATA)>
+<!ATTLIST desc %GRAPHML.common.attrib;>
+
+
+
+<!--=======================================================================
+     end of file graphml.mod
+========================================================================-->
+
+
+
+
+
+

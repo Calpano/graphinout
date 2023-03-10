@@ -1,2 +1,10 @@
 ﻿.idea
+.DS_Store
+.DS_Store-tmp
+nbproject
+target
 *.iml
+*.tmp
+tmp
+*.cache
+*.svg
