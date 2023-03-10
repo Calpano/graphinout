@@ -31,8 +31,6 @@ class GraphmlSAXHandler extends DefaultHandler {
     private Locator locator;
     private Map<String, String> namespaces = new HashMap<>();
 
-    private @Nullable Stack<GioPortEntity> openPorts = new Stack<>();
-
     public GraphmlSAXHandler(GioWriter gioWriter, Consumer<ContentError> errorConsumer) {
         this.gioWriter = gioWriter;
         this.errorConsumer = errorConsumer;
@@ -527,7 +525,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void startPortElement(Attributes attributes) throws IOException {
-        assertCurrent("startPort", GioNodeEntity.class, GioPortEntity.class);
+        assertCurrent("startPort", GioNodeEntity.class);
         sendStartThisOrParentMaybe(GraphmlElement.PORT);
         GioPort.GioPortBuilder b = GioPort.builder();
 
