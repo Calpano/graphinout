@@ -1,16 +1,8 @@
 package com.calpano.graphinout.reader.graphml;
 
 
-import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioEdge;
-import com.calpano.graphinout.base.gio.GioGraph;
-import com.calpano.graphinout.base.gio.GioKey;
-import com.calpano.graphinout.base.gio.GioKeyForType;
-import com.calpano.graphinout.base.gio.GioNode;
-import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.reader.ContentError;
-import com.calpano.graphinout.base.reader.GioReader;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -239,8 +231,9 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void startNodeDataElement(String uri, String localName, Attributes attributes) throws IOException {
-        if (currentEntity == null) throw new IOException("Invalid Structure format.");
-        stack.push(currentEntity);
+        if (currentEntity != null)
+            stack.push(currentEntity);
+
         GioData.GioDataBuilder builder = GioData.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -262,9 +255,16 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void endNodeDataElement() throws IOException {
-        if (stack.isEmpty()) throw new IOException("Invalid Structure format.");
-        stack.peek().addEntity(currentEntity);
-        currentEntity = stack.pop();
+        if (!stack.isEmpty()) {
+            stack.peek().addEntity(currentEntity);
+            currentEntity = stack.pop();
+        } else if (currentEntity != null && currentEntity.getEntity() instanceof GioData g) {
+            gioWriter.data(g);
+            currentEntity = null;
+        } else
+            throw new IOException("Invalid Structure format.");
+
+
     }
 
 
