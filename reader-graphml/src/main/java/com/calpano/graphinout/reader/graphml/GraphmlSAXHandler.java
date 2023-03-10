@@ -1,16 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 
-import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioEndpoint;
-import com.calpano.graphinout.base.gio.GioEndpointDirection;
-import com.calpano.graphinout.base.gio.GioGraph;
-import com.calpano.graphinout.base.gio.GioKey;
-import com.calpano.graphinout.base.gio.GioKeyForType;
-import com.calpano.graphinout.base.gio.GioNode;
-import com.calpano.graphinout.base.gio.GioPort;
-import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.reader.ContentError;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
@@ -22,14 +13,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -74,7 +58,10 @@ class GraphmlSAXHandler extends DefaultHandler {
                 throw new IllegalStateException("No open element to add characters to.");
             }
         } else {
-            openEntities.peek().addCharacters(new String(ch, start, length));
+            String s = new String(ch, start, length);
+            if (s.trim().length() > 0) {
+                openEntities.peek().addCharacters(s);
+            }
         }
     }
 
@@ -168,7 +155,9 @@ class GraphmlSAXHandler extends DefaultHandler {
         super.warning(e);
     }
 
-    /** Just looks at the stack */
+    /**
+     * Just looks at the stack
+     */
     private void assertCurrent(String location, @Nullable Class<?>... expectedCurrentEntities) {
         if (!structuralAssertionsEnabled) return;
         if (expectedCurrentEntities != null && expectedCurrentEntities.length > 0) {
@@ -319,7 +308,7 @@ class GraphmlSAXHandler extends DefaultHandler {
             case GraphmlElement.GRAPHML -> gioWriter.startDocument((GioDocument) entity.getEntity());
             case GraphmlElement.GRAPH -> gioWriter.startGraph((GioGraph) entity.getEntity());
             case GraphmlElement.NODE -> gioWriter.startNode((GioNode) entity.getEntity());
-            case GraphmlElement.PORT -> gioWriter.startPort( (GioPort) entity.getEntity());
+            case GraphmlElement.PORT -> gioWriter.startPort((GioPort) entity.getEntity());
             case GraphmlElement.EDGE, GraphmlElement.HYPER_EDGE ->
                     gioWriter.startEdge(((GioEdgeEntity) entity).buildEdge());
             default -> throw new AssertionError("Element " + name + " should have been sent");
