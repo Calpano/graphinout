@@ -5,12 +5,8 @@
   <graph id="G" edgedefault="directed">
     <node id="n0">
       <port name="p0">
-        <port name="p1">
-          <data key="portName">nested port 1</data>
-        </port>
-        <data key="portName">top-level port</data>
+        <port name="p1"></port>
       </port>
-      <data key="label">node 0</data>
     </node>
     <node id="n1">
       <data key="label">node 1</data>

@@ -30,6 +30,8 @@ class GraphmlSAXHandler extends DefaultHandler {
     private boolean structuralAssertionsEnabled = true;
     private Locator locator;
 
+    private @Nullable Stack<GioPortEntity> openPorts = new Stack<>();
+
     public GraphmlSAXHandler(GioWriter gioWriter, Consumer<ContentError> errorConsumer) {
         this.gioWriter = gioWriter;
         this.errorConsumer = errorConsumer;
@@ -268,9 +270,13 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void endPortElement() throws IOException {
         assertCurrent("endPort", GioPortEntity.class, GioNodeEntity.class);
+        GioPortEntity currentPort = openPorts.pop();
+        if (currentPort.getEntity().getName() != null) {
+            sendStartThisOrParentMaybe(GraphmlElement.PORT);
+        }
         sendStartThisOrParentMaybe(GraphmlElement.PORT);
-        gioWriter.endPort();
         pop(GioPortEntity.class);
+        gioWriter.endPort();
     }
 
     private <T extends GraphmlEntity<?>> T peek(Class<T> entity) {
@@ -525,7 +531,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void startNodeElement(Attributes attributes) throws IOException {
-        assertCurrent("startNode", GioGraphEntity.class);
+        assertCurrent("startNode", GioGraphEntity.class, GioPortEntity.class);
         sendStartThisOrParentMaybe(GraphmlElement.NODE);
         GioNode.GioNodeBuilder builder = GioNode.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
@@ -544,10 +550,10 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void startPortElement(Attributes attributes) throws IOException {
-        assertCurrent("startPort", GioNodeEntity.class);
+        assertCurrent("startPort", GioNodeEntity.class, GioPortEntity.class);
         sendStartThisOrParentMaybe(GraphmlElement.PORT);
         GioPort.GioPortBuilder b = GioPort.builder();
-        String portName;
+
         Map<String, String> customAttributes = new LinkedHashMap<>();
         for (int i = 0; i < attributes.getLength(); i++) {
             switch (attributes.getQName(i)) {
@@ -560,8 +566,14 @@ class GraphmlSAXHandler extends DefaultHandler {
         }
         GioPort gioPort = b.build();
         GioPortEntity gioPortEntity = new GioPortEntity(gioPort);
-        push(gioPortEntity);
+        GioPortEntity parentPort = new GioPortEntity(b.build());
+        if (openPorts.isEmpty()) {
+            push(gioPortEntity);
+        } else {
+            parentPort = openPorts.peek();
+            parentPort.addEntity(gioPortEntity);
+            push(parentPort);
+        }
+        openPorts.push(parentPort);
     }
-
-
 }
