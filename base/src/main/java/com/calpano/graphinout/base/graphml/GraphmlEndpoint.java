@@ -86,7 +86,7 @@ public class GraphmlEndpoint implements XMLValue {
 
         if (port != null) attributes.put("port", port);
 
-        attributes.put("type", type.name());
+        attributes.put("type", type.xmlValue());
         return attributes;
     }
     @Override
