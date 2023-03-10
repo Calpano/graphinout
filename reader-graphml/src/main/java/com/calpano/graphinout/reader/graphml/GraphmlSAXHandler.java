@@ -270,10 +270,6 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void endPortElement() throws IOException {
         assertCurrent("endPort", GioPortEntity.class, GioNodeEntity.class);
-        GioPortEntity currentPort = openPorts.pop();
-        if (currentPort.getEntity().getName() != null) {
-            sendStartThisOrParentMaybe(GraphmlElement.PORT);
-        }
         sendStartThisOrParentMaybe(GraphmlElement.PORT);
         pop(GioPortEntity.class);
         gioWriter.endPort();
