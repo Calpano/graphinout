@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml>
+  <key id="label" for="node" attr.name="label" attr.type="string" />
+  <key id="portName" for="port" attr.name="portName" attr.type="string" />
+  <graph id="G" edgedefault="directed">
+    <node id="n0">
+      <port name="p0">
+        <port name="p1">
+          <data key="portName">nested port 1</data>
+        </port>
+        <data key="portName">top-level port</data>
+      </port>
+      <data key="label">node 0</data>
+    </node>
+    <node id="n1">
+      <data key="label">node 1</data>
+    </node>
+    <edge source="n0:p0:p1" target="n1" />
+  </graph>
+</graphml>
