@@ -19,8 +19,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 class GraphmlSAXHandler extends DefaultHandler {
-    public static final String GRAPHML_MASTER__XMLNS = "http://graphml.graphdrawing.org/xmlns";
-    private static final String GRAPHML_STANDARD_NAME_SPACE = "http://graphml.graphdrawing.org/xmlns";
+     private static final String GRAPHML_STANDARD_NAME_SPACE = "http://graphml.graphdrawing.org/xmlns";
     private final GioWriter gioWriter;
     private final Consumer<ContentError> errorConsumer;
     /**
@@ -119,7 +118,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         super.startPrefixMapping(prefix, uri);
-        if (!GRAPHML_MASTER__XMLNS.equals(uri))
+        if (!GRAPHML_STANDARD_NAME_SPACE.equals(uri))
             namespaces.put(prefix, uri);
 
     }
