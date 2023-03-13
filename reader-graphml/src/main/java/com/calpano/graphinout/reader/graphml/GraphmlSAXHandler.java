@@ -1,16 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 
-import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioEndpoint;
-import com.calpano.graphinout.base.gio.GioEndpointDirection;
-import com.calpano.graphinout.base.gio.GioGraph;
-import com.calpano.graphinout.base.gio.GioKey;
-import com.calpano.graphinout.base.gio.GioKeyForType;
-import com.calpano.graphinout.base.gio.GioNode;
-import com.calpano.graphinout.base.gio.GioPort;
-import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.reader.ContentError;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
@@ -22,19 +13,13 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
 class GraphmlSAXHandler extends DefaultHandler {
+    public static final String GRAPHML_MASTER__XMLNS = "http://graphml.graphdrawing.org/xmlns";
     private static final String GRAPHML_STANDARD_NAME_SPACE = "http://graphml.graphdrawing.org/xmlns";
     private final GioWriter gioWriter;
     private final Consumer<ContentError> errorConsumer;
@@ -45,6 +30,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     private final Deque<GraphmlEntity<?>> openEntities = new LinkedList<>();
     private boolean structuralAssertionsEnabled = true;
     private Locator locator;
+    private Map<String, String> namespaces = new HashMap<>();
 
     public GraphmlSAXHandler(GioWriter gioWriter, Consumer<ContentError> errorConsumer) {
         this.gioWriter = gioWriter;
@@ -131,10 +117,17 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     @Override
+    public void startPrefixMapping(String prefix, String uri) throws SAXException {
+        super.startPrefixMapping(prefix, uri);
+        if (!GRAPHML_MASTER__XMLNS.equals(uri))
+            namespaces.put(prefix, uri);
+
+    }
+
+    @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         log.debug("XML <{}>.  Stack before: {}.", qName, stackAsString());
         String tagName = tagName(uri, localName, qName);
-
 
         // validate URI once, should be "http://graphml.graphdrawing.org/xmlns"; all other URIs: verbatim data, no interpretation, still resolve URI + localName
         /// TODO warn about wrong URI
@@ -168,7 +161,9 @@ class GraphmlSAXHandler extends DefaultHandler {
         super.warning(e);
     }
 
-    /** Just looks at the stack */
+    /**
+     * Just looks at the stack
+     */
     private void assertCurrent(String location, @Nullable Class<?>... expectedCurrentEntities) {
         if (!structuralAssertionsEnabled) return;
         if (expectedCurrentEntities != null && expectedCurrentEntities.length > 0) {
@@ -319,7 +314,7 @@ class GraphmlSAXHandler extends DefaultHandler {
             case GraphmlElement.GRAPHML -> gioWriter.startDocument((GioDocument) entity.getEntity());
             case GraphmlElement.GRAPH -> gioWriter.startGraph((GioGraph) entity.getEntity());
             case GraphmlElement.NODE -> gioWriter.startNode((GioNode) entity.getEntity());
-            case GraphmlElement.PORT -> gioWriter.startPort( (GioPort) entity.getEntity());
+            case GraphmlElement.PORT -> gioWriter.startPort((GioPort) entity.getEntity());
             case GraphmlElement.EDGE, GraphmlElement.HYPER_EDGE ->
                     gioWriter.startEdge(((GioEdgeEntity) entity).buildEdge());
             default -> throw new AssertionError("Element " + name + " should have been sent");
@@ -462,9 +457,11 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startGraphmlElement(Attributes attributes) {
         Map<String, String> customAttributes = new LinkedHashMap<>();
+        namespaces.forEach((k, v) -> customAttributes.put("xmlns:" + k, v));
         for (int i = 0; i < attributes.getLength(); i++) {
             customAttributes.put(attributes.getQName(i), attributes.getValue(i));
         }
+        namespaces.clear();
         GioDocumentEntity gioDocumentEntity = new GioDocumentEntity(GioDocument.builder().customAttributes(customAttributes).build());
         push(gioDocumentEntity);
     }
