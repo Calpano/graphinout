@@ -1,22 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
 import com.calpano.graphinout.base.Direction;
-import com.calpano.graphinout.base.graphml.GraphmlData;
-import com.calpano.graphinout.base.graphml.GraphmlDefault;
-import com.calpano.graphinout.base.graphml.GraphmlDescription;
-import com.calpano.graphinout.base.graphml.GraphmlDocument;
-import com.calpano.graphinout.base.graphml.GraphmlEdge;
-import com.calpano.graphinout.base.graphml.GraphmlElement;
-import com.calpano.graphinout.base.graphml.GraphmlEndpoint;
-import com.calpano.graphinout.base.graphml.GraphmlGraph;
-import com.calpano.graphinout.base.graphml.GraphmlGraphCommonElement;
-import com.calpano.graphinout.base.graphml.GraphmlHyperEdge;
-import com.calpano.graphinout.base.graphml.GraphmlKey;
-import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
-import com.calpano.graphinout.base.graphml.GraphmlLocator;
-import com.calpano.graphinout.base.graphml.GraphmlNode;
-import com.calpano.graphinout.base.graphml.GraphmlPort;
-import com.calpano.graphinout.base.graphml.GraphmlWriter;
+import com.calpano.graphinout.base.graphml.*;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -24,6 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.TreeMap;
 
 public class GioWriterImpl implements GioWriter {
 
@@ -92,7 +78,11 @@ public class GioWriterImpl implements GioWriter {
     public void startDocument(GioDocument document) throws IOException {
         GraphmlDocument graphmlDocument = new GraphmlDocument();
         desc(document, graphmlDocument);
-
+        if (document.getCustomAttributes() != null) {
+            if (graphmlDocument.getExtraAttrib() == null)
+                graphmlDocument.setExtraAttrib(new TreeMap<>());
+            document.getCustomAttributes().forEach((k, v) -> graphmlDocument.getExtraAttrib().put(k, v));
+        }
 
         if (document.getKeys() != null) {
             if (graphmlDocument.getKeys() == null)

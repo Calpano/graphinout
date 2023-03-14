@@ -7,11 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS;
-import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI;
-import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI_SCHEMA_LOCATIOM;
+import static com.calpano.graphinout.base.graphml.GraphmlDocument.*;
 
 @Slf4j
 public class GraphmlWriterImpl implements GraphmlWriter {
@@ -87,7 +86,10 @@ public class GraphmlWriterImpl implements GraphmlWriter {
         attributes.put("xmlns", HEADER_XMLNS);
         attributes.put("xmlns:xsi", HEADER_XMLNS_XSI);
         attributes.put("xsi:schemaLocation", HEADER_XMLNS_XSI_SCHEMA_LOCATIOM);
-
+        Map<String, String> extraAttrib = doc.getExtraAttrib();
+        if (extraAttrib != null) {
+            extraAttrib.forEach((k, v) -> attributes.put(k,v));
+        }
         xmlWriter.startElement(GraphmlDocument.TAGNAME, attributes);
         xmlWriter.lineBreak();
 
@@ -156,17 +158,20 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void data(GraphmlData data) throws IOException {
-        // TODO implement
+        writerData(data);
     }
 
     @Override
     public void startPort(GraphmlPort port) throws IOException {
-        // TODO implement
+        log.debug("startPort [{}]", port);
+        xmlWriter.startElement(GraphmlPort.TAGNAME, port.getAttributes());
+
     }
 
     @Override
     public void endPort() throws IOException {
-        // TODO implement
+        log.debug("endPort .");
+        xmlWriter.endElement(GraphmlPort.TAGNAME);
     }
 
     private void writerData(GraphmlData data) throws IOException {

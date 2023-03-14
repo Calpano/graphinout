@@ -29,6 +29,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     private final Deque<GraphmlEntity<?>> openEntities = new LinkedList<>();
     private boolean structuralAssertionsEnabled = true;
     private Locator locator;
+    private Map<String, String> namespaces = new HashMap<>();
 
     private @Nullable Stack<GioPortEntity> openPorts = new Stack<>();
 
@@ -88,7 +89,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                 default ->
                     //TODO Does it need to log?
                     //TODO Dose have to control qName and uri?
-                        createEndXMlElement(qName);
+                createEndXMlElement(qName);
             }
         } catch (Exception e) {
             throw buildException(e);
@@ -120,13 +121,18 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     @Override
+    public void startPrefixMapping(String prefix, String uri) throws SAXException {
+        super.startPrefixMapping(prefix, uri);
+        if (!GRAPHML_STANDARD_NAME_SPACE.equals(uri))
+            namespaces.put(prefix, uri);
+
+    }
+
+    @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         log.debug("XML <{}>.  Stack before: {}.", qName, stackAsString());
         String tagName = tagName(uri, localName, qName);
 
-
-        // validate URI once, should be "http://graphml.graphdrawing.org/xmlns"; all other URIs: verbatim data, no interpretation, still resolve URI + localName
-        /// TODO warn about wrong URI
         try {
             switch (tagName) {
                 case GraphmlElement.DATA -> startDataElement(attributes);
@@ -438,9 +444,11 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startGraphmlElement(Attributes attributes) {
         Map<String, String> customAttributes = new LinkedHashMap<>();
+        namespaces.forEach((k, v) -> customAttributes.put("xmlns:" + k, v));
         for (int i = 0; i < attributes.getLength(); i++) {
             customAttributes.put(attributes.getQName(i), attributes.getValue(i));
         }
+        namespaces.clear();
         GioDocumentEntity gioDocumentEntity = new GioDocumentEntity(GioDocument.builder().customAttributes(customAttributes).build());
         push(gioDocumentEntity);
     }

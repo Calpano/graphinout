@@ -1,25 +1,23 @@
-package com.calpano.graphinout.reader.graphml;
+package com.calpano.graphinout.basetest;
 
 import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.gio.LoggingGioWriter;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
+import com.calpano.graphinout.reader.graphml.GraphmlReader;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -27,38 +25,9 @@ import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-class GraphmlReaderTest2 {
+public class GraphmlReaderTests {
 
-    private static final Logger log = getLogger(GraphmlReaderTest2.class);
-
-    protected List<GioReader> readersToTest() {
-        return List.of(new GraphmlReader());
-    }
-
-    @Test
-    void test() throws IOException {
-        GioReader gioReader = new GraphmlReader();
-        String resourcePath = "graphin/graphml/synthetic/graphml-key-data.graphml.xml";
-        List<ContentError> expectedErrors = Collections.emptyList();
-        InMemoryOutputSink outputSink = new InMemoryOutputSink();
-        URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
-        log.info("Reading " + resourceUrl + " as " + gioReader.fileFormat());
-        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-        SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
-        GioWriter gioWriter = new LoggingGioWriter();
-        List<ContentError> contentErrors = new ArrayList<>();
-        gioReader.errorHandler(contentErrors::add);
-        gioReader.read(inputSource, gioWriter);
-        log.info("Recorded content errors: " + contentErrors);
-    }
-
-    @Test
-    void testWithOneResource() throws IOException {
-        GioReader gioReader = new GraphmlReader();
-        String resourcePath = "graphin/graphml/synthetic/graphml-key-data.graphml.xml";
-        List<ContentError> expectedErrors = Collections.emptyList();
-        testReadResourceToGraph(gioReader, resourcePath, expectedErrors);
-    }
+    private static final Logger log = getLogger(GraphmlReaderTests.class);
 
     public static void forEachReadableResource(GioReader gioReader, Consumer<String> resourcePathConsumer) {
         getAllTestResourceFilePaths().filter(resourcePath -> ReaderTests.canRead(gioReader, resourcePath)).forEach(resourcePathConsumer);
@@ -114,9 +83,6 @@ class GraphmlReaderTest2 {
             Assertions.assertEquals(expectedErrors, contentErrors, "expected=" + expectedErrors + " actual=" + contentErrors);
             graphmlBytes1 = outputSink.getByteBuffer().toByteArray();
         }
-        String graphml1 = new String(graphmlBytes1, StandardCharsets.UTF_8);
-        log.info("GraphML (read-1,write-1): "+graphml1);
-
         byte[] graphmlBytes2 = null;
         {
             SingleInputSource inputSource = SingleInputSource.of(graphmlBytes1);
@@ -126,6 +92,7 @@ class GraphmlReaderTest2 {
             List<ContentError> contentErrors = readTo(inputSource, graphmlReader, outputSink, true, true, true);
             graphmlBytes2 = outputSink.getByteBuffer().toByteArray();
         }
+        String graphml1 = new String(graphmlBytes1, StandardCharsets.UTF_8);
         String graphml2 = new String(graphmlBytes2, StandardCharsets.UTF_8);
         Assertions.assertEquals(graphml1, graphml2);
     }
@@ -139,5 +106,4 @@ class GraphmlReaderTest2 {
             }
         });
     }
-
 }

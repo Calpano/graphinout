@@ -25,9 +25,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -87,8 +84,9 @@ class GraphmlReaderTest {
             @Override
             public OutputStream outputStream() throws IOException {
 
-                Path outputSource = Paths.get("src","test","resources","graphin","graphml","aws","AWS - Analytics_out.graphml");
-
+                Path outputSource = Paths.get("target","test","AWS - Analytics.graphml.tmp");
+                outputSource.toFile().getParentFile().mkdirs();
+                outputSource.toFile().createNewFile();
                 return new FileOutputStream(outputSource.toFile());
             }
 
