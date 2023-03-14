@@ -84,7 +84,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                 default ->
                     //TODO Does it need to log?
                     //TODO Dose have to control qName and uri?
-                createEndXMlElement(qName);
+                        createEndXMlElement(qName);
             }
         } catch (Exception e) {
             throw buildException(e);
@@ -118,8 +118,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         super.startPrefixMapping(prefix, uri);
-        if (!GRAPHML_STANDARD_NAME_SPACE.equals(uri))
-            namespaces.put(prefix, uri);
+        if (!GRAPHML_STANDARD_NAME_SPACE.equals(uri)) namespaces.put(prefix, uri);
 
     }
 
@@ -522,7 +521,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void startPortElement(Attributes attributes) throws IOException {
-        assertCurrent("startPort", GioNodeEntity.class);
+        assertCurrent("startPort", GioNodeEntity.class, GioPortEntity.class);
         sendStartThisOrParentMaybe(GraphmlElement.PORT);
         GioPort.GioPortBuilder b = GioPort.builder();
 
