@@ -12,10 +12,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -64,6 +61,7 @@ public class TgfReader implements GioReader {
 
         writer.startDocument(GioDocument.builder().build());
         writer.startGraph(GioGraph.builder().build());
+        Set<String> createdNodeIds = new HashSet<>();
 
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
@@ -90,17 +88,24 @@ public class TgfReader implements GioReader {
                 List<GioEndpoint> endpointList = new ArrayList<>();
                 endpointList.add(sourceEndpoint);
                 endpointList.add(targetEndpoint);
+
                 if (edgeParts.length == 2 || edgeParts.length == 3) {
                     GioEdge gioEdge = GioEdge.builder().endpoints(endpointList).build();
                     if (edgeParts.length == 3) {
                         GioData.builder().value(edgeParts[2]).build();
                     }
                     if (!nodes) {
+                        if (!createdNodeIds.contains(edgeParts[0])) {
+                            writer.startNode(GioNode.builder().id(edgeParts[0]).build());
+                            writer.endNode(null);
+                            createdNodeIds.add(edgeParts[0]);
+                        }
+                        if (!createdNodeIds.contains(edgeParts[1])) {
+                            writer.startNode(GioNode.builder().id(edgeParts[1]).build());
+                            writer.endNode(null);
+                            createdNodeIds.add(edgeParts[1]);
+                        }
                         log.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + "Required nodes have been created.");
-                        writer.startNode(GioNode.builder().id(edgeParts[0]).build());
-                        writer.endNode(null);
-                        writer.startNode(GioNode.builder().id(edgeParts[1]).build());
-                        writer.endNode(null);
                     }
                     writer.startEdge(gioEdge);
                     writer.endEdge();

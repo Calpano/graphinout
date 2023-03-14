@@ -108,9 +108,6 @@ class TgfReaderTest {
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
         inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
         inOrder.verify(mockGioWriter).endEdge();
-        // TODO dont create node "2" multiple times
-        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
-        inOrder.verify(mockGioWriter).endNode(Mockito.any());
         inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
         inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
