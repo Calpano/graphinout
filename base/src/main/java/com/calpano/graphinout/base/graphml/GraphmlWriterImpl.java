@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.calpano.graphinout.base.graphml.GraphmlDocument.*;
@@ -85,7 +86,10 @@ public class GraphmlWriterImpl implements GraphmlWriter {
         attributes.put("xmlns", HEADER_XMLNS);
         attributes.put("xmlns:xsi", HEADER_XMLNS_XSI);
         attributes.put("xsi:schemaLocation", HEADER_XMLNS_XSI_SCHEMA_LOCATIOM);
-
+        Map<String, String> extraAttrib = doc.getExtraAttrib();
+        if (extraAttrib != null) {
+            extraAttrib.forEach((k, v) -> attributes.put(k,v));
+        }
         xmlWriter.startElement(GraphmlDocument.TAGNAME, attributes);
         xmlWriter.lineBreak();
 
