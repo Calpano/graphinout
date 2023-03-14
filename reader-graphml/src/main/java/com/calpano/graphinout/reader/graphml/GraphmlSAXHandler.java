@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 class GraphmlSAXHandler extends DefaultHandler {
-     private static final String GRAPHML_STANDARD_NAME_SPACE = "http://graphml.graphdrawing.org/xmlns";
+    private static final String GRAPHML_STANDARD_NAME_SPACE = "http://graphml.graphdrawing.org/xmlns";
     private final GioWriter gioWriter;
     private final Consumer<ContentError> errorConsumer;
     /**
@@ -84,7 +84,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                 default ->
                     //TODO Does it need to log?
                     //TODO Dose have to control qName and uri?
-                        createEndXMlElement(qName);
+                createEndXMlElement(qName);
             }
         } catch (Exception e) {
             throw buildException(e);
@@ -128,8 +128,6 @@ class GraphmlSAXHandler extends DefaultHandler {
         log.debug("XML <{}>.  Stack before: {}.", qName, stackAsString());
         String tagName = tagName(uri, localName, qName);
 
-        // validate URI once, should be "http://graphml.graphdrawing.org/xmlns"; all other URIs: verbatim data, no interpretation, still resolve URI + localName
-        /// TODO warn about wrong URI
         try {
             switch (tagName) {
                 case GraphmlElement.DATA -> startDataElement(attributes);
