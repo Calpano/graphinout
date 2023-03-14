@@ -1,13 +1,12 @@
 package com.calpano.graphinout.reader.jgrapht;
 
-import com.calpano.graphinout.basetest.AbstractReaderTest;
+import com.calpano.graphinout.base.AbstractReaderTest;
 import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.reader.GioReader;
 import com.calpano.graphinout.base.xml.GraphmlValidator;
-import com.calpano.graphinout.basetest.GraphmlReaderTests;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
@@ -32,11 +31,11 @@ class Graph6ReaderTest extends AbstractReaderTest {
     void test() {
         // stream incoming test resource as XML to the logger
         GioReader gioReader = new Graph6Reader();
-        GraphmlReaderTests.forEachReadableResource(gioReader, resourcePath -> {
+        ReaderTests.forEachReadableResource(gioReader, resourcePath -> {
             Writer w = null;
             InMemoryOutputSink outputSink = OutputSink.createInMemory();
             try {
-                GraphmlReaderTests.readResourceToSink(gioReader, resourcePath, outputSink, true, true, true);
+                ReaderTests.readResourceToSink(gioReader, resourcePath, outputSink, true, true, true);
                 String s = new String(outputSink.getByteBuffer().toByteArray(), StandardCharsets.UTF_8);
                 GraphmlValidator.isValidGraphml(SingleInputSource.of("parsed", s));
                 log.info("Read:\n" + s);

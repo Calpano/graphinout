@@ -13,7 +13,6 @@
     <modules>
         <module>base</module>
         <module>reader-graphml</module>
-        <module>base-test</module>
         <module>reader-tgf</module>
         <module>reader-dot</module>
         <module>reader-example</module>

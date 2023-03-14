@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.tgf;
 
 import com.calpano.graphinout.base.reader.ContentError;
-import com.calpano.graphinout.basetest.AbstractReaderTest;
+import com.calpano.graphinout.base.AbstractReaderTest;
 import com.calpano.graphinout.base.reader.GioReader;
 
 import java.util.Arrays;
