@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <graphml>
   <key id="label" for="node" attr.name="label" attr.type="string" />
-  <key id="portName" for="port" attr.name="portName" attr.type="string" />
   <graph id="G" edgedefault="directed">
     <node id="n0">
       <port name="p0">

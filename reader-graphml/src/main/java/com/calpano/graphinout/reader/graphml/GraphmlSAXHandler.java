@@ -61,10 +61,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                 throw new IllegalStateException("No open element to add characters to.");
             }
         } else {
-            String s = new String(ch, start, length);
-            if (s.trim().length() > 0) {
-                openEntities.peek().addCharacters(s);
-            }
+            openEntities.peek().addCharacters(new String(ch, start, length));
         }
     }
 
@@ -511,7 +508,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void startNodeElement(Attributes attributes) throws IOException {
-        assertCurrent("startNode", GioGraphEntity.class, GioPortEntity.class);
+        assertCurrent("startNode", GioGraphEntity.class);
         sendStartThisOrParentMaybe(GraphmlElement.NODE);
         GioNode.GioNodeBuilder builder = GioNode.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
@@ -541,11 +538,6 @@ class GraphmlSAXHandler extends DefaultHandler {
         GioPort gioPort = b.build();
         GioPortEntity gioPortEntity = new GioPortEntity(gioPort);
 
-        if ((openEntities.peek() instanceof GioPort)) {
-            GioPortEntity parentPort = (GioPortEntity) openEntities.peek();
-            parentPort.addEntity(gioPortEntity);
-        } else {
-            openEntities.push(gioPortEntity);
-        }
+        openEntities.push(gioPortEntity);
     }
 }
