@@ -11,30 +11,32 @@ package com.calpano.graphinout.base;
  * Note that the default direction must be specified.
  */
 public enum Direction {
-    In(true), Out(true), Undirected(false), Directed(true);
-    private final boolean isDirection;
+    In(true), Out(true), Undirected(false);
+    private final boolean isDirected;
 
-    private Direction(boolean isDirection) {
-        this.isDirection = isDirection;
+    Direction(boolean isDirected) {
+        this.isDirected = isDirected;
     }
 
     public static Direction getDirection(String strDirection) {
-        switch (strDirection.toLowerCase()) {
-            case "in":
-                return In;
-            case "out":
-                return Out;
-            case "directed":
-            case "dir":
-                return Directed;
-            case "undirected":
-            case "undir":
-            default:
-                return Undirected;
-        }
+        return switch (strDirection.toLowerCase()) {
+            case "in" -> In;
+            case "out" -> Out;
+            case "undir" -> Undirected;
+            default -> throw new IllegalArgumentException("Could not interpret '" + strDirection +
+                    "' as graphml endpoint direction");
+        };
     }
 
     public boolean isDirected() {
-        return isDirection;
+        return isDirected;
+    }
+
+    public String xmlValue() {
+        return switch (this) {
+            case In -> "in";
+            case Out -> "out";
+            case Undirected -> "undir";
+        };
     }
 }

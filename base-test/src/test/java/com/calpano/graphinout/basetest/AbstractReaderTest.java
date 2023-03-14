@@ -1,4 +1,4 @@
-package com.calpano.graphinout.base;
+package com.calpano.graphinout.basetest;
 
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
@@ -24,7 +24,7 @@ public abstract class AbstractReaderTest {
     void testWithAllResources() {
         List<GioReader> gioReaders = readersToTest();
         for (GioReader gioReader : gioReaders) {
-            ReaderTests.testWithAllResource(gioReader, this::expectedErrors);
+            GraphmlReaderTests.testWithAllResource(gioReader, this::expectedErrors);
         }
     }
 
