@@ -51,7 +51,6 @@ public class Graph6Reader implements GioReader {
         SingleInputSource sis = (SingleInputSource) inputSource;
         // here we read the inputStream of sis ...
 
-        // TODO streaming
         Graph6Sparse6Importer<Integer, DefaultEdge> importer = new Graph6Sparse6Importer<>();
         Map<Integer, String> nodeIds = new HashMap<>();
         importer.addVertexAttributeConsumer((pair, att) -> {
@@ -66,6 +65,7 @@ public class Graph6Reader implements GioReader {
             }
         });
         importer.setVertexFactory(i -> i);
+        // TODO streaming without using an in-memory graph
         Graph<Integer, DefaultEdge> graph = new DefaultUndirectedGraph<>(DefaultEdge.class);
         try {
             importer.importGraph(graph, sis.inputStream());
