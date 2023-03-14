@@ -59,10 +59,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                 throw new IllegalStateException("No open element to add characters to.");
             }
         } else {
-            String s = new String(ch, start, length);
-            if (s.trim().length() > 0) {
-                openEntities.peek().addCharacters(s);
-            }
+            openEntities.peek().addCharacters(new String(ch, start, length));
         }
     }
 
