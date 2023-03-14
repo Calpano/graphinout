@@ -1,16 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 
-import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioEndpoint;
-import com.calpano.graphinout.base.gio.GioEndpointDirection;
-import com.calpano.graphinout.base.gio.GioGraph;
-import com.calpano.graphinout.base.gio.GioKey;
-import com.calpano.graphinout.base.gio.GioKeyForType;
-import com.calpano.graphinout.base.gio.GioNode;
-import com.calpano.graphinout.base.gio.GioPort;
-import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.reader.ContentError;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
@@ -22,14 +13,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -96,10 +80,10 @@ class GraphmlSAXHandler extends DefaultHandler {
                 case GraphmlElement.LOCATOR -> endLocatorElement();
                 case GraphmlElement.NODE -> endNodeElement();
                 case GraphmlElement.PORT -> endPortElement();
-                default ->
-                    //TODO Does it need to log?
-                    //TODO Dose have to control qName and uri?
-                        createEndXMlElement(qName);
+                default -> {
+                    createWarningLog(String.format("The Element [%s] not acceptable tag for Graphml.", qName));
+                    createEndXMlElement(qName);
+                }
             }
         } catch (Exception e) {
             throw buildException(e);
@@ -135,27 +119,24 @@ class GraphmlSAXHandler extends DefaultHandler {
         log.debug("XML <{}>.  Stack before: {}.", qName, stackAsString());
         String tagName = tagName(uri, localName, qName);
 
-
-        // validate URI once, should be "http://graphml.graphdrawing.org/xmlns"; all other URIs: verbatim data, no interpretation, still resolve URI + localName
-        /// TODO warn about wrong URI
         try {
             switch (tagName) {
+                case GraphmlElement.GRAPHML -> startGraphmlElement(attributes);
                 case GraphmlElement.DATA -> startDataElement(attributes);
                 case GraphmlElement.DEFAULT -> startDefaultElement(attributes);
                 case GraphmlElement.DESC -> startDescElement(attributes);
                 case GraphmlElement.EDGE -> startEdgeElement(attributes);
                 case GraphmlElement.ENDPOINT -> startEndpointElement(attributes);
                 case GraphmlElement.GRAPH -> startGraphElement(attributes);
-                case GraphmlElement.GRAPHML -> startGraphmlElement(attributes);
                 case GraphmlElement.HYPER_EDGE -> startHyperedgeElement(attributes);
                 case GraphmlElement.KEY -> startKeyElement(attributes);
                 case GraphmlElement.LOCATOR -> startLocatorElement(attributes);
                 case GraphmlElement.NODE -> startNodeElement(attributes);
                 case GraphmlElement.PORT -> startPortElement(attributes);
-                default ->
-                    //TODO Does it need to log?
-                    //TODO Dose have to control qName and uri?
-                        createStartXMlElement(qName, attributes);
+                default -> {
+                    createWarningLog(String.format("The Element [%s] not acceptable tag for Graphml.", qName));
+                    createStartXMlElement(qName, attributes);
+                }
             }
         } catch (Exception e) {
             throw buildException(e);
@@ -168,7 +149,9 @@ class GraphmlSAXHandler extends DefaultHandler {
         super.warning(e);
     }
 
-    /** Just looks at the stack */
+    /**
+     * Just looks at the stack
+     */
     private void assertCurrent(String location, @Nullable Class<?>... expectedCurrentEntities) {
         if (!structuralAssertionsEnabled) return;
         if (expectedCurrentEntities != null && expectedCurrentEntities.length > 0) {
@@ -241,8 +224,12 @@ class GraphmlSAXHandler extends DefaultHandler {
         assertCurrent("endGraph", GioGraphEntity.class);
         sendStartThisOrParentMaybe(GraphmlElement.GRAPH);
         @Nullable URL url = peekOptional(GioLocatorEntity.class).map(GioLocatorEntity::getEntity).orElse(null);
+       if(url!=null)
+           pop(GioLocatorEntity.class);
         gioWriter.endGraph(url);
-        pop(GioGraphEntity.class);
+
+        //TODO At this point, the stack may be empty ref test : GraphmlSAXHandlerTest->endGraph_With_locator
+        peekOptional(GioGraphEntity.class);
     }
 
     private void endGraphmlElement() throws IOException {
@@ -319,7 +306,7 @@ class GraphmlSAXHandler extends DefaultHandler {
             case GraphmlElement.GRAPHML -> gioWriter.startDocument((GioDocument) entity.getEntity());
             case GraphmlElement.GRAPH -> gioWriter.startGraph((GioGraph) entity.getEntity());
             case GraphmlElement.NODE -> gioWriter.startNode((GioNode) entity.getEntity());
-            case GraphmlElement.PORT -> gioWriter.startPort( (GioPort) entity.getEntity());
+            case GraphmlElement.PORT -> gioWriter.startPort((GioPort) entity.getEntity());
             case GraphmlElement.EDGE, GraphmlElement.HYPER_EDGE ->
                     gioWriter.startEdge(((GioEdgeEntity) entity).buildEdge());
             default -> throw new AssertionError("Element " + name + " should have been sent");
@@ -574,5 +561,8 @@ class GraphmlSAXHandler extends DefaultHandler {
         push(gioPortEntity);
     }
 
+    private void createWarningLog(String message) {
+        this.errorConsumer.accept(new ContentError(ContentError.ErrorLevel.Warn, message, locator == null ? null : new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber())));
 
+    }
 }
