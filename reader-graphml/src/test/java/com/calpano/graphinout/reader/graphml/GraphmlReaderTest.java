@@ -7,7 +7,6 @@ import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
@@ -17,8 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,24 +25,13 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 @Slf4j
 class GraphmlReaderTest {
-    @Mock
-    private Consumer<ContentError> mockErrorConsumer;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        reset(mockErrorConsumer);
     }
 
 
@@ -59,10 +45,8 @@ class GraphmlReaderTest {
         OutputSink outputSink = new InMemoryOutputSink();
 
         GraphmlReader graphmlReader = new GraphmlReader();
-        graphmlReader.errorHandler(mockErrorConsumer);
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
-//TODO  verifyNoInteractions(mockErrorConsumer);
     }
 
     @Test
@@ -75,20 +59,17 @@ class GraphmlReaderTest {
         OutputSink outputSink = new OutputSink() {
             @Override
             public OutputStream outputStream() throws IOException {
-                Path outputSource = Paths.get("target","test","graphin","graphml","samples","graph1_out.graphml");
-                outputSource.toFile().getParentFile().mkdirs();
-                outputSource.toFile().createNewFile();
+                Path outputSource = Paths.get("src","test","resources","graphin","graphml","samples","graph1_out.graphml");
+
                 return new FileOutputStream(outputSource.toFile());
             }
 
         };
 
         GraphmlReader graphmlReader = new GraphmlReader();
-        graphmlReader.errorHandler(mockErrorConsumer);
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
-    //TODO  verifyNoInteractions(mockErrorConsumer);
-
+     //   outputSink.readAllData().forEach(s -> log.info(s));
 
 
     }
@@ -103,7 +84,7 @@ class GraphmlReaderTest {
             @Override
             public OutputStream outputStream() throws IOException {
 
-                Path outputSource = Paths.get("target","test","graphin","graphml","aws","AWS - Analytics_out.graphml");
+                Path outputSource = Paths.get("target","test","AWS - Analytics.graphml.tmp");
                 outputSource.toFile().getParentFile().mkdirs();
                 outputSource.toFile().createNewFile();
                 return new FileOutputStream(outputSource.toFile());
@@ -112,10 +93,9 @@ class GraphmlReaderTest {
         };
 
         GraphmlReader graphmlReader = new GraphmlReader();
-        graphmlReader.errorHandler(mockErrorConsumer);
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
-        //TODO  verifyNoInteractions(mockErrorConsumer);
+        //   outputSink.readAllData().forEach(s -> log.info(s));
 
     }
 

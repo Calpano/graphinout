@@ -58,16 +58,18 @@ class TgfReaderTest {
         SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
 
         underTest.read(singleInputSource, mockGioWriter);
+
+        verifyNoInteractions(mockErrorConsumer);
     }
 
     @Test
-    void shouldNotCallErrorConsumerWhenTGFIsEmpty() throws IOException {
+    void shouldNotCallErrorConsumerAndGioWriterWhenTGFIsEmpty() throws IOException {
         when(mockInputSrc.inputStream()).thenReturn(new ByteArrayInputStream(EMPTY_FILE.getBytes()));
 
         underTest.errorHandler(mockErrorConsumer);
         underTest.read(mockInputSrc, mockGioWriter);
 
-        verifyNoInteractions(mockErrorConsumer);
+        verifyNoInteractions(mockErrorConsumer, mockGioWriter);
     }
 
     @Test
@@ -77,6 +79,14 @@ class TgfReaderTest {
 
         underTest.errorHandler(mockErrorConsumer);
         underTest.read(mockInputSrc, mockGioWriter);
+
+        InOrder inOrder = Mockito.inOrder(mockGioWriter);
+        inOrder.verify(mockGioWriter).startDocument(any(GioDocument.class));
+        inOrder.verify(mockGioWriter).startGraph(any(GioGraph.class));
+        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
 
         verifyNoInteractions(mockErrorConsumer);
     }
@@ -98,10 +108,17 @@ class TgfReaderTest {
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
         inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
         inOrder.verify(mockGioWriter).endEdge();
+        // TODO dont create node "2" multiple times
+        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
         inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
         inOrder.verify(mockGioWriter).endEdge();
         inOrder.verify(mockGioWriter).endGraph(Mockito.any());
         inOrder.verify(mockGioWriter).endDocument();
+
+        verifyNoMoreInteractions(mockGioWriter);
     }
 
     @Test
@@ -116,10 +133,13 @@ class TgfReaderTest {
         inOrder.verify(mockGioWriter).startDocument(any(GioDocument.class));
         inOrder.verify(mockGioWriter).startGraph(any(GioGraph.class));
         inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).data(any(GioData.class));
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
         inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).data(any(GioData.class));
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
         inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
+        inOrder.verify(mockGioWriter).data(any(GioData.class));
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
         inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
         inOrder.verify(mockGioWriter).endEdge();
@@ -127,6 +147,8 @@ class TgfReaderTest {
         inOrder.verify(mockGioWriter).endEdge();
         inOrder.verify(mockGioWriter).endGraph(Mockito.any());
         inOrder.verify(mockGioWriter).endDocument();
+
+        verifyNoMoreInteractions(mockGioWriter);
     }
 
     private static Stream<String> getResourceFilePaths() {

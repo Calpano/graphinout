@@ -10,9 +10,9 @@ import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.output.ValidatingGraphMlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
-import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import com.calpano.graphinout.base.xml.ValidatingXmlWriter;
 import com.calpano.graphinout.base.xml.XmlWriter;
+import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -35,7 +34,7 @@ public class ReaderTests {
 
     private static final Logger log = getLogger(ReaderTests.class);
 
-    private static boolean canRead(GioReader gioReader, String resourcePath) {
+    public static boolean canRead(GioReader gioReader, String resourcePath) {
         return gioReader.fileFormat().fileExtensions().stream().anyMatch(resourcePath::endsWith);
     }
 
@@ -55,8 +54,9 @@ public class ReaderTests {
         return gioWriter;
     }
 
+
     public static void forEachReadableResource(GioReader gioReader, Consumer<String> resourcePathConsumer) {
-        getAllTestResourceFilePaths().filter(resourcePath -> canRead(gioReader, resourcePath)).forEach(resourcePathConsumer);
+        getAllTestResourceFilePaths().filter(resourcePath -> ReaderTests.canRead(gioReader, resourcePath)).forEach(resourcePathConsumer);
     }
 
     private static Stream<String> getAllTestResourceFilePaths() {
@@ -72,6 +72,7 @@ public class ReaderTests {
         return contentErrors;
     }
 
+
     /**
      * @param inputSource
      * @param gioReader
@@ -85,51 +86,33 @@ public class ReaderTests {
     public static List<ContentError> readTo(SingleInputSource inputSource, GioReader gioReader, OutputSink outputSink, //
                                             boolean validateXml, boolean validateGraphml, boolean validateGio) throws IOException {
         List<ContentError> contentErrors = new ArrayList<>();
-        GioWriter gioWriter = createWriter(outputSink, validateXml, validateGraphml, validateGio);
+        GioWriter gioWriter = ReaderTests.createWriter(outputSink, validateXml, validateGraphml, validateGio);
         gioReader.errorHandler(contentErrors::add);
         gioReader.read(inputSource, gioWriter);
         return contentErrors;
     }
 
     /**
-     * We read some inputFormat X into GraphML, write GraphML (1), read that GraphML, write to GraphML again (2); compare (1) and (2)
-     *
      * @param resourcePath
      * @throws IOException
      */
     public static void testReadResourceToGraph(GioReader gioReader, String resourcePath, List<ContentError> expectedErrors) throws IOException {
+        InMemoryOutputSink outputSink = new InMemoryOutputSink();
+        List<ContentError> contentErrors = readResourceToSink(gioReader, resourcePath, outputSink, true, true, true);
 
-        byte[] graphmlBytes1;
-        {
-            InMemoryOutputSink outputSink = new InMemoryOutputSink();
-            List<ContentError> contentErrors = readResourceToSink(gioReader, resourcePath, outputSink, true, true, true);
-
-            Assertions.assertEquals(expectedErrors.toString(), contentErrors.toString(),"expected="+ expectedErrors+" actual="+contentErrors);
-            Assertions.assertEquals(expectedErrors, contentErrors,"expected="+ expectedErrors+" actual="+contentErrors);
-            graphmlBytes1 = outputSink.getByteBuffer().toByteArray();
-        }
-        byte[] graphmlBytes2 = null;
-        {
-            SingleInputSource inputSource = SingleInputSource.of(graphmlBytes1);
-            // TODO read with graphml reader into memory again
-            // GioReader gioReader = null;
-            // InMemoryOutputSink outputSink = new InMemoryOutputSink();
-            // List<ContentError> contentErrors = readTo(inputSource, gioReader, outputSink, true, true, true);
-            // graphmlBytes = outputSink.getByteBuffer().toByteArray();
-        }
-        String graphml1 = new String(graphmlBytes1, StandardCharsets.UTF_8);
-        // TODO enable when ready
-        //String graphml2 = new String(graphmlBytes2, StandardCharsets.UTF_8);
-        // Assertions.assertEquals(graphml1, graphml2);
+        Assertions.assertEquals(expectedErrors.toString(), contentErrors.toString(), "expected=" + expectedErrors + " actual=" + contentErrors);
+        Assertions.assertEquals(expectedErrors, contentErrors, "expected=" + expectedErrors + " actual=" + contentErrors);
     }
 
-    public static void testWithAllResource(GioReader gioReader, Function<String,List<ContentError>> expectedErrorsFun) {
+    public static void testWithAllResource(GioReader gioReader, Function<String, List<ContentError>> expectedErrorsFun) {
         forEachReadableResource(gioReader, resourcePath -> {
             try {
-                testReadResourceToGraph(gioReader, resourcePath,expectedErrorsFun.apply(resourcePath));
+                testReadResourceToGraph(gioReader, resourcePath, expectedErrorsFun.apply(resourcePath));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
     }
+
+
 }

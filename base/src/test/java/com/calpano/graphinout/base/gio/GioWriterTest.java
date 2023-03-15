@@ -3,7 +3,6 @@ package com.calpano.graphinout.base.gio;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.xml.XmlWriter;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -83,13 +82,15 @@ class GioWriterTest {
 
     }
 
-    //TODO The implementation logic will should check.
-    //that the Edge can be closed stateless or it should stateful.
-    @Disabled
     @Test
     void endEdge() throws IOException {
+        gioWriter.startEdge(GioEdge.builder()//
+                .endpoint(GioEndpoint.builder().node("node1").type(GioEndpointDirection.Undirected).build()) //
+                .endpoint(GioEndpoint.builder().node("node2").type(GioEndpointDirection.Undirected).build()) //
+                .build()
+        );
         gioWriter.endEdge();
-        assertEquals("::endElement->edge", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->edge->{source=node1, target=node1, directed=false}::endElement->edge", xmlWriterSpy.getOutPut().toString());
     }
 
     @Test
@@ -122,7 +123,7 @@ class GioWriterTest {
         edge.customAttribute("foo", "bar");
         gioWriter.startEdge(edge);
         assertEquals("::startElement->edge->{id=edge1, source=node1, target=node1, directed=true, sourceport=port1, targetport=port1}", xmlWriterSpy.getOutPut().toString());
-      }
+    }
 
     @Test
     void startEdge_With_3_Endpoints() throws IOException {
@@ -134,8 +135,12 @@ class GioWriterTest {
         GioEdge edge = GioEdge.builder().id("edge1").endpoints(gioEndpoints).build();
         edge.customAttribute("foo", "bar");
         gioWriter.startEdge(edge);
-        assertEquals("::startElement->hyperedge->{id=edge1, foo=bar}::startElement->endpoint->{id=GioEndpoint1, node=node1, port=port1, type=In}::endElement->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=Out}::endElement->endpoint::startElement->endpoint->{id=GioEndpoint3, node=node3, port=port3, type=Out}::endElement->endpoint", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->hyperedge->{id=edge1, foo=bar}::startElement" +
+                "->endpoint->{id=GioEndpoint1, node=node1, port=port1, type=in}::endElement" +
+                "->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=out}::endElement" +
+                "->endpoint::startElement->endpoint->{id=GioEndpoint3, node=node3, port=port3, type=out}::endElement->endpoint", xmlWriterSpy.getOutPut().toString());
     }
+
     @Test
     void startGraph() throws IOException {
         gioWriter.startGraph(GioGraph.builder().id("graph").edgedefaultDirected(true).build());
