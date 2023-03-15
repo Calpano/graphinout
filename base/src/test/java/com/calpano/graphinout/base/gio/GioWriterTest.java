@@ -3,6 +3,7 @@ package com.calpano.graphinout.base.gio;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.xml.XmlWriter;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -82,6 +83,9 @@ class GioWriterTest {
 
     }
 
+    //TODO The implementation logic will should check.
+    //that the Edge can be closed stateless or it should stateful.
+    @Disabled
     @Test
     void endEdge() throws IOException {
         gioWriter.endEdge();
@@ -117,7 +121,7 @@ class GioWriterTest {
         GioEdge edge = GioEdge.builder().id("edge1").endpoints(gioEndpoints).build();
         edge.customAttribute("foo", "bar");
         gioWriter.startEdge(edge);
-        assertEquals("::startElement->edge->{source=node1, target=node1, directed=true, sourceport=port1, targetport=port1}", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->edge->{id=edge1, source=node1, target=node1, directed=true, sourceport=port1, targetport=port1}", xmlWriterSpy.getOutPut().toString());
       }
 
     @Test

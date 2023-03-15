@@ -227,9 +227,7 @@ class GraphmlSAXHandler extends DefaultHandler {
        if(url!=null)
            pop(GioLocatorEntity.class);
         gioWriter.endGraph(url);
-
-        //TODO At this point, the stack may be empty ref test : GraphmlSAXHandlerTest->endGraph_With_locator
-        peekOptional(GioGraphEntity.class);
+        pop(GioGraphEntity.class);
     }
 
     private void endGraphmlElement() throws IOException {
@@ -254,12 +252,14 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void endLocatorElement() throws IOException {
         assertCurrent("endLocator", GioGraphEntity.class, GioNodeEntity.class);
-    }
+         }
 
     private void endNodeElement() throws IOException {
         assertCurrent("endNode", GioNodeEntity.class);
         sendStartThisOrParentMaybe(GraphmlElement.NODE);
         @Nullable URL url = peekOptional(GioLocatorEntity.class).map(GioLocatorEntity::getEntity).orElse(null);
+        if(url!=null)
+            pop(GioLocatorEntity.class);
         gioWriter.endNode(url);
         pop(GioNodeEntity.class);
     }
