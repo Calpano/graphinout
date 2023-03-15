@@ -55,7 +55,6 @@ class GraphmlSAXHandlerTest {
             assertAll("",
                     () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
                     () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys()),
-// TODO rasul                    () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDataList()),
                     () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
@@ -94,7 +93,6 @@ class GraphmlSAXHandlerTest {
             assertAll("",
                     () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
                     () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys()),
-                    // TODO rasul() -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDataList()),
                     () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()),
                     () -> verify(gioWriter, times(0)).startDocument(any()),
                     () -> verify(gioWriter, times(0)).startGraph(any()),
@@ -148,7 +146,6 @@ class GraphmlSAXHandlerTest {
                     () -> verify(gioWriter, times(0)).endEdge(),
                     () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
                     () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys()),
-                    // TODO rasul() -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDataList()),
                     () -> assertNotNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()));
 
             //ADD Key
