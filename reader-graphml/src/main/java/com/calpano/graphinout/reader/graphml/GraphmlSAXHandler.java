@@ -127,7 +127,6 @@ class GraphmlSAXHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         log.debug("XML <{}>.  Stack before: {}.", qName, stackAsString());
         String tagName = tagName(uri, localName, qName);
-
         try {
             switch (tagName) {
                 case GraphmlElement.DATA -> startDataElement(attributes);
@@ -142,15 +141,20 @@ class GraphmlSAXHandler extends DefaultHandler {
                 case GraphmlElement.LOCATOR -> startLocatorElement(attributes);
                 case GraphmlElement.NODE -> startNodeElement(attributes);
                 case GraphmlElement.PORT -> startPortElement(attributes);
-                default ->
-                    //TODO Does it need to log?
-                    //TODO Dose have to control qName and uri?
+                default -> {
+                    GraphmlEntity<?> entity = openEntities.peek();
+                    if(entity instanceof GioDataEntity || entity instanceof GioDefaultEntity) {
+                        // parse generic xml
                         createStartXMlElement(qName, attributes);
+                    } else {
+                        // skip invalid tags? give up?
+                        throw buildException(new IllegalStateException("Unexpected tag <"+qName+">"));
+                    }
+                }
             }
         } catch (Exception e) {
             throw buildException(e);
         }
-
     }
 
     @Override
