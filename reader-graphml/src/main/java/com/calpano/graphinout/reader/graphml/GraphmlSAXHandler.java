@@ -197,6 +197,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
         builder.append('>');
         // characters(builder.toString().toCharArray(), 0, builder.length());
+        //TODO when getCurrentEntity is null!!!?
         getCurrentEntity().addCharacters(builder.toString());
     }
 

@@ -19,6 +19,11 @@ public class InMemoryOutputSink implements OutputSink {
         return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
     }
 
+    @Override
+    public String toString() {
+        return getBufferAsUtf8String();
+    }
+
     public ByteArrayOutputStream getByteBuffer() {
         return buffer;
     }
