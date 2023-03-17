@@ -29,6 +29,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     private final Deque<GraphmlEntity<?>> openEntities = new LinkedList<>();
     private boolean structuralAssertionsEnabled = true;
     private Locator locator;
+    private Map<String, String> namespaces = new HashMap<>();
 
     public GraphmlSAXHandler(GioWriter gioWriter, Consumer<ContentError> errorConsumer) {
         this.gioWriter = gioWriter;
@@ -82,8 +83,8 @@ class GraphmlSAXHandler extends DefaultHandler {
                 case GraphmlElement.PORT -> endPortElement();
                 default -> {
                     createWarningLog(String.format("The Element [%s] not acceptable tag for Graphml.", qName));
-                    createEndXMlElement(qName);
-                }
+                createEndXMlElement(qName);
+            }
             }
         } catch (Exception e) {
             throw buildException(e);
@@ -115,33 +116,45 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     @Override
+    public void startPrefixMapping(String prefix, String uri) throws SAXException {
+        super.startPrefixMapping(prefix, uri);
+        if (!GRAPHML_STANDARD_NAME_SPACE.equals(uri))
+            namespaces.put(prefix, uri);
+
+    }
+
+    @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         log.debug("XML <{}>.  Stack before: {}.", qName, stackAsString());
         String tagName = tagName(uri, localName, qName);
-
         try {
             switch (tagName) {
-                case GraphmlElement.GRAPHML -> startGraphmlElement(attributes);
                 case GraphmlElement.DATA -> startDataElement(attributes);
                 case GraphmlElement.DEFAULT -> startDefaultElement(attributes);
                 case GraphmlElement.DESC -> startDescElement(attributes);
                 case GraphmlElement.EDGE -> startEdgeElement(attributes);
                 case GraphmlElement.ENDPOINT -> startEndpointElement(attributes);
                 case GraphmlElement.GRAPH -> startGraphElement(attributes);
+                case GraphmlElement.GRAPHML -> startGraphmlElement(attributes);
                 case GraphmlElement.HYPER_EDGE -> startHyperedgeElement(attributes);
                 case GraphmlElement.KEY -> startKeyElement(attributes);
                 case GraphmlElement.LOCATOR -> startLocatorElement(attributes);
                 case GraphmlElement.NODE -> startNodeElement(attributes);
                 case GraphmlElement.PORT -> startPortElement(attributes);
                 default -> {
-                    createWarningLog(String.format("The Element [%s] not acceptable tag for Graphml.", qName));
-                    createStartXMlElement(qName, attributes);
+                    GraphmlEntity<?> entity = openEntities.peek();
+                    if(entity instanceof GioDataEntity || entity instanceof GioDefaultEntity) {
+                        // parse generic xml
+                        createStartXMlElement(qName, attributes);
+                    } else {
+                        // skip invalid tags? give up?
+                        createWarningLog(String.format("The Element <%s> not acceptable tag for Graphml.", qName));
+                    }
                 }
             }
         } catch (Exception e) {
             throw buildException(e);
         }
-
     }
 
     @Override
@@ -252,7 +265,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void endLocatorElement() throws IOException {
         assertCurrent("endLocator", GioGraphEntity.class, GioNodeEntity.class);
-         }
+    }
 
     private void endNodeElement() throws IOException {
         assertCurrent("endNode", GioNodeEntity.class);
@@ -449,9 +462,11 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startGraphmlElement(Attributes attributes) {
         Map<String, String> customAttributes = new LinkedHashMap<>();
+        namespaces.forEach((k, v) -> customAttributes.put("xmlns:" + k, v));
         for (int i = 0; i < attributes.getLength(); i++) {
             customAttributes.put(attributes.getQName(i), attributes.getValue(i));
         }
+        namespaces.clear();
         GioDocumentEntity gioDocumentEntity = new GioDocumentEntity(GioDocument.builder().customAttributes(customAttributes).build());
         push(gioDocumentEntity);
     }
@@ -564,5 +579,5 @@ class GraphmlSAXHandler extends DefaultHandler {
     private void createWarningLog(String message) {
         this.errorConsumer.accept(new ContentError(ContentError.ErrorLevel.Warn, message, locator == null ? null : new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber())));
 
-    }
+}
 }
