@@ -5,11 +5,14 @@ import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlDocument;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
+import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -18,8 +21,11 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.slf4j.LoggerFactory.getLogger;
 
 class XMLNamespaceHandlingTest {
+
+    private static final Logger log = getLogger(XMLNamespaceHandlingTest.class);
 
     @Test
     void XMLNamespaceHandlingTest1() throws IOException {
@@ -27,7 +33,7 @@ class XMLNamespaceHandlingTest {
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
         SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
-        OutputSink outputSink = OutputSink.createInMemory();
+        InMemoryOutputSink outputSink = OutputSink.createInMemory();
         GraphmlReader graphmlReader = new GraphmlReader();
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
@@ -38,7 +44,9 @@ class XMLNamespaceHandlingTest {
                 " xmlns:foo=\"http://foo.com\">\n" + //
                 "\n" + //
                 "</graphml>\n"; //
-        assertEquals(expected, outputSink.toString());
+        String actual = outputSink.getBufferAsUtf8String();
+        assertEquals(expected.length(), actual.length());
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -72,7 +80,8 @@ class XMLNamespaceHandlingTest {
         GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
 
         RuntimeException runtimeException = assertThrowsExactly(RuntimeException.class, () -> graphmlReader.read(singleInputSource, gioWriter));
-        //TODO Change message after manage Exception message
-        assertEquals("Failed reading '" + inputSource.getParent().toAbsolutePath() + "/XMLNamespaceHandlingTest3.xml'", runtimeException.getMessage());
+        //TODO where the error details about thw "myroot" element?
+        assertEquals("Failed reading '" + inputSource.getParent().toAbsolutePath()
+                + File.separatorChar + "XMLNamespaceHandlingTest3.xml'", runtimeException.getMessage());
     }
 }
