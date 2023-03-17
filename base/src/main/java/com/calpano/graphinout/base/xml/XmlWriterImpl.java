@@ -32,7 +32,7 @@ public class XmlWriterImpl implements XmlWriter {
     @Override
     public void endDocument() throws IOException {
         log.trace("endDocument");
-        writer.write(System.lineSeparator());
+        writer.write("\n");
         this.writer.flush();
         this.out.flush();
         this.writer.close();
