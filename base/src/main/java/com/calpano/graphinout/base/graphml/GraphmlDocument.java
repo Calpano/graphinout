@@ -31,6 +31,9 @@ import java.util.List;
 @SuperBuilder
 public class GraphmlDocument extends GraphmlGraphCommonElement {
 
+    public static final String DEFAULT_GRAPHML_XSD_URL = "http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
+
+
     public static final String TAGNAME = "graphml";
     /**
      * The graphml element, like all other GraphML elements, belongs to the namespace http://graphml.graphdrawing.org/xmlns.
@@ -50,7 +53,7 @@ public class GraphmlDocument extends GraphmlGraphCommonElement {
      * xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd" ,
      * defines the XML Schema location for all elements in the GraphML namespace.
      */
-    public static final String HEADER_XMLNS_XSI_SCHEMA_LOCATIOM = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
+    public static final String HEADER_XMLNS_XSI_SCHEMA_LOCATIOM = "http://graphml.graphdrawing.org/xmlns "+DEFAULT_GRAPHML_XSD_URL;
 
     /**
      * This is an Element that can be empty or null.
