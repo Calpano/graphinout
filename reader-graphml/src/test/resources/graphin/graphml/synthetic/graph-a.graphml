@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <graphml>
     <key attr.name="type" attr.type="string" id="type"/>
+    <key id="label" for="node" attr.name="label" attr.type="string"/>
     <graph edgedefault="directed" id="">
         <node id="cat">
             <data key="label">cat</data>
