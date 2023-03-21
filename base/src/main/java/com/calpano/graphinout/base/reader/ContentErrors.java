@@ -2,6 +2,7 @@ package com.calpano.graphinout.base.reader;
 
 import org.slf4j.Logger;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -29,5 +30,9 @@ public class ContentErrors {
                 case Warn -> log.warn(msg);
             }
         };
+    }
+
+    public static boolean hasErrors(List<ContentError> contentErrors) {
+        return contentErrors.stream().anyMatch(ce-> ce.level == ContentError.ErrorLevel.Error);
     }
 }

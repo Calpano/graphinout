@@ -54,12 +54,11 @@ public class ReaderTests {
         return gioWriter;
     }
 
-
     public static void forEachReadableResource(GioReader gioReader, Consumer<String> resourcePathConsumer) {
         getAllTestResourceFilePaths().filter(resourcePath -> ReaderTests.canRead(gioReader, resourcePath)).forEach(resourcePathConsumer);
     }
 
-    private static Stream<String> getAllTestResourceFilePaths() {
+    public static Stream<String> getAllTestResourceFilePaths() {
         return new ClassGraph().scan().getAllResources().stream().map(Resource::getPath);
     }
 
