@@ -10,6 +10,6 @@
     <node id="n1">
       <data key="label">node 1</data>
     </node>
-    <edge source="n0:p0:p1" target="n1" />
+    <edge source="n0" target="n1" />
   </graph>
 </graphml>
