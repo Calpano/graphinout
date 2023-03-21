@@ -88,7 +88,9 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
     @Override
     public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-        attributes.put("id",String.valueOf(id));
+        if(id!=null && id.length() > 0) {
+            attributes.put("id", String.valueOf(id));
+        }
         attributes.put("edgedefault",String.valueOf(edgedefault));
         return attributes;
     }
