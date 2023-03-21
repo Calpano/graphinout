@@ -1,14 +1,16 @@
 package com.calpano.graphinout.base.reader;
 
 import lombok.AllArgsConstructor;
+import lombok.Generated;
+import lombok.Getter;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
+@Getter
 @AllArgsConstructor
-public
-class ContentError {
+public class ContentError {
     public enum ErrorLevel {
         Warn, Error
     }
@@ -21,15 +23,16 @@ class ContentError {
             this.line = lineNumber;
             this.col = columnNumber;
         }
+
+        @Override
+        public String toString() {
+            return line + ":" + col;
+        }
     }
 
     final ErrorLevel level;
     final String message;
     final @Nullable Location location;
-
-    public Optional<Location> location() {
-        return Optional.of(location);
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -43,12 +46,12 @@ class ContentError {
         return Objects.hash(level, message, location);
     }
 
+    public Optional<Location> location() {
+        return Optional.of(location);
+    }
+
     @Override
     public String toString() {
-        return "ContentError{" +
-                "level=" + level +
-                ", message='" + message + '\'' +
-                ", location=" + location +
-                '}';
+        return "ContentError{" + "level=" + level + ", message='" + message + '\'' + ", location=" + location + '}';
     }
 }
