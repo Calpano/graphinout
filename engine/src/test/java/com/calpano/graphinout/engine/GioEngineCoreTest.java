@@ -78,6 +78,11 @@ class GioEngineCoreTest {
         assertFalse(core.readers().isEmpty());
     }
 
+    @Test
+    void testWith1Resource() {
+        testResource("graphin/graphml/synthetic/graph-with-nested-ports.graphml");
+    }
+
     private void testResource(String resourcePath) {
         URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
         if (gioEngineCore.canRead(resourcePath)) {
