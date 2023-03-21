@@ -107,7 +107,7 @@ public class GioWriterImpl implements GioWriter {
     public void startEdge(GioEdge gioEdge) throws IOException {
         if (gioEdge.getEndpoints().size() == 2) {
             GioEndpoint s = gioEdge.getEndpoints().get(0);
-            GioEndpoint t = gioEdge.getEndpoints().get(0);
+            GioEndpoint t = gioEdge.getEndpoints().get(1);
             Boolean directed;
             if (s.getType().isDirected() && t.getType().isDirected()) {
                 directed = true;
