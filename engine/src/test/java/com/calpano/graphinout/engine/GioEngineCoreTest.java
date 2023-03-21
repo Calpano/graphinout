@@ -6,11 +6,14 @@ import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +31,11 @@ class GioEngineCoreTest {
     @BeforeAll
     static void beforeAll() {
         gioEngineCore = new GioEngineCore();
+        if(!reportResultDir.exists())
+            reportResultDir.mkdirs();
     }
+
+    static final File reportResultDir = new File("./target/parse-reports");
 
     /**
      * We read some inputFormat X into GraphML, write GraphML (1), read that GraphML, write to GraphML again (2);
@@ -78,23 +85,35 @@ class GioEngineCoreTest {
                 SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
                 for (GioReader gioReader : gioEngineCore.readers()) {
                     if (gioReader.fileFormat().matches(resourcePath)) {
-                        // read it
-                        InMemoryOutputSink outputSink = new InMemoryOutputSink();
-                        boolean validateXml = true;
-                        boolean validateGraphml = true;
-                        boolean validateGio = true;
-                        List<ContentError> contentErrors = ReaderTests.readTo(inputSource, gioReader, outputSink, validateXml, validateGraphml, validateGio);
-                        if(ContentErrors.hasErrors(contentErrors)) {
-                            log.warn("Resource '{}' interpreted as '{}' contentErrors: {}", resourcePath, gioReader.fileFormat().id(), contentErrors);
-                        } else {
-                            // reading likely worked
-                            log.info("Resource '{}' interpreted as '{}' read to GraphML as {} bytes", resourcePath, gioReader.fileFormat().id(), outputSink.getByteBuffer().size());
-                        }
+                        testResourceWithReader(gioReader, inputSource, resourcePath);
                     }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    private void testResourceWithReader(GioReader gioReader, SingleInputSource inputSource, String resourcePath) throws IOException {
+        InMemoryOutputSink outputSink = new InMemoryOutputSink();
+        boolean validateXml = true;
+        boolean validateGraphml = true;
+        boolean validateGio = true;
+        try {
+            List<ContentError> contentErrors = ReaderTests.readTo(inputSource, gioReader, outputSink, validateXml, validateGraphml, validateGio);
+            if(ContentErrors.hasErrors(contentErrors)) {
+                log.warn("Resource '{}' interpreted as '{}' contentErrors: {}", resourcePath, gioReader.fileFormat().id(), contentErrors);
+            } else {
+                // reading likely worked
+                log.info("Resource '{}' interpreted as '{}' read to GraphML as {} bytes", resourcePath, gioReader.fileFormat().id(), outputSink.getByteBuffer().size());
+                File resultFile = new File(reportResultDir, gioReader.fileFormat().id()+"/"+resourcePath+".graphml" );
+                resultFile.getParentFile().mkdirs();
+                byte[] bytes = outputSink.getByteBuffer().toByteArray();
+                FileUtils.writeByteArrayToFile(resultFile, bytes);
+            }
+        } catch (RuntimeException e) {
+            e.fillInStackTrace();
+            log.warn("Resource '{}' interpreted as '{}' parse exception: {}", resourcePath, gioReader.fileFormat().id(), e);
         }
     }
 

@@ -2,6 +2,7 @@ package com.calpano.graphinout.base.gio;
 
 public enum GioKeyForType {
 
+    // TODO can we unify Graphml & All value?
     Graphml("graphml","all"),
     /** the default value */
     All("all"), Graph("graph"), Node("node"), Edge("edge"), HyperEdge("hyperedge"), Port("port"), Endpoint("endpoint");
