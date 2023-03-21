@@ -81,8 +81,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     public void endDocument() throws IOException {
         ensureAllowedEnd(CurrentElement.GRAPHML);
         for (GraphmlEdge edge : edgeReferences) {
-            if (!resolveEdges(edge))
-                throw new IllegalStateException("Edge [" + edge + "] references to a non-existent node ID");
+            RuntimeException t = resolveEdges(edge);
+            if(t!=null)
+                throw t;
         }
         for (GraphmlHyperEdge hyperEdge : hyperEdgeReferences) {
             RuntimeException t = resolveHyperEdges(hyperEdge);
@@ -197,19 +198,24 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         log.debug("STARTED '" + childElement.name() + "' => Stack: " + stackToString());
     }
 
-    private boolean resolveEdges(GraphmlEdge edge) {
+    /**
+     *
+     * @param edge
+     * @return null if all is OK
+     */
+    private RuntimeException resolveEdges(GraphmlEdge edge) {
         String sourceId = edge.getSourceId();
         String targetId = edge.getTargetId();
         if (!existingNodeIds.contains(sourceId)) {
             // IMPROVE remember just the undefined nodeId? remember whole edge: better error reporting
             edgeReferences.add(edge);
-            return false;
+            return new IllegalStateException("Edge [" + edge + "] references to a non-existent node ID: "+sourceId);
         }
         if (!existingNodeIds.contains(targetId)) {
             edgeReferences.add(edge);
-            return false;
+            return new IllegalStateException("Edge [" + edge + "] references to a non-existent node ID: "+targetId);
         }
-        return true;
+        return null;
     }
 
     /**
