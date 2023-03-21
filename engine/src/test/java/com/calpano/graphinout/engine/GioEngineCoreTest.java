@@ -1,24 +1,33 @@
 package com.calpano.graphinout.engine;
 
+import com.calpano.graphinout.base.reader.ContentErrors;
+import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
-import com.calpano.graphinout.reader.graphml.GraphmlReader;
-import org.junit.jupiter.api.Assertions;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.slf4j.LoggerFactory.getLogger;
 
 class GioEngineCoreTest {
 
-    @Test
-    void testServieLoading() {
-        GioEngineCore core = new GioEngineCore();
-        assertFalse(core.readers().isEmpty());
+    private static final Logger log = getLogger(GioEngineCoreTest.class);
+
+    private static GioEngineCore gioEngineCore;
+
+    @BeforeAll
+    static void beforeAll() {
+        gioEngineCore = new GioEngineCore();
     }
 
     /**
@@ -27,6 +36,10 @@ class GioEngineCoreTest {
      */
     @Test
     void test() {
+        // find all resources
+        ReaderTests.getAllTestResourceFilePaths().forEach(r -> testResource(r));
+
+
 //        byte[] graphmlBytes1;
 //        {
 //            InMemoryOutputSink outputSink = new InMemoryOutputSink();
@@ -48,6 +61,41 @@ class GioEngineCoreTest {
 //        String graphml1 = new String(graphmlBytes1, StandardCharsets.UTF_8);
 //        String graphml2 = new String(graphmlBytes2, StandardCharsets.UTF_8);
 //        Assertions.assertEquals(graphml1, graphml2);
+    }
+
+    @Test
+    void testServiceLoading() {
+        GioEngineCore core = new GioEngineCore();
+        assertFalse(core.readers().isEmpty());
+    }
+
+    private void testResource(String resourcePath) {
+        URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
+        if (gioEngineCore.canRead(resourcePath)) {
+            log.info("Reading " + resourceUrl + " in memory");
+            try {
+                String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
+                SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
+                for (GioReader gioReader : gioEngineCore.readers()) {
+                    if (gioReader.fileFormat().matches(resourcePath)) {
+                        // read it
+                        InMemoryOutputSink outputSink = new InMemoryOutputSink();
+                        boolean validateXml = true;
+                        boolean validateGraphml = true;
+                        boolean validateGio = true;
+                        List<ContentError> contentErrors = ReaderTests.readTo(inputSource, gioReader, outputSink, validateXml, validateGraphml, validateGio);
+                        if(ContentErrors.hasErrors(contentErrors)) {
+                            log.warn("Resource '{}' interpreted as '{}' contentErrors: {}", resourcePath, gioReader.fileFormat().id(), contentErrors);
+                        } else {
+                            // reading likely worked
+                            log.info("Resource '{}' interpreted as '{}' read to GraphML as {} bytes", resourcePath, gioReader.fileFormat().id(), outputSink.getByteBuffer().size());
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }

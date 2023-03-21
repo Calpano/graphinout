@@ -6,10 +6,10 @@ import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.OutputSink;
-import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import com.calpano.graphinout.base.reader.ContentErrors;
 import com.calpano.graphinout.base.reader.GioReader;
 import com.calpano.graphinout.base.reader.InMemoryErrorHandler;
+import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -29,6 +29,15 @@ public class GioEngineCore {
 
     public GioEngineCore() {
         loadServices();
+    }
+
+    public boolean canRead(String resourcePath) {
+        for (GioReader gioReader : readers()) {
+            if (gioReader.fileFormat().matches(resourcePath)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void read(SingleInputSource inputSource, OutputSink outputSink) throws IOException {
@@ -59,7 +68,7 @@ public class GioEngineCore {
         ServiceLoader<GioService> serviceLoader = ServiceLoader.load(GioService.class);
         log.info("Load GioServices ...");
         for (GioService gioService : serviceLoader) {
-            log.info("Found service '" + gioService.id() + "' in "+gioService.getClass().getCanonicalName());
+            log.info("Found service '" + gioService.id() + "' in " + gioService.getClass().getCanonicalName());
             services.put(gioService.id(), gioService);
             for (GioReader reader : gioService.readers()) {
                 readers.add(reader);
