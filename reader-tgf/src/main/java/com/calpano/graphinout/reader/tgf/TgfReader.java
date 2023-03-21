@@ -14,9 +14,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -64,7 +67,7 @@ public class TgfReader implements GioReader {
 
         writer.startDocument(GioDocument.builder().build());
         writer.startGraph(GioGraph.builder().build());
-
+        Set<String> nodesCreatedSet = new HashSet<>();
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             if (line.contains(HASH)) {
@@ -96,11 +99,14 @@ public class TgfReader implements GioReader {
                         GioData.builder().value(edgeParts[2]).build();
                     }
                     if (!nodes) {
-                        log.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + "Required nodes have been created.");
-                        writer.startNode(GioNode.builder().id(edgeParts[0]).build());
-                        writer.endNode(null);
-                        writer.startNode(GioNode.builder().id(edgeParts[1]).build());
-                        writer.endNode(null);
+                        for(String nodeId : Arrays.asList(edgeParts[0], edgeParts[1])) {
+                            if(nodesCreatedSet.add(nodeId)) {
+                                // IMPROVE create contentError warning
+                                log.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + "Required nodes have been created.");
+                                writer.startNode(GioNode.builder().id(nodeId).build());
+                                writer.endNode(null);
+                            }
+                        }
                     }
                     writer.startEdge(gioEdge);
                     writer.endEdge();
