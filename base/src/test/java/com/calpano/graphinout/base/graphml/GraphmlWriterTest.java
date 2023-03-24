@@ -72,7 +72,7 @@ class GraphmlWriterTest {
     @Test
     void data() throws IOException {
         graphmlWriter.key(GraphmlKey.builder().id("test").attrName("attrName").attrType("attrType").forType(GraphmlKeyForType.All).build());
-        assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=attrType, for=All}::endElement->key", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=attrType, for=all}::endElement->key", xmlWriterSpy.getOutPut().toString());
 
     }
 

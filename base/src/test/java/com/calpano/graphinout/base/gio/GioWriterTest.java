@@ -71,7 +71,7 @@ class GioWriterTest {
     @Test
     void data() throws IOException {
         gioWriter.key(GioKey.builder().id("test").attributeName("attrName").attributeType(GioDataType.typeInt).forType(GioKeyForType.All).build());
-        assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=int, for=Graphml}::endElement->key", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=int, for=graphml}::endElement->key", xmlWriterSpy.getOutPut().toString());
 
     }
 
@@ -90,7 +90,7 @@ class GioWriterTest {
                 .build()
         );
         gioWriter.endEdge();
-        assertEquals("::startElement->edge->{source=node1, target=node1, directed=false}::endElement->edge", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->edge->{source=node1, target=node2, directed=false}::endElement->edge", xmlWriterSpy.getOutPut().toString());
     }
 
     @Test
@@ -122,7 +122,7 @@ class GioWriterTest {
         GioEdge edge = GioEdge.builder().id("edge1").endpoints(gioEndpoints).build();
         edge.customAttribute("foo", "bar");
         gioWriter.startEdge(edge);
-        assertEquals("::startElement->edge->{id=edge1, source=node1, target=node1, directed=true, sourceport=port1, targetport=port1}", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->edge->{id=edge1, source=node1, target=node2, directed=true, sourceport=port1, targetport=port2}", xmlWriterSpy.getOutPut().toString());
     }
 
     @Test
