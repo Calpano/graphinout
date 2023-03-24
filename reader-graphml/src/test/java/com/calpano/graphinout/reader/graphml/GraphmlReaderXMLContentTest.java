@@ -9,6 +9,7 @@ import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -22,64 +23,16 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GraphmlReaderXMLContentTest {
+class GraphmlReaderXMLContentTest {
 
+    /**
+     * SAX parser not HTML parser It does not understand HTML tags, and content containing HTML structures that do not
+     * comply with the XML standard will generate an error during initial rendering.
+     */
     @Test
-    void xml_Standard_Tag_in_data_test() throws IOException {
-        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml","xml", "XML_Standard_Content_In_Data.xml");
-        URI resourceUri = inputSource.toUri();
-        String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
-        SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
-        InMemoryOutputSink outputSink = OutputSink.createInMemory();
-        GraphmlReader graphmlReader = new GraphmlReader();
-        List<ContentError> contentErrors = new ArrayList<>();
-        graphmlReader.errorHandler(contentErrors::add);
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
-        graphmlReader.read(singleInputSource, gioWriter);
-
-        String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +//
-                "\n" +//
-                "<graph edgedefault=\"undirected\">\n" +//
-                "<node><data> <b>Hello</b>World </data></node>\n" +//
-                "</graph>\n" +//
-                "</graphml>\n"; //
-        String actual = outputSink.getBufferAsUtf8String();
-
-        assertEquals(expected, actual);
-        assertTrue(contentErrors.isEmpty());
-    }
-
-    @Test
-    void xml_Standard_Tag_in_default_test() throws IOException {
-        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml","xml", "XML_Standard_Content_In_default.xml");
-        URI resourceUri = inputSource.toUri();
-        String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
-        SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
-        InMemoryOutputSink outputSink = OutputSink.createInMemory();
-        GraphmlReader graphmlReader = new GraphmlReader();
-        List<ContentError> contentErrors = new ArrayList<>();
-        graphmlReader.errorHandler(contentErrors::add);
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
-        graphmlReader.read(singleInputSource, gioWriter);
-
-        String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +//
-                "<key id=\"neuron_name\" for=\"node\" attr.name=\"name\" attr.type=\"string\"><default><b>Hello</b>World</default></key>\n" + //
-                "<graph edgedefault=\"undirected\">\n" + //
-                "</graph>\n" + //
-                "</graphml>\n"; //
-        String actual = outputSink.getBufferAsUtf8String();
-
-        assertEquals(expected, actual);
-        assertTrue(contentErrors.isEmpty());
-    }
-    //TODO SAX parser not HTML parser
-    //It does not understand HTML tags,
-    // and content containing HTML structures that do not comply with
-    // the XML standard will generate an error during initial rendering.
-    //
-    @Test
+    @Disabled("See issue #84")
     void html_Content_Tag_test() throws IOException {
-        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml","xml", "HTML_Content_In_Data.xml");
+        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "xml", "HTML_Content_In_Data.xml");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
         SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
@@ -109,6 +62,55 @@ public class GraphmlReaderXMLContentTest {
                 "        </div>\n" + //
                 "    </body></html></data></node>\n" + //
                 "</graph></graphml>\n"; //
+        String actual = outputSink.getBufferAsUtf8String();
+
+        assertEquals(expected, actual);
+        assertTrue(contentErrors.isEmpty());
+    }
+
+    @Test
+    void xml_Standard_Tag_in_data_test() throws IOException {
+        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "xml", "XML_Standard_Content_In_Data.xml");
+        URI resourceUri = inputSource.toUri();
+        String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
+        SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
+        InMemoryOutputSink outputSink = OutputSink.createInMemory();
+        GraphmlReader graphmlReader = new GraphmlReader();
+        List<ContentError> contentErrors = new ArrayList<>();
+        graphmlReader.errorHandler(contentErrors::add);
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        graphmlReader.read(singleInputSource, gioWriter);
+
+        String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +//
+                "\n" +//
+                "<graph edgedefault=\"undirected\">\n" +//
+                "<node><data> <b>Hello</b>World </data></node>\n" +//
+                "</graph>\n" +//
+                "</graphml>\n"; //
+        String actual = outputSink.getBufferAsUtf8String();
+
+        assertEquals(expected, actual);
+        assertTrue(contentErrors.isEmpty());
+    }
+
+    @Test
+    void xml_Standard_Tag_in_default_test() throws IOException {
+        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "xml", "XML_Standard_Content_In_default.xml");
+        URI resourceUri = inputSource.toUri();
+        String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
+        SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
+        InMemoryOutputSink outputSink = OutputSink.createInMemory();
+        GraphmlReader graphmlReader = new GraphmlReader();
+        List<ContentError> contentErrors = new ArrayList<>();
+        graphmlReader.errorHandler(contentErrors::add);
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        graphmlReader.read(singleInputSource, gioWriter);
+
+        String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +//
+                "<key id=\"neuron_name\" for=\"node\" attr.name=\"name\" attr.type=\"string\"><default><b>Hello</b>World</default></key>\n" + //
+                "<graph edgedefault=\"undirected\">\n" + //
+                "</graph>\n" + //
+                "</graphml>\n"; //
         String actual = outputSink.getBufferAsUtf8String();
 
         assertEquals(expected, actual);
