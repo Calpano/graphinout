@@ -2,7 +2,6 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
-import com.calpano.graphinout.base.graphml.GraphmlDocument;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.InMemoryOutputSink;
@@ -21,11 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GraphmlReaderXMLContent {
+public class GraphmlReaderXMLContentTest {
 
     @Test
-    void xML_Standard_Tag_in_data_test() throws IOException {
+    void xml_Standard_Tag_in_data_test() throws IOException {
         Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml","xml", "XML_Standard_Content_In_Data.xml");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
@@ -46,10 +46,11 @@ public class GraphmlReaderXMLContent {
         String actual = outputSink.getBufferAsUtf8String();
 
         assertEquals(expected, actual);
+        assertTrue(contentErrors.isEmpty());
     }
 
     @Test
-    void xML_Standard_Tag_in_default_test() throws IOException {
+    void xml_Standard_Tag_in_default_test() throws IOException {
         Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml","xml", "XML_Standard_Content_In_default.xml");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
@@ -69,6 +70,7 @@ public class GraphmlReaderXMLContent {
         String actual = outputSink.getBufferAsUtf8String();
 
         assertEquals(expected, actual);
+        assertTrue(contentErrors.isEmpty());
     }
     //TODO SAX parser not HTML parser
     //It does not understand HTML tags,
@@ -110,5 +112,6 @@ public class GraphmlReaderXMLContent {
         String actual = outputSink.getBufferAsUtf8String();
 
         assertEquals(expected, actual);
+        assertTrue(contentErrors.isEmpty());
     }
 }
