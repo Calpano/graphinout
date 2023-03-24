@@ -17,6 +17,10 @@ public class GioKeyEntity extends AbstractGraphmlEntity<GioKey> implements Graph
     public void addEntity(GraphmlEntity graphmlEntity) {
         if (GraphmlElement.DESC.equals(graphmlEntity.getName()))
             gioKey.setDescription(((GioDescriptionEntity) graphmlEntity).getEntity().getDescription());
+        if (GraphmlElement.DEFAULT.equals(graphmlEntity.getName()))
+            gioKey.setDefaultValue(((GioDefaultEntity) graphmlEntity).getEntity().toString());
+
+
     }
 
     @Override
