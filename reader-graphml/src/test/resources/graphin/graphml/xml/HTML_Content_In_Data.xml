@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" >
+<graph>
+<node> <data> <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="css/main.css">
+
+        <!-- Add icon library -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <!-- Fonts -->
+        </head>
+    <body>
+        <div class="ptext">
+            <span class="border">
+                <img src="./img/quote6-a.png" alt="Socrates Quote">
+            </span>
+        </div>
+    </body></html></data></node>
+</graph></graphml>
