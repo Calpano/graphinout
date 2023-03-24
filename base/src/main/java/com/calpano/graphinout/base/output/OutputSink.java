@@ -3,7 +3,7 @@ package com.calpano.graphinout.base.output;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public interface OutputSink {
+public interface OutputSink extends AutoCloseable {
 
     static InMemoryOutputSink createInMemory() {
         return new InMemoryOutputSink();

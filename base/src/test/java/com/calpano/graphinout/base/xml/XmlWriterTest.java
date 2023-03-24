@@ -32,6 +32,10 @@ class XmlWriterTest {
             return out;
         }
 
+        @Override
+        public void close() throws Exception {
+            out.close();
+        }
     }
 
     private final static String FILE_NAME = "test_graph_output.xml";

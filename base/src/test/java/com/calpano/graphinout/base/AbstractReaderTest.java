@@ -25,6 +25,7 @@ public abstract class AbstractReaderTest {
         List<GioReader> gioReaders = readersToTest();
         for (GioReader gioReader : gioReaders) {
             ReaderTests.testWithAllResource(gioReader, this::expectedErrors);
+
         }
     }
 

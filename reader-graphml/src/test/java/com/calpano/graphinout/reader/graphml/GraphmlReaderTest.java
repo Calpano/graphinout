@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -44,45 +43,48 @@ class GraphmlReaderTest {
 
     @ParameterizedTest
     @MethodSource("getAllGraphmlFiles")
-    void readAllGraphmlFiles(String filePath) throws IOException {
+    void readAllGraphmlFiles(String filePath) throws Exception {
         log.info("Start To pars file [{}]", filePath);
         URL resourceUrl = ClassLoader.getSystemResource(filePath);
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-        SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
-        OutputSink outputSink = new InMemoryOutputSink();
-        GraphmlReader graphmlReader = new GraphmlReader();
-        List<ContentError> contentErrors = new ArrayList<>();
-        graphmlReader.errorHandler(contentErrors::add);
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
-        graphmlReader.read(singleInputSource, gioWriter);
+        try (SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
+             OutputSink outputSink = new InMemoryOutputSink()) {
+            GraphmlReader graphmlReader = new GraphmlReader();
+            List<ContentError> contentErrors = new ArrayList<>();
+            graphmlReader.errorHandler(contentErrors::add);
+            GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+            graphmlReader.read(singleInputSource, gioWriter);
+        }
     }
 
     @Test
-    void read() throws IOException {
+    void read() throws Exception {
         Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "samples", "graph1_test.graphml");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
-        SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
-        OutputSink outputSink = new InMemoryOutputSink();
-        GraphmlReader graphmlReader = new GraphmlReader();
-        List<ContentError> contentErrors = new ArrayList<>();
-        graphmlReader.errorHandler(contentErrors::add);
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
-        graphmlReader.read(singleInputSource, gioWriter);
+        try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
+             OutputSink outputSink = new InMemoryOutputSink()) {
+            GraphmlReader graphmlReader = new GraphmlReader();
+            List<ContentError> contentErrors = new ArrayList<>();
+            graphmlReader.errorHandler(contentErrors::add);
+            GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+            graphmlReader.read(singleInputSource, gioWriter);
+        }
     }
 
     @Test
-    void read_AWS_Analytics_graphml() throws IOException {
+    void read_AWS_Analytics_graphml() throws Exception {
         Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "aws", "AWS - Analytics.graphml");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
-        SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
-        OutputSink outputSink = new InMemoryOutputSink();
-        GraphmlReader graphmlReader = new GraphmlReader();
-        List<ContentError> contentErrors = new ArrayList<>();
-        graphmlReader.errorHandler(contentErrors::add);
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
-        graphmlReader.read(singleInputSource, gioWriter);
+        try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
+             OutputSink outputSink = new InMemoryOutputSink()) {
+            GraphmlReader graphmlReader = new GraphmlReader();
+            List<ContentError> contentErrors = new ArrayList<>();
+            graphmlReader.errorHandler(contentErrors::add);
+            GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+            graphmlReader.read(singleInputSource, gioWriter);
+        }
 
     }
 }

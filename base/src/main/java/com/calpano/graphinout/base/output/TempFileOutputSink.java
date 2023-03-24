@@ -1,18 +1,13 @@
 package com.calpano.graphinout.base.output;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.*;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 
+@Slf4j
 public class TempFileOutputSink implements OutputSink {
 
     private static Path tempDirectory;
@@ -45,14 +40,6 @@ public class TempFileOutputSink implements OutputSink {
         return out;
     }
 
-    public void removeTemp() {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                delete();
-            }
-        });
-    }
 
     private void delete() {
         if (!Files.exists(tempDirectory)) {
@@ -77,5 +64,13 @@ public class TempFileOutputSink implements OutputSink {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        log.debug("Closed OutputSink  <{}}> type <{}>.", tmpFile.getName(), out.getClass().getName());
+        out.close();
+        w.close();
+        delete();
     }
 }

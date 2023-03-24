@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.output;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -7,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 public class InMemoryOutputSink implements OutputSink {
 
     private final ByteArrayOutputStream buffer;
@@ -37,5 +40,9 @@ public class InMemoryOutputSink implements OutputSink {
         return Collections.singletonList(buffer.toString());
     }
 
-
+    @Override
+    public void close() throws Exception {
+        log.debug("Closed OutputSink  <InMemoryOutputSink> type <{}>.", buffer.getClass().getName());
+        buffer.close();
+    }
 }
