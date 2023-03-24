@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.ExceptionUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -128,7 +127,7 @@ class GioEngineCoreTest {
             File resultFile = new File(reportResultDir, gioReader.fileFormat().id() + "/" + resourcePath + ".parse-errors.txt");
             resultFile.getParentFile().mkdirs();
             StringBuilder b = new StringBuilder();
-            b.append("# Generated on "+ LocalDateTime.now()+"\n");
+            b.append("# Generated on " + LocalDateTime.now() + "\n");
             b.append("Parsed " + resourcePath + " as " + gioReader.fileFormat().id() + "\n");
             b.append("--\n");
             StringWriter sw = new StringWriter();
@@ -144,7 +143,7 @@ class GioEngineCoreTest {
         File resultFile = new File(reportResultDir, fileFormatId + "/" + resourcePath + ".content-errors.txt");
         resultFile.getParentFile().mkdirs();
         List<String> lines = new ArrayList<>();
-        lines.add("# Generated on "+ LocalDateTime.now());
+        lines.add("# Generated on " + LocalDateTime.now());
         lines.add("Parsed " + resourcePath + " as " + fileFormatId);
         lines.add("Found " + contentErrors.size() + " content errors.");
         if (ContentErrors.hasErrors(contentErrors)) {
@@ -152,7 +151,7 @@ class GioEngineCoreTest {
         }
         lines.add("--");
         for (ContentError ce : contentErrors) {
-            lines.add(ce.getLevel()+": "+ce.getMessage()+" @"+ce.getLocation());
+            lines.add(ce.getLevel() + ": " + ce.getMessage() + " @" + ce.getLocation());
         }
         FileUtils.writeLines(resultFile, lines);
     }
