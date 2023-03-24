@@ -14,7 +14,8 @@ public interface OutputSink extends AutoCloseable {
     }
 
     /**
-     * Can be called once. Users need to close {@link OutputStream after usage.
+     * Can be called once. Users need to close {@link OutputStream} after usage.
+     *
      * Never return System.out here. We will close it, causing issues in IntelliJ testing.
      */
     OutputStream outputStream() throws IOException;

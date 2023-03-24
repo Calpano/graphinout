@@ -12,4 +12,6 @@ public interface InputSource extends AutoCloseable {
     boolean isSingle();
 
     String name();
+
+
 }
