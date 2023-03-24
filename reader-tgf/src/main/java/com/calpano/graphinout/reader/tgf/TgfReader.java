@@ -45,7 +45,7 @@ public class TgfReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("tfg", "Trivial Graph Format", ".tgf");
+        return new GioFileFormat("tgf", "Trivial Graph Format", ".tgf");
     }
 
     @Override
