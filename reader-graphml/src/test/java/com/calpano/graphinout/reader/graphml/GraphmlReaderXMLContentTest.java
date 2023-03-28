@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.graphml;
 
+import com.calpano.graphinout.base.gio.GioElementWithDescription;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
@@ -20,8 +21,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 class GraphmlReaderXMLContentTest {
 
@@ -88,9 +89,13 @@ class GraphmlReaderXMLContentTest {
                 "</graph>\n" +//
                 "</graphml>\n"; //
         String actual = outputSink.getBufferAsUtf8String();
+        assertAll("",
+                () ->  assertEquals(expected, actual),
+                () -> assertEquals(1, contentErrors.size()),
+                () -> assertEquals("The Element [b] not acceptable tag for Graphml.", contentErrors.get(0).getMessage()),
+                () -> assertEquals(ContentError.ErrorLevel.Warn, contentErrors.get(0).getLevel())
+        );
 
-        assertEquals(expected, actual);
-        assertTrue(contentErrors.isEmpty());
     }
 
     @Test

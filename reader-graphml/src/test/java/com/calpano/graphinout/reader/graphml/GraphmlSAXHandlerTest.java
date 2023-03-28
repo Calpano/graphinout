@@ -892,5 +892,140 @@ class GraphmlSAXHandlerTest {
     @Nested
     class errorTest {
 
+        private final List<ContentError> storage = new ArrayList<>();
+        GraphmlSAXHandler saxHandler;
+        @Mock
+        GioWriter gioWriter;
+        @Mock
+        Attributes attributes;
+
+        private Consumer<ContentError> consumer;
+
+        private InOrder inOrder;
+
+        @BeforeEach
+        void setUp() {
+            consumer = new Consumer<ContentError>() {
+                @Override
+                public void accept(ContentError contentError) {
+                    storage.add(contentError);
+                }
+            };
+            MockitoAnnotations.openMocks(this);
+            saxHandler = new GraphmlSAXHandler(gioWriter, consumer);
+            // TODO is this what we want in a test? maybe.
+            saxHandler.setStructuralAssertionsEnabled(false);
+            inOrder = Mockito.inOrder(gioWriter);
+        }
+
+
+        @DisplayName("Only GioDocument  start and End Element  must Exception throw.")
+        @Test
+        void startGioDocument_Only_Start_And_End_Element() throws SAXException, IOException {
+            String uri = "uri",
+                    localName = "invalid_tag",
+                    qName = "invalid_tag";
+
+            assertNull(saxHandler.getCurrentEntity());
+
+            saxHandler.startElement(uri, localName, qName, attributes);
+            assertAll("",
+                    () -> assertNull(saxHandler.getCurrentEntity()),
+                    () -> verifyNoMoreInteractions(gioWriter),
+                    () -> assertEquals(1, storage.size()),
+                    () -> assertEquals("The Element <invalid_tag> not acceptable tag for Graphml.", storage.get(0).getMessage()),
+                    () -> assertEquals(ContentError.ErrorLevel.Warn, storage.get(0).getLevel())
+            );
+
+            RuntimeException runtimeException = assertThrowsExactly(RuntimeException.class,
+                    () -> saxHandler.endElement(uri, localName, qName));
+
+            assertAll("",
+                    () -> assertNull(saxHandler.getCurrentEntity()),
+                    () -> verifyNoMoreInteractions(gioWriter),
+                    () -> assertEquals("While parsing N/A\n" +//
+                                    "Stack: -empty-\n" +//
+                                    "Message: Cannot invoke \"com.calpano.graphinout.reader.graphml.GraphmlEntity.addCharacters(String)\" because the return value of \"com.calpano.graphinout.reader.graphml.GraphmlSAXHandler.getCurrentEntity()\" is null",//
+                            runtimeException.getMessage())
+            );
+        }
+
+        @DisplayName("Add characters to invalid tag must  Exception Throw.")
+        @Test
+        void addCharactersToInvalidTag() throws SAXException, IOException {
+            String uri = "uri", localName = "", qName = GraphmlElement.GRAPHML;
+
+            assertNull(saxHandler.getCurrentEntity());
+            saxHandler.startElement(uri, localName, qName, attributes);
+            assertAll("",
+                    () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
+                    () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys()),
+                    () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()),
+                    () -> verifyNoMoreInteractions(gioWriter));
+            reset(attributes);
+            reset(gioWriter);
+            //ADD invalid_tag
+            localName = "invalid_tag";
+            qName = "invalid_tag";
+            saxHandler.startElement(uri, localName, qName, attributes);
+            assertAll("",
+                    () -> assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription),
+                    () -> verifyNoMoreInteractions(gioWriter),
+                    () -> assertEquals(1, storage.size()),
+                    () -> assertEquals("The Element <invalid_tag> not acceptable tag for Graphml.", storage.get(0).getMessage()),
+                    () -> assertEquals(ContentError.ErrorLevel.Warn, storage.get(0).getLevel())
+            );
+
+            reset(attributes);
+            reset(gioWriter);
+            String descGraphml = "this is desc for Graphml";
+
+            RuntimeException runtimeException = assertThrowsExactly(RuntimeException.class,
+                    () -> saxHandler.characters(descGraphml.toCharArray(), 0, descGraphml.length()));
+
+            assertAll("",
+                    () -> assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription),
+                    () -> verifyNoMoreInteractions(gioWriter),
+                    () -> assertEquals("Can't add direct characters  [this is desc for Graphml] to GioDocument", runtimeException.getMessage()));
+        }
+
+        @DisplayName("End invalid tag must  Exception Throw.")
+        @Test
+        void endInvalidTag() throws SAXException, IOException {
+            String uri = "uri", localName = "", qName = GraphmlElement.GRAPHML;
+
+            assertNull(saxHandler.getCurrentEntity());
+
+            saxHandler.startElement(uri, localName, qName, attributes);
+            reset(attributes);
+            reset(gioWriter);
+
+            localName = "invalid_tag";
+            qName = "invalid_tag";
+
+            saxHandler.startElement(uri, localName, qName, attributes);
+            assertAll("",
+                    () -> assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription),
+                    () -> verifyNoMoreInteractions(gioWriter),
+                    () -> assertEquals(1, storage.size()),
+                    () -> assertEquals("The Element <invalid_tag> not acceptable tag for Graphml.", storage.get(0).getMessage()),
+                    () -> assertEquals(ContentError.ErrorLevel.Warn, storage.get(0).getLevel())
+            );
+
+            RuntimeException runtimeException = assertThrowsExactly(RuntimeException.class,
+                    () ->  saxHandler.endElement(uri, "invalid_tag", "invalid_tag"));
+
+            assertAll("",
+                    () -> assertTrue(saxHandler.getCurrentEntity().getEntity() instanceof GioElementWithDescription),
+                    () -> verifyNoMoreInteractions(gioWriter),
+                    () -> assertEquals("While parsing N/A\n"+//
+                            "Stack: <graphml[PENDING]>\n"+//
+                            "Message: Can't add direct characters [</invalid_tag>] to GioDocument" , runtimeException.getMessage()));
+        }
+
+
     }
-}
+
+
+    }
+

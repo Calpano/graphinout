@@ -147,6 +147,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                         createStartXMlElement(qName, attributes);
                     } else {
                         // skip invalid tags? give up?
+
                         createWarningLog(String.format("The Element <%s> not acceptable tag for Graphml.", qName));
                     }
                 }

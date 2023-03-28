@@ -11,11 +11,16 @@ public class GioDocumentEntity extends AbstractGraphmlEntity<GioDocument> implem
         this.gioDocument = gioDocument;
     }
 
-    @Override
+
+ /*   @Override
     public void addCharacters(String characters) {
-
+        //TODO control Special data  like Space and lineSeparator
+        String tmp = characters.replaceAll("\n", "");
+        if (tmp.length() != 0) {
+            throw new RuntimeException(String.format("Can't add direct characters [%s] to GioDocument",characters));
+        }
     }
-
+*/
     @Override
     public void addEntity(GraphmlEntity<?> graphmlEntity) {
         if (graphmlEntity instanceof GioDescriptionEntity g) {

@@ -2,7 +2,10 @@ package com.calpano.graphinout.reader.graphml;
 
 public interface GraphmlEntity<E> {
     default void addCharacters(String characters) {
-        throw new UnsupportedOperationException("No characters expected in <"+getName()+">");
+        String tmp = characters.replaceAll("\n", "");
+        if (tmp.length() != 0) {
+            throw new UnsupportedOperationException("No characters expected in <" + getName() + "> to " + this.getClass().getName());
+        }
     }
 
     default void addEntity(GraphmlEntity<?> graphmlEntity) {
