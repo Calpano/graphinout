@@ -4,7 +4,7 @@ public interface GraphmlEntity<E> {
     default void addCharacters(String characters) {
         String tmp = characters.replaceAll("\n", "");
         if (tmp.length() != 0) {
-            throw new UnsupportedOperationException("No characters expected in <" + getName() + "> to " + this.getClass().getName());
+            throw new UnsupportedOperationException("No characters '" +characters+"' expected in <" + getName() + "> to " + this.getClass().getName());
         }
     }
 
