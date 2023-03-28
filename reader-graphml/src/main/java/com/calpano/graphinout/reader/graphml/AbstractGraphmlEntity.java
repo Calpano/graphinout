@@ -14,14 +14,4 @@ public abstract class AbstractGraphmlEntity<T> implements GraphmlEntity<T> {
         this.isSent = true;
     }
 
-    protected void allowOnlyWhitespace(String characters) {
-        if(characters.trim().length()==0) {
-            // ok, just whitespace
-        } else {
-            throw new UnsupportedOperationException("No characters expected in "+getName()+". Got '"+characters+"'");
-        }
-    }
-
-
-
 }

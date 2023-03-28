@@ -1,7 +1,16 @@
 package com.calpano.graphinout.reader.graphml;
 
 
-import com.calpano.graphinout.base.gio.*;
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEndpoint;
+import com.calpano.graphinout.base.gio.GioEndpointDirection;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.gio.GioKeyForType;
+import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioPort;
+import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
@@ -13,7 +22,15 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -56,7 +73,7 @@ class GraphmlSAXHandler extends DefaultHandler {
             if (s.trim().length() == 0) {
                 // ignore whitespace
             } else {
-                throw new IllegalStateException("No open element to add characters to.");
+                buildException(ContentError.ErrorLevel.Warn, "Unexpected characters '" + s + "' [No open element to add characters to.]");
             }
         } else {
             openEntities.peek().addCharacters(new String(ch, start, length));
@@ -82,12 +99,17 @@ class GraphmlSAXHandler extends DefaultHandler {
                 case GraphmlElement.NODE -> endNodeElement();
                 case GraphmlElement.PORT -> endPortElement();
                 default -> {
-                    createWarningLog(String.format("The Element [%s] not acceptable tag for Graphml.", qName));
-                createEndXMlElement(qName);
-            }
+                    if (openEntities.peek() != null && (openEntities.peek() instanceof GioDefaultEntity || openEntities.peek() instanceof GioDataEntity)) {
+                        // we accept any element and forward
+                        createEndXMlElement(qName);
+                    } else {
+                        // we warn and ignore
+                        buildException(ContentError.ErrorLevel.Warn, String.format("The Element </%s> not acceptable tag for Graphml.", qName));
+                    }
+                }
             }
         } catch (Exception e) {
-            throw buildException(e);
+            throw buildException(ContentError.ErrorLevel.Error, e);
         }
     }
 
@@ -116,13 +138,6 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     @Override
-    public void startPrefixMapping(String prefix, String uri) throws SAXException {
-        super.startPrefixMapping(prefix, uri);
-        if (!GRAPHML_STANDARD_NAME_SPACE.equals(uri)) namespaces.put(prefix, uri);
-
-    }
-
-    @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         log.debug("XML <{}>.  Stack before: {}.", qName, stackAsString());
         String tagName = tagName(uri, localName, qName);
@@ -142,19 +157,26 @@ class GraphmlSAXHandler extends DefaultHandler {
                 case GraphmlElement.PORT -> startPortElement(attributes);
                 default -> {
                     GraphmlEntity<?> entity = openEntities.peek();
-                    if(entity instanceof GioDataEntity || entity instanceof GioDefaultEntity) {
+                    if (entity instanceof GioDataEntity || entity instanceof GioDefaultEntity) {
                         // parse generic xml
                         createStartXMlElement(qName, attributes);
                     } else {
-                        // skip invalid tags? give up?
-
-                        createWarningLog(String.format("The Element <%s> not acceptable tag for Graphml.", qName));
+                        // we warn and ignore in valid tags
+                        buildException(ContentError.ErrorLevel.Warn, String.format("The Element <%s> not acceptable tag for Graphml.", qName));
                     }
                 }
             }
         } catch (Exception e) {
-            throw buildException(e);
+            throw buildException(ContentError.ErrorLevel.Error, e);
         }
+    }
+
+
+    @Override
+    public void startPrefixMapping(String prefix, String uri) throws SAXException {
+        super.startPrefixMapping(prefix, uri);
+        if (!GRAPHML_STANDARD_NAME_SPACE.equals(uri)) namespaces.put(prefix, uri);
+
     }
 
     @Override
@@ -178,10 +200,37 @@ class GraphmlSAXHandler extends DefaultHandler {
         }
     }
 
-    private RuntimeException buildException(Exception e) {
-        //TODO manage Exception
-        String location = locator == null ? "N/A" : locator.getLineNumber() + ":" + locator.getColumnNumber();
-        return new RuntimeException("While parsing " + location + "\n" + "Stack: " + stackAsString() + "\n" + "Message: " + e.getMessage(), e);
+    private @Nullable RuntimeException buildException(ContentError.ErrorLevel errorLevel, String msg) {
+        ContentError contentError = new ContentError(errorLevel, msg,
+                locator == null ? null :
+                        new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber()));
+        if (errorConsumer != null) {
+            errorConsumer.accept(contentError);
+        }
+        if (errorLevel == ContentError.ErrorLevel.Error) {
+            String location = locator == null ? "N/A" : locator.getLineNumber() + ":" + locator.getColumnNumber();
+            return new RuntimeException("While parsing " + location + "\n" + "Stack: " + stackAsString() + "\n" + "Message: " + msg);
+        } else {
+            log.warn("ContentError: "+contentError);
+            return null;
+        }
+    }
+
+
+    private @Nullable RuntimeException buildException(ContentError.ErrorLevel errorLevel, Exception e) {
+        ContentError contentError = new ContentError(errorLevel, e.getMessage(),
+                locator == null ? null :
+                        new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber()));
+        if (errorConsumer != null) {
+            errorConsumer.accept(contentError);
+        }
+            String location = locator == null ? "N/A" : locator.getLineNumber() + ":" + locator.getColumnNumber();
+        if (errorLevel == ContentError.ErrorLevel.Error) {
+            return new RuntimeException("While parsing " + location + "\n" + "Stack: " + stackAsString() + "\n" + "Message: " + e.getMessage(), e);
+        } else {
+            log.warn("ContentError: "+contentError,e);
+            return null;
+        }
     }
 
     private void createEndXMlElement(String name) throws SAXException {
@@ -202,6 +251,11 @@ class GraphmlSAXHandler extends DefaultHandler {
         builder.append('>');
         // characters(builder.toString().toCharArray(), 0, builder.length());
         getCurrentEntity().addCharacters(builder.toString());
+    }
+
+    private void createWarningLog(String message) {
+        this.errorConsumer.accept(new ContentError(ContentError.ErrorLevel.Warn, message, locator == null ? null : new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber())));
+
     }
 
     private void endDataElement() throws IOException {
@@ -237,8 +291,8 @@ class GraphmlSAXHandler extends DefaultHandler {
         assertCurrent("endGraph", GioGraphEntity.class);
         sendStartThisOrParentMaybe(GraphmlElement.GRAPH);
         @Nullable URL url = peekOptional(GioLocatorEntity.class).map(GioLocatorEntity::getEntity).orElse(null);
-       if(url!=null)
-           pop(GioLocatorEntity.class);
+        if (url != null)
+            pop(GioLocatorEntity.class);
         gioWriter.endGraph(url);
         pop(GioGraphEntity.class);
     }
@@ -271,7 +325,7 @@ class GraphmlSAXHandler extends DefaultHandler {
         assertCurrent("endNode", GioNodeEntity.class);
         sendStartThisOrParentMaybe(GraphmlElement.NODE);
         @Nullable URL url = peekOptional(GioLocatorEntity.class).map(GioLocatorEntity::getEntity).orElse(null);
-        if(url!=null)
+        if (url != null)
             pop(GioLocatorEntity.class);
         gioWriter.endNode(url);
         pop(GioNodeEntity.class);
@@ -546,9 +600,4 @@ class GraphmlSAXHandler extends DefaultHandler {
 
         openEntities.push(gioPortEntity);
     }
-
-    private void createWarningLog(String message) {
-        this.errorConsumer.accept(new ContentError(ContentError.ErrorLevel.Warn, message, locator == null ? null : new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber())));
-
-}
 }

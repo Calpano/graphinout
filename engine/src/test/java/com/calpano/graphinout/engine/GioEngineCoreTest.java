@@ -79,7 +79,7 @@ class GioEngineCoreTest {
 
     @Test
     void testWith1Resource() {
-        testResource("graphin/graphml/synthetic/graph-with-nested-ports.graphml");
+        testResource("graphin/graphml/synthetic/invalid-root.graphml");
     }
 
     private void testResource(String resourcePath) {
