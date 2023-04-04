@@ -150,10 +150,6 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             node.desc.writeXml(xmlWriter);
         }
         writerData(node.dataList);
-        if (node.getPorts() != null) for (GraphmlPort port : node.getPorts()) {
-            xmlWriter.startElement(GraphmlPort.TAGNAME, port.getAttributes());
-            xmlWriter.endElement(GraphmlPort.TAGNAME);
-        }
     }
 
     @Override
@@ -165,7 +161,6 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     public void startPort(GraphmlPort port) throws IOException {
         log.debug("startPort [{}]", port);
         xmlWriter.startElement(GraphmlPort.TAGNAME, port.getAttributes());
-
     }
 
     @Override

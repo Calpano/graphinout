@@ -41,23 +41,6 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
     /**
      * This is an Element that can be empty or null.
      * </p>
-     * The name of this Element in node is <b>port</b>.
-     */
-    @Singular(ignoreNullCollections = true)
-    @Deprecated
-    private List<GraphmlPort> ports;
-
-    /**
-     * This is an Element that can be empty or null.
-     * </p>
-     * The name of this Element in node is <b>graph</b>.
-     */
-    // FIXME this is wrong in a streaming API
-    private GraphmlGraph graph;
-
-    /**
-     * This is an Element that can be empty or null.
-     * </p>
      * The name of this Element in node is <b>locator</b>.
      */
     private GraphmlLocator locator;
@@ -83,11 +66,6 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
     @Override
     public String valueTag() {
         StringBuilder xmlValueData = new StringBuilder();
-
-        for (XMLValue xmlValue : ports) {
-            xmlValueData.append(xmlValue.fullTag());
-        }
-        //TODO GRAPH?
 
         if (locator != null) xmlValueData.append(locator.fullTag());
         return xmlValueData.toString();
