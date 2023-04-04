@@ -141,7 +141,7 @@ class GraphmlWriterTest {
         List<GraphmlData> graphmlDataList = new ArrayList<>();
         graphmlDataList.add(GraphmlData.builder().key("data").id("id").value("value").build());
 
-        graphmlWriter.startNode(GraphmlNode.builder().desc(GraphmlDescription.builder().value("GraphmlDescription").build()).id("node ").dataList(graphmlDataList).ports(gioPortList).build());
-        assertEquals("::startElement->node->{id=node }::startElement->desc->{}::characterData->GraphmlDescription::endElement->desc::startElement->data->{id=id, key=data}::characterData->value::endElement->data::startElement->port->{name=port}::endElement->port", xmlWriterSpy.getOutPut().toString());
+        graphmlWriter.startNode(GraphmlNode.builder().desc(GraphmlDescription.builder().value("GraphmlDescription").build()).id("node ").dataList(graphmlDataList).build());
+        assertEquals("::startElement->node->{id=node }::startElement->desc->{}::characterData->GraphmlDescription::endElement->desc::startElement->data->{id=id, key=data}::characterData->value::endElement->data::startElement", xmlWriterSpy.getOutPut().toString());
     }
 }
