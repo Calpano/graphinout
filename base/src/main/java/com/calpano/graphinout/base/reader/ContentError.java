@@ -1,6 +1,7 @@
 package com.calpano.graphinout.base.reader;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Generated;
 import lombok.Getter;
 
@@ -15,6 +16,7 @@ public class ContentError {
         Warn, Error
     }
 
+    @EqualsAndHashCode
     public static class Location {
         int line;
         int col;
