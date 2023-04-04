@@ -67,16 +67,22 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        log.trace("characters [{}].", new String(ch, start, length));
+        String s = new String(ch, start, length);
+        log.trace("characters [{}].", s);
         if (openEntities.isEmpty()) {
-            String s = new String(ch, start, length);
             if (s.trim().length() == 0) {
                 // ignore whitespace
             } else {
                 buildException(ContentError.ErrorLevel.Warn, "Unexpected characters '" + s + "' [No open element to add characters to.]");
             }
         } else {
-            openEntities.peek().addCharacters(new String(ch, start, length));
+            try {
+                openEntities.peek().addCharacters(s);
+            } catch (UnsupportedOperationException e) {
+                // characters could not be handled
+                buildException(ContentError.ErrorLevel.Warn, "Unexpected characters '" + s + "' [Element '" + openEntities.peek().getName() +
+                        "' does not allow characters.]");
+            }
         }
     }
 
@@ -211,7 +217,7 @@ class GraphmlSAXHandler extends DefaultHandler {
             String location = locator == null ? "N/A" : locator.getLineNumber() + ":" + locator.getColumnNumber();
             return new RuntimeException("While parsing " + location + "\n" + "Stack: " + stackAsString() + "\n" + "Message: " + msg);
         } else {
-            log.warn("ContentError: "+contentError);
+            log.warn("ContentError: " + contentError);
             return null;
         }
     }
@@ -224,11 +230,11 @@ class GraphmlSAXHandler extends DefaultHandler {
         if (errorConsumer != null) {
             errorConsumer.accept(contentError);
         }
-            String location = locator == null ? "N/A" : locator.getLineNumber() + ":" + locator.getColumnNumber();
+        String location = locator == null ? "N/A" : locator.getLineNumber() + ":" + locator.getColumnNumber();
         if (errorLevel == ContentError.ErrorLevel.Error) {
             return new RuntimeException("While parsing " + location + "\n" + "Stack: " + stackAsString() + "\n" + "Message: " + e.getMessage(), e);
         } else {
-            log.warn("ContentError: "+contentError,e);
+            log.warn("ContentError: " + contentError, e);
             return null;
         }
     }
