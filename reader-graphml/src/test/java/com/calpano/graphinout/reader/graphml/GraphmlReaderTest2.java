@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,6 +25,21 @@ import static org.slf4j.LoggerFactory.getLogger;
 class GraphmlReaderTest2 extends AbstractReaderTest {
 
     private static final Logger log = getLogger(GraphmlReaderTest2.class);
+
+    protected List<ContentError> expectedErrors(String resourceName) {
+        switch (resourceName) {
+            case "graphin/graphml/samples/greek2.graphml":
+                return Arrays.asList(
+                        new ContentError(ContentError.ErrorLevel.Warn,"Unexpected characters '\n" +
+                                "\n" +
+                                "\n" +
+                                "  \n" +
+                                "\n" +
+                                "========================================================' [Element 'graphml' does not allow characters.]",new ContentError.Location(33,57))
+                );
+        }
+        return Collections.emptyList();
+    }
 
     protected List<GioReader> readersToTest() {
         return List.of(new GraphmlReader());
@@ -50,8 +66,8 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
     @Test
     void testWithOneResource() throws IOException {
         GioReader gioReader = new GraphmlReader();
-        String resourcePath = "graphin/graphml/synthetic/graphml-key-data.graphml.xml";
-        List<ContentError> expectedErrors = Collections.emptyList();
+        String resourcePath = "graphin/graphml/samples/greek2.graphml";
+        List<ContentError> expectedErrors = expectedErrors(resourcePath);
         testReadResourceToGraph(gioReader, resourcePath, expectedErrors);
     }
 
