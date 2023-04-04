@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns" >
-<graph>
-<node> <data> <html lang="en">
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key id="key1" attr.type="string" attr.name="html"/>
+    <graph edgedefault="undirected">
+        <node id="a">
+            <data key="key1"><![CDATA[
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="css/main.css">
@@ -16,5 +19,7 @@
                 <img src="./img/quote6-a.png" alt="Socrates Quote">
             </span>
         </div>
-    </body></html></data></node>
-</graph></graphml>
+    </body></html>]]></data>
+        </node>
+    </graph>
+</graphml>
