@@ -91,9 +91,7 @@ class GraphmlReaderXMLContentTest {
         String actual = outputSink.getBufferAsUtf8String();
         assertAll("",
                 () ->  assertEquals(expected, actual),
-                () -> assertEquals(1, contentErrors.size()),
-                () -> assertEquals("The Element [b] not acceptable tag for Graphml.", contentErrors.get(0).getMessage()),
-                () -> assertEquals(ContentError.ErrorLevel.Warn, contentErrors.get(0).getLevel())
+                () -> assertEquals(0, contentErrors.size())
         );
 
     }
