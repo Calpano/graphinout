@@ -140,7 +140,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             throw new IllegalStateException("Wrong order of calls. Cannot END '" + element + "', last started element was " + currentElement);
         }
         currentElements.pop();
-        log.debug("ENDED '" + element.name() + "'. Stack: " + stackToString());
+        if (log.isDebugEnabled())
+            log.debug("ENDED '{} '. Stack: {}", element.name(), stackToString());
     }
 
     private void ensureAllowedStart(CurrentElement childElement) throws IllegalStateException {
@@ -150,17 +151,18 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             throw new IllegalStateException("Wrong order of elements. In element " + currentElement + " expected one of " + currentElement.allowedChildren + " but found " + childElement + ". Stack (leaf-to-root): " + this.currentElements);
         }
         currentElements.push(childElement);
-        log.debug("STARTED '" + childElement.name() + "' => Stack: " + stackToString());
+        if (log.isDebugEnabled())
+            log.debug("STARTED '{}' => Stack: {}", childElement.name(), stackToString());
     }
 
     /**
      * @param edge
      **/
     private void investigatingTheExistenceOfTheNode(GraphmlEdge edge) throws IllegalStateException {
-        for(String nodeId : Arrays.asList(edge.getSourceId(),edge.getTargetId())) {
+        for (String nodeId : Arrays.asList(edge.getSourceId(), edge.getTargetId())) {
             if (!existingNodeIds.contains(nodeId)) {
-                nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>() ) //
-                        .add("Edge [" + edge + "] references to a non-existent node ID: '" + nodeId+"'");
+                nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>()) //
+                        .add("Edge [" + edge + "] references to a non-existent node ID: '" + nodeId + "'");
             } else
                 nonExistingNode.remove(nodeId);
         }
@@ -174,8 +176,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         for (GraphmlEndpoint endpoint : endpoints) {
             if (!existingNodeIds.contains(endpoint.getNode())) {
                 String nodeId = endpoint.getNode();
-                nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>() ) //
-                        .add("Hyper Edge [" + hyperEdge + "] references to a non-existent node ID: '" + nodeId+"'");
+                nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>()) //
+                        .add("Hyper Edge [" + hyperEdge + "] references to a non-existent node ID: '" + nodeId + "'");
             } else
                 nonExistingNode.remove(endpoint.getNode());
         }

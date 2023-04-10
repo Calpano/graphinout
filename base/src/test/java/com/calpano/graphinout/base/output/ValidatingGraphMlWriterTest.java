@@ -45,6 +45,8 @@ public class ValidatingGraphMlWriterTest {
         private GraphmlHyperEdge mockHyperEdge;
         @Mock
         private GraphmlEdge mockEdge;
+        @Mock
+        private GraphmlKey mockKey;
 
         @BeforeEach
         void setUp() throws MalformedURLException {
@@ -66,9 +68,9 @@ public class ValidatingGraphMlWriterTest {
         void shouldWorkAsIntendedWithDocument() throws IOException {
             underTest.startDocument(mockDocument);
             underTest.endDocument();
-            assertAll("",
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),
+            assertAll("",//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),//
                     () -> verifyNoMoreInteractions(mockGraphMlWriter));
         }
 
@@ -80,11 +82,11 @@ public class ValidatingGraphMlWriterTest {
             underTest.endGraph(Optional.of(mockLocator));
             underTest.endDocument();
 
-            assertAll("",
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),
+            assertAll("",//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),//
                     () -> verifyNoMoreInteractions(mockGraphMlWriter));
         }
 
@@ -101,13 +103,13 @@ public class ValidatingGraphMlWriterTest {
             underTest.endDocument();
 
 
-            assertAll("",
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(mockLocator)),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),
+            assertAll("",//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(mockLocator)),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),//
                     () -> verifyNoMoreInteractions(mockGraphMlWriter));
         }
 
@@ -134,16 +136,16 @@ public class ValidatingGraphMlWriterTest {
             underTest.endDocument();
 
             assertAll("",
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(mockLocator)),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode2),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(graphmlLocator2)),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startEdge(mockEdge),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endEdge(),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(mockLocator)),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode2),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(graphmlLocator2)),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startEdge(mockEdge),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endEdge(),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),//
                     () -> verifyNoMoreInteractions(mockGraphMlWriter));
 
         }
@@ -164,6 +166,12 @@ public class ValidatingGraphMlWriterTest {
         private GraphmlHyperEdge mockHyperEdge;
         @Mock
         private GraphmlEdge mockEdge;
+        @Mock
+        private GraphmlKey mockKey;
+        @Mock
+        private GraphmlData mockData;
+        @Mock
+        private GraphmlPort mockPort;
 
         @BeforeEach
         void setUp() {
@@ -195,7 +203,6 @@ public class ValidatingGraphMlWriterTest {
         void shouldThrowExceptionWhenNodeHasNoId() throws IOException {
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
-
             assertThrows(IllegalStateException.class, () -> underTest.startNode(mockNode));
         }
 
@@ -229,15 +236,15 @@ public class ValidatingGraphMlWriterTest {
 
             IllegalStateException illegalStateException = assertThrowsExactly(IllegalStateException.class,
                     () -> underTest.endDocument());
-            assertAll("",
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(mockLocator)),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startHyperEdge(mockHyperEdge),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endHyperEdge(),
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),
-                    () -> verifyNoMoreInteractions(mockGraphMlWriter),
+            assertAll("",//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(mockLocator)),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startHyperEdge(mockHyperEdge),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endHyperEdge(),//
+                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),//
+                    () -> verifyNoMoreInteractions(mockGraphMlWriter),//
                     () -> assertEquals("2 nodes used in the graph without reference.", illegalStateException.getMessage()));
 
         }
@@ -250,8 +257,107 @@ public class ValidatingGraphMlWriterTest {
             underTest.startGraph(mockGraph);
             underTest.startNode(mockNode);
             underTest.endNode(Optional.of(mockLocator));
-
             assertThrows(IllegalArgumentException.class, () -> underTest.startEdge(mockEdge));
         }
+
+        @Test
+        void shouldThrowIllegalStateExceptionEndDocumentBeforeStart() throws IOException {
+            Exception exception = assertThrows(Exception.class, () -> underTest.endDocument());
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of calls. Cannot END 'GRAPHML', last started element was EMPTY",exception.getMessage()));
+        }
+        @Test
+        void shouldThrowIllegalStateExceptionStartGraphBeforeStartDocument() throws IOException {
+
+            Exception exception = assertThrows(Exception.class, () ->   underTest.startGraph(mockGraph));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found GRAPH. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+        }
+
+        @Test
+        void shouldThrowIllegalStateExceptionStartKeyBeforeStartDocument()  {
+            Exception exception = assertThrows(Exception.class, () ->   underTest.key(mockKey));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found KEY. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+        }
+        @Test
+        void shouldThrowIllegalStateExceptionStartEdgeBeforeStartDocument()  {
+
+            Exception exception = assertThrows(Exception.class, () ->     underTest.startEdge(mockEdge));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found EDGE. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+        }
+
+
+        @Test
+        void shouldThrowIllegalStateExceptionDataBeforeStartDocument() throws IOException {
+            Exception exception = assertThrows(Exception.class, () ->   underTest.data(mockData));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found DATA. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+        }
+
+        @Test
+        void shouldThrowIllegalStateExceptionStartPortBeforeStartDocument() throws IOException {
+
+            Exception exception = assertThrows(Exception.class, () ->   underTest.startPort(mockPort));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found PORT. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+        }
+        @Test
+        void shouldThrowIllegalStateExceptionStartHyperEdgeBeforeStartDocument() throws IOException {
+           Exception exception = assertThrows(Exception.class, () ->   underTest.startHyperEdge(mockHyperEdge));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found HYPEREDGE. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+        }
+        @Test
+        void shouldThrowIllegalStateExceptionEndEdgeBeforeStart() throws IOException {
+            underTest.startDocument(mockDocument);
+            Exception exception = assertThrows(Exception.class, () ->  underTest.endEdge());
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of calls. Cannot END 'EDGE', last started element was GRAPHML",exception.getMessage()));
+        }
+
+        @Test
+        void shouldThrowIllegalStateExceptionEndPortBeforeStart() throws IOException {
+            underTest.startDocument(mockDocument);
+            Exception exception = assertThrows(Exception.class, () ->  underTest.endPort());
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of calls. Cannot END 'PORT', last started element was GRAPHML",exception.getMessage()));
+        }
+        @Test
+        void shouldThrowIllegalStateExceptionEndNodeBeforeStart() throws IOException {
+            underTest.startDocument(mockDocument);
+            Exception exception = assertThrows(Exception.class, () ->  underTest.endNode(Optional.empty()));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of calls. Cannot END 'NODE', last started element was GRAPHML",exception.getMessage()));
+        }
+
+        @Test
+        void shouldThrowIllegalStateExceptionEndHyperEdgeBeforeStart() throws IOException {
+            underTest.startDocument(mockDocument);
+            Exception exception = assertThrows(Exception.class, () ->  underTest.endHyperEdge());
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of calls. Cannot END 'HYPEREDGE', last started element was GRAPHML",exception.getMessage()));
+        }
+        @Test
+        void shouldThrowIllegalStateExceptionEndGraphBeforeStart() throws IOException {
+            underTest.startDocument(mockDocument);
+            Exception exception = assertThrows(Exception.class, () ->  underTest.endGraph(Optional.empty()));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of calls. Cannot END 'GRAPH', last started element was GRAPHML",exception.getMessage()));
+        }
+
     }
 }
