@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml>
+  <graph id="G" edgedefault="directed">
+    <node id="n0"/>
+    <node id="n1"/>
+    <node id="n2">
+      <graph id="n2::" edgedefault="directed">
+        <node id="n2::n0"/>
+        <node id="n2::n1">
+          <graph id="n2::n1::" edgedefault="directed">
+            <node id="n2::n1::n0"/>
+            <node id="n2::n1::n1"/>
+            <node id="n2::n1::n2"/>
+            <edge id="e0" source="n2::n1::n1" target="n2::n1::n0"/>
+            <edge id="e1" source="n2::n1::n2" target="n2::n1::n1"/>
+          </graph>
+        </node>
+        <node id="n2::n2"/>
+        <edge id="e2" source="n2::n1" target="n2::n0"/>
+        <edge id="e3" source="n2::n2" target="n2::n1"/>
+      </graph>
+    </node>
+    <edge id="e4" source="n1" target="n0"/>
+    <edge id="e5" source="n1" target="n2::n1"/>
+    <edge id="e6" source="n0" target="n2"/>
+  </graph>
+</graphml>
