@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,14 +36,6 @@ public class GraphmlDefault implements XMLValue {
     private String defaultType;
 
     @Override
-    public String startTag() {
-        LinkedHashMap<String, String> attributes = getAttributes();
-
-        if (value == null || value.isEmpty()) return GIOUtil.makeElement("default", attributes);
-        else return GIOUtil.makeStartElement("default", attributes);
-    }
-
-    @Override
     public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
 
@@ -52,15 +43,5 @@ public class GraphmlDefault implements XMLValue {
 
         return attributes;
     }
-    @Override
-    public String valueTag() {
-        if (value == null || value.isEmpty()) return "";
-        return value + GraphmlGraphInOutConstants.NEW_LINE_SEPARATOR;
-    }
 
-    @Override
-    public String endTag() {
-        if (value == null || value.isEmpty()) return "";
-        else return GIOUtil.makeEndElement("default");
-    }
 }

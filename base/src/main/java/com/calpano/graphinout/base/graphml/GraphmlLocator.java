@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,27 +33,11 @@ public class GraphmlLocator implements XMLValue {
     private URL xLinkHref;
 
     @Override
-    public String endTag() {
-        return GIOUtil.makeEndElement(TAGNAME);
-    }
-
-    @Override
     public Map<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
         attributes.put("xlink:href", xLinkHref.toExternalForm());
-        // TODO maybe can be omitted
-        attributes.put("xlink:type", "simple");
+        // GraphML schema implies this attribute: attributes.put("xlink:type", "simple");
         return attributes;
     }
 
-    @Override
-    public String startTag() {
-        if (xLinkHref == null) throw new IllegalArgumentException();
-        return GIOUtil.makeStartElement("locator", getAttributes());
-    }
-
-    @Override
-    public String valueTag() {
-        return "";
-    }
 }

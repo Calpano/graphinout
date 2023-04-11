@@ -1,9 +1,8 @@
 package com.calpano.graphinout.base.graphml;
 
 
-import com.calpano.graphinout.base.util.GIOUtil;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
@@ -23,6 +22,7 @@ import java.util.List;
 
 @SuperBuilder
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue {
 
     public enum EdgeDefault {
@@ -42,23 +42,7 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
      * The name of this attribute in graph is <b>id</b>
      */
     private String id;
-    /**
-     * This is an Element that can be empty or null.
-     * </p>
-     * The name of this Element in graph is <b>node</b>
-     */
-    @Singular(ignoreNullCollections = true)
-    private List<GraphmlNode> nodes;
 
-    /**
-     * This is an Element that can be empty or null.
-     * <p/>
-     * The name of this Element in graph is <b>hyperedge</b>
-     * <p/>
-     * All edges in the output will be converted to this element
-     */
-    @Singular(ignoreNullCollections = true)
-    private List<GraphmlHyperEdge> hyperEdges;
 
     /**
      * This is an Element that can be empty or null.
@@ -75,16 +59,6 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
     }
 
 
-
-    @Override
-    public String startTag() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-        attributes.put("edgedefault",String.valueOf(edgedefault));
-        attributes.put("id",String.valueOf(id));
-
-        return GIOUtil.makeStartElement("graph",attributes);
-    }
-
     @Override
     public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
@@ -95,22 +69,4 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
         return attributes;
     }
 
-    @Override
-    public String valueTag() {
-        final StringBuilder xmlValueData = new StringBuilder();
-        if (desc != null) xmlValueData.append(desc.fullTag());
-        for (XMLValue data : dataList)
-            xmlValueData.append(data.fullTag());
-        for (XMLValue node : nodes)
-            xmlValueData.append(node.fullTag());
-        for (XMLValue hyperEdge : hyperEdges)
-            xmlValueData.append(hyperEdge.fullTag());
-        if (locator != null) xmlValueData.append(locator.fullTag());
-        return xmlValueData.toString();
-    }
-
-    @Override
-    public String endTag() {
-        return GIOUtil.makeEndElement("graph");
-    }
 }

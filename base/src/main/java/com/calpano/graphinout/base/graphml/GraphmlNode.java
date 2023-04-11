@@ -1,14 +1,12 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 /**
  * @author rbaba
@@ -27,6 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
 
     public static final String TAGNAME = "node";
@@ -46,16 +45,6 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
     private GraphmlLocator locator;
 
     @Override
-    public String startTag() {
-
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (id != null) attributes.put("id", id);
-
-        return GIOUtil.makeStartElement("node", attributes);
-    }
-
-    @Override
     public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
 
@@ -63,16 +52,4 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
         return  attributes;
     }
 
-    @Override
-    public String valueTag() {
-        StringBuilder xmlValueData = new StringBuilder();
-
-        if (locator != null) xmlValueData.append(locator.fullTag());
-        return xmlValueData.toString();
-    }
-
-    @Override
-    public String endTag() {
-        return GIOUtil.makeEndElement("node");
-    }
 }

@@ -1,7 +1,6 @@
 package com.calpano.graphinout.base.graphml;
 
 import com.calpano.graphinout.base.Direction;
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -68,16 +67,6 @@ public class GraphmlEndpoint implements XMLValue {
 
 
     @Override
-    public String startTag() {
-        LinkedHashMap<String, String> attributes = getAttributes();
-
-        if (desc == null) return GIOUtil.makeElement("endpoint", attributes);
-        else return GIOUtil.makeStartElement("endpoint", attributes);
-
-    }
-
-
-    @Override
     public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
         if (id != null) attributes.put("id", id);
@@ -89,18 +78,5 @@ public class GraphmlEndpoint implements XMLValue {
         attributes.put("type", type.xmlValue());
         return attributes;
     }
-    @Override
-    public String valueTag() {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (desc != null) {
-            stringBuilder.append(desc.fullTag());
-        }
-        return stringBuilder.toString();
-    }
 
-    @Override
-    public String endTag() {
-        if (desc == null) return "";
-        return GIOUtil.makeEndElement("endpoint");
-    }
 }

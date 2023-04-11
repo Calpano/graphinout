@@ -3,6 +3,7 @@ package com.calpano.graphinout.base.graphml;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -12,11 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// TODO split into GraphmlElementWithData and GraphmlElementWithDesc
+// IMPROVE split into GraphmlElementWithData and GraphmlElementWithDesc
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class GraphmlGraphCommonElement extends GraphmlElement {
     /**
      * This ia an Element That can be empty or null.

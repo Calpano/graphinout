@@ -107,8 +107,6 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void startGraph(GraphmlGraph graph) throws IOException {
         ensureAllowedStart(CurrentElement.GRAPH);
-        // TODO adapt next line once GraphmlModel is simplified
-        validateGraph(graph);
         graphMlWriter.startGraph(graph);
     }
 
@@ -212,18 +210,6 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         if (edge.getTargetId() == null) throw new IllegalArgumentException("endpoint without targetId");
     }
 
-    private void validateGraph(GraphmlGraph graph) throws IllegalStateException {
-        if (!graph.getNodes().isEmpty()) {
-            for (GraphmlNode gioNode : graph.getNodes()) {
-                validateNode(gioNode);
-            }
-        }
-        if (!graph.getHyperEdges().isEmpty()) {
-            for (GraphmlHyperEdge gioEdge : graph.getHyperEdges()) {
-                validateHyperEdge(gioEdge);
-            }
-        }
-    }
 
     private void validateGraphMl(GraphmlDocument document) {
         if (document.getKeys() != null) {

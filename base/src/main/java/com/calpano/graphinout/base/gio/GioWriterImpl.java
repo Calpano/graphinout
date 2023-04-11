@@ -139,9 +139,10 @@ public class GioWriterImpl implements GioWriter {
         assert gioEdge.getEndpoints() != null;
         assert gioEdge.getEndpoints().size() > 2;
         // default case: hyperedge
-        GraphmlHyperEdge graphmlHyperEdge = GraphmlHyperEdge.builder().id(gioEdge.getId()).build();
+        GraphmlHyperEdge.GraphmlHyperEdgeBuilder builder = GraphmlHyperEdge.builder(gioEdge.getId());
+        gioEdge.getEndpoints().stream().map(this::graphmlEndpoint).forEach(builder::addEndpoint);
+        GraphmlHyperEdge graphmlHyperEdge = builder.build();
         customAttributes(gioEdge, graphmlHyperEdge);
-        graphmlHyperEdge.setEndpoints(gioEdge.getEndpoints().stream().map(this::graphmlEndpoint).toList());
         graphmlWriter.startHyperEdge(graphmlHyperEdge);
         this.openEdge = graphmlHyperEdge;
     }
@@ -204,11 +205,4 @@ public class GioWriterImpl implements GioWriter {
         return Optional.ofNullable(locator).map(url -> GraphmlLocator.builder().xLinkHref(url).build());
     }
 
-    private GraphmlPort port(GioPort gioPort) {
-        GraphmlPort graphmlPort = GraphmlPort.builder().name(gioPort.getName()).build();
-        customAttributes(gioPort, graphmlPort);
-        // TODO need to copy recursive sub-ports and their data
-        // data(gioPort, graphmlPort);
-        return graphmlPort;
-    }
 }

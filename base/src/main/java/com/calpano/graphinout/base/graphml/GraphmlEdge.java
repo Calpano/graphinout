@@ -97,11 +97,6 @@ public class GraphmlEdge extends GraphmlGraphCommonElement implements XMLValue {
     protected String targetPortId;
 
     @Override
-    public String startTag() {
-        return null;
-    }
-
-    @Override
     public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
         if (id != null) attributes.put("id", id);
@@ -119,13 +114,4 @@ public class GraphmlEdge extends GraphmlGraphCommonElement implements XMLValue {
         return attributes;
     }
 
-    @Override
-    public String valueTag() {
-        return null;
-    }
-
-    @Override
-    public String endTag() {
-        return null;
-    }
 }
