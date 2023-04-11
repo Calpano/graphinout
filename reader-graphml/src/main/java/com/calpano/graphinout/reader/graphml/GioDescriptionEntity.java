@@ -4,12 +4,13 @@ import com.calpano.graphinout.base.gio.GioElementWithDescription;
 
 public class GioDescriptionEntity extends AbstractGraphmlEntity<GioElementWithDescription> implements GraphmlEntity<GioElementWithDescription> {
 
-    private GioElementWithDescription gioElementWithDescription = new GioElementWithDescription() {};
+    private GioElementWithDescription gioElementWithDescription = new GioElementWithDescription() {
+    };
 
     @Override
     public void addCharacters(String characters) {
-        // FIXME ADD chars, not replace
-        gioElementWithDescription.setDescription(characters);
+        String description = gioElementWithDescription.getDescription();
+        gioElementWithDescription.setDescription(description + characters);
     }
 
     @Override

@@ -33,7 +33,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     public void data(GraphmlData data) throws IOException {
         ensureAllowedStart(CurrentElement.DATA);
         ensureAllowedEnd(CurrentElement.DATA);
-        // TODO implement validation
+        if (data.getKey() == null) {
+            throw new IllegalArgumentException("Graphml data must have a key attribute.");
+        }
         graphMlWriter.data(data);
     }
 
@@ -163,8 +165,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             if (!existingNodeIds.contains(nodeId)) {
                 nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>()) //
                         .add("Edge [" + edge + "] references to a non-existent node ID: '" + nodeId + "'");
-            } else
-                nonExistingNode.remove(nodeId);
+            } else nonExistingNode.remove(nodeId);
         }
     }
 
@@ -178,8 +179,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
                 String nodeId = endpoint.getNode();
                 nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>()) //
                         .add("Hyper Edge [" + hyperEdge + "] references to a non-existent node ID: '" + nodeId + "'");
-            } else
-                nonExistingNode.remove(endpoint.getNode());
+            } else nonExistingNode.remove(endpoint.getNode());
         }
     }
 
@@ -267,8 +267,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     private void validateLocator(Optional<GraphmlLocator> locator) throws IllegalStateException {
-        if (locator.isEmpty())
-            return;
+        if (locator.isEmpty()) return;
         GraphmlLocator graphmlLocator = locator.get();
         ensureAllowedStart(CurrentElement.LOCATOR);
         ensureAllowedEnd(CurrentElement.LOCATOR);
@@ -291,16 +290,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             EDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH));
             HYPEREDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, ENDPOINT));
             PORT.allowedChildren.addAll(Arrays.asList(DATA, PORT));
-//            EMPTY.allowedChildren = Set.of(GRAPHML);
-//            GRAPHML.allowedChildren = Set.of(DATA, DESC, KEY, GRAPH);
-//            KEY.allowedChildren = Set.of(DESC, DEFAULT);
-//            NODE.allowedChildren = Set.of(DATA, DESC, GRAPH, LOCATOR, PORT);
-//            GRAPH.allowedChildren = Set.of(DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR);
-//            EDGE.allowedChildren = Set.of(DATA, DESC, GRAPH);
-//            HYPEREDGE.allowedChildren = Set.of(DATA, DESC, ENDPOINT);
-//            PORT.allowedChildren = Set.of(DATA, PORT);
         }
 
+        // IMPROVE remove LinkedHashSet and use HashSet instead when no tests rely on this order
         private Set<CurrentElement> allowedChildren = new LinkedHashSet<>();
 
         public boolean isValidChild(CurrentElement childElement) {

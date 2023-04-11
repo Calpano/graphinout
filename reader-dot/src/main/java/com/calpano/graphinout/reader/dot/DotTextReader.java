@@ -1,12 +1,6 @@
 package com.calpano.graphinout.reader.dot;
 
-import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioEdge;
-import com.calpano.graphinout.base.gio.GioEndpoint;
-import com.calpano.graphinout.base.gio.GioGraph;
-import com.calpano.graphinout.base.gio.GioNode;
-import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
@@ -52,7 +46,6 @@ public class DotTextReader implements GioReader {
         assert inputSource instanceof SingleInputSource;
         SingleInputSource sis = (SingleInputSource) inputSource;
 
-        // TODO show ContentError to user when Paypal parser has GraphParserException
         try {
             GraphParser parser = new GraphParser(sis.inputStream());
             Map<String, GraphNode> nodes = parser.getNodes();
@@ -89,8 +82,12 @@ public class DotTextReader implements GioReader {
             writer.endGraph(null);
             writer.endDocument();
         } catch (GraphParserException e) {
-            // TODO try to extract line number from error message
-            errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, e.getMessage(), null));
+            ContentError.ErrorLevel errorLevel = ContentError.ErrorLevel.Error;
+            String errorMessage = e.getMessage();
+
+            if (errorHandler != null) {
+                errorHandler.accept(new ContentError(errorLevel, errorMessage, null));
+            }
         }
     }
 }

@@ -68,17 +68,6 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     @Override
-    public void endNode(Optional<GraphmlLocator> locator) throws IOException {
-        log.trace("endNode [{}]", locator.isPresent() ? locator.get() : null);
-        if (locator.isPresent()) {
-            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
-            xmlWriter.endElement(GraphmlLocator.TAGNAME);
-        }
-        xmlWriter.endElement(GraphmlNode.TAGNAME);
-        xmlWriter.lineBreak();
-    }
-
-    @Override
     public void startDocument(GraphmlDocument doc) throws IOException {
         log.trace("startDocument [{}]", doc);
         xmlWriter.startDocument();
@@ -88,7 +77,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
         attributes.put("xsi:schemaLocation", HEADER_XMLNS_XSI_SCHEMA_LOCATIOM);
         Map<String, String> extraAttrib = doc.getExtraAttrib();
         if (extraAttrib != null) {
-            extraAttrib.forEach((k, v) -> attributes.put(k,v));
+            extraAttrib.forEach((k, v) -> attributes.put(k, v));
         }
         xmlWriter.startElement(GraphmlDocument.TAGNAME, attributes);
         xmlWriter.lineBreak();
@@ -141,7 +130,6 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     }
 
-    // TODO split into startNode and endNode to have the sub-graphs in between
     @Override
     public void startNode(GraphmlNode node) throws IOException {
         log.trace("startNode [{}]", node);
@@ -150,6 +138,17 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             node.desc.writeXml(xmlWriter);
         }
         writerData(node.dataList);
+    }
+
+    @Override
+    public void endNode(Optional<GraphmlLocator> locator) throws IOException {
+        log.trace("endNode [{}]", locator.isPresent() ? locator.get() : null);
+        if (locator.isPresent()) {
+            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
+            xmlWriter.endElement(GraphmlLocator.TAGNAME);
+        }
+        xmlWriter.endElement(GraphmlNode.TAGNAME);
+        xmlWriter.lineBreak();
     }
 
     @Override
