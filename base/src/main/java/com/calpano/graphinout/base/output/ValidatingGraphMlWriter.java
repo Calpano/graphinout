@@ -33,7 +33,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     public void data(GraphmlData data) throws IOException {
         ensureAllowedStart(CurrentElement.DATA);
         ensureAllowedEnd(CurrentElement.DATA);
-        // TODO implement validation
+        if (data.getKey() == null) {
+            throw new IllegalArgumentException("Graphml data must have a key attribute.");
+        }
         graphMlWriter.data(data);
     }
 
@@ -157,12 +159,11 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
      * @param edge
      **/
     private void investigatingTheExistenceOfTheNode(GraphmlEdge edge) throws IllegalStateException {
-        for(String nodeId : Arrays.asList(edge.getSourceId(),edge.getTargetId())) {
+        for (String nodeId : Arrays.asList(edge.getSourceId(), edge.getTargetId())) {
             if (!existingNodeIds.contains(nodeId)) {
-                nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>() ) //
-                        .add("Edge [" + edge + "] references to a non-existent node ID: '" + nodeId+"'");
-            } else
-                nonExistingNode.remove(nodeId);
+                nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>()) //
+                        .add("Edge [" + edge + "] references to a non-existent node ID: '" + nodeId + "'");
+            } else nonExistingNode.remove(nodeId);
         }
     }
 
@@ -174,10 +175,9 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         for (GraphmlEndpoint endpoint : endpoints) {
             if (!existingNodeIds.contains(endpoint.getNode())) {
                 String nodeId = endpoint.getNode();
-                nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>() ) //
-                        .add("Hyper Edge [" + hyperEdge + "] references to a non-existent node ID: '" + nodeId+"'");
-            } else
-                nonExistingNode.remove(endpoint.getNode());
+                nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>()) //
+                        .add("Hyper Edge [" + hyperEdge + "] references to a non-existent node ID: '" + nodeId + "'");
+            } else nonExistingNode.remove(endpoint.getNode());
         }
     }
 
@@ -265,8 +265,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     private void validateLocator(Optional<GraphmlLocator> locator) throws IllegalStateException {
-        if (locator.isEmpty())
-            return;
+        if (locator.isEmpty()) return;
         GraphmlLocator graphmlLocator = locator.get();
         ensureAllowedStart(CurrentElement.LOCATOR);
         ensureAllowedEnd(CurrentElement.LOCATOR);
