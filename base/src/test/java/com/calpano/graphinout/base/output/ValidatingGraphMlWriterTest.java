@@ -273,7 +273,7 @@ public class ValidatingGraphMlWriterTest {
             Exception exception = assertThrows(Exception.class, () ->   underTest.startGraph(mockGraph));
             assertAll("",//
                     () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found GRAPH. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found GRAPH. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
         }
 
         @Test
@@ -281,7 +281,7 @@ public class ValidatingGraphMlWriterTest {
             Exception exception = assertThrows(Exception.class, () ->   underTest.key(mockKey));
             assertAll("",//
                     () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found KEY. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found KEY. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
         }
         @Test
         void shouldThrowIllegalStateExceptionStartEdgeBeforeStartDocument()  {
@@ -289,7 +289,7 @@ public class ValidatingGraphMlWriterTest {
             Exception exception = assertThrows(Exception.class, () ->     underTest.startEdge(mockEdge));
             assertAll("",//
                     () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found EDGE. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found EDGE. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
         }
 
 
@@ -298,7 +298,7 @@ public class ValidatingGraphMlWriterTest {
             Exception exception = assertThrows(Exception.class, () ->   underTest.data(mockData));
             assertAll("",//
                     () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found DATA. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found DATA. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
         }
 
         @Test
@@ -307,14 +307,14 @@ public class ValidatingGraphMlWriterTest {
             Exception exception = assertThrows(Exception.class, () ->   underTest.startPort(mockPort));
             assertAll("",//
                     () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found PORT. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found PORT. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
         }
         @Test
         void shouldThrowIllegalStateExceptionStartHyperEdgeBeforeStartDocument() throws IOException {
            Exception exception = assertThrows(Exception.class, () ->   underTest.startHyperEdge(mockHyperEdge));
             assertAll("",//
                     () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element EMPTY expected one of [GRAPHML] but found HYPEREDGE. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
+                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found HYPEREDGE. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
         }
         @Test
         void shouldThrowIllegalStateExceptionEndEdgeBeforeStart() throws IOException {
@@ -357,6 +357,62 @@ public class ValidatingGraphMlWriterTest {
             assertAll("",//
                     () -> assertInstanceOf(IllegalStateException.class, exception),//
                     () -> assertEquals("Wrong order of calls. Cannot END 'GRAPH', last started element was GRAPHML",exception.getMessage()));
+        }
+
+        @Test
+        void shouldThrowIllegalStateExceptionStartNodeInsideDocument() throws IOException {
+            underTest.startDocument(mockDocument);
+            Exception exception = assertThrows(Exception.class, () ->  underTest.startNode(mockNode));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of elements. In element 'GRAPHML' expected one of [DATA, DESC, KEY, GRAPH] but found NODE. Stack (leaf-to-root): [GRAPHML, EMPTY]",exception.getMessage()));
+        }
+
+        @Test
+        void shouldThrowIllegalStateExceptionStartPortInsideDocument() throws IOException {
+            underTest.startDocument(mockDocument);
+
+            Exception exception = assertThrows(Exception.class, () ->  underTest.startPort(mockPort));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of elements. In element 'GRAPHML' expected one of [DATA, DESC, KEY, GRAPH] but found PORT. Stack (leaf-to-root): [GRAPHML, EMPTY]",exception.getMessage()));
+        }
+        @Test
+        void shouldThrowIllegalStateExceptionStartEdgeInsideDocument() throws IOException {
+            underTest.startDocument(mockDocument);
+
+            Exception exception = assertThrows(Exception.class, () ->  underTest.startEdge(mockEdge));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of elements. In element 'GRAPHML' expected one of [DATA, DESC, KEY, GRAPH] but found EDGE. Stack (leaf-to-root): [GRAPHML, EMPTY]",exception.getMessage()));
+        }
+        @Test
+        void shouldThrowIllegalStateExceptionStartHyperEdgeInsideDocument() throws IOException {
+            underTest.startDocument(mockDocument);
+
+            Exception exception = assertThrows(Exception.class, () ->  underTest.startHyperEdge(mockHyperEdge));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of elements. In element 'GRAPHML' expected one of [DATA, DESC, KEY, GRAPH] but found HYPEREDGE. Stack (leaf-to-root): [GRAPHML, EMPTY]",exception.getMessage()));
+        }
+        @Test
+        void shouldThrowIllegalStateExceptionEndDocumentBeforeEndGraph() throws IOException {
+            underTest.startDocument(mockDocument);
+            underTest.startGraph(mockGraph);
+            Exception exception = assertThrows(Exception.class, () ->  underTest.endDocument());
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of calls. Cannot END 'GRAPHML', last started element was GRAPH",exception.getMessage()));
+        }
+
+        @Test
+        void shouldThrowIllegalStateExceptionStartKeyInsideGraph()  throws IOException {
+            underTest.startDocument(mockDocument);
+            underTest.startGraph(mockGraph);
+            Exception exception = assertThrows(Exception.class, () ->   underTest.key(mockKey));
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class, exception),//
+                    () -> assertEquals("Wrong order of elements. In element 'GRAPH' expected one of [DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR] but found KEY. Stack (leaf-to-root): [GRAPH, GRAPHML, EMPTY]",exception.getMessage()));
         }
 
     }

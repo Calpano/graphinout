@@ -148,7 +148,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         CurrentElement currentElement = currentElements.peek();
         assert currentElement != null;
         if (!currentElement.isValidChild(childElement)) {
-            throw new IllegalStateException("Wrong order of elements. In element " + currentElement + " expected one of " + currentElement.allowedChildren + " but found " + childElement + ". Stack (leaf-to-root): " + this.currentElements);
+            throw new IllegalStateException("Wrong order of elements. In element '" + currentElement + "' expected one of " + currentElement.allowedChildren + " but found " + childElement + ". Stack (leaf-to-root): " + this.currentElements);
         }
         currentElements.push(childElement);
         if (log.isDebugEnabled())
@@ -283,17 +283,25 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, EDGE, PORT, LOCATOR, DEFAULT, ENDPOINT;
 
         static {
-            EMPTY.allowedChildren = Set.of(GRAPHML);
-            GRAPHML.allowedChildren = Set.of(DATA, DESC, KEY, GRAPH);
-            KEY.allowedChildren = Set.of(DESC, DEFAULT);
-            NODE.allowedChildren = Set.of(DATA, DESC, GRAPH, LOCATOR, PORT);
-            GRAPH.allowedChildren = Set.of(DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR);
-            EDGE.allowedChildren = Set.of(DATA, DESC, GRAPH);
-            HYPEREDGE.allowedChildren = Set.of(DATA, DESC, ENDPOINT);
-            PORT.allowedChildren = Set.of(DATA, PORT);
+            EMPTY.allowedChildren.addAll(Arrays.asList(GRAPHML));
+            GRAPHML.allowedChildren.addAll(Arrays.asList(DATA, DESC, KEY, GRAPH));
+            KEY.allowedChildren.addAll(Arrays.asList(DESC, DEFAULT));
+            NODE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH, LOCATOR, PORT));
+            GRAPH.allowedChildren.addAll(Arrays.asList(DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR));
+            EDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH));
+            HYPEREDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, ENDPOINT));
+            PORT.allowedChildren.addAll(Arrays.asList(DATA, PORT));
+//            EMPTY.allowedChildren = Set.of(GRAPHML);
+//            GRAPHML.allowedChildren = Set.of(DATA, DESC, KEY, GRAPH);
+//            KEY.allowedChildren = Set.of(DESC, DEFAULT);
+//            NODE.allowedChildren = Set.of(DATA, DESC, GRAPH, LOCATOR, PORT);
+//            GRAPH.allowedChildren = Set.of(DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR);
+//            EDGE.allowedChildren = Set.of(DATA, DESC, GRAPH);
+//            HYPEREDGE.allowedChildren = Set.of(DATA, DESC, ENDPOINT);
+//            PORT.allowedChildren = Set.of(DATA, PORT);
         }
 
-        private Set<CurrentElement> allowedChildren = new HashSet<>();
+        private Set<CurrentElement> allowedChildren = new LinkedHashSet<>();
 
         public boolean isValidChild(CurrentElement childElement) {
             return allowedChildren.contains(childElement);
