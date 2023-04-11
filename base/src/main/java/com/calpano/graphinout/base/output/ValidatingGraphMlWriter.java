@@ -137,7 +137,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     private void ensureAllowedEnd(CurrentElement element) throws IllegalStateException {
         CurrentElement currentElement = currentElements.peek();
         if (currentElement != element) {
-            throw new IllegalStateException("Wrong order of calls. Cannot END '" + element + "', last started element was " + currentElement);
+            throw new GraphmlWriterEndException(element, currentElement,"Wrong order of calls. Cannot END '" + element + "', last started element was " + currentElement);
         }
         currentElements.pop();
         if (log.isDebugEnabled())
@@ -148,7 +148,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         CurrentElement currentElement = currentElements.peek();
         assert currentElement != null;
         if (!currentElement.isValidChild(childElement)) {
-            throw new IllegalStateException("Wrong order of elements. In element '" + currentElement + "' expected one of " + currentElement.allowedChildren + " but found " + childElement + ". Stack (leaf-to-root): " + this.currentElements);
+            throw new GraphmlWriterStartException(currentElement, childElement, "Wrong order of elements. In element '" + currentElement + "' expected one of " + currentElement.allowedChildren + " but found " + childElement + ". Stack (leaf-to-root): " + this.currentElements);
         }
         currentElements.push(childElement);
         if (log.isDebugEnabled())
@@ -276,7 +276,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             throw new IllegalArgumentException("XLinkHref Url cannot be null or empty.");
     }
 
-    private enum CurrentElement {
+    enum CurrentElement {
         /**
          * state before any token
          */

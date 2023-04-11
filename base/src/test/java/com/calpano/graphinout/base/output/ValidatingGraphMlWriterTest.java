@@ -264,8 +264,10 @@ public class ValidatingGraphMlWriterTest {
         void shouldThrowIllegalStateExceptionEndDocumentBeforeStart() throws IOException {
             Exception exception = assertThrows(Exception.class, () -> underTest.endDocument());
             assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of calls. Cannot END 'GRAPHML', last started element was EMPTY",exception.getMessage()));
+                    () -> assertInstanceOf(GraphmlWriterEndException.class, exception),//
+                    () -> assertEquals(ValidatingGraphMlWriter.CurrentElement.GRAPHML, ((GraphmlWriterEndException)exception).offendingElement ),
+                    () -> assertEquals(ValidatingGraphMlWriter.CurrentElement.EMPTY, ((GraphmlWriterEndException)exception).lastStartedElement )
+            );
         }
         @Test
         void shouldThrowIllegalStateExceptionStartGraphBeforeStartDocument() throws IOException {
@@ -364,8 +366,10 @@ public class ValidatingGraphMlWriterTest {
             underTest.startDocument(mockDocument);
             Exception exception = assertThrows(Exception.class, () ->  underTest.startNode(mockNode));
             assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element 'GRAPHML' expected one of [DATA, DESC, KEY, GRAPH] but found NODE. Stack (leaf-to-root): [GRAPHML, EMPTY]",exception.getMessage()));
+                    () -> assertInstanceOf(GraphmlWriterStartException.class, exception),//
+                    () -> assertEquals(ValidatingGraphMlWriter.CurrentElement.GRAPHML, ((GraphmlWriterStartException)exception).currentElement ), //
+                    () -> assertEquals(ValidatingGraphMlWriter.CurrentElement.NODE, ((GraphmlWriterStartException)exception).childElement ) //
+            );
         }
 
         @Test
