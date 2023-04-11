@@ -10,7 +10,7 @@ public class GioDescriptionEntity extends AbstractGraphmlEntity<GioElementWithDe
     @Override
     public void addCharacters(String characters) {
         String description = gioElementWithDescription.getDescription();
-        gioElementWithDescription.setDescription(description + characters);
+        gioElementWithDescription.setDescription((description == null ? "" : description) + characters);
     }
 
     @Override

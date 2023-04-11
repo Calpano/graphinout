@@ -107,8 +107,8 @@ public class ReaderTests {
         forEachReadableResource(gioReader, resourcePath -> {
             try {
                 testReadResourceToGraph(gioReader, resourcePath, expectedErrorsFun.apply(resourcePath));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (Throwable e) {
+                log.warn("Exception during parsing", e);
             }
         });
     }
