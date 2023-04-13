@@ -1,7 +1,10 @@
 package com.calpano.graphinout.base.output;
 
 import com.calpano.graphinout.base.graphml.*;
+import com.calpano.graphinout.base.output.ValidatingGraphMlWriter.CurrentElement;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -10,8 +13,10 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -173,6 +178,8 @@ public class ValidatingGraphMlWriterTest {
         @Mock
         private GraphmlPort mockPort;
 
+
+
         @BeforeEach
         void setUp() {
             closeable = MockitoAnnotations.openMocks(this);
@@ -186,25 +193,7 @@ public class ValidatingGraphMlWriterTest {
             closeable.close();
         }
 
-        @Test
-        void shouldThrowExceptionWhenElementsHaveWrongOrder() throws IOException {
-            underTest.startDocument(mockDocument);
-            assertThrows(IllegalStateException.class, () -> underTest.startNode(mockNode));
-        }
 
-        @Test
-        void shouldThrowExceptionWhenElementsHaveWrongOrder_2() throws IOException {
-            underTest.startDocument(mockDocument);
-            underTest.startGraph(mockGraph);
-            assertThrows(IllegalStateException.class, () -> underTest.startHyperEdge(mockHyperEdge));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenNodeHasNoId() throws IOException {
-            underTest.startDocument(mockDocument);
-            underTest.startGraph(mockGraph);
-            assertThrows(IllegalStateException.class, () -> underTest.startNode(mockNode));
-        }
 
         @Test
         void shouldThrowExceptionWhenNodeIdIsNotUnique() throws IOException {
@@ -249,174 +238,168 @@ public class ValidatingGraphMlWriterTest {
 
         }
 
-        @Test
-        void shouldThrowExceptionWhenEdgeHasNoEndpoints() throws IOException {
-            when(mockNode.getId()).thenReturn(NODE_ID_3);
-            when(mockLocator.getXLinkHref()).thenReturn(URI.create("http://example.com").toURL());
-            underTest.startDocument(mockDocument);
-            underTest.startGraph(mockGraph);
-            underTest.startNode(mockNode);
-            underTest.endNode(Optional.of(mockLocator));
-            assertThrows(IllegalArgumentException.class, () -> underTest.startEdge(mockEdge));
+        private static Stream<ParameterData> parameterDataList() throws IOException {
+
+            List<ParameterData> parameterDataList = new ArrayList<>();
+            parameterDataList.add(new ParameterData(new String[]{}, "key", CurrentElement.EMPTY, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{}, "data", CurrentElement.EMPTY, CurrentElement.DATA, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{}, "startGraph", CurrentElement.EMPTY, CurrentElement.GRAPH, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{}, "startNode", CurrentElement.EMPTY, CurrentElement.NODE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{}, "startEdge", CurrentElement.EMPTY, CurrentElement.EDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{}, "startHyperEdge", CurrentElement.EMPTY, CurrentElement.HYPEREDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{}, "startPort", CurrentElement.EMPTY, CurrentElement.PORT, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{}, "endGraph", CurrentElement.GRAPH, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{}, "endNode", CurrentElement.NODE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{}, "endEdge", CurrentElement.EDGE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+           //10
+            parameterDataList.add(new ParameterData(new String[]{}, "endEdge", CurrentElement.EDGE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{}, "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{}, "endPort", CurrentElement.PORT, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "startNode", CurrentElement.GRAPHML, CurrentElement.NODE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "startEdge", CurrentElement.GRAPHML, CurrentElement.EDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "startHyperEdge", CurrentElement.GRAPHML, CurrentElement.HYPEREDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "startPort", CurrentElement.GRAPHML, CurrentElement.PORT, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "endGraph", CurrentElement.GRAPH, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "endNode", CurrentElement.NODE, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "endEdge", CurrentElement.EDGE, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
+            //20
+            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "endPort", CurrentElement.PORT, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "startDocument", CurrentElement.GRAPH, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "key", CurrentElement.GRAPH, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "endDocument", CurrentElement.GRAPHML, CurrentElement.GRAPH, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "endNode", CurrentElement.NODE, CurrentElement.GRAPH, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "endEdge", CurrentElement.EDGE, CurrentElement.GRAPH, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.GRAPH, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "endPort", CurrentElement.PORT, CurrentElement.GRAPH, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "startDocument", CurrentElement.NODE, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
+            //30
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "key", CurrentElement.NODE, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "startDocument", CurrentElement.NODE, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "endDocument", CurrentElement.GRAPHML, CurrentElement.NODE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "endGraph", CurrentElement.GRAPH, CurrentElement.NODE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "endEdge", CurrentElement.EDGE, CurrentElement.NODE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.NODE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "endPort", CurrentElement.PORT, CurrentElement.NODE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startEdge"}, "key", CurrentElement.EDGE, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startEdge"}, "endDocument", CurrentElement.GRAPHML, CurrentElement.EDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startEdge"}, "endGraph", CurrentElement.GRAPH, CurrentElement.EDGE, GraphmlWriterEndException.class));
+            //40
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startEdge"}, "endNode", CurrentElement.NODE, CurrentElement.EDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "endDocument", CurrentElement.GRAPHML, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "startDocument", CurrentElement.HYPEREDGE, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "startEdge", CurrentElement.HYPEREDGE, CurrentElement.EDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "startPort", CurrentElement.HYPEREDGE, CurrentElement.PORT, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "key", CurrentElement.HYPEREDGE, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "endGraph", CurrentElement.GRAPH, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "endNode", CurrentElement.NODE, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "endEdge", CurrentElement.EDGE, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "endPort", CurrentElement.PORT, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
+            //50
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "endDocument", CurrentElement.GRAPHML, CurrentElement.PORT, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "startDocument", CurrentElement.PORT, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "startEdge", CurrentElement.PORT, CurrentElement.EDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "startHyperEdge", CurrentElement.PORT, CurrentElement.HYPEREDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "key", CurrentElement.PORT, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "endGraph", CurrentElement.GRAPH, CurrentElement.PORT, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "endNode", CurrentElement.NODE, CurrentElement.PORT, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "endEdge", CurrentElement.EDGE, CurrentElement.PORT, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.PORT, GraphmlWriterEndException.class));
+
+            return parameterDataList.stream();
         }
 
-        @Test
-        void shouldThrowIllegalStateExceptionEndDocumentBeforeStart() throws IOException {
-            Exception exception = assertThrows(Exception.class, () -> underTest.endDocument());
-            assertAll("",//
-                    () -> assertInstanceOf(GraphmlWriterEndException.class, exception),//
-                    () -> assertEquals(ValidatingGraphMlWriter.CurrentElement.GRAPHML, ((GraphmlWriterEndException)exception).offendingElement ),
-                    () -> assertEquals(ValidatingGraphMlWriter.CurrentElement.EMPTY, ((GraphmlWriterEndException)exception).lastStartedElement )
-            );
-        }
-        @Test
-        void shouldThrowIllegalStateExceptionStartGraphBeforeStartDocument() throws IOException {
+        @ParameterizedTest
+        @MethodSource("parameterDataList")
+        void shouldThrowException(ParameterData parameterData) throws Exception {
+            underTest = new ValidatingGraphMlWriter(mockGraphMlWriter);
+            for (String t : parameterData.initializerMethod) {
+                execute(t);
+            }
 
-            Exception exception = assertThrows(Exception.class, () ->   underTest.startGraph(mockGraph));
+            Exception exception = assertThrows(Exception.class, () -> execute(parameterData.exceptionThrowerMethod));
             assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found GRAPH. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
-        }
-
-        @Test
-        void shouldThrowIllegalStateExceptionStartKeyBeforeStartDocument()  {
-            Exception exception = assertThrows(Exception.class, () ->   underTest.key(mockKey));
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found KEY. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
-        }
-        @Test
-        void shouldThrowIllegalStateExceptionStartEdgeBeforeStartDocument()  {
-
-            Exception exception = assertThrows(Exception.class, () ->     underTest.startEdge(mockEdge));
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found EDGE. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
-        }
-
-
-        @Test
-        void shouldThrowIllegalStateExceptionDataBeforeStartDocument() throws IOException {
-            Exception exception = assertThrows(Exception.class, () ->   underTest.data(mockData));
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found DATA. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
-        }
-
-        @Test
-        void shouldThrowIllegalStateExceptionStartPortBeforeStartDocument() throws IOException {
-
-            Exception exception = assertThrows(Exception.class, () ->   underTest.startPort(mockPort));
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found PORT. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
-        }
-        @Test
-        void shouldThrowIllegalStateExceptionStartHyperEdgeBeforeStartDocument() throws IOException {
-           Exception exception = assertThrows(Exception.class, () ->   underTest.startHyperEdge(mockHyperEdge));
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element 'EMPTY' expected one of [GRAPHML] but found HYPEREDGE. Stack (leaf-to-root): [EMPTY]",exception.getMessage()));
-        }
-        @Test
-        void shouldThrowIllegalStateExceptionEndEdgeBeforeStart() throws IOException {
-            underTest.startDocument(mockDocument);
-            Exception exception = assertThrows(Exception.class, () ->  underTest.endEdge());
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of calls. Cannot END 'EDGE', last started element was GRAPHML",exception.getMessage()));
-        }
-
-        @Test
-        void shouldThrowIllegalStateExceptionEndPortBeforeStart() throws IOException {
-            underTest.startDocument(mockDocument);
-            Exception exception = assertThrows(Exception.class, () ->  underTest.endPort());
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of calls. Cannot END 'PORT', last started element was GRAPHML",exception.getMessage()));
-        }
-        @Test
-        void shouldThrowIllegalStateExceptionEndNodeBeforeStart() throws IOException {
-            underTest.startDocument(mockDocument);
-            Exception exception = assertThrows(Exception.class, () ->  underTest.endNode(Optional.empty()));
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of calls. Cannot END 'NODE', last started element was GRAPHML",exception.getMessage()));
-        }
-
-        @Test
-        void shouldThrowIllegalStateExceptionEndHyperEdgeBeforeStart() throws IOException {
-            underTest.startDocument(mockDocument);
-            Exception exception = assertThrows(Exception.class, () ->  underTest.endHyperEdge());
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of calls. Cannot END 'HYPEREDGE', last started element was GRAPHML",exception.getMessage()));
-        }
-        @Test
-        void shouldThrowIllegalStateExceptionEndGraphBeforeStart() throws IOException {
-            underTest.startDocument(mockDocument);
-            Exception exception = assertThrows(Exception.class, () ->  underTest.endGraph(Optional.empty()));
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of calls. Cannot END 'GRAPH', last started element was GRAPHML",exception.getMessage()));
-        }
-
-        @Test
-        void shouldThrowIllegalStateExceptionStartNodeInsideDocument() throws IOException {
-            underTest.startDocument(mockDocument);
-            Exception exception = assertThrows(Exception.class, () ->  underTest.startNode(mockNode));
-            assertAll("",//
-                    () -> assertInstanceOf(GraphmlWriterStartException.class, exception),//
-                    () -> assertEquals(ValidatingGraphMlWriter.CurrentElement.GRAPHML, ((GraphmlWriterStartException)exception).currentElement ), //
-                    () -> assertEquals(ValidatingGraphMlWriter.CurrentElement.NODE, ((GraphmlWriterStartException)exception).childElement ) //
+                    () -> assertInstanceOf(parameterData.exceptionClass, exception),//
+                    () -> assertEquals(parameterData.offendingElement, ((GraphmlWriterException) exception).offendingElement),
+                    () -> assertEquals(parameterData.lastStartedElement, ((GraphmlWriterException) exception).lastStartedElement)
             );
         }
 
-        @Test
-        void shouldThrowIllegalStateExceptionStartPortInsideDocument() throws IOException {
-            underTest.startDocument(mockDocument);
+        private void execute(String methodName) throws IOException {
 
-            Exception exception = assertThrows(Exception.class, () ->  underTest.startPort(mockPort));
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element 'GRAPHML' expected one of [DATA, DESC, KEY, GRAPH] but found PORT. Stack (leaf-to-root): [GRAPHML, EMPTY]",exception.getMessage()));
-        }
-        @Test
-        void shouldThrowIllegalStateExceptionStartEdgeInsideDocument() throws IOException {
-            underTest.startDocument(mockDocument);
+            switch (methodName) {
+                case "key":
+                    underTest.key(mockKey);
+                    break;
+                case "data":
+                    underTest.data(mockData);
+                    break;
+                case "startDocument":
+                    underTest.startDocument(mockDocument);
+                    break;
+                case "startGraph":
+                    underTest.startGraph(mockGraph);
+                    break;
+                case "startNode":
+                    when(mockNode.getId()).thenReturn(NODE_ID_1);
+                    underTest.startNode(mockNode);
+                    break;
+                case "startEdge":
+                    when(mockEdge.getSourceId()).thenReturn(NODE_ID_1);
+                    when(mockEdge.getTargetId()).thenReturn(NODE_ID_2);
+                    underTest.startEdge(mockEdge);
+                    break;
+                case "startHyperEdge":
+                    when(mockHyperEdge.getEndpoints()).thenReturn(List.of(ENDPOINT_1, ENDPOINT_2));
+                    underTest.startHyperEdge(mockHyperEdge);
+                    break;
+                case "startPort":
+                    underTest.startPort(mockPort);
+                    break;
+                case "endDocument":
+                    underTest.endDocument();
+                    break;
+                case "endGraph":
+                    underTest.endGraph(Optional.empty());
+                    break;
+                case "endNode":
+                    underTest.endNode(Optional.empty());
+                    break;
+                case "endEdge":
+                    underTest.endEdge();
+                    break;
+                case "endHyperEdge":
+                    underTest.endHyperEdge();
+                    break;
+                case "endPort":
+                    underTest.endPort();
+                    break;
+                default:
+                    throw new IllegalArgumentException(String.format("Method <%s> not supported.", methodName));
+            }
 
-            Exception exception = assertThrows(Exception.class, () ->  underTest.startEdge(mockEdge));
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element 'GRAPHML' expected one of [DATA, DESC, KEY, GRAPH] but found EDGE. Stack (leaf-to-root): [GRAPHML, EMPTY]",exception.getMessage()));
-        }
-        @Test
-        void shouldThrowIllegalStateExceptionStartHyperEdgeInsideDocument() throws IOException {
-            underTest.startDocument(mockDocument);
-
-            Exception exception = assertThrows(Exception.class, () ->  underTest.startHyperEdge(mockHyperEdge));
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element 'GRAPHML' expected one of [DATA, DESC, KEY, GRAPH] but found HYPEREDGE. Stack (leaf-to-root): [GRAPHML, EMPTY]",exception.getMessage()));
-        }
-        @Test
-        void shouldThrowIllegalStateExceptionEndDocumentBeforeEndGraph() throws IOException {
-            underTest.startDocument(mockDocument);
-            underTest.startGraph(mockGraph);
-            Exception exception = assertThrows(Exception.class, () ->  underTest.endDocument());
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of calls. Cannot END 'GRAPHML', last started element was GRAPH",exception.getMessage()));
         }
 
-        @Test
-        void shouldThrowIllegalStateExceptionStartKeyInsideGraph()  throws IOException {
-            underTest.startDocument(mockDocument);
-            underTest.startGraph(mockGraph);
-            Exception exception = assertThrows(Exception.class, () ->   underTest.key(mockKey));
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("Wrong order of elements. In element 'GRAPH' expected one of [DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR] but found KEY. Stack (leaf-to-root): [GRAPH, GRAPHML, EMPTY]",exception.getMessage()));
+        static class ParameterData {
+            List<String> initializerMethod;
+            String exceptionThrowerMethod;
+            ValidatingGraphMlWriter.CurrentElement offendingElement;
+            ValidatingGraphMlWriter.CurrentElement lastStartedElement;
+
+            Class exceptionClass;
+
+            public ParameterData(List<String> initializerMethod, String exceptionThrowerMethod, CurrentElement offendingElement, CurrentElement lastStartedElement, Class exceptionClass) {
+                this.initializerMethod = initializerMethod;
+                this.exceptionThrowerMethod = exceptionThrowerMethod;
+                this.offendingElement = offendingElement;
+                this.lastStartedElement = lastStartedElement;
+                this.exceptionClass = exceptionClass;
+            }
+
+            public ParameterData(String[] initializerMethod, String exceptionThrowerMethod, ValidatingGraphMlWriter.CurrentElement offendingElement, ValidatingGraphMlWriter.CurrentElement lastStartedElement, Class exceptionClass) {
+                this(List.of(initializerMethod), exceptionThrowerMethod, offendingElement, lastStartedElement, exceptionClass);
+            }
+
         }
 
     }
