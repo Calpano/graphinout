@@ -64,7 +64,7 @@ public class GioWriterImpl implements GioWriter {
     public void key(GioKey gioKey) throws IOException {
         GraphmlKey graphmlKey = GraphmlKey.builder()//
                 .id(gioKey.getId())//
-                .forType(GraphmlKeyForType.keyForType(gioKey.getForType().values))//
+                .forType(GraphmlKeyForType.keyForType(gioKey.getForType().value))//
                 .build();
         gioKey.defaultValue().ifPresent(defaultValue -> graphmlKey.setDefaultValue(GraphmlDefault.builder().value(defaultValue).build()));
         gioKey.attributeName().ifPresent(graphmlKey::setAttrName);
@@ -139,9 +139,10 @@ public class GioWriterImpl implements GioWriter {
         assert gioEdge.getEndpoints() != null;
         assert gioEdge.getEndpoints().size() > 2;
         // default case: hyperedge
-        GraphmlHyperEdge graphmlHyperEdge = GraphmlHyperEdge.builder().id(gioEdge.getId()).build();
+        GraphmlHyperEdge.GraphmlHyperEdgeBuilder builder = GraphmlHyperEdge.builder(gioEdge.getId());
+        gioEdge.getEndpoints().stream().map(this::graphmlEndpoint).forEach(builder::addEndpoint);
+        GraphmlHyperEdge graphmlHyperEdge = builder.build();
         customAttributes(gioEdge, graphmlHyperEdge);
-        graphmlHyperEdge.setEndpoints(gioEdge.getEndpoints().stream().map(this::graphmlEndpoint).toList());
         graphmlWriter.startHyperEdge(graphmlHyperEdge);
         this.openEdge = graphmlHyperEdge;
     }
@@ -152,16 +153,6 @@ public class GioWriterImpl implements GioWriter {
         desc(gioGraph, graphmlGraph);
 
         graphmlWriter.startGraph(graphmlGraph);
-        // TODO instead, remember all nodes ids of the stream, also node ids refered to in edges -> ValidatingGioWriter
-//        if (gioGraph.getNodes() != null) {
-//            for (GioNode gioNode : gioGraph.getNodes())
-//                startNode(gioNode);
-//        }
-//        if (gioGraph.getHyperEdges() != null) {
-//            for (GioEdge gioEdge : gioGraph.getHyperEdges())
-//                startEdge(gioEdge);
-//        }
-
     }
 
     @Override
@@ -177,9 +168,8 @@ public class GioWriterImpl implements GioWriter {
     }
 
     private void customAttributes(GioElement gioElement, GraphmlElement graphmlElement) {
-        // TODO validate in GraphmlWriter we dont overwrite the already defined attributes
-        if (graphmlElement.getExtraAttrib() == null) graphmlElement.setExtraAttrib(new HashMap<>());
         if (gioElement.getCustomAttributes() != null) {
+            if (graphmlElement.getExtraAttrib() == null) graphmlElement.setExtraAttrib(new HashMap<>());
             graphmlElement.getExtraAttrib().putAll(gioElement.getCustomAttributes());
         }
     }
@@ -204,11 +194,4 @@ public class GioWriterImpl implements GioWriter {
         return Optional.ofNullable(locator).map(url -> GraphmlLocator.builder().xLinkHref(url).build());
     }
 
-    private GraphmlPort port(GioPort gioPort) {
-        GraphmlPort graphmlPort = GraphmlPort.builder().name(gioPort.getName()).build();
-        customAttributes(gioPort, graphmlPort);
-        // TODO need to copy recursive sub-ports and their data
-        // data(gioPort, graphmlPort);
-        return graphmlPort;
-    }
 }

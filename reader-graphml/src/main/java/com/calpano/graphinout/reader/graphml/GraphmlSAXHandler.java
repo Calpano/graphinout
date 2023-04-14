@@ -279,7 +279,6 @@ class GraphmlSAXHandler extends DefaultHandler {
         assertCurrent("endDesc", GioDescriptionEntity.class);
         GioDescriptionEntity gioDescriptionEntity = pop(GioDescriptionEntity.class);
         getCurrentEntity().addEntity(gioDescriptionEntity);
-        // TODO fire parent element.start to GioWriter
     }
 
     private void endEdgeElement() throws IOException {
@@ -541,7 +540,7 @@ class GraphmlSAXHandler extends DefaultHandler {
             switch (attributes.getQName(i)) {
                 case "id" -> builder.id(attributes.getValue(i));
                 case "for" -> {
-                    builder.forType(GioKeyForType.keyForType(attributes.getValue(i).toLowerCase()));
+                    builder.forType(GioKeyForType.keyForType(attributes.getValue(i)));
                     isForDefined = true;
                 }
                 default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
@@ -557,7 +556,6 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startLocatorElement(Attributes attributes) throws IOException {
         assertCurrent("startLocator", GioGraphEntity.class, GioNodeEntity.class);
-        //TODO locator customAttributes doese need to process that
         URL url = null;
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -566,7 +564,6 @@ class GraphmlSAXHandler extends DefaultHandler {
                 case "xlink:href" -> url = new URL(attributes.getValue(i));
                 default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
             }
-
         }
         // NOTE: we are throwing away custom attributes on <locator>-element
         GioLocatorEntity gioLocatorEntity = new GioLocatorEntity(url);

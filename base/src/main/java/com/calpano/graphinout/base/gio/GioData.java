@@ -41,7 +41,7 @@ public class GioData extends GioElement {
     /**
      * Links this data instance to a definition given in a {@link GioKey} element
      * <p>
-     * TODO validate: Must refer to a previously defined {@link GioKey#getId()}.
+     * TODO validate: Must refer to a previously defined {@link GioKey#getId()}. -- similar to #90
      */
     private String key;
 

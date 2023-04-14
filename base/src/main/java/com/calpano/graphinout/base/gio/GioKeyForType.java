@@ -2,27 +2,29 @@ package com.calpano.graphinout.base.gio;
 
 public enum GioKeyForType {
 
-    // TODO can we unify Graphml & All value?
-    Graphml("graphml","all"),
+    Graphml("graphml"),
     /** the default value */
     All("all"), Graph("graph"), Node("node"), Edge("edge"), HyperEdge("hyperedge"), Port("port"), Endpoint("endpoint");
 
-    public final String[] values;
+    public final String value;
 
-    GioKeyForType(String ... values) {
-        this.values = values;
+    GioKeyForType(String value) {
+        this.value = value;
     }
 
+    /**
+     * Compare ignoring case
+     * @param keyForType
+     * @return
+     * @throws IllegalArgumentException
+     */
     public static GioKeyForType keyForType(String keyForType) throws IllegalArgumentException {
         if (keyForType == null)
             // default value
             return GioKeyForType.All;
         for (GioKeyForType v : values()) {
-            for(String s : v.values) {
-                if(s.equals(keyForType))
-                    return v;
-            }
+            if (keyForType.toLowerCase().trim().equals(v.value)) return v;
         }
-        throw new IllegalArgumentException("No enum constant  "+ keyForType+" .");
+        throw new IllegalArgumentException("No enum constant  " + keyForType + " .");
     }
 }

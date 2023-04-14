@@ -45,7 +45,7 @@ class GraphmlWriterTest {
 
         @Override
         public void lineBreak() throws IOException {
-            // TODO should we test it too or ignore it?
+            // ignored in tests
         }
 
         @Override
@@ -58,6 +58,7 @@ class GraphmlWriterTest {
             outPut.append("::startElement->").append(name).append("->").append(attributes);
         }
     }
+
     @Spy
     static XmlWriterSpy xmlWriterSpy;
     private static GraphmlWriter graphmlWriter;
@@ -73,21 +74,18 @@ class GraphmlWriterTest {
     void data() throws IOException {
         graphmlWriter.key(GraphmlKey.builder().id("test").attrName("attrName").attrType("attrType").forType(GraphmlKeyForType.All).build());
         assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=attrType, for=all}::endElement->key", xmlWriterSpy.getOutPut().toString());
-
     }
 
     @Test
     void endDocument() throws IOException {
         graphmlWriter.endDocument();
         assertEquals("::endElement->graphml::endDocument", xmlWriterSpy.getOutPut().toString());
-
     }
 
     @Test
     void endEdge() throws IOException {
         graphmlWriter.endHyperEdge();
         assertEquals("::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
-
     }
 
     @Test
@@ -96,8 +94,7 @@ class GraphmlWriterTest {
                 .xLinkHref(new URL("http:\\127.0.0.1"))
                 .build();
         graphmlWriter.endGraph(Optional.of(locator));
-        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
-
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
     }
 
     @Test
@@ -107,7 +104,7 @@ class GraphmlWriterTest {
                 .build();
         locator.getAttributes().put("locator.extra.attrib", "local");
         graphmlWriter.endNode(Optional.of(locator));
-        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
     }
 
     @Test
@@ -119,10 +116,10 @@ class GraphmlWriterTest {
 
     @Test
     void startEdge() throws IOException {
-        List<GraphmlEndpoint> gioEndpoints = new ArrayList<>();
-        gioEndpoints.add(GraphmlEndpoint.builder().id("GioEndpoint1").node("node1").type(Direction.In).port("port1").build());
-        gioEndpoints.add(GraphmlEndpoint.builder().id("GioEndpoint2").node("node2").type(Direction.Out).port("port2").build());
-        graphmlWriter.startHyperEdge(GraphmlHyperEdge.builder().id("edge1").endpoints(gioEndpoints).build());
+        graphmlWriter.startHyperEdge(GraphmlHyperEdge.builder("edge1")
+                .addEndpoint(GraphmlEndpoint.builder().id("GioEndpoint1").node("node1").type(Direction.In).port("port1").build())
+                .addEndpoint(GraphmlEndpoint.builder().id("GioEndpoint2").node("node2").type(Direction.Out).port("port2").build())
+                .build());
         assertEquals("::startElement->hyperedge->{id=edge1}::startElement->endpoint->{id=GioEndpoint1, node=node1, port=port1, type=in}::endElement->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=out}::endElement->endpoint", xmlWriterSpy.getOutPut().toString());
 
     }

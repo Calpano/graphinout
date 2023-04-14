@@ -42,7 +42,7 @@ class GioWriterTest {
 
         @Override
         public void lineBreak() throws IOException {
-            // TODO should we test it too or ignore it?
+            // ignored in tests
         }
 
         @Override
@@ -56,7 +56,7 @@ class GioWriterTest {
         }
     }
 
-    // TODO why do we have two XmlWriterSpy implementations? Should re-use the other XmlWriterSpy
+    // TODO Rasul: why do we have two XmlWriterSpy implementations? Should re-use the other XmlWriterSpy
     @Spy
     XmlWriterSpy xmlWriterSpy;
     private GioWriter gioWriter;
@@ -71,15 +71,13 @@ class GioWriterTest {
     @Test
     void data() throws IOException {
         gioWriter.key(GioKey.builder().id("test").attributeName("attrName").attributeType(GioDataType.typeInt).forType(GioKeyForType.All).build());
-        assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=int, for=graphml}::endElement->key", xmlWriterSpy.getOutPut().toString());
-
+        assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=int, for=all}::endElement->key", xmlWriterSpy.getOutPut().toString());
     }
 
     @Test
     void endDocument() throws IOException {
         gioWriter.endDocument();
         assertEquals("::endElement->graphml::endDocument", xmlWriterSpy.getOutPut().toString());
-
     }
 
     @Test
@@ -96,14 +94,14 @@ class GioWriterTest {
     @Test
     void endGraph() throws IOException {
         gioWriter.endGraph(new URL("http:\\127.0.0.1"));
-        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
 
     }
 
     @Test
     void endNode() throws IOException {
         gioWriter.endNode(new URL("http:\\127.0.0.1"));
-        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
 
     }
 

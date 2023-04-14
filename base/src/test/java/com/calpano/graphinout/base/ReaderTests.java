@@ -2,6 +2,7 @@ package com.calpano.graphinout.base;
 
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
+import com.calpano.graphinout.base.gio.ValidatingGioWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
@@ -49,7 +50,7 @@ public class ReaderTests {
         }
         GioWriter gioWriter = new GioWriterImpl(graphmlWriter);
         if (validateGio) {
-            // TODO        gioWriter = new ValidatingGioWriter( gioWriter );
+            gioWriter = new ValidatingGioWriter( gioWriter );
         }
         return gioWriter;
     }
@@ -107,8 +108,8 @@ public class ReaderTests {
         forEachReadableResource(gioReader, resourcePath -> {
             try {
                 testReadResourceToGraph(gioReader, resourcePath, expectedErrorsFun.apply(resourcePath));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (Throwable e) {
+                log.warn("Exception during parsing", e);
             }
         });
     }

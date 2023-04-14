@@ -1,14 +1,12 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * @author rbaba
@@ -31,6 +29,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
 
     public static final String TAGNAME = "key";
@@ -80,13 +79,6 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
     }
 
     @Override
-    public String startTag() {
-        LinkedHashMap<String, String> attributes = getAttributes();
-        if (valueTag().isEmpty()) return GIOUtil.makeElement("key", attributes);
-        return GIOUtil.makeStartElement("key", attributes);
-    }
-
-    @Override
     public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
 
@@ -96,7 +88,7 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
 
         if (attrType != null && !attrType.isEmpty()) attributes.put("attr.type", attrType);
 
-        if (forType != null) attributes.put("for", forType.values[0]);
+        if (forType != null) attributes.put("for", forType.value);
 
         if(extraAttrib!=null)
             attributes.putAll(extraAttrib);
@@ -104,23 +96,5 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
         return  attributes;
     }
 
-    @Override
-    public String valueTag() {
-        StringBuilder xmlValueData = new StringBuilder();
-        if (desc != null) xmlValueData.append(desc.fullTag());
-        if (getDataList() != null) for (XMLValue data : getDataList())
-            xmlValueData.append(data.fullTag());
-        if (defaultValue != null) {
-            xmlValueData.append(defaultValue.fullTag());
-        }
-        //HIT GRAPH
-        return xmlValueData.toString();
-    }
-
-    @Override
-    public String endTag() {
-        if (valueTag().isEmpty()) return "";
-        return GIOUtil.makeEndElement("key");
-    }
 }
 
