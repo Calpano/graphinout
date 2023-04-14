@@ -1,0 +1,17 @@
+digraph G {
+  node [shape=ellipse];
+  edge [dir=none];
+
+  {rank=same; A B C D}
+  {rank=same; E F G H}
+  {rank=same; I J K L}
+
+  A -> B -> C -> D [style=bold, weight=2];
+  A -> E [style=dashed, weight=1.5];
+  C -> G [style=dotted, weight=3];
+  D -> H [style=solid, weight=4.5];
+  E -> F -> G -> H -> I [style=bold, weight=2.5];
+  F -> J [style=dashed, weight=1];
+  H -> K [style=dotted, weight=3.5];
+  I -> J -> K -> L [style=solid, weight=4];
+}

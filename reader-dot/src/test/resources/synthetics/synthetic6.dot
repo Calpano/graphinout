@@ -1,0 +1,12 @@
+digraph G {
+  node [shape=record, height=0.7, width=1.2];
+  edge [color=blue, dir=none, weight=2];
+
+  A [label="{<f0>Field 0|<f1>Field 1|<f2>Field 2}", fillcolor=gray90, style=filled];
+  B [label="{<f0>Field 0|<f1>Field 1|<f2>Field 2}", fillcolor=gray90, style=filled];
+  C [label="{<f0>Field 0|<f1>Field 1|<f2>Field 2}", fillcolor=gray90, style=filled];
+
+  A:f1 -> B:f0;
+  B:f1 -> C:f0;
+  A:f2 -> C:f1;
+}
