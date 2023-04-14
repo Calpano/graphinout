@@ -14,7 +14,7 @@ class DotReaderTest2 extends AbstractReaderTest {
             return Arrays.asList(new ContentError(ContentError.ErrorLevel.Error, "at line 35:22 extraneous input ',' expecting {'{', '}', GRAPH, NODE, EDGE, SUBGRAPH, NUMBER, STRING, ID, HTML_STRING}", null));
         }
         if (resourceName.endsWith("libinput-stack-xorg.gv")) {
-            return Arrays.asList(new ContentError(ContentError.ErrorLevel.Error, "at line 17:7 syntax error, unexpected ID, expecting '{'", null));
+            return Arrays.asList(new ContentError(ContentError.ErrorLevel.Error, "at line 6:15 extraneous input ';' expecting {']', NUMBER, STRING, ID, HTML_STRING}", null));
         }
         return Collections.emptyList();
     }
