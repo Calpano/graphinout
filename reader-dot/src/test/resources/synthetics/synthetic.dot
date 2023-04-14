@@ -1,15 +1,11 @@
 digraph G {
-  node [shape=rect, style=filled, fillcolor=white, color=black, fontname=Helvetica, fontsize=12];
-  edge [color=black, arrowhead=vee, style=dashed, dir=back, fontname=Arial, fontsize=10, constraint=false];
+  node [shape=rect];
+  edge [color=black];
 
-  A [label="Node A", shape=circle, style=filled, fillcolor=blue, color=white, fontname=Times, fontsize=14, width=1.5, height=1.5, fixedsize=true, pos="10,20!"];
-  B [label="Node B", shape=box, style=dashed, fillcolor=red, color=black, fontname=Arial, fontsize=10, width=2, height=1, fixedsize=false, pos="30,40!"];
-  C [label="Node C", shape=diamond, style=bold, fillcolor=yellow, color=blue, fontname=Helvetica, fontsize=8, width=0.5, height=1, fixedsize=false, pos="50,60!"];
-  D [label="Node D", shape=triangle, style=solid, fillcolor=green, color=red, fontname=Times, fontsize=16, width=1, height=2, fixedsize=true, pos="70,80!"];
+  A [shape=circle];
+  B ;
+  C ;
 
-  A -> B [label="Edge AB", color=red, fontname=Helvetica, fontsize=12, constraint=false, weight=1.5, minlen=2, dir=back, arrowhead=none, arrowtail=crow, penwidth=0.5, style=dashed];
-  A -> C [label="Edge AC", color=blue, fontname=Arial, fontsize=10, constraint=true, weight=2.5, minlen=1, dir=both, arrowhead=vee, arrowtail=tee, penwidth=1, style=bold];
-  B -> C [label="Edge BC", color=green, fontname=Times, fontsize=14, constraint=false, weight=0.5, minlen=3, dir=none, arrowhead=odot, arrowtail=none, penwidth=1.5, style=solid];
-  B -> D [label="Edge BD", color=purple, fontname=Helvetica, fontsize=12, constraint=true, weight=3.5, minlen=4, dir=forward, arrowhead=vee, arrowtail=none, penwidth=2, style=dotted];
-  C -> D [label="Edge CD", color=orange, fontname=Arial, fontsize=10, constraint=false, weight=4.5, minlen=5, dir=reverse, arrowhead=dot, arrowtail=odiamond, penwidth=2.5, style=dashed];
+  A -> B ;
+  A -> C [color=blue];
 }
