@@ -64,7 +64,7 @@ public class GioWriterImpl implements GioWriter {
     public void key(GioKey gioKey) throws IOException {
         GraphmlKey graphmlKey = GraphmlKey.builder()//
                 .id(gioKey.getId())//
-                .forType(GraphmlKeyForType.keyForType(gioKey.getForType().values))//
+                .forType(GraphmlKeyForType.keyForType(gioKey.getForType().value))//
                 .build();
         gioKey.defaultValue().ifPresent(defaultValue -> graphmlKey.setDefaultValue(GraphmlDefault.builder().value(defaultValue).build()));
         gioKey.attributeName().ifPresent(graphmlKey::setAttrName);

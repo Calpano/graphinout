@@ -12,7 +12,8 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 public class ValidatingGioWriter implements GioWriter {
-    private final GioWriterImpl gioWriter;
+
+    private final GioWriter gioWriter;
     private final Set<String> nodesIds = new HashSet<>();
     private final Set<String> edgesIds = new HashSet<>();
     private final Set<String> keysIds = new HashSet<>();

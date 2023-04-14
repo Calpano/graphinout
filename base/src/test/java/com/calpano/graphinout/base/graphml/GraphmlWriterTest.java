@@ -45,7 +45,7 @@ class GraphmlWriterTest {
 
         @Override
         public void lineBreak() throws IOException {
-            // TODO should we test it too or ignore it?
+            // ignored in tests
         }
 
         @Override

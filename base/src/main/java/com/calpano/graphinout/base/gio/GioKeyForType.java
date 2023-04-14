@@ -23,7 +23,7 @@ public enum GioKeyForType {
             // default value
             return GioKeyForType.All;
         for (GioKeyForType v : values()) {
-            if (keyForType.toLowerCase().equals(keyForType)) return v;
+            if (keyForType.toLowerCase().trim().equals(v.value)) return v;
         }
         throw new IllegalArgumentException("No enum constant  " + keyForType + " .");
     }
