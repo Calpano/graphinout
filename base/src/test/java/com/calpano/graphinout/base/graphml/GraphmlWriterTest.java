@@ -74,21 +74,18 @@ class GraphmlWriterTest {
     void data() throws IOException {
         graphmlWriter.key(GraphmlKey.builder().id("test").attrName("attrName").attrType("attrType").forType(GraphmlKeyForType.All).build());
         assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=attrType, for=all}::endElement->key", xmlWriterSpy.getOutPut().toString());
-
     }
 
     @Test
     void endDocument() throws IOException {
         graphmlWriter.endDocument();
         assertEquals("::endElement->graphml::endDocument", xmlWriterSpy.getOutPut().toString());
-
     }
 
     @Test
     void endEdge() throws IOException {
         graphmlWriter.endHyperEdge();
         assertEquals("::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
-
     }
 
     @Test
@@ -98,7 +95,6 @@ class GraphmlWriterTest {
                 .build();
         graphmlWriter.endGraph(Optional.of(locator));
         assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
-
     }
 
     @Test

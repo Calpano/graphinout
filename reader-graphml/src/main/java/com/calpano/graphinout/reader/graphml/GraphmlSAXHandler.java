@@ -541,7 +541,7 @@ class GraphmlSAXHandler extends DefaultHandler {
             switch (attributes.getQName(i)) {
                 case "id" -> builder.id(attributes.getValue(i));
                 case "for" -> {
-                    builder.forType(GioKeyForType.keyForType(attributes.getValue(i).toLowerCase()));
+                    builder.forType(GioKeyForType.keyForType(attributes.getValue(i)));
                     isForDefined = true;
                 }
                 default -> customAttributes.put(attributes.getQName(i), attributes.getValue(i));
