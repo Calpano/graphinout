@@ -1,0 +1,20 @@
+digraph G {
+  rankdir=TB;
+  node [shape=record, style=filled, fillcolor=lightgray, width=4, height=1, fontsize=12];
+  edge [dir=none, color=black, style=solid, weight=1, arrowsize=1.0];
+
+  A [label="{Node A|<f0> Field 1|<f1> Field 2|<f2> Field 3}|{<s0> Subfield 1|<s1> Subfield 2|<s2> Subfield 3}", fillcolor=white, fontcolor=black, penwidth=2.0, peripheries=2];
+  B [label="{Node B|<f0> Field 1|<f1> Field 2|<f2> Field 3}|{<s0> Subfield 1|<s1> Subfield 2|<s2> Subfield 3}", fillcolor=white, fontcolor=black, penwidth=2.0, peripheries=2];
+  C [label="{Node C|<f0> Field 1|<f1> Field 2|<f2> Field 3}|{<s0> Subfield 1|<s1> Subfield 2|<s2> Subfield 3}", fillcolor=white, fontcolor=black, penwidth=2.0, peripheries=2];
+  D [label="{Node D|<f0> Field 1|<f1> Field 2|<f2> Field 3}|{<s0> Subfield 1|<s1> Subfield 2|<s2> Subfield 3}", fillcolor=white, fontcolor=black, penwidth=2.0, peripheries=2];
+  E [label="{Node E|<f0> Field 1|<f1> Field 2|<f2> Field 3}|{<s0> Subfield 1|<s1> Subfield 2|<s2> Subfield 3}", fillcolor=white, fontcolor=black, penwidth=2.0, peripheries=2];
+
+  A:s0 -> B:s1 [label="Edge AB", color=red, style=dashed, weight=2, taillabel="tail", headlabel="head", arrowsize=1.5, constraint=false, decorate=true, dir=forward, arrowhead=vee, arrowtail=none];
+  A:s2 -> C:s1 [label="Edge AC", color=blue, style=solid, weight=1.5, taillabel="tail", headlabel="head", arrowsize=1.0, minlen=2, constraint=false, decorate=false, dir=forward, arrowhead=none, arrowtail=dot];
+  B:s0 -> C:s2 [label="Edge BC", color=green, style=dotted, weight=0.5, taillabel="tail", headlabel="head", arrowsize=0.5, minlen=3, constraint=false, decorate=true, dir=none, arrowhead=none, arrowtail=none];
+  B:s1 -> D:s0 [label="Edge BD", color=gray, style=bold, weight=1.0, taillabel="tail", headlabel="head", arrowsize=1.0, minlen=1, constraint=false, decorate=false, dir=both, arrowtail=tee, dir=none, weight=0.5, constraint=false];
+  C:s1 -> E:s0 [label="Edge CE", color=orange, style=solid, weight=2.5, taillabel="tail", headlabel="head", arrowsize=1.5, minlen=1, constraint=false, decorate=true, dir=back, arrowhead=box, arrowtail=none];
+  D:s2 -> E:s1 [label="Edge DE", color=yellow, style=dashed, arrowsize=1.0, taillabel="tail", headlabel="head", minlen=1, decorate=false, arrowhead=vee, arrowtail=none, dir=both, weight=1.5, constraint=false];
+
+  {rank=same; A; B; C; D; E};
+ }
