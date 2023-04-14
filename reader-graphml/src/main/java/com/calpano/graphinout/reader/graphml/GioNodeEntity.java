@@ -14,11 +14,6 @@ public class GioNodeEntity extends AbstractGraphmlEntity<GioNode> implements Gra
     public void addEntity(GraphmlEntity graphmlEntity) {
         if (graphmlEntity.getEntity() instanceof GioElementWithDescription g) {
             gioNode.setDescription(g.getDescription());
-        } else if (graphmlEntity instanceof GioDataEntity g) {
-            // TODO rasul
-            //if (gioNode.getDataList() == null)
-            //gioNode.setDataList(new ArrayList<>());
-            //gioNode.getDataList().add(g.getEntity());
         } else {
             throw new RuntimeException("Graphml has not " + graphmlEntity.getName() + " element.");
         }

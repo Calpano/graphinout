@@ -180,8 +180,7 @@ class GraphmlSAXHandlerTest {
         void setUp() {
             MockitoAnnotations.openMocks(this);
             saxHandler = new GraphmlSAXHandler(gioWriter, mockErrorConsumer);
-            // TODO is this what we want in a test? maybe.
-            saxHandler.setStructuralAssertionsEnabled(false);
+            saxHandler.setStructuralAssertionsEnabled(true);
             inOrder = Mockito.inOrder(gioWriter);
         }
 
@@ -578,6 +577,7 @@ class GraphmlSAXHandlerTest {
 
         @Test
         void startLocator_Only_Start_And_End_Element() throws SAXException {
+            saxHandler.setStructuralAssertionsEnabled(false);
             String uri = "uri", qName = GraphmlElement.LOCATOR, localName = "";
 
 

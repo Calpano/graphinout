@@ -28,12 +28,6 @@ public class GraphmlReader implements GioReader {
     }
 
     @Override
-    public boolean isValid(SingleInputSource singleInputSource) throws IOException {
-        // TODO
-        return GioReader.super.isValid(singleInputSource);
-    }
-
-    @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         try {
