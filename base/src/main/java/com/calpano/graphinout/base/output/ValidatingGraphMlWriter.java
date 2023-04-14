@@ -107,8 +107,6 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void startGraph(GraphmlGraph graph) throws IOException {
         ensureAllowedStart(CurrentElement.GRAPH);
-        // TODO adapt next line once GraphmlModel is simplified
-        validateGraph(graph);
         graphMlWriter.startGraph(graph);
     }
 
@@ -139,20 +137,22 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     private void ensureAllowedEnd(CurrentElement element) throws IllegalStateException {
         CurrentElement currentElement = currentElements.peek();
         if (currentElement != element) {
-            throw new IllegalStateException("Wrong order of calls. Cannot END '" + element + "', last started element was " + currentElement);
+            throw new GraphmlWriterEndException(element, currentElement,"Wrong order of calls. Cannot END '" + element + "', last started element was " + currentElement);
         }
         currentElements.pop();
-        log.debug("ENDED '" + element.name() + "'. Stack: " + stackToString());
+        if (log.isDebugEnabled())
+            log.debug("ENDED '{} '. Stack: {}", element.name(), stackToString());
     }
 
     private void ensureAllowedStart(CurrentElement childElement) throws IllegalStateException {
         CurrentElement currentElement = currentElements.peek();
         assert currentElement != null;
         if (!currentElement.isValidChild(childElement)) {
-            throw new IllegalStateException("Wrong order of elements. In element " + currentElement + " expected one of " + currentElement.allowedChildren + " but found " + childElement + ". Stack (leaf-to-root): " + this.currentElements);
+            throw new GraphmlWriterStartException(currentElement, childElement, "Wrong order of elements. In element '" + currentElement + "' expected one of " + currentElement.allowedChildren + " but found " + childElement + ". Stack (leaf-to-root): " + this.currentElements);
         }
         currentElements.push(childElement);
-        log.debug("STARTED '" + childElement.name() + "' => Stack: " + stackToString());
+        if (log.isDebugEnabled())
+            log.debug("STARTED '{}' => Stack: {}", childElement.name(), stackToString());
     }
 
     /**
@@ -210,18 +210,6 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         if (edge.getTargetId() == null) throw new IllegalArgumentException("endpoint without targetId");
     }
 
-    private void validateGraph(GraphmlGraph graph) throws IllegalStateException {
-        if (!graph.getNodes().isEmpty()) {
-            for (GraphmlNode gioNode : graph.getNodes()) {
-                validateNode(gioNode);
-            }
-        }
-        if (!graph.getHyperEdges().isEmpty()) {
-            for (GraphmlHyperEdge gioEdge : graph.getHyperEdges()) {
-                validateHyperEdge(gioEdge);
-            }
-        }
-    }
 
     private void validateGraphMl(GraphmlDocument document) {
         if (document.getKeys() != null) {
@@ -273,24 +261,25 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             throw new IllegalArgumentException("XLinkHref Url cannot be null or empty.");
     }
 
-    private enum CurrentElement {
+    enum CurrentElement {
         /**
          * state before any token
          */
         EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, EDGE, PORT, LOCATOR, DEFAULT, ENDPOINT;
 
         static {
-            EMPTY.allowedChildren = Set.of(GRAPHML);
-            GRAPHML.allowedChildren = Set.of(DATA, DESC, KEY, GRAPH);
-            KEY.allowedChildren = Set.of(DESC, DEFAULT);
-            NODE.allowedChildren = Set.of(DATA, DESC, GRAPH, LOCATOR, PORT);
-            GRAPH.allowedChildren = Set.of(DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR);
-            EDGE.allowedChildren = Set.of(DATA, DESC, GRAPH);
-            HYPEREDGE.allowedChildren = Set.of(DATA, DESC, ENDPOINT);
-            PORT.allowedChildren = Set.of(DATA, PORT);
+            EMPTY.allowedChildren.addAll(Arrays.asList(GRAPHML));
+            GRAPHML.allowedChildren.addAll(Arrays.asList(DATA, DESC, KEY, GRAPH));
+            KEY.allowedChildren.addAll(Arrays.asList(DESC, DEFAULT));
+            NODE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH, LOCATOR, PORT));
+            GRAPH.allowedChildren.addAll(Arrays.asList(DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR));
+            EDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH));
+            HYPEREDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, ENDPOINT));
+            PORT.allowedChildren.addAll(Arrays.asList(DATA, PORT));
         }
 
-        private Set<CurrentElement> allowedChildren = new HashSet<>();
+        // IMPROVE remove LinkedHashSet and use HashSet instead when no tests rely on this order
+        private Set<CurrentElement> allowedChildren = new LinkedHashSet<>();
 
         public boolean isValidChild(CurrentElement childElement) {
             return allowedChildren.contains(childElement);

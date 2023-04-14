@@ -37,7 +37,7 @@ public interface GioReader {
                 valid.set(false);
             }
         });
-        // TODO dont use null, use a dummy do-nothing-writer
+        // FIXME dont use null, use a dummy do-nothing-writer
         read(singleInputSource, null);
         return valid.get();
     }

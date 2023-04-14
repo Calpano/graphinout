@@ -96,14 +96,14 @@ class GioWriterTest {
     @Test
     void endGraph() throws IOException {
         gioWriter.endGraph(new URL("http:\\127.0.0.1"));
-        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
 
     }
 
     @Test
     void endNode() throws IOException {
         gioWriter.endNode(new URL("http:\\127.0.0.1"));
-        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1, xlink:type=simple}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
+        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
 
     }
 

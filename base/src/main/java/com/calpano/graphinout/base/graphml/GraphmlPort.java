@@ -1,13 +1,12 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 /**
  * @author rbaba
@@ -31,6 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class GraphmlPort extends GraphmlElement implements XMLValue {
 
 
@@ -42,17 +42,6 @@ public class GraphmlPort extends GraphmlElement implements XMLValue {
      */
     private String name;
 
-    /**
-     * User defined ports for <port> elements.
-     * <p>
-     * The name of this attribute in port is <b>port</b>
-     */
-
-    @Override
-    public String endTag() {
-        return GIOUtil.makeEndElement("port");
-    }
-
     @Override
     public LinkedHashMap<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
@@ -62,18 +51,4 @@ public class GraphmlPort extends GraphmlElement implements XMLValue {
         return attributes;
     }
 
-    @Override
-    public String startTag() {
-        LinkedHashMap<String, String> attributes = getAttributes();
-        return GIOUtil.makeStartElement("port", attributes);
-    }
-
-    @Override
-    public String valueTag() {
-        StringBuilder xmlValueData = new StringBuilder();
-//        for (XMLValue xmlValue : ports) {
-//            xmlValueData.append(xmlValue.fullTag());
-//        }
-        return xmlValueData.toString();
-    }
 }
