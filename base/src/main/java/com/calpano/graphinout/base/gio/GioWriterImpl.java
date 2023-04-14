@@ -152,16 +152,6 @@ public class GioWriterImpl implements GioWriter {
         desc(gioGraph, graphmlGraph);
 
         graphmlWriter.startGraph(graphmlGraph);
-        // TODO instead, remember all nodes ids of the stream, also node ids refered to in edges -> ValidatingGioWriter
-//        if (gioGraph.getNodes() != null) {
-//            for (GioNode gioNode : gioGraph.getNodes())
-//                startNode(gioNode);
-//        }
-//        if (gioGraph.getHyperEdges() != null) {
-//            for (GioEdge gioEdge : gioGraph.getHyperEdges())
-//                startEdge(gioEdge);
-//        }
-
     }
 
     @Override
@@ -177,9 +167,8 @@ public class GioWriterImpl implements GioWriter {
     }
 
     private void customAttributes(GioElement gioElement, GraphmlElement graphmlElement) {
-        // TODO validate in GraphmlWriter we dont overwrite the already defined attributes
-        if (graphmlElement.getExtraAttrib() == null) graphmlElement.setExtraAttrib(new HashMap<>());
         if (gioElement.getCustomAttributes() != null) {
+            if (graphmlElement.getExtraAttrib() == null) graphmlElement.setExtraAttrib(new HashMap<>());
             graphmlElement.getExtraAttrib().putAll(gioElement.getCustomAttributes());
         }
     }
