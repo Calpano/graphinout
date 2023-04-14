@@ -33,7 +33,7 @@ public interface GioReader {
     default boolean isValid(SingleInputSource singleInputSource) throws IOException {
         AtomicBoolean valid = new AtomicBoolean(true);
         errorHandler((error) -> {
-            if (error.level == ContentError.ErrorLevel.Error) {
+            if (error.level == ContentError.ErrorLevel.Error || error.level == ContentError.ErrorLevel.Warn) {
                 valid.set(false);
             }
         });
