@@ -1,8 +1,8 @@
 package com.calpano.graphinout.reader.dot;
 
+import com.calpano.graphinout.base.AbstractReaderTest;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
-import com.calpano.graphinout.base.AbstractReaderTest;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,9 +13,11 @@ class DotReaderTest2 extends AbstractReaderTest {
         if (resourceName.endsWith("Call_Graph.gv")) {
             return Arrays.asList(new ContentError(ContentError.ErrorLevel.Error, "at line 35:22 extraneous input ',' expecting {'{', '}', GRAPH, NODE, EDGE, SUBGRAPH, NUMBER, STRING, ID, HTML_STRING}", null));
         }
-        if(resourceName.endsWith("libinput-stack-xorg.gv")) {
-            // TODO
-            return Collections.emptyList();
+        if (resourceName.endsWith("libinput-stack-xorg.gv")) {
+            return Arrays.asList(new ContentError(ContentError.ErrorLevel.Error, "at line 6:15 extraneous input ';' expecting {']', NUMBER, STRING, ID, HTML_STRING}", null));
+        }
+        if (resourceName.endsWith("oberon.gv")) {
+            return Arrays.asList(new ContentError(ContentError.ErrorLevel.Error, "at line 32:6 extraneous input ',' expecting {'{', '}', GRAPH, NODE, EDGE, SUBGRAPH, NUMBER, STRING, ID, HTML_STRING}", null));
         }
         return Collections.emptyList();
     }
