@@ -2,6 +2,7 @@ package com.calpano.graphinout.base.gio;
 
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.xml.XmlWriter;
+import com.calpano.graphinout.base.xml.XmlWriterSpy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -17,47 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GioWriterTest {
 
-    static class XmlWriterSpy implements XmlWriter {
-
-        private final StringBuilder outPut = new StringBuilder();
-
-        @Override
-        public void characterData(String characterData) throws IOException {
-            outPut.append("::characterData->").append(characterData);
-        }
-
-        @Override
-        public void endDocument() throws IOException {
-            outPut.append("::endDocument");
-        }
-
-        @Override
-        public void endElement(String name) throws IOException {
-            outPut.append("::endElement->").append(name);
-        }
-
-        public StringBuilder getOutPut() {
-            return outPut;
-        }
-
-        @Override
-        public void lineBreak() throws IOException {
-            // ignored in tests
-        }
-
-        @Override
-        public void startDocument() throws IOException {
-            outPut.append("::startDocument->");
-        }
-
-        @Override
-        public void startElement(String name, Map<String, String> attributes) throws IOException {
-            outPut.append("::startElement->").append(name).append("->").append(attributes);
-        }
-    }
-
-    // TODO Rasul: why do we have two XmlWriterSpy implementations? Should re-use the other XmlWriterSpy
-    @Spy
+   @Spy
     XmlWriterSpy xmlWriterSpy;
     private GioWriter gioWriter;
 
