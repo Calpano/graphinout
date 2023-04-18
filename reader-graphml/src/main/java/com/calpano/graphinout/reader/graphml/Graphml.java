@@ -18,6 +18,7 @@ public class Graphml {
         parent_child = new HashMap<>();
         parent_child.computeIfAbsent("graphml", k->new HashSet<>()).add("graph");
         parent_child.computeIfAbsent("graphml", k->new HashSet<>()).add("data");
+        parent_child.computeIfAbsent("graphml", k->new HashSet<>()).add("key");
         parent_child.computeIfAbsent("graph", k->new HashSet<>()).add("data");
         parent_child.computeIfAbsent("graph", k->new HashSet<>()).add("node");
         parent_child.computeIfAbsent("graph", k->new HashSet<>()).add("edge");

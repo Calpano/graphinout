@@ -83,23 +83,6 @@ public class GioWriterImpl implements GioWriter {
                 graphmlDocument.setExtraAttrib(new TreeMap<>());
             document.getCustomAttributes().forEach((k, v) -> graphmlDocument.getExtraAttrib().put(k, v));
         }
-
-        if (document.getKeys() != null) {
-            if (graphmlDocument.getKeys() == null)
-                graphmlDocument.setKeys(new ArrayList<>());
-            for (GioKey gioKey : document.getKeys()) {
-                GraphmlKey graphmlKey = GraphmlKey.builder()//
-                        .id(gioKey.getId())//
-                        .forType(GraphmlKeyForType.keyForType(gioKey.getForType().name()))//
-                        .build();
-                gioKey.defaultValue().ifPresent(defaultValue -> graphmlKey.setDefaultValue(GraphmlDefault.builder().value(defaultValue).build()));
-                gioKey.attributeName().ifPresent(graphmlKey::setAttrName);
-                gioKey.attributeType().ifPresent(attType -> graphmlKey.setAttrType(attType.graphmlName));
-                customAttributes(gioKey, graphmlKey);
-                desc(gioKey, graphmlKey);
-                graphmlDocument.getKeys().add(graphmlKey);
-            }
-        }
         graphmlWriter.startDocument(graphmlDocument);
     }
 

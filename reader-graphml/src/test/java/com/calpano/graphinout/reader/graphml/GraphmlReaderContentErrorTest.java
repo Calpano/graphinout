@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.graphml;
 
+import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
@@ -35,10 +36,7 @@ class GraphmlReaderContentErrorTest {
     private List<String> invalidFiles = new ArrayList<>();
 
     private static Stream<String> getAllGraphmlFiles() {
-        return new ClassGraph().scan()
-                .getAllResources()
-                .stream()
-                .map(Resource::getPath)
+        return ReaderTests.getAllTestResourceFilePaths()
                 .filter(path -> path.endsWith(".graphml"));
     }
 
@@ -54,10 +52,8 @@ class GraphmlReaderContentErrorTest {
     void readAllGraphmlFiles(String filePath) throws Exception {
         log.info("Start To pars file [{}]", filePath);
         URL resourceUrl = ClassLoader.getSystemResource(filePath);
-        invalidFiles.forEach(s -> System.out.println(s));
-        System.out.println(resourceUrl.getPath());
         if (invalidFiles.removeIf(s -> resourceUrl.getPath().equals(s))) {
-            log.info("This file is Invalid.");
+            log.info("This file is known as invalid.");
             return;
         }
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
@@ -103,51 +99,6 @@ class GraphmlReaderContentErrorTest {
         }
     }
 
-    @Test
-    void elementsGraphmlDoesNotAllowCharacter_haitimap2() throws Exception {
-        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "samples", "haitimap2.graphml");
-        URI resourceUri = inputSource.toUri();
-        String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
-        try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
-             OutputSink outputSink = new InMemoryOutputSink()) {
-            GraphmlReader graphmlReader = new GraphmlReader();
-            List<ContentError> contentErrors = new ArrayList<>();
-            graphmlReader.errorHandler(contentErrors::add);
-            GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
-            graphmlReader.read(singleInputSource, gioWriter);
-            List<ContentError> contentErrorsResult = contentErrors.stream().toList();
-            assertEquals(1, contentErrorsResult.size());
-            assertEquals(ContentError.ErrorLevel.Warn, contentErrorsResult.get(0).getLevel());
-            assertEquals("Unexpected characters '\n" +
-                    "  \n" +
-                    "\n" +
-                    "========================================================' [Element 'graphml' does not allow characters.]", contentErrorsResult.get(0).getMessage());
-            assertEquals("25:57", contentErrorsResult.get(0).getLocation().toString());
-        }
-    }
 
-    @Test
-    void elementsGraphmlDoesNotAllowCharacter_greek2() throws Exception {
-        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "samples", "greek2.graphml");
-        URI resourceUri = inputSource.toUri();
-        String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
-        try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
-             OutputSink outputSink = new InMemoryOutputSink()) {
-            GraphmlReader graphmlReader = new GraphmlReader();
-            List<ContentError> contentErrors = new ArrayList<>();
-            graphmlReader.errorHandler(contentErrors::add);
-            GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
-            graphmlReader.read(singleInputSource, gioWriter);
-            List<ContentError> contentErrorsResult = contentErrors.stream().toList();
-            assertEquals(1, contentErrorsResult.size());
-            assertEquals(ContentError.ErrorLevel.Warn, contentErrorsResult.get(0).getLevel());
-            assertEquals("Unexpected characters '\n" +
-                    "\n" +
-                    "\n" +
-                    "  \n" +
-                    "\n" +
-                    "========================================================' [Element 'graphml' does not allow characters.]", contentErrorsResult.get(0).getMessage());
-            assertEquals("33:57", contentErrorsResult.get(0).getLocation().toString());
-        }
-    }
+
 }

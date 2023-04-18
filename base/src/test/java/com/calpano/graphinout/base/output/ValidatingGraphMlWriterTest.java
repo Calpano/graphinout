@@ -57,7 +57,7 @@ public class ValidatingGraphMlWriterTest {
         void setUp() throws MalformedURLException {
             closeable = MockitoAnnotations.openMocks(this);
             mockGraphMlWriter = mock(GraphmlWriter.class);
-            underTest = new ValidatingGraphMlWriter(mockGraphMlWriter);
+            underTest = new ValidatingGraphMlWriter();
             inOrder = Mockito.inOrder(mockGraphMlWriter);
             when(mockLocator.getXLinkHref()).thenReturn(URI.create("http://example.com").toURL());
 
@@ -184,7 +184,7 @@ public class ValidatingGraphMlWriterTest {
         void setUp() {
             closeable = MockitoAnnotations.openMocks(this);
             mockGraphMlWriter = mock(GraphmlWriter.class);
-            underTest = new ValidatingGraphMlWriter(mockGraphMlWriter);
+            underTest = new ValidatingGraphMlWriter();
             inOrder = Mockito.inOrder(mockGraphMlWriter);
         }
 
@@ -312,7 +312,7 @@ public class ValidatingGraphMlWriterTest {
         @ParameterizedTest
         @MethodSource("parameterDataList")
         void shouldThrowException(ParameterData parameterData) throws Exception {
-            underTest = new ValidatingGraphMlWriter(mockGraphMlWriter);
+            underTest = new ValidatingGraphMlWriter();
             for (String t : parameterData.initializerMethod) {
                 execute(t);
             }

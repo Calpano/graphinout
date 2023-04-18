@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.graphml;
 
+import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
@@ -30,10 +31,7 @@ import java.util.stream.Stream;
 class GraphmlReaderTest {
 
     private static Stream<String> getAllGraphmlFiles() {
-        return new ClassGraph().scan()
-                .getAllResources()
-                .stream()
-                .map(Resource::getPath)
+        return ReaderTests.getAllTestResourceFilePaths()
                 .filter(path -> path.endsWith(".graphml"));
     }
 

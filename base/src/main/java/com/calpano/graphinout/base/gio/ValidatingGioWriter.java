@@ -13,7 +13,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ValidatingGioWriter implements GioWriter {
 
-    private final GioWriter gioWriter;
     private final Set<String> nodesIds = new HashSet<>();
     private final Set<String> edgesIds = new HashSet<>();
     private final Set<String> keysIds = new HashSet<>();
@@ -23,18 +22,18 @@ public class ValidatingGioWriter implements GioWriter {
 
     @Override
     public void data(GioData data) throws IOException {
-        if (!keysIds.contains(data.getId()))
-            throw new IllegalStateException("GioData should refer to an existing Key ID.");
+        if (!keysIds.contains(data.getKey()))
+            throw new IllegalStateException("GioData should refer to an existing Key ID, but uses '"+data.getKey()+"'");
     }
 
     @Override
     public void endDocument() throws IOException {
-        gioWriter.endDocument();
+
     }
 
     @Override
     public void endEdge() throws IOException {
-        gioWriter.endEdge();
+
     }
 
     @Override
@@ -53,12 +52,12 @@ public class ValidatingGioWriter implements GioWriter {
                 throw new IllegalStateException(errorMsg);
             }
         }
-        gioWriter.endGraph(locator);
+
     }
 
     @Override
     public void endNode(@Nullable URL locator) throws IOException {
-        gioWriter.endNode(locator);
+
     }
 
     @Override
@@ -67,12 +66,11 @@ public class ValidatingGioWriter implements GioWriter {
             throw new IllegalStateException("GioKey ID must be unique: " + gioKey.getId());
         }
         keysIds.add(gioKey.getId());
-        gioWriter.key(gioKey);
     }
 
     @Override
     public void startDocument(GioDocument document) throws IOException {
-        gioWriter.startDocument(document);
+
     }
 
     @Override
@@ -86,13 +84,13 @@ public class ValidatingGioWriter implements GioWriter {
             endpointsPort.add(endpoint.getPort());
         }
         edgesIds.add(edge.getId());
-        gioWriter.startEdge(edge);
+
 
     }
 
     @Override
     public void startGraph(GioGraph gioGraph) throws IOException {
-        gioWriter.startGraph(gioGraph);
+
 
     }
 
@@ -104,7 +102,7 @@ public class ValidatingGioWriter implements GioWriter {
             throw new IllegalStateException("GioNode ID must be unique: " + node.getId());
         }
         nodesIds.add(node.getId());
-        gioWriter.startNode(node);
+
     }
 
     public void startPort(GioPort port) throws IOException {
@@ -113,11 +111,11 @@ public class ValidatingGioWriter implements GioWriter {
         if (portName == null || portName.isEmpty()) {
             throw new IllegalStateException("GioPort name cannot be null or empty.");
         }
-        gioWriter.startPort(port);
+
     }
 
     public void endPort() throws IOException {
-        gioWriter.endPort();
+
     }
 
 }

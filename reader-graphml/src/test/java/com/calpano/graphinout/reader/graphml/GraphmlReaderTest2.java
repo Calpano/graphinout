@@ -30,13 +30,14 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
     protected List<ContentError> expectedErrors(String resourceName) {
         switch (resourceName) {
             case "graphin/graphml/samples/greek2.graphml":
-                return Arrays.asList(
-                        new ContentError(ContentError.ErrorLevel.Warn,"Unexpected characters '\n" +
-                                "\n" +
-                                "\n" +
-                                "  \n" +
-                                "\n" +
-                                "========================================================' [Element 'graphml' does not allow characters.]",new ContentError.Location(33,57))
+                return Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new ContentError.Location(33, 57)));
+            case "graphin/graphml/samples/haitimap2.graphml":
+                return Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new ContentError.Location(25, 57)));
+            case "graphin/graphml/synthetic/invalid-root.graphml":
+                return Arrays.asList( //
+                        new ContentError(ContentError.ErrorLevel.Warn, "The Element <myroot> not acceptable tag for Graphml.", new ContentError.Location(2, 9)), //
+                        new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "    Hello\n" + "' [No open element to add characters to.]", new ContentError.Location(4, 1)), //
+                        new ContentError(ContentError.ErrorLevel.Warn, "The Element </myroot> not acceptable tag for Graphml.", new ContentError.Location(4, 10)) //
                 );
         }
         return Collections.emptyList();
@@ -64,11 +65,12 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
         log.info("Recorded content errors: " + contentErrors);
     }
 
+    /** This test helps to pin-point issues with a specific resource */
     @Test
-    @Disabled("See issue #96 : This test was done in GraphmlReaderContentErrorTest's class")
+    @Disabled("intended for local use to debug a specific resource")
     void testWithOneResource() throws IOException {
         GioReader gioReader = new GraphmlReader();
-        String resourcePath = "graphin/graphml/samples/greek2.graphml";
+        String resourcePath = "graphin/graphml/aws/AWS - Analytics.graphml";
         List<ContentError> expectedErrors = expectedErrors(resourcePath);
         testReadResourceToGraph(gioReader, resourcePath, expectedErrors);
     }

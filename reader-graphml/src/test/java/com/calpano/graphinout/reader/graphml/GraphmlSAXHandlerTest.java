@@ -47,7 +47,8 @@ class GraphmlSAXHandlerTest {
             assertNull(saxHandler.getCurrentEntity());
 
             saxHandler.startElement(uri, localName, qName, attributes);
-            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()), () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys()), () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> verifyNoMoreInteractions(gioWriter));
+            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
+                    () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> verifyNoMoreInteractions(gioWriter));
 
             reset(attributes);
             reset(gioWriter);
@@ -265,7 +266,6 @@ class GraphmlSAXHandlerTest {
             saxHandler.startElement(uri, localName, qName, attributes);
             assertAll("", //
                     () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),//
-                    () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys()),//
                     () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()),//
                     () -> verifyNoMoreInteractions(gioWriter));
             reset(attributes);
@@ -290,7 +290,6 @@ class GraphmlSAXHandlerTest {
             assertAll("",//
                     () -> verifyNoMoreInteractions(gioWriter), //
                     () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()), //
-                    () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys()), //
                     () -> assertNotNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()));
 
             //ADD Key
@@ -328,7 +327,8 @@ class GraphmlSAXHandlerTest {
             reset(gioWriter);
             qName = GraphmlElement.KEY;
             saxHandler.endElement(uri, localName, qName);
-            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()), () -> assertEquals(1, ((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys().size()), () -> assertEquals("this is desc for Graphml", ((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> verifyNoMoreInteractions(gioWriter));
+            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
+                    () -> assertEquals("this is desc for Graphml", ((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> verifyNoMoreInteractions(gioWriter));
 
 
             //ADD Key 2
@@ -362,7 +362,8 @@ class GraphmlSAXHandlerTest {
             reset(gioWriter);
             qName = GraphmlElement.KEY;
             saxHandler.endElement(uri, localName, qName);
-            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()), () -> assertEquals(2, ((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys().size()), () -> assertEquals("this is desc for Graphml", ((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> verifyNoMoreInteractions(gioWriter));
+            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
+                    () -> assertEquals("this is desc for Graphml", ((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> verifyNoMoreInteractions(gioWriter));
 
             //ADD data
             reset(attributes);
@@ -380,7 +381,8 @@ class GraphmlSAXHandlerTest {
             reset(gioWriter);
             qName = GraphmlElement.DATA;
             saxHandler.endElement(uri, localName, qName);
-            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()), () -> assertEquals(2, ((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys().size()), () -> assertEquals("this is desc for Graphml", ((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> inOrder.verify(gioWriter, times(1)).data(any()), () -> verifyNoMoreInteractions(gioWriter));
+            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
+                    () -> assertEquals("this is desc for Graphml", ((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> inOrder.verify(gioWriter, times(1)).data(any()), () -> verifyNoMoreInteractions(gioWriter));
 
         }
 
@@ -392,7 +394,8 @@ class GraphmlSAXHandlerTest {
             assertNull(saxHandler.getCurrentEntity());
 
             saxHandler.startElement(uri, localName, qName, attributes);
-            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()), () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys()), () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> verifyNoMoreInteractions(gioWriter));
+            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
+                    () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> verifyNoMoreInteractions(gioWriter));
 
             //ADD Graph
             reset(attributes);
@@ -418,7 +421,8 @@ class GraphmlSAXHandlerTest {
             assertNull(saxHandler.getCurrentEntity());
 
             saxHandler.startElement(uri, localName, qName, attributes);
-            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()), () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys()), () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> verifyNoMoreInteractions(gioWriter));
+            assertAll("", () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()),
+                    () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), () -> verifyNoMoreInteractions(gioWriter));
 
             qName = GraphmlElement.GRAPHML;
 
@@ -762,7 +766,6 @@ class GraphmlSAXHandlerTest {
             saxHandler.startElement(uri, localName, qName, attributes);
             assertAll("", //
                     () -> assertInstanceOf(GioDocument.class, saxHandler.getCurrentEntity().getEntity()), //
-                    () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getKeys()), //
                     () -> assertNull(((GioDocument) saxHandler.getCurrentEntity().getEntity()).getDescription()), //
                     () -> verifyNoMoreInteractions(gioWriter));
             reset(attributes);

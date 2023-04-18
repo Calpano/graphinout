@@ -43,8 +43,7 @@ class ValidatingGioWriterTest {
     @BeforeEach
     void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
-        this.underTest = new ValidatingGioWriter(mockGioWriterImpl);
-
+        this.underTest = new ValidatingGioWriter();
     }
 
     @AfterEach

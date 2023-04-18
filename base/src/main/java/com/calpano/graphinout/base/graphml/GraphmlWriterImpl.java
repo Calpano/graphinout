@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.calpano.graphinout.base.graphml.GraphmlDocument.*;
+import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS;
+import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI;
+import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI_SCHEMA_LOCATIOM;
 
 @Slf4j
 public class GraphmlWriterImpl implements GraphmlWriter {
@@ -22,19 +24,8 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     @Override
-    public void key(GraphmlKey data) throws IOException {
-        log.trace("data [{}]", data);
-        xmlWriter.startElement(GraphmlKey.TAGNAME, data.getAttributes());
-        if (data.getDesc() != null) {
-            data.getDesc().writeXml(xmlWriter);
-        }
-        writerData(data.getDataList());
-        if (data.getDefaultValue() != null) {
-            xmlWriter.startElement(GraphmlDefault.TAGNAME, data.getDefaultValue().getAttributes());
-            xmlWriter.characterData(data.getDefaultValue().getValue());
-            xmlWriter.endElement(GraphmlDefault.TAGNAME);
-        }
-        xmlWriter.endElement(GraphmlKey.TAGNAME);
+    public void data(GraphmlData data) throws IOException {
+        writerData(data);
     }
 
     @Override
@@ -68,6 +59,38 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     @Override
+    public void endNode(Optional<GraphmlLocator> locator) throws IOException {
+        log.trace("endNode [{}]", locator.isPresent() ? locator.get() : null);
+        if (locator.isPresent()) {
+            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
+            xmlWriter.endElement(GraphmlLocator.TAGNAME);
+        }
+        xmlWriter.endElement(GraphmlNode.TAGNAME);
+        xmlWriter.lineBreak();
+    }
+
+    @Override
+    public void endPort() throws IOException {
+        log.debug("endPort .");
+        xmlWriter.endElement(GraphmlPort.TAGNAME);
+    }
+
+    @Override
+    public void key(GraphmlKey graphmlKey) throws IOException {
+        log.trace("data [{}]", graphmlKey);
+        xmlWriter.startElement(GraphmlKey.TAGNAME, graphmlKey.getAttributes());
+        if (graphmlKey.getDesc() != null) {
+            graphmlKey.getDesc().writeXml(xmlWriter);
+        }
+        if (graphmlKey.getDefaultValue() != null) {
+            xmlWriter.startElement(GraphmlDefault.TAGNAME, graphmlKey.getDefaultValue().getAttributes());
+            xmlWriter.characterData(graphmlKey.getDefaultValue().getValue());
+            xmlWriter.endElement(GraphmlDefault.TAGNAME);
+        }
+        xmlWriter.endElement(GraphmlKey.TAGNAME);
+    }
+
+    @Override
     public void startDocument(GraphmlDocument doc) throws IOException {
         log.trace("startDocument [{}]", doc);
         xmlWriter.startDocument();
@@ -92,7 +115,6 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             }
         }
 
-        writerData(doc.getDataList());
         xmlWriter.lineBreak();
     }
 
@@ -108,7 +130,6 @@ public class GraphmlWriterImpl implements GraphmlWriter {
         if (graphmlGraph.desc != null) {
             graphmlGraph.desc.writeXml(xmlWriter);
         }
-        writerData(graphmlGraph.getDataList());
         xmlWriter.lineBreak();
     }
 
@@ -119,15 +140,12 @@ public class GraphmlWriterImpl implements GraphmlWriter {
         if (edge.desc != null) {
             edge.desc.writeXml(xmlWriter);
         }
-        writerData(edge.getDataList());
-
         if (edge.getEndpoints() != null) {
             for (GraphmlEndpoint endpoint : edge.getEndpoints()) {
                 xmlWriter.startElement(GraphmlEndpoint.TAGNAME, endpoint.getAttributes());
                 xmlWriter.endElement(GraphmlEndpoint.TAGNAME);
             }
         }
-
     }
 
     @Override
@@ -137,35 +155,12 @@ public class GraphmlWriterImpl implements GraphmlWriter {
         if (node.desc != null) {
             node.desc.writeXml(xmlWriter);
         }
-        writerData(node.dataList);
-    }
-
-    @Override
-    public void endNode(Optional<GraphmlLocator> locator) throws IOException {
-        log.trace("endNode [{}]", locator.isPresent() ? locator.get() : null);
-        if (locator.isPresent()) {
-            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
-            xmlWriter.endElement(GraphmlLocator.TAGNAME);
-        }
-        xmlWriter.endElement(GraphmlNode.TAGNAME);
-        xmlWriter.lineBreak();
-    }
-
-    @Override
-    public void data(GraphmlData data) throws IOException {
-        writerData(data);
     }
 
     @Override
     public void startPort(GraphmlPort port) throws IOException {
         log.debug("startPort [{}]", port);
         xmlWriter.startElement(GraphmlPort.TAGNAME, port.getAttributes());
-    }
-
-    @Override
-    public void endPort() throws IOException {
-        log.debug("endPort .");
-        xmlWriter.endElement(GraphmlPort.TAGNAME);
     }
 
     private void writerData(GraphmlData data) throws IOException {

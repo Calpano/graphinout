@@ -319,7 +319,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     private void endKeyElement() throws IOException {
         assertCurrent("endKey", GioKeyEntity.class);
         GioKeyEntity gioKeyEntity = pop(GioKeyEntity.class);
-        peek(GioDocumentEntity.class).addEntity(gioKeyEntity);
+        gioWriter.key(gioKeyEntity.getEntity());
     }
 
     private void endLocatorElement() throws IOException {
@@ -532,6 +532,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startKeyElement(Attributes attributes) throws IOException {
         assertCurrent("startKey", GioDocumentEntity.class);
+        sendStartThisOrParentMaybe(GraphmlElement.KEY);
         GioKey.GioKeyBuilder builder = GioKey.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();

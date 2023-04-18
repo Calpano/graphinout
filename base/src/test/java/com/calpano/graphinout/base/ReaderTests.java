@@ -1,8 +1,10 @@
 package com.calpano.graphinout.base;
 
+import com.calpano.graphinout.base.gio.DelegatingGioWriter;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.gio.ValidatingGioWriter;
+import com.calpano.graphinout.base.graphml.DelegatingGraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.SingleInputSource;
@@ -44,13 +46,15 @@ public class ReaderTests {
         if (validateXml) {
             xmlWriter = new ValidatingXmlWriter(xmlWriter);
         }
+
         GraphmlWriter graphmlWriter = new GraphmlWriterImpl(xmlWriter);
         if (validateGraphml) {
-            graphmlWriter = new ValidatingGraphMlWriter(graphmlWriter);
+            graphmlWriter = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), graphmlWriter);
         }
+
         GioWriter gioWriter = new GioWriterImpl(graphmlWriter);
         if (validateGio) {
-            gioWriter = new ValidatingGioWriter( gioWriter );
+            gioWriter = new DelegatingGioWriter(new ValidatingGioWriter(), gioWriter);
         }
         return gioWriter;
     }

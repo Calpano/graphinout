@@ -16,10 +16,6 @@ public class GioDocumentEntity extends AbstractGraphmlEntity<GioDocument> implem
     public void addEntity(GraphmlEntity<?> graphmlEntity) {
         if (graphmlEntity instanceof GioDescriptionEntity g) {
             gioDocument.setDescription(g.getEntity().getDescription());
-        } else if (graphmlEntity instanceof GioKeyEntity g) {
-            if (gioDocument.getKeys() == null)
-                gioDocument.setKeys(new ArrayList<>());
-            gioDocument.getKeys().add(g.getEntity());
         } else {
             throw new RuntimeException("Graphml has not " + graphmlEntity.getName() + " element.");
         }
