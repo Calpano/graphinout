@@ -293,11 +293,11 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void endGraphElement() throws IOException {
-        assertCurrent("endGraph", GioGraphEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.GRAPH);
         @Nullable URL url = peekOptional(GioLocatorEntity.class).map(GioLocatorEntity::getEntity).orElse(null);
         if (url != null)
             pop(GioLocatorEntity.class);
+        assertCurrent("endGraph", GioGraphEntity.class);
+        sendStartThisOrParentMaybe(GraphmlElement.GRAPH);
         gioWriter.endGraph(url);
         pop(GioGraphEntity.class);
     }
@@ -323,15 +323,15 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void endLocatorElement() throws IOException {
-        assertCurrent("endLocator", GioGraphEntity.class, GioNodeEntity.class);
+        assertCurrent("endLocator", GioLocatorEntity.class);
     }
 
     private void endNodeElement() throws IOException {
-        assertCurrent("endNode", GioNodeEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.NODE);
         @Nullable URL url = peekOptional(GioLocatorEntity.class).map(GioLocatorEntity::getEntity).orElse(null);
         if (url != null)
             pop(GioLocatorEntity.class);
+        assertCurrent("endNode", GioNodeEntity.class);
+        sendStartThisOrParentMaybe(GraphmlElement.NODE);
         gioWriter.endNode(url);
         pop(GioNodeEntity.class);
     }
