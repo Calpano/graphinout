@@ -77,7 +77,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     @Override
     public void key(GraphmlKey graphmlKey) throws IOException {
-        log.trace("data [{}]", graphmlKey);
+        log.trace("key [{}]", graphmlKey);
         xmlWriter.startElement(GraphmlKey.TAGNAME, graphmlKey.getAttributes());
         if (graphmlKey.getDesc() != null) {
             graphmlKey.getDesc().writeXml(xmlWriter);
@@ -88,6 +88,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             xmlWriter.endElement(GraphmlDefault.TAGNAME);
         }
         xmlWriter.endElement(GraphmlKey.TAGNAME);
+        xmlWriter.lineBreak();
     }
 
     @Override

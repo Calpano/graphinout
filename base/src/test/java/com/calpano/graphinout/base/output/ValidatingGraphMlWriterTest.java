@@ -60,8 +60,6 @@ public class ValidatingGraphMlWriterTest {
             underTest = new ValidatingGraphMlWriter();
             inOrder = Mockito.inOrder(mockGraphMlWriter);
             when(mockLocator.getXLinkHref()).thenReturn(URI.create("http://example.com").toURL());
-
-
         }
 
         @AfterEach
