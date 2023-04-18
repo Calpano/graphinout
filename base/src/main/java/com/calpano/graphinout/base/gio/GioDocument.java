@@ -13,11 +13,4 @@ import java.util.Optional;
 @SuperBuilder
 public class GioDocument extends GioElementWithDescription {
 
-    /**
-     * Define default type and default values.
-     * May be empty
-     */
-    List<GioKey> keys;
-
-
 }

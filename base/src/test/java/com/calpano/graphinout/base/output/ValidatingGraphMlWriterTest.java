@@ -29,7 +29,7 @@ public class ValidatingGraphMlWriterTest {
     public static final GraphmlEndpoint ENDPOINT_1 = GraphmlEndpoint.builder().node(NODE_ID_1).build();
     public static final GraphmlEndpoint ENDPOINT_2 = GraphmlEndpoint.builder().node(NODE_ID_2).build();
     private AutoCloseable closeable;
-    private ValidatingGraphMlWriter underTest;
+    private DelegatingGraphmlWriter underTest;
     private GraphmlWriter mockGraphMlWriter;
 
     private InOrder inOrder;
@@ -57,11 +57,9 @@ public class ValidatingGraphMlWriterTest {
         void setUp() throws MalformedURLException {
             closeable = MockitoAnnotations.openMocks(this);
             mockGraphMlWriter = mock(GraphmlWriter.class);
-            underTest = new ValidatingGraphMlWriter(mockGraphMlWriter);
+            underTest = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), mockGraphMlWriter);
             inOrder = Mockito.inOrder(mockGraphMlWriter);
             when(mockLocator.getXLinkHref()).thenReturn(URI.create("http://example.com").toURL());
-
-
         }
 
         @AfterEach
@@ -184,7 +182,7 @@ public class ValidatingGraphMlWriterTest {
         void setUp() {
             closeable = MockitoAnnotations.openMocks(this);
             mockGraphMlWriter = mock(GraphmlWriter.class);
-            underTest = new ValidatingGraphMlWriter(mockGraphMlWriter);
+            underTest = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), mockGraphMlWriter);
             inOrder = Mockito.inOrder(mockGraphMlWriter);
         }
 
@@ -241,70 +239,70 @@ public class ValidatingGraphMlWriterTest {
         private static Stream<ParameterData> parameterDataList() throws IOException {
 
             List<ParameterData> parameterDataList = new ArrayList<>();
-            parameterDataList.add(new ParameterData(new String[]{}, "key", CurrentElement.EMPTY, CurrentElement.KEY, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{}, "data", CurrentElement.EMPTY, CurrentElement.DATA, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{}, "startGraph", CurrentElement.EMPTY, CurrentElement.GRAPH, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{}, "startNode", CurrentElement.EMPTY, CurrentElement.NODE, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{}, "startEdge", CurrentElement.EMPTY, CurrentElement.EDGE, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{}, "startHyperEdge", CurrentElement.EMPTY, CurrentElement.HYPEREDGE, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{}, "startPort", CurrentElement.EMPTY, CurrentElement.PORT, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{}, "endGraph", CurrentElement.GRAPH, CurrentElement.EMPTY, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{}, "endNode", CurrentElement.NODE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{}, "endEdge", CurrentElement.EDGE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
-           //10
-            parameterDataList.add(new ParameterData(new String[]{}, "endEdge", CurrentElement.EDGE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{}, "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{}, "endPort", CurrentElement.PORT, CurrentElement.EMPTY, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "startNode", CurrentElement.GRAPHML, CurrentElement.NODE, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "startEdge", CurrentElement.GRAPHML, CurrentElement.EDGE, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "startHyperEdge", CurrentElement.GRAPHML, CurrentElement.HYPEREDGE, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "startPort", CurrentElement.GRAPHML, CurrentElement.PORT, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "endGraph", CurrentElement.GRAPH, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "endNode", CurrentElement.NODE, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "endEdge", CurrentElement.EDGE, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of(), "key", CurrentElement.EMPTY, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of(), "data", CurrentElement.EMPTY, CurrentElement.DATA, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of(), "startGraph", CurrentElement.EMPTY, CurrentElement.GRAPH, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of(), "startNode", CurrentElement.EMPTY, CurrentElement.NODE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of(), "startEdge", CurrentElement.EMPTY, CurrentElement.EDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of(), "startHyperEdge", CurrentElement.EMPTY, CurrentElement.HYPEREDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of(), "startPort", CurrentElement.EMPTY, CurrentElement.PORT, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of(), "endGraph", CurrentElement.GRAPH, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of(), "endNode", CurrentElement.NODE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of(), "endEdge", CurrentElement.EDGE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+            //10
+            parameterDataList.add(new ParameterData( List.of(), "endEdge", CurrentElement.EDGE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of(), "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of(), "endPort", CurrentElement.PORT, CurrentElement.EMPTY, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument"), "startNode", CurrentElement.GRAPHML, CurrentElement.NODE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument"), "startEdge", CurrentElement.GRAPHML, CurrentElement.EDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument"), "startHyperEdge", CurrentElement.GRAPHML, CurrentElement.HYPEREDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument"), "startPort", CurrentElement.GRAPHML, CurrentElement.PORT, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument"), "endGraph", CurrentElement.GRAPH, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument"), "endNode", CurrentElement.NODE, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument"), "endEdge", CurrentElement.EDGE, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
             //20
-            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument"}, "endPort", CurrentElement.PORT, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "startDocument", CurrentElement.GRAPH, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "key", CurrentElement.GRAPH, CurrentElement.KEY, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "endDocument", CurrentElement.GRAPHML, CurrentElement.GRAPH, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "endNode", CurrentElement.NODE, CurrentElement.GRAPH, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "endEdge", CurrentElement.EDGE, CurrentElement.GRAPH, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.GRAPH, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph"}, "endPort", CurrentElement.PORT, CurrentElement.GRAPH, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "startDocument", CurrentElement.NODE, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument"), "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument"), "endPort", CurrentElement.PORT, CurrentElement.GRAPHML, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph"), "startDocument", CurrentElement.GRAPH, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph"), "key", CurrentElement.GRAPH, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph"), "endDocument", CurrentElement.GRAPHML, CurrentElement.GRAPH, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph"), "endNode", CurrentElement.NODE, CurrentElement.GRAPH, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph"), "endEdge", CurrentElement.EDGE, CurrentElement.GRAPH, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph"), "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.GRAPH, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph"), "endPort", CurrentElement.PORT, CurrentElement.GRAPH, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode"), "startDocument", CurrentElement.NODE, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
             //30
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "key", CurrentElement.NODE, CurrentElement.KEY, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "startDocument", CurrentElement.NODE, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "endDocument", CurrentElement.GRAPHML, CurrentElement.NODE, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "endGraph", CurrentElement.GRAPH, CurrentElement.NODE, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "endEdge", CurrentElement.EDGE, CurrentElement.NODE, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.NODE, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode"}, "endPort", CurrentElement.PORT, CurrentElement.NODE, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startEdge"}, "key", CurrentElement.EDGE, CurrentElement.KEY, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startEdge"}, "endDocument", CurrentElement.GRAPHML, CurrentElement.EDGE, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startEdge"}, "endGraph", CurrentElement.GRAPH, CurrentElement.EDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode"), "key", CurrentElement.NODE, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode"), "startDocument", CurrentElement.NODE, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode"), "endDocument", CurrentElement.GRAPHML, CurrentElement.NODE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode"), "endGraph", CurrentElement.GRAPH, CurrentElement.NODE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode"), "endEdge", CurrentElement.EDGE, CurrentElement.NODE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode"), "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.NODE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode"), "endPort", CurrentElement.PORT, CurrentElement.NODE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startEdge"), "key", CurrentElement.EDGE, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startEdge"), "endDocument", CurrentElement.GRAPHML, CurrentElement.EDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startEdge"), "endGraph", CurrentElement.GRAPH, CurrentElement.EDGE, GraphmlWriterEndException.class));
             //40
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startEdge"}, "endNode", CurrentElement.NODE, CurrentElement.EDGE, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "endDocument", CurrentElement.GRAPHML, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "startDocument", CurrentElement.HYPEREDGE, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "startEdge", CurrentElement.HYPEREDGE, CurrentElement.EDGE, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "startPort", CurrentElement.HYPEREDGE, CurrentElement.PORT, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "key", CurrentElement.HYPEREDGE, CurrentElement.KEY, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "endGraph", CurrentElement.GRAPH, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "endNode", CurrentElement.NODE, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "endEdge", CurrentElement.EDGE, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startHyperEdge"}, "endPort", CurrentElement.PORT, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startEdge"), "endNode", CurrentElement.NODE, CurrentElement.EDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startHyperEdge"), "endDocument", CurrentElement.GRAPHML, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startHyperEdge"), "startDocument", CurrentElement.HYPEREDGE, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startHyperEdge"), "startEdge", CurrentElement.HYPEREDGE, CurrentElement.EDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startHyperEdge"), "startPort", CurrentElement.HYPEREDGE, CurrentElement.PORT, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startHyperEdge"), "key", CurrentElement.HYPEREDGE, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startHyperEdge"), "endGraph", CurrentElement.GRAPH, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startHyperEdge"), "endNode", CurrentElement.NODE, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startHyperEdge"), "endEdge", CurrentElement.EDGE, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startHyperEdge"), "endPort", CurrentElement.PORT, CurrentElement.HYPEREDGE, GraphmlWriterEndException.class));
             //50
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "endDocument", CurrentElement.GRAPHML, CurrentElement.PORT, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "startDocument", CurrentElement.PORT, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "startEdge", CurrentElement.PORT, CurrentElement.EDGE, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "startHyperEdge", CurrentElement.PORT, CurrentElement.HYPEREDGE, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "key", CurrentElement.PORT, CurrentElement.KEY, GraphmlWriterStartException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "endGraph", CurrentElement.GRAPH, CurrentElement.PORT, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "endNode", CurrentElement.NODE, CurrentElement.PORT, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "endEdge", CurrentElement.EDGE, CurrentElement.PORT, GraphmlWriterEndException.class));
-            parameterDataList.add(new ParameterData(new String[]{"startDocument", "startGraph", "startNode", "startPort"}, "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.PORT, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode", "startPort"), "endDocument", CurrentElement.GRAPHML, CurrentElement.PORT, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode", "startPort"), "startDocument", CurrentElement.PORT, CurrentElement.GRAPHML, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode", "startPort"), "startEdge", CurrentElement.PORT, CurrentElement.EDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode", "startPort"), "startHyperEdge", CurrentElement.PORT, CurrentElement.HYPEREDGE, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode", "startPort"), "key", CurrentElement.PORT, CurrentElement.KEY, GraphmlWriterStartException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode", "startPort"), "endGraph", CurrentElement.GRAPH, CurrentElement.PORT, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode", "startPort"), "endNode", CurrentElement.NODE, CurrentElement.PORT, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode", "startPort"), "endEdge", CurrentElement.EDGE, CurrentElement.PORT, GraphmlWriterEndException.class));
+            parameterDataList.add(new ParameterData( List.of("startDocument", "startGraph", "startNode", "startPort"), "endHyperEdge", CurrentElement.HYPEREDGE, CurrentElement.PORT, GraphmlWriterEndException.class));
 
             return parameterDataList.stream();
         }
@@ -312,8 +310,9 @@ public class ValidatingGraphMlWriterTest {
         @ParameterizedTest
         @MethodSource("parameterDataList")
         void shouldThrowException(ParameterData parameterData) throws Exception {
-            underTest = new ValidatingGraphMlWriter(mockGraphMlWriter);
-            for (String t : parameterData.initializerMethod) {
+            // TODO remove mockGraphmlWriter, now that we changed our delegation strategy to proxy pattern
+            underTest = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), mockGraphMlWriter);
+            for (String t : parameterData.previousOrders) {
                 execute(t);
             }
 
@@ -381,23 +380,23 @@ public class ValidatingGraphMlWriterTest {
         }
 
         static class ParameterData {
-            List<String> initializerMethod;
+            List<String> previousOrders;
             String exceptionThrowerMethod;
             ValidatingGraphMlWriter.CurrentElement offendingElement;
             ValidatingGraphMlWriter.CurrentElement lastStartedElement;
 
             Class exceptionClass;
 
-            public ParameterData(List<String> initializerMethod, String exceptionThrowerMethod, CurrentElement offendingElement, CurrentElement lastStartedElement, Class exceptionClass) {
-                this.initializerMethod = initializerMethod;
+            public ParameterData(List<String> previousOrders, String exceptionThrowerMethod, CurrentElement offendingElement, CurrentElement lastStartedElement, Class exceptionClass) {
+                this.previousOrders = previousOrders;
                 this.exceptionThrowerMethod = exceptionThrowerMethod;
                 this.offendingElement = offendingElement;
                 this.lastStartedElement = lastStartedElement;
                 this.exceptionClass = exceptionClass;
             }
 
-            public ParameterData(String[] initializerMethod, String exceptionThrowerMethod, ValidatingGraphMlWriter.CurrentElement offendingElement, ValidatingGraphMlWriter.CurrentElement lastStartedElement, Class exceptionClass) {
-                this(List.of(initializerMethod), exceptionThrowerMethod, offendingElement, lastStartedElement, exceptionClass);
+            public ParameterData(String[] previousOrders, String exceptionThrowerMethod, ValidatingGraphMlWriter.CurrentElement offendingElement, ValidatingGraphMlWriter.CurrentElement lastStartedElement, Class exceptionClass) {
+                this(List.of(previousOrders), exceptionThrowerMethod, offendingElement, lastStartedElement, exceptionClass);
             }
 
         }

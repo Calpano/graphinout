@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.base.graphml.DelegatingGraphmlWriter;
+import com.calpano.graphinout.base.output.ValidatingGraphMlWriter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +26,7 @@ class ValidatingGioWriterTest {
     public static final GioEndpoint ENDPOINT_1 = GioEndpoint.builder().node(NODE_ID_1).build();
     public static final GioEndpoint ENDPOINT_2 = GioEndpoint.builder().node(NODE_ID_2).build();
     private AutoCloseable closeable;
-    private ValidatingGioWriter underTest;
+    private DelegatingGioWriter underTest;
     @Mock
     private GioWriterImpl mockGioWriterImpl;
     @Mock
@@ -43,8 +45,8 @@ class ValidatingGioWriterTest {
     @BeforeEach
     void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
-        this.underTest = new ValidatingGioWriter(mockGioWriterImpl);
-
+        // TODO change test strategy; we dont need to check underTest -> mockGioWriterImpl as this is now done in the general DelegatingGioWriter
+        underTest = new DelegatingGioWriter(new ValidatingGioWriter(), mockGioWriterImpl);
     }
 
     @AfterEach
