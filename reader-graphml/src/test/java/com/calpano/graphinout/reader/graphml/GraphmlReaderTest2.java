@@ -8,6 +8,7 @@ import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioReader;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
@@ -64,6 +65,7 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
     }
 
     @Test
+    @Disabled("See issue #96 : This test was done in GraphmlReaderContentErrorTest's class")
     void testWithOneResource() throws IOException {
         GioReader gioReader = new GraphmlReader();
         String resourcePath = "graphin/graphml/samples/greek2.graphml";
