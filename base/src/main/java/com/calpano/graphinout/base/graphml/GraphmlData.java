@@ -1,7 +1,6 @@
 package com.calpano.graphinout.base.graphml;
 
 
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,13 +44,6 @@ public class GraphmlData implements XMLValue {
     private String key;
 
     @Override
-    public String startTag() {
-        Map<String, String> attributes = getAttributes();
-        return  GIOUtil.makeStartElement("data", attributes);
-
-    }
-
-    @Override
     public Map<String, String> getAttributes() {
         Map<String, String> attributes = new LinkedHashMap<>();
 
@@ -63,14 +55,4 @@ public class GraphmlData implements XMLValue {
         return attributes;
     }
 
-    @Override
-    public String valueTag() {
-        if (value == null) return "";
-        return value ;
-    }
-
-    @Override
-    public String endTag() {
-     return GIOUtil.makeEndElement("data");
-    }
 }

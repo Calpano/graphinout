@@ -1,0 +1,14 @@
+digraph G {
+  node [shape=ellipse, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+  edge [dir=none];
+
+  A [label="Node A", shape=box3d, style=filled, fillcolor=gray, fontcolor=white, width=2.0, height=1.0];
+  B [label="Node B", shape=ellipse, style=dashed, fillcolor=white, fontcolor=red, width=1.0, height=1.0];
+  C [label="Node C", shape=component, style=filled, fillcolor=gray90, fontcolor=black, width=1.0, height=2.0];
+  D [label="Node D", shape=parallelogram, style=dotted, fillcolor=white, fontcolor=green, width=1.25, height=1.25];
+
+  A -> B [label="Edge AB", color=red, fontcolor=white, style=dashed, weight=1.5, minlen=2, taillabel="tail", headlabel="head", arrowsize=1.5];
+  B -> C [label="Edge BC", color=blue, fontcolor=white, style=solid, weight=2.5, minlen=3, taillabel="tail", headlabel="head", arrowhead=vee, arrowtail=box, penwidth=2.0];
+  C -> D [label="Edge CD", color=green, fontcolor=white, style=dotted, weight=3.5, minlen=4, taillabel="tail", headlabel="head", arrowhead=diamond, arrowtail=tee, penwidth=3.0];
+  D -> A [label="Edge DA", color=purple, fontcolor=white, style=bold, weight=4.5, minlen=5, taillabel="tail", headlabel="head", arrowhead=inv, arrowtail=dot, penwidth=4.0];
+}

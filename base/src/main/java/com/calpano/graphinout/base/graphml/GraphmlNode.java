@@ -1,14 +1,12 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.util.GIOUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 /**
  * @author rbaba
@@ -27,6 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
 
     public static final String TAGNAME = "node";
@@ -41,36 +40,9 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
     /**
      * This is an Element that can be empty or null.
      * </p>
-     * The name of this Element in node is <b>port</b>.
-     */
-    @Singular(ignoreNullCollections = true)
-    @Deprecated
-    private List<GraphmlPort> ports;
-
-    /**
-     * This is an Element that can be empty or null.
-     * </p>
-     * The name of this Element in node is <b>graph</b>.
-     */
-    // FIXME this is wrong in a streaming API
-    private GraphmlGraph graph;
-
-    /**
-     * This is an Element that can be empty or null.
-     * </p>
      * The name of this Element in node is <b>locator</b>.
      */
     private GraphmlLocator locator;
-
-    @Override
-    public String startTag() {
-
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (id != null) attributes.put("id", id);
-
-        return GIOUtil.makeStartElement("node", attributes);
-    }
 
     @Override
     public LinkedHashMap<String, String> getAttributes() {
@@ -80,21 +52,4 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
         return  attributes;
     }
 
-    @Override
-    public String valueTag() {
-        StringBuilder xmlValueData = new StringBuilder();
-
-        for (XMLValue xmlValue : ports) {
-            xmlValueData.append(xmlValue.fullTag());
-        }
-        //TODO GRAPH?
-
-        if (locator != null) xmlValueData.append(locator.fullTag());
-        return xmlValueData.toString();
-    }
-
-    @Override
-    public String endTag() {
-        return GIOUtil.makeEndElement("node");
-    }
 }

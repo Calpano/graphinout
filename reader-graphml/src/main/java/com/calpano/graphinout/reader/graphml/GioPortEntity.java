@@ -25,4 +25,8 @@ public class GioPortEntity extends AbstractGraphmlEntity<GioPort> implements Gra
         return GraphmlElement.PORT;
     }
 
+    public void addCharacters(String characters) {
+        allowOnlyWhitespace(characters);
+    }
+
 }

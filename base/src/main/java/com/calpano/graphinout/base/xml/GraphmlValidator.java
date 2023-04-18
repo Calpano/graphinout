@@ -52,7 +52,7 @@ public class GraphmlValidator {
             validator.setErrorHandler(errorHandler);
             Source source = new SAXSource(new org.xml.sax.InputSource(singleInputSource.inputStream()));
             validator.validate(source);
-            // TODO what about warnings?
+            // TODO if there are warnings, file is not valid
             return errorHandler.errors() == 0 && errorHandler.fatals() == 0;
         } catch (SAXException e) {
             log.warn("SAX Exception",e);

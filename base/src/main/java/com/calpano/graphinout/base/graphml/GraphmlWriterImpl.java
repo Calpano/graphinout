@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.calpano.graphinout.base.graphml.GraphmlDocument.*;
@@ -67,17 +68,6 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     @Override
-    public void endNode(Optional<GraphmlLocator> locator) throws IOException {
-        log.trace("endNode [{}]", locator.isPresent() ? locator.get() : null);
-        if (locator.isPresent()) {
-            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
-            xmlWriter.endElement(GraphmlLocator.TAGNAME);
-        }
-        xmlWriter.endElement(GraphmlNode.TAGNAME);
-        xmlWriter.lineBreak();
-    }
-
-    @Override
     public void startDocument(GraphmlDocument doc) throws IOException {
         log.trace("startDocument [{}]", doc);
         xmlWriter.startDocument();
@@ -85,7 +75,10 @@ public class GraphmlWriterImpl implements GraphmlWriter {
         attributes.put("xmlns", HEADER_XMLNS);
         attributes.put("xmlns:xsi", HEADER_XMLNS_XSI);
         attributes.put("xsi:schemaLocation", HEADER_XMLNS_XSI_SCHEMA_LOCATIOM);
-
+        Map<String, String> extraAttrib = doc.getExtraAttrib();
+        if (extraAttrib != null) {
+            extraAttrib.forEach((k, v) -> attributes.put(k, v));
+        }
         xmlWriter.startElement(GraphmlDocument.TAGNAME, attributes);
         xmlWriter.lineBreak();
 
@@ -137,7 +130,6 @@ public class GraphmlWriterImpl implements GraphmlWriter {
 
     }
 
-    // TODO split into startNode and endNode to have the sub-graphs in between
     @Override
     public void startNode(GraphmlNode node) throws IOException {
         log.trace("startNode [{}]", node);
@@ -146,10 +138,17 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             node.desc.writeXml(xmlWriter);
         }
         writerData(node.dataList);
-        if (node.getPorts() != null) for (GraphmlPort port : node.getPorts()) {
-            xmlWriter.startElement(GraphmlPort.TAGNAME, port.getAttributes());
-            xmlWriter.endElement(GraphmlPort.TAGNAME);
+    }
+
+    @Override
+    public void endNode(Optional<GraphmlLocator> locator) throws IOException {
+        log.trace("endNode [{}]", locator.isPresent() ? locator.get() : null);
+        if (locator.isPresent()) {
+            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
+            xmlWriter.endElement(GraphmlLocator.TAGNAME);
         }
+        xmlWriter.endElement(GraphmlNode.TAGNAME);
+        xmlWriter.lineBreak();
     }
 
     @Override
@@ -161,7 +160,6 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     public void startPort(GraphmlPort port) throws IOException {
         log.debug("startPort [{}]", port);
         xmlWriter.startElement(GraphmlPort.TAGNAME, port.getAttributes());
-
     }
 
     @Override

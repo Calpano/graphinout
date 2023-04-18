@@ -1,11 +1,17 @@
 package com.calpano.graphinout.base.input;
 
 
+import org.slf4j.Logger;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 public interface SingleInputSource extends InputSource {
 
@@ -14,28 +20,7 @@ public interface SingleInputSource extends InputSource {
     }
 
     static SingleInputSource of(byte[] bytes) {
-        return new SingleInputSource() {
-            @Override
-            public Optional<Charset> encoding() {
-                return Optional.empty();
-            }
-
-            @Override
-            public Optional<String> inputFormat() {
-                return Optional.empty();
-            }
-
-            @Override
-            public InputStream inputStream() throws IOException {
-                return new ByteArrayInputStream(bytes);
-            }
-
-            @Override
-            public String name() {
-                return "InMemory";
-            }
-
-        };
+        return new ByteArrayInputSource("InMemory",bytes);
     }
 
     /**
@@ -45,6 +30,9 @@ public interface SingleInputSource extends InputSource {
 
     Optional<String> inputFormat();
 
+    /**
+     * @return a new {@link InputStream} on the underlying data
+     */
     InputStream inputStream() throws IOException;
 
     default boolean isSingle() {
@@ -56,5 +44,11 @@ public interface SingleInputSource extends InputSource {
      */
     @Override
     String name();
+
+    /**
+     * Auto-closing an inputsource closes all streams handed out via #inputstream()
+     */
+    @Override
+    void close() throws Exception;
 
 }

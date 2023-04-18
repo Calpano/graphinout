@@ -51,7 +51,6 @@ public class ValidatingXmlWriter implements XmlWriter {
 
     @Override
     public void lineBreak() throws IOException {
-        // TODO where do we *allow* line breaks?
         sink.lineBreak();
     }
 

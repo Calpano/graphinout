@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" >
+
+    <key id="neuron_name" for="node" attr.name="name" attr.type="string">
+        <default><b>Hello</b>World</default>
+    </key>
+
+<graph>
+
+</graph></graphml>

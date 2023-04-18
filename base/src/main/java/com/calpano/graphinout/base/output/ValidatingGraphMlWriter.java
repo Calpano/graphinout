@@ -1,55 +1,15 @@
 package com.calpano.graphinout.base.output;
 
-import com.calpano.graphinout.base.graphml.GraphmlData;
-import com.calpano.graphinout.base.graphml.GraphmlDocument;
-import com.calpano.graphinout.base.graphml.GraphmlEdge;
-import com.calpano.graphinout.base.graphml.GraphmlEndpoint;
-import com.calpano.graphinout.base.graphml.GraphmlGraph;
-import com.calpano.graphinout.base.graphml.GraphmlHyperEdge;
-import com.calpano.graphinout.base.graphml.GraphmlKey;
-import com.calpano.graphinout.base.graphml.GraphmlLocator;
-import com.calpano.graphinout.base.graphml.GraphmlNode;
-import com.calpano.graphinout.base.graphml.GraphmlPort;
-import com.calpano.graphinout.base.graphml.GraphmlWriter;
+import com.calpano.graphinout.base.graphml.*;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class ValidatingGraphMlWriter implements GraphmlWriter {
-
-    private enum CurrentElement {
-        /**
-         * state before any token
-         */
-        EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, EDGE, PORT, LOCATOR, DEFAULT, ENDPOINT;
-
-        static {
-            EMPTY.allowedChildren = Set.of(GRAPHML);
-            GRAPHML.allowedChildren = Set.of(DATA, DESC, KEY, GRAPH);
-            KEY.allowedChildren = Set.of(DESC, DEFAULT);
-            NODE.allowedChildren = Set.of(DATA, DESC, GRAPH, LOCATOR, PORT);
-            GRAPH.allowedChildren = Set.of(DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR);
-            EDGE.allowedChildren = Set.of(DATA, DESC, GRAPH);
-            HYPEREDGE.allowedChildren = Set.of(DATA, DESC, ENDPOINT);
-            PORT.allowedChildren = Set.of(DATA, PORT);
-        }
-
-        private Set<CurrentElement> allowedChildren = new HashSet<>();
-
-        public boolean isValidChild(CurrentElement childElement) {
-            return allowedChildren.contains(childElement);
-        }
-    }
 
     private static final Logger log = getLogger(ValidatingGraphMlWriter.class);
     /**
@@ -59,8 +19,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     private final GraphmlWriter graphMlWriter;
     private final Set<String> existingNodeIds = new HashSet<>();
     private final Set<String> existingEdgeIds = new HashSet<>();
-    private final Set<GraphmlEdge> edgeReferences = new HashSet<>();
-    private final Set<GraphmlHyperEdge> hyperEdgeReferences = new HashSet<>();
+
+    private final Map<String, List<String>> nonExistingNode = new HashMap<>();
 
     public ValidatingGraphMlWriter(GraphmlWriter graphMlWriter) {
         this.currentElements = new LinkedList<>();
@@ -73,21 +33,18 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     public void data(GraphmlData data) throws IOException {
         ensureAllowedStart(CurrentElement.DATA);
         ensureAllowedEnd(CurrentElement.DATA);
-        // TODO implement validation
+        if (data.getKey() == null) {
+            throw new IllegalArgumentException("Graphml data must have a key attribute.");
+        }
         graphMlWriter.data(data);
     }
 
     @Override
     public void endDocument() throws IOException {
         ensureAllowedEnd(CurrentElement.GRAPHML);
-        for (GraphmlEdge edge : edgeReferences) {
-            if (!resolveEdges(edge))
-                throw new IllegalStateException("Edge [" + edge + "] references to a non-existent node ID");
-        }
-        for (GraphmlHyperEdge hyperEdge : hyperEdgeReferences) {
-            RuntimeException t = resolveHyperEdges(hyperEdge);
-            if(t!=null)
-                throw t;
+        if (!nonExistingNode.isEmpty()) {
+            nonExistingNode.forEach((s, messages) -> messages.forEach(log::warn));
+            throw new IllegalStateException(nonExistingNode.size() + " nodes used in the graph without reference.");
         }
         graphMlWriter.endDocument();
     }
@@ -100,8 +57,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
 
     @Override
     public void endGraph(Optional<GraphmlLocator> locator) throws IOException {
+        validateLocator(locator);
         ensureAllowedEnd(CurrentElement.GRAPH);
-        // TODO validate all open edgeReferences here
         graphMlWriter.endGraph(locator);
     }
 
@@ -113,8 +70,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
 
     @Override
     public void endNode(Optional<GraphmlLocator> locator) throws IOException {
+        validateLocator(locator);
         ensureAllowedEnd(CurrentElement.NODE);
-        // TODO call validation checks
         graphMlWriter.endNode(locator);
     }
 
@@ -142,7 +99,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     public void startEdge(GraphmlEdge edge) throws IOException {
         ensureAllowedStart(CurrentElement.EDGE);
         validateEdge(edge);
-        resolveEdges(edge);
+        investigatingTheExistenceOfTheNode(edge);
         if (edge.getId() != null) existingEdgeIds.add(edge.getId());
         graphMlWriter.startEdge(edge);
     }
@@ -150,8 +107,6 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void startGraph(GraphmlGraph graph) throws IOException {
         ensureAllowedStart(CurrentElement.GRAPH);
-        // TODO adapt next line once GraphmlModel is simplified
-        validateGraph(graph);
         graphMlWriter.startGraph(graph);
     }
 
@@ -159,7 +114,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     public void startHyperEdge(GraphmlHyperEdge hyperEdge) throws IOException {
         ensureAllowedStart(CurrentElement.HYPEREDGE);
         validateHyperEdge(hyperEdge);
-        resolveHyperEdges(hyperEdge);
+        investigatingTheExistenceOfTheNode(hyperEdge);
         existingEdgeIds.add(hyperEdge.getId());
         graphMlWriter.startHyperEdge(hyperEdge);
     }
@@ -175,60 +130,60 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void startPort(GraphmlPort port) throws IOException {
         ensureAllowedStart(CurrentElement.PORT);
-        // TODO implement validation
+        // TODO implement validation #90
         graphMlWriter.startPort(port);
     }
 
     private void ensureAllowedEnd(CurrentElement element) throws IllegalStateException {
         CurrentElement currentElement = currentElements.peek();
         if (currentElement != element) {
-            throw new IllegalStateException("Wrong order of calls. Cannot END '" + element + "', last started element was " + currentElement);
+            throw new GraphmlWriterEndException(element, currentElement,"Wrong order of calls. Cannot END '" + element + "', last started element was " + currentElement);
         }
         currentElements.pop();
-        log.debug("ENDED '" + element.name() + "'. Stack: " + stackToString());
+        if (log.isDebugEnabled())
+            log.debug("ENDED '{} '. Stack: {}", element.name(), stackToString());
     }
 
     private void ensureAllowedStart(CurrentElement childElement) throws IllegalStateException {
         CurrentElement currentElement = currentElements.peek();
+        assert currentElement != null;
         if (!currentElement.isValidChild(childElement)) {
-            throw new IllegalStateException("Wrong order of elements. In element " + currentElement + " expected one of " + currentElement.allowedChildren + " but found " + childElement + ". Stack (leaf-to-root): " + this.currentElements);
+            throw new GraphmlWriterStartException(currentElement, childElement, "Wrong order of elements. In element '" + currentElement + "' expected one of " + currentElement.allowedChildren + " but found " + childElement + ". Stack (leaf-to-root): " + this.currentElements);
         }
         currentElements.push(childElement);
-        log.debug("STARTED '" + childElement.name() + "' => Stack: " + stackToString());
+        if (log.isDebugEnabled())
+            log.debug("STARTED '{}' => Stack: {}", childElement.name(), stackToString());
     }
 
-    private boolean resolveEdges(GraphmlEdge edge) {
-        String sourceId = edge.getSourceId();
-        String targetId = edge.getTargetId();
-        if (!existingNodeIds.contains(sourceId)) {
-            // IMPROVE remember just the undefined nodeId? remember whole edge: better error reporting
-            edgeReferences.add(edge);
-            return false;
+    /**
+     * @param edge
+     **/
+    private void investigatingTheExistenceOfTheNode(GraphmlEdge edge) throws IllegalStateException {
+        for (String nodeId : Arrays.asList(edge.getSourceId(), edge.getTargetId())) {
+            if (!existingNodeIds.contains(nodeId)) {
+                nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>()) //
+                        .add("Edge [" + edge + "] references to a non-existent node ID: '" + nodeId + "'");
+            } else nonExistingNode.remove(nodeId);
         }
-        if (!existingNodeIds.contains(targetId)) {
-            edgeReferences.add(edge);
-            return false;
-        }
-        return true;
     }
 
     /**
      * @param hyperEdge
-     * @return null = no error, string = error message
      */
-    private RuntimeException resolveHyperEdges(GraphmlHyperEdge hyperEdge) {
+    private void investigatingTheExistenceOfTheNode(GraphmlHyperEdge hyperEdge) throws IllegalStateException {
         List<GraphmlEndpoint> endpoints = hyperEdge.getEndpoints();
         for (GraphmlEndpoint endpoint : endpoints) {
             if (!existingNodeIds.contains(endpoint.getNode())) {
-                hyperEdgeReferences.add(hyperEdge);
-                return new IllegalStateException("Hyper edge [" + hyperEdge + "] references to a non-existent node ID '"+endpoint.getNode()+"'");
-            }
+                String nodeId = endpoint.getNode();
+                nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>()) //
+                        .add("Hyper Edge [" + hyperEdge + "] references to a non-existent node ID: '" + nodeId + "'");
+            } else nonExistingNode.remove(endpoint.getNode());
         }
-        return null;
     }
 
+
     private String stackToString() {
-        List<String> list = currentElements.stream().map(Enum::name).collect(Collectors.toList());
+        List<String> list = currentElements.stream().map(Enum::name).collect(Collectors.toCollection(ArrayList::new));
         Collections.reverse(list);
         return String.join("|", list);
     }
@@ -255,18 +210,6 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         if (edge.getTargetId() == null) throw new IllegalArgumentException("endpoint without targetId");
     }
 
-    private void validateGraph(GraphmlGraph graph) throws IllegalStateException {
-        if (!graph.getNodes().isEmpty()) {
-            for (GraphmlNode gioNode : graph.getNodes()) {
-                validateNode(gioNode);
-            }
-        }
-        if (!graph.getHyperEdges().isEmpty()) {
-            for (GraphmlHyperEdge gioEdge : graph.getHyperEdges()) {
-                validateHyperEdge(gioEdge);
-            }
-        }
-    }
 
     private void validateGraphMl(GraphmlDocument document) {
         if (document.getKeys() != null) {
@@ -307,12 +250,39 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         String nodeId = node.getId();
         if (nodeId == null || nodeId.isEmpty()) throw new IllegalStateException("Node must have an ID.");
         if (existingNodeIds.contains(nodeId)) throw new IllegalStateException("Node ID must be unique.");
-        if (node.getPorts() != null) {
-            for (GraphmlPort port : node.getPorts()) {
-                if (port.getName() == null || port.getName().isEmpty()) {
-                    throw new IllegalArgumentException("Port name cannot be null or empty.");
-                }
-            }
+    }
+
+    private void validateLocator(Optional<GraphmlLocator> locator) throws IllegalStateException {
+        if (locator.isEmpty()) return;
+        GraphmlLocator graphmlLocator = locator.get();
+        ensureAllowedStart(CurrentElement.LOCATOR);
+        ensureAllowedEnd(CurrentElement.LOCATOR);
+        if (graphmlLocator.getXLinkHref() == null)
+            throw new IllegalArgumentException("XLinkHref Url cannot be null or empty.");
+    }
+
+    enum CurrentElement {
+        /**
+         * state before any token
+         */
+        EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, EDGE, PORT, LOCATOR, DEFAULT, ENDPOINT;
+
+        static {
+            EMPTY.allowedChildren.addAll(Arrays.asList(GRAPHML));
+            GRAPHML.allowedChildren.addAll(Arrays.asList(DATA, DESC, KEY, GRAPH));
+            KEY.allowedChildren.addAll(Arrays.asList(DESC, DEFAULT));
+            NODE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH, LOCATOR, PORT));
+            GRAPH.allowedChildren.addAll(Arrays.asList(DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR));
+            EDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH));
+            HYPEREDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, ENDPOINT));
+            PORT.allowedChildren.addAll(Arrays.asList(DATA, PORT));
+        }
+
+        // IMPROVE remove LinkedHashSet and use HashSet instead when no tests rely on this order
+        private Set<CurrentElement> allowedChildren = new LinkedHashSet<>();
+
+        public boolean isValidChild(CurrentElement childElement) {
+            return allowedChildren.contains(childElement);
         }
     }
 }

@@ -11,10 +11,6 @@ public class GioDocumentEntity extends AbstractGraphmlEntity<GioDocument> implem
         this.gioDocument = gioDocument;
     }
 
-    @Override
-    public void addCharacters(String characters) {
-
-    }
 
     @Override
     public void addEntity(GraphmlEntity<?> graphmlEntity) {
@@ -24,11 +20,6 @@ public class GioDocumentEntity extends AbstractGraphmlEntity<GioDocument> implem
             if (gioDocument.getKeys() == null)
                 gioDocument.setKeys(new ArrayList<>());
             gioDocument.getKeys().add(g.getEntity());
-        } else if (graphmlEntity instanceof GioDataEntity g) {
-            // TODO rasul implement
-//            if (gioDocument.getDataList() == null)
-//                gioDocument.setDataList(new ArrayList<>());
-//            gioDocument.getDataList().add(g.getEntity());
         } else {
             throw new RuntimeException("Graphml has not " + graphmlEntity.getName() + " element.");
         }

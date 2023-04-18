@@ -15,7 +15,7 @@ public enum GioEndpointDirection {
             if(d.xmlValue.equalsIgnoreCase(value))
                 return d;
         }
-        throw new IllegalArgumentException("Could not interpret '"+value+"' as GioEndpointDirecton");
+        throw new IllegalArgumentException("Could not interpret '"+value+"' as GioEndpointDirection");
     }
 
     public boolean isDirected() {

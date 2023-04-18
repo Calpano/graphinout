@@ -91,4 +91,11 @@ class DotTextReaderTest {
     private static Stream<String> getResourceFilePaths() {
         return new ClassGraph().scan().getAllResources().stream().map(Resource::getPath).filter(path -> path.endsWith(".dot"));
     }
+
+    @Test
+    void nodeEdgeAttributes() {
+        // test using synthetic.doc
+        // TODO ...
+    }
+
 }

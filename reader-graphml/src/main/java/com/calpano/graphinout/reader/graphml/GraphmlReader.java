@@ -28,14 +28,7 @@ public class GraphmlReader implements GioReader {
     }
 
     @Override
-    public boolean isValid(SingleInputSource singleInputSource) throws IOException {
-        // TODO
-        return GioReader.super.isValid(singleInputSource);
-    }
-
-    @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
-        //TODO use SAX-based reader in here
         SAXParserFactory factory = SAXParserFactory.newInstance();
         try {
             factory.setNamespaceAware(true);
@@ -54,6 +47,7 @@ public class GraphmlReader implements GioReader {
                 throw new IOException(e);
             }
         } catch (Throwable t) {
+            errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "Failed reading '" + inputSource.name() + "'. Details: "+t.getMessage(), null));
             throw new RuntimeException("Failed reading '" + inputSource.name() + "'", t);
         }
     }

@@ -31,22 +31,8 @@ public class GraphmlDescription  implements  XMLValue{
     }
 
     @Override
-    public String startTag() {
-        return null;
-    }
-
-    @Override
     public LinkedHashMap<String, String> getAttributes() {
         return null;
     }
 
-    @Override
-    public String valueTag() {
-        return null;
-    }
-
-    @Override
-    public String endTag() {
-        return null;
-    }
 }

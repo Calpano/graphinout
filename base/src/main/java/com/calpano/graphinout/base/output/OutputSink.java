@@ -3,7 +3,7 @@ package com.calpano.graphinout.base.output;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public interface OutputSink {
+public interface OutputSink extends AutoCloseable {
 
     static InMemoryOutputSink createInMemory() {
         return new InMemoryOutputSink();
@@ -14,7 +14,8 @@ public interface OutputSink {
     }
 
     /**
-     * Can be called once. Users need to close {@link OutputStream after usage.
+     * Can be called once. Users need to close {@link OutputStream} after usage.
+     *
      * Never return System.out here. We will close it, causing issues in IntelliJ testing.
      */
     OutputStream outputStream() throws IOException;

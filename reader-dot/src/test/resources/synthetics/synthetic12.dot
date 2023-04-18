@@ -1,0 +1,41 @@
+digraph G {
+  rankdir=LR;
+  node [shape=box, style=filled, fillcolor=gray, width=1.5, height=1.0, fontsize=12];
+  edge [dir=none];
+
+  subgraph cluster_1 {
+    label="Cluster 1";
+    style=dashed;
+    color=gray;
+    fontcolor=white;
+    A [label="Node A", shape=ellipse, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+    B [label="Node B", shape=box, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+    C [label="Node C", shape=diamond, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+    D [label="Node D", shape=parallelogram, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+    E [label="Node E", shape=trapezium, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+    A -> B -> C -> D -> E;
+  }
+
+  subgraph cluster_2 {
+    label="Cluster 2";
+    style=solid;
+    color=green;
+    fontcolor=white;
+    F [label="Node F", shape=ellipse, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+    G [label="Node G", shape=box, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+    H [label="Node H", shape=diamond, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+    I [label="Node I", shape=parallelogram, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+    J [label="Node J", shape=trapezium, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+    F -> G -> H -> I -> J;
+  }
+
+  {rank=same; B; F;}
+  {rank=same; C; G;}
+  {rank=same; D; H;}
+  {rank=same; E; I;}
+
+  B -> G;
+  C -> H;
+  D -> I;
+  E -> J;
+}

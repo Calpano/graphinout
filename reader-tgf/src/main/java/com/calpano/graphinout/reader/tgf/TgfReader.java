@@ -12,10 +12,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -42,7 +39,7 @@ public class TgfReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("tfg", "Trivial Graph Format", ".tgf");
+        return new GioFileFormat("tgf", "Trivial Graph Format", ".tgf");
     }
 
     @Override
@@ -64,7 +61,7 @@ public class TgfReader implements GioReader {
 
         writer.startDocument(GioDocument.builder().build());
         writer.startGraph(GioGraph.builder().build());
-
+        Set<String> nodesCreatedSet = new HashSet<>();
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             if (line.contains(HASH)) {
@@ -75,12 +72,17 @@ public class TgfReader implements GioReader {
                 nodes = true;
                 log.info("--- nodes:");
                 String[] nodeParts = line.split(DELIMITER);
-
-                writer.startNode(GioNode.builder()
-                        .id(nodeParts[0])
-                        .build());
-                writer.data(GioData.builder().key(LABEL).value(nodeParts[1]).build());
-                writer.endNode(null);
+                if (!nodesCreatedSet.contains(nodeParts[0])) {
+                    nodesCreatedSet.add(nodeParts[0]);
+                    writer.startNode(GioNode.builder()
+                            .id(nodeParts[0])
+                            .build());
+                    writer.data(GioData.builder().key(LABEL).value(nodeParts[1]).build());
+                    writer.endNode(null);
+                } else {
+                    // node already exists, skip to next line
+                    continue;
+                }
             } else {
                 log.info("--- edges:");
                 String[] edgeParts = line.split(DELIMITER, 3);
@@ -91,16 +93,20 @@ public class TgfReader implements GioReader {
                 endpointList.add(sourceEndpoint);
                 endpointList.add(targetEndpoint);
                 if (edgeParts.length == 2 || edgeParts.length == 3) {
+                    if (!nodes) {
+                        for (String nodeId : Arrays.asList(edgeParts[0], edgeParts[1])) {
+                            if (!nodesCreatedSet.contains(nodeId)) {
+                                // IMPROVE create contentError warning
+                                log.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + "Required nodes have been created.");
+                                writer.startNode(GioNode.builder().id(nodeId).build());
+                                writer.endNode(null);
+                                nodesCreatedSet.add(nodeId);
+                            }
+                        }
+                    }
                     GioEdge gioEdge = GioEdge.builder().endpoints(endpointList).build();
                     if (edgeParts.length == 3) {
                         GioData.builder().value(edgeParts[2]).build();
-                    }
-                    if (!nodes) {
-                        log.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + "Required nodes have been created.");
-                        writer.startNode(GioNode.builder().id(edgeParts[0]).build());
-                        writer.endNode(null);
-                        writer.startNode(GioNode.builder().id(edgeParts[1]).build());
-                        writer.endNode(null);
                     }
                     writer.startEdge(gioEdge);
                     writer.endEdge();
@@ -112,14 +118,12 @@ public class TgfReader implements GioReader {
         scanner.close();
         if (!edges) {
             if (!nodes) {
-                log.warn("No nodes found in the file.");
+                if (errorHandler != null) {
+                    errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "No nodes found in file", null));
+                }
             } else {
                 log.warn("No edges found in the file.");
             }
-            return;
-        }
-        if (errorHandler != null) {
-            errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "TGF file is not valid.", null));
         }
     }
 }

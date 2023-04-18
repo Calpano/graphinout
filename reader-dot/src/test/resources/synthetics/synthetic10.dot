@@ -1,0 +1,70 @@
+digraph G {
+  rankdir=LR;
+  node [shape=ellipse, style=filled, fillcolor=white, width=1.5, height=0.75, fontsize=12];
+  edge [dir=none];
+
+  subgraph cluster_1 {
+    label="Cluster 1";
+    style=dashed;
+    color=gray;
+    fontcolor=white;
+    rank=same;
+    A [label="Node A", shape=box3d, style=filled, fillcolor=gray, fontcolor=white, width=2.0, height=1.0];
+    B [label="Node B", shape=ellipse, style=dashed, fillcolor=white, fontcolor=red, width=1.0, height=1.0];
+    C [label="Node C", shape=component, style=filled, fillcolor=gray90, fontcolor=black, width=1.0, height=2.0];
+    D [label="Node D", shape=parallelogram, style=dotted, fillcolor=white, fontcolor=green, width=1.25, height=1.25];
+    A -> B [label="Edge AB", color=red, fontcolor=white, style=dashed, weight=1.5, minlen=2, taillabel="tail", headlabel="head", arrowsize=1.5];
+    B -> C [label="Edge BC", color=blue, fontcolor=white, style=solid, weight=2.5, minlen=3, taillabel="tail", headlabel="head", arrowhead=vee, arrowtail=box, penwidth=2.0];
+    C -> D [label="Edge CD", color=green, fontcolor=white, style=dotted, weight=3.5, minlen=4, taillabel="tail", headlabel="head", arrowhead=diamond, arrowtail=tee, penwidth=3.0];
+  }
+
+  subgraph cluster_2 {
+    label="Cluster 2";
+    style=solid;
+    color=green;
+    fontcolor=white;
+    rank=same;
+    E [label="Node E", color=blue, fontcolor=white, shape=circle, style=filled, fillcolor=orange, width=2, height=2];
+    F [label="Node F", color=green, fontcolor=white, shape=box, style=filled, fillcolor=yellow, width=1.5, height=1.5];
+    G [label="Node G", color=red, fontcolor=white, shape=diamond, style=filled, fillcolor=blue, width=1, height=1];
+    H [label="Node H", color=orange, fontcolor=white, shape=triangle, style=filled, fillcolor=red, width=0.5, height=0.5];
+    E -> F [label="Edge EF", color=green, fontcolor=white, style=dashed, weight=1.5];
+    F -> G [label="Edge FG", color=green, fontcolor=white, style=bold, weight=0.5];
+    F -> H [label="Edge FH", color=blue, fontcolor=white, style=solid, weight=3.5];
+    G -> H [label="Edge GH", color=yellow, fontcolor=black, style=dashed, weight=4.5];
+  }
+
+  subgraph cluster_3 {
+    label="Cluster 3";
+    style=dotted;
+    color=blue;
+    fontcolor=white;
+    rank=same;
+    I [label="Node I", shape=egg, style=filled, fillcolor=white, fontcolor=black, width=1.5, height=1.5];
+    J [label="Node J", shape=hexagon, style=dashed, fillcolor=white, fontcolor=green, width=1.0, height=1.0];
+    K [label="Node K", shape=house, style=filled, fillcolor=gray, fontcolor=white, width=1.0, height=1.5];
+    L [label="Node L", shape=invhouse, style=solid, fillcolor=white, fontcolor=red, width=1.5, height=1.25];
+    I -> J [label="Edge IJ", color=blue, fontcolor=white, style=dotted, weight=1.5, minlen=2, taillabel="tail", headlabel="head", arrowsize=1.5];
+    J -> K [label="Edge JK", color=red, fontcolor=white, style=solid, weight=2.5, minlen=3, taillabel="tail", headlabel="head", arrowhead=crow, arrowtail=inv, penwidth=2.0];
+    K -> L [label="Edge KL", color=green, fontcolor=white, style=dashed, weight=3.5, minlen=4, taillabel="tail", headlabel="head", arrowhead=none, arrowtail=none, penwidth=3.0];
+  }
+
+  subgraph cluster_4 {
+    label="Cluster 4";
+    style=dashed;
+    color=red;
+    fontcolor=white;
+    rank=same;
+    M [label="Node M", color=green, fontcolor=white, shape=octagon, style=filled, fillcolor=blue, width=2, height=2];
+    N [label="Node N", color=blue, fontcolor=white, shape=triangle, style=filled, fillcolor=orange, width=1.5, height=1.5];
+    O [label="Node O", color=red, fontcolor=white, shape=trapezium, style=filled, fillcolor=yellow, width=1, height=1];
+    P [label="Node P", color=orange, fontcolor=white, shape=oval, style=filled, fillcolor=red, width=0.5, height=0.5];
+    M -> N [label="Edge MN", color=red, fontcolor=white, style=dashed, weight=1.5];
+    N -> O [label="Edge NO", color=green, fontcolor=white, style=bold, weight=0.5];
+    N -> P [label="Edge NP", color=blue, fontcolor=white, style=solid, weight=3.5];
+    O -> P [label="Edge OP", color=yellow, fontcolor=black, style=dashed, weight=4.5];
+  }
+
+  {rank=same; B; F; J; N;}
+  {rank=same; A; C; E; I; M;}
+}
