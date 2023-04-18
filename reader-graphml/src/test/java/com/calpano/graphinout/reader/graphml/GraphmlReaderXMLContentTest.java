@@ -110,6 +110,7 @@ class GraphmlReaderXMLContentTest {
         graphmlReader.read(singleInputSource, gioWriter);
 
         String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +//
+                "\n" + //
                 "<key id=\"neuron_name\" for=\"node\" attr.name=\"name\" attr.type=\"string\"><default><b>Hello</b>World</default></key>\n" + //
                 "<graph edgedefault=\"undirected\">\n" + //
                 "</graph>\n" + //

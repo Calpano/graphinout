@@ -29,7 +29,7 @@ public class ValidatingGraphMlWriterTest {
     public static final GraphmlEndpoint ENDPOINT_1 = GraphmlEndpoint.builder().node(NODE_ID_1).build();
     public static final GraphmlEndpoint ENDPOINT_2 = GraphmlEndpoint.builder().node(NODE_ID_2).build();
     private AutoCloseable closeable;
-    private ValidatingGraphMlWriter underTest;
+    private DelegatingGraphmlWriter underTest;
     private GraphmlWriter mockGraphMlWriter;
 
     private InOrder inOrder;
@@ -57,11 +57,9 @@ public class ValidatingGraphMlWriterTest {
         void setUp() throws MalformedURLException {
             closeable = MockitoAnnotations.openMocks(this);
             mockGraphMlWriter = mock(GraphmlWriter.class);
-            underTest = new ValidatingGraphMlWriter(mockGraphMlWriter);
+            underTest = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), mockGraphMlWriter);
             inOrder = Mockito.inOrder(mockGraphMlWriter);
             when(mockLocator.getXLinkHref()).thenReturn(URI.create("http://example.com").toURL());
-
-
         }
 
         @AfterEach
@@ -184,7 +182,7 @@ public class ValidatingGraphMlWriterTest {
         void setUp() {
             closeable = MockitoAnnotations.openMocks(this);
             mockGraphMlWriter = mock(GraphmlWriter.class);
-            underTest = new ValidatingGraphMlWriter(mockGraphMlWriter);
+            underTest = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), mockGraphMlWriter);
             inOrder = Mockito.inOrder(mockGraphMlWriter);
         }
 
@@ -312,7 +310,8 @@ public class ValidatingGraphMlWriterTest {
         @ParameterizedTest
         @MethodSource("parameterDataList")
         void shouldThrowException(ParameterData parameterData) throws Exception {
-            underTest = new ValidatingGraphMlWriter(mockGraphMlWriter);
+            // TODO remove mockGraphmlWriter, now that we changed our delegation strategy to proxy pattern
+            underTest = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), mockGraphMlWriter);
             for (String t : parameterData.previousOrders) {
                 execute(t);
             }

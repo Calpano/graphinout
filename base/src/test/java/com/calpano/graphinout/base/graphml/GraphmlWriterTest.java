@@ -96,10 +96,9 @@ class GraphmlWriterTest {
     void startNode() throws IOException {
         List<GraphmlPort> gioPortList = new ArrayList<>();
         gioPortList.add(GraphmlPort.builder().name("port").build());
-        List<GraphmlData> graphmlDataList = new ArrayList<>();
-        graphmlDataList.add(GraphmlData.builder().key("data").id("id").value("value").build());
 
-        graphmlWriter.startNode(GraphmlNode.builder().desc(GraphmlDescription.builder().value("GraphmlDescription").build()).id("node ").dataList(graphmlDataList).build());
+        graphmlWriter.startNode(GraphmlNode.builder().desc(GraphmlDescription.builder().value("GraphmlDescription").build()).id("node ").build());
+        graphmlWriter.data(GraphmlData.builder().key("data").id("id").value("value").build());
         assertEquals("::startElement->node->{id=node }::startElement->desc->{}::characterData->GraphmlDescription::endElement->desc::startElement->data->{id=id, key=data}::characterData->value::endElement->data", xmlWriterSpy.getOutPut().toString());
     }
 }
