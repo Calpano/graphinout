@@ -1,4 +1,5 @@
 digraph {
-    A -> B;
-    A -> C;
+    A [label="Node A"];
+    B [label="Node B"];
+    A -- B;
 }

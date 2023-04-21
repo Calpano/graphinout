@@ -1,5 +1,0 @@
-digraph {
-    A [shape=box];
-    B;
-    A -> B;
-}

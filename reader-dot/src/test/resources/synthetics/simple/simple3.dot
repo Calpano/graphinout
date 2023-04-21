@@ -1,7 +1,5 @@
 digraph {
-    A [label="Node A"];
-    B [label="Node B"];
-    C [label="Node C"];
-    A -> B;
-    A -> C;
+    A -> B [label="Edge 1"];
+    B -> C [label="Edge 2"];
+    C -> D [label="Edge 3"];
 }

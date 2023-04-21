@@ -1,3 +1,4 @@
 digraph {
     A -> B;
+    A -> C;
 }

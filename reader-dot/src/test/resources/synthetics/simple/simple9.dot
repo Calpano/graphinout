@@ -1,5 +1,0 @@
-digraph {
-    A -> B;
-    B -> A;
-    B -> B [label="Self-loop"];
-}
