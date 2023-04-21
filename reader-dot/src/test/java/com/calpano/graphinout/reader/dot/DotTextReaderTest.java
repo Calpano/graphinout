@@ -15,15 +15,20 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.Invocation;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
+import static org.slf4j.LoggerFactory.getLogger;
 
 class DotTextReaderTest {
     public static final String EXAMPLE_DOT_PATH = "/example.dot";
@@ -93,10 +98,13 @@ class DotTextReaderTest {
         return new ClassGraph().scan().getAllResources().stream().map(Resource::getPath).filter(path -> path.endsWith(".dot"));
     }
 
+    private static final Logger log = getLogger(DotTextReaderTest.class);
+
     @Test
     void testSimpleGraph() throws IOException {
-        String content = IOUtils.resourceToString("/synthetics/simple/simple2.dot", StandardCharsets.UTF_8);
-        SingleInputSource inputSource = SingleInputSource.of("/synthetics/simple/simple2.dot", content);
+        String resourceName = "/synthetics/simple/simple2.dot";
+        String content = IOUtils.resourceToString(resourceName, StandardCharsets.UTF_8);
+        SingleInputSource inputSource = SingleInputSource.of(resourceName, content);
         GioWriter mockGioWriter = mock(GioWriter.class);
         underTest.read(inputSource, mockGioWriter);
 
@@ -116,6 +124,7 @@ class DotTextReaderTest {
 
         inOrder.verify(mockGioWriter).startEdge(
                 GioEdge.builder()
+                        .id("A-B")
                         .endpoint(GioEndpoint.builder().node("A").build())
                         .endpoint(GioEndpoint.builder().node("B").build())
                         .build()
@@ -124,6 +133,7 @@ class DotTextReaderTest {
 
         inOrder.verify(mockGioWriter).startEdge(
                 GioEdge.builder()
+                        .id("A-C")
                         .endpoint(GioEndpoint.builder().node("A").build())
                         .endpoint(GioEndpoint.builder().node("C").build())
                         .build()
