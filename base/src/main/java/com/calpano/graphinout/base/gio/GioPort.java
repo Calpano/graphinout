@@ -1,12 +1,10 @@
 package com.calpano.graphinout.base.gio;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Singular;
-
-import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 /**
  * @author rbaba
@@ -27,9 +25,9 @@ import java.util.List;
  */
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@RequiredArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class GioPort extends GioElementWithDescription {
 
     /**
@@ -37,7 +35,8 @@ public class GioPort extends GioElementWithDescription {
      * </p>
      * The name of this attribute in graph is <b>name</b>
      */
-    private String name;
+    @NonNull
+    private final String name;
 
 
 }
