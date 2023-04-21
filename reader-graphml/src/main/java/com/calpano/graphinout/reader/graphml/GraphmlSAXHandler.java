@@ -105,7 +105,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                 case GraphmlElement.NODE -> endNodeElement();
                 case GraphmlElement.PORT -> endPortElement();
                 default -> {
-                    if (openEntities.peek() != null && (openEntities.peek() instanceof GioDefaultEntity || openEntities.peek() instanceof GioDataEntity)) {
+                    if (openEntities.peek() != null && (openEntities.peek() instanceof GioDefaultEntity || openEntities.peek() instanceof GioDataEntity  ||  openEntities.peek()  instanceof GioDescriptionEntity) ) {
                         // we accept any element and forward
                         createEndXMlElement(qName);
                     } else {
@@ -163,7 +163,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                 case GraphmlElement.PORT -> startPortElement(attributes);
                 default -> {
                     GraphmlEntity<?> entity = openEntities.peek();
-                    if (entity instanceof GioDataEntity || entity instanceof GioDefaultEntity) {
+                    if (entity instanceof GioDataEntity || entity instanceof GioDefaultEntity || entity instanceof GioDescriptionEntity) {
                         // parse generic xml
                         createStartXMlElement(qName, attributes);
                     } else {
