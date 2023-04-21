@@ -120,4 +120,30 @@ class GraphmlReaderXMLContentTest {
         assertEquals(expected, actual);
         assertTrue(contentErrors.isEmpty());
     }
+
+    @Test
+    void xml_Standard_Tag_in_DESC_test() throws IOException {
+        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "xml", "XML_Standard_Content_In_Desc.xml");
+        URI resourceUri = inputSource.toUri();
+        String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
+        SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
+        InMemoryOutputSink outputSink = OutputSink.createInMemory();
+        GraphmlReader graphmlReader = new GraphmlReader();
+        List<ContentError> contentErrors = new ArrayList<>();
+        graphmlReader.errorHandler(contentErrors::add);
+        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        graphmlReader.read(singleInputSource, gioWriter);
+
+        String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +//
+                "\n" + //
+                "<key id=\"neuron_name\" for=\"node\" attr.name=\"name\" attr.type=\"string\"><desc><b>Hello</b>World</desc></key>\n" + //
+                "<graph edgedefault=\"undirected\">\n" + //
+                "</graph>\n" + //
+                "</graphml>\n"; //
+        String actual = outputSink.getBufferAsUtf8String();
+
+        assertEquals(expected, actual);
+        assertTrue(contentErrors.isEmpty());
+    }
+
 }
