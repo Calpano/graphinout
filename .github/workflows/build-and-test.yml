@@ -30,13 +30,13 @@ jobs:
         run: mvn clean -U install
 
       - name: 🔨️ Build & ⬇ install readers
-        working-directory: graphinout/cc-shared
+        working-directory: graphinout
         run: mvn clean -U -pl !base,!engine,!app-cmdline install
         env:
           MAVEN_OPTS: "-Xmx6144m"
 
       - name: 🔨️ Build & ⬇ install engine & app-cmdline
-        working-directory: graphinout/cc-shared
+        working-directory: graphinout
         run: mvn clean -U -pl engine,app-cmdline install
         env:
           MAVEN_OPTS: "-Xmx6144m"
