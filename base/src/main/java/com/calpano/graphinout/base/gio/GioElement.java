@@ -11,7 +11,6 @@ import java.util.Map;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
 public abstract class GioElement {
 
@@ -19,7 +18,7 @@ public abstract class GioElement {
      * <a href="http://graphml.graphdrawing.org/specification.html">GraphML</a>
      * "Users can add attributes to all GraphML elements."
      */
-    @Nullable Map<String,String> customAttributes;
+    private @Nullable Map<String,String> customAttributes;
 
     public void customAttribute( String attributeName, String attributeValue) {
         if(customAttributes==null) {
