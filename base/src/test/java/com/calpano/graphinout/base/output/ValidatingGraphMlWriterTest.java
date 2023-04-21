@@ -30,10 +30,8 @@ public class ValidatingGraphMlWriterTest {
     public static final GraphmlEndpoint ENDPOINT_1 = GraphmlEndpoint.builder().node(NODE_ID_1).build();
     public static final GraphmlEndpoint ENDPOINT_2 = GraphmlEndpoint.builder().node(NODE_ID_2).build();
     private AutoCloseable closeable;
-    private DelegatingGraphmlWriter underTest;
-    private GraphmlWriter mockGraphMlWriter;
+    private ValidatingGraphMlWriter underTest;
 
-    private InOrder inOrder;
 
     @DisplayName("The GraphmlWriter test successfully pass.")
     @Nested
@@ -57,9 +55,7 @@ public class ValidatingGraphMlWriterTest {
         @BeforeEach
         void setUp() throws MalformedURLException {
             closeable = MockitoAnnotations.openMocks(this);
-            mockGraphMlWriter = mock(GraphmlWriter.class);
-            underTest = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), mockGraphMlWriter);
-            inOrder = Mockito.inOrder(mockGraphMlWriter);
+            underTest = new ValidatingGraphMlWriter();
             when(mockLocator.getXLinkHref()).thenReturn(URI.create("http://example.com").toURL());
         }
 
@@ -72,26 +68,14 @@ public class ValidatingGraphMlWriterTest {
         void shouldWorkAsIntendedWithDocument() throws IOException {
             underTest.startDocument(mockDocument);
             underTest.endDocument();
-            assertAll("",//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),//
-                    () -> verifyNoMoreInteractions(mockGraphMlWriter));
         }
 
         @Test
         void shouldWorkAsIntendedWithGraph() throws IOException {
-
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
             underTest.endGraph(Optional.of(mockLocator));
             underTest.endDocument();
-
-            assertAll("",//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),//
-                    () -> verifyNoMoreInteractions(mockGraphMlWriter));
         }
 
         @Test
@@ -105,16 +89,6 @@ public class ValidatingGraphMlWriterTest {
             underTest.endNode(Optional.of(mockLocator));
             underTest.endGraph(Optional.of(mockLocator));
             underTest.endDocument();
-
-
-            assertAll("",//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(mockLocator)),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),//
-                    () -> verifyNoMoreInteractions(mockGraphMlWriter));
         }
 
         @Test
@@ -138,20 +112,6 @@ public class ValidatingGraphMlWriterTest {
             underTest.endEdge();
             underTest.endGraph(Optional.of(mockLocator));
             underTest.endDocument();
-
-            assertAll("",
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(mockLocator)),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode2),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(graphmlLocator2)),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startEdge(mockEdge),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endEdge(),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endDocument(),//
-                    () -> verifyNoMoreInteractions(mockGraphMlWriter));
-
         }
     }
 
@@ -177,14 +137,10 @@ public class ValidatingGraphMlWriterTest {
         @Mock
         private GraphmlPort mockPort;
 
-
-
         @BeforeEach
         void setUp() {
             closeable = MockitoAnnotations.openMocks(this);
-            mockGraphMlWriter = mock(GraphmlWriter.class);
-            underTest = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), mockGraphMlWriter);
-            inOrder = Mockito.inOrder(mockGraphMlWriter);
+            underTest = new ValidatingGraphMlWriter();
         }
 
         @AfterEach
@@ -302,14 +258,6 @@ public class ValidatingGraphMlWriterTest {
             IllegalStateException illegalStateException = assertThrowsExactly(IllegalStateException.class,
                     () -> underTest.endDocument());
             assertAll("",//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startDocument(mockDocument),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startGraph(mockGraph),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startNode(mockNode),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endNode(Optional.of(mockLocator)),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).startHyperEdge(mockHyperEdge),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endHyperEdge(),//
-                    () -> inOrder.verify(mockGraphMlWriter, times(1)).endGraph(Optional.of(mockLocator)),//
-                    () -> verifyNoMoreInteractions(mockGraphMlWriter),//
                     () -> assertEquals("2 nodes used in the graph without reference.", illegalStateException.getMessage()));
 
         }
@@ -388,8 +336,6 @@ public class ValidatingGraphMlWriterTest {
         @ParameterizedTest
         @MethodSource("parameterDataList")
         void shouldThrowException(ParameterData parameterData) throws Exception {
-            // TODO remove mockGraphmlWriter, now that we changed our delegation strategy to proxy pattern
-            underTest = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), mockGraphMlWriter);
             for (String t : parameterData.previousOrders) {
                 execute(t);
             }
