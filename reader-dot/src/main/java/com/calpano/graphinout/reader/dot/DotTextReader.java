@@ -76,13 +76,17 @@ public class DotTextReader implements GioReader {
             log.info("--- edges:");
             for (GraphEdge dotEdge : edges.values()) {
                 Map<String, Object> attributes = dotEdge.getAttributes();
-                String edgeValue = String.valueOf(attributes.get("value"));
-                String edgeKey = String.valueOf(attributes.get("key"));
-                GioData gioData = GioData.builder().key(edgeKey).value(edgeValue).build();
 
                 writer.startEdge(GioEdge.builder().id(dotEdge.getId()).endpoint(GioEndpoint.builder().node(dotEdge.getNode1().getId()).build()).endpoint(GioEndpoint.builder().node(dotEdge.getNode2().getId()).build()).build());
-                if (edgeKey != null && !edgeKey.equals("null")) {
-                    writer.data(gioData);
+
+                for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
+                    String edgeKey = attribute.getKey();
+                    String edgeValue = String.valueOf(attribute.getValue());
+                    GioData gioData = GioData.builder().key(edgeKey).value(edgeValue).build();
+
+                    if (edgeKey != null && !edgeKey.equals("null")) {
+                        writer.data(gioData);
+                    }
                 }
                 writer.endEdge();
                 log.info(dotEdge.getNode1().getId() + "->" + dotEdge.getNode2().getId() + " " + dotEdge.getAttributes());
