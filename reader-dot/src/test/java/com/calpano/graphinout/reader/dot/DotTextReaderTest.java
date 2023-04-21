@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 
 class DotTextReaderTest {
     public static final String EXAMPLE_DOT_PATH = "/example.dot";
@@ -93,9 +94,43 @@ class DotTextReaderTest {
     }
 
     @Test
-    void nodeEdgeAttributes() {
-        // test using synthetic.doc
-        // TODO ...
-    }
+    void testSimpleGraph() throws IOException {
+        String content = IOUtils.resourceToString("/synthetics/simple/simple2.dot", StandardCharsets.UTF_8);
+        SingleInputSource inputSource = SingleInputSource.of("/synthetics/simple/simple2.dot", content);
+        GioWriter mockGioWriter = mock(GioWriter.class);
+        underTest.read(inputSource, mockGioWriter);
 
+        InOrder inOrder = Mockito.inOrder(mockGioWriter);
+        inOrder.verify(mockGioWriter).startDocument(Mockito.any());
+
+        inOrder.verify(mockGioWriter).startGraph(Mockito.any());
+
+        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id("A").build());
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+
+        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id("B").build());
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+
+        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id("C").build());
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+
+        inOrder.verify(mockGioWriter).startEdge(
+                GioEdge.builder()
+                        .endpoint(GioEndpoint.builder().node("A").build())
+                        .endpoint(GioEndpoint.builder().node("B").build())
+                        .build()
+        );
+        inOrder.verify(mockGioWriter).endEdge();
+
+        inOrder.verify(mockGioWriter).startEdge(
+                GioEdge.builder()
+                        .endpoint(GioEndpoint.builder().node("A").build())
+                        .endpoint(GioEndpoint.builder().node("C").build())
+                        .build()
+        );
+        inOrder.verify(mockGioWriter).endEdge();
+
+        inOrder.verify(mockGioWriter).endGraph(Mockito.any());
+        inOrder.verify(mockGioWriter).endDocument();
+    }
 }
