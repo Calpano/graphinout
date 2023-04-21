@@ -1,61 +1,16 @@
 package com.calpano.graphinout.base.output;
 
-import com.calpano.graphinout.base.graphml.GraphmlData;
-import com.calpano.graphinout.base.graphml.GraphmlDocument;
-import com.calpano.graphinout.base.graphml.GraphmlEdge;
-import com.calpano.graphinout.base.graphml.GraphmlEndpoint;
-import com.calpano.graphinout.base.graphml.GraphmlGraph;
-import com.calpano.graphinout.base.graphml.GraphmlHyperEdge;
-import com.calpano.graphinout.base.graphml.GraphmlKey;
-import com.calpano.graphinout.base.graphml.GraphmlLocator;
-import com.calpano.graphinout.base.graphml.GraphmlNode;
-import com.calpano.graphinout.base.graphml.GraphmlPort;
-import com.calpano.graphinout.base.graphml.GraphmlWriter;
+import com.calpano.graphinout.base.graphml.*;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class ValidatingGraphMlWriter implements GraphmlWriter {
-
-    enum CurrentElement {
-        /**
-         * state before any token
-         */
-        EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, EDGE, PORT, LOCATOR, DEFAULT, ENDPOINT;
-
-        static {
-            EMPTY.allowedChildren.addAll(Arrays.asList(GRAPHML));
-            GRAPHML.allowedChildren.addAll(Arrays.asList(DATA, DESC, KEY, GRAPH));
-            KEY.allowedChildren.addAll(Arrays.asList(DESC, DEFAULT));
-            NODE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH, LOCATOR, PORT));
-            GRAPH.allowedChildren.addAll(Arrays.asList(DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR));
-            EDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH));
-            HYPEREDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, ENDPOINT));
-            PORT.allowedChildren.addAll(Arrays.asList(DATA, PORT));
-        }
-
-        // IMPROVE remove LinkedHashSet and use HashSet instead when no tests rely on this order
-        private Set<CurrentElement> allowedChildren = new LinkedHashSet<>();
-
-        public boolean isValidChild(CurrentElement childElement) {
-            return allowedChildren.contains(childElement);
-        }
-    }
 
     private static final Logger log = getLogger(ValidatingGraphMlWriter.class);
     /**
@@ -65,7 +20,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     private final Set<String> existingNodeIds = new HashSet<>();
     private final Set<String> existingEdgeIds = new HashSet<>();
     private final Map<String, List<String>> nonExistingNode = new HashMap<>();
-
+    private final Set<String> existingPortNames = new HashSet<>();
+    private final Map<String, List<String>> nonExistingPortNames = new HashMap<>();
     public ValidatingGraphMlWriter() {
         this.currentElements = new LinkedList<>();
         // never deal with an empty stack
@@ -87,6 +43,10 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         if (!nonExistingNode.isEmpty()) {
             nonExistingNode.forEach((s, messages) -> messages.forEach(log::warn));
             throw new IllegalStateException(nonExistingNode.size() + " nodes used in the graph without reference.");
+        }
+        if (!nonExistingPortNames.isEmpty()) {
+            nonExistingPortNames.forEach((s, messages) -> messages.forEach(log::warn));
+            throw new IllegalStateException(nonExistingPortNames.size() + " ports used in the graph without reference.");
         }
     }
 
@@ -135,6 +95,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         validateEdge(edge);
         investigatingTheExistenceOfTheNode(edge);
         if (edge.getId() != null) existingEdgeIds.add(edge.getId());
+
+        investigatingTheExistenceOfThePort(edge);
     }
 
     @Override
@@ -147,6 +109,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         ensureAllowedStart(CurrentElement.HYPEREDGE);
         validateHyperEdge(hyperEdge);
         investigatingTheExistenceOfTheNode(hyperEdge);
+        investigatingTheExistenceOfThePort(hyperEdge);
         existingEdgeIds.add(hyperEdge.getId());
     }
 
@@ -160,7 +123,13 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     @Override
     public void startPort(GraphmlPort port) throws IOException {
         ensureAllowedStart(CurrentElement.PORT);
-        // TODO implement validation #90
+        if (port.getName() == null || port.getName().trim().isEmpty())
+            throw new IllegalStateException("Name of Port cannot be null or empty.");
+
+        if (existingPortNames.contains(port.getName()))
+            throw new IllegalStateException("Port must have a unique Name, but name is used several times: '" + port.getName() + "'.");
+        existingPortNames.add(port.getName());
+
     }
 
     private void ensureAllowedEnd(CurrentElement element) throws IllegalStateException {
@@ -196,12 +165,33 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         }
     }
 
+    private void investigatingTheExistenceOfThePort(@NotNull GraphmlEdge edge) throws IllegalStateException {
+        for (String portName : Arrays.asList(edge.getSourcePortId(), edge.getTargetPortId())) {
+            if (portName != null)
+                if (!existingPortNames.contains(portName)) {
+                    nonExistingPortNames.computeIfAbsent(portName, key -> new ArrayList<>()) //
+                            .add("Edge [" + edge + "] references to a non-existent port Name: '" + portName + "'");
+                } else nonExistingNode.remove(portName);
+        }
+    }
+
+    private void investigatingTheExistenceOfThePort(@NotNull GraphmlHyperEdge hyperEdge) throws IllegalStateException {
+        for (GraphmlEndpoint endpoint : hyperEdge.getEndpoints()) {
+            if (endpoint.getPort() != null)
+                if (!existingPortNames.contains(endpoint.getPort())) {
+                    nonExistingPortNames.computeIfAbsent(endpoint.getPort(), key -> new ArrayList<>()) //
+                            .add("Hyper Edge [" + hyperEdge + "] references to a non-existent port Name: '" + endpoint.getPort() + "'");
+                } else nonExistingNode.remove(endpoint.getPort());
+        }
+    }
+
     /**
      * @param hyperEdge
      */
     private void investigatingTheExistenceOfTheNode(GraphmlHyperEdge hyperEdge) throws IllegalStateException {
         List<GraphmlEndpoint> endpoints = hyperEdge.getEndpoints();
         for (GraphmlEndpoint endpoint : endpoints) {
+
             if (!existingNodeIds.contains(endpoint.getNode())) {
                 String nodeId = endpoint.getNode();
                 nonExistingNode.computeIfAbsent(nodeId, key -> new ArrayList<>()) //
@@ -267,5 +257,30 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         String nodeId = node.getId();
         if (nodeId == null || nodeId.isEmpty()) throw new IllegalStateException("Node must have an ID.");
         if (existingNodeIds.contains(nodeId)) throw new IllegalStateException("Node ID must be unique.");
+    }
+
+    enum CurrentElement {
+        /**
+         * state before any token
+         */
+        EMPTY, GRAPHML, KEY, GRAPH, NODE, HYPEREDGE, DESC, DATA, EDGE, PORT, LOCATOR, DEFAULT, ENDPOINT;
+
+        static {
+            EMPTY.allowedChildren.addAll(Arrays.asList(GRAPHML));
+            GRAPHML.allowedChildren.addAll(Arrays.asList(DATA, DESC, KEY, GRAPH));
+            KEY.allowedChildren.addAll(Arrays.asList(DESC, DEFAULT));
+            NODE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH, LOCATOR, PORT));
+            GRAPH.allowedChildren.addAll(Arrays.asList(DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR));
+            EDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH));
+            HYPEREDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, ENDPOINT));
+            PORT.allowedChildren.addAll(Arrays.asList(DATA, PORT));
+        }
+
+        // IMPROVE remove LinkedHashSet and use HashSet instead when no tests rely on this order
+        private Set<CurrentElement> allowedChildren = new LinkedHashSet<>();
+
+        public boolean isValidChild(CurrentElement childElement) {
+            return allowedChildren.contains(childElement);
+        }
     }
 }

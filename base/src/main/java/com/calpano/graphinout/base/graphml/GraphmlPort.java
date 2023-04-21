@@ -40,7 +40,7 @@ public class GraphmlPort extends GraphmlElement implements XMLValue {
      * </p>
      * The name of this attribute in graph is <b>name</b>
      */
-    private String name;
+    private  String name;
 
     @Override
     public LinkedHashMap<String, String> getAttributes() {

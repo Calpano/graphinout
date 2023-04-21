@@ -26,6 +26,7 @@ public class ValidatingGraphMlWriterTest {
     public static final String NODE_ID_2 = "node2";
     public static final String NODE_ID_3 = "node3";
     public static final String EDGE_ID_1 = "edge1";
+    public static final String PORT_NAME_1 ="port_name_1";
     public static final GraphmlEndpoint ENDPOINT_1 = GraphmlEndpoint.builder().node(NODE_ID_1).build();
     public static final GraphmlEndpoint ENDPOINT_2 = GraphmlEndpoint.builder().node(NODE_ID_2).build();
     private AutoCloseable closeable;
@@ -209,6 +210,83 @@ public class ValidatingGraphMlWriterTest {
         }
 
         @Test
+        void shouldThrowExceptionWhenPortNameIsNotUnique() throws IOException {
+            GraphmlNode mockNode2 = mock(GraphmlNode.class);
+            when(mockLocator.getXLinkHref()).thenReturn(URI.create("http://example.com").toURL());
+            when(mockNode.getId()).thenReturn(NODE_ID_1);
+            when(mockPort.getName()).thenReturn(PORT_NAME_1);
+
+            underTest.startDocument(mockDocument);
+            underTest.startGraph(mockGraph);
+            underTest.startNode(mockNode);
+            underTest.startPort(mockPort);
+            Exception exception = assertThrows(Exception.class,
+                    () -> underTest.startPort(mockPort));
+
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class,exception),//
+                    () -> assertEquals("Port must have a unique Name, but name is used several times: 'port_name_1'.", exception.getMessage()));
+
+        }
+
+        @Test
+        void shouldThrowExceptionWhenPortRefersNonExisting() throws IOException {
+            when(mockNode.getId()).thenReturn(NODE_ID_1);
+            GraphmlEndpoint ENDPOINT_TEST_PORT = GraphmlEndpoint.builder().node(NODE_ID_1).port("123").build();
+            when(mockEdge.getSourceId()).thenReturn(NODE_ID_1);
+            when(mockEdge.getTargetId()).thenReturn(NODE_ID_1);
+            when(mockEdge.getSourcePortId()).thenReturn("123");
+            when(mockEdge.getTargetPortId()).thenReturn("456");
+            when(mockPort.getName()).thenReturn(PORT_NAME_1);
+
+            underTest.startDocument(mockDocument);
+            underTest.startGraph(mockGraph);
+
+            underTest.startNode(mockNode);
+            underTest.startPort(mockPort);
+            underTest.endPort();
+            underTest.endNode(Optional.empty());
+            underTest.startEdge(mockEdge);
+            underTest.endEdge();
+            underTest.endGraph(Optional.empty());
+
+
+            Exception exception = assertThrows(Exception.class,
+                    () -> underTest.endDocument());
+
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class,exception),//
+                    () -> assertEquals("2 ports used in the graph without reference.", exception.getMessage()));
+
+        }
+        @Test
+        void shouldThrowExceptionWhenPortRefersNonExistingInHyperEdge() throws IOException {
+            when(mockNode.getId()).thenReturn(NODE_ID_1);
+            GraphmlEndpoint ENDPOINT_TEST_PORT = GraphmlEndpoint.builder().node(NODE_ID_1).port("123").build();
+            when(mockHyperEdge.getEndpoints()).thenReturn(List.of(ENDPOINT_TEST_PORT, ENDPOINT_TEST_PORT));
+            when(mockPort.getName()).thenReturn(PORT_NAME_1);
+
+            underTest.startDocument(mockDocument);
+            underTest.startGraph(mockGraph);
+
+            underTest.startNode(mockNode);
+            underTest.startPort(mockPort);
+            underTest.endPort();
+            underTest.endNode(Optional.empty());
+            underTest.startHyperEdge(mockHyperEdge);
+            underTest.endHyperEdge();
+            underTest.endGraph(Optional.empty());
+
+
+            Exception exception = assertThrows(Exception.class,
+                    () -> underTest.endDocument());
+
+            assertAll("",//
+                    () -> assertInstanceOf(IllegalStateException.class,exception),//
+                    () -> assertEquals("1 ports used in the graph without reference.", exception.getMessage()));
+
+        }
+        @Test
         void shouldThrowExceptionWhenHyperEdgeRefersToNonExistingNode() throws IOException {
             when(mockNode.getId()).thenReturn(NODE_ID_3);
             when(mockHyperEdge.getEndpoints()).thenReturn(List.of(ENDPOINT_1, ENDPOINT_2));
@@ -353,6 +431,7 @@ public class ValidatingGraphMlWriterTest {
                     underTest.startHyperEdge(mockHyperEdge);
                     break;
                 case "startPort":
+                    when(mockPort.getName()).thenReturn(PORT_NAME_1);
                     underTest.startPort(mockPort);
                     break;
                 case "endDocument":
