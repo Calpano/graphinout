@@ -17,13 +17,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class DotTextReader implements GioReader {
 
     private static final Logger log = getLogger(DotTextReader.class);
+    public static final String QUOTES = "[\"']";
+    public static final String EMPTY = "";
+    public static final String NULL = "null";
     private Consumer<ContentError> errorHandler;
 
     @Override
@@ -64,13 +66,13 @@ public class DotTextReader implements GioReader {
             edges.values().stream().flatMap(node -> node.getAttributes().keySet().stream()).forEach(usedEdgeKeys::add);
             usedKeys.addAll(usedNodeKeys);
             usedKeys.addAll(usedEdgeKeys);
-            for(String key : usedKeys) {
+            for (String key : usedKeys) {
                 GioKeyForType keyForType = GioKeyForType.All;
-                if(usedNodeKeys.contains(key) && usedEdgeKeys.contains(key)) {
+                if (usedNodeKeys.contains(key) && usedEdgeKeys.contains(key)) {
                     // ok
-                } else if(usedNodeKeys.contains(key)) {
+                } else if (usedNodeKeys.contains(key)) {
                     keyForType = GioKeyForType.Node;
-                } else if(usedEdgeKeys.contains(key)) {
+                } else if (usedEdgeKeys.contains(key)) {
                     keyForType = GioKeyForType.Edge;
                 }
                 GioKey gioKey = GioKey.builder().id(key).forType(keyForType).build();
@@ -82,8 +84,8 @@ public class DotTextReader implements GioReader {
             log.info("--- nodes:");
             for (GraphNode node : nodes.values()) {
                 Map<String, Object> attributes = node.getAttributes();
-                // TODO is node ID is in quotes, strip double quotes and single quotes. These are not allowed in XML attribute values.
-                GioNode gioNode = GioNode.builder().id(node.getId()).build();
+                String nodeId = node.getId().replaceAll(QUOTES, EMPTY);
+                GioNode gioNode = GioNode.builder().id(nodeId).build();
                 writer.startNode(gioNode);
 
                 for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
@@ -109,7 +111,7 @@ public class DotTextReader implements GioReader {
                     String edgeValue = String.valueOf(attribute.getValue());
                     GioData gioData = GioData.builder().key(edgeKey).value(edgeValue).build();
 
-                    if (edgeKey != null && !edgeKey.equals("null")) {
+                    if (edgeKey != null && !edgeKey.equals(NULL)) {
                         writer.data(gioData);
                     }
                 }
