@@ -1,0 +1,6 @@
+= Reader DOT
+
+NOTE: Graph, node and edge default attributes are not supported by the underlying Paypal DOT parser https://github.com/paypal/digraph-parser[]
+
+Normal node and edge attributes do work.
+
