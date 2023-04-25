@@ -1,6 +1,8 @@
 package com.calpano.graphinout.base.xml;
 
 import com.calpano.graphinout.base.input.SingleInputSource;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -51,4 +53,15 @@ class GraphmlValidatorTest {
         assertFalse(GraphmlValidator.isValidGraphml(SingleInputSource.of("funnybunny", badGraphml)));
     }
 
+    @BeforeEach
+    void setUp() {
+    }
+
+    @AfterEach
+    void tearDown() {
+    }
+
+    @Test
+    void isValidGraphml() {
+    }
 }

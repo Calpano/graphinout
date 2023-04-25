@@ -1,0 +1,43 @@
+name: Build and Test
+
+on:
+  push:
+
+jobs:
+  build-and-test:
+    # list of OSes and what they contain https://github.com/actions/virtual-environments
+    runs-on: ubuntu-latest
+    steps:
+      - name: ↙️ Check out repository code from git
+        uses: actions/checkout@v3
+        with:
+          repository: Calpano/graphinout
+          path: graphinout
+
+      - name: ☕ Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      - name: ⬇️ Install root project
+        working-directory: graphinout
+        run: mvn clean -U -N install
+
+      - name: 🔨️ Build & ⬇ install base
+        working-directory: graphinout/base
+        run: mvn clean -U install
+
+      - name: 🔨️ Build & ⬇ install readers
+        working-directory: graphinout
+        run: mvn clean -U -pl !base,!engine,!app-cmdline install
+        env:
+          MAVEN_OPTS: "-Xmx6144m"
+
+      - name: 🔨️ Build & ⬇ install engine & app-cmdline
+        working-directory: graphinout
+        run: mvn clean -U -pl engine,app-cmdline install
+        env:
+          MAVEN_OPTS: "-Xmx6144m"
+
