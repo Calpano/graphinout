@@ -13,8 +13,11 @@ import com.paypal.digraph.parser.GraphParserException;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -52,12 +55,34 @@ public class DotTextReader implements GioReader {
             Map<String, GraphEdge> edges = parser.getEdges();
 
             writer.startDocument(GioDocument.builder().build());
+
+            // send GioKey events for all used attribute types
+            Set<String> usedNodeKeys = new HashSet<>();
+            Set<String> usedEdgeKeys = new HashSet<>();
+            Set<String> usedKeys = new HashSet<>();
+            nodes.values().stream().flatMap(node -> node.getAttributes().keySet().stream()).forEach(usedNodeKeys::add);
+            edges.values().stream().flatMap(node -> node.getAttributes().keySet().stream()).forEach(usedEdgeKeys::add);
+            usedKeys.addAll(usedNodeKeys);
+            usedKeys.addAll(usedEdgeKeys);
+            for(String key : usedKeys) {
+                GioKeyForType keyForType = GioKeyForType.All;
+                if(usedNodeKeys.contains(key) && usedEdgeKeys.contains(key)) {
+                    // ok
+                } else if(usedNodeKeys.contains(key)) {
+                    keyForType = GioKeyForType.Node;
+                } else if(usedEdgeKeys.contains(key)) {
+                    keyForType = GioKeyForType.Edge;
+                }
+                GioKey gioKey = GioKey.builder().id(key).forType(keyForType).build();
+                writer.key(gioKey);
+            }
+
             writer.startGraph(GioGraph.builder().build());
 
             log.info("--- nodes:");
             for (GraphNode node : nodes.values()) {
                 Map<String, Object> attributes = node.getAttributes();
-
+                // TODO is node ID is in quotes, strip double quotes and single quotes. These are not allowed in XML attribute values.
                 GioNode gioNode = GioNode.builder().id(node.getId()).build();
                 writer.startNode(gioNode);
 
