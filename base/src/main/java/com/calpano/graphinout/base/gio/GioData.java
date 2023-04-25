@@ -3,6 +3,7 @@ package com.calpano.graphinout.base.gio;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
@@ -26,6 +27,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @Data
 @Builder
+@EqualsAndHashCode(callSuper = true)
 public class GioData extends GioElement {
 
     /**
