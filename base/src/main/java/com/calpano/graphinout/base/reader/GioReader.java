@@ -38,7 +38,8 @@ public interface GioReader {
             }
         });
         // FIXME dont use null, use a dummy do-nothing-writer
-        read(singleInputSource, null);
+        //I think it's better to call the isValid method inside the read method, not the other way around
+        //read(singleInputSource, null);
         return valid.get();
     }
 
