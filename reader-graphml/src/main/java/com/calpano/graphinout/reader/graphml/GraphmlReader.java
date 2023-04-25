@@ -104,7 +104,7 @@ public class GraphmlReader implements GioReader {
         reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));
     }
 
-    void ValidateInternalXSD(SingleInputSource inputSource) throws ParserConfigurationException, SAXException, IOException {
+    void validateInternalXSD(SingleInputSource inputSource) throws ParserConfigurationException, SAXException, IOException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(true);
         factory.setNamespaceAware(true);
@@ -118,7 +118,15 @@ public class GraphmlReader implements GioReader {
         reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));
     }
 
-    void ValidateExternalSchema(SingleInputSource inputSource) throws SAXException, IOException, ParserConfigurationException {
+    /**
+     * Two sub-options: (1) XML file contains "xsi:schemaLocation" -> take XML Schema from there;
+     * (2) we pre-downloaded Graphml.XSD, use it, and ignore "xsi:schemaLocation" -- http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd
+     * @param inputSource
+     * @throws SAXException
+     * @throws IOException
+     * @throws ParserConfigurationException
+     */
+    void validateExternalSchema(SingleInputSource inputSource) throws SAXException, IOException, ParserConfigurationException {
         if (externalSchemaList.isEmpty()) return;
 
         Source[] listOfAvailableSchema = externalSchemaList.stream().toArray(StreamSource[]::new);
