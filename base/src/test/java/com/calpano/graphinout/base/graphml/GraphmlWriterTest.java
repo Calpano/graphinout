@@ -54,7 +54,7 @@ class GraphmlWriterTest {
         GraphmlLocator locator = GraphmlLocator.builder()
                 .xLinkHref(new URL("http:\\127.0.0.1"))
                 .build();
-        graphmlWriter.endGraph(Optional.of(locator));
+        graphmlWriter.endGraph(locator);
         assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
     }
 
@@ -64,7 +64,7 @@ class GraphmlWriterTest {
                 .xLinkHref(new URL("http:\\127.0.0.1"))
                 .build();
         locator.getAttributes().put("locator.extra.attrib", "local");
-        graphmlWriter.endNode(Optional.of(locator));
+        graphmlWriter.endNode(locator);
         assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
     }
 

@@ -4,11 +4,11 @@ package com.calpano.graphinout.base.graphml;
 import com.calpano.graphinout.base.xml.XmlWriter;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS;
 import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI;
@@ -42,10 +42,10 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     @Override
-    public void endGraph(Optional<GraphmlLocator> locator) throws IOException {
-        log.trace("endGraph [{}]", locator.isPresent() ? locator.get() : null);
-        if (locator.isPresent()) {
-            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
+    public void endGraph(@Nullable GraphmlLocator locator) throws IOException {
+        log.trace("endGraph [{}]", locator);
+        if (locator!=null) {
+            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.getAttributes());
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
         }
         xmlWriter.endElement(GraphmlGraph.TAGNAME);
@@ -59,10 +59,10 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     }
 
     @Override
-    public void endNode(Optional<GraphmlLocator> locator) throws IOException {
-        log.trace("endNode [{}]", locator.isPresent() ? locator.get() : null);
-        if (locator.isPresent()) {
-            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.get().getAttributes());
+    public void endNode(@Nullable GraphmlLocator locator) throws IOException {
+        log.trace("endNode [{}]", locator);
+        if(locator!=null) {
+            xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.getAttributes());
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
         }
         xmlWriter.endElement(GraphmlNode.TAGNAME);

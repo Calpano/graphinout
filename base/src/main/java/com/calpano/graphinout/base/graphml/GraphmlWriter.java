@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.graphml;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * For large files, we don't want to keep the entire graph object in memory.
@@ -14,11 +14,11 @@ public interface GraphmlWriter {
 
     void endEdge() throws IOException;
 
-    void endGraph(Optional<GraphmlLocator> graphmlLocator) throws IOException;
+    void endGraph(@Nullable GraphmlLocator graphmlLocator) throws IOException;
 
     void endHyperEdge() throws IOException;
 
-    void endNode(Optional<GraphmlLocator> locator) throws IOException;
+    void endNode(@Nullable GraphmlLocator locator) throws IOException;
 
     void startDocument(GraphmlDocument document) throws IOException;
 

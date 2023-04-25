@@ -62,12 +62,12 @@ public class ValidatingGraphMlWriterTest {
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
             underTest.startNode(mockNode);
-            underTest.endNode(Optional.of(mockLocator));
+            underTest.endNode(mockLocator);
             underTest.startNode(mockNode2);
-            underTest.endNode(Optional.of(graphmlLocator2));
+            underTest.endNode(graphmlLocator2);
             underTest.startEdge(mockEdge);
             underTest.endEdge();
-            underTest.endGraph(Optional.of(mockLocator));
+            underTest.endGraph(mockLocator);
             underTest.endDocument();
         }
 
@@ -75,7 +75,7 @@ public class ValidatingGraphMlWriterTest {
         void shouldWorkAsIntendedWithGraph() throws IOException {
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
-            underTest.endGraph(Optional.of(mockLocator));
+            underTest.endGraph(mockLocator);
             underTest.endDocument();
         }
 
@@ -87,8 +87,8 @@ public class ValidatingGraphMlWriterTest {
             underTest.startGraph(mockGraph);
             mockNode.setId(NODE_ID_1);
             underTest.startNode(mockNode);
-            underTest.endNode(Optional.of(mockLocator));
-            underTest.endGraph(Optional.of(mockLocator));
+            underTest.endNode(mockLocator);
+            underTest.endGraph(mockLocator);
             underTest.endDocument();
         }
     }
@@ -212,10 +212,10 @@ public class ValidatingGraphMlWriterTest {
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
             underTest.startNode(mockNode);
-            underTest.endNode(Optional.of(mockLocator));
+            underTest.endNode(mockLocator);
             underTest.startHyperEdge(mockHyperEdge);
             underTest.endHyperEdge();
-            underTest.endGraph(Optional.of(mockLocator));
+            underTest.endGraph(mockLocator);
 
             IllegalStateException illegalStateException = assertThrowsExactly(IllegalStateException.class,
                     () -> underTest.endDocument());
@@ -234,7 +234,7 @@ public class ValidatingGraphMlWriterTest {
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
             underTest.startNode(mockNode);
-            underTest.endNode(Optional.of(mockLocator));
+            underTest.endNode(mockLocator);
 
             assertThrows(IllegalStateException.class, () -> underTest.startNode(mockNode2));
         }
@@ -275,10 +275,10 @@ public class ValidatingGraphMlWriterTest {
             // define unused port "port_name_1"
             underTest.startPort(mockPort);
             underTest.endPort();
-            underTest.endNode(Optional.empty());
+            underTest.endNode(null);
             underTest.startEdge(mockEdge);
             underTest.endEdge();
-            underTest.endGraph(Optional.empty());
+            underTest.endGraph(null);
 
 
             Exception exception = assertThrows(Exception.class,
@@ -302,10 +302,10 @@ public class ValidatingGraphMlWriterTest {
             underTest.startNode(mockNode);
             underTest.startPort(mockPort);
             underTest.endPort();
-            underTest.endNode(Optional.empty());
+            underTest.endNode(null);
             underTest.startHyperEdge(mockHyperEdge);
             underTest.endHyperEdge();
-            underTest.endGraph(Optional.empty());
+            underTest.endGraph(null);
 
 
             Exception exception = assertThrows(Exception.class,
@@ -341,8 +341,8 @@ public class ValidatingGraphMlWriterTest {
                     underTest.startPort(mockPort);
                 }
                 case "endDocument" -> underTest.endDocument();
-                case "endGraph" -> underTest.endGraph(Optional.empty());
-                case "endNode" -> underTest.endNode(Optional.empty());
+                case "endGraph" -> underTest.endGraph(null);
+                case "endNode" -> underTest.endNode(null);
                 case "endEdge" -> underTest.endEdge();
                 case "endHyperEdge" -> underTest.endHyperEdge();
                 case "endPort" -> underTest.endPort();
