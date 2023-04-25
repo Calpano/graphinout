@@ -29,6 +29,7 @@ class DotTextReaderTest {
     public static final String SIMPLE_DOT = "/synthetics/simple/simple.dot";
     public static final String SIMPLE_2_DOT = "/synthetics/simple/simple2.dot";
     public static final String SIMPLE_3_DOT = "/synthetics/simple/simple3.dot";
+    public static final String SIMPLE_4_DOT = "/synthetics/simple/simple4.dot";
     public static final String LABEL = "label";
     public static final String NODE_A = "Node A";
     public static final String NODE_B = "Node B";
@@ -43,6 +44,11 @@ class DotTextReaderTest {
     public static final String EDGE_ID_A_B = "A-B";
     public static final String EDGE_ID_B_C = "B-C";
     public static final String EDGE_ID_C_D = "C-D";
+    public static final String COLOR = "color";
+    public static final String COLOR_VALUE = "red";
+    public static final String COLOR_VALUE_2 = "lightblue";
+    public static final String SHAPE = "shape";
+    public static final String SHAPE_VALUE = "circle";
     private AutoCloseable closeable;
     private DotTextReader underTest;
     @Mock
@@ -218,6 +224,48 @@ class DotTextReaderTest {
         inOrder.verify(mockGioWriter).endEdge();
 
         inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(EDGE_ID_C_D).endpoint(GioEndpoint.builder().node("C").build()).endpoint(GioEndpoint.builder().node("D").build()).build());
+        inOrder.verify(mockGioWriter).endEdge();
+
+        inOrder.verify(mockGioWriter).endGraph(Mockito.any());
+        inOrder.verify(mockGioWriter).endDocument();
+    }
+
+    @Test
+    void testSimpleDotFile4() throws IOException {
+        String content = IOUtils.resourceToString(SIMPLE_4_DOT, StandardCharsets.UTF_8);
+        SingleInputSource inputSource = SingleInputSource.of(SIMPLE_4_DOT, content);
+        GioWriter mockGioWriter = mock(GioWriter.class);
+        underTest.read(inputSource, mockGioWriter);
+
+        InOrder inOrder = Mockito.inOrder(mockGioWriter);
+        inOrder.verify(mockGioWriter).startDocument(Mockito.any());
+        inOrder.verify(mockGioWriter).startGraph(Mockito.any());
+
+        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_A).build());
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+
+        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_B).build());
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+
+        ArgumentCaptor<GioData> dataCaptor = ArgumentCaptor.forClass(GioData.class);
+        verify(mockGioWriter, times(5)).data(dataCaptor.capture());
+
+        List<GioData> capturedData = dataCaptor.getAllValues();
+        assertEquals(5, capturedData.size());
+
+        assertEquals(SHAPE, capturedData.get(0).getKey());
+        assertEquals(SHAPE_VALUE, capturedData.get(0).getValue());
+        assertEquals(COLOR, capturedData.get(1).getKey());
+        assertEquals(COLOR_VALUE_2, capturedData.get(1).getValue());
+
+        assertEquals(LABEL, capturedData.get(2).getKey());
+        assertEquals(NODE_A, capturedData.get(2).getValue());
+        assertEquals(COLOR, capturedData.get(3).getKey());
+        assertEquals(COLOR_VALUE_2, capturedData.get(3).getValue());
+        assertEquals(LABEL, capturedData.get(4).getKey());
+        assertEquals(NODE_B, capturedData.get(4).getValue());
+
+        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(EDGE_ID_A_B).endpoint(GioEndpoint.builder().node(NODE_ID_A).build()).endpoint(GioEndpoint.builder().node(NODE_ID_B).build()).build());
         inOrder.verify(mockGioWriter).endEdge();
 
         inOrder.verify(mockGioWriter).endGraph(Mockito.any());
