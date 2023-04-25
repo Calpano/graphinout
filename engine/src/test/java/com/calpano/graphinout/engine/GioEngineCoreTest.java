@@ -79,7 +79,7 @@ class GioEngineCoreTest {
 
     @Test
     void testWith1Resource() {
-        testResource("graphin/graphml/synthetic/invalid-root.graphml");
+        testResource("dt_surrogate_mojo.gv");
     }
 
     private void testResource(String resourcePath) {
