@@ -104,7 +104,29 @@ public class DotTextReader implements GioReader {
             for (GraphEdge dotEdge : edges.values()) {
                 Map<String, Object> attributes = dotEdge.getAttributes();
 
-                writer.startEdge(GioEdge.builder().id(dotEdge.getId()).endpoint(GioEndpoint.builder().node(dotEdge.getNode1().getId()).build()).endpoint(GioEndpoint.builder().node(dotEdge.getNode2().getId()).build()).build());
+                String edgeId = dotEdge.getId().replaceAll(QUOTES, EMPTY);
+                String sourceNodeId = dotEdge.getNode1().getId().replaceAll(QUOTES, EMPTY);
+                String targetNodeId = dotEdge.getNode2().getId().replaceAll(QUOTES, EMPTY);
+
+                GioEndpointDirection direction = GioEndpointDirection.Undirected;
+                if (edges.values().stream().anyMatch(edge -> edge.getNode2() == dotEdge.getNode1() && edge.getNode1() == dotEdge.getNode2())) {
+                    direction = GioEndpointDirection.Out;
+                }
+
+                GioEndpoint sourceEndpoint = GioEndpoint.builder()
+                        .node(sourceNodeId)
+                        .type(direction)
+                        .build();
+                GioEndpoint targetEndpoint = GioEndpoint.builder()
+                        .node(targetNodeId)
+                        .type(direction.isDirected() ? GioEndpointDirection.In : GioEndpointDirection.Undirected)
+                        .build();
+
+                writer.startEdge(GioEdge.builder()
+                        .id(edgeId)
+                        .endpoint(sourceEndpoint)
+                        .endpoint(targetEndpoint)
+                        .build());
 
                 for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
                     String edgeKey = attribute.getKey();
