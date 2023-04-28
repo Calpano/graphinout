@@ -75,17 +75,18 @@ public class ValidatingGioWriter implements GioWriter {
 
     @Override
     public void startEdge(GioEdge edge) throws IOException {
-        if (edgesIds.contains(edge.getId())) {
-            throw new IllegalStateException("GioEdge ID must be unique: " + edge.getId());
+        if(edge.getId()!=null) {
+            boolean contains = edgesIds.add(edge.getId());
+            if(contains) {
+                throw new IllegalStateException("GioEdge ID must be unique: " + edge.getId());
+            }
         }
+
         if (edge.getEndpoints().size() < 2) throw new IllegalStateException("GioEdge must have at least 2 endpoints.");
         for (GioEndpoint endpoint : edge.getEndpoints()) {
             endpointsNode.add(endpoint.getNode());
             endpointsPort.add(endpoint.getPort());
         }
-        edgesIds.add(edge.getId());
-
-
     }
 
     @Override
