@@ -11,6 +11,7 @@ import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import org.jgrapht.alg.util.Pair;
 import org.jgrapht.nio.Attribute;
+import org.jgrapht.nio.AttributeType;
 import org.jgrapht.nio.EventDrivenImporter;
 import org.jgrapht.nio.ImportException;
 import org.slf4j.Logger;
@@ -67,6 +68,29 @@ public class JGraphTReader<N> {
         assert inputSource instanceof SingleInputSource;
         SingleInputSource sis = (SingleInputSource) inputSource;
         // here we read the inputStream of sis ...
+
+        importer.addVertexAttributeConsumer((pair,att)-> {
+            log.info("VertexAtt: {} : {}", pair.getFirst(), att);
+            N vertex = pair.getFirst();
+            String attName=pair.getSecond();
+            String attValue = att.getValue();
+            AttributeType attType = att.getType();
+        });
+
+        importer.addGraphAttributeConsumer((key,value)->{
+            log.info("GraphAtt: {} : {}", key, value);
+        });
+
+        importer.addEdgeWithAttributesConsumer((e,eatts)->{
+            log.info("Edge: {} -> {}", e.getFirst(), e.getSecond());
+        });
+        importer.addEdgeAttributeConsumer((pair,att)->{
+            log.info("EdgeAtt: {} -> {} : {}", pair.getFirst(), pair.getSecond(), att);
+            Pair<N, N> edge = pair.getFirst();
+            String attName=pair.getSecond();
+            String attValue = att.getValue();
+            AttributeType attType = att.getType();
+        });
 
         importer.addEdgeConsumer(e-> {
             N source = e.getFirst();
