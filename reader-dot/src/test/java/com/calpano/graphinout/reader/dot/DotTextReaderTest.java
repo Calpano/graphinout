@@ -302,13 +302,13 @@ class DotTextReaderTest {
         inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_C).build());
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
 
-        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(EDGE_ID_A_B).endpoint(GioEndpoint.builder().node(NODE_ID_A).build()).endpoint(GioEndpoint.builder().node(NODE_ID_B).build()).build());
+        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(EDGE_ID_A_B).endpoint(GioEndpoint.builder().node(NODE_ID_A).type(GioEndpointDirection.Undirected).build()).endpoint(GioEndpoint.builder().node(NODE_ID_B).type(GioEndpointDirection.Undirected).build()).build());
         inOrder.verify(mockGioWriter).endEdge();
 
-        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(EDGE_ID_B_C).endpoint(GioEndpoint.builder().node(NODE_ID_B).build()).endpoint(GioEndpoint.builder().node(NODE_ID_C).build()).build());
+        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(EDGE_ID_B_C).endpoint(GioEndpoint.builder().node(NODE_ID_B).type(GioEndpointDirection.Out).build()).endpoint(GioEndpoint.builder().node(NODE_ID_C).type(GioEndpointDirection.In).build()).build());
         inOrder.verify(mockGioWriter).endEdge();
 
-        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(EDGE_ID_C_A).endpoint(GioEndpoint.builder().node(NODE_ID_C).build()).endpoint(GioEndpoint.builder().node(NODE_ID_A).build()).build());
+        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(EDGE_ID_C_A).endpoint(GioEndpoint.builder().node(NODE_ID_C).type(GioEndpointDirection.Out).build()).endpoint(GioEndpoint.builder().node(NODE_ID_A).type(GioEndpointDirection.In).build()).build());
         inOrder.verify(mockGioWriter).endEdge();
 
         inOrder.verify(mockGioWriter).endGraph(Mockito.any());
