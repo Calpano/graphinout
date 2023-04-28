@@ -1,0 +1,89 @@
+#http://viz-js.com/
+digraph D {
+    graph [pad="0.5", nodesep="0.5", ranksep="1"];
+    edge [dir="left"]
+    concentrate=true
+    rankdir=TD; #top down looks
+    size="15,5";
+    layout = dot; #sfdp,dot,fdp,neato,osage,patchwork,sfdp,twopi
+    node  [style="rounded,bold", shape=box, fixedsize=true, width=2.5, fontname="Arial"];
+ 
+    EclipseStaticstic [label="0. EclipseStaticstic"] [shape=circle]
+    
+    HalsteadLength [label="1. HalsteadLength"][shape=box]
+    HalsteadVocab [label="2. HalsteadVocab"][shape=box]
+    NumOperands[label="3. NumOperands"][shape=box]
+    NumOperators[label="4. NumOperators"][shape=box]
+    UniqueOperator[label="5. UniqueOperator"][shape=box]
+    UniqueOperand[label="6. UniqueOperand"][shape=box]
+    NumLinesCodes[label="7. NumLinesCodes"][shape=box]
+    HalsteadVolume[label="8. HalsteadVolume"][shape=box]
+    HalsteadEffort[label="9. HalsteadEffort"][shape=box]
+    HalsteadDifficulty[label="10. HalsteadDifficulty"][shape=box]
+    MaintainabilityIndex[label="11. MaintainabilityIndex"][shape=box]
+    CyclomaticComplexity[label="12. CyclomaticComplexity"][shape=box]
+    NumCommentLines[label="13. NumCommentLines"][shape=box]
+    NumComments[label="14. NumComments"][shape=box]
+    NumLoops[label="15. NumLoops"][shape=box]
+    NumExpressions[label="16. NumExpressions"][shape=box]
+    NumVarDeclarations[label="17. NumVarDeclarations"][shape=box]
+    NumExternalMethod[label="18. NumExternalMethod"][shape=box]
+    NumLocalMethod[label="19. NumLocalMethod"][shape=box]
+    NumCasts[label="20. NumCasts"][shape=box]
+
+    EclipseStaticstic -> {
+        HalsteadLength,
+        HalsteadVocab,
+        HalsteadVolume,
+        HalsteadDifficulty,
+        HalsteadEffort,
+        MaintainabilityIndex,
+        NumComments,
+        NumLoops,
+        NumExpressions,
+        NumVarDeclarations,
+        NumExternalMethod,
+        NumLocalMethod,
+        NumCasts
+    }
+    
+    HalsteadLength -> {
+        NumOperands,
+        NumOperators
+    }
+    
+    HalsteadVocab -> {
+        UniqueOperator,
+        UniqueOperand
+    }
+    
+    HalsteadVolume -> {
+        NumLinesCodes
+    }
+    
+    HalsteadEffort -> {
+        HalsteadDifficulty
+    }
+    
+    MaintainabilityIndex -> {
+        CyclomaticComplexity,
+        NumCommentLines
+    }
+    
+    HalsteadDifficulty -> {
+        NumOperators,
+        UniqueOperator,
+        UniqueOperand
+    }
+    
+    MaintainabilityIndex -> {
+        HalsteadVolume,
+        NumLinesCodes
+    }
+    
+    HalsteadVolume -> {
+        HalsteadVocab
+    }
+
+
+}

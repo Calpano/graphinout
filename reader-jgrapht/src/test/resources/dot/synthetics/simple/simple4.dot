@@ -1,0 +1,6 @@
+digraph {
+    node [shape=circle, color=lightblue];
+    A [label="Node A" color=red];
+    B [label="Node B"];
+    A -> B [label="Edge 1", color="green"];
+}

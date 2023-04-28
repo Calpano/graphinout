@@ -1,0 +1,53 @@
+digraph G {
+  graph [label="Complex Graph", fontsize=16, fontcolor=black, bgcolor=gray, rankdir=LR, nodesep=1.5, ranksep=2.0, margin=0.5, pad=1.0];
+  node [shape=oval, style=filled, fillcolor=white, fontsize=12, fontcolor=black, height=1.0, width=1.5, fixedsize=true, margin=0.1];
+  edge [color=blue, style=solid, weight=1, arrowhead=normal, arrowtail=none, fontsize=10, fontcolor=black, labeldistance=1.5, labelfontsize=10, decorate=false];
+
+  subgraph cluster_0 {
+    label="Cluster 0";
+    style=dashed;
+    color=red;
+    fontcolor=white;
+    A [label="Node A", color=red, fontcolor=white, shape=circle, style=filled, fillcolor=green, width=2, height=2];
+    B [label="Node B", color=blue, fontcolor=white, shape=box, style=filled, fillcolor=yellow, width=1.5, height=1.5];
+    C [label="Node C", color=green, fontcolor=white, shape=diamond, style=filled, fillcolor=blue, width=1, height=1];
+    D [label="Node D", color=orange, fontcolor=white, shape=triangle, style=filled, fillcolor=red, width=0.5, height=0.5];
+    A -> B [label="Edge AB", color=red, fontcolor=white, style=dashed, weight=1.5];
+    A -> C [label="Edge AC", color=blue, fontcolor=white, style=dotted, weight=2.5];
+    B -> C [label="Edge BC", color=green, fontcolor=white, style=bold, weight=0.5];
+    B -> D [label="Edge BD", color=orange, fontcolor=white, style=solid, weight=3.5];
+    C -> D [label="Edge CD", color=purple, fontcolor=white, style=dashed, weight=4.5];
+  }
+
+  subgraph cluster_1 {
+    label="Cluster 1";
+    style=dotted;
+    color=blue;
+    fontcolor=white;
+    E [label="Node E", color=green, fontcolor=white, shape=circle, style=filled, fillcolor=red, width=2, height=2];
+    F [label="Node F", color=red, fontcolor=white, shape=box, style=filled, fillcolor=orange, width=1.5, height=1.5];
+    G [label="Node G", color=blue, fontcolor=white, shape=diamond, style=filled, fillcolor=yellow, width=1, height=1];
+    H [label="Node H", color=orange, fontcolor=white, shape=triangle, style=filled, fillcolor=blue, width=0.5, height=0.5];
+    E -> F [label="Edge EF", color=purple, fontcolor=white, style=dashed, weight=1.5];
+    E -> G [label="Edge EG", color=red, fontcolor=white, style=dotted, weight=2.5];
+    F -> G [label="Edge FG", color=green, fontcolor=white, style=bold, weight=0.5];
+    F -> H [label="Edge FH", color=blue, fontcolor=white, style=solid, weight=3.5];
+    G -> H [label="Edge GH", color=yellow, fontcolor=black, style=dashed, weight=4.5];
+    }
+
+    subgraph cluster_2 {
+    label="Cluster 2";
+    style=solid;
+    color=green;
+    fontcolor=white;
+    I [label="Node I", color=blue, fontcolor=white, shape=circle, style=filled, fillcolor=orange, width=2, height=2];
+    J [label="Node J", color=green, fontcolor=white, shape=box, style=filled, fillcolor=yellow, width=1.5, height=1.5];
+    K [label="Node K", color=red, fontcolor=white, shape=diamond, style=filled, fillcolor=blue, width=1, height=1];
+    L [label="Node L", color=orange, fontcolor=white, shape=triangle, style=filled, fillcolor=red, width=0.5, height=0.5];
+    I -> J [label="Edge IJ", color=green, fontcolor=white, style=dashed, weight=1.5];
+    I -> K [label="Edge IK", color=red, fontcolor=white, style=dotted, weight=2.5];
+    J -> K [label="Edge JK", color=blue, fontcolor=white, style=bold, weight=0.5];
+    J -> L [label="Edge JL", color=green, fontcolor=white, style=solid, weight=3.5];
+    K -> L [label="Edge KL", color=yellow, fontcolor=black, style=dashed, weight=4.5];
+    }
+ }
