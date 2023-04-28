@@ -29,7 +29,6 @@ class Graph6ReaderTest extends AbstractReaderTest {
     }
 
     @Test
-    @Disabled("edge ids are null???")
     void test() {
         // stream incoming test resource as XML to the logger
         GioReader gioReader = new Graph6Reader();
