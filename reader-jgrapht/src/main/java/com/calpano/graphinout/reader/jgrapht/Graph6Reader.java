@@ -33,8 +33,7 @@ public class Graph6Reader implements GioReader {
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
         Graph6Sparse6EventDrivenImporter importer = new Graph6Sparse6EventDrivenImporter();
-        JGraphTReader<Integer> jGraphTReader = new JGraphTReader<>(inputSource, importer, writer, errorHandler);
-        jGraphTReader.registerNodeMapper(v-> ""+v);
+        JGraphTReader<Integer> jGraphTReader = new JGraphTReader<>(inputSource, importer, writer, errorHandler, node-> ""+node.vertex);
         jGraphTReader.read();
     }
 }
