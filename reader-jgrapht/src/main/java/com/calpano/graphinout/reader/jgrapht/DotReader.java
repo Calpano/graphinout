@@ -31,8 +31,7 @@ public class DotReader implements GioReader {
 
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
-        DOTEventDrivenImporter importer = new DOTEventDrivenImporter();
-        JGraphTReader<String> jGraphTReader = new JGraphTReader<>(inputSource, importer, writer, errorHandler, node -> node.vertex);
+        JGraphTReader<String> jGraphTReader = new JGraphTReader<>(inputSource, DOTEventDrivenImporter::new, writer, errorHandler, vertex -> vertex);
         jGraphTReader.read();
     }
 }

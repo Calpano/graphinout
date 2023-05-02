@@ -28,15 +28,13 @@ import java.util.Optional;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @SuperBuilder
 public class GioKey extends GioElementWithDescription {
 
     /**
      * GraphML Type data / attribute extension
      */
-    @Nullable
-    String attributeName;
+    @Nullable String attributeName;
     /**
      * ID of this element. Is refered to by {@link GioData#getKey()}.
      */
