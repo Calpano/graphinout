@@ -72,7 +72,7 @@ public class JGraphTReader<N> {
     public static class Graph extends JgtEntity {
     }
 
-    final InputSource inputSource;
+    final SingleInputSource inputSource;
     final GioWriter writer;
     final Consumer<ContentError> errorHandler;
     private final AtomicReference<IOException> exception = new AtomicReference<>();
@@ -90,7 +90,11 @@ public class JGraphTReader<N> {
     private Mode mode;
 
     public JGraphTReader(InputSource inputSource, Supplier<EventDrivenImporter<N, Pair<N, N>>> importer, GioWriter writer, Consumer<ContentError> errorHandler, Function<N, String> nodeToNodeIdFun) {
-        this.inputSource = inputSource;
+        if (inputSource.isMulti()) {
+            throw new IllegalArgumentException("Cannot handle multi-sources");
+        }
+        assert inputSource instanceof SingleInputSource;
+        this.inputSource = (SingleInputSource) inputSource;
         this.importerSupplier = importer;
         this.writer = writer;
         this.errorHandler = errorHandler;
@@ -156,14 +160,16 @@ public class JGraphTReader<N> {
             writer.endDocument();
         } catch (ImportException | IOException e) {
             if (e.getCause() instanceof IOException ioex) throw ioex;
-            errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + e.getMessage(), null));
+            if (errorHandler != null) {
+                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + e.getMessage(), null));
+            }
         }
         if (exception.get() != null) throw exception.get();
     }
 
     private void copyAttributeInfo(Map<String, JgtAttribute> attributes, GioKeyForType gioKeyForType, Map<String, GioKey> gioKeyMap) {
         attributes.forEach((attName, v) -> {
-            String id = gioKeyForType + "-" + gioKeyMap.size();
+            String id = gioKeyForType.name().toLowerCase() + "-" + attName;
             gioKeyMap.computeIfAbsent(attName, k -> new GioKey(attName, id, gioKeyForType, null, toGioType(v.attributeType)));
         });
     }
@@ -220,10 +226,11 @@ public class JGraphTReader<N> {
                     writer.endEdge();
                 } catch (IOException ex) {
                     if (ex.getCause() instanceof IOException ioex && (exception.get() == null)) {
-                            exception.set(ioex);
+                        exception.set(ioex);
 
                     }
-                    errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + ex.getMessage(), null));
+                    if (errorHandler != null)
+                        errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + ex.getMessage(), null));
                 }
             }
         }
@@ -242,9 +249,10 @@ public class JGraphTReader<N> {
                         writer.data(GioData.builder().key(key).value(graphAtt.attributeValue).build());
                     } catch (IOException ex) {
                         if (ex.getCause() instanceof IOException ioex && (exception.get() == null)) {
-                                exception.set(ioex);
+                            exception.set(ioex);
                         }
-                        errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + ex.getMessage(), null));
+                        if (errorHandler != null)
+                            errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + ex.getMessage(), null));
                     }
                 }
             }
@@ -267,9 +275,10 @@ public class JGraphTReader<N> {
                     writer.endNode(null);
                 } catch (IOException ex) {
                     if (ex.getCause() instanceof IOException ioex && (exception.get() == null)) {
-                            exception.set(ioex);
+                        exception.set(ioex);
                     }
-                    errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + ex.getMessage(), null));
+                    if (errorHandler != null)
+                        errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + ex.getMessage(), null));
                 }
             }
         }
@@ -279,6 +288,8 @@ public class JGraphTReader<N> {
         this.importer = importerSupplier.get();
         nodeIds.clear();
         importer.addVertexAttributeConsumer((pair, att) -> {
+            if (att == null)
+                return;
             maybeEmitEvent(Kind.Node, pair.getFirst());
             String attName = pair.getSecond();
             String attValue = att.getValue();

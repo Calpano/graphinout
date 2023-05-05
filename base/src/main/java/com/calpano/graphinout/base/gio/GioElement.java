@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.gio;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
