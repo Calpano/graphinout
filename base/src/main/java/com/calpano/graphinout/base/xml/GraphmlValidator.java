@@ -39,6 +39,7 @@ public class GraphmlValidator {
     public static boolean isValidGraphml(InputSource inputSource) throws IOException {
         if (inputSource.isMulti()) throw new IllegalArgumentException("can only handle SingleInputSource");
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
+
         try {
             String schemaAsString = IOUtils.resourceToString(xmlSchemaResource, StandardCharsets.UTF_8);
             Sax2Log errorHandler = new Sax2Log(log);
@@ -46,18 +47,20 @@ public class GraphmlValidator {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             factory.setErrorHandler(errorHandler);
             Source schemaFile = new StreamSource(new StringReader(schemaAsString));
-            //"<!DOCTYPE graphml SYSTEM \"http://graphml.graphdrawing.org/dtds/1.0rc/graphml.dtd\">"));
             Schema schema = factory.newSchema(schemaFile);
             Validator validator = schema.newValidator();
             validator.setErrorHandler(errorHandler);
             Source source = new SAXSource(new org.xml.sax.InputSource(singleInputSource.inputStream()));
             validator.validate(source);
-            // TODO if there are warnings, file is not valid
-            return errorHandler.errors() == 0 && errorHandler.fatals() == 0;
+
+            boolean hasErrors = errorHandler.errors() > 0;
+            boolean hasFatals = errorHandler.fatals() > 0;
+            boolean hasWarnings = errorHandler.warnings() > 0;
+
+            return !hasErrors && !hasFatals && !hasWarnings;
         } catch (SAXException e) {
-            log.warn("SAX Exception",e);
+            log.warn("SAX Exception", e);
             return false;
         }
     }
-
 }
