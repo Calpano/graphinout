@@ -22,6 +22,8 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     private final Map<String, List<String>> nonExistingNode = new HashMap<>();
     private final Set<String> existingPortNames = new HashSet<>();
     private final Map<String, List<String>> nonExistingPortNames = new HashMap<>();
+    private Set<String> existingKeyIds = new HashSet<>();
+
     public ValidatingGraphMlWriter() {
         this.currentElements = new LinkedList<>();
         // never deal with an empty stack
@@ -138,8 +140,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             throw new GraphmlWriterEndException(element, currentElement, "Wrong order of calls. Cannot END '" + element + "', last started element was " + currentElement);
         }
         currentElements.pop();
-        if (log.isDebugEnabled())
-            log.debug("ENDED '{} '. Stack: {}", element.name(), stackToString());
+        if (log.isDebugEnabled()) log.debug("ENDED '{} '. Stack: {}", element.name(), stackToString());
     }
 
     private void ensureAllowedStart(CurrentElement childElement) throws IllegalStateException {
@@ -149,8 +150,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             throw new GraphmlWriterStartException(currentElement, childElement, "Wrong order of elements. In element '" + currentElement + "' expected one of " + currentElement.allowedChildren + " but found " + childElement + ". Stack (leaf-to-root): " + this.currentElements);
         }
         currentElements.push(childElement);
-        if (log.isDebugEnabled())
-            log.debug("STARTED '{}' => Stack: {}", childElement.name(), stackToString());
+        if (log.isDebugEnabled()) log.debug("STARTED '{}' => Stack: {}", childElement.name(), stackToString());
     }
 
     /**
@@ -167,21 +167,19 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
 
     private void investigatingTheExistenceOfThePort(@NotNull GraphmlEdge edge) throws IllegalStateException {
         for (String portName : Arrays.asList(edge.getSourcePortId(), edge.getTargetPortId())) {
-            if (portName != null)
-                if (!existingPortNames.contains(portName)) {
-                    nonExistingPortNames.computeIfAbsent(portName, key -> new ArrayList<>()) //
-                            .add("Edge [" + edge + "] references to a non-existent port Name: '" + portName + "'");
-                } else nonExistingNode.remove(portName);
+            if (portName != null) if (!existingPortNames.contains(portName)) {
+                nonExistingPortNames.computeIfAbsent(portName, key -> new ArrayList<>()) //
+                        .add("Edge [" + edge + "] references to a non-existent port Name: '" + portName + "'");
+            } else nonExistingNode.remove(portName);
         }
     }
 
     private void investigatingTheExistenceOfThePort(@NotNull GraphmlHyperEdge hyperEdge) throws IllegalStateException {
         for (GraphmlEndpoint endpoint : hyperEdge.getEndpoints()) {
-            if (endpoint.getPort() != null)
-                if (!existingPortNames.contains(endpoint.getPort())) {
-                    nonExistingPortNames.computeIfAbsent(endpoint.getPort(), key -> new ArrayList<>()) //
-                            .add("Hyper Edge [" + hyperEdge + "] references to a non-existent port Name: '" + endpoint.getPort() + "'");
-                } else nonExistingNode.remove(endpoint.getPort());
+            if (endpoint.getPort() != null) if (!existingPortNames.contains(endpoint.getPort())) {
+                nonExistingPortNames.computeIfAbsent(endpoint.getPort(), key -> new ArrayList<>()) //
+                        .add("Hyper Edge [" + hyperEdge + "] references to a non-existent port Name: '" + endpoint.getPort() + "'");
+            } else nonExistingNode.remove(endpoint.getPort());
         }
     }
 
@@ -238,10 +236,12 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     private void validateKey(GraphmlKey key) throws IllegalStateException {
-        // FIXME validate that this key has an ID which has not already been used by a previous key
-        // if (key.getDataList() != null && key.getDataList().stream().anyMatch(existingKey -> existingKey.getId().equals(key.getId()))) {
-        // throw new IllegalStateException("Key ID already exists: " + key.getId() + ". ID must be unique.");
-        // }
+        String keyId = key.getId();
+        if (existingKeyIds.contains(keyId)) {
+            throw new IllegalStateException("Key ID already exists: " + keyId + ". ID must be unique.");
+        } else {
+            existingKeyIds.add(keyId);
+        }
     }
 
     private void validateLocator(Optional<GraphmlLocator> locator) throws IllegalStateException {
