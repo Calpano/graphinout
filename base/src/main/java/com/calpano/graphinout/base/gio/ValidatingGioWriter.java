@@ -23,7 +23,7 @@ public class ValidatingGioWriter implements GioWriter {
     @Override
     public void data(GioData data) throws IOException {
         if (!keysIds.contains(data.getKey()))
-            throw new IllegalStateException("GioData should refer to an existing Key ID, but uses '"+data.getKey()+"'");
+            throw new IllegalStateException("GioData should refer to an existing Key ID, but uses '" + data.getKey() + "'");
     }
 
     @Override
@@ -75,10 +75,12 @@ public class ValidatingGioWriter implements GioWriter {
 
     @Override
     public void startEdge(GioEdge edge) throws IOException {
-        if(edge.getId()!=null) {
-            boolean contains = edgesIds.add(edge.getId());
-            if(contains) {
+        if (edge.getId() != null) {
+            boolean contains = edgesIds.contains(edge.getId());
+            if (contains) {
                 throw new IllegalStateException("GioEdge ID must be unique: " + edge.getId());
+            } else {
+                edgesIds.add(edge.getId());
             }
         }
 
