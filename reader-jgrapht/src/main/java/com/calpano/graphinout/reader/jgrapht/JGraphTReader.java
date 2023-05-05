@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -55,6 +56,10 @@ public class JGraphTReader<N> {
 
         public Node(N v) {
             this.vertex = v;
+        }
+
+        public void updateWithAttributesFrom(Node<N> other) {
+            super.attributes.putAll(other.attributes);
         }
 
     }
@@ -259,6 +264,8 @@ public class JGraphTReader<N> {
         }
     }
 
+    private LinkedHashMap<String, Node> nodes = new LinkedHashMap<>();
+
     private void onNode(Node<N> node) {
         switch (mode) {
             case CollectAttributeTypes -> {
@@ -266,6 +273,8 @@ public class JGraphTReader<N> {
             }
             case RealParsing -> {
                 String nodeId = toNodeId(node.vertex);
+                // TODO buffer the node and emit it later
+
                 try {
                     writer.startNode(GioNode.builder().id(nodeId).build());
                     for (JgtAttribute nodeAtt : node.attributes.values()) {
