@@ -2,7 +2,12 @@ package com.calpano.graphinout.base.input;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
@@ -11,21 +16,19 @@ public class FileSingleInputSource implements SingleInputSource {
 
     final File file;
     private final FileInputStream inputStream;
-    Optional<Charset> encoding;
+    @Nullable
+    Charset encoding;
 
-    public FileSingleInputSource(File file, Charset encoding) {
-        this(file, Optional.of(encoding));
-    }
 
     /**
      * Unknown encoding
      */
     public FileSingleInputSource(File file) {
-        this(file, Optional.empty());
+        this(file, null);
 
     }
 
-    FileSingleInputSource(File file, Optional<Charset> encoding) {
+    public FileSingleInputSource(File file, @Nullable Charset encoding) {
         this.file = file;
         this.encoding = encoding;
         try {
@@ -35,10 +38,15 @@ public class FileSingleInputSource implements SingleInputSource {
         }
     }
 
+    @Override
+    public void close() throws Exception {
+        log.debug("Closed inputStream <{}> type <{}>.", name(), inputStream().getClass().getName());
+        inputStream.close();
+    }
 
     @Override
     public Optional<Charset> encoding() {
-        return encoding;
+        return Optional.ofNullable(encoding);
     }
 
     @Override
@@ -53,12 +61,10 @@ public class FileSingleInputSource implements SingleInputSource {
 
     @Override
     public String name() {
-        return null;
-    }
-
-    @Override
-    public void close() throws Exception {
-        log.debug("Closed inputStream <{}> type <{}>.", name(), inputStream().getClass().getName());
-        inputStream.close();
+        try {
+            return this.file.getCanonicalPath();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

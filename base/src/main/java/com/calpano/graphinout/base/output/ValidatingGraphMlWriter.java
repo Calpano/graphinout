@@ -4,6 +4,7 @@ import com.calpano.graphinout.base.graphml.*;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,7 +59,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endGraph(Optional<GraphmlLocator> locator) throws IOException {
+    public void endGraph(@Nullable GraphmlLocator locator) throws IOException {
         validateLocator(locator);
         ensureAllowedEnd(CurrentElement.GRAPH);
     }
@@ -69,7 +70,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endNode(Optional<GraphmlLocator> locator) throws IOException {
+    public void endNode(@Nullable GraphmlLocator locator) throws IOException {
         validateLocator(locator);
         ensureAllowedEnd(CurrentElement.NODE);
     }
@@ -244,12 +245,11 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         }
     }
 
-    private void validateLocator(Optional<GraphmlLocator> locator) throws IllegalStateException {
-        if (locator.isEmpty()) return;
-        GraphmlLocator graphmlLocator = locator.get();
+    private void validateLocator(GraphmlLocator locator) throws IllegalStateException {
+        if(locator==null) return;
         ensureAllowedStart(CurrentElement.LOCATOR);
         ensureAllowedEnd(CurrentElement.LOCATOR);
-        if (graphmlLocator.getXLinkHref() == null)
+        if (locator.getXLinkHref() == null)
             throw new IllegalArgumentException("XLinkHref Url cannot be null or empty.");
     }
 

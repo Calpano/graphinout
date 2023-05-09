@@ -1,9 +1,9 @@
 package com.calpano.graphinout.base.graphml;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public class DelegatingGraphmlWriter implements GraphmlWriter {
 
@@ -35,7 +35,7 @@ public class DelegatingGraphmlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endGraph(Optional<GraphmlLocator> graphmlLocator) throws IOException {
+    public void endGraph(@Nullable GraphmlLocator graphmlLocator) throws IOException {
         for (GraphmlWriter writer : writers) {
             writer.endGraph(graphmlLocator);
         }
@@ -49,7 +49,7 @@ public class DelegatingGraphmlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endNode(Optional<GraphmlLocator> locator) throws IOException {
+    public void endNode(@Nullable GraphmlLocator locator) throws IOException {
         for (GraphmlWriter writer : writers) {
             writer.endNode(locator);
         }
