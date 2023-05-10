@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class GraphmlReader implements GioReader {
-    //TODO This can load from config file
+    //TODO This can load from config file - use only GraphML 1.1
     private List<String> externalSchemaList = new ArrayList<>();
     private Consumer<ContentError> errorHandler;
 
@@ -145,7 +145,7 @@ public class GraphmlReader implements GioReader {
 
     }
 
-    class SimpleErrorHandler implements ErrorHandler {
+    static class SimpleErrorHandler implements ErrorHandler {
 
 
         private final Consumer<ContentError> errorConsumer;
@@ -165,14 +165,22 @@ public class GraphmlReader implements GioReader {
 
         @Override
         public void error(SAXParseException e) throws SAXException {
-            //TODO Throw exception Or log to errorConsumer?
+            ContentError contentError = new ContentError(ContentError.ErrorLevel.Error, e.getMessage(),
+                    null);
+            if (errorConsumer != null) {
+                errorConsumer.accept(contentError);
+            }
             throw e;
 
         }
 
         @Override
         public void fatalError(SAXParseException e) throws SAXException {
-            //TODO Throw exception Or log to errorConsumer?
+            ContentError contentError = new ContentError(ContentError.ErrorLevel.Error, e.getMessage(),
+                    null);
+            if (errorConsumer != null) {
+                errorConsumer.accept(contentError);
+            }
             throw e;
         }
     }
