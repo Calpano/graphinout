@@ -12,7 +12,7 @@
   <!--<xs:include schemaLocation="graphml-parseinfo.xsd"/>-->
 
   <!-- Redefinition of the elements in the graphml-structure schema -->
-  <xs:redefine schemaLocation="graphml.xsd.xml">
+  <xs:redefine schemaLocation="../schema/graphml.xsd.xml">
 
     <xs:attributeGroup name="key.extra.attrib">
       <xs:annotation>

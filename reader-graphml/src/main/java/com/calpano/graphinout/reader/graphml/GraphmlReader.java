@@ -6,6 +6,9 @@ import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.base.reader.GioReader;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.Resource;
+import io.github.classgraph.ResourceList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -17,28 +20,60 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
-import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 public class GraphmlReader implements GioReader {
+    static class SimpleErrorHandler implements ErrorHandler {
+
+
+        private final Consumer<ContentError> errorConsumer;
+
+        public SimpleErrorHandler(Consumer<ContentError> errorConsumer) {
+            this.errorConsumer = errorConsumer;
+        }
+
+        @Override
+        public void error(SAXParseException e) throws SAXException {
+            ContentError contentError = new ContentError(ContentError.ErrorLevel.Error, e.getMessage(), null);
+            if (errorConsumer != null) {
+                errorConsumer.accept(contentError);
+            }
+
+        }
+
+        @Override
+        public void fatalError(SAXParseException e) throws SAXException {
+            ContentError contentError = new ContentError(ContentError.ErrorLevel.Error, e.getMessage(), null);
+            if (errorConsumer != null) {
+                errorConsumer.accept(contentError);
+            }
+            throw e;
+        }
+
+        @Override
+        public void warning(SAXParseException e) throws SAXException {
+            ContentError contentError = new ContentError(ContentError.ErrorLevel.Warn, e.getMessage(), null);
+            if (errorConsumer != null) {
+                errorConsumer.accept(contentError);
+            }
+        }
+    }
+
     //TODO This can load from config file - use only GraphML 1.1
+    /** lists of schema contents */
     private List<String> externalSchemaList = new ArrayList<>();
     private Consumer<ContentError> errorHandler;
 
     public GraphmlReader() {
-
         try {
             loadSchemaFiles();
-        } catch (URISyntaxException | IOException e) {
-            ContentError contentError = new ContentError(ContentError.ErrorLevel.Error, e.getMessage(),
-                    null);
+        } catch (IOException e) {
+            ContentError contentError = new ContentError(ContentError.ErrorLevel.Error, e.getMessage(), null);
             if (errorHandler != null) {
                 errorHandler.accept(contentError);
             }
@@ -53,6 +88,23 @@ public class GraphmlReader implements GioReader {
     @Override
     public GioFileFormat fileFormat() {
         return new GioFileFormat("graphml", "GraphML", ".graphml", ".graphml.xml");
+    }
+
+    @Override
+    public boolean isValid(SingleInputSource singleInputSource) throws IOException {
+
+        try {
+            validateWellFormed(singleInputSource);
+            //TODO There is no internal DTD in any of the files that have been processed so far.
+            //If it exists, it can be verified with this method
+            //validateInternalDTD(singleInputSource);
+            //ValidateInternalXSD(singleInputSource);
+            validateExternalSchema(singleInputSource);
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new RuntimeException(e);
+        }
+        //TODO This method does not work well here
+        return GioReader.super.isValid(singleInputSource);
     }
 
     @Override
@@ -80,30 +132,28 @@ public class GraphmlReader implements GioReader {
         }
     }
 
-    @Override
-    public boolean isValid(SingleInputSource singleInputSource) throws IOException {
+    /**
+     * Two sub-options: (1) XML file contains "xsi:schemaLocation" -> take XML Schema from there; (2) we pre-downloaded
+     * Graphml.XSD, use it, and ignore "xsi:schemaLocation" -- http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd
+     *
+     * @param inputSource
+     * @throws SAXException
+     * @throws IOException
+     * @throws ParserConfigurationException
+     */
+    void validateExternalSchema(SingleInputSource inputSource) throws SAXException, IOException, ParserConfigurationException {
+        if (externalSchemaList.isEmpty()) return;
 
-        try {
-            validateWellFormed(singleInputSource);
-           //TODO There is no internal DTD in any of the files that have been processed so far.
-           //If it exists, it can be verified with this method
-           //validateInternalDTD(singleInputSource);
-           //ValidateInternalXSD(singleInputSource);
-          validateExternalSchema(singleInputSource);
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new RuntimeException(e);
-        }
-        //TODO This method does not work well here
-        return GioReader.super.isValid(singleInputSource) ;
-    }
+        Source[] listOfAvailableSchema = externalSchemaList.stream().map(s -> new StreamSource(new StringReader(s))).toArray(Source[]::new);
 
-    void validateWellFormed(SingleInputSource inputSource) throws ParserConfigurationException, SAXException, IOException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(false);
         factory.setNamespaceAware(true);
 
-        SAXParser parser = factory.newSAXParser();
+        SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+        factory.setSchema(schemaFactory.newSchema(listOfAvailableSchema));
 
+        SAXParser parser = factory.newSAXParser();
         XMLReader reader = parser.getXMLReader();
         reader.setErrorHandler(new SimpleErrorHandler(this.errorHandler));
         reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));
@@ -127,86 +177,32 @@ public class GraphmlReader implements GioReader {
         factory.setNamespaceAware(true);
 
         SAXParser parser = factory.newSAXParser();
-        parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-                "http://www.w3.org/2001/XMLSchema");
+        parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
 
         XMLReader reader = parser.getXMLReader();
         reader.setErrorHandler(new SimpleErrorHandler(this.errorHandler));
         reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));
     }
 
-    /**
-     * Two sub-options: (1) XML file contains "xsi:schemaLocation" -> take XML Schema from there;
-     * (2) we pre-downloaded Graphml.XSD, use it, and ignore "xsi:schemaLocation" -- http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd
-     * @param inputSource
-     * @throws SAXException
-     * @throws IOException
-     * @throws ParserConfigurationException
-     */
-    void validateExternalSchema(SingleInputSource inputSource) throws SAXException, IOException, ParserConfigurationException {
-        if (externalSchemaList.isEmpty()) return;
-
-        Source[] listOfAvailableSchema = externalSchemaList.stream().map(s ->new StreamSource(new File(s))).toArray(StreamSource[]::new);
-
+    void validateWellFormed(SingleInputSource inputSource) throws ParserConfigurationException, SAXException, IOException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(false);
         factory.setNamespaceAware(true);
 
-        SchemaFactory schemaFactory =
-                SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        factory.setSchema(schemaFactory.newSchema(listOfAvailableSchema));
-
         SAXParser parser = factory.newSAXParser();
+
         XMLReader reader = parser.getXMLReader();
         reader.setErrorHandler(new SimpleErrorHandler(this.errorHandler));
         reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));
-
-    }
-    private void loadSchemaFiles() throws URISyntaxException, IOException {
-
-        URL schemaURL = getClass().getClassLoader().getResource("schema");
-        String path = schemaURL.getPath();
-        externalSchemaList.addAll(Stream.of(new File(path).listFiles()).filter(file ->(file.isFile() && file.getName().toLowerCase().endsWith(".xsd.xml")))
-                .map(File::getPath).toList());
     }
 
-
-    static class SimpleErrorHandler implements ErrorHandler {
-
-
-        private final Consumer<ContentError> errorConsumer;
-
-        public SimpleErrorHandler(Consumer<ContentError> errorConsumer) {
-            this.errorConsumer = errorConsumer;
-        }
-
-        @Override
-        public void warning(SAXParseException e) throws SAXException {
-            ContentError contentError = new ContentError(ContentError.ErrorLevel.Warn, e.getMessage(),
-                    null);
-            if (errorConsumer != null) {
-                errorConsumer.accept(contentError);
+    private void loadSchemaFiles() throws IOException {
+        ClassGraph cg = new ClassGraph();
+        try (ResourceList list = cg.scan().getAllResources().filter(r -> r.getPath().contains("/schema/") && r.getPath().toLowerCase().endsWith(".xsd.xml"))) {
+            for (Resource resource : list) {
+                String content = resource.getContentAsString();
+                externalSchemaList.add(content);
             }
-        }
-
-        @Override
-        public void error(SAXParseException e) throws SAXException {
-            ContentError contentError = new ContentError(ContentError.ErrorLevel.Error, e.getMessage(),
-                    null);
-            if (errorConsumer != null) {
-                errorConsumer.accept(contentError);
-            }
-
-        }
-
-        @Override
-        public void fatalError(SAXParseException e) throws SAXException {
-            ContentError contentError = new ContentError(ContentError.ErrorLevel.Error, e.getMessage(),
-                    null);
-            if (errorConsumer != null) {
-                errorConsumer.accept(contentError);
-            }
-            throw e;
         }
     }
 }
