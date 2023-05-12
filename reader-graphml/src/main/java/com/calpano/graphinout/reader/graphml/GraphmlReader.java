@@ -17,15 +17,33 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class GraphmlReader implements GioReader {
     //TODO This can load from config file - use only GraphML 1.1
     private List<String> externalSchemaList = new ArrayList<>();
     private Consumer<ContentError> errorHandler;
+
+    public GraphmlReader() {
+
+        try {
+            loadSchemaFiles();
+        } catch (URISyntaxException | IOException e) {
+            ContentError contentError = new ContentError(ContentError.ErrorLevel.Error, e.getMessage(),
+                    null);
+            if (errorHandler != null) {
+                errorHandler.accept(contentError);
+            }
+        }
+    }
 
     @Override
     public void errorHandler(Consumer<ContentError> errorHandler) {
@@ -71,13 +89,12 @@ public class GraphmlReader implements GioReader {
            //If it exists, it can be verified with this method
            //validateInternalDTD(singleInputSource);
            //ValidateInternalXSD(singleInputSource);
-           //ValidateExternalSchema(singleInputSource);
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (SAXException e) {
+          validateExternalSchema(singleInputSource);
+        } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
-        return GioReader.super.isValid(singleInputSource);
+        //TODO This method does not work well here
+        return GioReader.super.isValid(singleInputSource) ;
     }
 
     void validateWellFormed(SingleInputSource inputSource) throws ParserConfigurationException, SAXException, IOException {
@@ -129,7 +146,8 @@ public class GraphmlReader implements GioReader {
     void validateExternalSchema(SingleInputSource inputSource) throws SAXException, IOException, ParserConfigurationException {
         if (externalSchemaList.isEmpty()) return;
 
-        Source[] listOfAvailableSchema = externalSchemaList.stream().toArray(StreamSource[]::new);
+        Source[] listOfAvailableSchema = externalSchemaList.stream().map(s ->new StreamSource(new File(s))).toArray(StreamSource[]::new);
+
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(false);
         factory.setNamespaceAware(true);
@@ -144,6 +162,14 @@ public class GraphmlReader implements GioReader {
         reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));
 
     }
+    private void loadSchemaFiles() throws URISyntaxException, IOException {
+
+        URL schemaURL = getClass().getClassLoader().getResource("schema");
+        String path = schemaURL.getPath();
+        externalSchemaList.addAll(Stream.of(new File(path).listFiles()).filter(file ->(file.isFile() && file.getName().toLowerCase().endsWith(".xsd.xml")))
+                .map(File::getPath).toList());
+    }
+
 
     static class SimpleErrorHandler implements ErrorHandler {
 
@@ -170,7 +196,6 @@ public class GraphmlReader implements GioReader {
             if (errorConsumer != null) {
                 errorConsumer.accept(contentError);
             }
-            throw e;
 
         }
 

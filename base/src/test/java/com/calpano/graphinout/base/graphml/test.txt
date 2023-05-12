@@ -1,0 +1,994 @@
+/Library/Java/JavaVirtualMachines/jdk-17.0.4.1.jdk/Contents/Home/bin/java -ea -Didea.test.cyclic.buffer.size=1048576 -javaagent:/Applications/IntelliJ IDEA CE.app/Contents/lib/idea_rt.jar=63210:/Applications/IntelliJ IDEA CE.app/Contents/bin -Dfile.encoding=UTF-8 -classpath /Users/rbaba/.m2/repository/org/junit/platform/junit-platform-launcher/1.9.0/junit-platform-launcher-1.9.0.jar:/Applications/IntelliJ IDEA CE.app/Contents/lib/idea_rt.jar:/Applications/IntelliJ IDEA CE.app/Contents/plugins/junit/lib/junit5-rt.jar:/Applications/IntelliJ IDEA CE.app/Contents/plugins/junit/lib/junit-rt.jar:/Users/rbaba/GitHub/graphinout/reader-graphml/target/test-classes:/Users/rbaba/GitHub/graphinout/reader-graphml/target/classes:/Users/rbaba/GitHub/graphinout/base/target/classes:/Users/rbaba/.m2/repository/ch/qos/logback/logback-classic/1.2.11/logback-classic-1.2.11.jar:/Users/rbaba/.m2/repository/ch/qos/logback/logback-core/1.2.11/logback-core-1.2.11.jar:/Users/rbaba/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar:/Users/rbaba/.m2/repository/org/jetbrains/annotations/24.0.1/annotations-24.0.1.jar:/Users/rbaba/.m2/repository/org/projectlombok/lombok/1.18.24/lombok-1.18.24.jar:/Users/rbaba/.m2/repository/io/github/classgraph/classgraph/4.8.154/classgraph-4.8.154.jar:/Users/rbaba/.m2/repository/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar:/Users/rbaba/GitHub/graphinout/base/target/test-classes:/Users/rbaba/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/Users/rbaba/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.0/junit-jupiter-5.9.0.jar:/Users/rbaba/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.0/junit-jupiter-api-5.9.0.jar:/Users/rbaba/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/rbaba/.m2/repository/org/junit/platform/junit-platform-commons/1.9.0/junit-platform-commons-1.9.0.jar:/Users/rbaba/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/rbaba/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.0/junit-jupiter-params-5.9.0.jar:/Users/rbaba/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.0/junit-jupiter-engine-5.9.0.jar:/Users/rbaba/.m2/repository/org/junit/platform/junit-platform-engine/1.9.0/junit-platform-engine-1.9.0.jar:/Users/rbaba/.m2/repository/org/mockito/mockito-junit-jupiter/5.1.1/mockito-junit-jupiter-5.1.1.jar:/Users/rbaba/.m2/repository/org/mockito/mockito-core/5.1.1/mockito-core-5.1.1.jar:/Users/rbaba/.m2/repository/net/bytebuddy/byte-buddy/1.12.22/byte-buddy-1.12.22.jar:/Users/rbaba/.m2/repository/net/bytebuddy/byte-buddy-agent/1.12.22/byte-buddy-agent-1.12.22.jar:/Users/rbaba/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar com.intellij.rt.junit.JUnitStarter -ideVersion5 -junit5 com.calpano.graphinout.reader.graphml.GraphmlSAXSchemaValidationTest,readAllGraphmlFiles(java.lang.String)
+09:35:21,834 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback-test.xml] at [file:/Users/rbaba/GitHub/graphinout/reader-graphml/target/test-classes/logback-test.xml]
+09:35:21,888 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+09:35:21,890 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [Console]
+09:35:21,892 |-INFO in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+09:35:21,902 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [org.mortbay.thread] to ERROR
+09:35:21,902 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [com.calpano.graphinout.reader.graphml.GraphmlSAXHandler] to INFO
+09:35:21,902 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [com.calpano.graphinout.base.output.ValidatingGraphMlWriter] to INFO
+09:35:21,903 |-INFO in ch.qos.logback.classic.joran.action.RootLoggerAction - Setting level of ROOT logger to DEBUG
+09:35:21,903 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [Console] to Logger[ROOT]
+09:35:21,903 |-ERROR in ch.qos.logback.core.joran.action.ShutdownHookAction - Missing class name for shutdown hook. Near [shutdownHook] line 28
+09:35:21,903 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - End of configuration.
+09:35:21,903 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@12028586 - Registering current configuration as safe fallback point
+case "graphin/graphml/aws/AWS - Analytics.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,16l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,16l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,16l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,16l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,16l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,16l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Analytics.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Analytics.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Analytics.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - Application Services.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,13l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,13l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,13l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,13l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,13l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,13l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Application Services.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Application Services.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Application Services.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - Compute.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Compute.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Compute.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Compute.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - Database.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,29l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,29l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,29l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,29l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,29l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,29l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Database.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Database.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Database.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - Developer Tools.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Developer Tools.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Developer Tools.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Developer Tools.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - Enterprise Applications.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Enterprise Applications.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Enterprise Applications.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Enterprise Applications.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - General.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - General.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - General.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - General.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - Internet of Things.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,34l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,34l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,34l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,34l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,34l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,34l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Internet of Things.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Internet of Things.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Internet of Things.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - Management Tools.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Management Tools.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Management Tools.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Management Tools.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - Mobile Services.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,8l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,8l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,8l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,8l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,8l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,8l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Mobile Services.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Mobile Services.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Mobile Services.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - Networking.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Networking.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Networking.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Networking.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - On-Demand Workforce.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - On-Demand Workforce.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - On-Demand Workforce.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - On-Demand Workforce.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - SDK.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,14l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,14l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,14l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,14l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,14l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,14l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - SDK.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - SDK.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - SDK.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - Security & Identity.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Security & Identity.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Security & Identity.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Security & Identity.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/aws/AWS - Storage & Content Delivery.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Palette ToolTip' of attribute 'attr.name' on element 'ns0:key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Palette ToolTip' is not a valid value for 'NMTOKEN'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'ns0:key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'ns2:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,21l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,21l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,21l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,21l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'ns2:Geometry'.", null).toString() ,21l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:SVGNode'. No child element is expected at this point.", null).toString() ,21l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:Resources'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Storage & Content Delivery.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Storage & Content Delivery.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/aws/AWS - Storage & Content Delivery.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/images/anforderungscluster.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'y:Geometry'.", null).toString() ,7l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,7l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'y:Geometry'.", null).toString() ,7l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.a: Invalid content was found starting with element '{"http://www.yworks.com/xml/graphml":PreferredPlacementDescriptor}'. One of '{"http://www.yworks.com/xml/graphml":LabelModel, "http://www.yworks.com/xml/graphml":ModelParameter}' is expected.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'y:Geometry'.", null).toString() ,7l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SVGNode'. No child element is expected at this point.", null).toString() ,7l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:Resource'.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'y:Geometry'.", null).toString() ,7l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,7l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'data'.", null).toString() ,2l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/images/anforderungscluster.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/anforderungscluster.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/anforderungscluster.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/images/bausteinsicht_ebene1.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:NodeLabel'.", null).toString() ,32l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PreferredPlacementDescriptor'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SVGNode'. No child element is expected at this point.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:Resource'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,11l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:UMLClassNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,12l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:UMLNoteNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:EdgeLabel'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,20l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,12l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'data'.", null).toString() ,10l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/images/bausteinsicht_ebene1.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/bausteinsicht_ebene1.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/bausteinsicht_ebene1.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/images/bausteinsicht_ebene2.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'y:Geometry'.", null).toString() ,13l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:NodeLabel'.", null).toString() ,113l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PreferredPlacementDescriptor'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SVGNode'. No child element is expected at this point.", null).toString() ,7l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:Resource'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,60l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:UMLClassNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,54l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'y:Geometry'.", null).toString() ,13l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,13l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:UMLNoteNode'. No child element is expected at this point.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,27l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,27l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:EdgeLabel'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'y:Geometry'.", null).toString() ,13l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,59l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,54l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'y:Geometry'.", null).toString() ,13l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'data'.", null).toString() ,35l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/images/bausteinsicht_ebene2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/bausteinsicht_ebene2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/bausteinsicht_ebene2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/images/ci-cd-process.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.a: Invalid content was found starting with element '{"http://www.yworks.com/xml/graphml":PreferredPlacementDescriptor}'. One of '{"http://www.yworks.com/xml/graphml":LabelModel, "http://www.yworks.com/xml/graphml":ModelParameter}' is expected.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:NodeLabel'.", null).toString() ,10l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SVGNode'. No child element is expected at this point.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:Resource'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,10l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:EdgeLabel'.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'data'.", null).toString() ,5l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/images/ci-cd-process.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/ci-cd-process.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/ci-cd-process.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/images/flask-pulsar.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'y:Geometry'.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.a: Invalid content was found starting with element '{"http://www.yworks.com/xml/graphml":PreferredPlacementDescriptor}'. One of '{"http://www.yworks.com/xml/graphml":LabelModel, "http://www.yworks.com/xml/graphml":ModelParameter}' is expected.", null).toString() ,8l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:NodeLabel'.", null).toString() ,15l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PreferredPlacementDescriptor'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SVGNode'. No child element is expected at this point.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:Resource'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,11l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:UMLClassNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'y:Geometry'.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:UMLNoteNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:EdgeLabel'.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'y:Geometry'.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'y:Geometry'.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'data'.", null).toString() ,7l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/images/flask-pulsar.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/flask-pulsar.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/flask-pulsar.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/images/kubernetes-architecture.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.a: Invalid content was found starting with element '{"http://www.yworks.com/xml/graphml":PreferredPlacementDescriptor}'. One of '{"http://www.yworks.com/xml/graphml":LabelModel, "http://www.yworks.com/xml/graphml":ModelParameter}' is expected.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:NodeLabel'.", null).toString() ,43l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SVGNode'. No child element is expected at this point.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:Resource'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,32l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:EdgeLabel'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,25l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,18l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'data'.", null).toString() ,11l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-architecture.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-architecture.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-architecture.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/images/kubernetes-ci-cd-process.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'y:Geometry'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.a: Invalid content was found starting with element '{"http://www.yworks.com/xml/graphml":PreferredPlacementDescriptor}'. One of '{"http://www.yworks.com/xml/graphml":LabelModel, "http://www.yworks.com/xml/graphml":ModelParameter}' is expected.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:NodeLabel'.", null).toString() ,46l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SVGNode'. No child element is expected at this point.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:Resource'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,26l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,20l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'y:Geometry'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,10l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,10l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:EdgeLabel'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'y:Geometry'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,26l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,20l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'y:Geometry'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'data'.", null).toString() ,13l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-ci-cd-process.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-ci-cd-process.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-ci-cd-process.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/images/kubernetes-clean-architecture-reduced.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:NodeLabel'.", null).toString() ,11l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SVGNode'. No child element is expected at this point.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:Resource'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,8l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'y:Geometry'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'data'.", null).toString() ,4l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-clean-architecture-reduced.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-clean-architecture-reduced.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-clean-architecture-reduced.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/images/kubernetes-clean-architecture.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'y:Geometry'.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.a: Invalid content was found starting with element '{"http://www.yworks.com/xml/graphml":PreferredPlacementDescriptor}'. One of '{"http://www.yworks.com/xml/graphml":LabelModel, "http://www.yworks.com/xml/graphml":ModelParameter}' is expected.", null).toString() ,17l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:NodeLabel'.", null).toString() ,58l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SVGNode'. No child element is expected at this point.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'raised' is not allowed to appear in element 'y:BorderStyle'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:Resource'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,56l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,22l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'y:Geometry'.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,11l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,11l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:EdgeLabel'.", null).toString() ,17l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'y:Geometry'.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,36l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,22l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'y:Geometry'.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'data'.", null).toString() ,14l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-clean-architecture.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-clean-architecture.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-clean-architecture.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/images/kubernetes-opensource-deployment.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'y:Geometry'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.a: Invalid content was found starting with element '{"http://www.yworks.com/xml/graphml":PreferredPlacementDescriptor}'. One of '{"http://www.yworks.com/xml/graphml":LabelModel, "http://www.yworks.com/xml/graphml":ModelParameter}' is expected.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:NodeLabel'.", null).toString() ,24l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SVGNode'. No child element is expected at this point.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:Resource'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,11l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,14l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'y:Geometry'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,7l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,7l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:EdgeLabel'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'y:Geometry'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,10l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,14l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'y:Geometry'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'data'.", null).toString() ,13l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-opensource-deployment.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-opensource-deployment.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/kubernetes-opensource-deployment.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/images/projektstrukturplan.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'xml:space' is not allowed to appear in element 'y:NodeLabel'.", null).toString() ,29l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,29l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,28l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/images/projektstrukturplan.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/projektstrukturplan.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/images/projektstrukturplan.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/nested-graph-structures/nested_graph_graphical_representation.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-elt.1.a: Cannot find the declaration of element 'graphml'.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/nested-graph-structures/nested_graph_graphical_representation.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/nested-graph-structures/nested_graph_graphical_representation.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/nested-graph-structures/nested_graph_graphical_representation.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/nested-graph-structures/sample.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-elt.1.a: Cannot find the declaration of element 'graphml'.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/nested-graph-structures/sample.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/nested-graph-structures/sample.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/nested-graph-structures/sample.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/auto_oscillator.graphml":
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/auto_oscillator.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/auto_oscillator.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/auto_oscillator.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/classements.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,17l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,8l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/classements.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/classements.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/classements.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/four_neuron_cpg.graphml":
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/four_neuron_cpg.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/four_neuron_cpg.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/four_neuron_cpg.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/gml.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SplineEdge'. No child element is expected at this point.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:GenericEdge' is not complete. One of '{"http://www.yworks.com/xml/graphml":EdgeLabel, "http://www.yworks.com/xml/graphml":SourcePort, "http://www.yworks.com/xml/graphml":TargetPort, "http://www.yworks.com/xml/graphml":UserData}' is expected.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-identity-constraint.4.3: Key 'edge_source_ref' with value 'n6' not found for identity constraint of element 'graph'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericEdge'. No child element is expected at this point.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,9l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-identity-constraint.4.3: Key 'edge_target_ref' with value 'n7' not found for identity constraint of element 'graph'.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/gml.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/gml.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/gml.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/got-graph.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-elt.1.a: Cannot find the declaration of element 'graphml'.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/got-graph.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/got-graph.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/got-graph.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/graph1.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,20l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,30l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/graph1.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph1.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph1.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+WARN : Invalid input in graphin/graphml/samples/graph1_test.graphml   at com.calpano.graphinout.base.reader.GioReader:56
+java.lang.RuntimeException: Failed reading 'graphin/graphml/samples/graph1_test.graphml'
+	at com.calpano.graphinout.reader.graphml.GraphmlReader.read(GraphmlReader.java:78)
+	at com.calpano.graphinout.base.reader.GioReader.isValid(GioReader.java:54)
+	at com.calpano.graphinout.reader.graphml.GraphmlReader.isValid(GraphmlReader.java:97)
+	at com.calpano.graphinout.reader.graphml.GraphmlSAXSchemaValidationTest.readAllGraphmlFiles(GraphmlSAXSchemaValidationTest.java:71)
+	at jdk.internal.reflect.GeneratedMethodAccessor15.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:156)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:147)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestTemplateMethod(TimeoutExtension.java:94)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:103)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:93)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:92)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:86)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:217)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:213)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:138)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:68)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask$DefaultDynamicTestExecutor.execute(NodeTestTask.java:226)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask$DefaultDynamicTestExecutor.execute(NodeTestTask.java:204)
+	at org.junit.jupiter.engine.descriptor.TestTemplateTestDescriptor.execute(TestTemplateTestDescriptor.java:142)
+	at org.junit.jupiter.engine.descriptor.TestTemplateTestDescriptor.lambda$execute$2(TestTemplateTestDescriptor.java:110)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:150)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:173)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at java.base/java.util.stream.ReferencePipeline$7$1.accept(ReferencePipeline.java:276)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:992)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:150)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:173)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at java.base/java.util.stream.ReferencePipeline$7$1.accept(ReferencePipeline.java:276)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:150)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:173)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at java.base/java.util.stream.ReferencePipeline$7$1.accept(ReferencePipeline.java:276)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:150)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:173)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at org.junit.jupiter.engine.descriptor.TestTemplateTestDescriptor.execute(TestTemplateTestDescriptor.java:110)
+	at org.junit.jupiter.engine.descriptor.TestTemplateTestDescriptor.execute(TestTemplateTestDescriptor.java:44)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:147)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:127)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:90)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:55)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:102)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.junit.platform.launcher.core.SessionPerRequestLauncher.execute(SessionPerRequestLauncher.java:53)
+	at com.intellij.junit5.JUnit5IdeaTestRunner.startRunnerWithArgs(JUnit5IdeaTestRunner.java:57)
+	at com.intellij.rt.junit.IdeaTestRunner$Repeater$1.execute(IdeaTestRunner.java:38)
+	at com.intellij.rt.execution.junit.TestsRepeater.repeat(TestsRepeater.java:11)
+	at com.intellij.rt.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:35)
+	at com.intellij.rt.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:235)
+	at com.intellij.rt.junit.JUnitStarter.main(JUnitStarter.java:54)
+Caused by: java.lang.RuntimeException: While parsing 8:21
+Stack: <graphml>|<graph>
+Message: GioData should refer to an existing Key ID, but uses 'd7'
+	at com.calpano.graphinout.reader.graphml.GraphmlSAXHandler.buildException(GraphmlSAXHandler.java:235)
+	at com.calpano.graphinout.reader.graphml.GraphmlSAXHandler.endElement(GraphmlSAXHandler.java:118)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.endElement(AbstractSAXParser.java:618)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractXMLDocumentParser.emptyElement(AbstractXMLDocumentParser.java:184)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.scanStartElement(XMLNSDocumentScannerImpl.java:351)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl$FragmentContentDriver.next(XMLDocumentFragmentScannerImpl.java:2726)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl.next(XMLDocumentScannerImpl.java:605)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.next(XMLNSDocumentScannerImpl.java:112)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl.scanDocument(XMLDocumentFragmentScannerImpl.java:542)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:889)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:825)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XMLParser.parse(XMLParser.java:141)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.parse(AbstractSAXParser.java:1224)
+	at java.xml/com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser.parse(SAXParserImpl.java:637)
+	at java.xml/com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl.parse(SAXParserImpl.java:326)
+	at java.xml/javax.xml.parsers.SAXParser.parse(SAXParser.java:197)
+	at com.calpano.graphinout.reader.graphml.GraphmlReader.read(GraphmlReader.java:72)
+	... 136 common frames omitted
+Caused by: java.lang.IllegalStateException: GioData should refer to an existing Key ID, but uses 'd7'
+	at com.calpano.graphinout.base.gio.ValidatingGioWriter.data(ValidatingGioWriter.java:26)
+	at com.calpano.graphinout.base.gio.DelegatingGioWriter.data(DelegatingGioWriter.java:56)
+	at com.calpano.graphinout.reader.graphml.GraphmlSAXHandler.endDataElement(GraphmlSAXHandler.java:269)
+	at com.calpano.graphinout.reader.graphml.GraphmlSAXHandler.endElement(GraphmlSAXHandler.java:95)
+	... 151 common frames omitted
+case "graphin/graphml/samples/graph1_test.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-identity-constraint.4.3: Key 'data_key_ref' with value 'd7' not found for identity constraint of element 'graphml'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-identity-constraint.4.3: Key 'edge_target_ref' with value 'n4' not found for identity constraint of element 'graph'.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/graph1_test.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph1_test.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph1_test.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/graph2.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,34l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,33l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/graph2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/graph3.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,16l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,22l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/graph3.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph3.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph3.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/graph4.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,23l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,63l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/graph4.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph4.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph4.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/graph5.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,31l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,36l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/graph5.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph5.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph5.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/graph6.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,24l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,27l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/graph6.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph6.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/graph6.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+WARN : ContentError: ContentError{level=Warn, message='Unexpected characters '
+
+
+
+
+========================================================' [Element 'graphml' does not allow characters.]', location=33:57}   at com.calpano.graphinout.reader.graphml.GraphmlSAXHandler:220
+case "graphin/graphml/samples/greek2.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'y coordinate' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'line 3' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'line 0' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'color.r' is not allowed to appear in element 'key'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'color.g' is not allowed to appear in element 'key'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'importance' is not allowed to appear in element 'key'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'x coordinate' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'color.b' is not allowed to appear in element 'key'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'line 3' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'line 2' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'line 0' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.3: Element 'graphml' cannot have character [children], because the type's content type is element-only.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'station name' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'title' is not allowed to appear in element 'key'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'line 1' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'line 2' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'line 1' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'x coordinate' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'y coordinate' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'station name' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/greek2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/greek2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/greek2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/guava-17.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,226l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,226l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,1529l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,452l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,5923l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,452l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/guava-17.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/guava-17.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/guava-17.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+WARN : ContentError: ContentError{level=Warn, message='Unexpected characters '
+
+
+========================================================' [Element 'graphml' does not allow characters.]', location=25:57}   at com.calpano.graphinout.reader.graphml.GraphmlSAXHandler:220
+case "graphin/graphml/samples/haitimap2.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'y coordinate' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'line 3' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'line 0' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'color.r' is not allowed to appear in element 'key'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'color.g' is not allowed to appear in element 'key'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'x coordinate' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'color.b' is not allowed to appear in element 'key'.", null).toString() ,4l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'line 3' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'line 2' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'line 0' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.3: Element 'graphml' cannot have character [children], because the type's content type is element-only.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'station name' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'line 1' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'line 2' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'line 1' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'x coordinate' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'y coordinate' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'station name' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/haitimap2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/haitimap2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/haitimap2.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/les-miserables.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Modularity Class' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-attribute.3: The value 'Edge Label' of attribute 'attr.name' on element 'key' is not valid with respect to its type, 'key.name.type'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Edge Label' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-datatype-valid.1.2.1: 'Modularity Class' is not a valid value for 'NMTOKEN'.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/les-miserables.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/les-miserables.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/les-miserables.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/samples/nested-sample-graph.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ProxyAutoBoundsNode'. No child element is expected at this point.", null).toString() ,11l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,11l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,44l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedHeight' is not allowed to appear in element 'y:State'.", null).toString() ,22l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,50l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'closedWidth' is not allowed to appear in element 'y:State'.", null).toString() ,22l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/samples/nested-sample-graph.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/nested-sample-graph.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/samples/nested-sample-graph.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/svg/DelayedMessageDispatching.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:TableNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,11l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,10l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/svg/DelayedMessageDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/DelayedMessageDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/DelayedMessageDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/svg/EngineEventDispatching.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:TableNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,2l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/svg/EngineEventDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/EngineEventDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/EngineEventDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/svg/FlexsimObjectEventDispatching.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:TableNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,5l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,4l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/svg/FlexsimObjectEventDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/FlexsimObjectEventDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/FlexsimObjectEventDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/svg/FlexsimObjectHierarchy.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/svg/FlexsimObjectHierarchy.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/FlexsimObjectHierarchy.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/FlexsimObjectHierarchy.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/svg/FlexsimObjectOnDrawDispatching.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:TableNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,7l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,6l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/svg/FlexsimObjectOnDrawDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/FlexsimObjectOnDrawDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/FlexsimObjectOnDrawDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/svg/MessageDispatching.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.foldertype' is not allowed to appear in element 'node'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:TableNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,5l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/svg/MessageDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/MessageDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/MessageDispatching.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/svg/OnClickEngine.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'width' is not allowed to appear in element 'y:Geometry'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.b: The content of element 'y:Geometry' is not complete. One of '{WC[##any]}' is expected.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'height' is not allowed to appear in element 'y:Geometry'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'x' is not allowed to appear in element 'y:Geometry'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:SVGNode'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'y' is not allowed to appear in element 'y:Geometry'.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,2l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/svg/OnClickEngine.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/OnClickEngine.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/OnClickEngine.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/svg/byteblock.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/svg/byteblock.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/byteblock.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/byteblock.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/svg/objectdatatypeSimple.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,1l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/svg/objectdatatypeSimple.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/objectdatatypeSimple.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/objectdatatypeSimple.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/svg/predrawfunction.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,3l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,2l);
+  return  errorLongMap;
+DEBUG: Closed inputStream <graphin/graphml/svg/predrawfunction.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/predrawfunction.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+DEBUG: Closed inputStream <graphin/graphml/svg/predrawfunction.graphml> type <java.io.ByteArrayInputStream>.   at com.calpano.graphinout.base.input.ByteArrayInputSource:29
+case "graphin/graphml/svg/resetChain.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.3.2.2: Attribute 'yfiles.type' is not allowed to appear in element 'key'.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:ShapeNode'. No child element is expected at this point.", null).toString() ,2l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:Resources'. No child element is expected at this point.", null).toString() ,1l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:GenericNode'. No child element is expected at this point.", null).toString() ,6l);
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-complex-type.2.4.d: Invalid content was found starting with element 'y:PolyLineEdge'. No child element is expected at this point.", null).toString() ,6l);
+  return  errorLongMap;
+
+case "graphin/graphml/synthetic/graph-a.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-elt.1.a: Cannot find the declaration of element 'graphml'.", null).toString() ,1l);
+  return  errorLongMap;
+
+case "graphin/graphml/synthetic/graph-b.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-elt.1.a: Cannot find the declaration of element 'graphml'.", null).toString() ,1l);
+  return  errorLongMap;
+
+case "graphin/graphml/synthetic/graph-with-nested-ports.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-elt.1.a: Cannot find the declaration of element 'graphml'.", null).toString() ,1l);
+  return  errorLongMap;
+
+case "graphin/graphml/synthetic/invalid-root.graphml":
+errorLongMap.put(new ContentError(ContentError.ErrorLevel.Error, "cvc-elt.1.a: Cannot find the declaration of element 'myroot'.", null).toString() ,1l);
+  return  errorLongMap;
+
