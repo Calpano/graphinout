@@ -9,11 +9,19 @@ import com.calpano.graphinout.base.reader.GioReader;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import io.github.classgraph.ResourceList;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSResourceResolver;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
+import javax.annotation.Nullable;
+import javax.xml.catalog.Catalog;
+import javax.xml.catalog.CatalogFeatures;
+import javax.xml.catalog.CatalogManager;
+import javax.xml.catalog.CatalogResolver;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -22,8 +30,13 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class GraphmlReader implements GioReader {
@@ -65,7 +78,7 @@ public class GraphmlReader implements GioReader {
 
     //TODO This can load from config file - use only GraphML 1.1
     /** lists of schema contents */
-    private List<String> externalSchemaList = new ArrayList<>();
+    private Map<String,String> externalSchemaMap = new HashMap<>();
     private Consumer<ContentError> errorHandler;
 
     public GraphmlReader() {
@@ -141,21 +154,36 @@ public class GraphmlReader implements GioReader {
      * @throws ParserConfigurationException
      */
     void validateExternalSchema(SingleInputSource inputSource) throws SAXException, IOException, ParserConfigurationException {
-        if (externalSchemaList.isEmpty()) return;
+        if (externalSchemaMap.isEmpty()) throw new IllegalStateException("no schemas loaded");
 
-        Source[] listOfAvailableSchema = externalSchemaList.stream().map(s -> new StreamSource(new StringReader(s))).toArray(Source[]::new);
+        try {
+            System.setProperty("javax.xml.catalog.files", "schema/graphinout-catalog.xml");
+            CatalogFeatures features = CatalogFeatures.builder().with(CatalogFeatures.Feature.RESOLVE, "continue").build();
+            URI uri = new URI("schema/graphinout-catalog.xml");
+            Catalog catalog = CatalogManager.catalog(features);
+            CatalogResolver cr = CatalogManager.catalogResolver( catalog);
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setValidating(false);
+            factory.setNamespaceAware(true);
+            SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+            //schemaFactory.setResourceResolver(cr);
+            schemaFactory.setResourceResolver(new LSResourceResolver() {
+                @Override
+                public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+                    log.info("Requesting resource: type=" + type + ", namespaceURI=" + namespaceURI + ", publicId=" + publicId + ", systemId=" + systemId + ", baseURI=" + baseURI);
+                    return cr.resolveResource(type, namespaceURI, publicId, systemId, baseURI);
+                }
+            });
+            Source source = new StreamSource(new StringReader(externalSchemaMap.get("graphml.xsd.xml")));
+            factory.setSchema(schemaFactory.newSchema(source));
 
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        factory.setValidating(false);
-        factory.setNamespaceAware(true);
-
-        SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        factory.setSchema(schemaFactory.newSchema(listOfAvailableSchema));
-
-        SAXParser parser = factory.newSAXParser();
-        XMLReader reader = parser.getXMLReader();
-        reader.setErrorHandler(new SimpleErrorHandler(this.errorHandler));
-        reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));
+            SAXParser parser = factory.newSAXParser();
+            XMLReader reader = parser.getXMLReader();
+            reader.setErrorHandler(new SimpleErrorHandler(this.errorHandler));
+            reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));
+        } catch ( URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     void validateInternalDTD(SingleInputSource inputSource) throws ParserConfigurationException, SAXException, IOException {
@@ -200,9 +228,14 @@ public class GraphmlReader implements GioReader {
         try (ResourceList list = cg.scan().getAllResources().filter(r -> r.getPath().contains("schema") && r.getPath().toLowerCase().endsWith(".xsd.xml"))) {
             for (Resource resource : list) {
                 String content = resource.getContentAsString();
-                content=   content.replaceAll("schemaLocation=\"resources/schema","schemaLocation=\""+resource.getClasspathElementURI().getPath()+"/schema");
-                externalSchemaList.add(content);
+                int lastSlash = resource.getPath().lastIndexOf('/');
+                String schemaName = resource.getPath().substring(lastSlash + 1);
+                externalSchemaMap.put(schemaName, content);
             }
         }
+    }
+
+    public @Nullable String getSchema(String localSchemaResourceName)  {
+        return externalSchemaMap.get(localSchemaResourceName);
     }
 }
