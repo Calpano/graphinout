@@ -3,7 +3,7 @@
   <xs:annotation>
     <xs:documentation source="http://graphml.graphdrawing.org/" xml:lang="en">
      This document defines the attributes extension of the GraphML language.
-     It redefines the attribut list of &lt;key&gt; by adding two new 
+     It redefines the attribut list of &lt;key&gt; by adding two new
      attributes:
      - attr.name (gives a name for the data function) and
      - attr.type (declares the range of values for the data function).
@@ -13,7 +13,7 @@
   </xs:annotation>
 
 
-<xs:redefine schemaLocation="resources/schema/graphml-structure.xsd.xml">
+<xs:redefine schemaLocation="graphml-structure.xsd.xml">
 
   <xs:annotation>
     <xs:documentation source="http://graphml.graphdrawing.org/" xml:lang="en">
@@ -61,7 +61,7 @@
     </xs:documentation>
   </xs:annotation>
 
-  <xs:restriction base="xs:NMTOKEN">  
+  <xs:restriction base="xs:NMTOKEN">
     <xs:enumeration value="boolean"/>
     <xs:enumeration value="int"/>
     <xs:enumeration value="long"/>

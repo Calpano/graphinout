@@ -4,16 +4,16 @@
   <xs:annotation>
     <xs:documentation source="http://graphml.graphdrawing.org/" xml:lang="en">
      This document defines the parseinfo extension of the GraphML language.
-     It redefines the attribut list of &lt;graph&gt; by adding 7 new 
+     It redefines the attribut list of &lt;graph&gt; by adding 7 new
      attributes:
      - parse.nodeids (fixed to 'canonical' meaning that the id attribute
                       of &lt;node&gt; follows the pattern 'n[number]),
      - parse.edgeids (fixed to 'canonical' meaning that the id attribute
                       of &lt;edge&gt; follows the pattern 'e[number]),
-     - parse.order (required; one of the values 'nodesfirst', 
+     - parse.order (required; one of the values 'nodesfirst',
                     'adjacencylist' or 'free'),
-     - parse.nodes (required; number of nodes in this graph), 
-     - parse.edges (required; number of edges in this graph), 
+     - parse.nodes (required; number of nodes in this graph),
+     - parse.edges (required; number of edges in this graph),
      - parse.maxindegree (optional; maximal indegree of a node in this graph),
      - parse.maxoutdegree (optional; maximal outdegree of a node in this graph).
      and it redefines the attribute list of node by adding 2 new attributes:
@@ -24,7 +24,7 @@
   </xs:annotation>
 
 
-<xs:redefine schemaLocation="resources/schema/graphml-structure.xsd.xml">
+<xs:redefine schemaLocation="graphml-structure.xsd.xml">
 
   <xs:annotation>
     <xs:documentation source="http://graphml.graphdrawing.org/" xml:lang="en">
@@ -88,7 +88,7 @@
     </xs:documentation>
   </xs:annotation>
 
-  <xs:restriction base="xs:nonNegativeInteger"/>  
+  <xs:restriction base="xs:nonNegativeInteger"/>
 </xs:simpleType>
 
 <xs:simpleType name="graph.edges.type" final="#all">
@@ -103,7 +103,7 @@
     </xs:documentation>
   </xs:annotation>
 
-  <xs:restriction base="xs:nonNegativeInteger"/>  
+  <xs:restriction base="xs:nonNegativeInteger"/>
 </xs:simpleType>
 
 <xs:simpleType name="graph.maxindegree.type" final="#all">
@@ -118,7 +118,7 @@
     </xs:documentation>
   </xs:annotation>
 
-  <xs:restriction base="xs:nonNegativeInteger"/>  
+  <xs:restriction base="xs:nonNegativeInteger"/>
 </xs:simpleType>
 
 <xs:simpleType name="graph.maxoutdegree.type" final="#all">
@@ -133,7 +133,7 @@
     </xs:documentation>
   </xs:annotation>
 
-  <xs:restriction base="xs:nonNegativeInteger"/>  
+  <xs:restriction base="xs:nonNegativeInteger"/>
 </xs:simpleType>
 
 <xs:simpleType name="graph.nodeids.type" final="#all">
@@ -151,7 +151,7 @@
   <xs:restriction base="xs:NMTOKEN">
     <xs:enumeration value="canonical"/>
     <xs:enumeration value="free"/>
-  </xs:restriction>  
+  </xs:restriction>
 </xs:simpleType>
 
 <xs:simpleType name="graph.edgeids.type" final="#all">
@@ -169,7 +169,7 @@
   <xs:restriction base="xs:NMTOKEN">
     <xs:enumeration value="canonical"/>
     <xs:enumeration value="free"/>
-  </xs:restriction>  
+  </xs:restriction>
 </xs:simpleType>
 
 <xs:attributeGroup name="graph.parseinfo.attrib">
@@ -182,10 +182,10 @@
                       of &lt;node&gt; follows the pattern 'n[number]),
      - parse.edgeids (fixed to 'canonical' meaning that the id attribute
                       of &lt;edge&gt; follows the pattern 'e[number]),
-     - parse.order (required; one of the values 'nodesfirst', 
+     - parse.order (required; one of the values 'nodesfirst',
                     'adjacencylist' or 'free'),
-     - parse.nodes (required; number of nodes in this graph), 
-     - parse.edges (required; number of edges in this graph), 
+     - parse.nodes (required; number of nodes in this graph),
+     - parse.edges (required; number of edges in this graph),
      - parse.maxindegree (optional; maximal indegree of a node in this graph),
      - parse.maxoutdegree (optional; maximal outdegree of a node in this graph)
     </xs:documentation>
@@ -220,7 +220,7 @@
     </xs:documentation>
   </xs:annotation>
 
-  <xs:restriction base="xs:nonNegativeInteger"/>  
+  <xs:restriction base="xs:nonNegativeInteger"/>
 </xs:simpleType>
 
 <xs:simpleType name="node.outdegree.type" final="#all">
@@ -235,7 +235,7 @@
     </xs:documentation>
   </xs:annotation>
 
-  <xs:restriction base="xs:nonNegativeInteger"/>  
+  <xs:restriction base="xs:nonNegativeInteger"/>
 </xs:simpleType>
 
 <xs:attributeGroup name="node.parseinfo.attrib">
