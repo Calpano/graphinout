@@ -1,51 +1,5 @@
 = GraphML Parsing
-
-
-== GraphML XML Element Nesting
-
-.Nesting
-[plantuml]
-....
-hide empty members
-hide circles
-class graphml
-
-graphml --> desc
-graphml --> key
-graphml ..> graph
-graphml ..> data
-
-graph --> desc
-graph ..> data
-graph ..> node
-graph ..> edge
-graph ..> hyperedge
-graph --> locator
-
-node --> desc
-node ..> data
-node ..> port
-node ..> graph
-node --> locator
-
-port --> desc
-port ..> data
-port ..> port
-
-edge --> desc
-edge ..> data
-edge ..> graph
-
-hyperedge --> desc
-hyperedge ..> data
-hyperedge --> endpoint
-hyperedge ..> graph
-
-endpoint --> desc
-
-key --> desc
-key --> default
-....
+:toc:
 
 .Structural Nesting in GioWriter
 [plantuml]
