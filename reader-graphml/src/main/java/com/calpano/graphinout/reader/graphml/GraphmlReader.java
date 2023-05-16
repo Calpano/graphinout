@@ -22,7 +22,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -198,9 +197,10 @@ public class GraphmlReader implements GioReader {
 
     private void loadSchemaFiles() throws IOException {
         ClassGraph cg = new ClassGraph();
-        try (ResourceList list = cg.scan().getAllResources().filter(r -> r.getPath().contains("/schema/") && r.getPath().toLowerCase().endsWith(".xsd.xml"))) {
+        try (ResourceList list = cg.scan().getAllResources().filter(r -> r.getPath().contains("schema") && r.getPath().toLowerCase().endsWith(".xsd.xml"))) {
             for (Resource resource : list) {
                 String content = resource.getContentAsString();
+                content=   content.replaceAll("schemaLocation=\"resources/schema","schemaLocation=\""+resource.getClasspathElementURI().getPath()+"/schema");
                 externalSchemaList.add(content);
             }
         }

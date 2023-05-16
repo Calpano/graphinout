@@ -24,7 +24,7 @@
   </xs:annotation>
 
 
-<xs:redefine schemaLocation="graphml-structure.xsd.xml">
+<xs:redefine schemaLocation="resources/schema/graphml-structure.xsd.xml">
 
   <xs:annotation>
     <xs:documentation source="http://graphml.graphdrawing.org/" xml:lang="en">

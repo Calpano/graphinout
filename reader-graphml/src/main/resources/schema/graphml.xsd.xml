@@ -8,7 +8,7 @@
   </xs:annotation>
 
 
-<xs:redefine schemaLocation="http://graphml.graphdrawing.org/xmlns/1.1/graphml-structure.xsd">
+<xs:redefine schemaLocation="resources/schema/graphml-structure.xsd.xml">
 
   <!--redefinition as in graphml-attributes.xsd -->
 
