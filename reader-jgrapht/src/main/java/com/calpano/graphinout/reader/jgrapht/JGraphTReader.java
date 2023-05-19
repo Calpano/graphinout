@@ -33,7 +33,7 @@ import java.util.function.Supplier;
 
 public class JGraphTReader<N> {
 
-    enum Mode {CollectAttributeTypes, RealParsing}
+    enum Mode {CollectAttributeTypes, NodeParsing, GraphAndEdgeParsing}
 
     enum Kind {Node, Edge, Graph}
 
@@ -123,6 +123,15 @@ public class JGraphTReader<N> {
         maybeEmitEvent();
     }
 
+    private void parseInMode(SingleInputSource sis, Mode parseMode) throws IOException {
+        try (InputStream in = sis.inputStream()) {
+            mode = parseMode;
+            prepareParse();
+            importer.importInput(in);
+            onEnd();
+        }
+    }
+
     public void read() throws IOException {
         if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
@@ -132,13 +141,8 @@ public class JGraphTReader<N> {
 
         // here we read the inputStream of sis ...
         try {
-            try (InputStream in = sis.inputStream()) {
-                mode = Mode.CollectAttributeTypes;
-                prepareParse();
-                importer.importInput(in);
-                onEnd();
-            }
-
+            parseInMode(sis, Mode.CollectAttributeTypes);
+            parseInMode(sis, Mode.NodeParsing);
 
             // and write the graph to our GioWriter
             writer.startDocument(GioDocument.builder().build());
@@ -154,12 +158,28 @@ public class JGraphTReader<N> {
             }
 
             writer.startGraph(GioGraph.builder().build());
-            try (InputStream in = sis.inputStream()) {
-                mode = Mode.RealParsing;
-                prepareParse();
-                importer.importInput(in);
-                onEnd();
+            // write nodes from nodeMap
+            for(Map.Entry<String, Node<N>> entry : nodeMap.entrySet()) {
+                String nodeId = entry.getKey();
+                Node<N> node = entry.getValue();
+                try {
+                    writer.startNode(GioNode.builder().id(nodeId).build());
+                    for (JgtAttribute nodeAtt : node.attributes.values()) {
+                        String key = nodeAtts.get(nodeAtt.attributeName).getId();
+                        writer.data(GioData.builder().key(key).value(nodeAtt.attributeValue).build());
+                    }
+                    writer.endNode(null);
+                } catch (IOException ex) {
+                    if (ex.getCause() instanceof IOException ioex && (exception.get() == null)) {
+                        exception.set(ioex);
+                    }
+                    if (errorHandler != null)
+                        errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + ex.getMessage(), null));
+                }
             }
+
+
+            parseInMode(sis, Mode.GraphAndEdgeParsing);
 
             writer.endGraph(null);
             writer.endDocument();
@@ -211,12 +231,15 @@ public class JGraphTReader<N> {
         }
     }
 
+    private Map<String,Node<N>> nodeMap = new HashMap<>();
+
     private void onEdge(Edge<N> edge) {
         switch (mode) {
             case CollectAttributeTypes -> {
                 copyAttributeInfo(edge.attributes, GioKeyForType.Edge, edgeAtts);
             }
-            case RealParsing -> {
+            case NodeParsing -> {}
+            case GraphAndEdgeParsing -> {
                 String s = toNodeId(edge.jgtEdge.getFirst());
                 String t = toNodeId(edge.jgtEdge.getSecond());
                 try {
@@ -247,7 +270,8 @@ public class JGraphTReader<N> {
             case CollectAttributeTypes -> {
                 copyAttributeInfo(graph.attributes, GioKeyForType.Graph, graphAtts);
             }
-            case RealParsing -> {
+            case NodeParsing -> {}
+            case GraphAndEdgeParsing -> {
                 for (JgtAttribute graphAtt : graph.attributes.values()) {
                     String key = graphAtts.get(graphAtt.attributeName).getId();
                     try {
@@ -271,25 +295,11 @@ public class JGraphTReader<N> {
             case CollectAttributeTypes -> {
                 copyAttributeInfo(node.attributes, GioKeyForType.Node, nodeAtts);
             }
-            case RealParsing -> {
+            case NodeParsing -> {
                 String nodeId = toNodeId(node.vertex);
-                // TODO buffer the node and emit it later
-
-                try {
-                    writer.startNode(GioNode.builder().id(nodeId).build());
-                    for (JgtAttribute nodeAtt : node.attributes.values()) {
-                        String key = nodeAtts.get(nodeAtt.attributeName).getId();
-                        writer.data(GioData.builder().key(key).value(nodeAtt.attributeValue).build());
-                    }
-                    writer.endNode(null);
-                } catch (IOException ex) {
-                    if (ex.getCause() instanceof IOException ioex && (exception.get() == null)) {
-                        exception.set(ioex);
-                    }
-                    if (errorHandler != null)
-                        errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + ex.getMessage(), null));
-                }
+                nodeMap.put(nodeId, node);
             }
+            case GraphAndEdgeParsing -> {}
         }
     }
 

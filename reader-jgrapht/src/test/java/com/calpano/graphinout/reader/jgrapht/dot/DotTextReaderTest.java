@@ -148,13 +148,13 @@ class DotTextReaderTest {
         inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_B).build());
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
 
+        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_C).build());
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+
         inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null) //
                 .endpoint(GioEndpoint.builder().node(NODE_ID_A).build()) //
                 .endpoint(GioEndpoint.builder().node(NODE_ID_B).build()).build());
         inOrder.verify(mockGioWriter).endEdge();
-
-        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_C).build());
-        inOrder.verify(mockGioWriter).endNode(Mockito.any());
 
         inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node(NODE_ID_A).build()).endpoint(GioEndpoint.builder().node(NODE_ID_C).build()).build());
         inOrder.verify(mockGioWriter).endEdge();
@@ -216,17 +216,17 @@ class DotTextReaderTest {
         inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_B).build());
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
 
-        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("A").build()).endpoint(GioEndpoint.builder().node("B").build()).build());
-        inOrder.verify(mockGioWriter).endEdge();
-
         inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_C).build());
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
 
-        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("B").build()).endpoint(GioEndpoint.builder().node("C").build()).build());
-        inOrder.verify(mockGioWriter).endEdge();
-
         inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_D).build());
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
+
+        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("A").build()).endpoint(GioEndpoint.builder().node("B").build()).build());
+        inOrder.verify(mockGioWriter).endEdge();
+
+        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("B").build()).endpoint(GioEndpoint.builder().node("C").build()).build());
+        inOrder.verify(mockGioWriter).endEdge();
 
         inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("C").build()).endpoint(GioEndpoint.builder().node("D").build()).build());
         inOrder.verify(mockGioWriter).endEdge();
