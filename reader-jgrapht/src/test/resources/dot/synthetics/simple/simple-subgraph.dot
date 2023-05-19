@@ -1,0 +1,7 @@
+digraph A {
+    subgraph B {
+        label="labelB";
+        C -> D;
+    }
+    C -> E;
+}
