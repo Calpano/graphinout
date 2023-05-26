@@ -43,7 +43,7 @@ class XmlWriterTest {
     @BeforeEach
     public void setUp() throws IOException {
 
-        Arrays.stream(new File("./").listFiles(new FileFilter() {
+        Arrays.stream(new File("./target/").listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
                 return pathname.getName().startsWith(FILE_NAME);
@@ -74,7 +74,7 @@ class XmlWriterTest {
         testEdgeMap.put("ka", "kb");
         testEdgeMap.put("kc", "10");
 
-        File file = new File("./" + FILE_NAME);
+        File file = new File("./target/" + FILE_NAME);
         XmlWriterImpl instance = new XmlWriterImpl(new OutputSinkMock(file));
         instance.startDocument();
 
