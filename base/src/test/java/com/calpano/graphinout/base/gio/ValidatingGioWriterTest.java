@@ -45,7 +45,6 @@ class ValidatingGioWriterTest {
     @BeforeEach
     void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
-        // TODO change test strategy; we dont need to check underTest -> mockGioWriterImpl as this is now done in the general DelegatingGioWriter
         underTest = new DelegatingGioWriter(new ValidatingGioWriter(), mockGioWriterImpl);
     }
 
