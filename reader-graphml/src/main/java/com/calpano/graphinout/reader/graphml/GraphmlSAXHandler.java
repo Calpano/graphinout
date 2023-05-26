@@ -119,14 +119,20 @@ class GraphmlSAXHandler extends DefaultHandler {
         }
     }
 
+
+    @Override
+    public void warning(SAXParseException e) throws SAXException {
+        buildException(ContentError.ErrorLevel.Warn, e);
+    }
+
     @Override
     public void error(SAXParseException e) throws SAXException {
-        super.error(e);
+        throw buildException(ContentError.ErrorLevel.Error, e);
     }
 
     @Override
     public void fatalError(SAXParseException e) throws SAXException {
-        super.fatalError(e);
+        throw e;
     }
 
     public @Nullable GraphmlEntity getCurrentEntity() {
@@ -185,10 +191,6 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     }
 
-    @Override
-    public void warning(SAXParseException e) throws SAXException {
-        super.warning(e);
-    }
 
     /**
      * Just looks at the stack
