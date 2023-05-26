@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
@@ -25,11 +26,26 @@ class InMemoryOutputSinkTest  {
         assertEquals("this is for test this is for test 2 \nthis is for test 3 ",outputSink.readAllData().get(0));
     }
 
-    @BeforeEach
-    void setUp() {
+
+    @Test
+    void close() throws Exception {
+        InMemoryOutputSinkSpy outputSink2;
+        try (InMemoryOutputSinkSpy outputSink = new InMemoryOutputSinkSpy()) {
+            outputSink2 = outputSink;
+            assertFalse(outputSink2.isClosed);
+        }
+        assertTrue(outputSink2.isClosed);
     }
 
-    @AfterEach
-    void tearDown() {
+    class InMemoryOutputSinkSpy extends InMemoryOutputSink {
+        boolean isClosed = false;
+
+              @Override
+        public void close() throws Exception {
+            super.close();
+            this.isClosed = true;
+        }
+
+
     }
 }
