@@ -19,12 +19,16 @@ import org.jgrapht.nio.AttributeType;
 import org.jgrapht.nio.EventDrivenImporter;
 import org.jgrapht.nio.ImportException;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -32,7 +36,7 @@ import java.util.function.Supplier;
 
 public class JGraphTReader<N> {
 
-    enum Mode {CollectAttributeTypes, RealParsing}
+    enum Mode {CollectAttributeTypes, NodeParsing, GraphAndEdgeParsing}
 
     enum Kind {Node, Edge, Graph}
 
@@ -76,6 +80,8 @@ public class JGraphTReader<N> {
     public static class Graph extends JgtEntity {
     }
 
+    public static final String GRAPH_ID = "ID";
+
     final SingleInputSource inputSource;
     final GioWriter writer;
     final Consumer<ContentError> errorHandler;
@@ -89,9 +95,12 @@ public class JGraphTReader<N> {
     EventDrivenImporter<N, Pair<N, N>> importer;
     Node<N> activeNode = null;
     Object activeObject = null;
-    Graph activeGraph = null;
+    Stack<Graph> activeGraphs = new Stack<>();
     private Edge<N> activeEdge;
     private Mode mode;
+    private Map<String, Node<N>> nodeMap = new HashMap<>();
+    private LinkedHashMap<String, Node> nodes = new LinkedHashMap<>();
+    private @Nullable String outermostGraphId = null;
 
     public JGraphTReader(InputSource inputSource, Supplier<EventDrivenImporter<N, Pair<N, N>>> importer, GioWriter writer, Consumer<ContentError> errorHandler, Function<N, String> nodeToNodeIdFun) {
         if (inputSource.isMulti()) {
@@ -131,13 +140,8 @@ public class JGraphTReader<N> {
 
         // here we read the inputStream of sis ...
         try {
-            try (InputStream in = sis.inputStream()) {
-                mode = Mode.CollectAttributeTypes;
-                prepareParse();
-                importer.importInput(in);
-                onEnd();
-            }
-
+            parseInMode(sis, Mode.CollectAttributeTypes);
+            parseInMode(sis, Mode.NodeParsing);
 
             // and write the graph to our GioWriter
             writer.startDocument(GioDocument.builder().build());
@@ -152,13 +156,33 @@ public class JGraphTReader<N> {
                 writer.key(key);
             }
 
-            writer.startGraph(GioGraph.builder().build());
-            try (InputStream in = sis.inputStream()) {
-                mode = Mode.RealParsing;
-                prepareParse();
-                importer.importInput(in);
-                onEnd();
+            // outermost graph / root graph
+            GioGraph.GioGraphBuilder<?, ?> builder = GioGraph.builder();
+            if (outermostGraphId != null) {
+                builder.id(outermostGraphId);
             }
+            writer.startGraph(builder.build());
+            // write nodes from nodeMap
+            for (Map.Entry<String, Node<N>> entry : nodeMap.entrySet()) {
+                String nodeId = entry.getKey();
+                Node<N> node = entry.getValue();
+                try {
+                    writer.startNode(GioNode.builder().id(nodeId).build());
+                    for (JgtAttribute nodeAtt : node.attributes.values()) {
+                        String key = nodeAtts.get(nodeAtt.attributeName).getId();
+                        writer.data(GioData.builder().key(key).value(nodeAtt.attributeValue).build());
+                    }
+                    writer.endNode(null);
+                } catch (IOException ex) {
+                    if (ex.getCause() instanceof IOException ioex && (exception.get() == null)) {
+                        exception.set(ioex);
+                    }
+                    if (errorHandler != null)
+                        errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + ex.getMessage(), null));
+                }
+            }
+
+            parseInMode(sis, Mode.GraphAndEdgeParsing);
 
             writer.endGraph(null);
             writer.endDocument();
@@ -178,7 +202,6 @@ public class JGraphTReader<N> {
         });
     }
 
-
     private void maybeEmitEvent() {
         if (activeEdge != null) {
             onEdge(activeEdge);
@@ -186,13 +209,11 @@ public class JGraphTReader<N> {
         } else if (activeNode != null) {
             onNode(activeNode);
             activeNode = null;
-        } else if (activeGraph != null) {
-            onGraph(activeGraph);
-            activeGraph = null;
+        } else if (!activeGraphs.isEmpty()) {
+            onGraph(activeGraphs.pop(), activeGraphs.size());
         }
         activeObject = null;
     }
-
 
     private void maybeEmitEvent(Kind kind, Object jgtObject) {
         if (activeObject != null && !Objects.equals(activeObject, jgtObject)) {
@@ -205,7 +226,7 @@ public class JGraphTReader<N> {
             switch (kind) {
                 case Node -> activeNode = (Node<N>) new Node<>(jgtObject);
                 case Edge -> activeEdge = new Edge<>((Pair<N, N>) jgtObject);
-                case Graph -> activeGraph = new Graph();
+                case Graph -> activeGraphs.push(new Graph());
             }
         }
     }
@@ -215,7 +236,9 @@ public class JGraphTReader<N> {
             case CollectAttributeTypes -> {
                 copyAttributeInfo(edge.attributes, GioKeyForType.Edge, edgeAtts);
             }
-            case RealParsing -> {
+            case NodeParsing -> {
+            }
+            case GraphAndEdgeParsing -> {
                 String s = toNodeId(edge.jgtEdge.getFirst());
                 String t = toNodeId(edge.jgtEdge.getSecond());
                 try {
@@ -236,19 +259,29 @@ public class JGraphTReader<N> {
                     if (errorHandler != null)
                         errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + ex.getMessage(), null));
                 }
+
             }
         }
 
     }
 
-    private void onGraph(Graph graph) {
+    private void onGraph(Graph graph, int outerGraphCount) {
         switch (mode) {
             case CollectAttributeTypes -> {
                 copyAttributeInfo(graph.attributes, GioKeyForType.Graph, graphAtts);
             }
-            case RealParsing -> {
+            case NodeParsing -> {
+                if (outerGraphCount == 0) {
+                    // we are the root graph, outermost graph
+                    Optional.ofNullable(graph.attributes.get(GRAPH_ID)).map(att -> att.attributeValue).ifPresent(id -> outermostGraphId = id);
+                }
+            }
+            case GraphAndEdgeParsing -> {
                 for (JgtAttribute graphAtt : graph.attributes.values()) {
                     String key = graphAtts.get(graphAtt.attributeName).getId();
+                    if (key.equals(GRAPH_ID)) {
+                        continue;
+                    }
                     try {
                         writer.data(GioData.builder().key(key).value(graphAtt.attributeValue).build());
                     } catch (IOException ex) {
@@ -268,23 +301,21 @@ public class JGraphTReader<N> {
             case CollectAttributeTypes -> {
                 copyAttributeInfo(node.attributes, GioKeyForType.Node, nodeAtts);
             }
-            case RealParsing -> {
+            case NodeParsing -> {
                 String nodeId = toNodeId(node.vertex);
-                try {
-                    writer.startNode(GioNode.builder().id(nodeId).build());
-                    for (JgtAttribute nodeAtt : node.attributes.values()) {
-                        String key = nodeAtts.get(nodeAtt.attributeName).getId();
-                        writer.data(GioData.builder().key(key).value(nodeAtt.attributeValue).build());
-                    }
-                    writer.endNode(null);
-                } catch (IOException ex) {
-                    if (ex.getCause() instanceof IOException ioex && (exception.get() == null)) {
-                        exception.set(ioex);
-                    }
-                    if (errorHandler != null)
-                        errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "JGraphT error: " + ex.getMessage(), null));
-                }
+                nodeMap.put(nodeId, node);
             }
+            case GraphAndEdgeParsing -> {
+            }
+        }
+    }
+
+    private void parseInMode(SingleInputSource sis, Mode parseMode) throws IOException {
+        try (InputStream in = sis.inputStream()) {
+            mode = parseMode;
+            prepareParse();
+            importer.importInput(in);
+            onEnd();
         }
     }
 
@@ -292,8 +323,7 @@ public class JGraphTReader<N> {
         this.importer = importerSupplier.get();
         nodeIds.clear();
         importer.addVertexAttributeConsumer((pair, att) -> {
-            if (att == null)
-                return;
+            if (att == null) return;
             maybeEmitEvent(Kind.Node, pair.getFirst());
             String attName = pair.getSecond();
             String attValue = att.getValue();
@@ -324,7 +354,10 @@ public class JGraphTReader<N> {
         importer.addGraphAttributeConsumer((attName, atts) -> {
             // TODO subgraphs in jgraphT?
             maybeEmitEvent(Kind.Graph, this);
-            activeGraph.addAttribute(attName, atts.getType(), atts.getValue());
+            activeGraphs.peek().addAttribute(attName, atts.getType(), atts.getValue());
+        });
+        importer.addImportEventConsumer(importEvent->{
+            // start and end of import
         });
     }
 

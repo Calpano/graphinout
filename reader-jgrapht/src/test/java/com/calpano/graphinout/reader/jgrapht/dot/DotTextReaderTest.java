@@ -15,6 +15,7 @@ import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -148,13 +149,13 @@ class DotTextReaderTest {
         inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_B).build());
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
 
+        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_C).build());
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+
         inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null) //
                 .endpoint(GioEndpoint.builder().node(NODE_ID_A).build()) //
                 .endpoint(GioEndpoint.builder().node(NODE_ID_B).build()).build());
         inOrder.verify(mockGioWriter).endEdge();
-
-        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_C).build());
-        inOrder.verify(mockGioWriter).endNode(Mockito.any());
 
         inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node(NODE_ID_A).build()).endpoint(GioEndpoint.builder().node(NODE_ID_C).build()).build());
         inOrder.verify(mockGioWriter).endEdge();
@@ -216,17 +217,17 @@ class DotTextReaderTest {
         inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_B).build());
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
 
-        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("A").build()).endpoint(GioEndpoint.builder().node("B").build()).build());
-        inOrder.verify(mockGioWriter).endEdge();
-
         inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_C).build());
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
 
-        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("B").build()).endpoint(GioEndpoint.builder().node("C").build()).build());
-        inOrder.verify(mockGioWriter).endEdge();
-
         inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_D).build());
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
+
+        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("A").build()).endpoint(GioEndpoint.builder().node("B").build()).build());
+        inOrder.verify(mockGioWriter).endEdge();
+
+        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("B").build()).endpoint(GioEndpoint.builder().node("C").build()).build());
+        inOrder.verify(mockGioWriter).endEdge();
 
         inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("C").build()).endpoint(GioEndpoint.builder().node("D").build()).build());
         inOrder.verify(mockGioWriter).endEdge();
@@ -316,6 +317,37 @@ class DotTextReaderTest {
         SingleInputSource inputSource = SingleInputSource.of(path, content);
         mockGioWriter = mock(GioWriter.class);
         underTest.read(inputSource, mockGioWriter);
+    }
+
+    @Test
+    void testUndirected() throws IOException {
+        testRead("/dot/synthetics/simple/simple-undirected.dot");
+    }
+
+    @Test
+    @Disabled("not yet possible given the jgrapht API, see #112")
+    void testSubgraph() throws IOException {
+        testRead("/dot/synthetics/simple/simple-subgraph.dot");
+        InOrder inOrder = Mockito.inOrder(mockGioWriter);
+        inOrder.verify(mockGioWriter).startDocument(Mockito.any());
+        inOrder.verify(mockGioWriter).startGraph(GioGraph.builder().id("A").build());
+        // nodes
+        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id("C").build());
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id("D").build());
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockGioWriter).startNode(GioNode.builder().id("E").build());
+        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        // normal parsing
+        inOrder.verify(mockGioWriter).startGraph(GioGraph.builder().id("B").build());
+        inOrder.verify(mockGioWriter).data(GioData.builder().key("graph-label").value("labelB").build());
+        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("C").build()).endpoint(GioEndpoint.builder().node("D").build()).build());
+        inOrder.verify(mockGioWriter).endEdge();
+        inOrder.verify(mockGioWriter).endGraph(null);
+        inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("C").build()).endpoint(GioEndpoint.builder().node("E").build()).build());
+        inOrder.verify(mockGioWriter).endEdge();
+        inOrder.verify(mockGioWriter).endGraph(Mockito.any());
+        inOrder.verify(mockGioWriter).endDocument();
     }
 
     @Test
