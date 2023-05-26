@@ -157,9 +157,18 @@ public class GraphmlReader implements GioReader {
         schemaFactory.setResourceResolver(new LSResourceResolver() {
             @Override
             public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+                // type: http://www.w3.org/2001/XMLSchema
+                // namespaceURI: http://graphml.graphdrawing.org/xmlns
+                // http://www.w3.org/1999/xlink
+
+                // publicId: null
+                // baseUri: null
+                // systemId: graphml-structure.xsd.xml
+
                 log.info("Requesting resource: type=" + type + ", namespaceURI=" + namespaceURI + ", publicId=" + publicId + ", systemId=" + systemId + ", baseURI=" + baseURI);
                 // FIXME Max ...
-                return new SchemaInfo(null, null, null, null);
+                String content = externalSchemaMap.get(systemId);
+                return new SchemaInfo(content, null, null, systemId);
             }
         });
         Source source = new StreamSource(new StringReader(externalSchemaMap.get("graphml.xsd.xml")));
