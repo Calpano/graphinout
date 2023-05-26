@@ -6,35 +6,14 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileOutputSinkTest {
-    private String fileName = UUID.randomUUID() + "-" + LocalDateTime.now() + "_test.txt";
-
-    @BeforeEach
-    void setUp() throws IOException {
-        new File(fileName).createNewFile();
-    }
-
-    @AfterEach
-    void tearDown() {
-        new File(fileName).deleteOnExit();
-    }
-    @Test
-    void close() throws Exception {
-        FileOutputSinkSpy  fileOutputSinkSpy2;
-        try (FileOutputSinkSpy fileOutputSinkSpy = new FileOutputSinkSpy(new File(fileName))) {
-            fileOutputSinkSpy2 = fileOutputSinkSpy;
-            assertFalse(fileOutputSinkSpy2.isClosed);
-        }
-        assertTrue(fileOutputSinkSpy2.isClosed);
-    }
-
-    class FileOutputSinkSpy extends FileOutputSink {
+    static class FileOutputSinkSpy extends FileOutputSink {
         boolean isClosed = false;
 
         public FileOutputSinkSpy(File file) {
@@ -49,5 +28,27 @@ class FileOutputSinkTest {
         }
 
 
+    }
+
+    private final String fileName = UUID.randomUUID() + "-test.txt";
+
+    @Test
+    void close() throws Exception {
+        FileOutputSinkSpy fileOutputSinkSpy2;
+        try (FileOutputSinkSpy fileOutputSinkSpy = new FileOutputSinkSpy(new File(fileName))) {
+            fileOutputSinkSpy2 = fileOutputSinkSpy;
+            assertFalse(fileOutputSinkSpy2.isClosed);
+        }
+        assertTrue(fileOutputSinkSpy2.isClosed);
+    }
+
+    @BeforeEach
+    void setUp() throws IOException {
+        new File(fileName).createNewFile();
+    }
+
+    @AfterEach
+    void tearDown() {
+        new File(fileName).deleteOnExit();
     }
 }

@@ -8,21 +8,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class InputSourceTest {
 
 
-    @Test
-    void close() throws Exception {
-        InputSourceSpy inputSourceSpy2;
-        try (InputSourceSpy inputSourceSpy = new InputSourceSpy()) {
-            inputSourceSpy2 = inputSourceSpy;
-            assertFalse(inputSourceSpy2.isClosed);
-        }
-        assertTrue(inputSourceSpy2.isClosed);
-    }
-
-    class InputSourceSpy implements InputSource {
+    static class InputSourceSpy implements InputSource {
         boolean isClosed = false;
 
         public InputSourceSpy() {
             this.isClosed = false;
+        }
+
+        @Override
+        public void close() throws Exception {
+            this.isClosed = true;
         }
 
         @Override
@@ -34,10 +29,15 @@ class InputSourceTest {
         public String name() {
             return null;
         }
+    }
 
-        @Override
-        public void close() throws Exception {
-            this.isClosed = true;
+    @Test
+    void close() throws Exception {
+        InputSourceSpy inputSourceSpy2;
+        try (InputSourceSpy inputSourceSpy = new InputSourceSpy()) {
+            inputSourceSpy2 = inputSourceSpy;
+            assertFalse(inputSourceSpy2.isClosed);
         }
+        assertTrue(inputSourceSpy2.isClosed);
     }
 }
