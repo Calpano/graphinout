@@ -25,7 +25,6 @@
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
             <version>4.8.154</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
