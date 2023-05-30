@@ -18,6 +18,7 @@
         <module>reader-jgrapht</module>
         <module>engine</module>
         <module>app-cmdline</module>
+        <module>reader-json</module>
     </modules>
 
     <properties>
@@ -33,6 +34,7 @@
         <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
         <lombok-version>1.18.24</lombok-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
+        <fasterxml-jackson.version>2.15.1</fasterxml-jackson.version>
     </properties>
 
     <dependencyManagement>
@@ -52,6 +54,11 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback-classic-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${fasterxml-jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
