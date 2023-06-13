@@ -2,16 +2,16 @@
   "id": "id",
   "label": "title",
   "links": [
-{
-  "refer" : "existing",
-  "idTarget" : "recommendations.fans_liked",
-  "linkLabel:" : "recommended"
-},
-{
-"refer" : "inline",
-"target": "credit.desiger",
-"id": "id",
-"label": "name"
-}
-]
+    {
+      "refer": "existing",
+      "idTarget": "recommendations.fans_liked",
+      "linkLabel:": "recommended"
+    },
+    {
+      "refer": "inline",
+      "target": "credit.desiger",
+      "id": "id",
+      "label": "name"
+    }
+  ]
 }
