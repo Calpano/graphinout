@@ -39,7 +39,7 @@ public class FileSingleInputSource implements SingleInputSource {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
         log.debug("Closed inputStream <{}> type <{}>.", name(), inputStream().getClass().getName());
         inputStream.close();
     }

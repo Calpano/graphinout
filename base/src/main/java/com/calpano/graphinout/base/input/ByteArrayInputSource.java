@@ -23,7 +23,7 @@ public class ByteArrayInputSource implements SingleInputSource {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
         for (InputStream is : openStreams) {
             is.close();
             log.debug("Closed inputStream <{}> type <{}>.", name(), is.getClass().getName());

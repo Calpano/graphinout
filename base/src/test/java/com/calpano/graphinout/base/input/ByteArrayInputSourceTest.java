@@ -3,6 +3,8 @@ package com.calpano.graphinout.base.input;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 class ByteArrayInputSourceTest {
 
     static class ByteArrayInputSourceSpy extends ByteArrayInputSource {
@@ -14,7 +16,7 @@ class ByteArrayInputSourceTest {
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() throws IOException {
             super.close();
             isClosed = true;
         }

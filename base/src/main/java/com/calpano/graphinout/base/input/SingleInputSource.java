@@ -1,14 +1,9 @@
 package com.calpano.graphinout.base.input;
 
 
-import org.slf4j.Logger;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -49,6 +44,6 @@ public interface SingleInputSource extends InputSource {
      * Auto-closing an inputsource closes all streams handed out via #inputstream()
      */
     @Override
-    void close() throws Exception;
+    void close() throws IOException;
 
 }

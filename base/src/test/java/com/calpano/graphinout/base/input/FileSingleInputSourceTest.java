@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 class FileSingleInputSourceTest {
@@ -21,7 +20,7 @@ class FileSingleInputSourceTest {
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() throws IOException {
             super.close();
             isClosed = true;
         }
