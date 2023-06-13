@@ -19,7 +19,6 @@ public class FileSingleInputSource implements SingleInputSource {
     @Nullable
     Charset encoding;
 
-
     /**
      * Unknown encoding
      */
@@ -27,6 +26,7 @@ public class FileSingleInputSource implements SingleInputSource {
         this(file, null);
 
     }
+
 
     public FileSingleInputSource(File file, @Nullable Charset encoding) {
         this.file = file;
@@ -47,6 +47,10 @@ public class FileSingleInputSource implements SingleInputSource {
     @Override
     public Optional<Charset> encoding() {
         return Optional.ofNullable(encoding);
+    }
+
+    public File file() {
+        return file;
     }
 
     @Override
