@@ -1,0 +1,80 @@
+= JSON Reader
+
+.Example
+[source,js]
+----
+{
+    "id": "id", // json path -> node.id
+    "label": "title", // json path -> node attribute "label"
+    "links": [
+        {
+            "refer": "existing",  // enum -> refer to existing nodes
+            "linkLabel:": "recommended", // string  -> edge attribute "label"
+            // for links to existing objects of the same type
+            "idTarget": "recommendations.fans_liked" // json path -> list of strings (ids) -> edge.target
+        },
+        {
+            "refer": "inline", // enum -> create new nodes
+            "linkLabel:": "designed by", // string -> edge attribute "label"
+            // to create new objects of a different type
+            "target": "credit.desiger", // json path -> list of JSON objects  -> target nodes
+            "id": "id", // json path from object to an id -> target node.id
+            "label": "name" // json path from object to label -> target node attribute "label"
+        }
+    ]
+}
+----
+
+.Schema
+[source,js]
+----
+{
+  "id": "...", // JSON path-> node.id
+  "label": "...", // json path -> node attribute "label"
+  "links": [
+    {
+      "refer": "existing",  // enum -> refer to existing nodes
+      "linkLabel:": "...", // string  -> edge attribute "label"
+      // for links to existing objects of the same type
+      "idTarget": "....fans_liked" // json path -> list of strings (ids) -> edge.target
+    },
+    {
+      "refer": "inline", // enum -> create new nodes
+      "linkLabel:": "...", // string -> edge attribute "label"
+      // to create new objects of a different type
+      "target": "...", // json path -> list of JSON objects  -> target nodes
+      "id": "...", // json path from object to an id -> target node.id
+      "label": "..." // json path from object to label -> target node attribute "label"
+    }
+  ]
+}
+----
+
+.Mapping Model
+[plantuml]
+....
+hide empty members
+class Mapping {
+    id : JSONPath
+    label : JSONPath
+}
+enum ReferType {
+    existing
+    inline
+}
+interface Link {
+    linkLabel : string
+}
+class LinkToExisting {
+    idTarget : JSONPath
+}
+class LinkToNew {
+    target : JSONPath
+    id : JSONPath
+    label : JSONPath
+}
+Link --> ReferType : refer
+Mapping --> Link : links
+Link <|-- LinkToExisting
+Link <|-- LinkToNew
+....
