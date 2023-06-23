@@ -58,7 +58,7 @@
         </dependency>
         <dependency>
             <groupId>com.calpano.graphinout</groupId>
-            <artifactId>reader-dot</artifactId>
+            <artifactId>reader-jgrapht</artifactId>
             <version>1.0-SNAPSHOT</version>
             <type>test-jar</type>
             <classifier>tests</classifier>
