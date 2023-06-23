@@ -9,6 +9,7 @@
     },
     {
       "refer": "inline",
+      "linkLabel:": "designed by",
       "target": "credit.desiger",
       "id": "id",
       "label": "name"
