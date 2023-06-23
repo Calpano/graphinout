@@ -1,6 +1,12 @@
 package com.calpano.graphinout.reader.json;
 
-import com.calpano.graphinout.base.gio.*;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioEndpoint;
+import com.calpano.graphinout.base.gio.GioEndpointDirection;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.reader.json.mapper.PathBuilder;
@@ -23,10 +29,14 @@ public class JsonGraphmlParser {
         this.inputSource = (SingleInputSource) inputSource;
         this.writer = writer;
         this.pathBuilder = pathBuilder;
-
+        // IMPROVE it would suffice to read only 1 object at a time
         ctx = JsonPath.parse(this.inputSource.inputStream());
     }
 
+    /**
+     *
+     * @throws IOException when writing fails
+     */
     public void read() throws IOException {
         writer.startDocument(GioDocument.builder().build());
         writer.startGraph(GioGraph.builder().build());
@@ -47,13 +57,8 @@ public class JsonGraphmlParser {
                     endpoints.get(0).forEach(endpoint -> gioEndpoints.add(GioEndpoint.builder().node(endpoint.toString()).type(GioEndpointDirection.In).build()));
                 }
                 if (gioEndpoints.size() > 0) {
-                    try {
-                        writer.startEdge(GioEdge.builder().endpoints(gioEndpoints).build());
-                        writer.endEdge();
-                    } catch (IOException e) {
-                        //TODO MANAGE Exception
-                        e.printStackTrace();
-                    }
+                    writer.startEdge(GioEdge.builder().endpoints(gioEndpoints).build());
+                    writer.endEdge();
                 }
             }
         }
