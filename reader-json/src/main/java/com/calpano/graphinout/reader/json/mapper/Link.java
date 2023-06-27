@@ -8,36 +8,42 @@ import java.util.stream.Collectors;
 @Data
 class Link {
 
-    private ReferNode refer;
+    private ReferType refer;
     private String idTarget;
     private String linkLabel;
     private String target;
     private String id;
     private String label;
 
+    private static String jsonPath(String s, String... parents) {
+        return String.join("", parents) + Arrays.stream(s.split("\\.")).collect(Collectors.joining("']['", "['", "']"));
+    }
 
-    public PathBuilder.PaarValue<Object> path(String... parent) {
-        if (ReferNode.existing.equals(refer)) {
+    /**
+     *
+     * @param parents
+     * @return
+     */
+    public PathBuilder.PairValue<Object> path(String... parents) {
+        if (ReferType.existing.equals(refer)) {
             PathBuilder.Existing existing = new PathBuilder.Existing();
             if (this.linkLabel != null)
-                existing.edgeAttribute = new PathBuilder.PaarValue<>(linkLabel, String.join("", parent) + Arrays.stream(linkLabel.split("\\.")).collect(Collectors.joining("']['", "['", "']")));
-            existing.edgeTarget = new PathBuilder.PaarValue<>(idTarget, String.join("", parent) + Arrays.stream(idTarget.split("\\.")).collect(Collectors.joining("']['", "['", "']")));
-            return new PathBuilder.PaarValue<>(refer.name(), existing);
+                existing.edgeAttribute = new PathBuilder.PairValue<>(linkLabel, jsonPath(linkLabel,parents));
+            existing.edgeTarget = new PathBuilder.PairValue<>(idTarget, jsonPath(idTarget,parents));
+            return new PathBuilder.PairValue<>(refer.name(), existing);
 
-        } else if (ReferNode.inline.equals(refer)) {
+        } else if (ReferType.inline.equals(refer)) {
             PathBuilder.Inline inline = new PathBuilder.Inline();
             if (this.linkLabel != null)
-                inline.edgeAttribute = new PathBuilder.PaarValue<>(linkLabel, String.join("", parent) + Arrays.stream(linkLabel.split("\\.")).collect(Collectors.joining("']['", "['", "']")));
-            if (this.label != null)
-                inline.targetNodeAttribute = new PathBuilder.PaarValue<>(label, String.join("", parent) + Arrays.stream(label.split("\\.")).collect(Collectors.joining("']['", "['", "']")));
-            if (this.target != null)
-                inline.targetNodes = new PathBuilder.PaarValue<>(target, String.join("", parent) + Arrays.stream(target.split("\\.")).collect(Collectors.joining("']['", "['", "']")));
-            if (this.id != null)
-                inline.targetNodeId = new PathBuilder.PaarValue<>(id, String.join("", parent) + Arrays.stream(id.split("\\.")).collect(Collectors.joining("']['", "['", "']")));
-            return new PathBuilder.PaarValue<>(refer.name(), inline);
-
+                inline.edgeAttribute = new PathBuilder.PairValue<>(linkLabel, jsonPath(linkLabel,parents));
+            if (this.label != null) inline.targetNodeAttribute = new PathBuilder.PairValue<>(label, jsonPath(label,parents));
+            if (this.target != null) inline.targetNodes = new PathBuilder.PairValue<>(target, jsonPath(target,parents));
+            if (this.id != null) inline.targetNodeId = new PathBuilder.PairValue<>(id, jsonPath(id,parents));
+            return new PathBuilder.PairValue<>(refer.name(), inline);
         }
         return null;
     }
+
+
 
 }

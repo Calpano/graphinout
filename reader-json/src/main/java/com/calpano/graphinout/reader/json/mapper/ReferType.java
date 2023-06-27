@@ -1,5 +1,5 @@
 package com.calpano.graphinout.reader.json.mapper;
 
-public enum ReferNode {
+public enum ReferType {
     existing,inline;
 }

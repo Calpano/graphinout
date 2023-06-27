@@ -2,51 +2,53 @@ package com.calpano.graphinout.reader.json.mapper;
 
 import lombok.Data;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Data
- class GraphmlJsonMapper implements PathBuilder {
+class GraphmlJsonMapper implements PathBuilder {
 
     private String id;
     private String label;
     private Set<Link> links;
 
     @Override
-    public PaarValue<String> findAll() {
-        return new PaarValue<>("*","$[*]");
-    }
-    @Override
-    public PaarValue<String>  findAllId() {
-        return new PaarValue<String>(this.id,"$[*]['"+this.id+"']['"+this.label+"']");
-    }
-    @Override
-    public PaarValue<String> findById(String id) {
-        return new PaarValue<String>(this.id,"$[?(@."+this.id+" == '"+id+"')]");
+    public PairValue<String> findAll() {
+        return new PairValue<>("*", "$[*]");
     }
 
     @Override
-    public PaarValue<String> findById(Integer id) {
-        return new PaarValue<String>(this.id,"$[?(@.id == "+id+")]");
+    public PairValue<String> findAllId() {
+        return new PairValue<String>(this.id, "$[*]['" + this.id + "']['" + this.label + "']");
     }
 
     @Override
-    public PaarValue<String> findByLabel(String label) {
-        return new PaarValue<String>(this.id,"$[?(@."+this.label+" == '"+label+"')]");
+    public PairValue<String> findById(String id) {
+        return new PairValue<String>(this.id, "$[?(@." + this.id + " == '" + id + "')]");
     }
 
     @Override
-    public Set<PaarValue> findLink(String id) {
-        Set<PaarValue> tmpPaths = new TreeSet<>();
-        if(links!=null)
-            links.forEach(link -> tmpPaths.add(link.path(findById(id).path)));
+    public PairValue<String> findById(Integer id) {
+        return new PairValue<String>(this.id, "$[?(@.id == " + id + ")]");
+    }
+
+    @Override
+    public PairValue<String> findByLabel(String label) {
+        return new PairValue<String>(this.id, "$[?(@." + this.label + " == '" + label + "')]");
+    }
+
+    @Override
+    public Set<PairValue<?>> findLink(String id) {
+        Set<PairValue<?>> tmpPaths = new TreeSet<PairValue<?>>();
+        if (links != null) links.forEach(link -> tmpPaths.add(link.path(findById(id).path)));
         return tmpPaths;
     }
 
     @Override
-    public Set<PaarValue<?>> findLink(Integer id) {
-        Set<PaarValue<?>> tmpPaths = new HashSet<>();
-        if(links!=null)
-            links.forEach(link -> tmpPaths.add(link.path(findById(id).path)));
+    public Set<PairValue<?>> findLink(Integer id) {
+        Set<PairValue<?>> tmpPaths = new HashSet<>();
+        if (links != null) links.forEach(link -> tmpPaths.add(link.path(findById(id).path)));
         return tmpPaths;
-       }
+    }
 }

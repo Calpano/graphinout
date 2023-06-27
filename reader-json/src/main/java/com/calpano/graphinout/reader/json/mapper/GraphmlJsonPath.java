@@ -37,37 +37,37 @@ public class GraphmlJsonPath implements  PathBuilder{
     }
 
     @Override
-    public PaarValue<String> findAll() {
+    public PairValue<String> findAll() {
         return jsonMapper.findAll();
     }
 
     @Override
-    public PaarValue<String> findAllId() {
+    public PairValue<String> findAllId() {
           return jsonMapper.findAllId();
     }
 
     @Override
-    public PaarValue<String> findById(String id) {
+    public PairValue<String> findById(String id) {
         return jsonMapper.findById(id);
     }
 
     @Override
-    public PaarValue<String> findById(Integer id) {
+    public PairValue<String> findById(Integer id) {
         return jsonMapper.findById(id);
     }
 
     @Override
-    public PaarValue<String> findByLabel(String label) {
+    public PairValue<String> findByLabel(String label) {
         return jsonMapper.findByLabel(label);
     }
 
     @Override
-    public  Set<PaarValue> findLink(String id) {
+    public  Set<PairValue<?>> findLink(String id) {
         return jsonMapper.findLink(id);
     }
 
     @Override
-    public  Set<PaarValue<?>>  findLink(Integer id) {
+    public  Set<PairValue<?>>  findLink(Integer id) {
         return jsonMapper.findLink(id);
     }
 }
