@@ -34,7 +34,7 @@
         <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
         <lombok-version>1.18.24</lombok-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
-        <fasterxml-jackson.version>2.15.1</fasterxml-jackson.version>
+        <fasterxml-jackson.version>2.15.2</fasterxml-jackson.version>
     </properties>
 
     <dependencyManagement>
