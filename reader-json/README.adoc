@@ -1,5 +1,7 @@
 = JSON Reader
+:toc:
 
+== Concepts
 .Example
 [source,js]
 ----
@@ -78,3 +80,13 @@ Mapping --> Link : links
 Link <|-- LinkToExisting
 Link <|-- LinkToNew
 ....
+
+
+== Implementation Strategy
+
+. Read mapping file via Jackson ObjectMapper (as POJO)
+. Stream JSON data file, read one JSON object at a time (no POJO mapping possible); For each object:
+** Create a node in Gio
+** For each link in the mapping:
+*** Create a link in Gio (refer=existing)
+*** Create a node and link in Gio (refer=inline)

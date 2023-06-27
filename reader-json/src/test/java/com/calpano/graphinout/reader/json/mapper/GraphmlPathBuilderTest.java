@@ -4,31 +4,36 @@ import com.calpano.graphinout.base.input.SingleInputSource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import static com.jayway.jsonpath.JsonPath.using;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class GraphmlPathBuilderTest {
 
     private static final Logger log = getLogger(GraphmlPathBuilderTest.class);
+    final String json = "[{\"refer\":\"existing\",\"linkLabel\":\"recommended\",\"idTarget\":\"recommendations.fans_liked\"},{\"refer\":\"inline\",\"linkLabel\":\"designed by\",\"target\":\"credit.designer\",\"id\":\"id\",\"label\":\"name\"}]";
 
     @Test
     void paths() throws Exception {
@@ -56,17 +61,33 @@ class GraphmlPathBuilderTest {
         }
     }
 
+    /**
+     * Return a Jackson ObjectNode from applying JsonPath to a stream -- we need it the other way around: Apply a
+     * JsonPath to a Jackson ObjectNode
+     */
+    @Test
+    void test() {
+        String json = "assume a stream here";
+        InputStream in = new ByteArrayInputStream(json.getBytes());
+
+        Configuration conf = Configuration
+                .builder()
+                .mappingProvider(new JacksonMappingProvider())
+                .jsonProvider(new JacksonJsonNodeJsonProvider())
+                .build();
+
+        ObjectNode node = using(conf).parse(in).read("$");
+    }
+
     @Test
     void testDeserialize() throws JsonProcessingException {
-        List<Links.Link> links = new ObjectMapper().readValue(json, new TypeReference<List<Links.Link>>(){});
+        List<Links.Link> links = new ObjectMapper().readValue(json, new TypeReference<List<Links.Link>>() {
+        });
         assertNotNull(links);
 
         String result = new ObjectMapper().writeValueAsString(links);
         log.info("res={}", result);
     }
-
-  final String json = "[{\"refer\":\"existing\",\"linkLabel\":\"recommended\",\"idTarget\":\"recommendations.fans_liked\"},{\"refer\":\"inline\",\"linkLabel\":\"designed by\",\"target\":\"credit.designer\",\"id\":\"id\",\"label\":\"name\"}]";
-
 
     @Test
     void testSerialize() throws JsonProcessingException {
