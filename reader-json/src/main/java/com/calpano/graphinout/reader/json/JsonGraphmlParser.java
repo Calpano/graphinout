@@ -16,6 +16,7 @@ import com.jayway.jsonpath.ReadContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class JsonGraphmlParser {
     private final SingleInputSource inputSource;
@@ -42,25 +43,27 @@ public class JsonGraphmlParser {
         writer.startGraph(GioGraph.builder().build());
         long countOfNode = ctx.read("$.length()", Long.class);
 
-        List<Integer> nodes = ctx.read(pathBuilder.findAllId());
+        List<Integer> nodes = ctx.read(pathBuilder.findAllId().path);
         for (Integer s : nodes) {
+
             writer.startNode(GioNode.builder().id(s.toString()).build());
             writer.endNode(null);
         }
 
         for (Integer s : nodes) {
-            for (String format : pathBuilder.findLink(s)) {
-                List<List<Integer>> endpoints = ctx.read(String.format(format, s));
-                List<GioEndpoint> gioEndpoints = new ArrayList<>();
-                if (endpoints.size() > 0) {
-                    gioEndpoints.add(GioEndpoint.builder().id(s.toString()).type(GioEndpointDirection.Out).build());
-                    endpoints.get(0).forEach(endpoint -> gioEndpoints.add(GioEndpoint.builder().node(endpoint.toString()).type(GioEndpointDirection.In).build()));
-                }
-                if (gioEndpoints.size() > 0) {
-                    writer.startEdge(GioEdge.builder().endpoints(gioEndpoints).build());
-                    writer.endEdge();
-                }
-            }
+
+//            for (String format : pathBuilder.findLink(s)) {
+//                List<List<Integer>> endpoints = ctx.read(String.format(format, s));
+//                List<GioEndpoint> gioEndpoints = new ArrayList<>();
+//                if (endpoints.size() > 0) {
+//                    gioEndpoints.add(GioEndpoint.builder().id(s.toString()).type(GioEndpointDirection.Out).build());
+//                    endpoints.get(0).forEach(endpoint -> gioEndpoints.add(GioEndpoint.builder().node(endpoint.toString()).type(GioEndpointDirection.In).build()));
+//                }
+//                if (gioEndpoints.size() > 0) {
+//                    writer.startEdge(GioEdge.builder().endpoints(gioEndpoints).build());
+//                    writer.endEdge();
+//                }
+//            }
         }
         writer.endGraph(null);
         writer.endDocument();

@@ -51,7 +51,6 @@ class JsonGraphmlParserTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
     private PathBuilder pathBuilder() throws Exception {

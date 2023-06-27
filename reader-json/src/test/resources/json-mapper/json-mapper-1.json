@@ -5,11 +5,11 @@
     {
       "refer": "existing",
       "idTarget": "recommendations.fans_liked",
-      "linkLabel:": "recommended"
+      "linkLabel": "recommended"
     },
     {
       "refer": "inline",
-      "linkLabel:": "designed by",
+      "linkLabel": "designed by",
       "target": "credit.desiger",
       "id": "id",
       "label": "name"

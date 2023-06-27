@@ -28,17 +28,30 @@ class GraphmlPathBuilderTest {
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
         try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content)) {
             PathBuilder pathBuilder = new GraphmlJsonPath(singleInputSource);
-            Set<String> results = pathBuilder.findLink(10);
+            Set<PathBuilder.PaarValue<?>> results = pathBuilder.findLink(10);
             System.out.println(results);
             assertAll("",
-                    () -> assertEquals("$[*]", pathBuilder.findAll()),
-                    () -> assertEquals("$[*]['id']", pathBuilder.findAllId()),
-                    () -> assertEquals("$[?(@.id == 10)]", pathBuilder.findById(10)),
-                    () -> assertEquals("$[?(@.id == '10')]", pathBuilder.findById("10")),
-                    () -> assertEquals("$[?(@.title == 'test')]", pathBuilder.findByLabel("test")),
+                    () -> assertEquals("$[*]", pathBuilder.findAll().path),
+                    () -> assertEquals("$[*]['id']['title']", pathBuilder.findAllId().path),
+                    () -> assertEquals("$[?(@.id == 10)]", pathBuilder.findById(10).path),
+                    () -> assertEquals("$[?(@.id == '10')]", pathBuilder.findById("10").path),
+                    () -> assertEquals("$[?(@.title == 'test')]", pathBuilder.findByLabel("test").path),
                     () -> assertEquals(2, results.size()),
-                    () -> assertTrue(results.containsAll(expected))
-            );
+                    () -> assertInstanceOf(PathBuilder.PaarValue.class, results.stream().toList().get(0)),
+                    () -> assertInstanceOf(PathBuilder.PaarValue.class, results.stream().toList().get(1)),
+
+                    () -> assertEquals("designed by", ((PathBuilder.Inline) results.stream().toList().get(1).path).edgeAttribute.name),
+                    () -> assertEquals("$[?(@.id == 10)]['credit']['desiger']", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodes.path),
+
+                    () -> assertEquals("credit.desiger", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodes.name),
+                    () -> assertEquals("$[?(@.id == 10)]['credit']['desiger']", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodes.path),
+
+                    () -> assertEquals("name", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodeAttribute.name),
+                    () -> assertEquals("$[?(@.id == 10)]['name']", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodeAttribute.path),
+
+                    () -> assertEquals("id", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodeId.name),
+                    () -> assertEquals("$[?(@.id == 10)]['id']", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodeId.path));
+
         }
     }
 }

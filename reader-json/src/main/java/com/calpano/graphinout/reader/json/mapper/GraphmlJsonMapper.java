@@ -2,8 +2,7 @@ package com.calpano.graphinout.reader.json.mapper;
 
 import lombok.Data;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
  class GraphmlJsonMapper implements PathBuilder {
@@ -13,41 +12,41 @@ import java.util.Set;
     private Set<Link> links;
 
     @Override
-    public String findAll() {
-        return "$[*]";
+    public PaarValue<String> findAll() {
+        return new PaarValue<>("*","$[*]");
     }
     @Override
-    public String findAllId() {
-        return "$[*]['"+this.id+"']";
+    public PaarValue<String>  findAllId() {
+        return new PaarValue<String>(this.id,"$[*]['"+this.id+"']['"+this.label+"']");
     }
     @Override
-    public String findById(String id) {
-        return "$[?(@."+this.id+" == '"+id+"')]";
-    }
-
-    @Override
-    public String findById(Integer id) {
-        return "$[?(@.id == "+id+")]";
+    public PaarValue<String> findById(String id) {
+        return new PaarValue<String>(this.id,"$[?(@."+this.id+" == '"+id+"')]");
     }
 
     @Override
-    public String findByLabel(String label) {
-        return "$[?(@."+this.label+" == '"+label+"')]";
+    public PaarValue<String> findById(Integer id) {
+        return new PaarValue<String>(this.id,"$[?(@.id == "+id+")]");
     }
 
     @Override
-    public Set<String> findLink(String id) {
-        Set<String> tmpPaths = new HashSet<>();
+    public PaarValue<String> findByLabel(String label) {
+        return new PaarValue<String>(this.id,"$[?(@."+this.label+" == '"+label+"')]");
+    }
+
+    @Override
+    public Set<PaarValue> findLink(String id) {
+        Set<PaarValue> tmpPaths = new TreeSet<>();
         if(links!=null)
-            links.forEach(link -> tmpPaths.add(link.path(findById(id))));
+            links.forEach(link -> tmpPaths.add(link.path(findById(id).path)));
         return tmpPaths;
     }
 
     @Override
-    public Set<String> findLink(Integer id) {
-        Set<String> tmpPaths = new HashSet<>();
+    public Set<PaarValue<?>> findLink(Integer id) {
+        Set<PaarValue<?>> tmpPaths = new HashSet<>();
         if(links!=null)
-            links.forEach(link -> tmpPaths.add(link.path(findById(id))));
+            links.forEach(link -> tmpPaths.add(link.path(findById(id).path)));
         return tmpPaths;
-    }
+       }
 }
