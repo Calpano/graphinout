@@ -21,13 +21,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static com.jayway.jsonpath.JsonPath.using;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class GraphmlPathBuilderTest {
@@ -36,27 +32,30 @@ class GraphmlPathBuilderTest {
     final String json = "[{\"refer\":\"existing\",\"linkLabel\":\"recommended\",\"idTarget\":\"recommendations.fans_liked\"},{\"refer\":\"inline\",\"linkLabel\":\"designed by\",\"target\":\"credit.designer\",\"id\":\"id\",\"label\":\"name\"}]";
 
     @Test
-    void paths() throws Exception {
-        List<String> expected = new ArrayList<>();
-        expected.add("$[?(@.id == 10)]['credit']['desiger']");
-        expected.add("$[?(@.id == 10)]['recommendations']['fans_liked']");
-
+    void loadObjectFromMapperFile() throws Exception {
         Path inputSource = Paths.get("src", "test", "resources", "json-mapper", "json-mapper-1.json");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
         try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content)) {
-            PathBuilder pathBuilder = new GraphmlJsonPath(singleInputSource);
-            Set<PathBuilder.PairValue<?>> results = pathBuilder.findLink(10);
-            System.out.println(results);
-            assertAll("", () -> assertEquals("$[*]", pathBuilder.findAll().path), () -> assertEquals("$[*]['id']['title']", pathBuilder.findAllId().path), () -> assertEquals("$[?(@.id == 10)]", pathBuilder.findById(10).path), () -> assertEquals("$[?(@.id == '10')]", pathBuilder.findById("10").path), () -> assertEquals("$[?(@.title == 'test')]", pathBuilder.findByLabel("test").path), () -> assertEquals(2, results.size()), () -> assertInstanceOf(PathBuilder.PairValue.class, results.stream().toList().get(0)), () -> assertInstanceOf(PathBuilder.PairValue.class, results.stream().toList().get(1)),
+            GraphmlJsonMapperLoader graphmlJsonMapperLoader = new GraphmlJsonMapperLoader(singleInputSource);
+            GraphmlJsonMapper mapper = graphmlJsonMapperLoader.getMapper();
 
-                    () -> assertEquals("designed by", ((PathBuilder.Inline) results.stream().toList().get(1).path).edgeAttribute.name), () -> assertEquals("$[?(@.id == 10)]['credit']['desiger']", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodes.path),
+            assertAll("",//
+                    () -> assertEquals("id", mapper.getId()),
+                    () -> assertEquals("title", mapper.getLabel()),
+                    () -> assertEquals(2, mapper.getLinks().size()),
 
-                    () -> assertEquals("credit.desiger", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodes.name), () -> assertEquals("$[?(@.id == 10)]['credit']['desiger']", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodes.path),
+                    () -> assertInstanceOf(Link.LinkCreateNode.class, mapper.getLinks().stream().toList().get(0)),
+                    () -> assertEquals("id", ((Link.LinkCreateNode) mapper.getLinks().stream().toList().get(0)).id),
+                    () -> assertEquals("designed by", ((Link.LinkCreateNode) mapper.getLinks().stream().toList().get(0)).linkLabel),
+                    () -> assertEquals("name", ((Link.LinkCreateNode) mapper.getLinks().stream().toList().get(0)).label),
+                    () -> assertEquals("credit.desiger", ((Link.LinkCreateNode) mapper.getLinks().stream().toList().get(0)).target),
 
-                    () -> assertEquals("name", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodeAttribute.name), () -> assertEquals("$[?(@.id == 10)]['name']", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodeAttribute.path),
+                    () -> assertInstanceOf(Link.LinkToExistingNode.class, mapper.getLinks().stream().toList().get(1)),
+                    () -> assertEquals("recommendations.fans_liked", ((Link.LinkToExistingNode) mapper.getLinks().stream().toList().get(1)).idTarget),
+                    () -> assertEquals("recommended", ((Link.LinkToExistingNode) mapper.getLinks().stream().toList().get(1)).linkLabel)
+            );
 
-                    () -> assertEquals("id", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodeId.name), () -> assertEquals("$[?(@.id == 10)]['id']", ((PathBuilder.Inline) results.stream().toList().get(1).path).targetNodeId.path));
 
         }
     }
@@ -67,7 +66,7 @@ class GraphmlPathBuilderTest {
      */
     @Test
     void test() {
-        String json = "assume a stream here";
+        String json = "{ \"a\": \"assume a stream here\"}";
         InputStream in = new ByteArrayInputStream(json.getBytes());
 
         Configuration conf = Configuration
@@ -81,7 +80,7 @@ class GraphmlPathBuilderTest {
 
     @Test
     void testDeserialize() throws JsonProcessingException {
-        List<Links.Link> links = new ObjectMapper().readValue(json, new TypeReference<List<Links.Link>>() {
+        List<Link> links = new ObjectMapper().readValue(json, new TypeReference<List<Link>>() {
         });
         assertNotNull(links);
 
@@ -91,13 +90,13 @@ class GraphmlPathBuilderTest {
 
     @Test
     void testSerialize() throws JsonProcessingException {
-        List<Links.Link> links = new ArrayList<>();
-        Links.LinkToExistingNode link1 = Links.LinkToExistingNode.of("recommended", "recommendations.fans_liked");
+        List<Link> links = new ArrayList<>();
+        Link.LinkToExistingNode link1 = Link.LinkToExistingNode.of("recommended", "recommendations.fans_liked");
         links.add(link1);
-        links.add(Links.LinkCreateNode.of("designed by", "credit.designer", "id", "name"));
+        links.add(Link.LinkCreateNode.of("designed by", "credit.designer", "id", "name"));
 
         ObjectMapper mapper = new ObjectMapper();
-        CollectionType listType = mapper.getTypeFactory().constructCollectionType(List.class, Links.Link.class);
+        CollectionType listType = mapper.getTypeFactory().constructCollectionType(List.class, Link.class);
         String result = mapper.writer().forType(listType).writeValueAsString(links);
         log.info("res={}", result);
         assertEquals(json, result);

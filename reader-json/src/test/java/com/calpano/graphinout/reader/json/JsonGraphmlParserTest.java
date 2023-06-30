@@ -7,23 +7,19 @@ import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.xml.XmlWriterImpl;
-import com.calpano.graphinout.reader.json.mapper.GraphmlJsonPath;
-import com.calpano.graphinout.reader.json.mapper.PathBuilder;
+
+import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapper;
+import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapperLoader;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
 
 class JsonGraphmlParserTest {
 
@@ -38,7 +34,7 @@ class JsonGraphmlParserTest {
 
     @Test
     void read() throws Exception {
-        PathBuilder  graphmlPathBuilder = pathBuilder();
+        GraphmlJsonMapper graphmlPathBuilder = pathBuilder();
         Path inputSource = Paths.get("src", "test", "resources", "sample", "boardgames_40.json");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
@@ -53,13 +49,13 @@ class JsonGraphmlParserTest {
         }
     }
 
-    private PathBuilder pathBuilder() throws Exception {
-        PathBuilder pathBuilder;
+    private GraphmlJsonMapper pathBuilder() throws Exception {
+        GraphmlJsonMapper pathBuilder;
         Path inputSource = Paths.get("src", "test", "resources", "json-mapper", "json-mapper-1.json");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
         try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content)) {
-             pathBuilder = new GraphmlJsonPath(singleInputSource);
+             pathBuilder = new GraphmlJsonMapperLoader(singleInputSource).getMapper();
         }
         return pathBuilder;
     }

@@ -1,49 +1,47 @@
 package com.calpano.graphinout.reader.json.mapper;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "refer")
+@JsonSubTypes({ //
+        @JsonSubTypes.Type(value = Link.LinkToExistingNode.class, name = "existing"), //
+        @JsonSubTypes.Type(value = Link.LinkCreateNode.class, name = "inline") //
+})
+public class Link {
 
-@Data
-class Link {
 
-    private ReferType refer;
-    private String idTarget;
-    private String linkLabel;
-    private String target;
-    private String id;
-    private String label;
+    public String linkLabel;
 
-    private static String jsonPath(String s, String... parents) {
-        return String.join("", parents) + Arrays.stream(s.split("\\.")).collect(Collectors.joining("']['", "['", "']"));
-    }
 
-    /**
-     *
-     * @param parents
-     * @return
-     */
-    public PathBuilder.PairValue<Object> path(String... parents) {
-        if (ReferType.existing.equals(refer)) {
-            PathBuilder.Existing existing = new PathBuilder.Existing();
-            if (this.linkLabel != null)
-                existing.edgeAttribute = new PathBuilder.PairValue<>(linkLabel, jsonPath(linkLabel,parents));
-            existing.edgeTarget = new PathBuilder.PairValue<>(idTarget, jsonPath(idTarget,parents));
-            return new PathBuilder.PairValue<>(refer.name(), existing);
+    @JsonTypeName("existing")
+    public static class LinkToExistingNode extends Link {
+        public String idTarget;
 
-        } else if (ReferType.inline.equals(refer)) {
-            PathBuilder.Inline inline = new PathBuilder.Inline();
-            if (this.linkLabel != null)
-                inline.edgeAttribute = new PathBuilder.PairValue<>(linkLabel, jsonPath(linkLabel,parents));
-            if (this.label != null) inline.targetNodeAttribute = new PathBuilder.PairValue<>(label, jsonPath(label,parents));
-            if (this.target != null) inline.targetNodes = new PathBuilder.PairValue<>(target, jsonPath(target,parents));
-            if (this.id != null) inline.targetNodeId = new PathBuilder.PairValue<>(id, jsonPath(id,parents));
-            return new PathBuilder.PairValue<>(refer.name(), inline);
+        public static LinkToExistingNode of(String linkLabel, String idTarget) {
+            LinkToExistingNode link = new LinkToExistingNode();
+            link.linkLabel = linkLabel;
+            link.idTarget = idTarget;
+            return link;
         }
-        return null;
     }
 
+    @JsonTypeName("inline")
+    public static class LinkCreateNode extends Link {
+        public String target;
+        public String id;
+        public String label;
 
+        public static LinkCreateNode of(String linkLabel, String target, String id, String label) {
+            LinkCreateNode link = new LinkCreateNode();
+            link.linkLabel = linkLabel;
+            link.target = target;
+            link.id = id;
+            link.label = label;
+            return link;
+        }
 
+    }
 }
