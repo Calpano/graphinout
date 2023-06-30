@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.calpano.graphinout.reader.json.JsonPathOnJackson.runJsonPathOnJackson;
+
 public class JsonGraphmlParser {
     private final SingleInputSource inputSource;
     private final GioWriter writer;
@@ -71,9 +73,9 @@ public class JsonGraphmlParser {
 
                 // maybe there is a better way to do this
                 String json = jsonNodeRoot.toString();
-                // run jayway on json to tun any JsonPath on it
+                // run jayway on json to run any JsonPath on it
 
-                String label = jsonNodeRoot.get(jsonMapping.getLabel()).asText();
+                String label = runJsonPathOnJackson(jsonNodeRoot, jsonMapping.getLabel());
                 String id = jsonNodeRoot.get(jsonMapping.getId()).asText();
                 writer.startNode(GioNode.builder().id(id).build());
                 writer.data(GioData.builder().key("label").value(label).build());
