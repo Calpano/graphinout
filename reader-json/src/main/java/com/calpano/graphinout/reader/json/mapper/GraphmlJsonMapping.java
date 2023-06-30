@@ -3,9 +3,10 @@ package com.calpano.graphinout.reader.json.mapper;
 import lombok.Data;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 @Data
-public class GraphmlJsonMapper {
+public class GraphmlJsonMapping {
 
     private String id;
     private String label;

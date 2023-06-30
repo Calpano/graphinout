@@ -37,8 +37,8 @@ class GraphmlPathBuilderTest {
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
         try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content)) {
-            GraphmlJsonMapperLoader graphmlJsonMapperLoader = new GraphmlJsonMapperLoader(singleInputSource);
-            GraphmlJsonMapper mapper = graphmlJsonMapperLoader.getMapper();
+            GraphmlJsonMappingLoader graphmlJsonMappingLoader = new GraphmlJsonMappingLoader(singleInputSource);
+            GraphmlJsonMapping mapper = graphmlJsonMappingLoader.getMapper();
 
             assertAll("",//
                     () -> assertEquals("id", mapper.getId()),

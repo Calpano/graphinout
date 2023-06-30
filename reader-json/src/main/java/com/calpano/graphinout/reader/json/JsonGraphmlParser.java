@@ -6,7 +6,7 @@ import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
-import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapper;
+import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapping;
 import com.calpano.graphinout.reader.json.mapper.Link;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -23,13 +23,13 @@ import java.util.Map;
 public class JsonGraphmlParser {
     private final SingleInputSource inputSource;
     private final GioWriter writer;
-    private final GraphmlJsonMapper jsonMapper;
+    private final GraphmlJsonMapping jsonMapping;
 
 
-    public JsonGraphmlParser(InputSource inputSource, GioWriter writer, GraphmlJsonMapper jsonMapper) throws IOException {
+    public JsonGraphmlParser(InputSource inputSource, GioWriter writer, GraphmlJsonMapping jsonMapping) throws IOException {
         this.inputSource = (SingleInputSource) inputSource;
         this.writer = writer;
-        this.jsonMapper = jsonMapper;
+        this.jsonMapping = jsonMapping;
 
     }
 
@@ -41,7 +41,7 @@ public class JsonGraphmlParser {
         writer.startGraph(GioGraph.builder().build());
         Link.LinkToExistingNode linkToExistingNode = null;
         Link.LinkCreateNode linkCreateNode = null;
-        List<Link> links = jsonMapper.getLinks().stream().toList();
+        List<Link> links = jsonMapping.getLinks().stream().toList();
         for (Link link : links) {
             if (link instanceof Link.LinkToExistingNode g) {
                 linkToExistingNode = g;
@@ -50,8 +50,7 @@ public class JsonGraphmlParser {
                 linkCreateNode = g;
             }
         }
-        try (JsonParser jParser = new JsonFactory()
-                .createParser(inputSource.inputStream());) {
+        try (JsonParser jParser = new JsonFactory().createParser(inputSource.inputStream());) {
 
             while (jParser.nextToken() != JsonToken.END_ARRAY) {
                 System.out.println(jParser.currentToken().id());
@@ -123,21 +122,17 @@ public class JsonGraphmlParser {
 //        }
         writer.endGraph(null);
         writer.endDocument();
-
-
     }
 
     private void readNode(JsonParser jParser) throws IOException {
-
         String nodeId = "";
-
 
         Map<String, String> customAttribute = new HashMap<>();
 
         while (jParser.nextToken() != JsonToken.END_OBJECT) {
-            if (jsonMapper.getId().equals(jParser.getCurrentName())) {
+            if (jsonMapping.getId().equals(jParser.getCurrentName())) {
                 nodeId = jParser.getValueAsString();
-            } else if (jsonMapper.getLabel().equals(jParser.getCurrentName())) {
+            } else if (jsonMapping.getLabel().equals(jParser.getCurrentName())) {
                 customAttribute.put(jParser.getCurrentName(), jParser.getValueAsString());
             }
         }

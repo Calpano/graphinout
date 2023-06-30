@@ -8,8 +8,8 @@ import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.xml.XmlWriterImpl;
 
-import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapper;
-import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapperLoader;
+import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapping;
+import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMappingLoader;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ class JsonGraphmlParserTest {
 
     @Test
     void read() throws Exception {
-        GraphmlJsonMapper graphmlPathBuilder = pathBuilder();
+        GraphmlJsonMapping graphmlPathBuilder = pathBuilder();
         Path inputSource = Paths.get("src", "test", "resources", "sample", "boardgames_40.json");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
@@ -49,13 +49,13 @@ class JsonGraphmlParserTest {
         }
     }
 
-    private GraphmlJsonMapper pathBuilder() throws Exception {
-        GraphmlJsonMapper pathBuilder;
+    private GraphmlJsonMapping pathBuilder() throws Exception {
+        GraphmlJsonMapping pathBuilder;
         Path inputSource = Paths.get("src", "test", "resources", "json-mapper", "json-mapper-1.json");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
         try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content)) {
-             pathBuilder = new GraphmlJsonMapperLoader(singleInputSource).getMapper();
+             pathBuilder = new GraphmlJsonMappingLoader(singleInputSource).getMapper();
         }
         return pathBuilder;
     }

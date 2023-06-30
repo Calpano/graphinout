@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-public class GraphmlJsonMapperLoader {
+public class GraphmlJsonMappingLoader {
 
     private final SingleInputSource mapperSource;
-    private GraphmlJsonMapper graphmlJsonMapper;
+    private GraphmlJsonMapping graphmlJsonMapping;
 
-    public GraphmlJsonMapperLoader(InputSource mapperSource) throws IOException {
+    public GraphmlJsonMappingLoader(InputSource mapperSource) throws IOException {
         this.mapperSource = (SingleInputSource) mapperSource;
         loadMapperFile();
     }
@@ -22,10 +22,10 @@ public class GraphmlJsonMapperLoader {
         this.mapperSource.inputStream().read(jsonData);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        graphmlJsonMapper = objectMapper.readValue(jsonData, GraphmlJsonMapper.class);
+        graphmlJsonMapping = objectMapper.readValue(jsonData, GraphmlJsonMapping.class);
     }
-    public final GraphmlJsonMapper getMapper(){
-        return graphmlJsonMapper;
+    public final GraphmlJsonMapping getMapper(){
+        return graphmlJsonMapping;
     }
 
 }
