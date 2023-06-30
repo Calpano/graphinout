@@ -13,6 +13,13 @@
       "target": "credit.desiger",
       "id": "id",
       "label": "name"
+    },
+    {
+      "refer": "inline",
+      "linkLabel": "uses mechanics",
+      "target": "mechanics",
+      "id": "id",
+      "label": "name"
     }
   ]
 }
