@@ -1,7 +1,11 @@
 package com.calpano.graphinout.reader.json;
 
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioDataType;
 import com.calpano.graphinout.base.gio.GioDocument;
 import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.gio.GioKeyForType;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.input.InputSource;
@@ -30,7 +34,69 @@ public class JsonGraphmlParser {
         this.inputSource = (SingleInputSource) inputSource;
         this.writer = writer;
         this.jsonMapping = jsonMapping;
+    }
 
+    public void read() throws IOException {
+        writer.startDocument(GioDocument.builder().build());
+
+        writer.key(GioKey.builder().forType(GioKeyForType.Node).id("label").attributeName("label").attributeType(GioDataType.typeString).build());
+
+        writer.startGraph(GioGraph.builder().build());
+
+
+        Link.LinkToExistingNode linkToExistingNode = null;
+        Link.LinkCreateNode linkCreateNode = null;
+        List<Link> links = jsonMapping.getLinks().stream().toList();
+        for (Link link : links) {
+            if (link instanceof Link.LinkToExistingNode g) {
+                linkToExistingNode = g;
+
+            } else if (link instanceof Link.LinkCreateNode g) {
+                linkCreateNode = g;
+            }
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        //  mapper.registerModule(new JavaTimeModule());
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+
+        try (JsonParser jsonParser = mapper.getFactory().createParser(inputSource.inputStream())) {
+
+            if (jsonParser.nextToken() != JsonToken.START_ARRAY) {
+                throw new IllegalStateException("Expected content to be an array");
+            }
+
+            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                JsonNode jsonNodeRoot = mapper.readTree(jsonParser);
+
+                // maybe there is a better way to do this
+                String json = jsonNodeRoot.toString();
+                // run jayway on json to tun any JsonPath on it
+
+                String label = jsonNodeRoot.get(jsonMapping.getLabel()).asText();
+                String id = jsonNodeRoot.get(jsonMapping.getId()).asText();
+                writer.startNode(GioNode.builder().id(id).build());
+                writer.data(GioData.builder().key("label").value(label).build());
+                writer.endNode(null);
+
+                if (linkToExistingNode != null) {
+                    JsonNode tmp = jsonNodeRoot;
+                    for (String path : linkToExistingNode.idTarget.split("\\.")) {
+                        tmp = tmp.get(path);
+                        if (tmp == null) break;
+                    }
+                    if (tmp != null) {
+                        // System.out.println(tmp.asText());
+                    }
+                }
+//
+//                if (linkCreateNode != null) {
+//                    System.out.println(jsonNodeRoot.get(linkCreateNode.target).asText());
+//                }
+            }
+        }
+        writer.endGraph(null);
+        writer.endDocument();
     }
 
     /**
@@ -159,60 +225,5 @@ public class JsonGraphmlParser {
 //                    }
 //            }
 //        }
-    }
-
-
-    public void read() throws IOException {
-        writer.startDocument(GioDocument.builder().build());
-        writer.startGraph(GioGraph.builder().build());
-        Link.LinkToExistingNode linkToExistingNode = null;
-        Link.LinkCreateNode linkCreateNode = null;
-        List<Link> links = jsonMapper.getLinks().stream().toList();
-        for (Link link : links) {
-            if (link instanceof Link.LinkToExistingNode g) {
-                linkToExistingNode = g;
-
-            } else if (link instanceof Link.LinkCreateNode g) {
-                linkCreateNode = g;
-            }
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        //  mapper.registerModule(new JavaTimeModule());
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
-
-        try (JsonParser jsonParser = mapper.getFactory().createParser(inputSource.inputStream())) {
-
-            if (jsonParser.nextToken() != JsonToken.START_ARRAY) {
-                throw new IllegalStateException("Expected content to be an array");
-            }
-
-            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
-                JsonNode jsonNodeRoot = mapper.readTree(jsonParser);
-                Map<String, String> customAttribute = new HashMap<>();
-                customAttribute.put(jsonMapper.getLabel(), jsonNodeRoot.get(jsonMapper.getLabel()).asText());
-                writer.startNode(GioNode.builder().id(jsonNodeRoot.get(jsonMapper.getId()).asText()).customAttributes(customAttribute).build());
-                writer.endNode(null);
-
-
-                if (linkToExistingNode != null) {
-                    JsonNode tmp = jsonNodeRoot;
-                    for (String path : linkToExistingNode.idTarget.split("\\.")) {
-                        tmp = tmp.get(path);
-                        if (tmp == null)
-                            break;
-                    }
-                    if (tmp != null) {
-                        System.out.println(tmp.asText());
-                    }
-                }
-//
-//                if (linkCreateNode != null) {
-//                    System.out.println(jsonNodeRoot.get(linkCreateNode.target).asText());
-//                }
-            }
-        }
-        writer.endGraph(null);
-        writer.endDocument();
     }
 }
