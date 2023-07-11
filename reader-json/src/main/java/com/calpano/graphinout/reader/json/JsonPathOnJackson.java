@@ -2,6 +2,7 @@ package com.calpano.graphinout.reader.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ public class JsonPathOnJackson {
         }
     }
 
-    public static String runJsonPathOnJackson(JsonNode jsonNode, String jsonPath) {
+    public static Object runJsonPathOnJackson(JsonNode jsonNode, String jsonPath) {
         JsonPath p = JsonPath.of(jsonPath);
 
         JsonNode tmp = jsonNode;
@@ -41,6 +42,11 @@ public class JsonPathOnJackson {
         if(tmp==null) return null;
         if(tmp.isArray()){
             //TODO
+            List<Integer> list =  new ArrayList<>();
+            for (final JsonNode objNode : tmp) {
+                list.add(objNode.asInt());
+            }
+            return list;
         }else if(tmp.isTextual())
             tmp.asText();
 

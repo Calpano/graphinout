@@ -65,4 +65,5 @@ public class GioEndpoint extends GioElement  {
         assert this.node != null :"node is null";
         return true;
     }
+
 }
