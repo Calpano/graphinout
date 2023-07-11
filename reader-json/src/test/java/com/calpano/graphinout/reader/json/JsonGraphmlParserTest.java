@@ -7,7 +7,6 @@ import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.xml.XmlWriterImpl;
-
 import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapping;
 import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMappingLoader;
 import org.apache.commons.io.IOUtils;
@@ -15,21 +14,22 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 class JsonGraphmlParserTest {
+
+    private static final Logger log = getLogger(JsonGraphmlParserTest.class);
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-    }
-
-    @AfterEach
-    void tearDown() {
     }
 
     @Test
@@ -38,15 +38,19 @@ class JsonGraphmlParserTest {
         Path inputSource = Paths.get("src", "test", "resources", "sample", "boardgames_40.json");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
-        try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
+        try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content); //
              OutputSink outputSink = new InMemoryOutputSink()) {
             GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
-            JsonGraphmlParser graphmlReader = new JsonGraphmlParser(singleInputSource, gioWriter, graphmlPathBuilder);
+            JsonGraphmlParser graphmlReader = new JsonGraphmlParser(singleInputSource, gioWriter, graphmlPathBuilder, error -> log.warn("Error: " + error));
             graphmlReader.read();
             System.out.println(outputSink.toString());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @AfterEach
+    void tearDown() {
     }
 
     private GraphmlJsonMapping pathBuilder() throws Exception {
@@ -55,7 +59,7 @@ class JsonGraphmlParserTest {
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
         try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content)) {
-             pathBuilder = new GraphmlJsonMappingLoader(singleInputSource).getMapper();
+            pathBuilder = GraphmlJsonMappingLoader.loadMapping(singleInputSource);
         }
         return pathBuilder;
     }

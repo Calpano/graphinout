@@ -8,14 +8,17 @@ import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.base.reader.GioReader;
+import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapping;
+import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMappingLoader;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.function.Consumer;
 
 public class JsonReader implements GioReader {
     public static final String DATA = "data";
     public static final String MAPPING = "mapping";
-    private Consumer<ContentError> errorHandler;
+    private @Nullable Consumer<ContentError> errorHandler;
     @Override
     public void errorHandler(Consumer<ContentError> errorHandler) {
         this.errorHandler=errorHandler;
@@ -32,7 +35,9 @@ public class JsonReader implements GioReader {
             MultiInputSource multiInputSource = (MultiInputSource) inputSource;
             SingleInputSource dataSource = multiInputSource.getNamedSource(DATA);
             SingleInputSource mappingSource = multiInputSource.getNamedSource(MAPPING);
-            // TODO read data and mapping
+            GraphmlJsonMapping jsonMapping = GraphmlJsonMappingLoader.loadMapping(mappingSource);
+            JsonGraphmlParser parser = new JsonGraphmlParser(dataSource, writer, jsonMapping, errorHandler);
+            parser.read();
         } else {
             throw new IOException("JsonReader expects a multi-input for data and mapping");
         }

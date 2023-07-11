@@ -10,14 +10,14 @@
     {
       "refer": "inline",
       "linkLabel": "designed by",
-      "target": "credit.desiger",
+      "target": "credit.designer",
       "id": "id",
       "label": "name"
     },
     {
       "refer": "inline",
       "linkLabel": "uses mechanics",
-      "target": "mechanics",
+      "target": "types.mechanics",
       "id": "id",
       "label": "name"
     }

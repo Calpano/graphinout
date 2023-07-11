@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 public class Link {
 
 
+    /** the literal link label, not a JsonPointer */
     public String linkLabel;
 
 
