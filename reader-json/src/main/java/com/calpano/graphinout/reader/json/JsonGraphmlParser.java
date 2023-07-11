@@ -1,13 +1,6 @@
 package com.calpano.graphinout.reader.json;
 
-import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioDataType;
-import com.calpano.graphinout.base.gio.GioDocument;
-import com.calpano.graphinout.base.gio.GioGraph;
-import com.calpano.graphinout.base.gio.GioKey;
-import com.calpano.graphinout.base.gio.GioKeyForType;
-import com.calpano.graphinout.base.gio.GioNode;
-import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.gio.*;
 import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapping;
@@ -20,6 +13,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,19 +41,8 @@ public class JsonGraphmlParser {
         writer.startGraph(GioGraph.builder().build());
 
 
-        Link.LinkToExistingNode linkToExistingNode = null;
-        Link.LinkCreateNode linkCreateNode = null;
-        List<Link> links = jsonMapping.getLinks().stream().toList();
-        for (Link link : links) {
-            if (link instanceof Link.LinkToExistingNode g) {
-                linkToExistingNode = g;
 
-            } else if (link instanceof Link.LinkCreateNode g) {
-                linkCreateNode = g;
-            }
-        }
         ObjectMapper mapper = new ObjectMapper();
-        //  mapper.registerModule(new JavaTimeModule());
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
 
@@ -73,24 +57,27 @@ public class JsonGraphmlParser {
 
                 // maybe there is a better way to do this
                 String json = jsonNodeRoot.toString();
-                // run jayway on json to run any JsonPath on it
+
 
                 String label = runJsonPathOnJackson(jsonNodeRoot, jsonMapping.getLabel());
                 String id = jsonNodeRoot.get(jsonMapping.getId()).asText();
                 writer.startNode(GioNode.builder().id(id).build());
                 writer.data(GioData.builder().key("label").value(label).build());
                 writer.endNode(null);
+                jsonMapping.getLinks().stream().forEach(link -> {
+                    try {
+                    if(link instanceof  Link.LinkCreateNode g){
 
-                if (linkToExistingNode != null) {
-                    JsonNode tmp = jsonNodeRoot;
-                    for (String path : linkToExistingNode.idTarget.split("\\.")) {
-                        tmp = tmp.get(path);
-                        if (tmp == null) break;
+                            writeEdge(writer,g,jsonNodeRoot,mapper,id);
+
+                    }else {
+                        writeEdge(writer,(Link.LinkToExistingNode)link,jsonNodeRoot,mapper,id);
                     }
-                    if (tmp != null) {
-                        // System.out.println(tmp.asText());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                }
+                } );
+
 //
 //                if (linkCreateNode != null) {
 //                    System.out.println(jsonNodeRoot.get(linkCreateNode.target).asText());
@@ -101,95 +88,51 @@ public class JsonGraphmlParser {
         writer.endDocument();
     }
 
-    /**
-     * @throws IOException when writing fails
-     */
-    public void read2() throws IOException {
-        writer.startDocument(GioDocument.builder().build());
-        writer.startGraph(GioGraph.builder().build());
-        Link.LinkToExistingNode linkToExistingNode = null;
-        Link.LinkCreateNode linkCreateNode = null;
-        List<Link> links = jsonMapping.getLinks().stream().toList();
-        for (Link link : links) {
-            if (link instanceof Link.LinkToExistingNode g) {
-                linkToExistingNode = g;
+    private void writeEdge(GioWriter writer,Link.LinkCreateNode createNode,JsonNode jsonNode, ObjectMapper mapper, String nodeId) throws IOException {
+        String targetJson = runJsonPathOnJackson(jsonNode, createNode.getTarget());
+         if(targetJson==null)
+             //TODO log
+             return;
+        try (JsonParser jsonParser = mapper.getFactory().createParser(targetJson)) {
+            List<GioEndpoint> gioEndpoints = new ArrayList<>();
+            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                JsonNode jsonNodeTargets = mapper.readTree(jsonParser);
+                String linkLabel = runJsonPathOnJackson(jsonNodeTargets, createNode.getLinkLabel());
 
-            } else if (link instanceof Link.LinkCreateNode g) {
-                linkCreateNode = g;
+                String label = runJsonPathOnJackson(jsonNodeTargets, createNode.getLabel());
+                String id = jsonNodeTargets.get(createNode.getId()).asText();
+                writer.startNode(GioNode.builder().id(id).build());
+                writer.data(GioData.builder().key("label").value(label).build());
+                writer.endNode(null);
+                gioEndpoints.add(GioEndpoint.builder().node(id).build());
             }
-        }
-        try (JsonParser jParser = new JsonFactory().createParser(inputSource.inputStream());) {
-
-            while (jParser.nextToken() != JsonToken.END_ARRAY) {
-                System.out.println(jParser.currentToken().id());
-
-                if (jParser.currentToken() != JsonToken.START_ARRAY) {
-                    System.out.println(jParser.currentToken());
-                    jParser.nextToken();
-                }
-                while (jParser.currentToken() != JsonToken.END_OBJECT) {
-                    readNode(jParser);
-                    System.out.println(jParser.currentToken());
-                }
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            writer.startEdge(GioEdge.builder().endpoints(gioEndpoints).build());
+            writer.endEdge();
         }
 
-//                if (jParser.nextToken() == JsonToken.START_ARRAY) {
-//                    while (jParser.nextToken() != JsonToken.END_ARRAY) {
-//                        System.out.println(jParser.getText());
-//                    }
-//                }
 
 
-//
-//                String nodeId = jParser.getValueAsString(jsonMapper.getId());
-//                Map<String,String> customAttribute = new HashMap<>();
-//                customAttribute.put(jsonMapper.getLabel(), jParser.getValueAsString(jsonMapper.getLabel()));
-//                writer.startNode(GioNode.builder().id(nodeId).customAttributes(customAttribute).build());
-//                writer.endNode(null);
-//                List<Link> links = jsonMapper.getLinks().stream().toList();
-//                for(Link link:links){
-//                    if(link instanceof  Link.LinkToExistingNode g){
-//                        System.out.println(jParser.getValueAsString(g.idTarget));
-//                List<GioEndpoint> gioEndpoints = new ArrayList<>();
-//                if (endpoints.size() > 0) {
-//                    gioEndpoints.add(GioEndpoint.builder().id(s.toString()).type(GioEndpointDirection.Out).build());
-//                    endpoints.get(0).forEach(endpoint -> gioEndpoints.add(GioEndpoint.builder().node(endpoint.toString()).type(GioEndpointDirection.In).build()));
-//                }
-//                if (gioEndpoints.size() > 0) {
-//                    writer.startEdge(GioEdge.builder().endpoints(gioEndpoints).build());
-//                    writer.endEdge();
-//                }
-//                    }else if(link instanceof  Link.LinkCreateNode) {
-//                    }
 
 
-//        for (Integer s : nodes) {
-//
-//            writer.startNode(GioNode.builder().id(s.toString()).build());
-//            writer.endNode(null);
-//        }
-//
-//        for (Integer s : nodes) {
+    }
+    private void writeEdge(GioWriter writer,Link.LinkToExistingNode existingNode,JsonNode jsonNode,ObjectMapper mapper, String nodeId) throws IOException {
+        String targetJson = runJsonPathOnJackson(jsonNode, existingNode.getIdTarget());
+        if (targetJson == null)
+            //TODO log
+            return;
+        try (JsonParser jsonParser = mapper.getFactory().createParser(targetJson)) {
+            List<GioEndpoint> gioEndpoints = new ArrayList<>();
+            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                JsonNode jsonNodeTargets = mapper.readTree(jsonParser);
 
-//            for (String format : pathBuilder.findLink(s)) {
-//                List<List<Integer>> endpoints = ctx.read(String.format(format, s));
-//                List<GioEndpoint> gioEndpoints = new ArrayList<>();
-//                if (endpoints.size() > 0) {
-//                    gioEndpoints.add(GioEndpoint.builder().id(s.toString()).type(GioEndpointDirection.Out).build());
-//                    endpoints.get(0).forEach(endpoint -> gioEndpoints.add(GioEndpoint.builder().node(endpoint.toString()).type(GioEndpointDirection.In).build()));
-//                }
-//                if (gioEndpoints.size() > 0) {
-//                    writer.startEdge(GioEdge.builder().endpoints(gioEndpoints).build());
-//                    writer.endEdge();
-//                }
-//            }
-//        }
-        writer.endGraph(null);
-        writer.endDocument();
+              //  String id = jsonNodeTargets.get(existingNode.get()).asText();
+
+             //   gioEndpoints.add(GioEndpoint.builder().node(id).build());
+            }
+            writer.startEdge(GioEdge.builder().endpoints(gioEndpoints).build());
+            writer.endEdge();
+
+        }
     }
 
     private void readNode(JsonParser jParser) throws IOException {

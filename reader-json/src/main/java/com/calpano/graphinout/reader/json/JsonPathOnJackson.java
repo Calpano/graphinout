@@ -37,7 +37,14 @@ public class JsonPathOnJackson {
             else if (step instanceof Integer indexStep) tmp = tmp.get(indexStep);
             else throw new AssertionError("unexpected step type");
         }
-        return tmp.asText();
+
+        if(tmp==null) return null;
+        if(tmp.isArray()){
+            //TODO
+        }else if(tmp.isTextual())
+            tmp.asText();
+
+        return "";
     }
 
 }
