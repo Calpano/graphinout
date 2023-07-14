@@ -1,0 +1,13 @@
+package com.calpano.graphinout.apprestservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class AppRestServiceApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(AppRestServiceApplication.class, args);
+    }
+
+}
