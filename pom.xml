@@ -18,6 +18,7 @@
         <module>reader-jgrapht</module>
         <module>engine</module>
         <module>app-cmdline</module>
+        <module>app-rest-service</module>
         <module>reader-json</module>
     </modules>
 
