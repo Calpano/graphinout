@@ -4,6 +4,7 @@ import com.calpano.graphinout.base.GioService;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
+import com.calpano.graphinout.base.input.InputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.reader.ContentErrors;
@@ -13,6 +14,8 @@ import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,5 +86,17 @@ public class GioEngineCore {
         // fake it
         return readers;
     }
+
+    /**
+     * Read the input, transform to GraphML and write result to resultOut. All content errors are written to logOut.
+     */
+    public void read(InputSource in, String inputType,  OutputStream resultOut, OutputStream logOut ) {
+        // ....
+    }
+
+    public void validate(InputSource in, OutputStream logOut ) {
+        // ....
+    }
+
 
 }
