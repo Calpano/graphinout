@@ -1,0 +1,45 @@
+= REST API
+
+== Requirement
+.Chaining
+Given a URL like `http://example.org/mygraph.dot`,
+construct a URL like
+`http://graphinout.com/api/convert?format=graphml&url=http://example.org/mygraph.dot` => Response is a GraphML file
+
+
+== Variant: ZIP
+- Request: POST file
+- Response: response.zip (log.txt, a.graphml.xml)
+
+== Variant: Resources <--
+* + Better timeout-resilience
+* + Better concurrency (impl)
+* - Several requests required
+* + Better debuggability
+
+- Request: POST file + optional sessionId
+- Response: Redirect to /session/<inputId>
+
+- Request: GET /session/<inputId>
+- Response: "still pending" or "done" (JSON or XML response)
+** Response: Show links (JSON or XML response) to /session/<inputId>/log.txt and /session/<inputId>/a.graphml.xml -- can download from there
+
+Keep sessions for 2 weeks?
+
+- Request: GET /session/<inputId>/all.zip
+- Response: ZIP file with log.txt and a.graphml.xml
+
+=== Session / InputIds?
+.Both
+- UUID v7?
+- User-supplied
+
+
+
+
+
+
+
+
+
+
