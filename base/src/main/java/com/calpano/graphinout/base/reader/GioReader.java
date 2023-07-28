@@ -52,7 +52,7 @@ public interface GioReader {
         try {
             GioWriter writer = new DelegatingGioWriter(new ValidatingGioWriter(), new GioWriterImpl(new ValidatingGraphMlWriter()));
             read(singleInputSource, writer);
-        } catch (Exception t) {
+        } catch (Throwable t) {
             log.warn("Invalid input in "+singleInputSource.name(), t);
             eh.accept(new ContentError(ContentError.ErrorLevel.Error,t.getMessage(), null));
         }

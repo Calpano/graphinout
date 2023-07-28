@@ -18,13 +18,18 @@ public class InMemoryOutputSink implements OutputSink {
         buffer = new ByteArrayOutputStream();
     }
 
-    public String getBufferAsUtf8String() {
-        return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+    public InMemoryOutputSink(ByteArrayOutputStream buffer) {
+        this.buffer = buffer;
     }
 
     @Override
-    public String toString() {
-        return getBufferAsUtf8String();
+    public void close() throws Exception {
+        log.debug("Closed OutputSink  <InMemoryOutputSink> type <{}>.", buffer.getClass().getName());
+        buffer.close();
+    }
+
+    public String getBufferAsUtf8String() {
+        return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
     }
 
     public ByteArrayOutputStream getByteBuffer() {
@@ -41,8 +46,7 @@ public class InMemoryOutputSink implements OutputSink {
     }
 
     @Override
-    public void close() throws Exception {
-        log.debug("Closed OutputSink  <InMemoryOutputSink> type <{}>.", buffer.getClass().getName());
-        buffer.close();
+    public String toString() {
+        return getBufferAsUtf8String();
     }
 }

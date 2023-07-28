@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 
 @FunctionalInterface
-public interface LoadFile {
+public interface LoadInputSource {
 
-    IOResource<InputSource> loadFile(@Nonnull String inputId) throws IOException;
+    IOResource<InputSource> load(@Nonnull String inputId) throws IOException;
 }
