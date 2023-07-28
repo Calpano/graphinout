@@ -97,8 +97,9 @@ public class GraphmlReader implements GioReader {
     }
 
     @Override
-    public boolean isValid(SingleInputSource singleInputSource) throws IOException {
-
+    public boolean isValid(InputSource inputSource) throws IOException {
+        if (inputSource.isMulti()) return false;
+        SingleInputSource singleInputSource = (SingleInputSource) inputSource;
         try {
             validateWellFormed(singleInputSource);
             //TODO There is no internal DTD in any of the files that have been processed so far.

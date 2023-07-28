@@ -5,7 +5,6 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.InputSource;
-import com.calpano.graphinout.base.input.MultiInputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.base.reader.ContentError;
@@ -16,10 +15,10 @@ import com.calpano.graphinout.base.xml.XmlWriterImpl;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -30,6 +29,7 @@ public class GioEngineCore {
 
     private static final Logger log = getLogger(GioEngineCore.class);
     private final List<GioReader> readers = new ArrayList<>();
+    @SuppressWarnings("unused")
     private final Map<String, GioService> services = new HashMap<>();
 
     public GioEngineCore() {
@@ -65,8 +65,58 @@ public class GioEngineCore {
         throw new IllegalStateException("Could not find any parser able to parse " + inputSource.name());
     }
 
+    /**
+     * Read the input, transform to GraphML and write result to resultOut. All content errors are written to logOut.
+     */
+    public void read(InputSource in, String inputType, OutputStream resultOut, OutputStream logOut) {
+        GioWriter gioWriter = createGioWriter(resultOut);
+        List<GioReader> availableService;
+        try {
+            availableService = new ArrayList<>(selectReaders(in));
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading input",e);
+        }
+        availableService.forEach(gioReader -> {
+            List<ContentError> contentErrors = new ArrayList<>();
+            gioReader.errorHandler(contentErrors::add);
+            try {
+                gioReader.read(in, gioWriter);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                contentErrors.forEach(contentError -> {
+                    try {
+                        logOut.write(contentError.toString().getBytes());
+                        logOut.write("\n".getBytes());
+                    } catch (IOException e) {
+                        log.error("Failed reporting contentError",e);
+                    }
+                });
+            }
+        });
+    }
+
     public List<GioReader> readers() {
         return readers;
+    }
+
+    public void validate(InputSource in, OutputStream logOut) {
+        // ....
+    }
+
+    private GioWriter createGioWriter(OutputStream resultOut) {
+        return new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(new OutputSink() {
+            @Override
+            public void close() throws Exception {
+                resultOut.flush();
+                resultOut.close();
+            }
+
+            @Override
+            public OutputStream outputStream() throws IOException {
+                return resultOut;
+            }
+        })));
     }
 
     private void loadServices() {
@@ -82,70 +132,28 @@ public class GioEngineCore {
         }
     }
 
-    private List<GioReader> selectReaders(SingleInputSource inputSource) {
-        // find reader candidates based on inputSource.inputFormat() and reader.fileFormat()
-        // TODO let fileFormat have registered list of extensions and use for matching
-        // fake it
-        return readers;
-    }
-
-    /**
-     * Read the input, transform to GraphML and write result to resultOut. All content errors are written to logOut.
-     */
-    public void read(InputSource in, String inputType,  OutputStream resultOut, OutputStream logOut ) {
-        GioWriter gioWriter = createGioWriter(resultOut);
-        List<GioReader> availableService = new ArrayList<>();
-        if(in.isSingle()){
-availableService.addAll( selectReaders((SingleInputSource) in));
-
-        } else if(in.isMulti()){
-            MultiInputSource multiInputSource = (MultiInputSource) in;
-         //TODO We need information about file titles
-        //    SingleInputSource dataSource = multiInputSource.getNamedSource(DATA);
-        //    SingleInputSource mappingSource = multiInputSource.getNamedSource(MAPPING);
-            //    availableService.addAll( dataSource));
+    private List<GioReader> selectReaders(InputSource inputSource) throws IOException {
+        List<GioReader> candidates = new ArrayList<>();
+        // 1) based on file extension, if available, select possible readers
+        for (GioReader r : readers) {
+            if (r.fileFormat().matches(inputSource.name())) {
+                candidates.add(r);
+            }
+        }
+        if(candidates.isEmpty()) {
+            candidates.addAll(readers);
         }
 
-
-        availableService.forEach(gioReader ->
-        {
-            List<ContentError> contentErrors = new ArrayList<>();
-            gioReader.errorHandler(contentErrors::add);
-            try {
-                gioReader.read(in,gioWriter);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }finally{
-                contentErrors.forEach(contentError -> {
-                    try {
-                        logOut.write(contentError.toString().getBytes());
-                        logOut.write("\n".getBytes());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                );
+        // 2) ask EVERY reader we have / every candidate, if it can read the given inputSource
+        Iterator<GioReader> it = candidates.iterator();
+        while (it.hasNext()) {
+            GioReader reader = it.next();
+            if (!reader.isValid(inputSource)) {
+                it.remove();
             }
-        });
-    }
+        }
 
-    private GioWriter createGioWriter( OutputStream resultOut){
-      return new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(new OutputSink() {
-          @Override
-          public OutputStream outputStream() throws IOException {
-              return resultOut;
-          }
-
-          @Override
-          public void close() throws Exception {
-               resultOut.flush();
-               resultOut.close();
-          }
-      } )));
-    }
-
-    public void validate(InputSource in, OutputStream logOut ) {
-        // ....
+        return candidates;
     }
 
 

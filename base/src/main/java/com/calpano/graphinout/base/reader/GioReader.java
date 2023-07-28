@@ -41,7 +41,7 @@ public interface GioReader {
      * @return
      * @throws IOException
      */
-    default boolean isValid(SingleInputSource singleInputSource) throws IOException {
+    default boolean isValid(InputSource singleInputSource) throws IOException {
         AtomicBoolean valid = new AtomicBoolean(true);
         Consumer<ContentError> eh = error -> {
             if (error.level == ContentError.ErrorLevel.Error || error.level == ContentError.ErrorLevel.Warn) {
