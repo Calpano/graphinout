@@ -3,6 +3,7 @@ package com.calpano.graphinout.base.input;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,12 +32,12 @@ public class FilesMultiInputSource implements MultiInputSource {
 
     @Override
     public SingleInputSource getNamedSource(String name) {
-        return null;
+        return  this.namedFiles.get(name);
     }
 
     @Override
     public String name() {
-        return null;
+        return new ArrayList<>(this.namedFiles.keySet()).toString();
     }
 
     @Override

@@ -53,13 +53,13 @@ class GraphmlPathBuilderTest {
                     () -> assertEquals("id", ((Link.LinkCreateNode)list.get(0)).id),
                     () -> assertEquals("uses mechanics", ((Link.LinkCreateNode)list.get(0)).linkLabel),
                     () -> assertEquals("name", ((Link.LinkCreateNode)list.get(0)).label),
-                    () -> assertEquals("mechanics", ((Link.LinkCreateNode)list.get(0)).target),
+                    () -> assertEquals("types.mechanics", ((Link.LinkCreateNode)list.get(0)).target),
 
                     () -> assertInstanceOf(Link.LinkCreateNode.class,list.get(1)),
                     () -> assertEquals("id", ((Link.LinkCreateNode)list.get(1)).id),
                     () -> assertEquals("designed by", ((Link.LinkCreateNode)list.get(1)).linkLabel),
                     () -> assertEquals("name", ((Link.LinkCreateNode)list.get(1)).label),
-                    () -> assertEquals("credit.desiger", ((Link.LinkCreateNode)list.get(1)).target),
+                    () -> assertEquals("credit.designer", ((Link.LinkCreateNode)list.get(1)).target),
 
                     () -> assertInstanceOf(Link.LinkToExistingNode.class,list.get(2)),
                     () -> assertEquals("recommendations.fans_liked", ((Link.LinkToExistingNode)list.get(2)).idTarget),
