@@ -35,7 +35,8 @@
         <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
         <lombok-version>1.18.24</lombok-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
-        <fasterxml-jackson.version>2.15.2</fasterxml-jackson.version>
+        <!-- must use same version as spring, otherwise 'java.lang.NoClassDefFoundError: com/fasterxml/jackson/core/exc/StreamConstraintsException' -->
+        <fasterxml-jackson.version>2.14.1</fasterxml-jackson.version>
     </properties>
 
     <dependencyManagement>
@@ -59,6 +60,11 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
+                <version>${fasterxml-jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
                 <version>${fasterxml-jackson.version}</version>
             </dependency>
             <dependency>
