@@ -13,5 +13,4 @@ public interface InputSource extends AutoCloseable {
 
     String name();
 
-
 }

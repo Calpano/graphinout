@@ -39,6 +39,11 @@
             <artifactId>reader-graphml</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.calpano.graphinout</groupId>
+            <artifactId>reader-json</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!-- test -->
         <dependency>
             <groupId>com.calpano.graphinout</groupId>

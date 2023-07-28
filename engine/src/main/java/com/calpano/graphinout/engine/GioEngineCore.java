@@ -5,8 +5,10 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.input.InputSource;
+import com.calpano.graphinout.base.input.MultiInputSource;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.output.OutputSink;
+import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.ContentErrors;
 import com.calpano.graphinout.base.reader.GioReader;
 import com.calpano.graphinout.base.reader.InMemoryErrorHandler;
@@ -91,7 +93,55 @@ public class GioEngineCore {
      * Read the input, transform to GraphML and write result to resultOut. All content errors are written to logOut.
      */
     public void read(InputSource in, String inputType,  OutputStream resultOut, OutputStream logOut ) {
-        // ....
+        GioWriter gioWriter = createGioWriter(resultOut);
+        List<GioReader> availableService = new ArrayList<>();
+        if(in.isSingle()){
+availableService.addAll( selectReaders((SingleInputSource) in));
+
+        } else if(in.isMulti()){
+            MultiInputSource multiInputSource = (MultiInputSource) in;
+         //TODO We need information about file titles
+        //    SingleInputSource dataSource = multiInputSource.getNamedSource(DATA);
+        //    SingleInputSource mappingSource = multiInputSource.getNamedSource(MAPPING);
+            //    availableService.addAll( dataSource));
+        }
+
+
+        availableService.forEach(gioReader ->
+        {
+            List<ContentError> contentErrors = new ArrayList<>();
+            gioReader.errorHandler(contentErrors::add);
+            try {
+                gioReader.read(in,gioWriter);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }finally{
+                contentErrors.forEach(contentError -> {
+                    try {
+                        logOut.write(contentError.toString().getBytes());
+                        logOut.write("\n".getBytes());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                );
+            }
+        });
+    }
+
+    private GioWriter createGioWriter( OutputStream resultOut){
+      return new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(new OutputSink() {
+          @Override
+          public OutputStream outputStream() throws IOException {
+              return resultOut;
+          }
+
+          @Override
+          public void close() throws Exception {
+               resultOut.flush();
+               resultOut.close();
+          }
+      } )));
     }
 
     public void validate(InputSource in, OutputStream logOut ) {
