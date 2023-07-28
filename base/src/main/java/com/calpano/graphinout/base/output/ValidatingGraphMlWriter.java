@@ -121,10 +121,12 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         ensureAllowedStart(CurrentElement.NODE);
         validateNode(node);
         existingNodeIds.add(node.getId());
+        nonExistingNode.remove(node.getId());
     }
 
     @Override
     public void startPort(GraphmlPort port) throws IOException {
+        // FIXME port names are not unique per graph, but only unique within a node
         ensureAllowedStart(CurrentElement.PORT);
         if (port.getName() == null || port.getName().trim().isEmpty())
             throw new IllegalStateException("Name of Port cannot be null or empty.");
@@ -132,7 +134,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         if (existingPortNames.contains(port.getName()))
             throw new IllegalStateException("Port must have a unique Name, but name is used several times: '" + port.getName() + "'.");
         existingPortNames.add(port.getName());
-
+        nonExistingPortNames.remove(port.getName() );
     }
 
     private void ensureAllowedEnd(CurrentElement element) throws IllegalStateException {
