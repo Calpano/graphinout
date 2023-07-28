@@ -46,6 +46,7 @@ class GraphmlReaderServiceTest {
         @Override
         public IOResource<InputSource> load(@NotNull String inputId) throws IOException {
             FilesMultiInputSource dataAndMapping = new FilesMultiInputSource() //
+                    // TODO use constants for 'data' and 'mapping'
                     .withFile("data", new File("./src/test/resources/json-test/boardgames_40.json")) //
                     .withFile("mapping", new File("./src/test/resources/json-test/json-mapper-1.json") //
                     );
@@ -72,6 +73,7 @@ class GraphmlReaderServiceTest {
     @Test
     void read() throws IOException {
         graphmlReaderService.read("123");
+        // TODO verify result
     }
 
     @BeforeEach
