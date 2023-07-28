@@ -9,13 +9,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 public class FileSingleInputSource implements SingleInputSource {
 
     final File file;
-    private final FileInputStream inputStream;
+    private final List<InputStream> inputStreams = new ArrayList<>();
+
     @Nullable
     Charset encoding;
 
@@ -31,17 +34,14 @@ public class FileSingleInputSource implements SingleInputSource {
     public FileSingleInputSource(File file, @Nullable Charset encoding) {
         this.file = file;
         this.encoding = encoding;
-        try {
-            inputStream = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
     public void close() throws IOException {
-        log.debug("Closed inputStream <{}> type <{}>.", name(), inputStream().getClass().getName());
-        inputStream.close();
+        for (InputStream in : inputStreams) {
+            log.debug("Closed inputStream <{}> type <{}>.", name(), in.getClass().getName());
+            in.close();
+        }
     }
 
     @Override
@@ -60,7 +60,13 @@ public class FileSingleInputSource implements SingleInputSource {
 
     @Override
     public InputStream inputStream() throws IOException {
-        return inputStream;
+        try {
+            InputStream inputStream = new FileInputStream(file);
+            inputStreams.add(inputStream);
+            return inputStream;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
