@@ -159,7 +159,6 @@ public class GioEngineCore {
             gioReader -> {
               try {
               return   gioReader.isValid(inputSource);
-
               } catch (Exception e) {
                   log.warn(e.getMessage());
                 return false;
