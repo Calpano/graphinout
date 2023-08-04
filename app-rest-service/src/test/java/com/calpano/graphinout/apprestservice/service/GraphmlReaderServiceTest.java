@@ -6,6 +6,7 @@ import com.calpano.graphinout.base.output.OutputSink;
 import com.calpano.graphinout.filemanagment.IOResource;
 import com.calpano.graphinout.filemanagment.LoadInputSource;
 import com.calpano.graphinout.filemanagment.SaveOutputSink;
+import com.calpano.graphinout.base.output.InMemoryOutputSink;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +60,8 @@ class GraphmlReaderServiceTest {
 
         @Override
         public String save(@NotNull IOResource<OutputSink> outputSink, @Nullable String inputId) throws IOException {
-            if (outputSink.getResource() instanceof ByteArrayOutputStream data) {
+
+            if (outputSink.getResource() instanceof InMemoryOutputSink data) {
                 log.info(data.toString());
             }
 
