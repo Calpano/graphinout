@@ -158,14 +158,14 @@ public class GioEngineCore {
         .filter(
             gioReader -> {
               try {
-              return   gioReader.isValid(inputSource);
+                return gioReader.isValid(inputSource);
               } catch (Exception e) {
-                  log.warn(e.getMessage());
+                log.warn(e.getMessage());
                 return false;
               }
             })
         .collect(Collectors.toList());
-      //Fixed bug management exception handling to check other providers
+    // Fixed bug management exception handling to check other providers
     //        Iterator<GioReader> it = candidates.iterator();
     //        while (it.hasNext()) {
     //            GioReader reader = it.next();
