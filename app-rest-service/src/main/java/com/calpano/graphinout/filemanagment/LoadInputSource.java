@@ -8,5 +8,12 @@ import java.io.IOException;
 @FunctionalInterface
 public interface LoadInputSource {
 
-    IOResource<InputSource> load(@Nonnull String inputId) throws IOException;
+    IOResource<InputSource> load(@Nonnull String sessionID,Type type) throws IOException;
+    default  IOResource<InputSource> load(@Nonnull String sessionID) throws IOException{
+        return  load(sessionID,Type.INPUT);
+    }
+
+    default  IOResource<InputSource> load(@Nonnull String sessionID,String type) throws IOException{
+        return  load(sessionID,Type.getType(type));
+    }
 }

@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class IOResource<T> {
 
-    private String type;
+    private Type type;
     private T resource;
 
     public IOResource(T resource) {
@@ -15,7 +15,7 @@ public class IOResource<T> {
     public IOResource() {
     }
 
-    public IOResource(T resource, String type) {
+    public IOResource(T resource, Type type) {
         this.type = type;
         this.resource = resource;
     }

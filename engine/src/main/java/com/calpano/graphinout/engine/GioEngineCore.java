@@ -71,7 +71,7 @@ public class GioEngineCore {
    * Read the input, transform to GraphML and write result to resultOut. All content errors are
    * written to logOut.
    */
-  public void read(InputSource in, String inputType, OutputStream resultOut, OutputStream logOut) {
+  public void read(InputSource in,  OutputStream resultOut, OutputStream logOut) {
     GioWriter gioWriter = createGioWriter(resultOut);
     List<GioReader> availableService;
     try {

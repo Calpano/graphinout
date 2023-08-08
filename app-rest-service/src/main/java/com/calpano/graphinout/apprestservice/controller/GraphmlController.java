@@ -1,113 +1,116 @@
 package com.calpano.graphinout.apprestservice.controller;
 
-import com.calpano.graphinout.apprestservice.GioMediaType;
-import com.calpano.graphinout.base.input.FileSingleInputSource;
-import com.calpano.graphinout.base.output.InMemoryOutputSink;
-import com.calpano.graphinout.engine.GioEngineCore;
+import com.calpano.graphinout.apprestservice.service.GraphmlReaderService;
+import com.calpano.graphinout.apprestservice.utility.FileManager;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @RestController
-@RequestMapping(value = "/api", produces = {GioMediaType.APPLICATION_ZIP_VALUE, MediaType.TEXT_PLAIN_VALUE}, consumes =
-        {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE})
+@RequestMapping(
+    value = "/api"
+    //        ,
+    //    produces = {GioMediaType.APPLICATION_ZIP_VALUE, MediaType.TEXT_PLAIN_VALUE},
+    //    consumes = {
+    //      MediaType.ALL_VALUE
+    ////            ,
+    ////      MediaType.APPLICATION_XML_VALUE,
+    ////      MediaType.TEXT_PLAIN_VALUE,
+    ////      MediaType.MULTIPART_FORM_DATA_VALUE
+    //    }
+    )
 @Slf4j
+@RequiredArgsConstructor
 public class GraphmlController {
 
-    @GetMapping(value = "/status", produces = MediaType.TEXT_PLAIN_VALUE)
-    @ResponseBody
-    public ResponseEntity<String> status() {
-        return ResponseEntity.ok("OK");
+  private final GraphmlReaderService graphmlReaderService;
+
+  private final FileManager fileManager;
+
+  @GetMapping(value = "/status", produces = MediaType.TEXT_PLAIN_VALUE)
+  public ResponseEntity<String> status() {
+    final HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+    return new ResponseEntity<String>("OK", httpHeaders, HttpStatus.OK);
+  }
+
+  @PostMapping(value = "/read/{inputType}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @ResponseBody
+  public ResponseEntity<StreamingResponseBody> read(
+      @PathVariable("inputType") String inputType,
+      @RequestParam(required = true, name = "data-file") MultipartFile dataFile, //
+      @RequestParam(required = false, name = "format-file") MultipartFile formatFile, //
+      HttpServletResponse response) {
+
+    try {
+      return ResponseEntity.ok(generateResult(response, dataFile, Optional.of(formatFile)));
+    } catch (IOException ioe) {
+      log.error(ioe.getMessage(), ioe);
+      return new ResponseEntity("Internal Error", HttpStatus.BAD_REQUEST);
     }
+  }
 
-    @PostMapping("/read")
-    @ResponseBody
-    public ResponseEntity<StreamingResponseBody> read(@RequestParam(required = true, name = "file") MultipartFile file, //
-                                                      @RequestParam("inputType") String inputType,
-                                                      HttpServletResponse response, RedirectAttributes redirectAttributes) {
-        // TODO
-        redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + file.getOriginalFilename() + "!");
-        try {
-            return ResponseEntity.ok(generateResult(response, file));
-        } catch (IOException ioe) {
-            log.error(ioe.getMessage(), ioe);
-            return new ResponseEntity("Internal Error", HttpStatus.BAD_REQUEST);
-        }
+  @PostMapping(value = "/validate/{inputType}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @ResponseBody
+  public ResponseEntity<StreamingResponseBody> validate(
+      @PathVariable("inputType") String inputType,
+      @RequestParam(required = true, name = "data-file") MultipartFile dataFile, //
+      @RequestParam(required = false, name = "format-file") MultipartFile formatFile, //
+      HttpServletResponse response) {
+
+    try {
+      final HttpHeaders httpHeaders = new HttpHeaders();
+      httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+      return new ResponseEntity<StreamingResponseBody>(
+          generateResult(response, dataFile, Optional.of(formatFile)), httpHeaders, HttpStatus.OK);
+
+    } catch (IOException ioe) {
+      log.error(ioe.getMessage(), ioe);
+      return new ResponseEntity("Internal Error", HttpStatus.BAD_REQUEST);
     }
+  }
 
-    @PostMapping("/validate")
-    @ResponseBody
-    public ResponseEntity<StreamingResponseBody> validate(@RequestParam(required = true, name = "file") MultipartFile file, //
-                                                          @RequestParam("type") String fileType, HttpServletResponse response, RedirectAttributes redirectAttributes) {
-        // TODO
-        redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + file.getOriginalFilename() + "!");
+  /**
+   * Create compressed(zip) file by StreamingResponseBody whose Content is result.graphml and
+   * log.txt
+   *
+   * @param response : May be required to generate output
+   * @return : StreamingResponseBody
+   */
+  private StreamingResponseBody generateResult(
+      HttpServletResponse response, MultipartFile dataFile, Optional<MultipartFile> formatFile)
+      throws IOException {
+    String sessionID = saveNewRequest(dataFile, formatFile);
+    graphmlReaderService.read(sessionID);
+    StreamingResponseBody stream = fileManager.zipAll(response, sessionID);
+    return stream;
+  }
 
-        try {
-            return ResponseEntity.ok(generateResult(response, file));
-        } catch (IOException ioe) {
-            log.error(ioe.getMessage(), ioe);
-            return new ResponseEntity("Internal Error", HttpStatus.BAD_REQUEST);
-        }
-    }
+  private String saveNewRequest(MultipartFile dataFile, Optional<MultipartFile> formatFile)
+      throws IOException {
+    String sessionID = fileManager.save(dataFile, Optional.empty());
 
-    /**
-     * Create compressed(zip) file by StreamingResponseBody whose Content is result.graphml and log.txt
-     *
-     * @param response : May be required to generate output
-     * @return : StreamingResponseBody
-     */
-    private StreamingResponseBody generateResult(HttpServletResponse response, MultipartFile file) throws IOException {
-        try (FileSingleInputSource fileSingleInputSource = new FileSingleInputSource(file.getResource().getFile())) {
-            final GioEngineCore gioEngineCore = new GioEngineCore();
-            //TODO need  to access ContentError's contents
-            final InMemoryOutputSink outputSink = new InMemoryOutputSink();
-            gioEngineCore.read(fileSingleInputSource, outputSink);
-            StreamingResponseBody stream = zipAll(response, outputSink.outputStream(), outputSink.outputStream());
-            return stream;
-        }
-    }
+    if (formatFile.isPresent()) fileManager.save(formatFile.get(), sessionID.describeConstable());
 
-    private StreamingResponseBody zipAll(final HttpServletResponse response, final OutputStream graphML, final OutputStream events) {
-        return out -> {
-            final ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
+    return sessionID;
+  }
 
-            final ZipEntry graphml = new ZipEntry("graphml.xml");
-            zipOut.putNextEntry(graphml);
-            zipOut.write(graphML.toString().getBytes(StandardCharsets.UTF_8));
-            final ZipEntry event = new ZipEntry("event.log");
-            zipOut.putNextEntry(event);
-            zipOut.write(events.toString().getBytes(StandardCharsets.UTF_8));
+  public void validate(InputStream in, String optionalInputId) {
+    // redirect to /session/...
+  }
 
-            zipOut.close();
-        };
-    }
+  public void validateInputResult(String inputId, OutputStream resultOut) {}
 
-    public void validate(InputStream in, String optionalInputId ) {
-        // redirect to /session/...
-    }
-
-    public void validateInputResult( String inputId, OutputStream resultOut ) {
-
-    }
-    public void validateInputContentErrors( String inputId, OutputStream logOut ) {
-
-    }
+  public void validateInputContentErrors(String inputId, OutputStream logOut) {}
 }

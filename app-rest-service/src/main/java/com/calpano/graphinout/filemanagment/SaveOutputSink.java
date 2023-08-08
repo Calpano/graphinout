@@ -1,15 +1,17 @@
 package com.calpano.graphinout.filemanagment;
 
 import com.calpano.graphinout.base.output.OutputSink;
-
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
+import javax.annotation.Nonnull;
 
 @FunctionalInterface
 public interface SaveOutputSink {
 
-    String save(@Nonnull IOResource<OutputSink> outputSink, @Nullable String inputId) throws IOException;
+  default String save(@Nonnull IOResource<OutputSink> outputSink, @Nonnull String sessionId)
+      throws IOException {
+    return save(outputSink, sessionId, Type.INPUT);
+  }
 
+  String save(@Nonnull IOResource<OutputSink> outputSink, @Nonnull String sessionId, Type type)
+      throws IOException;
 }

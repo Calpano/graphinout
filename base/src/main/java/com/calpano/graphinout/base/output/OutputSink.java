@@ -25,5 +25,6 @@ public interface OutputSink extends AutoCloseable {
      * Never return System.out here. We will close it, causing issues in IntelliJ testing.
      */
     OutputStream outputStream() throws IOException;
+    default void close() throws Exception {outputStream().close();}
 
 }
