@@ -164,7 +164,7 @@ public class GioWriterImpl implements GioWriter {
 
     private void customAttributes(GioElement gioElement, GraphmlElement graphmlElement) {
         if (gioElement.getCustomAttributes() != null) {
-            if (graphmlElement.getExtraAttrib() == null) graphmlElement.setExtraAttrib(new HashMap<>());
+            if (graphmlElement.getExtraAttrib() == null) graphmlElement.setExtraAttrib(new TreeMap<>());
             graphmlElement.getExtraAttrib().putAll(gioElement.getCustomAttributes());
         }
     }
