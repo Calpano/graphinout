@@ -49,7 +49,10 @@ public class TripleTextReader implements GioReader {
         try (InputStreamReader isr = new InputStreamReader(sis.inputStream(), StandardCharsets.UTF_8); BufferedReader reader = new BufferedReader(isr)) {
             String line;
             while ((line = reader.readLine()) != null) {
-                TripleText.parseLine(line, (s, p, o, m) -> tripleTextModel.indexTriple(s, p, o));
+                TripleText.parseLine(line, (s, p, o, m) -> {
+                    tripleTextModel.indexTriple(s, p, o);
+                    tripleTextModel.indexNode(o);
+                });
             }
         }
 
@@ -73,11 +76,13 @@ public class TripleTextReader implements GioReader {
             assert sNode != null;
             assert sNode.id != null;
             assert p != null;
+            assert !p.isBlank();
             assert o != null;
             try {
                 GioEndpoint sEndpoint = GioEndpoint.builder().node(sNode.id).type(GioEndpointDirection.Out).build();
                 GioEndpoint oEndpoint = GioEndpoint.builder().node(o).type(GioEndpointDirection.In).build();
                 writer.startEdge(GioEdge.builder().endpoints(Arrays.asList(sEndpoint, oEndpoint)).build());
+                writer.data(GioData.builder().key("label").value(p).build());
                 // TODO meta
                 writer.endEdge();
             } catch (IOException e) {

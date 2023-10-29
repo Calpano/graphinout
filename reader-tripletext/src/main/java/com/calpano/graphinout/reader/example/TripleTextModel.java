@@ -22,14 +22,17 @@ public class TripleTextModel {
         index.forEach(handler);
     }
 
+    public Node indexNode(String id) {
+        return nodes.computeIfAbsent(id, Node::new);
+    }
+
     public void indexTriple(String s, String p, String o) {
         if (p.equals("label")) {
-            Node node = new Node(s);
+            Node node = indexNode(s);
             node.label = o;
-            nodes.put(s, node);
             return;
         }
-        index.index(nodes.computeIfAbsent(s, Node::new), p, o);
+        index.index(indexNode(s), p, indexNode(o).id);
     }
 
     public Iterable<Node> nodes() {
