@@ -23,7 +23,7 @@ public class ValidatingGioWriter implements GioWriter {
     @Override
     public void data(GioData data) throws IOException {
         if (!keysIds.contains(data.getKey()))
-            throw new IllegalStateException("GioData should refer to an existing Key ID, but uses '" + data.getKey() + "'");
+            throw new IllegalStateException("GioData should refer to an existing Key ID, but uses '" + data.getKey() + "' in "+data);
     }
 
     @Override

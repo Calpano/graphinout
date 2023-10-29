@@ -62,7 +62,7 @@ public class GioEndpoint extends GioElement  {
     private GioEndpointDirection type = GioEndpointDirection.Undirected;
 
     public boolean isValid() {
-        assert this.node != null :"node is null";
+        assert this.node != null :"endpoint.node is null";
         return true;
     }
 
