@@ -6,7 +6,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Data;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "refer")
 @JsonSubTypes({ //
@@ -21,7 +22,7 @@ public class Link {
     public String linkLabel;
 
 
-    public int compareTo(@NotNull Link o) {
+    public int compareTo(@Nonnull Link o) {
         return  this.getClass().getName().compareTo(o.getClass().getName()) ;
     }
 

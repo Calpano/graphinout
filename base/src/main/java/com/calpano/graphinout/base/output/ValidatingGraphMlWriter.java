@@ -1,9 +1,9 @@
 package com.calpano.graphinout.base.output;
 
 import com.calpano.graphinout.base.graphml.*;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
@@ -168,7 +168,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         }
     }
 
-    private void investigatingTheExistenceOfThePort(@NotNull GraphmlEdge edge) throws IllegalStateException {
+    private void investigatingTheExistenceOfThePort(@Nonnull GraphmlEdge edge) throws IllegalStateException {
         for (String portName : Arrays.asList(edge.getSourcePortId(), edge.getTargetPortId())) {
             if (portName != null) if (!existingPortNames.contains(portName)) {
                 nonExistingPortNames.computeIfAbsent(portName, key -> new ArrayList<>()) //
@@ -177,7 +177,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         }
     }
 
-    private void investigatingTheExistenceOfThePort(@NotNull GraphmlHyperEdge hyperEdge) throws IllegalStateException {
+    private void investigatingTheExistenceOfThePort(@Nonnull GraphmlHyperEdge hyperEdge) throws IllegalStateException {
         for (GraphmlEndpoint endpoint : hyperEdge.getEndpoints()) {
             if (endpoint.getPort() != null) if (!existingPortNames.contains(endpoint.getPort())) {
                 nonExistingPortNames.computeIfAbsent(endpoint.getPort(), key -> new ArrayList<>()) //

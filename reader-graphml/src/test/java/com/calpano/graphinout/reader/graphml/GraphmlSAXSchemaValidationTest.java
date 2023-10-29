@@ -4,7 +4,6 @@ import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import org.apache.commons.io.IOUtils;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -12,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -41,7 +41,7 @@ public class GraphmlSAXSchemaValidationTest {
         return ReaderTests.getAllTestResourceFilePaths().filter(path -> path.endsWith(".graphml"));
     }
 
-    protected Map<String, Long> expectedErrors(@NotNull String resourceName) {
+    protected Map<String, Long> expectedErrors(@Nonnull String resourceName) {
         Map<String, Long> errorLongMap = new HashMap<>();
         switch (resourceName) {
 

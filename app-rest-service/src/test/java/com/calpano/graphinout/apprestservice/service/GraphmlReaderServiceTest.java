@@ -12,7 +12,6 @@ import com.calpano.graphinout.filemanagment.Type;
 import java.io.File;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+
+import javax.annotation.Nonnull;
 
 @Slf4j
 
@@ -59,7 +60,7 @@ class GraphmlReaderServiceTest {
   private static class MockLoadInputSource implements LoadInputSource {
 
     @Override
-    public IOResource<InputSource> load(@NotNull String sessionID, Type type) throws IOException {
+    public IOResource<InputSource> load(@Nonnull String sessionID, Type type) throws IOException {
       FilesMultiInputSource dataAndMapping =
           new FilesMultiInputSource() //
               // TODO use constants for 'data' and 'mapping'
@@ -75,7 +76,7 @@ class GraphmlReaderServiceTest {
 
     @Override
     public String save(
-        @NotNull IOResource<OutputSink> outputSink, @NotNull String sessionId, Type type)
+        @Nonnull IOResource<OutputSink> outputSink, @Nonnull String sessionId, Type type)
         throws IOException {
       if (outputSink.getResource() instanceof InMemoryOutputSink data) {
         log.info(data.toString());
