@@ -45,7 +45,7 @@ class GioEngineCoreTest {
     @Test
     void test() {
         // find all resources
-        ReaderTests.getAllTestResourceFilePaths().forEach(r -> testResource(r));
+        ReaderTests.getAllTestResourceFilePaths().forEach(this::testResource);
 
 
 //        byte[] graphmlBytes1;

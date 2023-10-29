@@ -1,5 +1,6 @@
 package com.calpano.graphinout.base.gio;
 
+import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
@@ -39,7 +40,7 @@ public class ValidatingGioWriter implements GioWriter {
     @Override
     public void endGraph(@Nullable URL locator) throws IOException {
         if (!nodesIds.containsAll(endpointsNode))
-            throw new IllegalStateException("All GioEdge endpoints should refer to an existing GioNode ID.");
+            throw new IllegalStateException("All GioEdge endpoints should refer to an existing GioNode ID. Missing: " + Sets.difference(endpointsNode,nodesIds));
         if (!nodePortName.isEmpty()) {
             List<String> missingPorts = new ArrayList<>();
             for (String port : endpointsPort) {
