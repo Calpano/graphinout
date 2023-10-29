@@ -15,6 +15,7 @@
         <module>reader-graphml</module>
         <module>reader-tgf</module>
         <module>reader-example</module>
+        <module>reader-tripletext</module>
         <module>reader-jgrapht</module>
         <module>engine</module>
         <module>app-cmdline</module>
