@@ -2,11 +2,38 @@ name: Build and Test
 
 on:
   push:
+  workflow_dispatch:
+
+# list of OSes and what they contain https://github.com/actions/virtual-environments
 
 jobs:
-  build-and-test:
-    # list of OSes and what they contain https://github.com/actions/virtual-environments
+  # This steps uses the maven cache better
+  Prepare Maven:
     runs-on: ubuntu-latest
+    env:
+      MAVEN_OPTS: "-Xmx6144m"
+    steps:
+      - name: ↙️ Check out repository code from git
+        uses: actions/checkout@v3
+        with:
+          repository: Calpano/graphinout
+          path: graphinout
+
+      - name: ☕ Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      - name: "🐹 Download all dependencies and 'go offline'"
+        working-directory: cc-j2cl-mvp
+        run: mvn --batch-mode org.apache.maven.plugins:maven-dependency-plugin:3.2.0:go-offline
+
+  Build and Test:
+    runs-on: ubuntu-latest
+    env:
+      MAVEN_OPTS: "-Xmx6144m"
     steps:
       - name: ↙️ Check out repository code from git
         uses: actions/checkout@v3
@@ -23,21 +50,25 @@ jobs:
 
       - name: ⬇️ Install root project
         working-directory: graphinout
-        run: mvn clean -U -N install
+        run: mvn clean -N install
 
       - name: 🔨️ Build & ⬇ install base
         working-directory: graphinout/base
-        run: mvn clean -U install
+        run: mvn clean install
 
       - name: 🔨️ Build & ⬇ install readers
         working-directory: graphinout
-        run: mvn clean -U -pl !base,!engine,!app-cmdline install
-        env:
-          MAVEN_OPTS: "-Xmx6144m"
+        run: mvn clean -pl !base,!engine,!app-cmdline,!app-rest-service install
 
-      - name: 🔨️ Build & ⬇ install engine & app-cmdline
+      - name: 🔨️ Build & ⬇ install engine
         working-directory: graphinout
-        run: mvn clean -U -pl engine,app-cmdline install
-        env:
-          MAVEN_OPTS: "-Xmx6144m"
+        run: mvn clean -pl engine install
+
+      - name: 🔨️ Build & ⬇ install app-cmdline
+        working-directory: graphinout
+        run: mvn clean -pl app-cmdline install
+
+      - name: 🔨️ Build & ⬇ install app-rest-service
+        working-directory: graphinout
+        run: mvn clean -pl app-rest-service install
 
