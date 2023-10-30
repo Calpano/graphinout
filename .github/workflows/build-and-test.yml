@@ -73,3 +73,6 @@ jobs:
         working-directory: graphinout
         run: mvn clean -pl app-rest-service install
 
+      - name: ↗️ Deploy
+        working-directory: graphinout
+        run: mvn deploy

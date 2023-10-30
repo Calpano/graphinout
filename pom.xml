@@ -118,4 +118,13 @@
 
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Graphinout Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/Calpano/graphinout</url>
+        </repository>
+    </distributionManagement>
+
 </project>
