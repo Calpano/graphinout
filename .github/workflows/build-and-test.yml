@@ -27,7 +27,7 @@ jobs:
           cache: 'maven'
 
       - name: "🐹 Download all dependencies and 'go offline'"
-        working-directory: cc-j2cl-mvp
+        working-directory: graphinout
         run: mvn --batch-mode org.apache.maven.plugins:maven-dependency-plugin:3.2.0:go-offline
 
   Build-and-Test:
