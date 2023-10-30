@@ -8,7 +8,7 @@ on:
 
 jobs:
   # This steps uses the maven cache better
-  Prepare Maven:
+  Prepare-Maven:
     runs-on: ubuntu-latest
     env:
       MAVEN_OPTS: "-Xmx6144m"
@@ -30,8 +30,8 @@ jobs:
         working-directory: cc-j2cl-mvp
         run: mvn --batch-mode org.apache.maven.plugins:maven-dependency-plugin:3.2.0:go-offline
 
-  Build and Test:
-    needs: Prepare Maven
+  Build-and-Test:
+    needs: Prepare-Maven
     runs-on: ubuntu-latest
     env:
       MAVEN_OPTS: "-Xmx6144m"
