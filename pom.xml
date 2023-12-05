@@ -27,7 +27,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j-version>1.7.36</slf4j-version>
-        <logback-classic-version>1.2.11</logback-classic-version>
+        <logback-classic-version>1.2.13</logback-classic-version>
         <junit-jupiter.version>5.9.0</junit-jupiter.version>
         <mockito-all-version>1.10.19</mockito-all-version>
         <mockito-core-version>5.1.1</mockito-core-version>
