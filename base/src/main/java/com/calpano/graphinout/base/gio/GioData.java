@@ -1,12 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -23,11 +18,6 @@ import java.util.Optional;
  * @see GioKey {@link GioKey}
  */
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-@Builder
-@EqualsAndHashCode(callSuper = true)
 public class GioData extends GioElement {
 
     /**
@@ -46,6 +36,100 @@ public class GioData extends GioElement {
      * TODO validate: Must refer to a previously defined {@link GioKey#getId()}. -- similar to #90
      */
     private String key;
+
+    // Constructors
+    public GioData() {
+        super();
+    }
+
+    public GioData(@Nullable String id, String value, String key) {
+        super();
+        this.id = id;
+        this.value = value;
+        this.key = key;
+    }
+
+    // Builder
+    public static GioDataBuilder builder() {
+        return new GioDataBuilder();
+    }
+
+    public static class GioDataBuilder {
+        private @Nullable String id;
+        private String value;
+        private String key;
+
+        public GioDataBuilder id(@Nullable String id) {
+            this.id = id;
+            return this;
+        }
+
+        public GioDataBuilder value(String value) {
+            this.value = value;
+            return this;
+        }
+
+        public GioDataBuilder key(String key) {
+            this.key = key;
+            return this;
+        }
+
+        public GioData build() {
+            return new GioData(id, value, key);
+        }
+    }
+
+    // Getters and Setters
+    public @Nullable String getId() {
+        return id;
+    }
+
+    public void setId(@Nullable String id) {
+        this.id = id;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GioData gioData = (GioData) o;
+        return Objects.equals(id, gioData.id) &&
+               Objects.equals(value, gioData.value) &&
+               Objects.equals(key, gioData.key);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, value, key);
+    }
+
+    @Override
+    public String toString() {
+        return "GioData{" +
+               "id='" + id + '\'' +
+               ", value='" + value + '\'' +
+               ", key='" + key + '\'' +
+               ", customAttributes=" + getCustomAttributes() +
+               '}';
+    }
 
     public Optional<String> id() {
         return Optional.ofNullable(id);

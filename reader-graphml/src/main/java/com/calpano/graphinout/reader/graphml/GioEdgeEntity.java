@@ -32,7 +32,7 @@ public class GioEdgeEntity extends AbstractGraphmlEntity<List<GioEndpoint>> impl
     }
 
     public GioEdge buildEdge() {
-        GioEdge.GioEdgeBuilder<?, ?> b = GioEdge.builder();
+        GioEdge.GioEdgeBuilder b = GioEdge.builder();
         if (id != null) b.id(id);
         if (desc != null) b.description(desc);
         b.endpoints(endpoints);

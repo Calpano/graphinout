@@ -1,6 +1,7 @@
 package com.calpano.graphinout.foundation.input;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,8 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 public class ByteArrayInputSource implements SingleInputSource {
+
+    private static final Logger log = LoggerFactory.getLogger(ByteArrayInputSource.class);
 
     private final List<ByteArrayInputStream> openStreams = new ArrayList<>();
     private final byte[] bytes;

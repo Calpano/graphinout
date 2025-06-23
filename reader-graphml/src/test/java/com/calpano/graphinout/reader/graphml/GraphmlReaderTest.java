@@ -9,7 +9,8 @@ import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import com.calpano.graphinout.foundation.output.OutputSink;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,8 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-@Slf4j
 class GraphmlReaderTest {
+
+    private static final Logger log = LoggerFactory.getLogger(GraphmlReaderTest.class);
 
     private static Stream<String> getAllGraphmlFiles() {
         return ReaderTests.getAllTestResourceFilePaths()

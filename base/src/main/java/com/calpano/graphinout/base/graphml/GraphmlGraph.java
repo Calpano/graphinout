@@ -1,13 +1,10 @@
 package com.calpano.graphinout.base.graphml;
 
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Singular;
-import lombok.experimental.SuperBuilder;
-
+import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -20,9 +17,6 @@ import java.util.List;
  * @see GraphmlHyperEdge {@link GraphmlHyperEdge}
  */
 
-@SuperBuilder
-@Data
-@EqualsAndHashCode(callSuper = true)
 public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue {
 
     public enum EdgeDefault {
@@ -51,13 +45,133 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
      */
     private GraphmlLocator locator;
 
+    // Constructors
+    public GraphmlGraph() {
+        super();
+    }
 
     public GraphmlGraph(String id, EdgeDefault edgedefault) {
-       super();
+        super();
         this.edgedefault = edgedefault;
         this.id = id;
     }
 
+    public GraphmlGraph(String id, EdgeDefault edgedefault, GraphmlLocator locator) {
+        super();
+        this.edgedefault = edgedefault;
+        this.id = id;
+        this.locator = locator;
+    }
+
+    public GraphmlGraph(String id, EdgeDefault edgedefault, GraphmlLocator locator, GraphmlDescription desc) {
+        super(desc);
+        this.edgedefault = edgedefault;
+        this.id = id;
+        this.locator = locator;
+    }
+
+    public GraphmlGraph(String id, EdgeDefault edgedefault, GraphmlLocator locator, @Nullable Map<String, String> extraAttrib, GraphmlDescription desc) {
+        super(extraAttrib, desc);
+        this.edgedefault = edgedefault;
+        this.id = id;
+        this.locator = locator;
+    }
+
+    // Builder
+    public static GraphmlGraphBuilder builder() {
+        return new GraphmlGraphBuilder();
+    }
+
+    public static class GraphmlGraphBuilder extends GraphmlGraphCommonElementBuilder {
+        private EdgeDefault edgedefault;
+        private String id;
+        private GraphmlLocator locator;
+
+        public GraphmlGraphBuilder edgedefault(EdgeDefault edgedefault) {
+            this.edgedefault = edgedefault;
+            return this;
+        }
+
+        public GraphmlGraphBuilder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public GraphmlGraphBuilder locator(GraphmlLocator locator) {
+            this.locator = locator;
+            return this;
+        }
+
+        @Override
+        public GraphmlGraphBuilder desc(GraphmlDescription desc) {
+            super.desc(desc);
+            return this;
+        }
+
+        @Override
+        public GraphmlGraphBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
+            super.extraAttrib(extraAttrib);
+            return this;
+        }
+
+        @Override
+        public GraphmlGraph build() {
+            return new GraphmlGraph(id, edgedefault, locator, extraAttrib, desc);
+        }
+    }
+
+    // Getters and Setters
+    public EdgeDefault getEdgedefault() {
+        return edgedefault;
+    }
+
+    public void setEdgedefault(EdgeDefault edgedefault) {
+        this.edgedefault = edgedefault;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public GraphmlLocator getLocator() {
+        return locator;
+    }
+
+    public void setLocator(GraphmlLocator locator) {
+        this.locator = locator;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GraphmlGraph that = (GraphmlGraph) o;
+        return edgedefault == that.edgedefault &&
+               Objects.equals(id, that.id) &&
+               Objects.equals(locator, that.locator);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), edgedefault, id, locator);
+    }
+
+    @Override
+    public String toString() {
+        return "GraphmlGraph{" +
+               "edgedefault=" + edgedefault +
+               ", id='" + id + '\'' +
+               ", locator=" + locator +
+               ", desc=" + desc +
+               ", extraAttrib=" + extraAttrib +
+               '}';
+    }
 
     @Override
     public LinkedHashMap<String, String> getAttributes() {

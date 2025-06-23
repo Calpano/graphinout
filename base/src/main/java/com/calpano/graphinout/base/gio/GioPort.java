@@ -1,10 +1,8 @@
 package com.calpano.graphinout.base.gio;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author rbaba
@@ -24,10 +22,6 @@ import lombok.RequiredArgsConstructor;
  * Occurence: <node>, <port>.
  */
 
-@Data
-@Builder
-@RequiredArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class GioPort extends GioElementWithDescription {
 
     /**
@@ -35,8 +29,77 @@ public class GioPort extends GioElementWithDescription {
      * </p>
      * The name of this attribute in graph is <b>name</b>
      */
-    @NonNull
     private final String name;
+
+    // Constructors
+    public GioPort(String name) {
+        super();
+        this.name = Objects.requireNonNull(name, "name cannot be null");
+    }
+
+    public GioPort(@Nullable Map<String, String> customAttributes, @Nullable String description, String name) {
+        super(customAttributes, description);
+        this.name = Objects.requireNonNull(name, "name cannot be null");
+    }
+
+    // Builder
+    public static GioPortBuilder builder() {
+        return new GioPortBuilder();
+    }
+
+    public static class GioPortBuilder {
+        private @Nullable Map<String, String> customAttributes;
+        private @Nullable String description;
+        private String name;
+
+        public GioPortBuilder customAttributes(@Nullable Map<String, String> customAttributes) {
+            this.customAttributes = customAttributes;
+            return this;
+        }
+
+        public GioPortBuilder description(@Nullable String description) {
+            this.description = description;
+            return this;
+        }
+
+        public GioPortBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public GioPort build() {
+            return new GioPort(customAttributes, description, name);
+        }
+    }
+
+    // Getters (no setters for final field)
+    public String getName() {
+        return name;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GioPort gioPort = (GioPort) o;
+        return Objects.equals(name, gioPort.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), name);
+    }
+
+    @Override
+    public String toString() {
+        return "GioPort{" +
+               "name='" + name + '\'' +
+               ", description='" + getDescription() + '\'' +
+               ", customAttributes=" + getCustomAttributes() +
+               '}';
+    }
 
 
 }

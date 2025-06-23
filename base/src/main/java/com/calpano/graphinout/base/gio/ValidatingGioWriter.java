@@ -1,7 +1,6 @@
 package com.calpano.graphinout.base.gio;
 
 import com.google.common.collect.Sets;
-import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -11,8 +10,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@RequiredArgsConstructor
 public class ValidatingGioWriter implements GioWriter {
+
+    // Constructor
+    public ValidatingGioWriter() {
+    }
 
     private final Set<String> nodesIds = new HashSet<>();
     private final Set<String> edgesIds = new HashSet<>();

@@ -1,14 +1,11 @@
 package com.calpano.graphinout.base.graphml;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Singular;
-import lombok.experimental.SuperBuilder;
-
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author rbaba
@@ -25,10 +22,6 @@ import java.util.List;
  * <p>
  * The name of this Element in XML File is  <b>graphml</b>
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
 public class GraphmlDocument extends GraphmlGraphCommonElement {
 
     public static final String DEFAULT_GRAPHML_XSD_URL = "http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
@@ -60,8 +53,115 @@ public class GraphmlDocument extends GraphmlGraphCommonElement {
      * </p>
      * The name of this Element in graphML is <b>key</b>
      */
-    @Singular(ignoreNullCollections = true)
     private @Nullable List<GraphmlKey> keys;
 
+    // Constructors
+    public GraphmlDocument() {
+        super();
+    }
 
+    public GraphmlDocument(@Nullable List<GraphmlKey> keys) {
+        super();
+        this.keys = keys;
+    }
+
+    public GraphmlDocument(@Nullable List<GraphmlKey> keys, GraphmlDescription desc) {
+        super(desc);
+        this.keys = keys;
+    }
+
+    public GraphmlDocument(@Nullable List<GraphmlKey> keys, @Nullable Map<String, String> extraAttrib, GraphmlDescription desc) {
+        super(extraAttrib, desc);
+        this.keys = keys;
+    }
+
+    // Builder
+    public static GraphmlDocumentBuilder builder() {
+        return new GraphmlDocumentBuilder();
+    }
+
+    public static class GraphmlDocumentBuilder extends GraphmlGraphCommonElementBuilder {
+        private ArrayList<GraphmlKey> keys;
+
+        public GraphmlDocumentBuilder() {
+            this.keys = new ArrayList<>();
+        }
+
+        public GraphmlDocumentBuilder key(GraphmlKey key) {
+            if (key != null) {
+                if (this.keys == null) {
+                    this.keys = new ArrayList<>();
+                }
+                this.keys.add(key);
+            }
+            return this;
+        }
+
+        public GraphmlDocumentBuilder keys(List<GraphmlKey> keys) {
+            if (keys != null) {
+                if (this.keys == null) {
+                    this.keys = new ArrayList<>();
+                }
+                this.keys.addAll(keys);
+            }
+            return this;
+        }
+
+        public GraphmlDocumentBuilder clearKeys() {
+            if (this.keys != null) {
+                this.keys.clear();
+            }
+            return this;
+        }
+
+        @Override
+        public GraphmlDocumentBuilder desc(GraphmlDescription desc) {
+            super.desc(desc);
+            return this;
+        }
+
+        @Override
+        public GraphmlDocumentBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
+            super.extraAttrib(extraAttrib);
+            return this;
+        }
+
+        @Override
+        public GraphmlDocument build() {
+            return new GraphmlDocument(keys, extraAttrib, desc);
+        }
+    }
+
+    // Getters and Setters
+    public @Nullable List<GraphmlKey> getKeys() {
+        return keys;
+    }
+
+    public void setKeys(@Nullable List<GraphmlKey> keys) {
+        this.keys = keys;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GraphmlDocument that = (GraphmlDocument) o;
+        return Objects.equals(keys, that.keys);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), keys);
+    }
+
+    @Override
+    public String toString() {
+        return "GraphmlDocument{" +
+               "keys=" + keys +
+               ", desc=" + desc +
+               ", extraAttrib=" + extraAttrib +
+               '}';
+    }
 }

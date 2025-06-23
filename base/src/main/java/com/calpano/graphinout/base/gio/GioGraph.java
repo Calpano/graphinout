@@ -1,11 +1,8 @@
 package com.calpano.graphinout.base.gio;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.experimental.SuperBuilder;
-
 import javax.annotation.Nullable;
-
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author rbaba
@@ -16,20 +13,15 @@ import javax.annotation.Nullable;
  * <b>In the output we avoid the edge and change them all to Hyperedge.</b>
  * @see GioEdge {@link GioEdge}
  */
-
-@SuperBuilder
-@Data
 public class GioGraph extends GioElementWithDescription {
-
-
 
     /**
      * This is an attribute that can be empty or null.
      * </p>
      * The name of this attribute in graph is <b>edgedefault</b>
      */
-    @Builder.Default
     private boolean edgedefaultDirected = false;
+
     /**
      * This is an attribute that can be empty or null.
      * </p>
@@ -37,10 +29,100 @@ public class GioGraph extends GioElementWithDescription {
      */
     private @Nullable String id;
 
+    // Constructors
+    public GioGraph() {
+        super();
+    }
+
     public GioGraph(@Nullable String id, boolean edgedefaultDirected) {
-       super();
+        super();
         this.edgedefaultDirected = edgedefaultDirected;
         this.id = id;
     }
 
+    public GioGraph(@Nullable Map<String, String> customAttributes, @Nullable String description,
+                    @Nullable String id, boolean edgedefaultDirected) {
+        super(customAttributes, description);
+        this.edgedefaultDirected = edgedefaultDirected;
+        this.id = id;
+    }
+
+    // Builder
+    public static GioGraphBuilder builder() {
+        return new GioGraphBuilder();
+    }
+
+    public static class GioGraphBuilder {
+        private @Nullable Map<String, String> customAttributes;
+        private @Nullable String description;
+        private boolean edgedefaultDirected = false;
+        private @Nullable String id;
+
+        public GioGraphBuilder customAttributes(@Nullable Map<String, String> customAttributes) {
+            this.customAttributes = customAttributes;
+            return this;
+        }
+
+        public GioGraphBuilder description(@Nullable String description) {
+            this.description = description;
+            return this;
+        }
+
+        public GioGraphBuilder edgedefaultDirected(boolean edgedefaultDirected) {
+            this.edgedefaultDirected = edgedefaultDirected;
+            return this;
+        }
+
+        public GioGraphBuilder id(@Nullable String id) {
+            this.id = id;
+            return this;
+        }
+
+        public GioGraph build() {
+            return new GioGraph(customAttributes, description, id, edgedefaultDirected);
+        }
+    }
+
+    // Getters and Setters
+    public boolean isEdgedefaultDirected() {
+        return edgedefaultDirected;
+    }
+
+    public void setEdgedefaultDirected(boolean edgedefaultDirected) {
+        this.edgedefaultDirected = edgedefaultDirected;
+    }
+
+    public @Nullable String getId() {
+        return id;
+    }
+
+    public void setId(@Nullable String id) {
+        this.id = id;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GioGraph gioGraph = (GioGraph) o;
+        return edgedefaultDirected == gioGraph.edgedefaultDirected &&
+               Objects.equals(id, gioGraph.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), edgedefaultDirected, id);
+    }
+
+    @Override
+    public String toString() {
+        return "GioGraph{" +
+               "edgedefaultDirected=" + edgedefaultDirected +
+               ", id='" + id + '\'' +
+               ", description='" + getDescription() + '\'' +
+               ", customAttributes=" + getCustomAttributes() +
+               '}';
+    }
 }

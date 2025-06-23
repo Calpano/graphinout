@@ -1,12 +1,9 @@
 package com.calpano.graphinout.base.graphml;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-
+import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author rbaba
@@ -26,13 +23,7 @@ import java.util.LinkedHashMap;
  * Occurence: <node>, <port>.
  */
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true)
 public class GraphmlPort extends GraphmlElement implements XMLValue {
-
 
     public static final String TAGNAME = "port";
     /**
@@ -40,7 +31,79 @@ public class GraphmlPort extends GraphmlElement implements XMLValue {
      * </p>
      * The name of this attribute in graph is <b>name</b>
      */
-    private  String name;
+    private String name;
+
+    // Constructors
+    public GraphmlPort() {
+        super();
+    }
+
+    public GraphmlPort(String name) {
+        super();
+        this.name = name;
+    }
+
+    public GraphmlPort(String name, @Nullable Map<String, String> extraAttrib) {
+        super(extraAttrib);
+        this.name = name;
+    }
+
+    // Builder
+    public static GraphmlPortBuilder builder() {
+        return new GraphmlPortBuilder();
+    }
+
+    public static class GraphmlPortBuilder extends GraphmlElementBuilder {
+        private String name;
+
+        public GraphmlPortBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        @Override
+        public GraphmlPortBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
+            super.extraAttrib(extraAttrib);
+            return this;
+        }
+
+        @Override
+        public GraphmlPort build() {
+            return new GraphmlPort(name, extraAttrib);
+        }
+    }
+
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GraphmlPort that = (GraphmlPort) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), name);
+    }
+
+    @Override
+    public String toString() {
+        return "GraphmlPort{" +
+               "name='" + name + '\'' +
+               ", extraAttrib=" + extraAttrib +
+               '}';
+    }
 
     @Override
     public LinkedHashMap<String, String> getAttributes() {

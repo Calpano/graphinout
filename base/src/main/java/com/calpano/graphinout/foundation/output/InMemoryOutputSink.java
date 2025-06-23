@@ -1,6 +1,7 @@
 package com.calpano.graphinout.foundation.output;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -9,8 +10,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
-@Slf4j
 public class InMemoryOutputSink implements OutputSink {
+
+    private static final Logger log = LoggerFactory.getLogger(InMemoryOutputSink.class);
 
     private final ByteArrayOutputStream buffer;
 

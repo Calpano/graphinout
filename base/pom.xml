@@ -13,9 +13,6 @@
     <artifactId>base</artifactId>
 
     <dependencies>
-        <dependency><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId></dependency>
         <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
         <dependency><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId></dependency>

@@ -1,14 +1,16 @@
 package com.calpano.graphinout.foundation.output;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-@Slf4j
 public class FileOutputSink implements OutputSink {
+
+    private static final Logger log = LoggerFactory.getLogger(FileOutputSink.class);
 
     private final File file;
     private transient OutputStream out;

@@ -12,7 +12,8 @@ import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -34,8 +35,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-@Slf4j
 class GraphmlSAXHandler extends DefaultHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GraphmlSAXHandler.class);
     private static final String GRAPHML_STANDARD_NAME_SPACE = "http://graphml.graphdrawing.org/xmlns";
     private final GioWriter gioWriter;
     private final Consumer<ContentError> errorConsumer;

@@ -31,11 +31,9 @@
         <junit-jupiter.version>5.9.0</junit-jupiter.version>
         <mockito-core-version>5.6.0</mockito-core-version>
         <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
-        <lombok-version>1.18.38</lombok-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
         <!-- must use same version as spring, otherwise 'java.lang.NoClassDefFoundError: com/fasterxml/jackson/core/exc/StreamConstraintsException' -->
         <fasterxml-jackson.version>2.14.1</fasterxml-jackson.version>
-        <maven.compiler.proc>full</maven.compiler.proc>
     </properties>
 
     <dependencyManagement>
@@ -52,7 +50,6 @@
             <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>${junit-jupiter.version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><version>${mockito-core-version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><version>${mockito-junit-jupiter-version}</version><scope>test</scope></dependency>
-            <dependency><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId><version>${lombok-version}</version><scope>provided</scope></dependency>
             <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>${slf4j-version}</version></dependency>
         </dependencies>
     </dependencyManagement>
@@ -63,13 +60,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok-version}</version>
-                        </path>
-                    </annotationProcessorPaths>
                     <source>21</source>
                     <target>21</target>
                 </configuration>

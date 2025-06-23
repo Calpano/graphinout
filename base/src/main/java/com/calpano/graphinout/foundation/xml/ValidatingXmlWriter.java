@@ -1,7 +1,5 @@
 package com.calpano.graphinout.foundation.xml;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.Stack;
@@ -9,7 +7,6 @@ import java.util.Stack;
 /**
  * A chaining, validating {@link XmlWriter}.
  */
-@Slf4j
 public class ValidatingXmlWriter implements XmlWriter {
 
     protected final XmlWriter sink;

@@ -1,6 +1,6 @@
 package com.calpano.graphinout.reader.example;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class Triple<S,P,O> {
     final S s;

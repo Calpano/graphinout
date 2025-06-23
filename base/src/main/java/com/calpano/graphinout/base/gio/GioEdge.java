@@ -1,16 +1,11 @@
 package com.calpano.graphinout.base.gio;
 
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.Singular;
-import lombok.experimental.SuperBuilder;
-
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author rbaba
@@ -31,11 +26,6 @@ import java.util.List;
  *         </hyperedge>
  * </pre>
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true)
 public class GioEdge extends GioElementWithDescription {
 
     /**
@@ -48,8 +38,119 @@ public class GioEdge extends GioElementWithDescription {
     /**
      * By convention, a simple directed edge should FIRST have the source, then the target endpoint.
      */
-    @Singular
     private List<GioEndpoint> endpoints;
+
+    // Constructors
+    public GioEdge() {
+        super();
+    }
+
+    public GioEdge(String id, List<GioEndpoint> endpoints) {
+        super();
+        this.id = id;
+        this.endpoints = endpoints;
+    }
+
+    public GioEdge(@Nullable Map<String, String> customAttributes, @Nullable String description,
+                   String id, List<GioEndpoint> endpoints) {
+        super(customAttributes, description);
+        this.id = id;
+        this.endpoints = endpoints;
+    }
+
+    // Builder
+    public static GioEdgeBuilder builder() {
+        return new GioEdgeBuilder();
+    }
+
+    public static class GioEdgeBuilder {
+        private @Nullable Map<String, String> customAttributes;
+        private @Nullable String description;
+        private String id;
+        private List<GioEndpoint> endpoints = new ArrayList<>();
+
+        public GioEdgeBuilder customAttributes(@Nullable Map<String, String> customAttributes) {
+            this.customAttributes = customAttributes;
+            return this;
+        }
+
+        public GioEdgeBuilder description(@Nullable String description) {
+            this.description = description;
+            return this;
+        }
+
+        public GioEdgeBuilder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public GioEdgeBuilder endpoints(List<GioEndpoint> endpoints) {
+            this.endpoints = endpoints != null ? new ArrayList<>(endpoints) : new ArrayList<>();
+            return this;
+        }
+
+        public GioEdgeBuilder endpoint(GioEndpoint endpoint) {
+            if (this.endpoints == null) {
+                this.endpoints = new ArrayList<>();
+            }
+            this.endpoints.add(endpoint);
+            return this;
+        }
+
+        public GioEdgeBuilder clearEndpoints() {
+            if (this.endpoints != null) {
+                this.endpoints.clear();
+            }
+            return this;
+        }
+
+        public GioEdge build() {
+            return new GioEdge(customAttributes, description, id, endpoints);
+        }
+    }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public List<GioEndpoint> getEndpoints() {
+        return endpoints;
+    }
+
+    public void setEndpoints(List<GioEndpoint> endpoints) {
+        this.endpoints = endpoints;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GioEdge gioEdge = (GioEdge) o;
+        return Objects.equals(id, gioEdge.id) &&
+               Objects.equals(endpoints, gioEdge.endpoints);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, endpoints);
+    }
+
+    @Override
+    public String toString() {
+        return "GioEdge{" +
+               "id='" + id + '\'' +
+               ", endpoints=" + endpoints +
+               ", description='" + getDescription() + '\'' +
+               ", customAttributes=" + getCustomAttributes() +
+               '}';
+    }
 
     /**
      * By convention, a simple directed edge should FIRST have the source, then the target endpoint.

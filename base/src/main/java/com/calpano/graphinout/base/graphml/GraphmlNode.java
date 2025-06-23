@@ -1,12 +1,9 @@
 package com.calpano.graphinout.base.graphml;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-
+import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author rbaba
@@ -21,11 +18,6 @@ import java.util.LinkedHashMap;
  * The name of this Element in XML File is  <b>node</b>
  */
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true)
 public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
 
     public static final String TAGNAME = "node";
@@ -43,6 +35,114 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
      * The name of this Element in node is <b>locator</b>.
      */
     private GraphmlLocator locator;
+
+    // Constructors
+    public GraphmlNode() {
+        super();
+    }
+
+    public GraphmlNode(String id) {
+        super();
+        this.id = id;
+    }
+
+    public GraphmlNode(String id, GraphmlLocator locator) {
+        super();
+        this.id = id;
+        this.locator = locator;
+    }
+
+    public GraphmlNode(String id, GraphmlLocator locator, GraphmlDescription desc) {
+        super(desc);
+        this.id = id;
+        this.locator = locator;
+    }
+
+    public GraphmlNode(String id, GraphmlLocator locator, @Nullable Map<String, String> extraAttrib, GraphmlDescription desc) {
+        super(extraAttrib, desc);
+        this.id = id;
+        this.locator = locator;
+    }
+
+    // Builder
+    public static GraphmlNodeBuilder builder() {
+        return new GraphmlNodeBuilder();
+    }
+
+    public static class GraphmlNodeBuilder extends GraphmlGraphCommonElementBuilder {
+        private String id;
+        private GraphmlLocator locator;
+
+        public GraphmlNodeBuilder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public GraphmlNodeBuilder locator(GraphmlLocator locator) {
+            this.locator = locator;
+            return this;
+        }
+
+        @Override
+        public GraphmlNodeBuilder desc(GraphmlDescription desc) {
+            super.desc(desc);
+            return this;
+        }
+
+        @Override
+        public GraphmlNodeBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
+            super.extraAttrib(extraAttrib);
+            return this;
+        }
+
+        @Override
+        public GraphmlNode build() {
+            return new GraphmlNode(id, locator, extraAttrib, desc);
+        }
+    }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public GraphmlLocator getLocator() {
+        return locator;
+    }
+
+    public void setLocator(GraphmlLocator locator) {
+        this.locator = locator;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GraphmlNode that = (GraphmlNode) o;
+        return Objects.equals(id, that.id) &&
+               Objects.equals(locator, that.locator);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, locator);
+    }
+
+    @Override
+    public String toString() {
+        return "GraphmlNode{" +
+               "id='" + id + '\'' +
+               ", locator=" + locator +
+               ", desc=" + desc +
+               ", extraAttrib=" + extraAttrib +
+               '}';
+    }
 
     @Override
     public LinkedHashMap<String, String> getAttributes() {

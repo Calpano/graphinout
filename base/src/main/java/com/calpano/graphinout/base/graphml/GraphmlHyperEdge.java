@@ -1,15 +1,12 @@
 package com.calpano.graphinout.base.graphml;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.Singular;
-
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author rbaba
@@ -30,10 +27,6 @@ import java.util.List;
  * <p>
  * See also {@link GraphmlEdge}
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements XMLValue {
 
     public static class GraphmlHyperEdgeBuilder {
@@ -64,8 +57,73 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements XMLVa
      */
     private String id;
 
-    @Singular(ignoreNullCollections = true)
     private List<GraphmlEndpoint> endpoints;
+
+    // Constructors
+    public GraphmlHyperEdge() {
+        super();
+    }
+
+    public GraphmlHyperEdge(String id, List<GraphmlEndpoint> endpoints) {
+        super();
+        this.id = id;
+        this.endpoints = endpoints;
+    }
+
+    public GraphmlHyperEdge(String id, List<GraphmlEndpoint> endpoints, GraphmlDescription desc) {
+        super(desc);
+        this.id = id;
+        this.endpoints = endpoints;
+    }
+
+    public GraphmlHyperEdge(String id, List<GraphmlEndpoint> endpoints, @Nullable Map<String, String> extraAttrib, GraphmlDescription desc) {
+        super(extraAttrib, desc);
+        this.id = id;
+        this.endpoints = endpoints;
+    }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public List<GraphmlEndpoint> getEndpoints() {
+        return endpoints;
+    }
+
+    public void setEndpoints(List<GraphmlEndpoint> endpoints) {
+        this.endpoints = endpoints;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GraphmlHyperEdge that = (GraphmlHyperEdge) o;
+        return Objects.equals(id, that.id) &&
+               Objects.equals(endpoints, that.endpoints);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, endpoints);
+    }
+
+    @Override
+    public String toString() {
+        return "GraphmlHyperEdge{" +
+               "id='" + id + '\'' +
+               ", endpoints=" + endpoints +
+               ", desc=" + desc +
+               ", extraAttrib=" + extraAttrib +
+               '}';
+    }
 
     public static GraphmlHyperEdgeBuilder builder(String id) {
         return new GraphmlHyperEdgeBuilder(id);

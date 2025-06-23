@@ -1,12 +1,9 @@
 package com.calpano.graphinout.base.graphml;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-
+import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author rbaba
@@ -25,12 +22,7 @@ import java.util.LinkedHashMap;
  * Occurence: <graphml>.
  * @see GraphmlData {@link GraphmlData}
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true)
-public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
+public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
 
     public static final String TAGNAME = "key";
     /**
@@ -60,12 +52,6 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
      * The name of this attribute in key is <b>for</b>
      */
     private GraphmlKeyForType forType;
-    /**
-     * This is an Element
-     *
-     * @see GraphmlDescription {@link  GraphmlDescription}
-     */
-    private GraphmlDescription desc;
 
     /**
      * This is an Element
@@ -74,8 +60,161 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
      */
     private GraphmlDefault defaultValue;
 
+    // Constructors
+    public GraphmlKey() {
+        super();
+    }
+
+    public GraphmlKey(String id, String attrName, String attrType, GraphmlKeyForType forType,
+                     GraphmlDescription desc, GraphmlDefault defaultValue) {
+        super(desc);
+        this.id = id;
+        this.attrName = attrName;
+        this.attrType = attrType;
+        this.forType = forType;
+        this.defaultValue = defaultValue;
+    }
+
+    public GraphmlKey(String id, String attrName, String attrType, GraphmlKeyForType forType,
+                     GraphmlDefault defaultValue, @Nullable Map<String, String> extraAttrib, GraphmlDescription desc) {
+        super(extraAttrib, desc);
+        this.id = id;
+        this.attrName = attrName;
+        this.attrType = attrType;
+        this.forType = forType;
+        this.defaultValue = defaultValue;
+    }
+
+    // Builder
+    public static GraphmlKeyBuilder builder() {
+        return new GraphmlKeyBuilder();
+    }
+
+    public static class GraphmlKeyBuilder extends GraphmlGraphCommonElementBuilder {
+        private String id;
+        private String attrName;
+        private String attrType;
+        private GraphmlKeyForType forType;
+        private GraphmlDefault defaultValue;
+
+        public GraphmlKeyBuilder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public GraphmlKeyBuilder attrName(String attrName) {
+            this.attrName = attrName;
+            return this;
+        }
+
+        public GraphmlKeyBuilder attrType(String attrType) {
+            this.attrType = attrType;
+            return this;
+        }
+
+        public GraphmlKeyBuilder forType(GraphmlKeyForType forType) {
+            this.forType = forType;
+            return this;
+        }
+
+        public GraphmlKeyBuilder defaultValue(GraphmlDefault defaultValue) {
+            this.defaultValue = defaultValue;
+            return this;
+        }
+
+        @Override
+        public GraphmlKeyBuilder desc(GraphmlDescription desc) {
+            super.desc(desc);
+            return this;
+        }
+
+        @Override
+        public GraphmlKeyBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
+            super.extraAttrib(extraAttrib);
+            return this;
+        }
+
+        @Override
+        public GraphmlKey build() {
+            return new GraphmlKey(id, attrName, attrType, forType, defaultValue, extraAttrib, desc);
+        }
+    }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getAttrName() {
+        return attrName;
+    }
+
+    public void setAttrName(String attrName) {
+        this.attrName = attrName;
+    }
+
+    public String getAttrType() {
+        return attrType;
+    }
+
+    public void setAttrType(String attrType) {
+        this.attrType = attrType;
+    }
+
+    public GraphmlKeyForType getForType() {
+        return forType;
+    }
+
+    public void setForType(GraphmlKeyForType forType) {
+        this.forType = forType;
+    }
+
     public void setForType(String forType) throws Exception {
         this.forType = GraphmlKeyForType.keyForType(forType);
+    }
+
+    public GraphmlDefault getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(GraphmlDefault defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GraphmlKey that = (GraphmlKey) o;
+        return Objects.equals(id, that.id) &&
+               Objects.equals(attrName, that.attrName) &&
+               Objects.equals(attrType, that.attrType) &&
+               Objects.equals(forType, that.forType) &&
+               Objects.equals(defaultValue, that.defaultValue);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, attrName, attrType, forType, defaultValue);
+    }
+
+    @Override
+    public String toString() {
+        return "GraphmlKey{" +
+               "id='" + id + '\'' +
+               ", attrName='" + attrName + '\'' +
+               ", attrType='" + attrType + '\'' +
+               ", forType=" + forType +
+               ", defaultValue=" + defaultValue +
+               ", desc=" + desc +
+               ", extraAttrib=" + extraAttrib +
+               '}';
     }
 
     @Override
@@ -97,4 +236,3 @@ public class GraphmlKey extends GraphmlGraphCommonElement  implements  XMLValue{
     }
 
 }
-

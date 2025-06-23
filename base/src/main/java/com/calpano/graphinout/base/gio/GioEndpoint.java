@@ -1,12 +1,8 @@
 package com.calpano.graphinout.base.gio;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
 import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author rbaba
@@ -19,11 +15,6 @@ import javax.annotation.Nullable;
  * Note that edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
  * @see GioEdge {@link GioEdge}
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Data
-@EqualsAndHashCode(callSuper = true)
 public class GioEndpoint extends GioElement  {
 
     /**
@@ -58,8 +49,132 @@ public class GioEndpoint extends GioElement  {
      * <p>
      * The name of this attribute in endpoint is <b>type</b>
      */
-    @Builder.Default
     private GioEndpointDirection type = GioEndpointDirection.Undirected;
+
+    // Constructors
+    public GioEndpoint() {
+        super();
+    }
+
+    public GioEndpoint(@Nullable String id, String node, @Nullable String port, GioEndpointDirection type) {
+        super();
+        this.id = id;
+        this.node = node;
+        this.port = port;
+        this.type = type != null ? type : GioEndpointDirection.Undirected;
+    }
+
+    public GioEndpoint(@Nullable Map<String, String> customAttributes, @Nullable String id, String node, @Nullable String port, GioEndpointDirection type) {
+        super(customAttributes);
+        this.id = id;
+        this.node = node;
+        this.port = port;
+        this.type = type != null ? type : GioEndpointDirection.Undirected;
+    }
+
+    // Builder
+    public static GioEndpointBuilder builder() {
+        return new GioEndpointBuilder();
+    }
+
+    public static class GioEndpointBuilder {
+        private @Nullable Map<String, String> customAttributes;
+        private @Nullable String id;
+        private String node;
+        private @Nullable String port;
+        private GioEndpointDirection type = GioEndpointDirection.Undirected;
+
+        public GioEndpointBuilder customAttributes(@Nullable Map<String, String> customAttributes) {
+            this.customAttributes = customAttributes;
+            return this;
+        }
+
+        public GioEndpointBuilder id(@Nullable String id) {
+            this.id = id;
+            return this;
+        }
+
+        public GioEndpointBuilder node(String node) {
+            this.node = node;
+            return this;
+        }
+
+        public GioEndpointBuilder port(@Nullable String port) {
+            this.port = port;
+            return this;
+        }
+
+        public GioEndpointBuilder type(GioEndpointDirection type) {
+            this.type = type;
+            return this;
+        }
+
+        public GioEndpoint build() {
+            return new GioEndpoint(customAttributes, id, node, port, type);
+        }
+    }
+
+    // Getters and Setters
+    public @Nullable String getId() {
+        return id;
+    }
+
+    public void setId(@Nullable String id) {
+        this.id = id;
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    public void setNode(String node) {
+        this.node = node;
+    }
+
+    public @Nullable String getPort() {
+        return port;
+    }
+
+    public void setPort(@Nullable String port) {
+        this.port = port;
+    }
+
+    public GioEndpointDirection getType() {
+        return type;
+    }
+
+    public void setType(GioEndpointDirection type) {
+        this.type = type;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GioEndpoint that = (GioEndpoint) o;
+        return Objects.equals(id, that.id) &&
+               Objects.equals(node, that.node) &&
+               Objects.equals(port, that.port) &&
+               type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, node, port, type);
+    }
+
+    @Override
+    public String toString() {
+        return "GioEndpoint{" +
+               "id='" + id + '\'' +
+               ", node='" + node + '\'' +
+               ", port='" + port + '\'' +
+               ", type=" + type +
+               ", customAttributes=" + getCustomAttributes() +
+               '}';
+    }
 
     public boolean isValid() {
         assert this.node != null :"endpoint.node is null";

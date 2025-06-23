@@ -2,7 +2,8 @@ package com.calpano.graphinout.base.graphml;
 
 
 import com.calpano.graphinout.foundation.xml.XmlWriter;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -13,9 +14,11 @@ import java.util.Map;
 import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS;
 import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI;
 import static com.calpano.graphinout.base.graphml.GraphmlDocument.HEADER_XMLNS_XSI_SCHEMA_LOCATIOM;
+import static org.slf4j.LoggerFactory.getLogger;
 
-@Slf4j
 public class GraphmlWriterImpl implements GraphmlWriter {
+
+    private static final Logger log = getLogger(GraphmlWriterImpl.class);
 
     final XmlWriter xmlWriter;
 

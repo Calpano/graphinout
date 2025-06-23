@@ -1,11 +1,7 @@
 package com.calpano.graphinout.base.graphml;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 /**
  * @author rbaba
@@ -18,10 +14,6 @@ import java.util.LinkedHashMap;
  * Note that edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
  * @see GraphmlHyperEdge {@link GraphmlHyperEdge}
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class GraphmlEndpoint implements XMLValue {
 
     public static final String TAGNAME = "endpoint";
@@ -55,7 +47,6 @@ public class GraphmlEndpoint implements XMLValue {
      * <p>
      * The name of this attribute in endpoint is <b>type</b>
      */
-    @Builder.Default
     private GraphmlDirection type = GraphmlDirection.Undirected;
     /**
      * This ia an Element That can be empty or null.
@@ -63,6 +54,130 @@ public class GraphmlEndpoint implements XMLValue {
      * The name of this element in endpoint is <b>desc</b>
      */
     private GraphmlDescription desc;
+
+    // Constructors
+    public GraphmlEndpoint() {
+    }
+
+    public GraphmlEndpoint(String id, String node, String port, GraphmlDirection type, GraphmlDescription desc) {
+        this.id = id;
+        this.node = node;
+        this.port = port;
+        this.type = type != null ? type : GraphmlDirection.Undirected;
+        this.desc = desc;
+    }
+
+    // Builder
+    public static GraphmlEndpointBuilder builder() {
+        return new GraphmlEndpointBuilder();
+    }
+
+    public static class GraphmlEndpointBuilder {
+        private String id;
+        private String node;
+        private String port;
+        private GraphmlDirection type = GraphmlDirection.Undirected;
+        private GraphmlDescription desc;
+
+        public GraphmlEndpointBuilder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public GraphmlEndpointBuilder node(String node) {
+            this.node = node;
+            return this;
+        }
+
+        public GraphmlEndpointBuilder port(String port) {
+            this.port = port;
+            return this;
+        }
+
+        public GraphmlEndpointBuilder type(GraphmlDirection type) {
+            this.type = type;
+            return this;
+        }
+
+        public GraphmlEndpointBuilder desc(GraphmlDescription desc) {
+            this.desc = desc;
+            return this;
+        }
+
+        public GraphmlEndpoint build() {
+            return new GraphmlEndpoint(id, node, port, type, desc);
+        }
+    }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    public void setNode(String node) {
+        this.node = node;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public GraphmlDirection getType() {
+        return type;
+    }
+
+    public void setType(GraphmlDirection type) {
+        this.type = type;
+    }
+
+    public GraphmlDescription getDesc() {
+        return desc;
+    }
+
+    public void setDesc(GraphmlDescription desc) {
+        this.desc = desc;
+    }
+
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GraphmlEndpoint that = (GraphmlEndpoint) o;
+        return Objects.equals(id, that.id) &&
+               Objects.equals(node, that.node) &&
+               Objects.equals(port, that.port) &&
+               type == that.type &&
+               Objects.equals(desc, that.desc);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, node, port, type, desc);
+    }
+
+    @Override
+    public String toString() {
+        return "GraphmlEndpoint{" +
+               "id='" + id + '\'' +
+               ", node='" + node + '\'' +
+               ", port='" + port + '\'' +
+               ", type=" + type +
+               ", desc=" + desc +
+               '}';
+    }
 
 
     @Override

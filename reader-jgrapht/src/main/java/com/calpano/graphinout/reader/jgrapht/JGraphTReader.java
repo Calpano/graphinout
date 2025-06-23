@@ -157,7 +157,7 @@ public class JGraphTReader<N> {
             }
 
             // outermost graph / root graph
-            GioGraph.GioGraphBuilder<?, ?> builder = GioGraph.builder();
+            GioGraph.GioGraphBuilder builder = GioGraph.builder();
             if (outermostGraphId != null) {
                 builder.id(outermostGraphId);
             }

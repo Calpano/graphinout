@@ -1,7 +1,8 @@
 package com.calpano.graphinout.foundation.xml;
 
 import com.calpano.graphinout.foundation.output.OutputSink;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -14,8 +15,9 @@ import java.util.Map;
 /**
  * Just writes out, no validation, no chaining.
  */
-@Slf4j
 public class XmlWriterImpl implements XmlWriter {
+
+    private static final Logger log = LoggerFactory.getLogger(XmlWriterImpl.class);
     protected final OutputSink outputSink;
     protected transient OutputStream out;
     protected transient Writer writer;

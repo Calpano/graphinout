@@ -1,22 +1,14 @@
 package com.calpano.graphinout.base.reader;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Generated;
-import lombok.Getter;
-
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-@Getter
-@AllArgsConstructor
 public class ContentError {
     public enum ErrorLevel {
         Warn, Error
     }
 
-    @EqualsAndHashCode
     public static class Location {
         int line;
         int col;
@@ -24,6 +16,27 @@ public class ContentError {
         public Location(int lineNumber, int columnNumber) {
             this.line = lineNumber;
             this.col = columnNumber;
+        }
+
+        public int getLine() {
+            return line;
+        }
+
+        public int getCol() {
+            return col;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Location location = (Location) o;
+            return line == location.line && col == location.col;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(line, col);
         }
 
         @Override
@@ -35,6 +48,24 @@ public class ContentError {
     final ErrorLevel level;
     final String message;
     final @Nullable Location location;
+
+    public ContentError(ErrorLevel level, String message, @Nullable Location location) {
+        this.level = level;
+        this.message = message;
+        this.location = location;
+    }
+
+    public ErrorLevel getLevel() {
+        return level;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public @Nullable Location getLocation() {
+        return location;
+    }
 
     @Override
     public boolean equals(Object o) {
