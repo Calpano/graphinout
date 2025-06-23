@@ -13,10 +13,9 @@ import java.util.List;
 
 /**
  * @author rbaba
- * @version 0.0.1
  * @implNote Hyperedges are a generalization of edges in the sense that they do not only relate two endpoints to each
- * other, they express a relation between an arbitrary number of enpoints. Hyperedges are declared by a hyperedge
- * element in GraphML. For each enpoint of the hyperedge, this hyperedge element contains an endpoint element. The
+ * other, they express a relation between an arbitrary number of endpoints. Hyperedges are declared by a hyperedge
+ * element in GraphML. For each endpoint of the hyperedge, this hyperedge element contains an endpoint element. The
  * endpoint element must have an XML-Attribute node, which contains the identifier of a node in the document. Note that
  * edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
  * Example:

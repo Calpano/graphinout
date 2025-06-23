@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * @implNote Declaration Nodes and Edges  and Hyperedges are nested within a graph element.
  * A node is declared with a node element and an edge with an edge element and a Hyperedge with a  Hyperedge element.
  * <p>

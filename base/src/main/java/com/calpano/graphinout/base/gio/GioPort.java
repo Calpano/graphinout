@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * @implNote A node may specify different logical locations for edges and hyperedges to connect.
  * The logical locations are called "ports".
  * As an analogy, think of the graph as a motherboard, the nodes as integrated circuits and the edges as connecting wires.

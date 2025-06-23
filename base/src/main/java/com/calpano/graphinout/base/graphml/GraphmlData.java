@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * @implNote <p>
  * Structured content can be added within the data element.
  * If you want to add structured content to graph elements you should use the key/data extension mechanism of GraphML.

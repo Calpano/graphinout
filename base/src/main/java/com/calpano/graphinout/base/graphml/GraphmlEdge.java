@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * @implNote Edges in the graph are declared by the edge element.
  * Each edge must define its two endpoints with the XML-Attributes source and target.
  * The value of the source, resp. target, must be the identifier of a node in the same document.

@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * Provides human-readable descriptions for the GraphML element containing this <desc> as its first child.
  * Occurence: <key>, <graphml>, <graph>, <node>, <port>, <edge>, <hyperedge>, and <endpoint>.
  */

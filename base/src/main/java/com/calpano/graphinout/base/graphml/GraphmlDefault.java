@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * @implNote In GraphML there may be data-functions attached to graphs, nodes, ports, edges, hyperedges and endpoint and to the
  * whole collection of graphs described by the content of <graphml>.
  * <p>

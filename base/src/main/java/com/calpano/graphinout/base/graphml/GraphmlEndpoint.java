@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.Direction;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,11 +9,11 @@ import java.util.LinkedHashMap;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * @implNote Hyperedges are a generalization of edges in the sense that they do not only relate two endpoints to each other,
- * they express a relation between an arbitrary number of enpoints.
+ * they express a relation between an arbitrary number of endpoints.
  * Hyperedges are declared by a hyperedge element in GraphML.
- * For each enpoint of the hyperedge, this hyperedge element contains an endpoint element.
+ * For each endpoint of the hyperedge, this hyperedge element contains an endpoint element.
  * The endpoint element must have an XML-Attribute node, which contains the identifier of a node in the document.
  * Note that edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
  * @see GraphmlHyperEdge {@link GraphmlHyperEdge}
@@ -57,7 +56,7 @@ public class GraphmlEndpoint implements XMLValue {
      * The name of this attribute in endpoint is <b>type</b>
      */
     @Builder.Default
-    private Direction type = Direction.Undirected;
+    private GraphmlDirection type = GraphmlDirection.Undirected;
     /**
      * This ia an Element That can be empty or null.
      * <p>

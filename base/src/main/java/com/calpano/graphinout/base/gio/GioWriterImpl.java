@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.Direction;
 import com.calpano.graphinout.base.graphml.GraphmlData;
 import com.calpano.graphinout.base.graphml.GraphmlDefault;
 import com.calpano.graphinout.base.graphml.GraphmlDescription;
@@ -21,7 +20,6 @@ import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -181,7 +179,7 @@ public class GioWriterImpl implements GioWriter {
             case Out -> Direction.Out;
             case Undirected -> Direction.Undirected;
         };
-        graphmlEndpoint.setType(dir);
+        graphmlEndpoint.setType(dir.asGraphml());
         return graphmlEndpoint;
     }
 

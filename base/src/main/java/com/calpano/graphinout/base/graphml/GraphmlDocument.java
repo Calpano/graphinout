@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * @implNote GraphML consists of a graphml element and a variety of subelements: graph, key, headers.
  * GRAPHML is an XML process instruction which defines that the document
  * adheres to the XML 1.0 standard and that the encoding of the

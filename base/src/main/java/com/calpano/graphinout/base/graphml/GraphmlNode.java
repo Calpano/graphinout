@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * @implNote The <b>node</b> is an element.
  * <p>
  * Nodes in the graph are declared by the node element.

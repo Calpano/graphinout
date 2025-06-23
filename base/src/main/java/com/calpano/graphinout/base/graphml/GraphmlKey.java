@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * @implNote A GraphML-Attribute is defined by a key element which specifies the identifier, name, type and domain of the attribute.
  * <p>
  * The name of the GraphML-Attribute is defined by the XML-Attribute attr.name and must be unique among all GraphML-Attributes declared in the document.

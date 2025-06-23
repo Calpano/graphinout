@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * <p>
  * Graphs and nodes are declared by the elements <graph> and <node>, respectively.
  * The optional <locator>-child of these elements point to their definition.

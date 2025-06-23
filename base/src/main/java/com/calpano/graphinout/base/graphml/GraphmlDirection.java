@@ -1,8 +1,8 @@
-package com.calpano.graphinout.base;
+package com.calpano.graphinout.base.graphml;
 
 /**
  * @author rbaba
- * @version 0.0.1
+
  * @implNote <p>
  * Graphs in GraphML are mixed, in other words, they can contain directed and undirected edges at the same time.
  * If no direction is specified when an edge is declared, the default direction is applied to the edge.
@@ -10,15 +10,15 @@ package com.calpano.graphinout.base;
  * The two possible value for this XML Attribute are directed and undirected.
  * Note that the default direction must be specified.
  */
-public enum Direction {
+public enum GraphmlDirection {
     In(true), Out(true), Undirected(false);
     private final boolean isDirected;
 
-    Direction(boolean isDirected) {
+    GraphmlDirection(boolean isDirected) {
         this.isDirected = isDirected;
     }
 
-    public static Direction getDirection(String strDirection) {
+    public static GraphmlDirection getDirection(String strDirection) {
         return switch (strDirection.toLowerCase()) {
             case "in" -> In;
             case "out" -> Out;

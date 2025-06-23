@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.Direction;
 import com.calpano.graphinout.foundation.xml.XmlWriterSpy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,8 +74,8 @@ class GraphmlWriterTest {
     @Test
     void startEdge() throws IOException {
         graphmlWriter.startHyperEdge(GraphmlHyperEdge.builder("edge1")
-                .addEndpoint(GraphmlEndpoint.builder().id("GioEndpoint1").node("node1").type(Direction.In).port("port1").build())
-                .addEndpoint(GraphmlEndpoint.builder().id("GioEndpoint2").node("node2").type(Direction.Out).port("port2").build())
+                .addEndpoint(GraphmlEndpoint.builder().id("GioEndpoint1").node("node1").type(GraphmlDirection.In).port("port1").build())
+                .addEndpoint(GraphmlEndpoint.builder().id("GioEndpoint2").node("node2").type(GraphmlDirection.Out).port("port2").build())
                 .build());
         assertEquals("::startElement->hyperedge->{id=edge1}::startElement->endpoint->{id=GioEndpoint1, node=node1, port=port1, type=in}::endElement->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=out}::endElement->endpoint", xmlWriterSpy.getOutPut().toString());
 
@@ -98,4 +97,5 @@ class GraphmlWriterTest {
         graphmlWriter.data(GraphmlData.builder().key("data").id("id").value("value").build());
         assertEquals("::startElement->node->{id=node }::startElement->desc->{}::characterData->GraphmlDescription::endElement->desc::startElement->data->{id=id, key=data}::characterData->value::endElement->data", xmlWriterSpy.getOutPut().toString());
     }
+
 }
