@@ -17,6 +17,7 @@
         <module>reader-example</module>
         <module>reader-tripletext</module>
         <module>reader-jgrapht</module>
+        <module>reader-adjlist</module>
         <module>engine</module>
         <module>reader-json</module>
     </modules>
