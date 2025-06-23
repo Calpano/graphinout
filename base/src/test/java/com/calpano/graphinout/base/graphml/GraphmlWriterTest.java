@@ -1,8 +1,7 @@
 package com.calpano.graphinout.base.graphml;
 
 import com.calpano.graphinout.base.Direction;
-import com.calpano.graphinout.base.xml.XmlWriter;
-import com.calpano.graphinout.base.xml.XmlWriterSpy;
+import com.calpano.graphinout.foundation.xml.XmlWriterSpy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -12,8 +11,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static com.calpano.graphinout.base.graphml.GraphmlDocument.builder;
 import static org.junit.jupiter.api.Assertions.assertEquals;

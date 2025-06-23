@@ -4,9 +4,8 @@ import com.calpano.graphinout.base.gio.DelegatingGioWriter;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.gio.ValidatingGioWriter;
-import com.calpano.graphinout.base.input.InputSource;
-import com.calpano.graphinout.base.input.SingleInputSource;
-import com.calpano.graphinout.base.output.ValidatingGraphMlWriter;
+import com.calpano.graphinout.foundation.input.InputSource;
+import com.calpano.graphinout.base.validation.ValidatingGraphMlWriter;
 import org.slf4j.Logger;
 
 import java.io.IOException;

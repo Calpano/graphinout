@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.xml.XmlWriter;
+import com.calpano.graphinout.foundation.xml.XmlWriter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

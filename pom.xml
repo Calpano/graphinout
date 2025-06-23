@@ -11,7 +11,6 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>connected-json</module>
         <module>base</module>
         <module>reader-graphml</module>
         <module>reader-tgf</module>
@@ -32,7 +31,7 @@
         <junit-jupiter.version>5.9.0</junit-jupiter.version>
         <mockito-core-version>5.6.0</mockito-core-version>
         <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
-        <lombok-version>1.18.24</lombok-version>
+        <lombok-version>1.18.32</lombok-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
         <!-- must use same version as spring, otherwise 'java.lang.NoClassDefFoundError: com/fasterxml/jackson/core/exc/StreamConstraintsException' -->
         <fasterxml-jackson.version>2.14.1</fasterxml-jackson.version>

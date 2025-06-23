@@ -8,7 +8,7 @@ import com.calpano.graphinout.base.gio.GioEndpointDirection;
 import com.calpano.graphinout.base.gio.GioGraph;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.input.SingleInputSource;
+import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;

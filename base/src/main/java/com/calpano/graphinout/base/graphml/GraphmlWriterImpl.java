@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.graphml;
 
 
-import com.calpano.graphinout.base.xml.XmlWriter;
+import com.calpano.graphinout.foundation.xml.XmlWriter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;

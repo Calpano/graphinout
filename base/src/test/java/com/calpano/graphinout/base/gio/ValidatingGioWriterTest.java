@@ -1,7 +1,5 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.graphml.DelegatingGraphmlWriter;
-import com.calpano.graphinout.base.output.ValidatingGraphMlWriter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

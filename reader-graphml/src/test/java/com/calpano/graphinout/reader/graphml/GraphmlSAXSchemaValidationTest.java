@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.ReaderTests;
-import com.calpano.graphinout.base.input.SingleInputSource;
+import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;

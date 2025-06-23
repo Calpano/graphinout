@@ -2,8 +2,8 @@ package com.calpano.graphinout.reader.json;
 
 import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.input.FilesMultiInputSource;
-import com.calpano.graphinout.base.output.InMemoryOutputSink;
+import com.calpano.graphinout.foundation.input.FilesMultiInputSource;
+import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import java.io.File;
 import java.io.IOException;
 

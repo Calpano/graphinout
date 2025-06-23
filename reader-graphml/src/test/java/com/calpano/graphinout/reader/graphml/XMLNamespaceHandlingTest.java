@@ -4,16 +4,15 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.gio.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlDocument;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
-import com.calpano.graphinout.base.input.SingleInputSource;
-import com.calpano.graphinout.base.output.InMemoryOutputSink;
-import com.calpano.graphinout.base.output.OutputSink;
+import com.calpano.graphinout.foundation.input.SingleInputSource;
+import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
+import com.calpano.graphinout.foundation.output.OutputSink;
 import com.calpano.graphinout.base.reader.ContentError;
-import com.calpano.graphinout.base.xml.XmlWriterImpl;
+import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;

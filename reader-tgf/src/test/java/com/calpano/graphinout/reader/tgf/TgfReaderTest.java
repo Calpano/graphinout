@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.tgf;
 
 import com.calpano.graphinout.base.gio.*;
-import com.calpano.graphinout.base.input.SingleInputSource;
+import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;

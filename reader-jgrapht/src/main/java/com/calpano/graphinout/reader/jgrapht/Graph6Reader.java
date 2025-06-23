@@ -1,16 +1,14 @@
 package com.calpano.graphinout.reader.jgrapht;
 
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.input.InputSource;
+import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.base.reader.GioReader;
-import org.jgrapht.nio.Attribute;
 import org.jgrapht.nio.graph6.Graph6Sparse6EventDrivenImporter;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;

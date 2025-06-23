@@ -2,12 +2,11 @@ package com.calpano.graphinout.reader.jgrapht;
 
 import com.calpano.graphinout.base.AbstractReaderTest;
 import com.calpano.graphinout.base.ReaderTests;
-import com.calpano.graphinout.base.input.SingleInputSource;
-import com.calpano.graphinout.base.output.InMemoryOutputSink;
-import com.calpano.graphinout.base.output.OutputSink;
+import com.calpano.graphinout.foundation.input.SingleInputSource;
+import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
+import com.calpano.graphinout.foundation.output.OutputSink;
 import com.calpano.graphinout.base.reader.GioReader;
-import com.calpano.graphinout.base.xml.GraphmlValidator;
-import org.junit.jupiter.api.Disabled;
+import com.calpano.graphinout.base.validation.GraphmlValidator;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 

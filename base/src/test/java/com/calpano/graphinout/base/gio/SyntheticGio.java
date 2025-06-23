@@ -1,8 +1,8 @@
 package com.calpano.graphinout.base.gio;
 
 import com.calpano.graphinout.base.ReaderTests;
-import com.calpano.graphinout.base.output.InMemoryOutputSink;
-import com.calpano.graphinout.base.output.OutputSink;
+import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
+import com.calpano.graphinout.foundation.output.OutputSink;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 

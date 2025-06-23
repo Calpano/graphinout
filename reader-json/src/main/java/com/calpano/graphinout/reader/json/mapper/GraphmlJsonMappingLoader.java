@@ -1,6 +1,6 @@
 package com.calpano.graphinout.reader.json.mapper;
 
-import com.calpano.graphinout.base.input.SingleInputSource;
+import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

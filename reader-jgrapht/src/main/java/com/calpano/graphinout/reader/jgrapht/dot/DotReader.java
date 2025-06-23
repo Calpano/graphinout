@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.jgrapht.dot;
 
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.input.InputSource;
+import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.base.reader.GioReader;
