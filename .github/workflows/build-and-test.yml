@@ -65,14 +65,6 @@ jobs:
         working-directory: graphinout
         run: mvn clean -pl engine install
 
-      - name: 🔨️ Build & ⬇ install app-cmdline
-        working-directory: graphinout
-        run: mvn clean -pl app-cmdline install
-
-      - name: 🔨️ Build & ⬇ install app-rest-service
-        working-directory: graphinout
-        run: mvn clean -pl app-rest-service install
-
       - name: ↗️ Deploy
         working-directory: graphinout
         run: mvn deploy
