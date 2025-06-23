@@ -1,0 +1,2 @@
+A Java API for the Connected JSON format.
+See http://j-s-o-n.org for more information.
