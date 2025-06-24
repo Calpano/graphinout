@@ -28,7 +28,22 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           cache: 'maven'
-          server-id: github # This ID must match the <id> in your pom.xml's <distributionManagement>
+          server-id: github-graphinout # This ID must match the <id> in your pom.xml's <distributionManagement>
+
+      - name: "⚙️ Configure settings.xml for Maven"
+        uses: s4u/maven-settings-action@v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        with:
+          override: true
+          githubServer: false
+          servers: |
+            [{
+                "id": "github-graphinout",
+                "username": "${{ env.GITHUB_ACTOR }}",
+                "password": "${{ env.GITHUB_TOKEN }}"
+            }]
 
       # --- This single step replaces the previous four ---
       - name: 🔨 Build, Test, and Package all modules
