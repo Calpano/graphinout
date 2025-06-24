@@ -59,7 +59,7 @@ jobs:
 
       - name: 🔨️ Build & ⬇ install readers
         working-directory: graphinout
-        run: mvn clean -pl !base,!engine,!app-cmdline,!app-rest-service install
+        run: mvn clean -pl !base,!engine install
 
       - name: 🔨️ Build & ⬇ install engine
         working-directory: graphinout
