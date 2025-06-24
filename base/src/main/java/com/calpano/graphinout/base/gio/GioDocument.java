@@ -9,7 +9,6 @@ import java.util.Objects;
  */
 public class GioDocument extends GioElementWithDescription {
 
-    // Constructors
     public GioDocument() {
         super();
     }
@@ -22,7 +21,6 @@ public class GioDocument extends GioElementWithDescription {
         super(customAttributes, description);
     }
 
-    // Builder
     public static GioDocumentBuilder builder() {
         return new GioDocumentBuilder();
     }
@@ -46,7 +44,6 @@ public class GioDocument extends GioElementWithDescription {
         }
     }
 
-    // equals, hashCode, toString
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
