@@ -30,7 +30,7 @@
             <version>1.5.1</version>
             <exclusions>
                 <exclusion>
-                    <groupId>maven:org.apache.commons</groupId>
+                    <groupId>org.apache.commons</groupId>
                     <artifactId>commons-text</artifactId>
                 </exclusion>
             </exclusions>
