@@ -18,35 +18,39 @@ jobs:
       MAVEN_OPTS: "-Xmx6144m"
     steps:
       - name: ↙️ Check out repository code from git
-        uses: actions/checkout@v3
-        with:
-          repository: Calpano/graphinout
-          path: graphinout
+        uses: actions/checkout@v4
 
       - name: ☕ Setup Java JDK and Authenticate with GitHub Packages
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
           cache: 'maven'
           server-id: github # This ID must match the <id> in your pom.xml's <distributionManagement>
 
-      - name: ⬇️ Install root project
+      # --- This single step replaces the previous four ---
+      - name: 🔨 Build, Test, and Package all modules
         working-directory: graphinout
-        run: mvn clean -N install
+        run: mvn clean install --batch-mode
 
-      - name: 🔨️ Build & ⬇ install base
-        working-directory: graphinout/base
-        run: mvn clean install
-
-      - name: 🔨️ Build & ⬇ install readers
-        working-directory: graphinout
-        run: mvn clean -pl !base,!engine install
-
-      - name: 🔨️ Build & ⬇ install engine
-        working-directory: graphinout
-        run: mvn clean -pl engine install
+#      - name: ⬇️ Install root project
+#        working-directory: graphinout
+#        run: mvn clean -N install
+#
+#      - name: 🔨️ Build & ⬇ install base
+#        working-directory: graphinout/base
+#        run: mvn clean install
+#
+#      - name: 🔨️ Build & ⬇ install readers
+#        working-directory: graphinout
+#        run: mvn clean -pl !base,!engine install
+#
+#      - name: 🔨️ Build & ⬇ install engine
+#        working-directory: graphinout
+#        run: mvn clean -pl engine install
 
       - name: ↗️ Deploy to Github Package Registry
+        # TODO enable when deploy works
+        # if: github.ref == 'refs/heads/main'
         working-directory: graphinout
         run: mvn deploy --batch-mode -DskipTests
