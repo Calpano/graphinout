@@ -8,7 +8,7 @@ on:
 
 jobs:
   # This steps uses the maven cache better
-  Prepare-Maven:
+  The-Build:
     runs-on: ubuntu-latest
     # Grant permissions for GITHUB_TOKEN to upload packages
     permissions:
@@ -30,33 +30,6 @@ jobs:
           java-version: '21'
           cache: 'maven'
           server-id: github # This ID must match the <id> in your pom.xml's <distributionManagement>
-
-      - name: "🐹 Download all dependencies and 'go offline'"
-        working-directory: graphinout
-        run: mvn --batch-mode org.apache.maven.plugins:maven-dependency-plugin:3.2.0:go-offline
-
-  Build-and-Test:
-    needs: Prepare-Maven
-    runs-on: ubuntu-latest
-    # Grant permissions for GITHUB_TOKEN to upload packages
-    permissions:
-      contents: read
-      packages: write
-    env:
-      MAVEN_OPTS: "-Xmx6144m"
-    steps:
-      - name: ↙️ Check out repository code from git
-        uses: actions/checkout@v3
-        with:
-          repository: Calpano/graphinout
-          path: graphinout
-
-      - name: ☕ Setup Java JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'maven'
 
       - name: ⬇️ Install root project
         working-directory: graphinout
