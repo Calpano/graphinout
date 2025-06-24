@@ -6,9 +6,9 @@ import java.util.Optional;
 
 /**
  * In GraphML there may be data-functions attached to graphs, nodes, ports, edges, hyperedges and endpoint and to
- * the whole collection of graphs described by the content of <graphml>. These functions are declared by <key> elements
- * (children of <graphml>) and defined by <data> elements.
- * Occurence: <graphml>, <graph>, <node>, <port>, <edge>, <hyperedge>, and <endpoint>.
+ * the whole collection of graphs described by the content of &lt;graphml&gt;. These functions are declared by &lt;key&gt; elements
+ * (children of &lt;graphml&gt;) and defined by &lt;data&gt; elements.
+ * Occurence: &lt;graphml&gt;, &lt;graph&gt;, &lt;node&gt;, &lt;port&gt;, &lt;edge&gt;, &lt;hyperedge&gt;, and &lt;endpoint&gt;.
  *
  * @author rbaba
 

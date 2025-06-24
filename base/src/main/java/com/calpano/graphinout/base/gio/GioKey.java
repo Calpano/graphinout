@@ -17,9 +17,9 @@ import java.util.Optional;
  * The type of the GraphML-Attribute can be either boolean, int, long, float, double, or string.
  * <p>
  * In GraphML there may be data-functions attached to graphs, nodes, ports, edges, hyperedges and endpoint and
- * to the whole collection of graphs described by the content of <graphml>.
- * These functions are declared by <key> elements (children of <graphml>) and defined by <data> elements.
- * Occurence: <graphml>.
+ * to the whole collection of graphs described by the content of &lt;graphml&gt;.
+ * These functions are declared by &lt;key&gt; elements (children of &lt;graphml&gt;) and defined by &lt;data&gt; elements.
+ * Occurence: &lt;graphml&gt;.
  * @see GioData {@link GioData}
  */
 public class GioKey extends GioElementWithDescription {

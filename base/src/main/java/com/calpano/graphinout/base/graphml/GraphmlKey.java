@@ -17,16 +17,16 @@ import java.util.Objects;
  * The type of the GraphML-Attribute can be either boolean, int, long, float, double, or string.
  * <p>
  * In GraphML there may be data-functions attached to graphs, nodes, ports, edges, hyperedges and endpoint and
- * to the whole collection of graphs described by the content of <graphml>.
- * These functions are declared by <key> elements (children of <graphml>) and defined by <data> elements.
- * Occurence: <graphml>.
+ * to the whole collection of graphs described by the content of &lt;graphml&gt;.
+ * These functions are declared by &lt;key&gt; elements (children of &lt;graphml&gt;) and defined by &lt;data&gt; elements.
+ * Occurence: &lt;graphml&gt;.
  * @see GraphmlData {@link GraphmlData}
  */
 public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
 
     public static final String TAGNAME = "key";
     /**
-     * identifies this <key>
+     * identifies this &lt;key&gt;
      * <p>
      * The name of this attribute in key is <b>id</b>
      */
@@ -46,7 +46,7 @@ public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
     /**
      * describes the domain of definition for the corresponding graph attribute.
      * <p>
-     * Simple type for the for attribute of <key>.
+     * Simple type for the for attribute of &lt;key&gt;.
      * key.for.type is a restriction of xs:NMTOKEN Allowed values: all, graph, node, edge, hyperedge, port and endpoint.
      * <p>
      * The name of this attribute in key is <b>for</b>

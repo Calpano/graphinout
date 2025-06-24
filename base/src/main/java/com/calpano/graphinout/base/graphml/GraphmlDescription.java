@@ -9,8 +9,8 @@ import java.util.Objects;
 /**
  * @author rbaba
 
- * Provides human-readable descriptions for the GraphML element containing this <desc> as its first child.
- * Occurence: <key>, <graphml>, <graph>, <node>, <port>, <edge>, <hyperedge>, and <endpoint>.
+ * Provides human-readable descriptions for the GraphML element containing this &lt;desc&gt; as its first child.
+ * Occurence: &lt;key&gt;, &lt;graphml&gt;, &lt;graph&gt;, &lt;node&gt;, &lt;port&gt;, &lt;edge&gt;, &lt;hyperedge&gt;, and &lt;endpoint&gt;.
  */
 public class GraphmlDescription implements XMLValue {
     private String value;

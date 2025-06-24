@@ -9,9 +9,9 @@ import java.util.Objects;
  * @author rbaba
 
  * <p>
- * Graphs and nodes are declared by the elements <graph> and <node>, respectively.
- * The optional <locator>-child of these elements point to their definition.
- * (If there is no <locator>-child the graphs/nodes are defined by their content). Occurence: <graph>, and <node>
+ * Graphs and nodes are declared by the elements &lt;graph&gt; and &lt;node&gt;, respectively.
+ * The optional &lt;locator&gt;-child of these elements point to their definition.
+ * (If there is no &lt;locator&gt;-child the graphs/nodes are defined by their content). Occurence: &lt;graph&gt;, and &lt;node&gt;
  */
 public class GraphmlLocator implements XMLValue {
 

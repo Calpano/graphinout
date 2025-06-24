@@ -19,7 +19,7 @@ import java.util.Objects;
  * the source, resp. target, node. Correspondingly, the endpoint element has an optional XML-Attribute port.
  * <p>
  * Nodes may be structured by ports; thus edges are not only attached to a node but to a certain port in this node.
- * Occurence: <node>, <port>.
+ * Occurence: &lt;node&gt;, &lt;port&gt;.
  */
 
 public class GioPort extends GioElementWithDescription {

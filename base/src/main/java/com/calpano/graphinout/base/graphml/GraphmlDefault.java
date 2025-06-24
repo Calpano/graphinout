@@ -7,10 +7,10 @@ import java.util.Objects;
  * @author rbaba
 
  * @implNote In GraphML there may be data-functions attached to graphs, nodes, ports, edges, hyperedges and endpoint and to the
- * whole collection of graphs described by the content of <graphml>.
+ * whole collection of graphs described by the content of &lt;graphml&gt;.
  * <p>
- * These functions are declared by <key> elements (children of <graphml>) and defined by <data> elements.
- * The (optional) <default> child of <key> gives the default value for the corresponding function. Occurence: <key>.
+ * These functions are declared by &lt;key&gt; elements (children of &lt;graphml&gt;) and defined by &lt;data&gt; elements.
+ * The (optional) &lt;default&gt; child of &lt;key&gt; gives the default value for the corresponding function. Occurence: &lt;key&gt;.
  */
 public class GraphmlDefault implements XMLValue {
     public static final String TAGNAME = "default";
@@ -19,7 +19,7 @@ public class GraphmlDefault implements XMLValue {
      */
     private String value;
     /**
-     * Complex type for the <default> element. default.type is mixed, that is, data may contain #PCDATA. Content type:
+     * Complex type for the &lt;default&gt; element. default.type is mixed, that is, data may contain #PCDATA. Content type:
      * extension of data-extension.
      * type which is empty per default.
      * <p>
