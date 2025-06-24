@@ -1,5 +1,6 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.base.graphml.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.foundation.xml.XmlWriterSpy;
 import org.junit.jupiter.api.BeforeEach;

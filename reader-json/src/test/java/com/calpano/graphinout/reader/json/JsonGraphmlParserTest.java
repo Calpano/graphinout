@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.json;
 
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.gio.GioWriterImpl;
+import com.calpano.graphinout.base.graphml.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;

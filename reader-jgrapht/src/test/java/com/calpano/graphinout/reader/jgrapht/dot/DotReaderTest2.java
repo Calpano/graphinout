@@ -6,7 +6,7 @@ import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import com.calpano.graphinout.foundation.output.OutputSink;
 import com.calpano.graphinout.base.reader.ContentError;
-import com.calpano.graphinout.base.reader.GioReader;
+import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.validation.GraphmlValidator;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

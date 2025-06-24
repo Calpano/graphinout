@@ -2,11 +2,11 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.AbstractReaderTest;
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.gio.LoggingGioWriter;
+import com.calpano.graphinout.base.writer.LoggingGioWriter;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import com.calpano.graphinout.base.reader.ContentError;
-import com.calpano.graphinout.base.reader.GioReader;
+import com.calpano.graphinout.base.gio.GioReader;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

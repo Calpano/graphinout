@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.jgrapht;
 
 import com.calpano.graphinout.base.GioService;
-import com.calpano.graphinout.base.reader.GioReader;
+import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.reader.jgrapht.dot.DotReader;
 
 import java.util.Arrays;

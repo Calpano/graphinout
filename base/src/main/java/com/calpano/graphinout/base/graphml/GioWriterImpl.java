@@ -1,21 +1,17 @@
-package com.calpano.graphinout.base.gio;
+package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.GraphmlData;
-import com.calpano.graphinout.base.graphml.GraphmlDefault;
-import com.calpano.graphinout.base.graphml.GraphmlDescription;
-import com.calpano.graphinout.base.graphml.GraphmlDocument;
-import com.calpano.graphinout.base.graphml.GraphmlEdge;
-import com.calpano.graphinout.base.graphml.GraphmlElement;
-import com.calpano.graphinout.base.graphml.GraphmlEndpoint;
-import com.calpano.graphinout.base.graphml.GraphmlGraph;
-import com.calpano.graphinout.base.graphml.GraphmlGraphCommonElement;
-import com.calpano.graphinout.base.graphml.GraphmlHyperEdge;
-import com.calpano.graphinout.base.graphml.GraphmlKey;
-import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
-import com.calpano.graphinout.base.graphml.GraphmlLocator;
-import com.calpano.graphinout.base.graphml.GraphmlNode;
-import com.calpano.graphinout.base.graphml.GraphmlPort;
-import com.calpano.graphinout.base.graphml.GraphmlWriter;
+import com.calpano.graphinout.base.gio.Direction;
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioElement;
+import com.calpano.graphinout.base.gio.GioElementWithDescription;
+import com.calpano.graphinout.base.gio.GioEndpoint;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioPort;
+import com.calpano.graphinout.base.gio.GioWriter;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -179,7 +175,7 @@ public class GioWriterImpl implements GioWriter {
             case Out -> Direction.Out;
             case Undirected -> Direction.Undirected;
         };
-        graphmlEndpoint.setType(dir.asGraphml());
+        graphmlEndpoint.setType(GraphmlDirection.of(dir));
         return graphmlEndpoint;
     }
 

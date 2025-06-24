@@ -6,7 +6,7 @@ import com.calpano.graphinout.foundation.input.MultiInputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
-import com.calpano.graphinout.base.reader.GioReader;
+import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapping;
 import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMappingLoader;
 

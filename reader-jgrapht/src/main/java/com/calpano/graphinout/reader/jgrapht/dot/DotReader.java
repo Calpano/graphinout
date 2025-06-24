@@ -4,7 +4,7 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
-import com.calpano.graphinout.base.reader.GioReader;
+import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.reader.jgrapht.JGraphTReader;
 import org.jgrapht.nio.dot.DOTEventDrivenImporter;
 import org.slf4j.Logger;

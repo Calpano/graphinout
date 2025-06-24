@@ -1,13 +1,10 @@
 package com.calpano.graphinout.reader.example;
 
 import com.calpano.graphinout.base.AbstractReaderTest;
-import com.calpano.graphinout.base.reader.GioReader;
-import org.junit.jupiter.api.Test;
+import com.calpano.graphinout.base.gio.GioReader;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class TripleTextReaderTest extends AbstractReaderTest {
 

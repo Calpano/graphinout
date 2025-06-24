@@ -1,9 +1,10 @@
-package com.calpano.graphinout.base.reader;
+package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.gio.DelegatingGioWriter;
-import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.gio.GioWriterImpl;
-import com.calpano.graphinout.base.gio.ValidatingGioWriter;
+import com.calpano.graphinout.base.writer.DelegatingGioWriter;
+import com.calpano.graphinout.base.graphml.GioWriterImpl;
+import com.calpano.graphinout.base.writer.ValidatingGioWriter;
+import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.base.validation.ValidatingGraphMlWriter;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public interface GioReader {
     default boolean isValid(InputSource singleInputSource) throws IOException {
         AtomicBoolean valid = new AtomicBoolean(true);
         Consumer<ContentError> eh = error -> {
-            if (error.level == ContentError.ErrorLevel.Error || error.level == ContentError.ErrorLevel.Warn) {
+            if (error.getLevel() == ContentError.ErrorLevel.Error || error.getLevel() == ContentError.ErrorLevel.Warn) {
                 valid.set(false);
             }
         };

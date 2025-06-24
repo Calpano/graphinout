@@ -1,10 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.graphml.GraphmlDirection;
-
 /**
  * @author rbaba
-
  * @implNote <p> Graphs in GraphML are mixed, in other words, they can contain directed and undirected edges at the same
  * time. If no direction is specified when an edge is declared, the default direction is applied to the edge. The
  * default direction is declared as the XML Attribute edgedefault of the graph element. The two possible value for this
@@ -25,14 +22,6 @@ public enum Direction {
             case "undir" -> Undirected;
             default -> throw new IllegalArgumentException("Could not interpret '" + strDirection +
                     "' as graphml endpoint direction");
-        };
-    }
-
-    public GraphmlDirection asGraphml() {
-        return switch (this) {
-            case In -> GraphmlDirection.In;
-            case Out -> GraphmlDirection.Out;
-            case Undirected -> GraphmlDirection.Undirected;
         };
     }
 

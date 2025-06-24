@@ -1,8 +1,7 @@
 package com.calpano.graphinout.reader.example;
 
 import com.calpano.graphinout.base.GioService;
-import com.calpano.graphinout.base.reader.GioReader;
-import com.calpano.graphinout.reader.example.ExampleReader;
+import com.calpano.graphinout.base.gio.GioReader;
 
 import java.util.Arrays;
 import java.util.List;

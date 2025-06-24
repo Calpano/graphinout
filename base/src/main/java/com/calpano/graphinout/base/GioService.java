@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base;
 
-import com.calpano.graphinout.base.reader.GioReader;
+import com.calpano.graphinout.base.gio.GioReader;
 
 import java.util.List;
 

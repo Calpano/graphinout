@@ -1,4 +1,13 @@
-package com.calpano.graphinout.base.gio;
+package com.calpano.graphinout.base.writer;
+
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioPort;
+import com.calpano.graphinout.base.gio.GioWriter;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
