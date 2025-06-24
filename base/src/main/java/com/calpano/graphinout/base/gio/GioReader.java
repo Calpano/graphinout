@@ -1,12 +1,12 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.writer.DelegatingGioWriter;
 import com.calpano.graphinout.base.graphml.GioWriterImpl;
-import com.calpano.graphinout.base.writer.ValidatingGioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
-import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.base.validation.ValidatingGraphMlWriter;
+import com.calpano.graphinout.base.writer.DelegatingGioWriter;
+import com.calpano.graphinout.base.writer.ValidatingGioWriter;
+import com.calpano.graphinout.foundation.input.InputSource;
 import org.slf4j.Logger;
 
 import java.io.IOException;

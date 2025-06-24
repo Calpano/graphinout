@@ -10,12 +10,12 @@ import com.calpano.graphinout.base.gio.GioGraph;
 import com.calpano.graphinout.base.gio.GioKey;
 import com.calpano.graphinout.base.gio.GioKeyForType;
 import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.foundation.input.InputSource;
-import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
-import com.calpano.graphinout.base.gio.GioReader;
+import com.calpano.graphinout.foundation.input.InputSource;
+import com.calpano.graphinout.foundation.input.SingleInputSource;
 
 import java.io.BufferedReader;
 import java.io.IOException;

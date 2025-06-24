@@ -1,11 +1,17 @@
 package com.calpano.graphinout.reader.tgf;
 
-import com.calpano.graphinout.base.gio.*;
-import com.calpano.graphinout.foundation.input.InputSource;
-import com.calpano.graphinout.foundation.input.SingleInputSource;
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioEndpoint;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioReader;
+import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
-import com.calpano.graphinout.base.gio.GioReader;
+import com.calpano.graphinout.foundation.input.InputSource;
+import com.calpano.graphinout.foundation.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +19,11 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class TgfReader implements GioReader {

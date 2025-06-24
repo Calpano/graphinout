@@ -1,6 +1,13 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.gio.*;
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioElementWithDescription;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,10 +25,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 class GraphmlSAXHandlerTest {
 

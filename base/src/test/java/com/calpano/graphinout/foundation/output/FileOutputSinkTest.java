@@ -1,6 +1,5 @@
 package com.calpano.graphinout.foundation.output;
 
-import com.calpano.graphinout.foundation.output.FileOutputSink;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

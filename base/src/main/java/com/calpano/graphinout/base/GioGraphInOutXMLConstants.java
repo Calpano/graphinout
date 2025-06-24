@@ -2,9 +2,9 @@ package com.calpano.graphinout.base;
 
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
+import com.calpano.graphinout.foundation.output.OutputSink;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
-import com.calpano.graphinout.foundation.output.OutputSink;
 
 public class GioGraphInOutXMLConstants {
 

@@ -1,7 +1,5 @@
 package com.calpano.graphinout.foundation.xml;
 
-import com.calpano.graphinout.foundation.xml.XmlWriter;
-
 import java.io.IOException;
 import java.util.Map;
 

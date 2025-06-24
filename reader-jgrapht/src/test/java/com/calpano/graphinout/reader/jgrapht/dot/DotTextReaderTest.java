@@ -8,8 +8,8 @@ import com.calpano.graphinout.base.gio.GioEndpointDirection;
 import com.calpano.graphinout.base.gio.GioGraph;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.foundation.input.SingleInputSource;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
@@ -37,7 +37,9 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class DotTextReaderTest {

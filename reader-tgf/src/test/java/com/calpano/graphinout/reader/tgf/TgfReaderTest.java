@@ -1,8 +1,13 @@
 package com.calpano.graphinout.reader.tgf;
 
-import com.calpano.graphinout.base.gio.*;
-import com.calpano.graphinout.foundation.input.SingleInputSource;
+import com.calpano.graphinout.base.gio.GioData;
+import com.calpano.graphinout.base.gio.GioDocument;
+import com.calpano.graphinout.base.gio.GioEdge;
+import com.calpano.graphinout.base.gio.GioGraph;
+import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.foundation.input.SingleInputSource;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
@@ -23,7 +28,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 class TgfReaderTest {
     public static final String EMPTY_FILE = "";

@@ -1,6 +1,5 @@
 package com.calpano.graphinout.foundation.input;
 
-import com.calpano.graphinout.foundation.input.InputSource;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -4,10 +4,10 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlDocument;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
+import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import com.calpano.graphinout.foundation.output.OutputSink;
-import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class XMLNamespaceHandlingTest {

@@ -4,11 +4,11 @@ import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.foundation.input.FilesMultiInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
-import java.io.File;
-import java.io.IOException;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.io.IOException;
 
 class JsonReaderTest {
 

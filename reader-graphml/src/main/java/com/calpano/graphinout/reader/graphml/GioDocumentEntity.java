@@ -2,8 +2,6 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioDocument;
 
-import java.util.ArrayList;
-
 public class GioDocumentEntity extends AbstractGraphmlEntity<GioDocument> implements GraphmlEntity<GioDocument> {
     private final GioDocument gioDocument;
 

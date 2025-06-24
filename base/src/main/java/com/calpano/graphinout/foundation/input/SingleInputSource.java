@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 public interface SingleInputSource extends InputSource {
 
     static SingleInputSource of(String name, String content) {

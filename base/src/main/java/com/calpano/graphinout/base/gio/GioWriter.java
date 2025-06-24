@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.gio;
 
-import javax.annotation.Detainted;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;

@@ -1,9 +1,5 @@
 package com.calpano.graphinout.foundation.output;
 
-import com.calpano.graphinout.base.validation.GraphmlWriterEndException;
-import com.calpano.graphinout.base.validation.GraphmlWriterException;
-import com.calpano.graphinout.base.validation.GraphmlWriterStartException;
-import com.calpano.graphinout.base.validation.ValidatingGraphMlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlData;
 import com.calpano.graphinout.base.graphml.GraphmlDocument;
 import com.calpano.graphinout.base.graphml.GraphmlEdge;
@@ -14,6 +10,10 @@ import com.calpano.graphinout.base.graphml.GraphmlKey;
 import com.calpano.graphinout.base.graphml.GraphmlLocator;
 import com.calpano.graphinout.base.graphml.GraphmlNode;
 import com.calpano.graphinout.base.graphml.GraphmlPort;
+import com.calpano.graphinout.base.validation.GraphmlWriterEndException;
+import com.calpano.graphinout.base.validation.GraphmlWriterException;
+import com.calpano.graphinout.base.validation.GraphmlWriterStartException;
+import com.calpano.graphinout.base.validation.ValidatingGraphMlWriter;
 import com.calpano.graphinout.base.validation.ValidatingGraphMlWriter.CurrentElement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

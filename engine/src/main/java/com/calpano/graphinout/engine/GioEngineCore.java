@@ -1,19 +1,19 @@
 package com.calpano.graphinout.engine;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import com.calpano.graphinout.base.GioService;
+import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
+import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.base.reader.ContentErrors;
+import com.calpano.graphinout.base.reader.InMemoryErrorHandler;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.OutputSink;
-import com.calpano.graphinout.base.reader.ContentError;
-import com.calpano.graphinout.base.reader.ContentErrors;
-import com.calpano.graphinout.base.gio.GioReader;
-import com.calpano.graphinout.base.reader.InMemoryErrorHandler;
 import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
+import org.slf4j.Logger;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class GioEngineCore {
 

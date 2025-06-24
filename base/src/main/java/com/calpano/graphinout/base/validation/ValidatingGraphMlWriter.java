@@ -1,12 +1,32 @@
 package com.calpano.graphinout.base.validation;
 
-import com.calpano.graphinout.base.graphml.*;
+import com.calpano.graphinout.base.graphml.GraphmlData;
+import com.calpano.graphinout.base.graphml.GraphmlDocument;
+import com.calpano.graphinout.base.graphml.GraphmlEdge;
+import com.calpano.graphinout.base.graphml.GraphmlEndpoint;
+import com.calpano.graphinout.base.graphml.GraphmlGraph;
+import com.calpano.graphinout.base.graphml.GraphmlHyperEdge;
+import com.calpano.graphinout.base.graphml.GraphmlKey;
+import com.calpano.graphinout.base.graphml.GraphmlLocator;
+import com.calpano.graphinout.base.graphml.GraphmlNode;
+import com.calpano.graphinout.base.graphml.GraphmlPort;
+import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;

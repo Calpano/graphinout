@@ -1,18 +1,18 @@
 package com.calpano.graphinout.base;
 
-import com.calpano.graphinout.base.writer.DelegatingGioWriter;
+import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.graphml.GioWriterImpl;
-import com.calpano.graphinout.base.writer.ValidatingGioWriter;
 import com.calpano.graphinout.base.graphml.DelegatingGraphmlWriter;
+import com.calpano.graphinout.base.graphml.GioWriterImpl;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
+import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.base.validation.ValidatingGraphMlWriter;
+import com.calpano.graphinout.base.writer.DelegatingGioWriter;
+import com.calpano.graphinout.base.writer.ValidatingGioWriter;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import com.calpano.graphinout.foundation.output.OutputSink;
-import com.calpano.graphinout.base.reader.ContentError;
-import com.calpano.graphinout.base.gio.GioReader;
-import com.calpano.graphinout.base.validation.ValidatingGraphMlWriter;
 import com.calpano.graphinout.foundation.xml.ValidatingXmlWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriterImpl;

@@ -1,6 +1,5 @@
 package com.calpano.graphinout.foundation.output;
 
-import com.calpano.graphinout.foundation.output.OutputSink;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

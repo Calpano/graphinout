@@ -1,10 +1,10 @@
 package com.calpano.graphinout.reader.json.mapper;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import javax.annotation.Nonnull;
 import java.util.Objects;
 

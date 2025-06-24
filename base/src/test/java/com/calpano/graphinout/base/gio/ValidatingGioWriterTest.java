@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.writer.DelegatingGioWriter;
 import com.calpano.graphinout.base.graphml.GioWriterImpl;
+import com.calpano.graphinout.base.writer.DelegatingGioWriter;
 import com.calpano.graphinout.base.writer.ValidatingGioWriter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,9 @@ import java.net.URL;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ValidatingGioWriterTest {
     public static final String NODE_ID_1 = "node1";
