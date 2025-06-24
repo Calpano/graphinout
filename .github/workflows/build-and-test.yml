@@ -65,11 +65,7 @@ jobs:
         working-directory: graphinout
         run: mvn clean -pl engine install
 
-      - name: ↗️ Deploy
-        working-directory: graphinout
-        run: mvn deploy
-
-      - name: Deploy to Github Package Registry
+      - name: ↗️ Deploy to Github Package Registry
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
