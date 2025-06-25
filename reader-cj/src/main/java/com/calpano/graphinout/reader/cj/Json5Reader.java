@@ -11,8 +11,10 @@ import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.amazon.ion.IonReader;
+import com.amazon.ion.IonSystem;
+import com.amazon.ion.IonType;
+import com.amazon.ion.system.IonSystemBuilder;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
 /**
  * Reader for JSON5 format (JSON with comments and other extensions).
@@ -33,7 +34,7 @@ import java.util.regex.Pattern;
  */
 public class Json5Reader implements GioReader {
 
-    private static final Pattern COMMENT_PATTERN = Pattern.compile("//.*$", Pattern.MULTILINE);
+    private static final IonSystem ION_SYSTEM = IonSystemBuilder.standard().build();
 
     private @Nullable Consumer<ContentError> errorHandler;
 
@@ -61,13 +62,12 @@ public class Json5Reader implements GioReader {
         }
 
         try {
-            // Strip JSON5 comments to make it valid JSON
-            String jsonContent = stripComments(content);
+            // Use Amazon Ion to parse JSON5 content directly
+            // Ion can handle JSON format and has better support for JSON5 features
+            IonReader reader = ION_SYSTEM.newReader(content);
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(jsonContent);
-
-            processJson5Content(rootNode, writer);
+            processJson5ContentWithIon(reader, writer);
+            reader.close();
 
         } catch (Exception e) {
             if (errorHandler != null) {
@@ -77,30 +77,33 @@ public class Json5Reader implements GioReader {
         }
     }
 
-    private String stripComments(String json5Content) {
-        // Simple comment stripping - removes // comments
-        return COMMENT_PATTERN.matcher(json5Content).replaceAll("");
-    }
-
-    private void processJson5Content(JsonNode rootNode, GioWriter writer) throws IOException {
+    private void processJson5ContentWithIon(IonReader reader, GioWriter writer) throws IOException {
         writer.startDocument(GioDocument.builder().build());
         writer.startGraph(GioGraph.builder().build());
 
         Map<String, String> createdNodes = new HashMap<>();
+        Map<String, Object> rootData = new HashMap<>();
+
+        // Parse the entire JSON structure first
+        parseIonStructure(reader, rootData);
 
         // Process nodes
-        JsonNode nodesNode = rootNode.get("nodes");
-        if (nodesNode != null && nodesNode.isArray()) {
-            for (JsonNode nodeJson : nodesNode) {
-                processNode(nodeJson, writer, createdNodes);
+        Object nodesObj = rootData.get("nodes");
+        if (nodesObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> nodesList = (List<Map<String, Object>>) nodesObj;
+            for (Map<String, Object> nodeData : nodesList) {
+                processNodeFromMap(nodeData, writer, createdNodes);
             }
         }
 
         // Process edges
-        JsonNode edgesNode = rootNode.get("edges");
-        if (edgesNode != null && edgesNode.isArray()) {
-            for (JsonNode edgeJson : edgesNode) {
-                processEdge(edgeJson, writer, createdNodes);
+        Object edgesObj = rootData.get("edges");
+        if (edgesObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> edgesList = (List<Map<String, Object>>) edgesObj;
+            for (Map<String, Object> edgeData : edgesList) {
+                processEdgeFromMap(edgeData, writer, createdNodes);
             }
         }
 
@@ -108,10 +111,61 @@ public class Json5Reader implements GioReader {
         writer.endDocument();
     }
 
-    private void processNode(JsonNode nodeJson, GioWriter writer, Map<String, String> createdNodes) throws IOException {
-        JsonNode idNode = nodeJson.get("id");
-        if (idNode != null) {
-            String nodeId = idNode.isTextual() ? idNode.asText() : String.valueOf(idNode.asInt());
+    private void parseIonStructure(IonReader reader, Map<String, Object> result) throws IOException {
+        IonType type = reader.next();
+        if (type == IonType.STRUCT) {
+            reader.stepIn();
+            while ((type = reader.next()) != null) {
+                String fieldName = reader.getFieldName();
+                Object value = parseIonValue(reader);
+                result.put(fieldName, value);
+            }
+            reader.stepOut();
+        }
+    }
+
+    private Object parseIonValue(IonReader reader) throws IOException {
+        IonType type = reader.getType();
+        if (reader.isNullValue()) {
+            return null;
+        }
+
+        switch (type) {
+            case STRING:
+                return reader.stringValue();
+            case INT:
+                return reader.intValue();
+            case FLOAT:
+                return reader.doubleValue();
+            case BOOL:
+                return reader.booleanValue();
+            case LIST:
+                List<Object> list = new ArrayList<>();
+                reader.stepIn();
+                while (reader.next() != null) {
+                    list.add(parseIonValue(reader));
+                }
+                reader.stepOut();
+                return list;
+            case STRUCT:
+                Map<String, Object> struct = new HashMap<>();
+                reader.stepIn();
+                while (reader.next() != null) {
+                    String fieldName = reader.getFieldName();
+                    Object value = parseIonValue(reader);
+                    struct.put(fieldName, value);
+                }
+                reader.stepOut();
+                return struct;
+            default:
+                return reader.stringValue(); // fallback
+        }
+    }
+
+    private void processNodeFromMap(Map<String, Object> nodeData, GioWriter writer, Map<String, String> createdNodes) throws IOException {
+        Object idObj = nodeData.get("id");
+        if (idObj != null) {
+            String nodeId = idObj instanceof String ? (String) idObj : String.valueOf(idObj);
 
             if (!createdNodes.containsKey(nodeId)) {
                 writer.startNode(GioNode.builder().id(nodeId).build());
@@ -121,14 +175,14 @@ public class Json5Reader implements GioReader {
         }
     }
 
-    private void processEdge(JsonNode edgeJson, GioWriter writer, Map<String, String> createdNodes) throws IOException {
+    private void processEdgeFromMap(Map<String, Object> edgeData, GioWriter writer, Map<String, String> createdNodes) throws IOException {
         // Handle simple source/target format
-        JsonNode sourceNode = edgeJson.get("source");
-        JsonNode targetNode = edgeJson.get("target");
+        Object sourceObj = edgeData.get("source");
+        Object targetObj = edgeData.get("target");
 
-        if (sourceNode != null && targetNode != null) {
-            String sourceId = sourceNode.isTextual() ? sourceNode.asText() : String.valueOf(sourceNode.asInt());
-            String targetId = targetNode.isTextual() ? targetNode.asText() : String.valueOf(targetNode.asInt());
+        if (sourceObj != null && targetObj != null) {
+            String sourceId = sourceObj instanceof String ? (String) sourceObj : String.valueOf(sourceObj);
+            String targetId = targetObj instanceof String ? (String) targetObj : String.valueOf(targetObj);
 
             // Ensure nodes exist
             ensureNodeExists(sourceId, writer, createdNodes);
@@ -146,22 +200,24 @@ public class Json5Reader implements GioReader {
         }
 
         // Handle endpoints format
-        JsonNode endpointsNode = edgeJson.get("endpoints");
-        if (endpointsNode != null && endpointsNode.isArray()) {
+        Object endpointsObj = edgeData.get("endpoints");
+        if (endpointsObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> endpointsList = (List<Map<String, Object>>) endpointsObj;
             List<GioEndpoint> endpoints = new ArrayList<>();
 
-            for (JsonNode endpointJson : endpointsNode) {
-                JsonNode nodeIdNode = endpointJson.get("node");
-                JsonNode portNode = endpointJson.get("port");
-                JsonNode directionNode = endpointJson.get("direction");
+            for (Map<String, Object> endpointData : endpointsList) {
+                Object nodeIdObj = endpointData.get("node");
+                Object portObj = endpointData.get("port");
+                Object directionObj = endpointData.get("direction");
 
-                if (nodeIdNode != null) {
-                    String nodeId = nodeIdNode.isTextual() ? nodeIdNode.asText() : String.valueOf(nodeIdNode.asInt());
+                if (nodeIdObj != null) {
+                    String nodeId = nodeIdObj instanceof String ? (String) nodeIdObj : String.valueOf(nodeIdObj);
                     ensureNodeExists(nodeId, writer, createdNodes);
 
                     GioEndpoint.GioEndpointBuilder endpointBuilder = GioEndpoint.builder().node(nodeId);
-                    if (portNode != null) {
-                        endpointBuilder.port(portNode.asText());
+                    if (portObj != null) {
+                        endpointBuilder.port(String.valueOf(portObj));
                     }
                     endpoints.add(endpointBuilder.build());
                 }

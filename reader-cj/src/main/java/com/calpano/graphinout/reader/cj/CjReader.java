@@ -29,9 +29,10 @@ import java.util.regex.Pattern;
 
 public class CjReader implements GioReader {
 
+    public static final GioFileFormat FORMAT = new GioFileFormat("connected-json", "Connected JSON Format", //
+            ".con.json", ".con.json5", ".connected.json", ".connected.json5");
     private static final Logger log = LoggerFactory.getLogger(Json5Reader.class);
     private static final Pattern COMMENT_PATTERN = Pattern.compile("//.*$", Pattern.MULTILINE);
-
     private @Nullable Consumer<ContentError> errorHandler;
 
     @Override
@@ -41,7 +42,7 @@ public class CjReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("connected-json", "Connected JSON Format", ".con.json");
+        return FORMAT;
     }
 
     @Override
