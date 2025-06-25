@@ -1,7 +1,6 @@
 package com.calpano.graphinout.base.cj;
 
 import com.calpano.graphinout.base.json.JsonEventStream;
-import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**
  * This API embeds stream of conceptual opening and closing tags (read/write events) for <em>connected JSON</em> into a
@@ -53,79 +52,80 @@ import edu.umd.cs.findbugs.annotations.Nullable;
  */
 public interface CjEventStream extends JsonEventStream {
 
-    interface CjGraph {
 
-        @Nullable
-        String baseuri();
-
-        @Nullable
-        String edgedefault();
-
-        @Nullable
-        String id();
-
-        @Nullable
-        String label();
-
-    }
-
-    interface CjNode {
-
-        @Nullable
-        String id();
-
-        @Nullable
-        String label();
-
-    }
-
-    interface CjPort {
-
-        @Nullable
-        String id();
-
-        @Nullable
-        String label();
-
-    }
-
-    interface CjEdge {
-
-    }
-
-    interface CjEndpoint {
-
-    }
-
+    /**
+     * CJ Edge end event.
+     */
     void edgeEnd();
 
-    /** Sub-elements: {@link #graphStart(CjGraph) graph}, {@link #endpointStart(CjEndpoint) endpoint} */
+    /**
+     * CJ Edge start event.
+     * <p>
+     * Sub-elements:
+     * <ul>
+     *   <li>{@link #graphStart(CjGraph) Graph} - nested graphs within the edge</li>
+     *   <li>{@link #endpointStart(CjEndpoint) Endpoint} - edge endpoints connecting to nodes/ports</li>
+     * </ul>
+     */
     void edgeStart(CjEdge edge);
 
+    /**
+     * CJ Endpoint end event.
+     */
     void endpointEnd();
 
+    /**
+     * CJ Endpoint start event.
+     * <p>
+     * Sub-elements: None (leaf element)
+     */
     void endpointStart(CjEndpoint endpoint);
 
     /**
-     * CJ Graph
+     * CJ Graph end event.
      */
     void graphEnd() throws CjException;
 
     /**
-     * CJ Graph
+     * CJ Graph start event.
+     * <p>
+     * Sub-elements:
+     * <ul>
+     *   <li>{@link #nodeStart(CjNode) Node} - nodes within the graph</li>
+     *   <li>{@link #edgeStart(CjEdge) Edge} - edges within the graph</li>
+     * </ul>
      */
     void graphStart(CjGraph graph) throws CjException;
 
+    /**
+     * CJ Node end event.
+     */
     void nodeEnd();
 
     /**
-     * Sub-elements: {@link #graphStart(CjGraph) graph}, {@link #portStart(CjPort) port}
+     * CJ Node start event.
+     * <p>
+     * Sub-elements:
+     * <ul>
+     *   <li>{@link #graphStart(CjGraph) Graph} - nested graphs within the node (compound nodes)</li>
+     *   <li>{@link #portStart(CjPort) Port} - ports attached to the node</li>
+     * </ul>
      */
     void nodeStart(CjNode node);
 
+    /**
+     * CJ Port end event.
+     */
     void portEnd();
 
-    /** Sub-elements: {@link #portStart(CjPort) port} */
+    /**
+     * CJ Port start event.
+     * <p>
+     * Sub-elements:
+     * <ul>
+     *   <li>{@link #portStart(CjPort) Port} - nested sub-ports (hierarchical ports)</li>
+     * </ul>
+     */
     void portStart(CjPort port);
 
 

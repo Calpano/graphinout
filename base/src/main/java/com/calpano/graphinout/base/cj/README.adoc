@@ -1,2 +1,8 @@
 A Java API for the Connected JSON format.
 See http://j-s-o-n.org for more information.
+
+Current specification:
+https://calpano.github.io/connected-json/spec.html
+
+Raw:
+https://raw.githubusercontent.com/Calpano/connected-json/refs/heads/main/modules/ROOT/pages/spec.adoc[]
