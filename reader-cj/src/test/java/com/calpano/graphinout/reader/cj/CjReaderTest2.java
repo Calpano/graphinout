@@ -12,7 +12,7 @@ class CjReaderTest2 extends AbstractReaderTest {
 
     @Override
     protected List<GioReader> readersToTest() {
-        return Arrays.asList(new CjReader());
+        return Arrays.asList(new ConnectedJsonReader());
     }
 
 

@@ -11,13 +11,11 @@ import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import com.amazon.ion.IonReader;
-import com.amazon.ion.IonSystem;
-import com.amazon.ion.IonType;
-import com.amazon.ion.system.IonSystemBuilder;
+import com.calpano.graphinout.reader.cj.json.Json5Preprocessor;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -29,12 +27,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Reader for JSON5 format (JSON with comments and other extensions).
- * Handles the Connected JSON format with JSON5 syntax.
+ * Reader for JSON5 format (JSON with comments and other extensions). Handles the Connected JSON format with JSON5
+ * syntax.
  */
 public class Json5Reader implements GioReader {
 
-    private static final IonSystem ION_SYSTEM = IonSystemBuilder.standard().build();
+    private static final JsonFactory JSON_FACTORY = new JsonFactory();
 
     private @Nullable Consumer<ContentError> errorHandler;
 
@@ -62,12 +60,13 @@ public class Json5Reader implements GioReader {
         }
 
         try {
-            // Use Amazon Ion to parse JSON5 content directly
-            // Ion can handle JSON format and has better support for JSON5 features
-            IonReader reader = ION_SYSTEM.newReader(content);
+            // Preprocess JSON5 content to make it compatible with standard JSON
+            String preprocessedContent = Json5Preprocessor.toJson(content);
 
-            processJson5ContentWithIon(reader, writer);
-            reader.close();
+            // Use Jackson to parse JSON content
+            try (JsonParser parser = JSON_FACTORY.createParser(preprocessedContent)) {
+                processJson5ContentWithJackson(parser, writer);
+            }
 
         } catch (Exception e) {
             if (errorHandler != null) {
@@ -77,101 +76,46 @@ public class Json5Reader implements GioReader {
         }
     }
 
-    private void processJson5ContentWithIon(IonReader reader, GioWriter writer) throws IOException {
-        writer.startDocument(GioDocument.builder().build());
-        writer.startGraph(GioGraph.builder().build());
-
-        Map<String, String> createdNodes = new HashMap<>();
-        Map<String, Object> rootData = new HashMap<>();
-
-        // Parse the entire JSON structure first
-        parseIonStructure(reader, rootData);
-
-        // Process nodes
-        Object nodesObj = rootData.get("nodes");
-        if (nodesObj instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> nodesList = (List<Map<String, Object>>) nodesObj;
-            for (Map<String, Object> nodeData : nodesList) {
-                processNodeFromMap(nodeData, writer, createdNodes);
-            }
-        }
-
-        // Process edges
-        Object edgesObj = rootData.get("edges");
-        if (edgesObj instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> edgesList = (List<Map<String, Object>>) edgesObj;
-            for (Map<String, Object> edgeData : edgesList) {
-                processEdgeFromMap(edgeData, writer, createdNodes);
-            }
-        }
-
-        writer.endGraph(null);
-        writer.endDocument();
-    }
-
-    private void parseIonStructure(IonReader reader, Map<String, Object> result) throws IOException {
-        IonType type = reader.next();
-        if (type == IonType.STRUCT) {
-            reader.stepIn();
-            while ((type = reader.next()) != null) {
-                String fieldName = reader.getFieldName();
-                Object value = parseIonValue(reader);
-                result.put(fieldName, value);
-            }
-            reader.stepOut();
+    private void ensureNodeExists(String nodeId, GioWriter writer, Map<String, String> createdNodes) throws IOException {
+        if (!createdNodes.containsKey(nodeId)) {
+            writer.startNode(GioNode.builder().id(nodeId).build());
+            writer.endNode(null);
+            createdNodes.put(nodeId, nodeId);
         }
     }
 
-    private Object parseIonValue(IonReader reader) throws IOException {
-        IonType type = reader.getType();
-        if (reader.isNullValue()) {
-            return null;
-        }
-
-        switch (type) {
-            case STRING:
-                return reader.stringValue();
-            case INT:
-                return reader.intValue();
-            case FLOAT:
-                return reader.doubleValue();
-            case BOOL:
-                return reader.booleanValue();
-            case LIST:
+    private Object parseJsonValue(JsonParser parser, JsonToken token) throws IOException {
+        switch (token) {
+            case VALUE_NULL:
+                return null;
+            case VALUE_STRING:
+                return parser.getValueAsString();
+            case VALUE_NUMBER_INT:
+                return parser.getIntValue();
+            case VALUE_NUMBER_FLOAT:
+                return parser.getDoubleValue();
+            case VALUE_TRUE:
+            case VALUE_FALSE:
+                return parser.getBooleanValue();
+            case START_ARRAY:
                 List<Object> list = new ArrayList<>();
-                reader.stepIn();
-                while (reader.next() != null) {
-                    list.add(parseIonValue(reader));
+                while ((token = parser.nextToken()) != JsonToken.END_ARRAY) {
+                    list.add(parseJsonValue(parser, token));
                 }
-                reader.stepOut();
                 return list;
-            case STRUCT:
+            case START_OBJECT:
                 Map<String, Object> struct = new HashMap<>();
-                reader.stepIn();
-                while (reader.next() != null) {
-                    String fieldName = reader.getFieldName();
-                    Object value = parseIonValue(reader);
-                    struct.put(fieldName, value);
+                while ((token = parser.nextToken()) != JsonToken.END_OBJECT) {
+                    if (token == JsonToken.FIELD_NAME) {
+                        String fieldName = parser.getCurrentName();
+                        token = parser.nextToken(); // Move to the value
+                        Object value = parseJsonValue(parser, token);
+                        struct.put(fieldName, value);
+                    }
                 }
-                reader.stepOut();
                 return struct;
             default:
-                return reader.stringValue(); // fallback
-        }
-    }
-
-    private void processNodeFromMap(Map<String, Object> nodeData, GioWriter writer, Map<String, String> createdNodes) throws IOException {
-        Object idObj = nodeData.get("id");
-        if (idObj != null) {
-            String nodeId = idObj instanceof String ? (String) idObj : String.valueOf(idObj);
-
-            if (!createdNodes.containsKey(nodeId)) {
-                writer.startNode(GioNode.builder().id(nodeId).build());
-                writer.endNode(null);
-                createdNodes.put(nodeId, nodeId);
-            }
+                return null; // fallback
         }
     }
 
@@ -231,11 +175,59 @@ public class Json5Reader implements GioReader {
         }
     }
 
-    private void ensureNodeExists(String nodeId, GioWriter writer, Map<String, String> createdNodes) throws IOException {
-        if (!createdNodes.containsKey(nodeId)) {
-            writer.startNode(GioNode.builder().id(nodeId).build());
-            writer.endNode(null);
-            createdNodes.put(nodeId, nodeId);
+    private void processJson5ContentWithJackson(JsonParser parser, GioWriter writer) throws IOException {
+        writer.startDocument(GioDocument.builder().build());
+        writer.startGraph(GioGraph.builder().build());
+
+        Map<String, String> createdNodes = new HashMap<>();
+        Map<String, Object> rootData = new HashMap<>();
+
+        // Parse the entire JSON structure first
+        JsonToken token = parser.nextToken();
+        if (token != null) {
+            Object parsedData = parseJsonValue(parser, token);
+            if (parsedData instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> dataMap = (Map<String, Object>) parsedData;
+                rootData.putAll(dataMap);
+            }
+        }
+
+        // Process nodes
+        Object nodesObj = rootData.get("nodes");
+        if (nodesObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> nodesList = (List<Map<String, Object>>) nodesObj;
+            for (Map<String, Object> nodeData : nodesList) {
+                processNodeFromMap(nodeData, writer, createdNodes);
+            }
+        }
+
+        // Process edges
+        Object edgesObj = rootData.get("edges");
+        if (edgesObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> edgesList = (List<Map<String, Object>>) edgesObj;
+            for (Map<String, Object> edgeData : edgesList) {
+                processEdgeFromMap(edgeData, writer, createdNodes);
+            }
+        }
+
+        writer.endGraph(null);
+        writer.endDocument();
+    }
+
+    private void processNodeFromMap(Map<String, Object> nodeData, GioWriter writer, Map<String, String> createdNodes) throws IOException {
+        Object idObj = nodeData.get("id");
+        if (idObj != null) {
+            String nodeId = idObj instanceof String ? (String) idObj : String.valueOf(idObj);
+
+            if (!createdNodes.containsKey(nodeId)) {
+                writer.startNode(GioNode.builder().id(nodeId).build());
+                writer.endNode(null);
+                createdNodes.put(nodeId, nodeId);
+            }
         }
     }
+
 }

@@ -25,14 +25,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
-public class CjReader implements GioReader {
+public class ConnectedJsonReader implements GioReader {
 
     public static final GioFileFormat FORMAT = new GioFileFormat("connected-json", "Connected JSON Format", //
             ".con.json", ".con.json5", ".connected.json", ".connected.json5");
     private static final Logger log = LoggerFactory.getLogger(Json5Reader.class);
-    private static final Pattern COMMENT_PATTERN = Pattern.compile("//.*$", Pattern.MULTILINE);
     private @Nullable Consumer<ContentError> errorHandler;
 
     @Override
@@ -59,14 +57,9 @@ public class CjReader implements GioReader {
         }
 
         try {
-            // Strip JSON5 comments to make it valid JSON
-            String jsonContent = stripComments(content);
-
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(jsonContent);
-
-            processJson5Content(rootNode, writer);
-
+            JsonNode rootNode = objectMapper.readTree(content);
+            parse(rootNode, writer);
         } catch (Exception e) {
             if (errorHandler != null) {
                 errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "Failed to parse JSON5 content: " + e.getMessage(), null));
@@ -81,6 +74,32 @@ public class CjReader implements GioReader {
             writer.endNode(null);
             createdNodes.put(nodeId, nodeId);
         }
+    }
+
+    private void parse(JsonNode rootNode, GioWriter writer) throws IOException {
+        writer.startDocument(GioDocument.builder().build());
+        writer.startGraph(GioGraph.builder().build());
+
+        Map<String, String> createdNodes = new HashMap<>();
+
+        // Process nodes
+        JsonNode nodesNode = rootNode.get("nodes");
+        if (nodesNode != null && nodesNode.isArray()) {
+            for (JsonNode nodeJson : nodesNode) {
+                processNode(nodeJson, writer, createdNodes);
+            }
+        }
+
+        // Process edges
+        JsonNode edgesNode = rootNode.get("edges");
+        if (edgesNode != null && edgesNode.isArray()) {
+            for (JsonNode edgeJson : edgesNode) {
+                processEdge(edgeJson, writer, createdNodes);
+            }
+        }
+
+        writer.endGraph(null);
+        writer.endDocument();
     }
 
     private void processEdge(JsonNode edgeJson, GioWriter writer, Map<String, String> createdNodes) throws IOException {
@@ -137,32 +156,6 @@ public class CjReader implements GioReader {
         }
     }
 
-    private void processJson5Content(JsonNode rootNode, GioWriter writer) throws IOException {
-        writer.startDocument(GioDocument.builder().build());
-        writer.startGraph(GioGraph.builder().build());
-
-        Map<String, String> createdNodes = new HashMap<>();
-
-        // Process nodes
-        JsonNode nodesNode = rootNode.get("nodes");
-        if (nodesNode != null && nodesNode.isArray()) {
-            for (JsonNode nodeJson : nodesNode) {
-                processNode(nodeJson, writer, createdNodes);
-            }
-        }
-
-        // Process edges
-        JsonNode edgesNode = rootNode.get("edges");
-        if (edgesNode != null && edgesNode.isArray()) {
-            for (JsonNode edgeJson : edgesNode) {
-                processEdge(edgeJson, writer, createdNodes);
-            }
-        }
-
-        writer.endGraph(null);
-        writer.endDocument();
-    }
-
     private void processNode(JsonNode nodeJson, GioWriter writer, Map<String, String> createdNodes) throws IOException {
         JsonNode idNode = nodeJson.get("id");
         if (idNode != null) {
@@ -174,11 +167,6 @@ public class CjReader implements GioReader {
                 createdNodes.put(nodeId, nodeId);
             }
         }
-    }
-
-    private String stripComments(String json5Content) {
-        // Simple comment stripping - removes // comments
-        return COMMENT_PATTERN.matcher(json5Content).replaceAll("");
     }
 
 }

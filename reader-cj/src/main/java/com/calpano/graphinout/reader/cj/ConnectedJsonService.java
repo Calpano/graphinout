@@ -6,7 +6,7 @@ import com.calpano.graphinout.base.gio.GioReader;
 import java.util.Arrays;
 import java.util.List;
 
-public class CjService implements GioService {
+public class ConnectedJsonService implements GioService {
     @Override
     public String id() {
         return "reader-cj";
@@ -14,6 +14,6 @@ public class CjService implements GioService {
 
     @Override
     public List<GioReader> readers() {
-        return Arrays.asList(new CjReader(), new Json5Reader());
+        return Arrays.asList(new ConnectedJsonReader(), new Json5Reader());
     }
 }

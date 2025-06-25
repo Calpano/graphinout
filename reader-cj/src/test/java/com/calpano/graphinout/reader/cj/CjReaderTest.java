@@ -28,13 +28,13 @@ class CjReaderTest {
 
     public static final String EMPTY_FILE = "";
     private AutoCloseable closeable;
-    private CjReader underTest;
+    private ConnectedJsonReader underTest;
     @Mock private GioWriter mockGioWriter;
     private List<ContentError> capturedErrors;
     private Consumer<ContentError> errorConsumer;
 
     private static Stream<String> getResourceFilePaths() {
-        return new ClassGraph().scan().getAllResources().stream().map(Resource::getPath).filter(CjReader.FORMAT::matches);
+        return new ClassGraph().scan().getAllResources().stream().map(Resource::getPath).filter(ConnectedJsonReader.FORMAT::matches);
     }
 
     @AfterEach
@@ -45,7 +45,7 @@ class CjReaderTest {
     @BeforeEach
     void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
-        this.underTest = new CjReader();
+        this.underTest = new ConnectedJsonReader();
         this.capturedErrors = new ArrayList<>();
         this.errorConsumer = capturedErrors::add;
     }
