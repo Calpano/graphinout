@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.cj;
 
-import com.calpano.graphinout.base.json.JsonEventStream;
+import com.calpano.graphinout.foundation.json.JsonEventStream;
 
 /**
  * This API embeds stream of conceptual opening and closing tags (read/write events) for <em>connected JSON</em> into a

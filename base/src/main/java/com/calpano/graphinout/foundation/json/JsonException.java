@@ -1,4 +1,4 @@
-package com.calpano.graphinout.base.json;
+package com.calpano.graphinout.foundation.json;
 
 public class JsonException extends RuntimeException {
 

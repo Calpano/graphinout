@@ -1,4 +1,4 @@
-package com.calpano.graphinout.base.json;
+package com.calpano.graphinout.foundation.json;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
 

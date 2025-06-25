@@ -18,10 +18,13 @@ public class ByteArrayInputSource implements SingleInputSource {
     private final List<ByteArrayInputStream> openStreams = new ArrayList<>();
     private final byte[] bytes;
     private final String name;
-
     public ByteArrayInputSource(String name, byte[] bytes) {
         this.name = name;
         this.bytes = bytes;
+    }
+
+    public byte[] bytes() {
+        return bytes;
     }
 
     @Override

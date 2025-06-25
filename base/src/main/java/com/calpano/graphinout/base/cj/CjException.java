@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.cj;
 
-import com.calpano.graphinout.base.json.JsonException;
+import com.calpano.graphinout.foundation.json.JsonException;
 
 public class CjException extends JsonException {
 

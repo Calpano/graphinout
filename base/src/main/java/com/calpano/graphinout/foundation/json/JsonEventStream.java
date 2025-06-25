@@ -1,5 +1,8 @@
-package com.calpano.graphinout.base.json;
+package com.calpano.graphinout.foundation.json;
 
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * SAJ: <em>S</em>AX-like <em>A</em>PI for <em>J</em>SON aka "Streaming API for JSON". Inspired from the XML SAX API.
@@ -11,6 +14,8 @@ package com.calpano.graphinout.base.json;
  * <li>performant: that's why we have int and long as well as float and double -- no conversions required by API for streaming data;
  * <li>small: Higher API layers optionally provide 'luxury' features like the current array index or schema information.
  * </ul>
+ * <p>
+ * This API reports neither whitespace nor parse location information (line:col).
  *
  * @author xamde
  */
@@ -45,6 +50,16 @@ public interface JsonEventStream {
      * JSON Object
      */
     void objectStart() throws JsonException;
+
+    /**
+     * JSON Number
+     */
+    void onBigDecimal(BigDecimal bigDecimal);
+
+    /**
+     * JSON Number
+     */
+    void onBigInteger(BigInteger bigInteger);
 
     /**
      * JSON Boolean
@@ -88,6 +103,5 @@ public interface JsonEventStream {
      * JSON String
      */
     void onString(String s) throws JsonException;
-
 
 }
