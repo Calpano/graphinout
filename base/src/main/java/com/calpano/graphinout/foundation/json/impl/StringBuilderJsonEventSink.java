@@ -11,7 +11,7 @@ import java.util.Stack;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * Mostly for testing. Reconstructs a JSON syntax string.
+ * Reconstructs a JSON syntax string from a {@link JsonEventStream}. Reusable.
  */
 public class StringBuilderJsonEventSink implements JsonEventStream {
 
@@ -19,7 +19,7 @@ public class StringBuilderJsonEventSink implements JsonEventStream {
 
     private static final Logger log = getLogger(StringBuilderJsonEventSink.class);
     private final StringBuilder b = new StringBuilder();
-    private Stack<State> stack = new Stack<>();
+    private final Stack<State> stack = new Stack<>();
 
     @Override
     public void arrayEnd() throws JsonException {
@@ -124,6 +124,11 @@ public class StringBuilderJsonEventSink implements JsonEventStream {
                 .replace("\\", "\\\\") //
                 .replace("\"", "\\\"") //
         ).append('"');
+    }
+
+    public void reset() {
+        b.setLength(0);
+        stack.clear();
     }
 
     private void maybeDelimiter() {

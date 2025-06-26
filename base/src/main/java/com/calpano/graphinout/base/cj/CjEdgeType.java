@@ -6,4 +6,18 @@ public interface CjEdgeType {
 
     String type();
 
+    static CjEdgeType of(CjEdgeTypeSource source, String type) {
+        return new CjEdgeType() {
+            @Override
+            public CjEdgeTypeSource source() {
+                return source;
+            }
+
+            @Override
+            public String type() {
+                return type;
+            }
+        };
+    }
+
 }

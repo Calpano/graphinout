@@ -1,0 +1,40 @@
+{
+  "nodes": [
+    { "id":  12 },
+    { "id":  "a",
+      "ports": [ "a1",
+                 { "id": "a2",
+                   "ports": [ "a2-1", "a2-2" ]
+    }]},
+    { "id":  "b", "foo": "bar" },
+    { "id":  "c" },
+    { "id":  "d" },
+    { "id":  "e" },
+    { "id":  "f" }
+  ],
+
+  "hello": ["My data","can be","everywhere"],
+  "edges": [
+    { "source": 12, "target": "a"},
+
+    { "endpoints":  [
+      { "direction": "in", "node": 12, "port":  "a2-1"},
+      { "direction": "out", "node": "a"}
+    ]},
+
+    { "endpoints":  [
+      { "direction": "in", "node": 12},
+      { "direction": "in", "node": "a", "port": "a2-1" },
+      { "direction": "out", "node": "d"},
+      { "direction": "out", "node": "e"}
+    ]},
+
+    { "endpoints":  [
+      { "direction": "in", "node": 12},
+      { "direction": "in", "node": "a"},
+      { "direction": "out", "node": "d"},
+      { "direction": "out", "node": "e"},
+      { "direction": "undir", "node": "f"}
+    ]}
+  ]
+}

@@ -1,8 +1,7 @@
 package com.calpano.graphinout.base.cj;
 
-/**
- * Where is the type information of a
- * {@link com.calpano.graphinout.base.cj.CjEdge}/{@link com.calpano.graphinout.base.cj.CjEndpoint} coming from?
+ /**
+ * Where is the type information for `edge`,`endpoint` coming from?
  */
 public enum CjEdgeTypeSource {
 

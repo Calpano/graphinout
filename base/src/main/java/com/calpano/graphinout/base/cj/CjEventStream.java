@@ -45,13 +45,19 @@ import com.calpano.graphinout.foundation.json.JsonEventStream;
  * regardless, the {@link CjEventStream} has the same structure:
  * <ol>
  *     <li>{@link CjEventStream#documentStart() CJ document start}</li>
- *     <li>{@link CjEventStream#graphStart(CjGraph) CJ graph start}, ... graph object 1..., {@link CjEventStream#graphEnd() CJ graph end}</li>
- *     <li>If more graphs are present: <li>{@link CjEventStream#graphStart(CjGraph) CJ graph start}, ... graph object i..., {@link CjEventStream#graphEnd() CJ graph end}</li>
+ *     <li>{@link #graphStart() CJ graph start}, ... graph object 1..., {@link CjEventStream#graphEnd() CJ graph end}</li>
+ *     <li>If more graphs are present: <li>{@link #graphStart() CJ graph start}, ... graph object i..., {@link CjEventStream#graphEnd() CJ graph end}</li>
  *     <li>{@link CjEventStream#documentEnd() CJ document end}</li>
  * </ol>
  */
 public interface CjEventStream extends JsonEventStream {
 
+
+    /** Graph base uri */
+    void baseuri(String baseuri);
+
+    /** endpoint.direction */
+    void direction(CjDirection direction);
 
     /**
      * CJ Edge end event.
@@ -63,11 +69,17 @@ public interface CjEventStream extends JsonEventStream {
      * <p>
      * Sub-elements:
      * <ul>
-     *   <li>{@link #graphStart(CjGraph) Graph} - nested graphs within the edge</li>
-     *   <li>{@link #endpointStart(CjEndpoint) Endpoint} - edge endpoints connecting to nodes/ports</li>
+     *   <li>{@link #graphStart() Graph} - nested graphs within the edge</li>
+     *   <li>{@link #endpointStart() Endpoint} - edge endpoints connecting to nodes/ports</li>
      * </ul>
      */
-    void edgeStart(CjEdge edge);
+    void edgeStart();
+
+    /** edge.type / endpoint.type */
+    void edgeType(CjEdgeType edgeType);
+
+    /** Graph property */
+    void edgedefault(String edgedefault);
 
     /**
      * CJ Endpoint end event.
@@ -79,7 +91,7 @@ public interface CjEventStream extends JsonEventStream {
      * <p>
      * Sub-elements: None (leaf element)
      */
-    void endpointStart(CjEndpoint endpoint);
+    void endpointStart();
 
     /**
      * CJ Graph end event.
@@ -91,42 +103,72 @@ public interface CjEventStream extends JsonEventStream {
      * <p>
      * Sub-elements:
      * <ul>
-     *   <li>{@link #nodeStart(CjNode) Node} - nodes within the graph</li>
-     *   <li>{@link #edgeStart(CjEdge) Edge} - edges within the graph</li>
+     *   <li>{@link #nodeStart() Node} - nodes within the graph</li>
+     *   <li>{@link #edgeStart() Edge} - edges within the graph</li>
      * </ul>
      */
-    void graphStart(CjGraph graph) throws CjException;
+    void graphStart() throws CjException;
+
+    void id(String id);
+
+    /**
+     * if this edge is directed (default: true)
+     */
+    void isDirected(boolean isDirected);
+
+    /** Marker for extension data end. */
+    void jsonEnd();
+
+    /** Marker for extension data start. */
+    void jsonStart();
+
+    void labelEnd();
+
+    void labelEntryEnd();
+
+    void labelEntryStart();
+
+    void labelStart();
+
+    void language(String language);
 
     /**
      * CJ Node end event.
      */
     void nodeEnd();
 
+    /** endpoint.node */
+    void nodeId(String nodeId);
+
     /**
      * CJ Node start event.
      * <p>
      * Sub-elements:
      * <ul>
-     *   <li>{@link #graphStart(CjGraph) Graph} - nested graphs within the node (compound nodes)</li>
-     *   <li>{@link #portStart(CjPort) Port} - ports attached to the node</li>
+     *   <li>{@link #graphStart() Graph} - nested graphs within the node (compound nodes)</li>
+     *   <li>{@link #portStart() Port} - ports attached to the node</li>
      * </ul>
      */
-    void nodeStart(CjNode node);
+    void nodeStart();
 
     /**
      * CJ Port end event.
      */
     void portEnd();
 
+    /** endpoint.port */
+    void portId(String portId);
+
     /**
      * CJ Port start event.
      * <p>
      * Sub-elements:
      * <ul>
-     *   <li>{@link #portStart(CjPort) Port} - nested sub-ports (hierarchical ports)</li>
+     *   <li>{@link #portStart() Port} - nested sub-ports (hierarchical ports)</li>
      * </ul>
      */
-    void portStart(CjPort port);
+    void portStart();
 
+    void value(String value);
 
 }

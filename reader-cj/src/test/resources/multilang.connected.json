@@ -1,0 +1,11 @@
+{
+  "nodes": [
+    { "id": "a", "label": "simple label" },
+    {
+      "id": "b", "label": [
+      { "language": "de", "value": "Sonne" },
+      { "language": "en", "value": "Sun" }
+    ]
+    }
+  ]
+}

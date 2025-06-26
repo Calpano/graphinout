@@ -34,12 +34,12 @@ public interface JsonEventStream {
     /**
      * JSON Document
      */
-    void documentEnd();
+    void documentEnd() throws JsonException;
 
     /**
      * JSON Document
      */
-    void documentStart();
+    void documentStart() throws JsonException;
 
     /**
      * JSON Object
@@ -54,12 +54,12 @@ public interface JsonEventStream {
     /**
      * JSON Number
      */
-    void onBigDecimal(BigDecimal bigDecimal);
+    void onBigDecimal(BigDecimal bigDecimal) throws JsonException;
 
     /**
      * JSON Number
      */
-    void onBigInteger(BigInteger bigInteger);
+    void onBigInteger(BigInteger bigInteger) throws JsonException;
 
     /**
      * JSON Boolean

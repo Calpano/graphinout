@@ -38,15 +38,22 @@ public class JsonReaderImpl implements JsonReader {
         // Create Jackson parser for JSON parsing
         try (JsonParser parser = JSON_FACTORY.createParser(preprocessedContent)) {
             // Parse the JSON content
+            stream.documentStart();
             JsonToken token = parser.nextToken();
-            if (token != null) {
+            while (token != null) {
                 parseJsonValue(parser, token, stream);
+                token = parser.nextToken();
             }
+        } finally {
+            stream.documentEnd();
         }
     }
 
     private void parseJsonValue(JsonParser parser, JsonToken token, JsonEventStream stream) throws IOException {
         switch (token) {
+            case FIELD_NAME:
+                stream.onKey(parser.currentName());
+                break;
             case VALUE_NULL:
                 stream.onNull();
                 break;
@@ -95,26 +102,19 @@ public class JsonReaderImpl implements JsonReader {
                 break;
             case START_ARRAY:
                 stream.arrayStart();
-                while ((token = parser.nextToken()) != JsonToken.END_ARRAY) {
-                    parseJsonValue(parser, token, stream);
-                }
+                break;
+            case END_ARRAY:
                 stream.arrayEnd();
                 break;
             case START_OBJECT:
                 stream.objectStart();
-                while ((token = parser.nextToken()) != JsonToken.END_OBJECT) {
-                    if (token == JsonToken.FIELD_NAME) {
-                        String fieldName = parser.getCurrentName();
-                        stream.onKey(fieldName);
-                        token = parser.nextToken(); // Move to the value
-                        parseJsonValue(parser, token, stream);
-                    }
-                }
+                break;
+            case END_OBJECT:
                 stream.objectEnd();
                 break;
             default:
                 // For any other tokens, skip or handle as needed
-                break;
+                throw new UnsupportedOperationException("Unsupported token: " + token);
         }
     }
 
