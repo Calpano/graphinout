@@ -83,7 +83,9 @@ public class Json2Cj implements JsonEventStream {
 
     }
 
+    /** The sink for the converted events. */
     final CjEventStream cjSink;
+
     /** The current context from root: stack of Container and String (property keys). */
     private final ParseStack parseStack = new ParseStack();
 

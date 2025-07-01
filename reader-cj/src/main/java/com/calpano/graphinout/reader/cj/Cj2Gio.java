@@ -159,16 +159,6 @@ public class Cj2Gio implements CjEventStream {
     }
 
     @Override
-    public void language(String lang) {
-
-    }
-
-    @Override
-    public void labelStart() {
-
-    }
-
-    @Override
     public void labelEntryEnd() {
 
     }
@@ -179,7 +169,12 @@ public class Cj2Gio implements CjEventStream {
     }
 
     @Override
-    public void value(String value) {
+    public void labelStart() {
+
+    }
+
+    @Override
+    public void language(String lang) {
 
     }
 
@@ -282,6 +277,11 @@ public class Cj2Gio implements CjEventStream {
     @Override
     public void portStart() {
         // TODO start buffering
+    }
+
+    @Override
+    public void value(String value) {
+
     }
 
 }

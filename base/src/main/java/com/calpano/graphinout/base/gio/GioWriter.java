@@ -9,6 +9,7 @@ import java.net.URL;
  */
 public interface GioWriter {
 
+    void data(GioData data) throws IOException;
 
     void endDocument() throws IOException;
 
@@ -18,9 +19,9 @@ public interface GioWriter {
 
     void endNode(@Nullable URL locator) throws IOException;
 
-    void key(GioKey gioKey) throws IOException;
+    void endPort() throws IOException;
 
-    void data(GioData data) throws IOException;
+    void key(GioKey gioKey) throws IOException;
 
     void startDocument(GioDocument document) throws IOException;
 
@@ -29,12 +30,11 @@ public interface GioWriter {
     void startGraph(GioGraph gioGraph) throws IOException;
 
     /**
-     * May contain #startGraph -- DTD is a bit unclear here whether 1 or multiple graphs are allowed. 1 seems more plausible.
+     * May contain #startGraph -- DTD is a bit unclear here whether 1 or multiple graphs are allowed. 1 seems more
+     * plausible.
      */
     void startNode(GioNode node) throws IOException;
 
     void startPort(GioPort port) throws IOException;
-    void endPort() throws IOException;
-
 
 }
