@@ -23,6 +23,7 @@ public class GioWriterImpl implements GioWriter {
 
     final GraphmlWriter graphmlWriter;
     private @Nullable GraphmlElement openEdge;
+    private String baseuri;
 
     public GioWriterImpl(GraphmlWriter graphmlWriter) {
         this.graphmlWriter = graphmlWriter;
@@ -90,6 +91,7 @@ public class GioWriterImpl implements GioWriter {
             if (graphmlDocument.getExtraAttrib() == null) graphmlDocument.setExtraAttrib(new TreeMap<>());
             document.getCustomAttributes().forEach((k, v) -> graphmlDocument.getExtraAttrib().put(k, v));
         }
+        // TODO: Implement baseuri handling
         graphmlWriter.startDocument(graphmlDocument);
     }
 
@@ -181,6 +183,11 @@ public class GioWriterImpl implements GioWriter {
 
     private GraphmlLocator locator(@Nullable URL url) {
         return url == null ? null : GraphmlLocator.builder().xLinkHref(url).build();
+    }
+
+    @Override
+    public void baseuri(String baseuri) throws IOException {
+        this.baseuri = baseuri;
     }
 
 }

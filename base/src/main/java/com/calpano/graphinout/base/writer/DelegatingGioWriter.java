@@ -107,4 +107,11 @@ public class DelegatingGioWriter implements GioWriter {
             writer.endPort();
         }
     }
+
+    @Override
+    public void baseuri(String baseuri) throws IOException {
+        for (GioWriter writer : writers) {
+            writer.baseuri(baseuri);
+        }
+    }
 }

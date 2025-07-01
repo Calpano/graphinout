@@ -59,4 +59,6 @@ public class NoopGioWriter implements GioWriter {
     @Override
     public void startPort(GioPort port) throws IOException {}
 
+    @Override
+    public void baseuri(String baseuri) throws IOException {}
 }

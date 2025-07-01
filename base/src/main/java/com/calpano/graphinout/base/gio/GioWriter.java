@@ -9,6 +9,8 @@ import java.net.URL;
  */
 public interface GioWriter {
 
+    void baseuri(String baseuri) throws IOException;
+
     void data(GioData data) throws IOException;
 
     void endDocument() throws IOException;

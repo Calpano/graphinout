@@ -46,7 +46,11 @@ public class Cj2Gio implements CjEventStream {
 
     @Override
     public void baseuri(String baseuri) {
-
+        try {
+            gio.baseuri(baseuri);
+        } catch (IOException e) {
+            throw new JsonException(e);
+        }
     }
 
     @Override

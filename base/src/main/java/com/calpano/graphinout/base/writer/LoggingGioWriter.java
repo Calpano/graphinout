@@ -81,4 +81,9 @@ public class LoggingGioWriter implements GioWriter {
     public void startPort(GioPort port) throws IOException {
         log.info("GioWriter: startPort(GioPort " + port + ")");
     }
+
+    @Override
+    public void baseuri(String baseuri) throws IOException {
+        log.info("GioWriter: baseuri(" + baseuri + ")");
+    }
 }
