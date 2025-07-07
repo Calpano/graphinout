@@ -83,7 +83,7 @@ public class LoggingGioWriter implements GioWriter {
     }
 
     @Override
-    public void baseuri(String baseuri) throws IOException {
-        log.info("GioWriter: baseuri(" + baseuri + ")");
+    public void baseUri(String baseUri) throws IOException {
+        log.info("GioWriter: baseuri(" + baseUri + ")");
     }
 }

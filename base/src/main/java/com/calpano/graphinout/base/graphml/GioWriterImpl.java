@@ -186,8 +186,8 @@ public class GioWriterImpl implements GioWriter {
     }
 
     @Override
-    public void baseuri(String baseuri) throws IOException {
-        this.baseuri = baseuri;
+    public void baseUri(String baseUri) throws IOException {
+        this.baseuri = baseUri;
     }
 
 }

@@ -9,6 +9,7 @@ import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
+import com.calpano.graphinout.base.reader.Location;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class ExampleReader implements GioReader {
         writer.endEdge();
 
         // content errors can be signaled like this
-        errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, " To be honest, we did not really read the input :-)", new ContentError.Location(1, 1)));
+        errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, " To be honest, we did not really read the input :-)", new Location(1, 1)));
 
         writer.endGraph(null);
         writer.endDocument();

@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.cj.json;
 
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
-import com.calpano.graphinout.foundation.json.impl.StringBuilderJsonEventSink;
+import com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -41,7 +41,7 @@ class JsonReaderImplTest {
 
     private void testInput(SingleInputSourceOfString input) throws IOException {
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-        StringBuilderJsonEventSink sink = new StringBuilderJsonEventSink();
+        StringBuilderJsonWriter sink = new StringBuilderJsonWriter();
         jsonReader.read(input, sink);
 
         String result = sink.json();

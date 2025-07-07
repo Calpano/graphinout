@@ -12,6 +12,7 @@ import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.base.reader.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -213,7 +214,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     private @Nullable RuntimeException buildException(ContentError.ErrorLevel errorLevel, String msg) {
         ContentError contentError = new ContentError(errorLevel, msg,
                 locator == null ? null :
-                        new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber()));
+                        new Location(locator.getLineNumber(), locator.getColumnNumber()));
         if (errorConsumer != null) {
             errorConsumer.accept(contentError);
         }
@@ -230,7 +231,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     private @Nullable RuntimeException buildException(ContentError.ErrorLevel errorLevel, Exception e) {
         ContentError contentError = new ContentError(errorLevel, e.getMessage(),
                 locator == null ? null :
-                        new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber()));
+                        new Location(locator.getLineNumber(), locator.getColumnNumber()));
         if (errorConsumer != null) {
             errorConsumer.accept(contentError);
         }
@@ -264,7 +265,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void createWarningLog(String message) {
-        this.errorConsumer.accept(new ContentError(ContentError.ErrorLevel.Warn, message, locator == null ? null : new ContentError.Location(locator.getLineNumber(), locator.getColumnNumber())));
+        this.errorConsumer.accept(new ContentError(ContentError.ErrorLevel.Warn, message, locator == null ? null : new Location(locator.getLineNumber(), locator.getColumnNumber())));
 
     }
 

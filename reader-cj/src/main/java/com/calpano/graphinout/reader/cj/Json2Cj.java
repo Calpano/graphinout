@@ -2,7 +2,7 @@ package com.calpano.graphinout.reader.cj;
 
 import com.calpano.graphinout.base.cj.CjEventStream;
 import com.calpano.graphinout.base.cj.CjProperties;
-import com.calpano.graphinout.foundation.json.JsonEventStream;
+import com.calpano.graphinout.foundation.json.JsonWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -16,7 +16,7 @@ import java.util.Stack;
  * <p>
  * Strategy: Merge aliase, e.g., normalize both "node" and "nodes" to "nodes". Do not buffer.
  */
-public class Json2Cj implements JsonEventStream {
+public class Json2Cj implements JsonWriter {
 
     public enum Container {
         JsonObject, JsonArray, Document, Graph, Node, Port, Edge, Label, LabelEntry, Endpoint

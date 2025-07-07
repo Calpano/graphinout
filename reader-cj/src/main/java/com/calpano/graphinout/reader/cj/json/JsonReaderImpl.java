@@ -2,7 +2,7 @@ package com.calpano.graphinout.reader.cj.json;
 
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import com.calpano.graphinout.foundation.json.JsonEventStream;
+import com.calpano.graphinout.foundation.json.JsonWriter;
 import com.calpano.graphinout.foundation.json.JsonReader;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -19,7 +19,7 @@ public class JsonReaderImpl implements JsonReader {
     private static final JsonFactory JSON_FACTORY = new JsonFactory();
 
     @Override
-    public void read(InputSource inputSource, JsonEventStream stream) throws IOException {
+    public void read(InputSource inputSource, JsonWriter stream) throws IOException {
         if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
@@ -49,7 +49,7 @@ public class JsonReaderImpl implements JsonReader {
         }
     }
 
-    private void parseJsonValue(JsonParser parser, JsonToken token, JsonEventStream stream) throws IOException {
+    private void parseJsonValue(JsonParser parser, JsonToken token, JsonWriter stream) throws IOException {
         switch (token) {
             case FIELD_NAME:
                 stream.onKey(parser.currentName());

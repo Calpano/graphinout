@@ -18,6 +18,6 @@ public interface JsonReader {
      * @param stream      receives the JSON events
      * @throws IOException can happen
      */
-    void read(InputSource inputSource, JsonEventStream stream) throws IOException;
+    void read(InputSource inputSource, JsonWriter stream) throws IOException;
 
 }

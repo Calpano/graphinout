@@ -12,6 +12,7 @@ import com.calpano.graphinout.base.gio.GioKeyForType;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.base.reader.Location;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.reader.json.mapper.GraphmlJsonMapping;
@@ -106,7 +107,7 @@ public class JsonGraphmlParser {
         if (!(shouldBeArrayNode instanceof ArrayNode)) {
             // mapping is wrong or JSON object in data file is wrong
             if (errorHandler != null)
-                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "Path ['" + jsonPointer + "'] does not resolve to a array node ", new ContentError.Location(jsonLocation.getLineNr(), jsonLocation.getColumnNr())));
+                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "Path ['" + jsonPointer + "'] does not resolve to a array node ", new Location(jsonLocation.getLineNr(), jsonLocation.getColumnNr())));
             return Collections.emptyList();
         } else {
             List<ObjectNode> result = new ArrayList<>();
@@ -121,7 +122,7 @@ public class JsonGraphmlParser {
         if (!(shouldBeArrayNode instanceof ArrayNode)) {
             // mapping is wrong or JSON object in data file is wrong
             if (errorHandler != null)
-                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "Path ['" + jsonPointer + "'] does not resolve to a array node ", new ContentError.Location(jsonLocation.getLineNr(), jsonLocation.getColumnNr())));
+                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "Path ['" + jsonPointer + "'] does not resolve to a array node ", new Location(jsonLocation.getLineNr(), jsonLocation.getColumnNr())));
             return Collections.emptyList();
         } else {
             List<String> result = new ArrayList<>();
@@ -136,7 +137,7 @@ public class JsonGraphmlParser {
         if (!(shouldBeValueNode instanceof ValueNode)) {
             // mapping is wrong or JSON object in data file is wrong
             if (errorHandler != null)
-                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "Path ['" + jsonPointer + "'] does not resolve to a string value ", new ContentError.Location(jsonLocation.getLineNr(), jsonLocation.getColumnNr())));
+                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "Path ['" + jsonPointer + "'] does not resolve to a string value ", new Location(jsonLocation.getLineNr(), jsonLocation.getColumnNr())));
             return "";
         } else {
             return shouldBeValueNode.asText();

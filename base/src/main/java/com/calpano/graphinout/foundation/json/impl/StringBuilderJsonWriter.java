@@ -1,6 +1,6 @@
 package com.calpano.graphinout.foundation.json.impl;
 
-import com.calpano.graphinout.foundation.json.JsonEventStream;
+import com.calpano.graphinout.foundation.json.JsonWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import org.slf4j.Logger;
 
@@ -11,13 +11,13 @@ import java.util.Stack;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * Reconstructs a JSON syntax string from a {@link JsonEventStream}. Reusable.
+ * Reconstructs a JSON syntax string from a {@link JsonWriter}. Reusable.
  */
-public class StringBuilderJsonEventSink implements JsonEventStream {
+public class StringBuilderJsonWriter implements JsonWriter {
 
     enum State {First, Later, Property}
 
-    private static final Logger log = getLogger(StringBuilderJsonEventSink.class);
+    private static final Logger log = getLogger(StringBuilderJsonWriter.class);
     private final StringBuilder b = new StringBuilder();
     private final Stack<State> stack = new Stack<>();
 

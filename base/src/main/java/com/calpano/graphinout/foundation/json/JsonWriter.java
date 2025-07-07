@@ -1,6 +1,8 @@
 package com.calpano.graphinout.foundation.json;
 
 
+import edu.umd.cs.findbugs.annotations.Nullable;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -19,7 +21,7 @@ import java.math.BigInteger;
  *
  * @author xamde
  */
-public interface JsonEventStream {
+public interface JsonWriter {
 
     /**
      * JSON Array
@@ -66,6 +68,12 @@ public interface JsonEventStream {
      */
     void onBoolean(boolean b) throws JsonException;
 
+    /** Convenience method only used for writing JSON */
+    default void onBoolean(@Nullable Boolean b) throws JsonException {
+        if (b == null) onNull();
+        else onBoolean(b.booleanValue());
+    }
+
     /**
      * JSON Number with decimals, which may be larger than Java {@link Float#MAX_VALUE}
      */
@@ -76,10 +84,22 @@ public interface JsonEventStream {
      */
     void onFloat(float f) throws JsonException;
 
+    /** Convenience method only used for writing JSON */
+    default void onFloat(@Nullable Float f) throws JsonException {
+        if (f == null) onNull();
+        else onFloat(f.floatValue());
+    }
+
     /**
      * JSON Number without decimals, which is less than or equal to Java {@link Integer#MAX_VALUE}
      */
     void onInteger(int i) throws JsonException;
+
+    /** Convenience method only used for writing JSON */
+    default void onInteger(@Nullable Integer i) throws JsonException {
+        if (i == null) onNull();
+        else onInteger(i.intValue());
+    }
 
     /**
      * JSON object property key. Only legal within 'objectStart' and 'objectEnd'
@@ -93,6 +113,12 @@ public interface JsonEventStream {
      * JSON Number without decimals, which may be larger than Java {@link Integer#MAX_VALUE}
      */
     void onLong(long l) throws JsonException;
+
+    /** Convenience method only used for writing JSON */
+    default void onLong(@Nullable Long l) throws JsonException {
+        if (l == null) onNull();
+        else onLong(l.longValue());
+    }
 
     /**
      * JSON Null

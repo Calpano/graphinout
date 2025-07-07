@@ -1,6 +1,6 @@
 package com.calpano.graphinout.foundation.json.impl;
 
-import com.calpano.graphinout.foundation.json.JsonEventStream;
+import com.calpano.graphinout.foundation.json.JsonWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import org.slf4j.Logger;
 
@@ -9,9 +9,9 @@ import java.math.BigInteger;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class LoggingJsonEventSink implements JsonEventStream {
+public class LoggingJsonWriter implements JsonWriter {
 
-    private static final Logger log = getLogger(LoggingJsonEventSink.class);
+    private static final Logger log = getLogger(LoggingJsonWriter.class);
 
     @Override
     public void arrayEnd() throws JsonException {

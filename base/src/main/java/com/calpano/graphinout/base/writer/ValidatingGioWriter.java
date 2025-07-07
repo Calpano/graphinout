@@ -134,12 +134,12 @@ public class ValidatingGioWriter implements GioWriter {
     }
 
     @Override
-    public void baseuri(String baseuri) throws IOException {
-        if (baseuri != null && !baseuri.isEmpty()) {
+    public void baseUri(String baseUri) throws IOException {
+        if (baseUri != null && !baseUri.isEmpty()) {
             try {
-                new java.net.URI(baseuri);
+                new java.net.URI(baseUri);
             } catch (java.net.URISyntaxException e) {
-                throw new IllegalStateException("Invalid baseuri: " + baseuri, e);
+                throw new IllegalStateException("Invalid baseuri: " + baseUri, e);
             }
         }
     }

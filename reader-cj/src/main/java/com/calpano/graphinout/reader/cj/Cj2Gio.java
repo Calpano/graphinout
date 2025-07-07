@@ -12,7 +12,7 @@ import com.calpano.graphinout.base.gio.GioKeyForType;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
-import com.calpano.graphinout.foundation.json.impl.StringBuilderJsonEventSink;
+import com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -29,7 +29,7 @@ public class Cj2Gio implements CjEventStream {
     }
 
     final GioWriter gio;
-    private final StringBuilderJsonEventSink jsonSink = new StringBuilderJsonEventSink();
+    private final StringBuilderJsonWriter jsonSink = new StringBuilderJsonWriter();
     private final Stack<Object> stack = new Stack<>();
 
     public Cj2Gio(GioWriter gio) {this.gio = gio;}
@@ -47,7 +47,7 @@ public class Cj2Gio implements CjEventStream {
     @Override
     public void baseuri(String baseuri) {
         try {
-            gio.baseuri(baseuri);
+            gio.baseUri(baseuri);
         } catch (IOException e) {
             throw new JsonException(e);
         }

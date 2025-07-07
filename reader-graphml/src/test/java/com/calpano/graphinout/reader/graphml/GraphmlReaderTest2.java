@@ -4,6 +4,7 @@ import com.calpano.graphinout.base.AbstractReaderTest;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.base.reader.Location;
 import com.calpano.graphinout.base.writer.LoggingGioWriter;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
@@ -30,14 +31,14 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
     protected List<ContentError> expectedErrors(String resourceName) {
         switch (resourceName) {
             case "graphin/graphml/samples/greek2.graphml":
-                return Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new ContentError.Location(33, 57)));
+                return Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(33, 57)));
             case "graphin/graphml/samples/haitimap2.graphml":
-                return Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new ContentError.Location(25, 57)));
+                return Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(25, 57)));
             case "graphin/graphml/synthetic/invalid-root.graphml":
                 return Arrays.asList( //
-                        new ContentError(ContentError.ErrorLevel.Warn, "The Element <myroot> not acceptable tag for Graphml.", new ContentError.Location(2, 9)), //
-                        new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "    Hello\n" + "' [No open element to add characters to.]", new ContentError.Location(4, 1)), //
-                        new ContentError(ContentError.ErrorLevel.Warn, "The Element </myroot> not acceptable tag for Graphml.", new ContentError.Location(4, 10)) //
+                        new ContentError(ContentError.ErrorLevel.Warn, "The Element <myroot> not acceptable tag for Graphml.", new Location(2, 9)), //
+                        new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "    Hello\n" + "' [No open element to add characters to.]", new Location(4, 1)), //
+                        new ContentError(ContentError.ErrorLevel.Warn, "The Element </myroot> not acceptable tag for Graphml.", new Location(4, 10)) //
                 );
         }
         return Collections.emptyList();

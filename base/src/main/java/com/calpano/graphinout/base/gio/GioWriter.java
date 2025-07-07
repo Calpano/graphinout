@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.base.reader.Locator;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
@@ -9,8 +11,9 @@ import java.net.URL;
  */
 public interface GioWriter {
 
-    void baseuri(String baseuri) throws IOException;
+    void baseUri(String baseUri) throws IOException;
 
+    @Deprecated
     void data(GioData data) throws IOException;
 
     void endDocument() throws IOException;
@@ -23,7 +26,11 @@ public interface GioWriter {
 
     void endPort() throws IOException;
 
+    @Deprecated
     void key(GioKey gioKey) throws IOException;
+
+    /** Receive a {@link Locator}, that can be used to retrieve line:col information about the current parse location () */
+    default void setLocator(Locator locator) {}
 
     void startDocument(GioDocument document) throws IOException;
 

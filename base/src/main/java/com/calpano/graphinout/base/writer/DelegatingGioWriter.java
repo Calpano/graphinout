@@ -109,9 +109,9 @@ public class DelegatingGioWriter implements GioWriter {
     }
 
     @Override
-    public void baseuri(String baseuri) throws IOException {
+    public void baseUri(String baseUri) throws IOException {
         for (GioWriter writer : writers) {
-            writer.baseuri(baseuri);
+            writer.baseUri(baseUri);
         }
     }
 }

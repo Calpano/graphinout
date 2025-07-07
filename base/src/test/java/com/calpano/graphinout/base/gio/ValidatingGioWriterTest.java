@@ -188,17 +188,17 @@ class ValidatingGioWriterTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenBaseuriIsInvalid() throws IOException {
+    void shouldThrowExceptionWhenBaseUriIsInvalid() throws IOException {
         String invalidUri = "invalid:///uri with spaces";
 
-        assertThrows(IllegalStateException.class, () -> underTest.baseuri(invalidUri));
+        assertThrows(IllegalStateException.class, () -> underTest.baseUri(invalidUri));
     }
 
     @Test
-    void shouldAcceptValidBaseuri() throws IOException {
+    void shouldAcceptValidBaseUri() throws IOException {
         String validUri = "http://example.com/valid/uri";
 
-        underTest.baseuri(validUri);
-        verify(mockGioWriterImpl).baseuri(validUri);
+        underTest.baseUri(validUri);
+        verify(mockGioWriterImpl).baseUri(validUri);
     }
 }

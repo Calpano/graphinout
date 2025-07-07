@@ -2,6 +2,7 @@ package com.calpano.graphinout.base;
 
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.base.reader.Location;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
@@ -22,7 +23,7 @@ public abstract class AbstractReaderTest {
                             new ContentError(
                                     ContentError.ErrorLevel.Error,
                                     "Edge [GraphmlEdge(id=e1, directed=true, sourceId=n0, targetId=n4, sourcePortId=null, targetPortId=null)] references to a non-existent node ID: 'n4'",
-                                    new ContentError.Location(68, 11)
+                                    new Location(68, 11)
                             ));
 
         return Collections.emptyList();

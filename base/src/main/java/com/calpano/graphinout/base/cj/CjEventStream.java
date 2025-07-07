@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.cj;
 
-import com.calpano.graphinout.foundation.json.JsonEventStream;
+import com.calpano.graphinout.foundation.json.JsonWriter;
 
 /**
  * This API embeds stream of conceptual opening and closing tags (read/write events) for <em>connected JSON</em> into a
@@ -13,14 +13,14 @@ import com.calpano.graphinout.foundation.json.JsonEventStream;
  *         "graph": { ... graph object ... }   // object
  *     }
  * </pre>
- * which is in {@link JsonEventStream}
+ * which is in {@link JsonWriter}
  * <ol>
- *     <li>{@link JsonEventStream#documentStart() JSON document start}</li>
- *     <li>{@link JsonEventStream#objectStart() JSON object start}</li>
- *     <li>{@link JsonEventStream#onKey(String) JSON object key "graph"}</li>
- *     <li>{@link JsonEventStream#objectStart() JSON object start}, ... graph object 1..., {@link JsonEventStream#objectEnd() JSON object end}</li>
- *     <li>{@link JsonEventStream#objectEnd() JSON object end}</li>
- *     <li>{@link JsonEventStream#documentEnd() JSON document end}</li>
+ *     <li>{@link JsonWriter#documentStart() JSON document start}</li>
+ *     <li>{@link JsonWriter#objectStart() JSON object start}</li>
+ *     <li>{@link JsonWriter#onKey(String) JSON object key "graph"}</li>
+ *     <li>{@link JsonWriter#objectStart() JSON object start}, ... graph object 1..., {@link JsonWriter#objectEnd() JSON object end}</li>
+ *     <li>{@link JsonWriter#objectEnd() JSON object end}</li>
+ *     <li>{@link JsonWriter#documentEnd() JSON document end}</li>
  * </ol>
  * <p>
  * or
@@ -29,17 +29,17 @@ import com.calpano.graphinout.foundation.json.JsonEventStream;
  *         "graph": [{ ... graph object 1 ... }, { ... graph object 2 ... }] // array
  *     }
  * </pre>
- * which is in {@link JsonEventStream}
+ * which is in {@link JsonWriter}
  * <ol>
- *     <li>{@link JsonEventStream#documentStart() JSON document start}</li>
- *     <li>{@link JsonEventStream#objectStart() JSON object start}</li>
- *     <li>{@link JsonEventStream#onKey(String) JSON object key "graph"}</li>
- *     <li>{@link JsonEventStream#arrayStart() JSON array start}</li>
- *     <li>{@link JsonEventStream#objectStart() JSON object start}, ... graph object 1..., {@link JsonEventStream#objectEnd() JSON object end}</li>
- *     <li>{@link JsonEventStream#objectStart() JSON object start}, ... graph object 2..., {@link JsonEventStream#objectEnd() JSON object end}</li>
- *     <li>{@link JsonEventStream#arrayEnd() JSON array end}</li>
- *     <li>{@link JsonEventStream#objectEnd() JSON object end}</li>
- *     <li>{@link JsonEventStream#documentEnd() JSON document end}</li>
+ *     <li>{@link JsonWriter#documentStart() JSON document start}</li>
+ *     <li>{@link JsonWriter#objectStart() JSON object start}</li>
+ *     <li>{@link JsonWriter#onKey(String) JSON object key "graph"}</li>
+ *     <li>{@link JsonWriter#arrayStart() JSON array start}</li>
+ *     <li>{@link JsonWriter#objectStart() JSON object start}, ... graph object 1..., {@link JsonWriter#objectEnd() JSON object end}</li>
+ *     <li>{@link JsonWriter#objectStart() JSON object start}, ... graph object 2..., {@link JsonWriter#objectEnd() JSON object end}</li>
+ *     <li>{@link JsonWriter#arrayEnd() JSON array end}</li>
+ *     <li>{@link JsonWriter#objectEnd() JSON object end}</li>
+ *     <li>{@link JsonWriter#documentEnd() JSON document end}</li>
  * </ol>
  * <p>
  * regardless, the {@link CjEventStream} has the same structure:
@@ -50,7 +50,7 @@ import com.calpano.graphinout.foundation.json.JsonEventStream;
  *     <li>{@link CjEventStream#documentEnd() CJ document end}</li>
  * </ol>
  */
-public interface CjEventStream extends JsonEventStream {
+public interface CjEventStream extends JsonWriter {
 
 
     /** Graph base uri */
