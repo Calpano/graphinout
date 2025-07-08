@@ -1,7 +1,7 @@
 package com.calpano.graphinout.foundation.json.impl;
 
-import com.calpano.graphinout.foundation.json.JsonWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
+import com.calpano.graphinout.foundation.json.JsonWriter;
 import org.slf4j.Logger;
 
 import java.math.BigDecimal;
@@ -20,6 +20,9 @@ public class StringBuilderJsonWriter implements JsonWriter {
     private static final Logger log = getLogger(StringBuilderJsonWriter.class);
     private final StringBuilder b = new StringBuilder();
     private final Stack<State> stack = new Stack<>();
+    private final boolean preserveWhitespace;
+
+    public StringBuilderJsonWriter(boolean preserveWhitespace) {this.preserveWhitespace = preserveWhitespace;}
 
     @Override
     public void arrayEnd() throws JsonException {
@@ -117,18 +120,35 @@ public class StringBuilderJsonWriter implements JsonWriter {
         b.append("null");
     }
 
-    @Override
-    public void onString(String s) throws JsonException {
-        maybeDelimiter();
-        b.append('"').append(s //
-                .replace("\\", "\\\\") //
-                .replace("\"", "\\\"") //
-        ).append('"');
-    }
-
     public void reset() {
         b.setLength(0);
         stack.clear();
+    }
+
+    @Override
+    public void stringCharacters(String s) throws JsonException {
+        b.append(s //
+                .replace("\\", "\\\\") //
+                .replace("\"", "\\\"") //
+        );
+    }
+
+    @Override
+    public void stringEnd() throws JsonException {
+        b.append('"');
+    }
+
+    @Override
+    public void stringStart() throws JsonException {
+        maybeDelimiter();
+        b.append('"');
+    }
+
+    @Override
+    public void whitespaceCharacters(String s) throws JsonException {
+        if (preserveWhitespace) {
+            b.append(s);
+        }
     }
 
     private void maybeDelimiter() {

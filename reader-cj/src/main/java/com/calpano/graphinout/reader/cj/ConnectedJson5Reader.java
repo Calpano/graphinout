@@ -28,6 +28,7 @@ public class ConnectedJson5Reader implements GioReader {
     private static final Logger log = LoggerFactory.getLogger(Json5Reader.class);
     private final ConnectedJsonReader cjReader = new ConnectedJsonReader();
 
+
     @Override
     public void errorHandler(Consumer<ContentError> errorHandler) {
         this.cjReader.errorHandler(errorHandler);
@@ -56,6 +57,7 @@ public class ConnectedJson5Reader implements GioReader {
         // construct new input source
         SingleInputSourceOfString strippedInput = inputSource(inputSource.name() + "-preprocessed", json);
         // parse normal
+
         cjReader.read(strippedInput, writer);
     }
 

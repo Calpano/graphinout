@@ -2,8 +2,8 @@ package com.calpano.graphinout.reader.cj.json;
 
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import com.calpano.graphinout.foundation.json.JsonWriter;
 import com.calpano.graphinout.foundation.json.JsonReader;
+import com.calpano.graphinout.foundation.json.JsonWriter;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -58,7 +58,10 @@ public class JsonReaderImpl implements JsonReader {
                 stream.onNull();
                 break;
             case VALUE_STRING:
-                stream.onString(parser.getValueAsString());
+                stream.stringStart();
+                // IMPROVE: use streaming parser
+                stream.stringCharacters(parser.getValueAsString());
+                stream.stringEnd();
                 break;
             case VALUE_NUMBER_INT:
                 // Handle different integer types based on the number size

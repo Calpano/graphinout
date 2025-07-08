@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.graphml.GioWriterImpl;
+import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.base.validation.ValidatingGraphMlWriter;
@@ -50,7 +50,7 @@ public interface GioReader {
         };
         errorHandler(eh);
         try {
-            GioWriter writer = new DelegatingGioWriter(new ValidatingGioWriter(), new GioWriterImpl(new ValidatingGraphMlWriter()));
+            GioWriter writer = new DelegatingGioWriter(new ValidatingGioWriter(), new Gio2GraphmlWriter(new ValidatingGraphMlWriter()));
             read(singleInputSource, writer);
         } catch (Throwable t) {
             log.warn("Invalid input in "+singleInputSource.name(), t);

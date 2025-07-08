@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.graphml.GioWriterImpl;
+import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlDocument;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.reader.ContentError;
@@ -36,7 +36,7 @@ class XMLNamespaceHandlingTest {
         SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
         InMemoryOutputSink outputSink = OutputSink.createInMemory();
         GraphmlReader graphmlReader = new GraphmlReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
 
         String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" " + //
@@ -58,7 +58,7 @@ class XMLNamespaceHandlingTest {
         SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
         OutputSink outputSink = OutputSink.createInMemory();
         GraphmlReader graphmlReader = new GraphmlReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
 
         String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" " + //
@@ -78,7 +78,7 @@ class XMLNamespaceHandlingTest {
         SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
         OutputSink outputSink = OutputSink.createInMemory();
         GraphmlReader graphmlReader = new GraphmlReader();
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         List<ContentError> errorList = new ArrayList<>();
         graphmlReader.errorHandler(errorList::add);
         graphmlReader.read(singleInputSource, gioWriter);

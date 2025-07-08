@@ -8,13 +8,17 @@ import com.calpano.graphinout.base.gio.GioKey;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.foundation.json.JsonException;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+/** Delegates one input stream to n output streams */
 public class DelegatingGioWriter implements GioWriter {
 
     public DelegatingGioWriter(GioWriter ... writers) {
@@ -23,6 +27,124 @@ public class DelegatingGioWriter implements GioWriter {
 
     private final List<GioWriter> writers;
 
+    @Override
+    public void arrayEnd() throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.arrayEnd();
+        }
+    }
+
+    @Override
+    public void arrayStart() throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.arrayStart();
+        }
+    }
+
+    @Override
+    public void objectEnd() throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.objectEnd();
+        }
+    }
+
+    @Override
+    public void objectStart() throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.objectStart();
+        }
+    }
+
+    @Override
+    public void onBigDecimal(BigDecimal bigDecimal) throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.onBigDecimal(bigDecimal);
+        }
+    }
+
+    @Override
+    public void onBigInteger(BigInteger bigInteger) throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.onBigInteger(bigInteger);
+        }
+    }
+
+    @Override
+    public void onBoolean(boolean b) throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.onBoolean(b);
+        }
+    }
+
+    @Override
+    public void onDouble(double d) throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.onDouble(d);
+        }
+    }
+
+    @Override
+    public void onFloat(float f) throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.onFloat(f);
+        }
+    }
+
+    @Override
+    public void onInteger(int i) throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.onInteger(i);
+        }
+    }
+
+    @Override
+    public void onKey(String key) throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.onKey(key);
+        }
+    }
+
+    @Override
+    public void onLong(long l) throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.onLong(l);
+        }
+    }
+
+    @Override
+    public void onNull() throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.onNull();
+        }
+    }
+
+    @Override
+    public void stringStart() throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.stringStart();
+        }
+    }
+
+    @Override
+    public void stringEnd() throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.stringEnd();
+        }
+    }
+
+    @Override
+    public void stringCharacters(String s) throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.stringCharacters(s);
+        }
+    }
+
+    @Override
+    public void whitespaceCharacters(String s) throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.whitespaceCharacters(s);
+        }
+    }
 
     @Override
     public void endDocument() throws IOException {

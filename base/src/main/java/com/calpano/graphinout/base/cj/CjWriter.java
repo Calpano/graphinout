@@ -42,19 +42,19 @@ import com.calpano.graphinout.foundation.json.JsonWriter;
  *     <li>{@link JsonWriter#documentEnd() JSON document end}</li>
  * </ol>
  * <p>
- * regardless, the {@link CjEventStream} has the same structure:
+ * regardless, the {@link CjWriter} has the same structure:
  * <ol>
- *     <li>{@link CjEventStream#documentStart() CJ document start}</li>
- *     <li>{@link #graphStart() CJ graph start}, ... graph object 1..., {@link CjEventStream#graphEnd() CJ graph end}</li>
- *     <li>If more graphs are present: <li>{@link #graphStart() CJ graph start}, ... graph object i..., {@link CjEventStream#graphEnd() CJ graph end}</li>
- *     <li>{@link CjEventStream#documentEnd() CJ document end}</li>
+ *     <li>{@link CjWriter#documentStart() CJ document start}</li>
+ *     <li>{@link #graphStart() CJ graph start}, ... graph object 1..., {@link CjWriter#graphEnd() CJ graph end}</li>
+ *     <li>If more graphs are present: <li>{@link #graphStart() CJ graph start}, ... graph object i..., {@link CjWriter#graphEnd() CJ graph end}</li>
+ *     <li>{@link CjWriter#documentEnd() CJ document end}</li>
  * </ol>
  */
-public interface CjEventStream extends JsonWriter {
+public interface CjWriter extends JsonWriter {
 
 
     /** Graph base uri */
-    void baseuri(String baseuri);
+    void baseUri(String baseuri);
 
     /** endpoint.direction */
     void direction(CjDirection direction);
@@ -79,7 +79,7 @@ public interface CjEventStream extends JsonWriter {
     void edgeType(CjEdgeType edgeType);
 
     /** Graph property */
-    void edgedefault(String edgedefault);
+    void edgeDefault(String edgedefault);
 
     /**
      * CJ Endpoint end event.

@@ -3,7 +3,7 @@ package com.calpano.graphinout.base;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.DelegatingGraphmlWriter;
-import com.calpano.graphinout.base.graphml.GioWriterImpl;
+import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.reader.ContentError;
@@ -52,7 +52,7 @@ public class ReaderTests {
             graphmlWriter = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), graphmlWriter);
         }
 
-        GioWriter gioWriter = new GioWriterImpl(graphmlWriter);
+        GioWriter gioWriter = new Gio2GraphmlWriter(graphmlWriter);
         if (validateGio) {
             gioWriter = new DelegatingGioWriter(new ValidatingGioWriter(), gioWriter);
         }

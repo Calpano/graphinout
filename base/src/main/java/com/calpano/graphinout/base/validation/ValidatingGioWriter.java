@@ -9,6 +9,7 @@ import com.calpano.graphinout.base.gio.GioKey;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.foundation.json.impl.ValidatingJsonWriter;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /** QUALITY: Unfinished */
-public class ValidatingGioWriter implements GioWriter {
+public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWriter {
 
     public enum CurrentElement {
         /**

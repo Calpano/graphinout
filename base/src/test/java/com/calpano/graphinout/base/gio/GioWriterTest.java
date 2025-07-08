@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.graphml.GioWriterImpl;
+import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.foundation.xml.XmlWriterSpy;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +25,7 @@ class GioWriterTest {
     public void setup() {
         MockitoAnnotations.openMocks(this);
         xmlWriterSpy.getOutPut().delete(0, xmlWriterSpy.getOutPut().length());
-        gioWriter = new GioWriterImpl(new GraphmlWriterImpl(xmlWriterSpy));
+        gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(xmlWriterSpy));
     }
 
     @Test

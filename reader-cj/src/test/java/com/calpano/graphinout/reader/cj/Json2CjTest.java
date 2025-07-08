@@ -1,6 +1,6 @@
 package com.calpano.graphinout.reader.cj;
 
-import com.calpano.graphinout.base.cj.impl.LoggingCjEventStream;
+import com.calpano.graphinout.base.cj.impl.LoggingCjWriter;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.reader.cj.json.JsonReaderImpl;
 import org.junit.jupiter.api.Test;
@@ -34,8 +34,8 @@ class Json2CjTest {
 
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         InputSource inputSource = inputSource("alias.json", aliasJson);
-        LoggingCjEventStream cjSink = new LoggingCjEventStream();
-        Json2Cj sink = new Json2Cj(cjSink);
+        LoggingCjWriter cjSink = new LoggingCjWriter();
+        Json2CjWriter sink = new Json2CjWriter(cjSink);
 
         // Should process aliases (node->nodes, edge->edges, from->source, to->target, name->label) without errors
         assertDoesNotThrow(() -> {
@@ -55,8 +55,8 @@ class Json2CjTest {
 
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         InputSource inputSource = inputSource("example.connected.json5", jsonContent);
-        LoggingCjEventStream cjSink = new LoggingCjEventStream();
-        Json2Cj sink = new Json2Cj(cjSink);
+        LoggingCjWriter cjSink = new LoggingCjWriter();
+        Json2CjWriter sink = new Json2CjWriter(cjSink);
 
         // Process the JSON through Json2Cj - should complete without errors
         assertDoesNotThrow(() -> {
@@ -86,8 +86,8 @@ class Json2CjTest {
 
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         InputSource inputSource = inputSource("endpoints.json", endpointsJson);
-        LoggingCjEventStream cjSink = new LoggingCjEventStream();
-        Json2Cj sink = new Json2Cj(cjSink);
+        LoggingCjWriter cjSink = new LoggingCjWriter();
+        Json2CjWriter sink = new Json2CjWriter(cjSink);
 
         // Should process endpoints without errors
         assertDoesNotThrow(() -> {
@@ -106,8 +106,8 @@ class Json2CjTest {
                 """;
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         try (InputSource inputSource = inputSource("one-node-test", simpleJson)) {
-            LoggingCjEventStream cjSink = new LoggingCjEventStream();
-            Json2Cj sink = new Json2Cj(cjSink);
+            LoggingCjWriter cjSink = new LoggingCjWriter();
+            Json2CjWriter sink = new Json2CjWriter(cjSink);
 
             // Should process simple nodes and edges without errors
             assertDoesNotThrow(() -> jsonReader.read(inputSource, sink));
@@ -130,8 +130,8 @@ class Json2CjTest {
 
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         InputSource inputSource = inputSource("simple.json", simpleJson);
-        LoggingCjEventStream cjSink = new LoggingCjEventStream();
-        Json2Cj sink = new Json2Cj(cjSink);
+        LoggingCjWriter cjSink = new LoggingCjWriter();
+        Json2CjWriter sink = new Json2CjWriter(cjSink);
 
         // Should process simple nodes and edges without errors
         assertDoesNotThrow(() -> {

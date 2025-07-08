@@ -9,6 +9,7 @@ import com.calpano.graphinout.base.gio.GioKey;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.foundation.json.impl.ValidatingJsonWriter;
 import com.google.common.collect.Sets;
 
 import javax.annotation.Nullable;
@@ -19,7 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ValidatingGioWriter implements GioWriter {
+public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWriter {
 
     // Constructor
     public ValidatingGioWriter() {
@@ -139,7 +140,7 @@ public class ValidatingGioWriter implements GioWriter {
             try {
                 new java.net.URI(baseUri);
             } catch (java.net.URISyntaxException e) {
-                throw new IllegalStateException("Invalid baseuri: " + baseUri, e);
+                throw new IllegalStateException("Invalid baseUri: " + baseUri, e);
             }
         }
     }

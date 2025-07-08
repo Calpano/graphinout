@@ -2,9 +2,10 @@ package com.calpano.graphinout.base.cj.impl;
 
 import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjEdgeType;
-import com.calpano.graphinout.base.cj.CjEventStream;
+import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.CjException;
 import com.calpano.graphinout.foundation.json.JsonException;
+import com.calpano.graphinout.foundation.json.impl.LoggingJsonWriter;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -13,7 +14,7 @@ import java.math.BigInteger;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class LoggingCjEventStream implements CjEventStream {
+public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
 
     public enum JsonEvent {
         ArrayStart, ArrayEnd, DocumentStart, DocumentEnd, ObjectStart, ObjectEnd, OnNumber, OnBoolean, OnKey, OnNull, OnString
@@ -22,7 +23,7 @@ public class LoggingCjEventStream implements CjEventStream {
     public enum CjEvent {
         EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, JsonEnd, JsonStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, Directed, EdgeType, NodeId, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Value
     }
-    private static final Logger log = getLogger(LoggingCjEventStream.class);
+    private static final Logger log = getLogger(LoggingCjWriter.class);
     private final StringBuilder bufJson = new StringBuilder();
     private final StringBuilder bufCj = new StringBuilder();
 
@@ -37,7 +38,7 @@ public class LoggingCjEventStream implements CjEventStream {
     }
 
     @Override
-    public void baseuri(String baseuri) {
+    public void baseUri(String baseuri) {
         onCj(CjEvent.BaseUri, baseuri);
     }
 
@@ -79,7 +80,7 @@ public class LoggingCjEventStream implements CjEventStream {
     }
 
     @Override
-    public void edgedefault(String edgedefault) {
+    public void edgeDefault(String edgedefault) {
         onCj(CjEvent.EdgeDefault, edgedefault);
     }
 
@@ -262,11 +263,6 @@ public class LoggingCjEventStream implements CjEventStream {
     @Override
     public void onNull() throws JsonException {
         onJson(JsonEvent.OnNull, null);
-    }
-
-    @Override
-    public void onString(String s) throws JsonException {
-        onJson(JsonEvent.OnString, s);
     }
 
     @Override

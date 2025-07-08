@@ -2,7 +2,7 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.graphml.GioWriterImpl;
+import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
@@ -50,7 +50,7 @@ class GraphmlReaderTest {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
             graphmlReader.errorHandler(contentErrors::add);
-            GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+            GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
             graphmlReader.read(singleInputSource, gioWriter);
         }
     }
@@ -65,7 +65,7 @@ class GraphmlReaderTest {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
             graphmlReader.errorHandler(contentErrors::add);
-            GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+            GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
             graphmlReader.read(singleInputSource, gioWriter);
         }
     }
@@ -80,7 +80,7 @@ class GraphmlReaderTest {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
             graphmlReader.errorHandler(contentErrors::add);
-            GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+            GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
             graphmlReader.read(singleInputSource, gioWriter);
         }
 

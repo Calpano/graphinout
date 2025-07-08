@@ -2,7 +2,7 @@ package com.calpano.graphinout.reader.cj;
 
 import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjEdgeType;
-import com.calpano.graphinout.base.cj.CjEventStream;
+import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.CjException;
 import com.calpano.graphinout.base.cj.CjLabel;
 import com.calpano.graphinout.base.gio.GioData;
@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Stack;
 
-public class Cj2Gio implements CjEventStream {
+public class Cj2Gio implements CjWriter {
 
     static class CjNode {
 
@@ -29,23 +29,23 @@ public class Cj2Gio implements CjEventStream {
     }
 
     final GioWriter gio;
-    private final StringBuilderJsonWriter jsonSink = new StringBuilderJsonWriter();
+    private final StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter(false);
     private final Stack<Object> stack = new Stack<>();
 
     public Cj2Gio(GioWriter gio) {this.gio = gio;}
 
     @Override
     public void arrayEnd() throws JsonException {
-        jsonSink.arrayEnd();
+        jsonWriter.arrayEnd();
     }
 
     @Override
     public void arrayStart() throws JsonException {
-        jsonSink.arrayStart();
+        jsonWriter.arrayStart();
     }
 
     @Override
-    public void baseuri(String baseuri) {
+    public void baseUri(String baseuri) {
         try {
             gio.baseUri(baseuri);
         } catch (IOException e) {
@@ -100,7 +100,7 @@ public class Cj2Gio implements CjEventStream {
     }
 
     @Override
-    public void edgedefault(String edgedefault) {
+    public void edgeDefault(String edgedefault) {
 
     }
 
@@ -143,12 +143,12 @@ public class Cj2Gio implements CjEventStream {
     @Override
     public void jsonEnd() {
         try {
-            String json = jsonSink.json();
+            String json = jsonWriter.json();
             gio.data(GioData.builder().key("json").value(json).build());
         } catch (IOException e) {
             throw new JsonException(e);
         }
-        jsonSink.reset();
+        jsonWriter.reset();
     }
 
     @Override
@@ -206,62 +206,57 @@ public class Cj2Gio implements CjEventStream {
 
     @Override
     public void objectEnd() throws JsonException {
-        jsonSink.objectEnd();
+        jsonWriter.objectEnd();
     }
 
     @Override
     public void objectStart() throws JsonException {
-        jsonSink.objectStart();
+        jsonWriter.objectStart();
     }
 
     @Override
     public void onBigDecimal(BigDecimal bigDecimal) {
-        jsonSink.onBigDecimal(bigDecimal);
+        jsonWriter.onBigDecimal(bigDecimal);
     }
 
     @Override
     public void onBigInteger(BigInteger bigInteger) {
-        jsonSink.onBigInteger(bigInteger);
+        jsonWriter.onBigInteger(bigInteger);
     }
 
     @Override
     public void onBoolean(boolean b) throws JsonException {
-        jsonSink.onBoolean(b);
+        jsonWriter.onBoolean(b);
     }
 
     @Override
     public void onDouble(double d) throws JsonException {
-        jsonSink.onDouble(d);
+        jsonWriter.onDouble(d);
     }
 
     @Override
     public void onFloat(float f) throws JsonException {
-        jsonSink.onFloat(f);
+        jsonWriter.onFloat(f);
     }
 
     @Override
     public void onInteger(int i) throws JsonException {
-        jsonSink.onInteger(i);
+        jsonWriter.onInteger(i);
     }
 
     @Override
     public void onKey(String key) throws JsonException {
-        jsonSink.onKey(key);
+        jsonWriter.onKey(key);
     }
 
     @Override
     public void onLong(long l) throws JsonException {
-        jsonSink.onLong(l);
+        jsonWriter.onLong(l);
     }
 
     @Override
     public void onNull() throws JsonException {
-        jsonSink.onNull();
-    }
-
-    @Override
-    public void onString(String s) throws JsonException {
-        jsonSink.onString(s);
+        jsonWriter.onNull();
     }
 
     @Override
@@ -284,8 +279,28 @@ public class Cj2Gio implements CjEventStream {
     }
 
     @Override
+    public void stringCharacters(String s) throws JsonException {
+        jsonWriter.stringCharacters(s);
+    }
+
+    @Override
+    public void stringEnd() throws JsonException {
+        jsonWriter.stringEnd();
+    }
+
+    @Override
+    public void stringStart() throws JsonException {
+        jsonWriter.stringStart();
+    }
+
+    @Override
     public void value(String value) {
 
+    }
+
+    @Override
+    public void whitespaceCharacters(String s) throws JsonException {
+        jsonWriter.whitespaceCharacters(s);
     }
 
 }

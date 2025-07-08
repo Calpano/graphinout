@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.graphml.GioWriterImpl;
+import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.writer.DelegatingGioWriter;
 import com.calpano.graphinout.base.writer.ValidatingGioWriter;
 import org.junit.jupiter.api.AfterEach;
@@ -31,7 +31,7 @@ class ValidatingGioWriterTest {
     private AutoCloseable closeable;
     private DelegatingGioWriter underTest;
     @Mock
-    private GioWriterImpl mockGioWriterImpl;
+    private Gio2GraphmlWriter mockGioWriterImpl;
     @Mock
     private GioKey mockKey;
     @Mock

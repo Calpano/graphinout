@@ -1,6 +1,25 @@
 package com.calpano.graphinout.reader.cj;
 
+import java.util.Set;
+import java.util.function.Predicate;
+
 public class Util {
+
+    public static <E> E findExactlyOne(Set<E> set, Predicate<E> predicate) {
+        E found = null;
+        for (E element : set) {
+            if (predicate.test(element)) {
+                if (found != null) {
+                    throw new IllegalArgumentException("Expected exactly one element matching the predicate, but found at least two.");
+                }
+                found = element;
+            }
+        }
+        if(found == null) {
+            throw new IllegalArgumentException("Expected exactly one element matching the predicate, but found none.");
+        }
+        return found;
+    }
 
     /**
      * Is this a valid ISO language code as defined in <a href="https://datatracker.ietf.org/doc/html/rfc5646">RFC

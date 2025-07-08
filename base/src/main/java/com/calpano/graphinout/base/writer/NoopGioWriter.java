@@ -19,7 +19,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * Does not produce Graphml, rather, just logs
  */
-public class NoopGioWriter implements GioWriter {
+public class NoopGioWriter extends NoopJsonWriter implements GioWriter {
+
 
     private static final Logger log = getLogger(NoopGioWriter.class);
 

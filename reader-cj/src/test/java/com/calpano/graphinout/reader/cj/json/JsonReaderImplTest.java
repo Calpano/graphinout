@@ -41,7 +41,7 @@ class JsonReaderImplTest {
 
     private void testInput(SingleInputSourceOfString input) throws IOException {
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-        StringBuilderJsonWriter sink = new StringBuilderJsonWriter();
+        StringBuilderJsonWriter sink = new StringBuilderJsonWriter(true);
         jsonReader.read(input, sink);
 
         String result = sink.json();

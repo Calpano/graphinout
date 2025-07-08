@@ -3,7 +3,7 @@ package com.calpano.graphinout.engine;
 import com.calpano.graphinout.base.GioService;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.graphml.GioWriterImpl;
+import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.ContentErrors;
@@ -51,7 +51,7 @@ public class GioEngineCore {
     // we expect only one of them to be able to read it without throwing exceptions or reporting
     // contentErrors
     OutputSink noop = OutputSink.createNoop();
-    GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(noop)));
+    GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(noop)));
     for (GioReader reader : readerCandidates) {
       InMemoryErrorHandler errorHandler = ContentErrors.createInMemory();
       reader.errorHandler(errorHandler);
@@ -60,7 +60,7 @@ public class GioEngineCore {
       }
       if (errorHandler.hasNoErrors()) {
         // parsing worked, now for real
-        gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         return;
       }
     }
@@ -111,7 +111,7 @@ public class GioEngineCore {
   }
 
   private GioWriter createGioWriter(OutputStream resultOut) {
-    return new GioWriterImpl(
+    return new Gio2GraphmlWriter(
         new GraphmlWriterImpl(
             new XmlWriterImpl(
                 new OutputSink() {

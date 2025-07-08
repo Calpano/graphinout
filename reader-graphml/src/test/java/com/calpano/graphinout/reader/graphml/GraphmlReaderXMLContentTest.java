@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.graphml.GioWriterImpl;
+import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
@@ -37,7 +37,7 @@ class GraphmlReaderXMLContentTest {
         GraphmlReader graphmlReader = new GraphmlReader();
         List<ContentError> contentErrors = new ArrayList<>();
         graphmlReader.errorHandler(contentErrors::add);
-        GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
         return new Result(outputSink.getBufferAsUtf8String(), contentErrors);
     }

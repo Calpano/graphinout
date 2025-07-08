@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.json;
 
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.graphml.GioWriterImpl;
+import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
@@ -40,7 +40,7 @@ class JsonGraphmlParserTest {
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
         try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content); //
              OutputSink outputSink = new InMemoryOutputSink()) {
-            GioWriter gioWriter = new GioWriterImpl(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+            GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
             JsonGraphmlParser graphmlReader = new JsonGraphmlParser(singleInputSource, gioWriter, graphmlPathBuilder, error -> log.warn("Error: " + error));
             graphmlReader.read();
             System.out.println(outputSink.toString());

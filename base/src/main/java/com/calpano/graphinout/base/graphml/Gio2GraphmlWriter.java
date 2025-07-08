@@ -19,13 +19,13 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.TreeMap;
 
-public class GioWriterImpl implements GioWriter {
+public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter {
 
     final GraphmlWriter graphmlWriter;
     private @Nullable GraphmlElement openEdge;
     private String baseuri;
 
-    public GioWriterImpl(GraphmlWriter graphmlWriter) {
+    public Gio2GraphmlWriter(GraphmlWriter graphmlWriter) {
         this.graphmlWriter = graphmlWriter;
     }
 

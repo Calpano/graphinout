@@ -8,6 +8,7 @@ import com.calpano.graphinout.base.gio.GioKey;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.foundation.json.JsonException;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -86,4 +87,96 @@ public class LoggingGioWriter implements GioWriter {
     public void baseUri(String baseUri) throws IOException {
         log.info("GioWriter: baseuri(" + baseUri + ")");
     }
+
+    @Override
+    public void arrayEnd() {
+        log.info("GioWriter: arrayEnd()");
+    }
+
+    @Override
+    public void arrayStart() {
+        log.info("GioWriter: arrayStart()");
+    }
+
+    @Override
+    public void objectEnd() {
+        log.info("GioWriter: objectEnd()");
+    }
+
+    @Override
+    public void objectStart() {
+        log.info("GioWriter: objectStart()");
+    }
+
+    @Override
+    public void onBigDecimal(java.math.BigDecimal bigDecimal) {
+        log.info("GioWriter: onBigDecimal(" + bigDecimal + ")");
+    }
+
+    @Override
+    public void onBigInteger(java.math.BigInteger bigInteger) {
+        log.info("GioWriter: onBigInteger(" + bigInteger + ")");
+    }
+
+    @Override
+    public void onBoolean(boolean b) {
+        log.info("GioWriter: onBoolean(" + b + ")");
+    }
+
+    @Override
+    public void onDouble(double d) {
+        log.info("GioWriter: onDouble(" + d + ")");
+    }
+
+    @Override
+    public void onFloat(float f) {
+        log.info("GioWriter: onFloat(" + f + ")");
+    }
+
+    @Override
+    public void onInteger(int i) {
+        log.info("GioWriter: onInteger(" + i + ")");
+    }
+
+    @Override
+    public void onKey(String key) {
+        log.info("GioWriter: onKey(" + key + ")");
+    }
+
+    @Override
+    public void onLong(long l) {
+        log.info("GioWriter: onLong(" + l + ")");
+    }
+
+    @Override
+    public void onNull() {
+        log.info("GioWriter: onNull()");
+    }
+
+    @Override
+    public void stringStart() throws JsonException {
+        log.info("GioWriter: stringStart()");
+    }
+
+    @Override
+    public void stringEnd() throws JsonException {
+        log.info("GioWriter: stringEnd()");
+
+    }
+
+    @Override
+    public void stringCharacters(String s) throws JsonException {
+        log.info("GioWriter: stringCharacters(" + s + ")");
+    }
+
+    @Override
+    public void whitespaceCharacters(String s) throws JsonException {
+        log.info("GioWriter: whitespaceCharacters(" + s + ")");
+    }
+
+    @Override
+    public void onString(String s) {
+        log.info("GioWriter: onString(" + s + ")");
+    }
+
 }
