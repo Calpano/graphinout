@@ -1,0 +1,99 @@
+= Data Model Mapping
+:toc:
+:cj: Connected JSON
+
+Mapping XML, JSON, GraphML, Connected JSON.
+
+.GraphML
+- key-data
+- custom attributes
+- custom XML tags as `<data>` values -- need to transport XML namespace
+
+.Connected JSON
+- custom JSON in each object
+
+
+
+.Variants
+
+XML -> GraphML -> Gio -> GraphML -> XML
+
+XML -> GraphML -> Gio -> CJ -> JSON
+
+JSON -> CJ -> Gio -> GraphML -> XML
+
+JSON -> CJ -> Gio -> CJ -> JSON
+
+
+
+
+
+== Graphml Custom Attributes in ANY element
+.GraphML
+----
+<graphml
+  xmlns:my="http://example.org/my"
+>
+    <node my:foo="bar"> ... </node>
+----
+
+.CJ
+----
+{
+    "namespaces": {
+        "my": "http://example.org/my"
+    },
+...
+    "node": {
+        "customAttributes": {
+            "my:foo": "bar"
+        }
+    }
+
+}
+----
+
+
+== Graphml Custom Attributes in `<key>` element
+
+----
+<key id="d12" for="node" attr.name="PortViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/PortViewState" />
+----
+
+- `d12` is considered synthetic
+- `for="node"` can be computed
+- `attr.name="PortViewState"` the name must be kept -> JSON property key
+
+
+.CJ
+----
+{
+    "namespaces": {
+        "my": "http://example.org/my"
+    },
+...
+    "node": {
+        "PortViewState": ...
+        "customKeyAttributes": {
+               "y:attr.uri"="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/PortViewState"
+        }
+    }
+
+}
+----
+
+namespaces::
+A JSON object with namespace prefixes as keys.  The values are the namespace URIs.
+
+customAttributes::
+A JSON object with custom attributes as keys. The values are the attribute values. The keys are prefixed with the namespace URI, e.g., `my:foo`.
+
+customKeyAttributes::
+This represents the special case of the special case:
+Custom XML attributes on an element, which itself is not represented in {cj}.
+We have a GraphML `<key>` element with custom attributes.
+A key has a `for` attribute with a value of `graph`, `node`, `edge`, `hyperedge`, `port`, `endpoint` or `all`.
+
+These attributes are stored in the corresponding {cj} element, where the `<data>` tag is used.
+In that element, the property `customKeyAttributes` is a JSON object with the attribute names as keys and the attribute values as values.  The keys are prefixed with the namespace URI.
+
