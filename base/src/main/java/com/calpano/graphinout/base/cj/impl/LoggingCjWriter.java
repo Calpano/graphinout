@@ -2,8 +2,8 @@ package com.calpano.graphinout.base.cj.impl;
 
 import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjEdgeType;
-import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.CjException;
+import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.impl.LoggingJsonWriter;
 import edu.umd.cs.findbugs.annotations.Nullable;

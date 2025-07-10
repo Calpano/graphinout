@@ -2,9 +2,9 @@ package com.calpano.graphinout.reader.cj;
 
 import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjEdgeType;
-import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.CjException;
 import com.calpano.graphinout.base.cj.CjLabel;
+import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.gio.GioData;
 import com.calpano.graphinout.base.gio.GioDataType;
 import com.calpano.graphinout.base.gio.GioKey;

@@ -1,8 +1,6 @@
 package com.calpano.graphinout.base.gio.dom;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GioNode extends GioExtensibleElement {
 

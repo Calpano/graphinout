@@ -1,9 +1,7 @@
 package com.calpano.graphinout.reader.cj;
 
 import com.calpano.graphinout.base.GioService;
-import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.gio.GioReader;
-import com.calpano.graphinout.foundation.json.JsonReader;
 
 import java.util.Arrays;
 import java.util.List;
