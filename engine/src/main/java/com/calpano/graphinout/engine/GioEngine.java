@@ -21,7 +21,7 @@ public class GioEngine {
                 gioReader.fileFormat().matches(inputFile.getPath())).toList();
         for (GioReader r : readers) {
             System.out.println(r.fileFormat().id());
-            // read inputfile into string
+            // TODO read inputfile into string
         }
     }
 

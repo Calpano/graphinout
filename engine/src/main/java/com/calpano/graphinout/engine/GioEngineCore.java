@@ -46,6 +46,7 @@ public class GioEngineCore {
     return false;
   }
 
+  // FIXME this is unfinished
   public void read(SingleInputSource inputSource, OutputSink outputSink) throws IOException {
     List<GioReader> readerCandidates = selectReaders(inputSource);
     // we expect only one of them to be able to read it without throwing exceptions or reporting
@@ -61,6 +62,7 @@ public class GioEngineCore {
       if (errorHandler.hasNoErrors()) {
         // parsing worked, now for real
         gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        // FIXME now parse again
         return;
       }
     }
