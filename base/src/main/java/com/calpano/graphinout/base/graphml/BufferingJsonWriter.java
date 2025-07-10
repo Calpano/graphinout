@@ -1,109 +1,132 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.gio.dom.JsonArray;
-import com.calpano.graphinout.base.gio.dom.JsonObject;
-import com.calpano.graphinout.base.gio.dom.JsonValue;
 import com.calpano.graphinout.foundation.json.JsonElementWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BigIntegerNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Stack;
+import java.util.function.Consumer;
 
 public class BufferingJsonWriter implements JsonElementWriter {
 
-    static class Property {
+    @FunctionalInterface
+    interface ValueConsumer extends Consumer<JsonNode> {
 
-        final String key;
-        JsonObject jsonObject;
-
-        Property(JsonObject jsonObject, String key) {
-            this.jsonObject = jsonObject;
-            this.key = key;
+        static ValueConsumer of(Consumer<JsonNode> consumer) {
+            return consumer::accept;
         }
 
-        public void add(JsonValue jsonValue) {
-            jsonObject.addProperty(key, jsonValue);
+    }
+
+    @FunctionalInterface
+    interface ObjectPropertiesConsumer extends Consumer<String> {
+
+        static ObjectPropertiesConsumer of(Consumer<String> consumer) {
+            return consumer::accept;
         }
 
     }
 
     private final Stack<Object> stack = new Stack<>();
     private final StringBuilder stringBuffer = new StringBuilder();
-    private JsonValue root;
+    private final JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
+    private JsonNode root;
 
     @Override
     public void arrayEnd() throws JsonException {
-        Object o = stack.pop();
-        JsonArray jsonArray = (JsonArray) o;
-        addValueToCurrentContainer(jsonArray);
+        // pop the consumer
+        pop(ValueConsumer.class);
     }
 
     @Override
     public void arrayStart() throws JsonException {
-        stack.push(JsonArray.create());
+        // create new array
+        ArrayNode arrayNode = new ArrayNode(nodeFactory);
+
+        attachToTree(arrayNode);
+
+        // prepare for members
+        stack.push(ValueConsumer.of(arrayNode::add));
+    }
+
+    /** the result */
+    public JsonNode jsonNode() {
+        return root;
     }
 
     @Override
     public void objectEnd() throws JsonException {
-        Object o = stack.pop();
-        JsonObject jsonObject = (JsonObject) o;
-        addValueToCurrentContainer(jsonObject);
+        pop(ObjectPropertiesConsumer.class);
     }
 
     @Override
     public void objectStart() throws JsonException {
-        stack.push(JsonObject.create());
-        if (root == null) {
-            root = (JsonValue) stack.peek();
-        }
+        // create new object
+        ObjectNode objectNode = new ObjectNode(nodeFactory);
+
+        attachToTree(objectNode);
+
+        // prepare for properties
+        stack.push(ObjectPropertiesConsumer.of(key -> {
+            // prepare for value
+            stack.push(ValueConsumer.of(value -> {
+                objectNode.set(key, value);
+                pop(ValueConsumer.class);
+            }));
+        }));
     }
 
     @Override
     public void onBigDecimal(BigDecimal bigDecimal) throws JsonException {
-        addValueToCurrentContainer(JsonValue.bigDecimalValue(bigDecimal));
+        attachToTree(BigIntegerNode.valueOf(bigDecimal.unscaledValue()));
     }
 
     @Override
     public void onBigInteger(BigInteger bigInteger) throws JsonException {
-        addValueToCurrentContainer(JsonValue.bigIntegerValue(bigInteger));
+        attachToTree(BigIntegerNode.valueOf(bigInteger));
     }
 
     @Override
     public void onBoolean(boolean b) throws JsonException {
-        addValueToCurrentContainer(JsonValue.booleanValue(b));
+        attachToTree(nodeFactory.booleanNode(b));
     }
 
     @Override
     public void onDouble(double d) throws JsonException {
-        addValueToCurrentContainer(JsonValue.doubleValue(d));
+        attachToTree(nodeFactory.numberNode(d));
     }
 
     @Override
     public void onFloat(float f) throws JsonException {
-        addValueToCurrentContainer(JsonValue.floatValue(f));
+        attachToTree(nodeFactory.numberNode(f));
     }
 
     @Override
     public void onInteger(int i) throws JsonException {
-        addValueToCurrentContainer(JsonValue.intValue(i));
+        attachToTree(nodeFactory.numberNode(i));
     }
 
     @Override
     public void onKey(String key) throws JsonException {
-        JsonObject jsonObject = (JsonObject) stack.peek();
-        Property property = new Property(jsonObject, key);
-        stack.push(property);
+        // fetch PropertyConsumer
+        ObjectPropertiesConsumer propertyConsumer = (ObjectPropertiesConsumer) stack.peek();
+        propertyConsumer.accept(key);
     }
 
     @Override
     public void onLong(long l) throws JsonException {
-        addValueToCurrentContainer(JsonValue.longValue(l));
+        attachToTree(nodeFactory.numberNode(l));
     }
 
     @Override
     public void onNull() throws JsonException {
-        addValueToCurrentContainer(JsonValue.nullValue());
+        attachToTree(nodeFactory.nullNode());
     }
 
     @Override
@@ -114,7 +137,7 @@ public class BufferingJsonWriter implements JsonElementWriter {
     @Override
     public void stringEnd() throws JsonException {
         String s = stringBuffer.toString();
-        addValueToCurrentContainer(JsonValue.stringValue(s));
+        attachToTree(nodeFactory.textNode(s));
     }
 
     @Override
@@ -127,18 +150,18 @@ public class BufferingJsonWriter implements JsonElementWriter {
         // whitespace is ignored
     }
 
-    private void addValueToCurrentContainer(JsonValue jsonValue) {
-        if (root == null) {
-            root = jsonValue;
-            return;
+    private void attachToTree(JsonNode jsonNode) {
+        if (stack.isEmpty()) {
+            root = jsonNode;
+        } else {
+            ValueConsumer consumer = (ValueConsumer) stack.peek();
+            consumer.accept(jsonNode);
         }
-        Object top = stack.peek();
-        if (top instanceof JsonArray) {
-            ((JsonArray) top).add(jsonValue);
-        } else if (top instanceof Property property) {
-            property.add(jsonValue);
-            stack.pop();
-        }
+    }
+
+    private void pop(Class<?> expected) {
+        Object o = stack.pop();
+        assert o.getClass() == expected;
     }
 
 }
