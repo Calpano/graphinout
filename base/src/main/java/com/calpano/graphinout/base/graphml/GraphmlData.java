@@ -7,30 +7,24 @@ import java.util.Objects;
 
 /**
  * @author rbaba
-
- * @implNote <p>
- * Structured content can be added within the data element.
- * If you want to add structured content to graph elements you should use the key/data extension mechanism of GraphML.
+ * @implNote <p> Structured content can be added within the data element. If you want to add structured content to graph
+ * elements you should use the key/data extension mechanism of GraphML.
  */
 
 public class GraphmlData implements XMLValue {
 
-    public static GraphmlDataBuilder builder() {
-        return new GraphmlDataBuilder();
-    }
-
     public static class GraphmlDataBuilder {
+
         private String id;
         private String value;
         private String key;
 
-        public GraphmlDataBuilder id(String id) {
-            this.id = id;
-            return this;
+        public GraphmlData build() {
+            return new GraphmlData(id, value, key);
         }
 
-        public GraphmlDataBuilder value(String value) {
-            this.value = value;
+        public GraphmlDataBuilder id(String id) {
+            this.id = id;
             return this;
         }
 
@@ -39,11 +33,12 @@ public class GraphmlData implements XMLValue {
             return this;
         }
 
-        public GraphmlData build() {
-            return new GraphmlData(id, value, key);
+        public GraphmlDataBuilder value(String value) {
+            this.value = value;
+            return this;
         }
-    }
 
+    }
     public static final String TAGNAME = "data";
     /**
      * This is an attribute that can be empty or null.
@@ -51,12 +46,10 @@ public class GraphmlData implements XMLValue {
      * The name of this attribute in data is <b>id</b>
      */
     private String id;
-
     /**
      * the value for any data, which can be extended to complex models like SVG.
      */
     private String value;
-
     /**
      * This is an attribute is mandatory.
      * </p>
@@ -74,29 +67,8 @@ public class GraphmlData implements XMLValue {
         this.key = key;
     }
 
-    // Getters and Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
+    public static GraphmlDataBuilder builder() {
+        return new GraphmlDataBuilder();
     }
 
     // equals, hashCode, toString
@@ -106,22 +78,8 @@ public class GraphmlData implements XMLValue {
         if (o == null || getClass() != o.getClass()) return false;
         GraphmlData that = (GraphmlData) o;
         return Objects.equals(id, that.id) &&
-               Objects.equals(value, that.value) &&
-               Objects.equals(key, that.key);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, value, key);
-    }
-
-    @Override
-    public String toString() {
-        return "GraphmlData{" +
-               "id='" + id + '\'' +
-               ", value='" + value + '\'' +
-               ", key='" + key + '\'' +
-               '}';
+                Objects.equals(value, that.value) &&
+                Objects.equals(key, that.key);
     }
 
     @Override
@@ -134,6 +92,45 @@ public class GraphmlData implements XMLValue {
 
 
         return attributes;
+    }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, value, key);
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "GraphmlData{" +
+                "id='" + id + '\'' +
+                ", value='" + value + '\'' +
+                ", key='" + key + '\'' +
+                '}';
     }
 
 }

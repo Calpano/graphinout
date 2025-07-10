@@ -15,6 +15,14 @@ public class NoopOutputSink implements OutputSink {
     private Stack<OutputStream> outputStreams = new Stack<>();
 
     @Override
+    public void close() throws Exception {
+        while (!outputStreams.isEmpty()) {
+            log.debug("Closed OutputSink  <NoopOutputSink> type <{}>.", outputStreams.peek().getClass().getName());
+            outputStreams.pop().close();
+        }
+    }
+
+    @Override
     public OutputStream outputStream() throws IOException {
         outputStreams.push(new OutputStream() {
             @Override
@@ -25,11 +33,4 @@ public class NoopOutputSink implements OutputSink {
         return outputStreams.peek();
     }
 
-    @Override
-    public void close() throws Exception {
-        while (!outputStreams.isEmpty()) {
-            log.debug("Closed OutputSink  <NoopOutputSink> type <{}>.", outputStreams.peek().getClass().getName());
-            outputStreams.pop().close();
-        }
-    }
 }

@@ -21,6 +21,7 @@ import java.util.List;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class DotReaderTest2 extends AbstractReaderTest {
+
     private static final Logger log = getLogger(DotReaderTest2.class);
 
     protected List<ContentError> expectedErrors(String resourceName) {

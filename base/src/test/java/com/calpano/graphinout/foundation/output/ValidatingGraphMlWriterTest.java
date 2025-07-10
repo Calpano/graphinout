@@ -41,6 +41,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ValidatingGraphMlWriterTest {
+
     @DisplayName("The GraphmlWriter test successfully pass.")
     @Nested
     class successfulTest {
@@ -94,6 +95,7 @@ public class ValidatingGraphMlWriterTest {
             underTest.endGraph(mockLocator);
             underTest.endDocument();
         }
+
     }
 
     @DisplayName("Graphmlwriter test should not  pass successfully.")
@@ -102,6 +104,7 @@ public class ValidatingGraphMlWriterTest {
 
 
         static class ParameterData {
+
             List<String> previousOrders;
             String exceptionThrowerMethod;
             ValidatingGraphMlWriter.CurrentElement offendingElement;
@@ -352,7 +355,9 @@ public class ValidatingGraphMlWriterTest {
                 default -> throw new IllegalArgumentException(String.format("Method <%s> not supported.", methodName));
             }
         }
+
     }
+
     public static final String NODE_ID_1 = "node1";
     public static final String NODE_ID_2 = "node2";
     public static final String NODE_ID_3 = "node3";
@@ -392,4 +397,5 @@ public class ValidatingGraphMlWriterTest {
         underTest = new ValidatingGraphMlWriter();
         when(mockLocator.getXLinkHref()).thenReturn(URI.create("http://example.com").toURL());
     }
+
 }

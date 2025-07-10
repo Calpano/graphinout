@@ -15,7 +15,7 @@ public class Util {
                 found = element;
             }
         }
-        if(found == null) {
+        if (found == null) {
             throw new IllegalArgumentException("Expected exactly one element matching the predicate, but found none.");
         }
         return found;

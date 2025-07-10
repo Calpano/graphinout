@@ -8,9 +8,10 @@ import java.util.Map;
 public interface CjLabel {
 
     /**
-     * @return true if this is a simple string label
+     * @return the multilingual label as a map of language codes to labels
+     * @throws IllegalStateException if this is not a multilingual label
      */
-    boolean isSimple();
+    Map<String, String> asMultiLingual();
 
     /**
      * @return the simple string label
@@ -24,9 +25,8 @@ public interface CjLabel {
     boolean isMultiLingual();
 
     /**
-     * @return the multilingual label as a map of language codes to labels
-     * @throws IllegalStateException if this is not a multilingual label
+     * @return true if this is a simple string label
      */
-    Map<String, String> asMultiLingual();
+    boolean isSimple();
 
 }

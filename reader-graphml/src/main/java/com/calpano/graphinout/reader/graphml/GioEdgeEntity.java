@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GioEdgeEntity extends AbstractGraphmlEntity<List<GioEndpoint>> implements GraphmlEntity<List<GioEndpoint>> {
+
     public final List<GioEndpoint> endpoints = new ArrayList<>();
     public @Nullable String id;
     public @Nullable String desc;

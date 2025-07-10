@@ -29,13 +29,8 @@ public abstract class GioElementWithDescription extends GioElement {
         this.description = description;
     }
 
-    // Getters and Setters
-    public @Nullable String getDescription() {
-        return description;
-    }
-
-    public void setDescription(@Nullable String description) {
-        this.description = description;
+    public Optional<String> description() {
+        return Optional.ofNullable(description);
     }
 
     // equals, hashCode, toString
@@ -48,21 +43,26 @@ public abstract class GioElementWithDescription extends GioElement {
         return Objects.equals(description, that.description);
     }
 
+    // Getters and Setters
+    public @Nullable String getDescription() {
+        return description;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), description);
     }
 
+    public void setDescription(@Nullable String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
         return "GioElementWithDescription{" +
-               "description='" + description + '\'' +
-               ", customAttributes=" + getCustomAttributes() +
-               '}';
-    }
-
-    public Optional<String> description() {
-        return Optional.ofNullable(description);
+                "description='" + description + '\'' +
+                ", customAttributes=" + getCustomAttributes() +
+                '}';
     }
 
 }

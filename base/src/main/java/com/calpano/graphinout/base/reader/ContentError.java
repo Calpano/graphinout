@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class ContentError {
+
     public enum ErrorLevel {
         Warn, Error
     }
@@ -19,23 +20,23 @@ public class ContentError {
         this.location = location;
     }
 
-    public ErrorLevel getLevel() {
-        return level;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ContentError that)) return false;
+        return level == that.level && message.equals(that.message) && Objects.equals(location, that.location);
     }
 
-    public String getMessage() {
-        return message;
+    public ErrorLevel getLevel() {
+        return level;
     }
 
     public @Nullable Location getLocation() {
         return location;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ContentError that)) return false;
-        return level == that.level && message.equals(that.message) && Objects.equals(location, that.location);
+    public String getMessage() {
+        return message;
     }
 
     @Override
@@ -51,4 +52,5 @@ public class ContentError {
     public String toString() {
         return "ContentError{" + "level=" + level + ", message='" + message + '\'' + ", location=" + location + '}';
     }
+
 }

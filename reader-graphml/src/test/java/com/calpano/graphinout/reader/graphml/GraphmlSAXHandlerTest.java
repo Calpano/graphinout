@@ -566,7 +566,7 @@ class GraphmlSAXHandlerTest {
             saxHandler.startElement(uri, localName, qName, attributes);
 
             assertAll("When the current element is a graph and a node is added to it, " //
-                    + "the graph must be sent to the stream ", //
+                            + "the graph must be sent to the stream ", //
                     () -> assertInstanceOf(GioNode.class, saxHandler.getCurrentEntity().getEntity()),//
                     () -> assertNull(((GioNode) saxHandler.getCurrentEntity().getEntity()).getDescription()), //
                     () -> verifyNoMoreInteractions(gioWriter));

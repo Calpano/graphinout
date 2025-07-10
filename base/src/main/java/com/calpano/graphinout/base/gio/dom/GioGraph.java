@@ -7,40 +7,40 @@ import java.util.List;
 
 public class GioGraph extends GioExtensibleElement {
 
-    @JsonProperty("id")
-    private Object id;
-
     @JsonProperty("nodes")
     private final List<GioNode> nodes = new ArrayList<>();
-
     @JsonProperty("edges")
     private final List<GioEdge> edges = new ArrayList<>();
-
+    @JsonProperty("id")
+    private Object id;
     @JsonProperty("directed")
     private Boolean directed;
 
     @JsonProperty("label")
     private Object label;
 
+    public Boolean getDirected() {
+        return directed;
+    }
+
+    public List<GioEdge> getEdges() {
+        return edges;
+    }
+
     public Object getId() {
         return id;
     }
 
-    public void setId(Object id) {
-        this.id = id;
+    public Object getLabel() {
+        return label;
     }
 
     public List<GioNode> getNodes() {
         return nodes;
     }
 
-    public void setNodes(List<GioNode> nodes) {
-        this.nodes.clear();
-        this.nodes.addAll(nodes);
-    }
-
-    public List<GioEdge> getEdges() {
-        return edges;
+    public void setDirected(Boolean directed) {
+        this.directed = directed;
     }
 
     public void setEdges(List<GioEdge> edges) {
@@ -48,19 +48,17 @@ public class GioGraph extends GioExtensibleElement {
         this.edges.addAll(edges);
     }
 
-    public Boolean getDirected() {
-        return directed;
-    }
-
-    public void setDirected(Boolean directed) {
-        this.directed = directed;
-    }
-
-    public Object getLabel() {
-        return label;
+    public void setId(Object id) {
+        this.id = id;
     }
 
     public void setLabel(Object label) {
         this.label = label;
     }
+
+    public void setNodes(List<GioNode> nodes) {
+        this.nodes.clear();
+        this.nodes.addAll(nodes);
+    }
+
 }

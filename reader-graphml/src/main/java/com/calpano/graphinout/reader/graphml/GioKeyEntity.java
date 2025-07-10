@@ -3,6 +3,7 @@ package com.calpano.graphinout.reader.graphml;
 import com.calpano.graphinout.base.gio.GioKey;
 
 public class GioKeyEntity extends AbstractGraphmlEntity<GioKey> implements GraphmlEntity<GioKey> {
+
     private final GioKey gioKey;
 
     public GioKeyEntity(GioKey gioKey) {

@@ -97,7 +97,7 @@ public class AdjListReader implements GioReader {
             // create nodes for all parts that have not yet been created
             if (nodesCreatedSet.add(part)) {
                 writer.startNode(GioNode.builder().id(part).build());
-            //    writer.data(GioData.builder().key(LABEL).value(part).build());
+                //    writer.data(GioData.builder().key(LABEL).value(part).build());
                 writer.endNode(null);
             }
             if (i == 0) {

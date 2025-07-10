@@ -3,8 +3,11 @@
 https://networkx.org/documentation/stable/reference/readwrite/adjlist.html
 
 This format is provided by the NetworkX library:
+
 ____
-The adjacency list format consists of lines with node labels. The first label in a line is the source node. Further labels in the line are considered target nodes and are added to the graph along with an edge between the source node and target node.
+The adjacency list format consists of lines with node labels.
+The first label in a line is the source node.
+Further labels in the line are considered target nodes and are added to the graph along with an edge between the source node and target node.
 ____
 
 .Example

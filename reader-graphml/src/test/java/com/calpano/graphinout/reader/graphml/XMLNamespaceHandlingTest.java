@@ -86,4 +86,5 @@ class XMLNamespaceHandlingTest {
         assertEquals(ContentError.ErrorLevel.Warn, errorList.get(0).getLevel());
         assertEquals("The Element <myroot> not acceptable tag for Graphml.", errorList.get(0).getMessage());
     }
+
 }

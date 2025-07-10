@@ -12,10 +12,7 @@ Mapping XML, JSON, GraphML, Connected JSON.
 .Connected JSON
 - custom JSON in each object
 
-
-
 .Variants
-
 XML -> GraphML -> Gio -> GraphML -> XML
 
 XML -> GraphML -> Gio -> CJ -> JSON
@@ -24,11 +21,8 @@ JSON -> CJ -> Gio -> GraphML -> XML
 
 JSON -> CJ -> Gio -> CJ -> JSON
 
-
-
-
-
 == Graphml Custom Attributes in ANY element
+
 .GraphML
 ----
 <graphml
@@ -53,7 +47,6 @@ JSON -> CJ -> Gio -> CJ -> JSON
 }
 ----
 
-
 == Graphml Custom Attributes in `<key>` element
 
 ----
@@ -63,7 +56,6 @@ JSON -> CJ -> Gio -> CJ -> JSON
 - `d12` is considered synthetic
 - `for="node"` can be computed
 - `attr.name="PortViewState"` the name must be kept -> JSON property key
-
 
 .CJ
 ----
@@ -83,10 +75,13 @@ JSON -> CJ -> Gio -> CJ -> JSON
 ----
 
 namespaces::
-A JSON object with namespace prefixes as keys.  The values are the namespace URIs.
+A JSON object with namespace prefixes as keys.
+The values are the namespace URIs.
 
 customAttributes::
-A JSON object with custom attributes as keys. The values are the attribute values. The keys are prefixed with the namespace URI, e.g., `my:foo`.
+A JSON object with custom attributes as keys.
+The values are the attribute values.
+The keys are prefixed with the namespace URI, e.g., `my:foo`.
 
 customKeyAttributes::
 This represents the special case of the special case:
@@ -95,5 +90,6 @@ We have a GraphML `<key>` element with custom attributes.
 A key has a `for` attribute with a value of `graph`, `node`, `edge`, `hyperedge`, `port`, `endpoint` or `all`.
 
 These attributes are stored in the corresponding {cj} element, where the `<data>` tag is used.
-In that element, the property `customKeyAttributes` is a JSON object with the attribute names as keys and the attribute values as values.  The keys are prefixed with the namespace URI.
+In that element, the property `customKeyAttributes` is a JSON object with the attribute names as keys and the attribute values as values.
+The keys are prefixed with the namespace URI.
 

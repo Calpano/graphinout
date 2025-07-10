@@ -8,13 +8,7 @@ import java.util.Set;
 
 public class FilesMultiInputSource implements MultiInputSource {
 
-    private Map<String,FileSingleInputSource> namedFiles = new HashMap<>();
-
-    public FilesMultiInputSource withFile(String name, File file) {
-        FileSingleInputSource f = new FileSingleInputSource(file );
-        this.namedFiles.put(name, f);
-        return this;
-    }
+    private Map<String, FileSingleInputSource> namedFiles = new HashMap<>();
 
     @Override
     public void close() throws Exception {
@@ -29,7 +23,7 @@ public class FilesMultiInputSource implements MultiInputSource {
 
     @Override
     public SingleInputSource getNamedSource(String name) {
-        return  this.namedFiles.get(name);
+        return this.namedFiles.get(name);
     }
 
     @Override
@@ -41,4 +35,11 @@ public class FilesMultiInputSource implements MultiInputSource {
     public Set<String> names() {
         return null;
     }
+
+    public FilesMultiInputSource withFile(String name, File file) {
+        FileSingleInputSource f = new FileSingleInputSource(file);
+        this.namedFiles.put(name, f);
+        return this;
+    }
+
 }

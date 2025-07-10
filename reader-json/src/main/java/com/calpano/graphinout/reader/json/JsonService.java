@@ -8,13 +8,14 @@ import java.util.List;
 
 public class JsonService implements GioService {
 
-  @Override
-  public String id() {
-    return "reader-json";
-  }
+    @Override
+    public String id() {
+        return "reader-json";
+    }
 
-  @Override
-  public List<GioReader> readers() {
-    return Arrays.asList(new JsonReader());
-  }
+    @Override
+    public List<GioReader> readers() {
+        return Arrays.asList(new JsonReader());
+    }
+
 }

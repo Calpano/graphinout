@@ -30,4 +30,5 @@ public class GioGraphInOutXMLConstants {
     public static GraphmlWriter of(OutputSink outputSink) {
         return of(new XmlWriterImpl(outputSink));
     }
+
 }

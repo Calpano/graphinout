@@ -39,13 +39,14 @@ import java.util.function.Consumer;
 import static com.calpano.graphinout.reader.json.JsonPathOnJackson.runJsonPathOnJackson;
 
 public class JsonGraphmlParser {
+
     private final SingleInputSource inputSource;
     private final GioWriter writer;
     private final GraphmlJsonMapping jsonMapping;
     private final @Nullable Consumer<ContentError> errorHandler;
-    private final Set<String> createdInlineNodes= new HashSet<>();
-    private final Set<String> existingNodes= new HashSet<>();
-    private final Set<String> linkedNodes= new HashSet<>();
+    private final Set<String> createdInlineNodes = new HashSet<>();
+    private final Set<String> existingNodes = new HashSet<>();
+    private final Set<String> linkedNodes = new HashSet<>();
 
 
     public JsonGraphmlParser(InputSource inputSource, GioWriter writer, GraphmlJsonMapping jsonMapping, @Nullable Consumer<ContentError> errorHandler) {
@@ -94,7 +95,7 @@ public class JsonGraphmlParser {
         // auto-create missing nodes
         Set<String> missingNodes = new HashSet<>(linkedNodes);
         missingNodes.removeAll(existingNodes);
-        for(String missingNode : missingNodes) {
+        for (String missingNode : missingNodes) {
             writer.startNode(GioNode.builder().id(missingNode).build());
             writer.endNode(null);
         }
@@ -183,7 +184,7 @@ public class JsonGraphmlParser {
             List<GioEndpoint> gioEndpoints = new ArrayList<>();
             GioEndpoint gioEndpoint = GioEndpoint.builder().node(sourceNodeId).type(GioEndpointDirection.In).build();
             gioEndpoints.add(gioEndpoint);
-            for(String targetId : list) {
+            for (String targetId : list) {
                 gioEndpoints.add(GioEndpoint.builder().node(targetId).type(GioEndpointDirection.Out).build());
                 linkedNodes.add(targetId);
             }
@@ -193,4 +194,5 @@ public class JsonGraphmlParser {
             writer.endEdge();
         }
     }
+
 }

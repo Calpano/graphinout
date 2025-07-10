@@ -17,23 +17,24 @@ public class GioNode extends GioExtensibleElement {
         return id;
     }
 
-    public void setId(Object id) {
-        this.id = id;
-    }
-
     public Object getLabel() {
         return label;
-    }
-
-    public void setLabel(Object label) {
-        this.label = label;
     }
 
     public Object getPorts() {
         return ports;
     }
 
+    public void setId(Object id) {
+        this.id = id;
+    }
+
+    public void setLabel(Object label) {
+        this.label = label;
+    }
+
     public void setPorts(Object ports) {
         this.ports = ports;
     }
+
 }

@@ -6,6 +6,28 @@ import java.util.Objects;
 
 // IMPROVE split into GraphmlElementWithData and GraphmlElementWithDesc
 public class GraphmlGraphCommonElement extends GraphmlElement {
+
+    public static class GraphmlGraphCommonElementBuilder extends GraphmlElementBuilder {
+
+        protected GraphmlDescription desc;
+
+        @Override
+        public GraphmlGraphCommonElement build() {
+            return new GraphmlGraphCommonElement(extraAttrib, desc);
+        }
+
+        public GraphmlGraphCommonElementBuilder desc(GraphmlDescription desc) {
+            this.desc = desc;
+            return this;
+        }
+
+        @Override
+        public GraphmlGraphCommonElementBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
+            super.extraAttrib(extraAttrib);
+            return this;
+        }
+
+    }
     /**
      * This ia an Element That can be empty or null.
      * <p>
@@ -33,35 +55,6 @@ public class GraphmlGraphCommonElement extends GraphmlElement {
         return new GraphmlGraphCommonElementBuilder();
     }
 
-    public static class GraphmlGraphCommonElementBuilder extends GraphmlElementBuilder {
-        protected GraphmlDescription desc;
-
-        public GraphmlGraphCommonElementBuilder desc(GraphmlDescription desc) {
-            this.desc = desc;
-            return this;
-        }
-
-        @Override
-        public GraphmlGraphCommonElementBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
-            super.extraAttrib(extraAttrib);
-            return this;
-        }
-
-        @Override
-        public GraphmlGraphCommonElement build() {
-            return new GraphmlGraphCommonElement(extraAttrib, desc);
-        }
-    }
-
-    // Getters and Setters
-    public GraphmlDescription getDesc() {
-        return desc;
-    }
-
-    public void setDesc(GraphmlDescription desc) {
-        this.desc = desc;
-    }
-
     // equals, hashCode, toString
     @Override
     public boolean equals(Object o) {
@@ -72,16 +65,26 @@ public class GraphmlGraphCommonElement extends GraphmlElement {
         return Objects.equals(desc, that.desc);
     }
 
+    // Getters and Setters
+    public GraphmlDescription getDesc() {
+        return desc;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), desc);
     }
 
+    public void setDesc(GraphmlDescription desc) {
+        this.desc = desc;
+    }
+
     @Override
     public String toString() {
         return "GraphmlGraphCommonElement{" +
-               "desc=" + desc +
-               ", extraAttrib=" + extraAttrib +
-               '}';
+                "desc=" + desc +
+                ", extraAttrib=" + extraAttrib +
+                '}';
     }
+
 }

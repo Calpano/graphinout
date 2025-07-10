@@ -1,11 +1,12 @@
 {
   "nodes": [
     { "id": "node1", "label": "First Node" },
-    { "id": "node2", "label": "Second Node", "ports": ["port1", {"id": "port2"}] }
+    { "id": "node2", "label": "Second Node", "ports": [ "port1", { "id": "port2" } ] }
   ],
   "edges": [
     { "source": "node1", "target": "node2" },
-    { "endpoints": [
+    {
+      "endpoints": [
         { "direction": "out", "node": "node1" },
         { "direction": "in", "node": "node2", "port": "port1" }
       ]
@@ -17,7 +18,7 @@
       "nodes": [
         { "id": "sub1", "label": "Sub Node" }
       ],
-      "edges": []
+      "edges": [ ]
     }
   ],
   "foo": "bar",

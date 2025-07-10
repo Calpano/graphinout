@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ConnectedJsonService implements GioService {
+
     @Override
     public String id() {
         return "reader-cj";
@@ -14,6 +15,7 @@ public class ConnectedJsonService implements GioService {
 
     @Override
     public List<GioReader> readers() {
-        return Arrays.asList(new ConnectedJsonReader(), new ConnectedJson5Reader() );
+        return Arrays.asList(new ConnectedJsonReader(), new ConnectedJson5Reader());
     }
+
 }

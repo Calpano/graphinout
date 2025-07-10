@@ -61,4 +61,5 @@ public class ExampleReader implements GioReader {
         writer.endGraph(null);
         writer.endDocument();
     }
+
 }

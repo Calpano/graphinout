@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ExampleService implements GioService {
+
     @Override
     public String id() {
         return "reader-example";
@@ -16,4 +17,5 @@ public class ExampleService implements GioService {
     public List<GioReader> readers() {
         return Arrays.asList(new ExampleReader());
     }
+
 }

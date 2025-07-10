@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class InMemoryErrorHandler implements Consumer<ContentError> {
+
     List<ContentError> list = new ArrayList<>();
 
     @Override
@@ -13,7 +14,7 @@ public class InMemoryErrorHandler implements Consumer<ContentError> {
     }
 
     public boolean hasNoErrors() {
-        return list.stream().noneMatch(ce->ce.level == ContentError.ErrorLevel.Error);
+        return list.stream().noneMatch(ce -> ce.level == ContentError.ErrorLevel.Error);
     }
 
     public boolean isEmpty() {
@@ -23,4 +24,5 @@ public class InMemoryErrorHandler implements Consumer<ContentError> {
     public List<ContentError> list() {
         return list;
     }
+
 }

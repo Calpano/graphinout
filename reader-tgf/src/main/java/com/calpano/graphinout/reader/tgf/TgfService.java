@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TgfService implements GioService {
+
     @Override
     public String id() {
         return "reader-tgf";
@@ -16,4 +17,5 @@ public class TgfService implements GioService {
     public List<GioReader> readers() {
         return Arrays.asList(new TgfReader());
     }
+
 }

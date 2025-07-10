@@ -116,4 +116,5 @@ public class GraphmlSAXSchemaValidationTest {
         printWriter.print("return errorLongMap;\n");
         printWriter.close();
     }
+
 }

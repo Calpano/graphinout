@@ -45,4 +45,5 @@ public class Sax2Log implements ErrorHandler {
     public int warnings() {
         return warnings;
     }
+
 }

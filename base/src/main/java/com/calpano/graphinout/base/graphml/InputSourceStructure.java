@@ -9,4 +9,5 @@ package com.calpano.graphinout.base.graphml;
 public interface InputSourceStructure<T, E> {
 
     T structure(E inputStructure);
+
 }

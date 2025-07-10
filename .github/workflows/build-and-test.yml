@@ -50,21 +50,21 @@ jobs:
         working-directory: graphinout
         run: mvn clean install --batch-mode
 
-#      - name: ⬇️ Install root project
-#        working-directory: graphinout
-#        run: mvn clean -N install
-#
-#      - name: 🔨️ Build & ⬇ install base
-#        working-directory: graphinout/base
-#        run: mvn clean install
-#
-#      - name: 🔨️ Build & ⬇ install readers
-#        working-directory: graphinout
-#        run: mvn clean -pl !base,!engine install
-#
-#      - name: 🔨️ Build & ⬇ install engine
-#        working-directory: graphinout
-#        run: mvn clean -pl engine install
+      #      - name: ⬇️ Install root project
+      #        working-directory: graphinout
+      #        run: mvn clean -N install
+      #
+      #      - name: 🔨️ Build & ⬇ install base
+      #        working-directory: graphinout/base
+      #        run: mvn clean install
+      #
+      #      - name: 🔨️ Build & ⬇ install readers
+      #        working-directory: graphinout
+      #        run: mvn clean -pl !base,!engine install
+      #
+      #      - name: 🔨️ Build & ⬇ install engine
+      #        working-directory: graphinout
+      #        run: mvn clean -pl engine install
 
       - name: ↗️ Deploy to Github Package Registry
         # TODO enable when deploy works

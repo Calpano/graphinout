@@ -30,6 +30,7 @@ import java.util.Objects;
 public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements XMLValue {
 
     public static class GraphmlHyperEdgeBuilder {
+
         private final ArrayList<GraphmlEndpoint> endpoints = new ArrayList<>();
         private final String id;
 
@@ -47,6 +48,7 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements XMLVa
                 throw new IllegalStateException("Require at least 2 endpoints in hyperedge, got " + endpoints.size());
             return new GraphmlHyperEdge(id, endpoints);
         }
+
     }
 
     public static final String TAGNAME = "hyperedge";
@@ -82,21 +84,8 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements XMLVa
         this.endpoints = endpoints;
     }
 
-    // Getters and Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public List<GraphmlEndpoint> getEndpoints() {
-        return endpoints;
-    }
-
-    public void setEndpoints(List<GraphmlEndpoint> endpoints) {
-        this.endpoints = endpoints;
+    public static GraphmlHyperEdgeBuilder builder(String id) {
+        return new GraphmlHyperEdgeBuilder(id);
     }
 
     // equals, hashCode, toString
@@ -107,26 +96,7 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements XMLVa
         if (!super.equals(o)) return false;
         GraphmlHyperEdge that = (GraphmlHyperEdge) o;
         return Objects.equals(id, that.id) &&
-               Objects.equals(endpoints, that.endpoints);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), id, endpoints);
-    }
-
-    @Override
-    public String toString() {
-        return "GraphmlHyperEdge{" +
-               "id='" + id + '\'' +
-               ", endpoints=" + endpoints +
-               ", desc=" + desc +
-               ", extraAttrib=" + extraAttrib +
-               '}';
-    }
-
-    public static GraphmlHyperEdgeBuilder builder(String id) {
-        return new GraphmlHyperEdgeBuilder(id);
+                Objects.equals(endpoints, that.endpoints);
     }
 
     @Override
@@ -135,6 +105,38 @@ public class GraphmlHyperEdge extends GraphmlGraphCommonElement implements XMLVa
         if (id != null) attributes.put("id", id);
         if (getExtraAttrib() != null) attributes.putAll(getExtraAttrib());
         return attributes;
+    }
+
+    public List<GraphmlEndpoint> getEndpoints() {
+        return endpoints;
+    }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, endpoints);
+    }
+
+    public void setEndpoints(List<GraphmlEndpoint> endpoints) {
+        this.endpoints = endpoints;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "GraphmlHyperEdge{" +
+                "id='" + id + '\'' +
+                ", endpoints=" + endpoints +
+                ", desc=" + desc +
+                ", extraAttrib=" + extraAttrib +
+                '}';
     }
 
 }

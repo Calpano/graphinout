@@ -11,6 +11,10 @@ public class GioPortEntity extends AbstractGraphmlEntity<GioPort> implements Gra
         this.gioPort = gioPort;
     }
 
+    public void addCharacters(String characters) {
+        allowOnlyWhitespace(characters);
+    }
+
     @Override
     public void addEntity(GraphmlEntity graphmlEntity) {
     }
@@ -23,10 +27,6 @@ public class GioPortEntity extends AbstractGraphmlEntity<GioPort> implements Gra
     @Override
     public String getName() {
         return GraphmlElement.PORT;
-    }
-
-    public void addCharacters(String characters) {
-        allowOnlyWhitespace(characters);
     }
 
 }

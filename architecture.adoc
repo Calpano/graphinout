@@ -3,6 +3,7 @@
 
 
 == Basic Idea
+
 .Basic Reader Idea
 [plantuml,basic-idea,svg]
 ....
@@ -17,6 +18,7 @@ GraphML -> Output: writes out
 ....
 
 == Projects and Packages
+
 base:: Basic IO helpers, streaming Graph API (`Gio...`), API for Readers.
 Converts an incoming Graph API stream (`GioWriter`) to a GraphML/XML stream (`GraphmlWriter`).
 
@@ -156,7 +158,7 @@ GraphmlWriter ....> GraphmlHyperEdge
 * **ContentError**: Similar to a log message
 * **Resolver**: Resolves external entities and references, e.g. XML entity references or GraphML locators.
 
-[plantuml, base,svg]
+[plantuml,base,svg]
 ....
 hide empty members
 interface InputSource {
@@ -202,7 +204,6 @@ class XmlWriter {
 }
 XmlWriter --> OutputSink
 ....
-
 
 == Reader
 
@@ -286,6 +287,7 @@ interface Reader {
 ----
 
 === Reader Example
+
 .TGF Reader Example
 [source,java]
 ----
@@ -319,40 +321,26 @@ class TgfConfig {
 ----
 
 == TODO
+
 We also need Service Lookup
 
 == INBOX
 
-FileFormat
-extension ".tgf"
+FileFormat extension ".tgf"
 
-FileFormat "DOT"
-id
-label
-extension ".dot", ".gv"
+FileFormat "DOT" id label extension ".dot", ".gv"
 
 TgfReader
 
-
-"reader-FOOO" Maven project
-multiple GioReader
+"reader-FOOO" Maven project multiple GioReader
 
 Reader 1:1 FileFormat
 
-Engine
-service lookup -> SOMETHINGS
-SOMETHING -> Reader -> ext
+Engine service lookup -> SOMETHINGS SOMETHING -> Reader -> ext
 
+one jar: "reader-six" graph6 sparse6 digraph6 xxx
 
-one jar: "reader-six"
-graph6
-sparse6
-digraph6
-xxx
-
-
-GioService
-used in service lookup
+GioService used in service lookup
 
 one GioService will contain multiple GioReader
 

@@ -38,11 +38,11 @@ public class ExtensibleJson {
         }
 
 
-            public Value value(JsonType... typeQueries) {
+        public Value value(JsonType... typeQueries) {
             return new Value(List.of(typeQueries));
         }
 
-        public Value valueStringEnum(String ... values) {
+        public Value valueStringEnum(String... values) {
             // FIXME values
             return new Value(List.of(STRING));
         }
@@ -81,13 +81,6 @@ public class ExtensibleJson {
         });
     }
 
-
-    private void doc(String doc) {}
-
-    private Step in(String... propertyKeys) {
-        return new Step(List.of(propertyKeys), List.of());
-    }
-
     public static void main(String[] args) {
         ExtensibleJson.create().in("graph", "graphs").inMaybe(ARRAY).value(OBJECT).object(graph -> {
             graph.in("baseUri").value(STRING);
@@ -104,16 +97,22 @@ public class ExtensibleJson {
                 edge.in("source", "sources", "from").value(STRING, NUMBER);
                 edge.in("target", "targets", "to").value(STRING, NUMBER);
                 edge.in("endpoint", "endpoints").inMaybe(ARRAY).value(OBJECT).object(endpoint -> {
-                    endpoint.in("direction", "dir").valueStringEnum("in","out","undir");
+                    endpoint.in("direction", "dir").valueStringEnum("in", "out", "undir");
                     endpoint.in("node").value(STRING, NUMBER).doc("referenced node id");
                     endpoint.in("port").value(STRING, NUMBER).doc("referenced port id");
                     endpoint.in("type").value(STRING);
                     endpoint.in("typeNode").value(STRING, NUMBER);
                     endpoint.in("typeUri").value(STRING);
                 });
-                edge.in("graph","graphs").value(graph).doc("edge can contain graph");
+                edge.in("graph", "graphs").value(graph).doc("edge can contain graph");
             });
         });
+    }
+
+    private void doc(String doc) {}
+
+    private Step in(String... propertyKeys) {
+        return new Step(List.of(propertyKeys), List.of());
     }
 
     // ----

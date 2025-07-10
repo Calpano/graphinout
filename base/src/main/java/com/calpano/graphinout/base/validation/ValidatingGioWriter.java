@@ -77,6 +77,17 @@ public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWrit
     }
 
     @Override
+    public void baseUri(String baseUri) throws IOException {
+        if (baseUri != null && !baseUri.isEmpty()) {
+            try {
+                new java.net.URI(baseUri);
+            } catch (java.net.URISyntaxException e) {
+                throw new IllegalStateException("Invalid baseuri: " + baseUri, e);
+            }
+        }
+    }
+
+    @Override
     public void data(GioData data) throws IOException {
         ensureAllowedStart(CurrentElement.DATA);
         ensureAllowedEnd(CurrentElement.DATA);
@@ -257,17 +268,6 @@ public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWrit
         String nodeId = node.getId();
         if (nodeId == null || nodeId.isEmpty()) throw new IllegalStateException("Node must have an ID.");
         if (existingNodeIds.contains(nodeId)) throw new IllegalStateException("Node ID must be unique.");
-    }
-
-    @Override
-    public void baseUri(String baseUri) throws IOException {
-        if (baseUri != null && !baseUri.isEmpty()) {
-            try {
-                new java.net.URI(baseUri);
-            } catch (java.net.URISyntaxException e) {
-                throw new IllegalStateException("Invalid baseuri: " + baseUri, e);
-            }
-        }
     }
 
 }

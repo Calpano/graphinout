@@ -3,6 +3,7 @@ package com.calpano.graphinout.reader.graphml;
 import com.calpano.graphinout.base.gio.GioDocument;
 
 public class GioDocumentEntity extends AbstractGraphmlEntity<GioDocument> implements GraphmlEntity<GioDocument> {
+
     private final GioDocument gioDocument;
 
     public GioDocumentEntity(GioDocument gioDocument) {

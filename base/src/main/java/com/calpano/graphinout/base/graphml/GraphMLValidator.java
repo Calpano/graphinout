@@ -9,4 +9,5 @@ package com.calpano.graphinout.base.graphml;
 public interface GraphMLValidator<V, T> {
 
     void validate(V value, T Type) throws Exception;
+
 }

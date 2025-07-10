@@ -9,6 +9,27 @@ import java.util.Objects;
  */
 public class GioDocument extends GioElementWithDescription {
 
+    public static class GioDocumentBuilder {
+
+        private @Nullable Map<String, String> customAttributes;
+        private @Nullable String description;
+
+        public GioDocument build() {
+            return new GioDocument(customAttributes, description);
+        }
+
+        public GioDocumentBuilder customAttributes(@Nullable Map<String, String> customAttributes) {
+            this.customAttributes = customAttributes;
+            return this;
+        }
+
+        public GioDocumentBuilder description(@Nullable String description) {
+            this.description = description;
+            return this;
+        }
+
+    }
+
     public GioDocument() {
         super();
     }
@@ -23,25 +44,6 @@ public class GioDocument extends GioElementWithDescription {
 
     public static GioDocumentBuilder builder() {
         return new GioDocumentBuilder();
-    }
-
-    public static class GioDocumentBuilder {
-        private @Nullable Map<String, String> customAttributes;
-        private @Nullable String description;
-
-        public GioDocumentBuilder customAttributes(@Nullable Map<String, String> customAttributes) {
-            this.customAttributes = customAttributes;
-            return this;
-        }
-
-        public GioDocumentBuilder description(@Nullable String description) {
-            this.description = description;
-            return this;
-        }
-
-        public GioDocument build() {
-            return new GioDocument(customAttributes, description);
-        }
     }
 
     @Override
@@ -59,8 +61,9 @@ public class GioDocument extends GioElementWithDescription {
     @Override
     public String toString() {
         return "GioDocument{" +
-               "description='" + getDescription() + '\'' +
-               ", customAttributes=" + getCustomAttributes() +
-               '}';
+                "description='" + getDescription() + '\'' +
+                ", customAttributes=" + getCustomAttributes() +
+                '}';
     }
+
 }

@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.cj;
 
- /**
+/**
  * Where is the type information for `edge`,`endpoint` coming from?
  */
 public enum CjEdgeTypeSource {

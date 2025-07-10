@@ -100,4 +100,5 @@ public class SchemaInfo implements LSInput {
     public void setSystemId(String systemId) {
         throw new UnsupportedOperationException();
     }
+
 }

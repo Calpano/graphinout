@@ -2,7 +2,8 @@ package com.calpano.graphinout.reader.example;
 
 import org.jetbrains.annotations.Nullable;
 
-public class Triple<S,P,O> {
+public class Triple<S, P, O> {
+
     final S s;
     final P p;
     final O o;
@@ -14,4 +15,5 @@ public class Triple<S,P,O> {
         this.o = o;
         this.meta = meta;
     }
+
 }

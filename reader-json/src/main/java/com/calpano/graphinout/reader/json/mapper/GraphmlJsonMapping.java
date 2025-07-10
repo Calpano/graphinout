@@ -20,31 +20,6 @@ public class GraphmlJsonMapping {
         this.links = links;
     }
 
-    // Getters and Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public Set<Link> getLinks() {
-        return links;
-    }
-
-    public void setLinks(Set<Link> links) {
-        this.links = links;
-    }
-
     // equals, hashCode, toString
     @Override
     public boolean equals(Object o) {
@@ -52,8 +27,21 @@ public class GraphmlJsonMapping {
         if (o == null || getClass() != o.getClass()) return false;
         GraphmlJsonMapping that = (GraphmlJsonMapping) o;
         return Objects.equals(id, that.id) &&
-               Objects.equals(label, that.label) &&
-               Objects.equals(links, that.links);
+                Objects.equals(label, that.label) &&
+                Objects.equals(links, that.links);
+    }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public Set<Link> getLinks() {
+        return links;
     }
 
     @Override
@@ -61,12 +49,25 @@ public class GraphmlJsonMapping {
         return Objects.hash(id, label, links);
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setLinks(Set<Link> links) {
+        this.links = links;
+    }
+
     @Override
     public String toString() {
         return "GraphmlJsonMapping{" +
-               "id='" + id + '\'' +
-               ", label='" + label + '\'' +
-               ", links=" + links +
-               '}';
+                "id='" + id + '\'' +
+                ", label='" + label + '\'' +
+                ", links=" + links +
+                '}';
     }
+
 }

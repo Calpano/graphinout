@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 public class JsonPathOnJackson {
 
     public static class JsonPath {
+
         /** String = property, Integer = index */
         List<Object> steps;
 
@@ -26,6 +27,7 @@ public class JsonPathOnJackson {
             }).collect(Collectors.toList());
             return path;
         }
+
     }
 
     public static JsonNode runJsonPathOnJackson(JsonNode jsonNode, String jsonPath) {

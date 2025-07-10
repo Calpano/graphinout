@@ -46,7 +46,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     @Override
     public void endGraph(@Nullable GraphmlLocator locator) throws IOException {
         log.trace("endGraph [{}]", locator);
-        if (locator!=null) {
+        if (locator != null) {
             xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.getAttributes());
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
         }
@@ -63,7 +63,7 @@ public class GraphmlWriterImpl implements GraphmlWriter {
     @Override
     public void endNode(@Nullable GraphmlLocator locator) throws IOException {
         log.trace("endNode [{}]", locator);
-        if(locator!=null) {
+        if (locator != null) {
             xmlWriter.startElement(GraphmlLocator.TAGNAME, locator.getAttributes());
             xmlWriter.endElement(GraphmlLocator.TAGNAME);
         }
@@ -178,4 +178,5 @@ public class GraphmlWriterImpl implements GraphmlWriter {
             writerData(data);
         }
     }
+
 }

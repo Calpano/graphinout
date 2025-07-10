@@ -35,17 +35,12 @@ class GraphmlReaderTest {
                 .filter(path -> path.endsWith(".graphml"));
     }
 
-    @BeforeEach
-    void setUp() {
-    }
-
-    @ParameterizedTest
-    @MethodSource("getAllGraphmlFiles")
-    void readAllGraphmlFiles(String filePath) throws Exception {
-        log.info("Start To pars file [{}]", filePath);
-        URL resourceUrl = ClassLoader.getSystemResource(filePath);
-        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-        try (SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
+    @Test
+    void read() throws Exception {
+        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "samples", "graph1_test.graphml");
+        URI resourceUri = inputSource.toUri();
+        String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
+        try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
              OutputSink outputSink = new InMemoryOutputSink()) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
@@ -55,12 +50,13 @@ class GraphmlReaderTest {
         }
     }
 
-    @Test
-    void read() throws Exception {
-        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "samples", "graph1_test.graphml");
-        URI resourceUri = inputSource.toUri();
-        String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
-        try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
+    @ParameterizedTest
+    @MethodSource("getAllGraphmlFiles")
+    void readAllGraphmlFiles(String filePath) throws Exception {
+        log.info("Start To pars file [{}]", filePath);
+        URL resourceUrl = ClassLoader.getSystemResource(filePath);
+        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
+        try (SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
              OutputSink outputSink = new InMemoryOutputSink()) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
@@ -85,4 +81,9 @@ class GraphmlReaderTest {
         }
 
     }
+
+    @BeforeEach
+    void setUp() {
+    }
+
 }

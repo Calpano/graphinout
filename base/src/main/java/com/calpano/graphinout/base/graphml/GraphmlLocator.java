@@ -7,18 +7,31 @@ import java.util.Objects;
 
 /**
  * @author rbaba
-
+ *
  * <p>
- * Graphs and nodes are declared by the elements &lt;graph&gt; and &lt;node&gt;, respectively.
- * The optional &lt;locator&gt;-child of these elements point to their definition.
- * (If there is no &lt;locator&gt;-child the graphs/nodes are defined by their content). Occurence: &lt;graph&gt;, and &lt;node&gt;
+ * Graphs and nodes are declared by the elements &lt;graph&gt; and &lt;node&gt;, respectively. The optional
+ * &lt;locator&gt;-child of these elements point to their definition. (If there is no &lt;locator&gt;-child the
+ * graphs/nodes are defined by their content). Occurence: &lt;graph&gt;, and &lt;node&gt;
  */
 public class GraphmlLocator implements XMLValue {
 
+    public static class GraphmlLocatorBuilder {
+
+        private URL xLinkHref;
+
+        public GraphmlLocator build() {
+            return new GraphmlLocator(xLinkHref);
+        }
+
+        public GraphmlLocatorBuilder xLinkHref(URL xLinkHref) {
+            this.xLinkHref = xLinkHref;
+            return this;
+        }
+
+    }
     public static final String TAGNAME = "locator";
     /**
-     * points to the resource of this locator.
-     * This is a mandatory attribute.
+     * points to the resource of this locator. This is a mandatory attribute.
      * <p>
      * The name of this attribute is <b>xlink:href</b>
      */
@@ -37,28 +50,6 @@ public class GraphmlLocator implements XMLValue {
         return new GraphmlLocatorBuilder();
     }
 
-    public static class GraphmlLocatorBuilder {
-        private URL xLinkHref;
-
-        public GraphmlLocatorBuilder xLinkHref(URL xLinkHref) {
-            this.xLinkHref = xLinkHref;
-            return this;
-        }
-
-        public GraphmlLocator build() {
-            return new GraphmlLocator(xLinkHref);
-        }
-    }
-
-    // Getters and Setters
-    public URL getXLinkHref() {
-        return xLinkHref;
-    }
-
-    public void setXLinkHref(URL xLinkHref) {
-        this.xLinkHref = xLinkHref;
-    }
-
     // equals, hashCode, toString
     @Override
     public boolean equals(Object o) {
@@ -69,23 +60,32 @@ public class GraphmlLocator implements XMLValue {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(xLinkHref);
-    }
-
-    @Override
-    public String toString() {
-        return "GraphmlLocator{" +
-               "xLinkHref=" + xLinkHref +
-               '}';
-    }
-
-    @Override
     public Map<String, String> getAttributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
         attributes.put("xlink:href", xLinkHref.toExternalForm());
         // GraphML schema implies this attribute: attributes.put("xlink:type", "simple");
         return attributes;
+    }
+
+    // Getters and Setters
+    public URL getXLinkHref() {
+        return xLinkHref;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(xLinkHref);
+    }
+
+    public void setXLinkHref(URL xLinkHref) {
+        this.xLinkHref = xLinkHref;
+    }
+
+    @Override
+    public String toString() {
+        return "GraphmlLocator{" +
+                "xLinkHref=" + xLinkHref +
+                '}';
     }
 
 }

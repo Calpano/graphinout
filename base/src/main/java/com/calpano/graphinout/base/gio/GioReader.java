@@ -53,8 +53,8 @@ public interface GioReader {
             GioWriter writer = new DelegatingGioWriter(new ValidatingGioWriter(), new Gio2GraphmlWriter(new ValidatingGraphMlWriter()));
             read(singleInputSource, writer);
         } catch (Throwable t) {
-            log.warn("Invalid input in "+singleInputSource.name(), t);
-            eh.accept(new ContentError(ContentError.ErrorLevel.Error,t.getMessage(), null));
+            log.warn("Invalid input in " + singleInputSource.name(), t);
+            eh.accept(new ContentError(ContentError.ErrorLevel.Error, t.getMessage(), null));
         }
         return valid.get();
     }

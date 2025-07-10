@@ -6,22 +6,52 @@ import java.util.Objects;
 
 /**
  * @author rbaba
-
- * @implNote Declaration Nodes and Edges  and Hyperedges are nested within a graph element.
- * A node is declared with a node element and an edge with an edge element and a Hyperedge with a  Hyperedge element.
+ * @implNote Declaration Nodes and Edges  and Hyperedges are nested within a graph element. A node is declared with a
+ * node element and an edge with an edge element and a Hyperedge with a  Hyperedge element.
  * <p>
  * <b>In the output we avoid the edge and change them all to Hyperedge.</b>
  * @see GioEdge {@link GioEdge}
  */
 public class GioGraph extends GioElementWithDescription {
 
+    public static class GioGraphBuilder {
+
+        private @Nullable Map<String, String> customAttributes;
+        private @Nullable String description;
+        private boolean edgedefaultDirected = false;
+        private @Nullable String id;
+
+        public GioGraph build() {
+            return new GioGraph(customAttributes, description, id, edgedefaultDirected);
+        }
+
+        public GioGraphBuilder customAttributes(@Nullable Map<String, String> customAttributes) {
+            this.customAttributes = customAttributes;
+            return this;
+        }
+
+        public GioGraphBuilder description(@Nullable String description) {
+            this.description = description;
+            return this;
+        }
+
+        public GioGraphBuilder edgedefaultDirected(boolean edgedefaultDirected) {
+            this.edgedefaultDirected = edgedefaultDirected;
+            return this;
+        }
+
+        public GioGraphBuilder id(@Nullable String id) {
+            this.id = id;
+            return this;
+        }
+
+    }
     /**
      * This is an attribute that can be empty or null.
      * </p>
      * The name of this attribute in graph is <b>edgedefault</b>
      */
     private boolean edgedefaultDirected = false;
-
     /**
      * This is an attribute that can be empty or null.
      * </p>
@@ -52,35 +82,24 @@ public class GioGraph extends GioElementWithDescription {
         return new GioGraphBuilder();
     }
 
-    public static class GioGraphBuilder {
-        private @Nullable Map<String, String> customAttributes;
-        private @Nullable String description;
-        private boolean edgedefaultDirected = false;
-        private @Nullable String id;
+    // equals, hashCode, toString
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GioGraph gioGraph = (GioGraph) o;
+        return edgedefaultDirected == gioGraph.edgedefaultDirected &&
+                Objects.equals(id, gioGraph.id);
+    }
 
-        public GioGraphBuilder customAttributes(@Nullable Map<String, String> customAttributes) {
-            this.customAttributes = customAttributes;
-            return this;
-        }
+    public @Nullable String getId() {
+        return id;
+    }
 
-        public GioGraphBuilder description(@Nullable String description) {
-            this.description = description;
-            return this;
-        }
-
-        public GioGraphBuilder edgedefaultDirected(boolean edgedefaultDirected) {
-            this.edgedefaultDirected = edgedefaultDirected;
-            return this;
-        }
-
-        public GioGraphBuilder id(@Nullable String id) {
-            this.id = id;
-            return this;
-        }
-
-        public GioGraph build() {
-            return new GioGraph(customAttributes, description, id, edgedefaultDirected);
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), edgedefaultDirected, id);
     }
 
     // Getters and Setters
@@ -92,37 +111,18 @@ public class GioGraph extends GioElementWithDescription {
         this.edgedefaultDirected = edgedefaultDirected;
     }
 
-    public @Nullable String getId() {
-        return id;
-    }
-
     public void setId(@Nullable String id) {
         this.id = id;
-    }
-
-    // equals, hashCode, toString
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        GioGraph gioGraph = (GioGraph) o;
-        return edgedefaultDirected == gioGraph.edgedefaultDirected &&
-               Objects.equals(id, gioGraph.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), edgedefaultDirected, id);
     }
 
     @Override
     public String toString() {
         return "GioGraph{" +
-               "edgedefaultDirected=" + edgedefaultDirected +
-               ", id='" + id + '\'' +
-               ", description='" + getDescription() + '\'' +
-               ", customAttributes=" + getCustomAttributes() +
-               '}';
+                "edgedefaultDirected=" + edgedefaultDirected +
+                ", id='" + id + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", customAttributes=" + getCustomAttributes() +
+                '}';
     }
+
 }

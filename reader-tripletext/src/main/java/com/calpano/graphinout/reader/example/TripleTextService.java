@@ -6,6 +6,7 @@ import com.calpano.graphinout.base.gio.GioReader;
 import java.util.List;
 
 public class TripleTextService implements GioService {
+
     @Override
     public String id() {
         return "reader-example";
@@ -15,4 +16,5 @@ public class TripleTextService implements GioService {
     public List<GioReader> readers() {
         return List.of(new TripleTextReader());
     }
+
 }

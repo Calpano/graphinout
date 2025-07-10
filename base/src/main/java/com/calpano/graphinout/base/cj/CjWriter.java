@@ -59,6 +59,9 @@ public interface CjWriter extends JsonWriter {
     /** endpoint.direction */
     void direction(CjDirection direction);
 
+    /** Graph property */
+    void edgeDefault(String edgedefault);
+
     /**
      * CJ Edge end event.
      */
@@ -77,9 +80,6 @@ public interface CjWriter extends JsonWriter {
 
     /** edge.type / endpoint.type */
     void edgeType(CjEdgeType edgeType);
-
-    /** Graph property */
-    void edgeDefault(String edgedefault);
 
     /**
      * CJ Endpoint end event.

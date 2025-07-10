@@ -12,20 +12,20 @@ public class Location {
         this.col = columnNumber;
     }
 
-    public int getLine() {
-        return line;
-    }
-
-    public int getCol() {
-        return col;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Location location = (Location) o;
         return line == location.line && col == location.col;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public int getLine() {
+        return line;
     }
 
     @Override

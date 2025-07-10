@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class InMemoryOutputSinkTest {
 
     static class InMemoryOutputSinkSpy extends InMemoryOutputSink {
+
         boolean isClosed = false;
 
         @Override
@@ -20,6 +21,16 @@ class InMemoryOutputSinkTest {
             this.isClosed = true;
         }
 
+    }
+
+    @Test
+    void close() throws Exception {
+        InMemoryOutputSinkSpy outputSink2;
+        try (InMemoryOutputSinkSpy outputSink = new InMemoryOutputSinkSpy()) {
+            outputSink2 = outputSink;
+            assertFalse(outputSink2.isClosed);
+        }
+        assertTrue(outputSink2.isClosed);
     }
 
     @Test
@@ -35,13 +46,4 @@ class InMemoryOutputSinkTest {
         assertEquals("this is for test this is for test 2 \nthis is for test 3 ", outputSink.readAllData().get(0));
     }
 
-    @Test
-    void close() throws Exception {
-        InMemoryOutputSinkSpy outputSink2;
-        try (InMemoryOutputSinkSpy outputSink = new InMemoryOutputSinkSpy()) {
-            outputSink2 = outputSink;
-            assertFalse(outputSink2.isClosed);
-        }
-        assertTrue(outputSink2.isClosed);
-    }
 }

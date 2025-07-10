@@ -41,6 +41,7 @@ public class JGraphTReader<N> {
     enum Kind {Node, Edge, Graph}
 
     abstract static class JgtEntity {
+
         public final Map<String, JgtAttribute> attributes = new HashMap<>();
 
         public void addAttribute(String name, AttributeType type, String value) {
@@ -122,8 +123,8 @@ public class JGraphTReader<N> {
             case FLOAT -> GioDataType.typeFloat;
             case DOUBLE -> GioDataType.typeDouble;
             case STRING,
-                    // ??? weird mappings
-                    HTML, UNKNOWN, IDENTIFIER, NULL -> GioDataType.typeString;
+                 // ??? weird mappings
+                 HTML, UNKNOWN, IDENTIFIER, NULL -> GioDataType.typeString;
         };
     }
 
@@ -356,7 +357,7 @@ public class JGraphTReader<N> {
             maybeEmitEvent(Kind.Graph, this);
             activeGraphs.peek().addAttribute(attName, atts.getType(), atts.getValue());
         });
-        importer.addImportEventConsumer(importEvent->{
+        importer.addImportEventConsumer(importEvent -> {
             // start and end of import
         });
     }

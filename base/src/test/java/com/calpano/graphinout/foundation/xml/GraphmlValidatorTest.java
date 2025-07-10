@@ -45,13 +45,7 @@ class GraphmlValidatorTest {
             "</graphml>";
 
     @Test
-    void testGood() throws IOException {
-        assertTrue(GraphmlValidator.isValidGraphml(SingleInputSource.of("good", goodGraphml)));
-    }
-
-    @Test
-    void testWrongElement() throws IOException {
-        assertFalse(GraphmlValidator.isValidGraphml(SingleInputSource.of("funnybunny", badGraphml)));
+    void isValidGraphml() {
     }
 
     @BeforeEach
@@ -63,6 +57,13 @@ class GraphmlValidatorTest {
     }
 
     @Test
-    void isValidGraphml() {
+    void testGood() throws IOException {
+        assertTrue(GraphmlValidator.isValidGraphml(SingleInputSource.of("good", goodGraphml)));
     }
+
+    @Test
+    void testWrongElement() throws IOException {
+        assertFalse(GraphmlValidator.isValidGraphml(SingleInputSource.of("funnybunny", badGraphml)));
+    }
+
 }

@@ -8,9 +8,10 @@
 .Papers
 - __U. Brandes, M. Eiglsperger, I. Herman, M. Himsolt, and M.S. Marshall__:
 **GraphML Progress Report: Structural Layer Proposal.**
-Proc. 9th Intl. Symp. Graph Drawing (GD '01), LNCS 2265, pp. 501-512.
+Proc. 9th Intl.
+Symp.
+Graph Drawing (GD '01), LNCS 2265, pp. 501-512.
 © Springer-Verlag, 2002.
-
 
 == Parts
 
@@ -20,9 +21,6 @@ core 'structural layer':: the GraphML language core
 extension 'base-type attributes':: allows to add base-type attributes
 
 extension 'parsing information':: allows to add parsing information
-
-
-
 
 == Analysis
 

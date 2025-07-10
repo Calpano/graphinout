@@ -13,8 +13,14 @@ public interface SingleInputSource extends InputSource {
     }
 
     static SingleInputSource of(byte[] bytes) {
-        return new ByteArrayInputSource("InMemory",bytes);
+        return new ByteArrayInputSource("InMemory", bytes);
     }
+
+    /**
+     * Auto-closing an inputsource closes all streams handed out via #inputstream()
+     */
+    @Override
+    void close() throws IOException;
 
     /**
      * can be called repeatedly, but users need to close {@link InputStream after each usage
@@ -37,11 +43,5 @@ public interface SingleInputSource extends InputSource {
      */
     @Override
     String name();
-
-    /**
-     * Auto-closing an inputsource closes all streams handed out via #inputstream()
-     */
-    @Override
-    void close() throws IOException;
 
 }

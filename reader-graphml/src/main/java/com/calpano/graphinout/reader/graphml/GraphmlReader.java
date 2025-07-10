@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class GraphmlReader implements GioReader {
+
     static class SimpleErrorHandler implements ErrorHandler {
 
 
@@ -64,6 +65,7 @@ public class GraphmlReader implements GioReader {
                 errorConsumer.accept(contentError);
             }
         }
+
     }
 
     //TODO This can load from config file - use only GraphML 1.1
@@ -229,4 +231,5 @@ public class GraphmlReader implements GioReader {
             }
         }
     }
+
 }

@@ -39,40 +39,6 @@ class GraphmlReaderContentErrorTest {
                 .filter(path -> path.endsWith(".graphml"));
     }
 
-    @BeforeEach
-    void setUp() {
-        invalidFiles.add(Paths.get("target", "test-classes", "graphin", "graphml", "synthetic", "invalid-root.graphml").toUri().getPath());
-        invalidFiles.add(Paths.get("target", "test-classes", "graphin", "graphml", "samples", "haitimap2.graphml").toUri().getPath());
-        invalidFiles.add(Paths.get("target", "test-classes", "graphin", "graphml", "samples", "greek2.graphml").toUri().getPath());
-    }
-
-    @ParameterizedTest
-    @MethodSource("getAllGraphmlFiles")
-    void readAllGraphmlFiles(String filePath) throws Exception {
-
-        // FIXME #115
-        if(filePath.endsWith("graphin/graphml/invalidSchema/invalidSchema-1.graphml"))
-            return;
-
-        log.info("Start To pars file [{}]", filePath);
-        URL resourceUrl = ClassLoader.getSystemResource(filePath);
-        if (invalidFiles.removeIf(s -> resourceUrl.getPath().equals(s))) {
-            log.info("This file is known as invalid.");
-            return;
-        }
-        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-        try (SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
-             OutputSink outputSink = new InMemoryOutputSink()) {
-            GraphmlReader graphmlReader = new GraphmlReader();
-            List<ContentError> contentErrors = new ArrayList<>();
-            graphmlReader.errorHandler(contentErrors::add);
-            GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
-            graphmlReader.read(singleInputSource, gioWriter);
-            assertEquals(0, contentErrors.stream().count());
-        }
-    }
-
-
     @Test
     void elementsGraphmlDoesNotAllowCharacter_invalid_root() throws Exception {
         Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "synthetic", "invalid-root.graphml");
@@ -103,6 +69,38 @@ class GraphmlReaderContentErrorTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("getAllGraphmlFiles")
+    void readAllGraphmlFiles(String filePath) throws Exception {
+
+        // FIXME #115
+        if (filePath.endsWith("graphin/graphml/invalidSchema/invalidSchema-1.graphml"))
+            return;
+
+        log.info("Start To pars file [{}]", filePath);
+        URL resourceUrl = ClassLoader.getSystemResource(filePath);
+        if (invalidFiles.removeIf(s -> resourceUrl.getPath().equals(s))) {
+            log.info("This file is known as invalid.");
+            return;
+        }
+        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
+        try (SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
+             OutputSink outputSink = new InMemoryOutputSink()) {
+            GraphmlReader graphmlReader = new GraphmlReader();
+            List<ContentError> contentErrors = new ArrayList<>();
+            graphmlReader.errorHandler(contentErrors::add);
+            GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+            graphmlReader.read(singleInputSource, gioWriter);
+            assertEquals(0, contentErrors.stream().count());
+        }
+    }
+
+    @BeforeEach
+    void setUp() {
+        invalidFiles.add(Paths.get("target", "test-classes", "graphin", "graphml", "synthetic", "invalid-root.graphml").toUri().getPath());
+        invalidFiles.add(Paths.get("target", "test-classes", "graphin", "graphml", "samples", "haitimap2.graphml").toUri().getPath());
+        invalidFiles.add(Paths.get("target", "test-classes", "graphin", "graphml", "samples", "greek2.graphml").toUri().getPath());
+    }
 
 
 }

@@ -8,13 +8,11 @@ import java.util.Objects;
 
 /**
  * @author rbaba
-
- * @implNote Hyperedges are a generalization of edges in the sense that they do not only relate two endpoints to each other,
- * they express a relation between an arbitrary number of endpoints.
- * Hyperedges are declared by a hyperedge element in GraphML.
- * For each endpoint of the hyperedge, this hyperedge element contains an endpoint element.
- * The endpoint element must have an XML-Attribute node, which contains the identifier of a node in the document.
- * Note that edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
+ * @implNote Hyperedges are a generalization of edges in the sense that they do not only relate two endpoints to each
+ * other, they express a relation between an arbitrary number of endpoints. Hyperedges are declared by a hyperedge
+ * element in GraphML. For each endpoint of the hyperedge, this hyperedge element contains an endpoint element. The
+ * endpoint element must have an XML-Attribute node, which contains the identifier of a node in the document. Note that
+ * edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
  * Example:
  * <pre>
  *         <hyperedge id="id--hyperedge-4N56">
@@ -27,13 +25,59 @@ import java.util.Objects;
  */
 public class GioEdge extends GioElementWithDescription {
 
+    public static class GioEdgeBuilder {
+
+        private @Nullable Map<String, String> customAttributes;
+        private @Nullable String description;
+        private String id;
+        private List<GioEndpoint> endpoints = new ArrayList<>();
+
+        public GioEdge build() {
+            return new GioEdge(customAttributes, description, id, endpoints);
+        }
+
+        public GioEdgeBuilder clearEndpoints() {
+            if (this.endpoints != null) {
+                this.endpoints.clear();
+            }
+            return this;
+        }
+
+        public GioEdgeBuilder customAttributes(@Nullable Map<String, String> customAttributes) {
+            this.customAttributes = customAttributes;
+            return this;
+        }
+
+        public GioEdgeBuilder description(@Nullable String description) {
+            this.description = description;
+            return this;
+        }
+
+        public GioEdgeBuilder endpoint(GioEndpoint endpoint) {
+            if (this.endpoints == null) {
+                this.endpoints = new ArrayList<>();
+            }
+            this.endpoints.add(endpoint);
+            return this;
+        }
+
+        public GioEdgeBuilder endpoints(List<GioEndpoint> endpoints) {
+            this.endpoints = endpoints != null ? new ArrayList<>(endpoints) : new ArrayList<>();
+            return this;
+        }
+
+        public GioEdgeBuilder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+    }
     /**
      * This is an attribute that can be empty or null.
      * </p>
      * The name of this attribute in hyperEdge is <b>id</b>
      */
     private String id;
-
     /**
      * By convention, a simple directed edge should FIRST have the source, then the target endpoint.
      */
@@ -62,67 +106,12 @@ public class GioEdge extends GioElementWithDescription {
         return new GioEdgeBuilder();
     }
 
-    public static class GioEdgeBuilder {
-        private @Nullable Map<String, String> customAttributes;
-        private @Nullable String description;
-        private String id;
-        private List<GioEndpoint> endpoints = new ArrayList<>();
-
-        public GioEdgeBuilder customAttributes(@Nullable Map<String, String> customAttributes) {
-            this.customAttributes = customAttributes;
-            return this;
-        }
-
-        public GioEdgeBuilder description(@Nullable String description) {
-            this.description = description;
-            return this;
-        }
-
-        public GioEdgeBuilder id(String id) {
-            this.id = id;
-            return this;
-        }
-
-        public GioEdgeBuilder endpoints(List<GioEndpoint> endpoints) {
-            this.endpoints = endpoints != null ? new ArrayList<>(endpoints) : new ArrayList<>();
-            return this;
-        }
-
-        public GioEdgeBuilder endpoint(GioEndpoint endpoint) {
-            if (this.endpoints == null) {
-                this.endpoints = new ArrayList<>();
-            }
-            this.endpoints.add(endpoint);
-            return this;
-        }
-
-        public GioEdgeBuilder clearEndpoints() {
-            if (this.endpoints != null) {
-                this.endpoints.clear();
-            }
-            return this;
-        }
-
-        public GioEdge build() {
-            return new GioEdge(customAttributes, description, id, endpoints);
-        }
-    }
-
-    // Getters and Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public List<GioEndpoint> getEndpoints() {
-        return endpoints;
-    }
-
-    public void setEndpoints(List<GioEndpoint> endpoints) {
-        this.endpoints = endpoints;
+    /**
+     * By convention, a simple directed edge should FIRST have the source, then the target endpoint.
+     */
+    public void addEndpoint(GioEndpoint gioEndpoint) {
+        if (endpoints == null) endpoints = new ArrayList<>();
+        endpoints.add(gioEndpoint);
     }
 
     // equals, hashCode, toString
@@ -133,7 +122,16 @@ public class GioEdge extends GioElementWithDescription {
         if (!super.equals(o)) return false;
         GioEdge gioEdge = (GioEdge) o;
         return Objects.equals(id, gioEdge.id) &&
-               Objects.equals(endpoints, gioEdge.endpoints);
+                Objects.equals(endpoints, gioEdge.endpoints);
+    }
+
+    public List<GioEndpoint> getEndpoints() {
+        return endpoints;
+    }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -141,26 +139,27 @@ public class GioEdge extends GioElementWithDescription {
         return Objects.hash(super.hashCode(), id, endpoints);
     }
 
-    @Override
-    public String toString() {
-        return "GioEdge{" +
-               "id='" + id + '\'' +
-               ", endpoints=" + endpoints +
-               ", description='" + getDescription() + '\'' +
-               ", customAttributes=" + getCustomAttributes() +
-               '}';
-    }
-
-    /**
-     * By convention, a simple directed edge should FIRST have the source, then the target endpoint.
-     */
-    public void addEndpoint(GioEndpoint gioEndpoint) {
-        if (endpoints == null) endpoints = new ArrayList<>();
-        endpoints.add(gioEndpoint);
-    }
-
     public boolean isValid() {
         assert getEndpoints().size() >= 2 && getEndpoints().stream().allMatch(GioEndpoint::isValid);
         return true;
     }
+
+    public void setEndpoints(List<GioEndpoint> endpoints) {
+        this.endpoints = endpoints;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "GioEdge{" +
+                "id='" + id + '\'' +
+                ", endpoints=" + endpoints +
+                ", description='" + getDescription() + '\'' +
+                ", customAttributes=" + getCustomAttributes() +
+                '}';
+    }
+
 }

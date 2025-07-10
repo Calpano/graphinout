@@ -21,6 +21,8 @@ public class XmlWriterImpl implements XmlWriter {
     protected final OutputSink outputSink;
     protected transient OutputStream out;
     protected transient Writer writer;
+    private @Nullable String name = null;
+    private @Nullable Map<String, String> attributes = null;
 
     public XmlWriterImpl(OutputSink outputSink) {
         this.outputSink = outputSink;
@@ -47,7 +49,7 @@ public class XmlWriterImpl implements XmlWriter {
     @Override
     public void endElement(String name) throws IOException {
         log.trace("endElement [{}]", name);
-        if(this.name!=null) {
+        if (this.name != null) {
             writer.write("<");
             writer.write(name);
             for (Map.Entry<String, String> entry : attributes.entrySet()) {
@@ -64,15 +66,17 @@ public class XmlWriterImpl implements XmlWriter {
     }
 
     @Override
+    public void lineBreak() throws IOException {
+        writeBufferMaybe();
+        writer.write("\n");
+    }
+
+    @Override
     public void startDocument() throws IOException {
         log.trace("startDocument");
         this.out = outputSink.outputStream();
         this.writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
     }
-
-    private @Nullable String name = null;
-    private @Nullable Map<String,String> attributes = null;
-
 
     @Override
     public void startElement(String name, Map<String, String> attributes) throws IOException {
@@ -82,12 +86,12 @@ public class XmlWriterImpl implements XmlWriter {
     }
 
     private void buffer(String name, Map<String, String> attributes) {
-        this.name=name;
+        this.name = name;
         this.attributes = attributes;
     }
 
     private void writeBufferMaybe() throws IOException {
-        if(this.name != null) {
+        if (this.name != null) {
             writer.write("<");
             writer.write(name);
             for (Map.Entry<String, String> entry : attributes.entrySet()) {
@@ -96,14 +100,8 @@ public class XmlWriterImpl implements XmlWriter {
             writer.write('>');
             writer.flush();
         }
-        this.name= null;
+        this.name = null;
         this.attributes = null;
-    }
-
-    @Override
-    public void lineBreak() throws IOException {
-        writeBufferMaybe();
-        writer.write("\n");
     }
 
 }

@@ -93,4 +93,5 @@ public class TripleTextReader implements GioReader {
         writer.endGraph(null);
         writer.endDocument();
     }
+
 }

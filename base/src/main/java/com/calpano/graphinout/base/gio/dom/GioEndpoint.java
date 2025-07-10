@@ -17,23 +17,24 @@ public class GioEndpoint extends GioExtensibleElement {
         return direction;
     }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
-
     public Object getNode() {
         return node;
-    }
-
-    public void setNode(Object node) {
-        this.node = node;
     }
 
     public Object getPort() {
         return port;
     }
 
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
+
+    public void setNode(Object node) {
+        this.node = node;
+    }
+
     public void setPort(Object port) {
         this.port = port;
     }
+
 }

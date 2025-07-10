@@ -16,10 +16,6 @@ public enum CjDirection {
         this.value = value;
     }
 
-    public String value() {
-        return value;
-    }
-
     public static CjDirection of(@Nullable String value) {
         for (CjDirection direction : values()) {
             if (direction.value.equals(value)) {
@@ -27,5 +23,9 @@ public enum CjDirection {
             }
         }
         return UNDIR; // default
+    }
+
+    public String value() {
+        return value;
     }
 }

@@ -8,7 +8,7 @@ import java.io.IOException;
  */
 public interface GraphmlWriter {
 
-    void key(GraphmlKey data) throws IOException;
+    void data(GraphmlData data) throws IOException;
 
     void endDocument() throws IOException;
 
@@ -20,6 +20,10 @@ public interface GraphmlWriter {
 
     void endNode(@Nullable GraphmlLocator locator) throws IOException;
 
+    void endPort() throws IOException;
+
+    void key(GraphmlKey data) throws IOException;
+
     void startDocument(GraphmlDocument document) throws IOException;
 
     void startEdge(GraphmlEdge edge) throws IOException;
@@ -30,10 +34,7 @@ public interface GraphmlWriter {
 
     void startNode(GraphmlNode node) throws IOException;
 
-    void data(GraphmlData data) throws IOException;
-
     void startPort(GraphmlPort port) throws IOException;
-    void endPort() throws IOException;
 
 
 }

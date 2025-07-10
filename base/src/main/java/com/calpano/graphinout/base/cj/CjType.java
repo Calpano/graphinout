@@ -36,15 +36,14 @@ public enum CjType {
     public static class CjProperty {
 
         final Set<String> keys;
-
-        public Set<CjType> expected() {
-            return expected;
-        }
-
         Set<CjType> expected;
 
         public CjProperty(Set<String> keys) {
             this.keys = keys;
+        }
+
+        public Set<CjType> expected() {
+            return expected;
         }
 
         /** expected types for given property */

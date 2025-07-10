@@ -7,6 +7,6 @@ public interface XMLValue {
     /**
      * The full map of all attributes, built-in and 'extra attributes'
      */
-    Map<String, String> getAttributes() ;
+    Map<String, String> getAttributes();
 
 }

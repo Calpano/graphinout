@@ -12,6 +12,7 @@ import java.util.UUID;
 class FileSingleInputSourceTest {
 
     static class FileSingleInputSourceSpy extends FileSingleInputSource {
+
         boolean isClosed = false;
 
         public FileSingleInputSourceSpy(File file) {
@@ -24,6 +25,7 @@ class FileSingleInputSourceTest {
             super.close();
             isClosed = true;
         }
+
     }
 
     private final String fileName = UUID.randomUUID() + "-test.txt";
@@ -47,4 +49,5 @@ class FileSingleInputSourceTest {
     void tearDown() {
         new File(fileName).deleteOnExit();
     }
+
 }

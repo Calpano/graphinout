@@ -11,7 +11,7 @@ public abstract class GioElement {
      * <a href="http://graphml.graphdrawing.org/specification.html">GraphML</a>
      * "Users can add attributes to all GraphML elements."
      */
-    private @Nullable Map<String,String> customAttributes;
+    private @Nullable Map<String, String> customAttributes;
 
     // Constructor
     public GioElement() {
@@ -21,13 +21,11 @@ public abstract class GioElement {
         this.customAttributes = customAttributes;
     }
 
-    // Getters and Setters
-    public @Nullable Map<String, String> getCustomAttributes() {
-        return customAttributes;
-    }
-
-    public void setCustomAttributes(@Nullable Map<String, String> customAttributes) {
-        this.customAttributes = customAttributes;
+    public void customAttribute(String attributeName, String attributeValue) {
+        if (customAttributes == null) {
+            customAttributes = new HashMap<>();
+        }
+        customAttributes.put(attributeName, attributeValue);
     }
 
     // equals, hashCode, toString
@@ -39,23 +37,25 @@ public abstract class GioElement {
         return Objects.equals(customAttributes, that.customAttributes);
     }
 
+    // Getters and Setters
+    public @Nullable Map<String, String> getCustomAttributes() {
+        return customAttributes;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(customAttributes);
     }
 
+    public void setCustomAttributes(@Nullable Map<String, String> customAttributes) {
+        this.customAttributes = customAttributes;
+    }
+
     @Override
     public String toString() {
         return "GioElement{" +
-               "customAttributes=" + customAttributes +
-               '}';
-    }
-
-    public void customAttribute( String attributeName, String attributeValue) {
-        if(customAttributes==null) {
-            customAttributes = new HashMap<>();
-        }
-        customAttributes.put(attributeName, attributeValue);
+                "customAttributes=" + customAttributes +
+                '}';
     }
 
 }

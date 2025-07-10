@@ -108,7 +108,7 @@ class GraphmlSAXHandler extends DefaultHandler {
                 case GraphmlElement.NODE -> endNodeElement();
                 case GraphmlElement.PORT -> endPortElement();
                 default -> {
-                    if (openEntities.peek() != null && (openEntities.peek() instanceof GioDefaultEntity || openEntities.peek() instanceof GioDataEntity  ||  openEntities.peek()  instanceof GioDescriptionEntity) ) {
+                    if (openEntities.peek() != null && (openEntities.peek() instanceof GioDefaultEntity || openEntities.peek() instanceof GioDataEntity || openEntities.peek() instanceof GioDescriptionEntity)) {
                         // we accept any element and forward
                         createEndXMlElement(qName);
                     } else {
@@ -120,12 +120,6 @@ class GraphmlSAXHandler extends DefaultHandler {
         } catch (Exception e) {
             throw buildException(ContentError.ErrorLevel.Error, e);
         }
-    }
-
-
-    @Override
-    public void warning(SAXParseException e) throws SAXException {
-        buildException(ContentError.ErrorLevel.Warn, e);
     }
 
     @Override
@@ -186,7 +180,6 @@ class GraphmlSAXHandler extends DefaultHandler {
         }
     }
 
-
     @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         super.startPrefixMapping(prefix, uri);
@@ -194,6 +187,10 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     }
 
+    @Override
+    public void warning(SAXParseException e) throws SAXException {
+        buildException(ContentError.ErrorLevel.Warn, e);
+    }
 
     /**
      * Just looks at the stack
@@ -609,4 +606,5 @@ class GraphmlSAXHandler extends DefaultHandler {
 
         openEntities.push(gioPortEntity);
     }
+
 }

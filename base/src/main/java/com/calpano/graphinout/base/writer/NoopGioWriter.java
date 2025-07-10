@@ -25,6 +25,9 @@ public class NoopGioWriter extends NoopJsonWriter implements GioWriter {
     private static final Logger log = getLogger(NoopGioWriter.class);
 
     @Override
+    public void baseUri(String baseUri) throws IOException {}
+
+    @Override
     public void data(GioData data) throws IOException {}
 
     @Override
@@ -60,6 +63,4 @@ public class NoopGioWriter extends NoopJsonWriter implements GioWriter {
     @Override
     public void startPort(GioPort port) throws IOException {}
 
-    @Override
-    public void baseUri(String baseUri) throws IOException {}
 }

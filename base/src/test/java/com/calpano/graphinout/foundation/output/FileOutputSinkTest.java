@@ -12,7 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileOutputSinkTest {
+
     static class FileOutputSinkSpy extends FileOutputSink {
+
         boolean isClosed = false;
 
         public FileOutputSinkSpy(File file) {
@@ -50,4 +52,5 @@ class FileOutputSinkTest {
     void tearDown() {
         new File(fileName).deleteOnExit();
     }
+
 }

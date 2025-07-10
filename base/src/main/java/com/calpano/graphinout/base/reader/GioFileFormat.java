@@ -25,21 +25,8 @@ public class GioFileFormat {
         this.fileExtensions = extensions == null ? new HashSet<>() : new HashSet<>(Arrays.asList(extensions));
     }
 
-    /**
-     * @param resourcePath
-     * @return true iff given path ends with one of the registered file extensions
-     */
-    public boolean matches(String resourcePath) {
-        for(String ext: fileExtensions) {
-            if(resourcePath.endsWith(ext))
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return "'" + label + "' [" + id + "]";
+    public Set<String> fileExtensions() {
+        return fileExtensions;
     }
 
     public String id() {
@@ -50,7 +37,21 @@ public class GioFileFormat {
         return label;
     }
 
-    public Set<String> fileExtensions() {
-        return fileExtensions;
+    /**
+     * @param resourcePath
+     * @return true iff given path ends with one of the registered file extensions
+     */
+    public boolean matches(String resourcePath) {
+        for (String ext : fileExtensions) {
+            if (resourcePath.endsWith(ext))
+                return true;
+        }
+        return false;
     }
+
+    @Override
+    public String toString() {
+        return "'" + label + "' [" + id + "]";
+    }
+
 }

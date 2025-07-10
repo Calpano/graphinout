@@ -83,4 +83,5 @@ public class ConnectedJsonParsingTest {
 
         System.out.println("[DEBUG_LOG] All assertions passed - Connected JSON parsing works correctly");
     }
+
 }

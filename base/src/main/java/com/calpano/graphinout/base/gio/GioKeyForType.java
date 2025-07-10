@@ -14,6 +14,7 @@ public enum GioKeyForType {
 
     /**
      * Compare ignoring case
+     *
      * @param keyForType
      * @return
      * @throws IllegalArgumentException

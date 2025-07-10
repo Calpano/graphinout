@@ -2,6 +2,7 @@
 :toc:
 
 == Concepts
+
 .Example
 [source,js]
 ----
@@ -80,7 +81,6 @@ Mapping --> Link : links
 Link <|-- LinkToExisting
 Link <|-- LinkToNew
 ....
-
 
 == Implementation Strategy
 

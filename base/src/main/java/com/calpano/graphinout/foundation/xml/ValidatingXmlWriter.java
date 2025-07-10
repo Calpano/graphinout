@@ -30,9 +30,14 @@ public class ValidatingXmlWriter implements XmlWriter {
     public void endElement(String name) throws IOException {
         String expected = elements.pop();
         if (expected == null || !expected.equals(name)) {
-            throw new IllegalStateException("XML nesting: Expected close of element '" + expected + "' but got '" + name+"'. Stack: "+this.elements);
+            throw new IllegalStateException("XML nesting: Expected close of element '" + expected + "' but got '" + name + "'. Stack: " + this.elements);
         }
         sink.endElement(name);
+    }
+
+    @Override
+    public void lineBreak() throws IOException {
+        sink.lineBreak();
     }
 
     @Override
@@ -44,11 +49,6 @@ public class ValidatingXmlWriter implements XmlWriter {
     public void startElement(String name, Map<String, String> attributes) throws IOException {
         elements.push(name);
         sink.startElement(name, attributes);
-    }
-
-    @Override
-    public void lineBreak() throws IOException {
-        sink.lineBreak();
     }
 
 }

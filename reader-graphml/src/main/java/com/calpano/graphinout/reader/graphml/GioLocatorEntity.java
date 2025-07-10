@@ -2,7 +2,8 @@ package com.calpano.graphinout.reader.graphml;
 
 import java.net.URL;
 
-public class GioLocatorEntity extends AbstractGraphmlEntity<URL> implements GraphmlEntity<URL>{
+public class GioLocatorEntity extends AbstractGraphmlEntity<URL> implements GraphmlEntity<URL> {
+
     private final URL url;
 
     public GioLocatorEntity(URL url) {

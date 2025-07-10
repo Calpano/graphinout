@@ -21,18 +21,18 @@ public interface XmlWriter {
      */
     void endElement(String name) throws IOException;
 
-    void startDocument() throws IOException;
+    /**
+     * Write a \n to the output
+     */
+    void lineBreak() throws IOException;
 
-    void startElement(String name, Map<String, String> attributes) throws IOException;
+    void startDocument() throws IOException;
 
     default void startElement(String name) throws IOException {
         startElement(name, Collections.emptyMap());
     }
 
-    /**
-     * Write a \n to the output
-     */
-    void lineBreak() throws IOException;
+    void startElement(String name, Map<String, String> attributes) throws IOException;
 
 
 }

@@ -33,6 +33,7 @@ public class ContentErrors {
     }
 
     public static boolean hasErrors(List<ContentError> contentErrors) {
-        return contentErrors.stream().anyMatch(ce-> ce.level == ContentError.ErrorLevel.Error);
+        return contentErrors.stream().anyMatch(ce -> ce.level == ContentError.ErrorLevel.Error);
     }
+
 }

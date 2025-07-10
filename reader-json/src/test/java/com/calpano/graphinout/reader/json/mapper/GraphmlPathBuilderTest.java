@@ -45,28 +45,28 @@ class GraphmlPathBuilderTest {
             System.out.println(mapper.getLinks());
 
 
-                List<Link> list  =  new ArrayList<>(mapper.getLinks());
-                Collections.sort(list,(o1, o2) -> o1.getClass().getName().compareTo(o2.getClass().getName()));
+            List<Link> list = new ArrayList<>(mapper.getLinks());
+            Collections.sort(list, (o1, o2) -> o1.getClass().getName().compareTo(o2.getClass().getName()));
 
             assertAll("",//
                     () -> assertEquals("id", mapper.getId()),
                     () -> assertEquals("title", mapper.getLabel()),
                     () -> assertEquals(3, mapper.getLinks().size()),
                     () -> assertInstanceOf(Link.LinkCreateNode.class, list.get(0)),
-                    () -> assertEquals("id", ((Link.LinkCreateNode)list.get(0)).id),
-                    () -> assertEquals("uses mechanics", ((Link.LinkCreateNode)list.get(0)).linkLabel),
-                    () -> assertEquals("name", ((Link.LinkCreateNode)list.get(0)).label),
-                    () -> assertEquals("types.mechanics", ((Link.LinkCreateNode)list.get(0)).target),
+                    () -> assertEquals("id", ((Link.LinkCreateNode) list.get(0)).id),
+                    () -> assertEquals("uses mechanics", ((Link.LinkCreateNode) list.get(0)).linkLabel),
+                    () -> assertEquals("name", ((Link.LinkCreateNode) list.get(0)).label),
+                    () -> assertEquals("types.mechanics", ((Link.LinkCreateNode) list.get(0)).target),
 
-                    () -> assertInstanceOf(Link.LinkCreateNode.class,list.get(1)),
-                    () -> assertEquals("id", ((Link.LinkCreateNode)list.get(1)).id),
-                    () -> assertEquals("designed by", ((Link.LinkCreateNode)list.get(1)).linkLabel),
-                    () -> assertEquals("name", ((Link.LinkCreateNode)list.get(1)).label),
-                    () -> assertEquals("credit.designer", ((Link.LinkCreateNode)list.get(1)).target),
+                    () -> assertInstanceOf(Link.LinkCreateNode.class, list.get(1)),
+                    () -> assertEquals("id", ((Link.LinkCreateNode) list.get(1)).id),
+                    () -> assertEquals("designed by", ((Link.LinkCreateNode) list.get(1)).linkLabel),
+                    () -> assertEquals("name", ((Link.LinkCreateNode) list.get(1)).label),
+                    () -> assertEquals("credit.designer", ((Link.LinkCreateNode) list.get(1)).target),
 
-                    () -> assertInstanceOf(Link.LinkToExistingNode.class,list.get(2)),
-                    () -> assertEquals("recommendations.fans_liked", ((Link.LinkToExistingNode)list.get(2)).idTarget),
-                    () -> assertEquals("recommended", ((Link.LinkToExistingNode)list.get(2)).linkLabel)
+                    () -> assertInstanceOf(Link.LinkToExistingNode.class, list.get(2)),
+                    () -> assertEquals("recommendations.fans_liked", ((Link.LinkToExistingNode) list.get(2)).idTarget),
+                    () -> assertEquals("recommended", ((Link.LinkToExistingNode) list.get(2)).linkLabel)
             );
 
 
@@ -114,4 +114,5 @@ class GraphmlPathBuilderTest {
         log.info("res={}", result);
         assertEquals(json, result);
     }
+
 }

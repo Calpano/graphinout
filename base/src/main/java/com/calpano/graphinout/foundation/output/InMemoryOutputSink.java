@@ -51,4 +51,5 @@ public class InMemoryOutputSink implements OutputSink {
     public String toString() {
         return getBufferAsUtf8String();
     }
+
 }

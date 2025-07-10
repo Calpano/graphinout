@@ -21,11 +21,11 @@ import java.util.List;
 /** Delegates one input stream to n output streams */
 public class DelegatingGioWriter implements GioWriter {
 
-    public DelegatingGioWriter(GioWriter ... writers) {
+    private final List<GioWriter> writers;
+
+    public DelegatingGioWriter(GioWriter... writers) {
         this.writers = Arrays.asList(writers);
     }
-
-    private final List<GioWriter> writers;
 
     @Override
     public void arrayEnd() throws JsonException {
@@ -38,6 +38,62 @@ public class DelegatingGioWriter implements GioWriter {
     public void arrayStart() throws JsonException {
         for (GioWriter writer : writers) {
             writer.arrayStart();
+        }
+    }
+
+    @Override
+    public void baseUri(String baseUri) throws IOException {
+        for (GioWriter writer : writers) {
+            writer.baseUri(baseUri);
+        }
+    }
+
+    @Override
+    public void data(GioData data) throws IOException {
+        for (GioWriter writer : writers) {
+            writer.data(data);
+        }
+    }
+
+    @Override
+    public void endDocument() throws IOException {
+        for (GioWriter writer : writers) {
+            writer.endDocument();
+        }
+    }
+
+    @Override
+    public void endEdge() throws IOException {
+        for (GioWriter writer : writers) {
+            writer.endEdge();
+        }
+    }
+
+    @Override
+    public void endGraph(@Nullable URL locator) throws IOException {
+        for (GioWriter writer : writers) {
+            writer.endGraph(locator);
+        }
+    }
+
+    @Override
+    public void endNode(@Nullable URL locator) throws IOException {
+        for (GioWriter writer : writers) {
+            writer.endNode(locator);
+        }
+    }
+
+    @Override
+    public void endPort() throws IOException {
+        for (GioWriter writer : writers) {
+            writer.endPort();
+        }
+    }
+
+    @Override
+    public void key(GioKey gioKey) throws IOException {
+        for (GioWriter writer : writers) {
+            writer.key(gioKey);
         }
     }
 
@@ -119,76 +175,6 @@ public class DelegatingGioWriter implements GioWriter {
     }
 
     @Override
-    public void stringStart() throws JsonException {
-        for (GioWriter writer : writers) {
-            writer.stringStart();
-        }
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-        for (GioWriter writer : writers) {
-            writer.stringEnd();
-        }
-    }
-
-    @Override
-    public void stringCharacters(String s) throws JsonException {
-        for (GioWriter writer : writers) {
-            writer.stringCharacters(s);
-        }
-    }
-
-    @Override
-    public void whitespaceCharacters(String s) throws JsonException {
-        for (GioWriter writer : writers) {
-            writer.whitespaceCharacters(s);
-        }
-    }
-
-    @Override
-    public void endDocument() throws IOException {
-        for (GioWriter writer : writers) {
-            writer.endDocument();
-        }
-    }
-
-    @Override
-    public void endEdge() throws IOException {
-        for (GioWriter writer : writers) {
-            writer.endEdge();
-        }
-    }
-
-    @Override
-    public void endGraph(@Nullable URL locator) throws IOException {
-        for (GioWriter writer : writers) {
-            writer.endGraph(locator);
-        }
-    }
-
-    @Override
-    public void endNode(@Nullable URL locator) throws IOException {
-        for (GioWriter writer : writers) {
-            writer.endNode(locator);
-        }
-    }
-
-    @Override
-    public void key(GioKey gioKey) throws IOException {
-        for (GioWriter writer : writers) {
-            writer.key(gioKey);
-        }
-    }
-
-    @Override
-    public void data(GioData data) throws IOException {
-        for (GioWriter writer : writers) {
-            writer.data(data);
-        }
-    }
-
-    @Override
     public void startDocument(GioDocument document) throws IOException {
         for (GioWriter writer : writers) {
             writer.startDocument(document);
@@ -224,16 +210,31 @@ public class DelegatingGioWriter implements GioWriter {
     }
 
     @Override
-    public void endPort() throws IOException {
+    public void stringCharacters(String s) throws JsonException {
         for (GioWriter writer : writers) {
-            writer.endPort();
+            writer.stringCharacters(s);
         }
     }
 
     @Override
-    public void baseUri(String baseUri) throws IOException {
+    public void stringEnd() throws JsonException {
         for (GioWriter writer : writers) {
-            writer.baseUri(baseUri);
+            writer.stringEnd();
         }
     }
+
+    @Override
+    public void stringStart() throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.stringStart();
+        }
+    }
+
+    @Override
+    public void whitespaceCharacters(String s) throws JsonException {
+        for (GioWriter writer : writers) {
+            writer.whitespaceCharacters(s);
+        }
+    }
+
 }

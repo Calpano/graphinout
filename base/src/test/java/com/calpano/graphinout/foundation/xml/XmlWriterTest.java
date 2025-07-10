@@ -18,6 +18,7 @@ import java.util.Map;
 class XmlWriterTest {
 
     class OutputSinkMock implements OutputSink {
+
         private final File tmpFile;
         private transient OutputStream out;
         private transient Writer w;
@@ -27,16 +28,17 @@ class XmlWriterTest {
         }
 
         @Override
+        public void close() throws Exception {
+            out.close();
+        }
+
+        @Override
         public OutputStream outputStream() throws IOException {
             if (out == null)
                 out = new FileOutputStream(tmpFile);
             return out;
         }
 
-        @Override
-        public void close() throws Exception {
-            out.close();
-        }
     }
 
     private final static String FILE_NAME = "test_graph_output.xml";
@@ -102,4 +104,5 @@ class XmlWriterTest {
 
         instance.endDocument();
     }
+
 }

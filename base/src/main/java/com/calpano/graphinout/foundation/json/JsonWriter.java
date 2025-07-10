@@ -30,5 +30,4 @@ public interface JsonWriter extends JsonElementWriter {
     void documentStart() throws JsonException;
 
 
-
 }

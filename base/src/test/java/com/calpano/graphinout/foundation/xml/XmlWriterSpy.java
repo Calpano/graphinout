@@ -40,4 +40,5 @@ public class XmlWriterSpy implements XmlWriter {
     public void startElement(String name, Map<String, String> attributes) throws IOException {
         outPut.append("::startElement->").append(name).append("->").append(attributes);
     }
+
 }

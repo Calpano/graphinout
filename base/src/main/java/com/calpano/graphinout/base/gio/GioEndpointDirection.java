@@ -11,11 +11,11 @@ public enum GioEndpointDirection {
     }
 
     public static GioEndpointDirection of(String value) {
-        for(GioEndpointDirection d : values()) {
-            if(d.xmlValue.equalsIgnoreCase(value))
+        for (GioEndpointDirection d : values()) {
+            if (d.xmlValue.equalsIgnoreCase(value))
                 return d;
         }
-        throw new IllegalArgumentException("Could not interpret '"+value+"' as GioEndpointDirection");
+        throw new IllegalArgumentException("Could not interpret '" + value + "' as GioEndpointDirection");
     }
 
     public boolean isDirected() {

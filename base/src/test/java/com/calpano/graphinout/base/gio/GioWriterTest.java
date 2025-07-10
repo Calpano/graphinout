@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GioWriterTest {
 
-   @Spy
+    @Spy
     XmlWriterSpy xmlWriterSpy;
     private GioWriter gioWriter;
 
@@ -113,4 +113,5 @@ class GioWriterTest {
         gioWriter.data(GioData.builder().key("data").id("id").value("value").build());
         assertEquals("::startElement->node->{id=node }::startElement->desc->{}::characterData->GraphmlDescription::endElement->desc::startElement->port->{name=port}::endElement->port::startElement->data->{id=id, key=data}::characterData->value::endElement->data", xmlWriterSpy.getOutPut().toString());
     }
+
 }

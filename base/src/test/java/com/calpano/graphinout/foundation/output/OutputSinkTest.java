@@ -9,7 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OutputSinkTest {
+
     static class OutputSinkSpy implements OutputSink {
+
         boolean isClosed = false;
 
 
@@ -22,6 +24,7 @@ class OutputSinkTest {
         public OutputStream outputStream() throws IOException {
             return null;
         }
+
     }
 
     @Test
@@ -33,4 +36,5 @@ class OutputSinkTest {
         }
         assertTrue(OutputSinkSpy2.isClosed);
     }
+
 }

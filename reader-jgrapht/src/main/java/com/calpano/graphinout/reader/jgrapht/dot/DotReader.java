@@ -34,4 +34,5 @@ public class DotReader implements GioReader {
         JGraphTReader<String> jGraphTReader = new JGraphTReader<>(inputSource, DOTEventDrivenImporter::new, writer, errorHandler, vertex -> vertex);
         jGraphTReader.read();
     }
+
 }

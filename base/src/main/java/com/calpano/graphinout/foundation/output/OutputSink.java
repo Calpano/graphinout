@@ -19,12 +19,13 @@ public interface OutputSink extends AutoCloseable {
         return new NoopOutputSink();
     }
 
+    default void close() throws Exception {outputStream().close();}
+
     /**
      * Can be called once. Users need to close {@link OutputStream} after usage.
      * <p>
      * Never return System.out here. We will close it, causing issues in IntelliJ testing.
      */
     OutputStream outputStream() throws IOException;
-    default void close() throws Exception {outputStream().close();}
 
 }

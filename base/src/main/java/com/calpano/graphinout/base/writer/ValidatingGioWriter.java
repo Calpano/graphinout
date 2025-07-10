@@ -22,21 +22,31 @@ import java.util.Set;
 
 public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWriter {
 
-    // Constructor
-    public ValidatingGioWriter() {
-    }
-
     private final Set<String> nodesIds = new HashSet<>();
     private final Set<String> edgesIds = new HashSet<>();
     private final Set<String> keysIds = new HashSet<>();
     private final Set<String> endpointsNode = new HashSet<>();
     private final Set<String> endpointsPort = new HashSet<>();
     private final Set<String> nodePortName = new HashSet<>();
+    // Constructor
+    public ValidatingGioWriter() {
+    }
+
+    @Override
+    public void baseUri(String baseUri) throws IOException {
+        if (baseUri != null && !baseUri.isEmpty()) {
+            try {
+                new java.net.URI(baseUri);
+            } catch (java.net.URISyntaxException e) {
+                throw new IllegalStateException("Invalid baseUri: " + baseUri, e);
+            }
+        }
+    }
 
     @Override
     public void data(GioData data) throws IOException {
         if (!keysIds.contains(data.getKey()))
-            throw new IllegalStateException("GioData should refer to an existing Key ID, but uses '" + data.getKey() + "' in "+data);
+            throw new IllegalStateException("GioData should refer to an existing Key ID, but uses '" + data.getKey() + "' in " + data);
     }
 
     @Override
@@ -52,7 +62,7 @@ public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWrit
     @Override
     public void endGraph(@Nullable URL locator) throws IOException {
         if (!nodesIds.containsAll(endpointsNode))
-            throw new IllegalStateException("All GioEdge endpoints should refer to an existing GioNode ID. Missing: " + Sets.difference(endpointsNode,nodesIds));
+            throw new IllegalStateException("All GioEdge endpoints should refer to an existing GioNode ID. Missing: " + Sets.difference(endpointsNode, nodesIds));
         if (!nodePortName.isEmpty()) {
             List<String> missingPorts = new ArrayList<>();
             for (String port : endpointsPort) {
@@ -70,6 +80,10 @@ public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWrit
 
     @Override
     public void endNode(@Nullable URL locator) throws IOException {
+
+    }
+
+    public void endPort() throws IOException {
 
     }
 
@@ -128,21 +142,6 @@ public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWrit
             throw new IllegalStateException("GioPort name cannot be null or empty.");
         }
 
-    }
-
-    public void endPort() throws IOException {
-
-    }
-
-    @Override
-    public void baseUri(String baseUri) throws IOException {
-        if (baseUri != null && !baseUri.isEmpty()) {
-            try {
-                new java.net.URI(baseUri);
-            } catch (java.net.URISyntaxException e) {
-                throw new IllegalStateException("Invalid baseUri: " + baseUri, e);
-            }
-        }
     }
 
 }

@@ -21,7 +21,23 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Does not produce Graphml, rather, just logs
  */
 public class LoggingGioWriter implements GioWriter {
+
     private static final Logger log = getLogger(LoggingGioWriter.class);
+
+    @Override
+    public void arrayEnd() {
+        log.info("GioWriter: arrayEnd()");
+    }
+
+    @Override
+    public void arrayStart() {
+        log.info("GioWriter: arrayStart()");
+    }
+
+    @Override
+    public void baseUri(String baseUri) throws IOException {
+        log.info("GioWriter: baseuri(" + baseUri + ")");
+    }
 
     @Override
     public void data(GioData data) throws IOException {
@@ -56,46 +72,6 @@ public class LoggingGioWriter implements GioWriter {
     @Override
     public void key(GioKey gioKey) throws IOException {
         log.info("GioWriter: key(GioKey " + gioKey + ")");
-    }
-
-    @Override
-    public void startDocument(GioDocument document) throws IOException {
-        log.info("GioWriter: startDocument(GioDocument " + document + ")");
-    }
-
-    @Override
-    public void startEdge(GioEdge edge) throws IOException {
-        log.info("GioWriter: startEdge(GioEdge " + edge + ")");
-    }
-
-    @Override
-    public void startGraph(GioGraph gioGraph) throws IOException {
-        log.info("GioWriter: startGraph(GioGraph " + gioGraph + ")");
-    }
-
-    @Override
-    public void startNode(GioNode node) throws IOException {
-        log.info("GioWriter: startNode(GioNode " + node + ")");
-    }
-
-    @Override
-    public void startPort(GioPort port) throws IOException {
-        log.info("GioWriter: startPort(GioPort " + port + ")");
-    }
-
-    @Override
-    public void baseUri(String baseUri) throws IOException {
-        log.info("GioWriter: baseuri(" + baseUri + ")");
-    }
-
-    @Override
-    public void arrayEnd() {
-        log.info("GioWriter: arrayEnd()");
-    }
-
-    @Override
-    public void arrayStart() {
-        log.info("GioWriter: arrayStart()");
     }
 
     @Override
@@ -154,8 +130,38 @@ public class LoggingGioWriter implements GioWriter {
     }
 
     @Override
-    public void stringStart() throws JsonException {
-        log.info("GioWriter: stringStart()");
+    public void onString(String s) {
+        log.info("GioWriter: onString(" + s + ")");
+    }
+
+    @Override
+    public void startDocument(GioDocument document) throws IOException {
+        log.info("GioWriter: startDocument(GioDocument " + document + ")");
+    }
+
+    @Override
+    public void startEdge(GioEdge edge) throws IOException {
+        log.info("GioWriter: startEdge(GioEdge " + edge + ")");
+    }
+
+    @Override
+    public void startGraph(GioGraph gioGraph) throws IOException {
+        log.info("GioWriter: startGraph(GioGraph " + gioGraph + ")");
+    }
+
+    @Override
+    public void startNode(GioNode node) throws IOException {
+        log.info("GioWriter: startNode(GioNode " + node + ")");
+    }
+
+    @Override
+    public void startPort(GioPort port) throws IOException {
+        log.info("GioWriter: startPort(GioPort " + port + ")");
+    }
+
+    @Override
+    public void stringCharacters(String s) throws JsonException {
+        log.info("GioWriter: stringCharacters(" + s + ")");
     }
 
     @Override
@@ -165,18 +171,13 @@ public class LoggingGioWriter implements GioWriter {
     }
 
     @Override
-    public void stringCharacters(String s) throws JsonException {
-        log.info("GioWriter: stringCharacters(" + s + ")");
+    public void stringStart() throws JsonException {
+        log.info("GioWriter: stringStart()");
     }
 
     @Override
     public void whitespaceCharacters(String s) throws JsonException {
         log.info("GioWriter: whitespaceCharacters(" + s + ")");
-    }
-
-    @Override
-    public void onString(String s) {
-        log.info("GioWriter: onString(" + s + ")");
     }
 
 }

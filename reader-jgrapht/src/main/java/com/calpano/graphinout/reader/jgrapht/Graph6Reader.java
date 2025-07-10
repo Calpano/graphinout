@@ -33,4 +33,5 @@ public class Graph6Reader implements GioReader {
         JGraphTReader<Integer> jGraphTReader = new JGraphTReader<>(inputSource, Graph6Sparse6EventDrivenImporter::new, writer, errorHandler, Object::toString);
         jGraphTReader.read();
     }
+
 }

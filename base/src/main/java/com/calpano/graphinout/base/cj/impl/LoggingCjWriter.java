@@ -23,6 +23,7 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     public enum CjEvent {
         EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, JsonEnd, JsonStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, Directed, EdgeType, NodeId, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Value
     }
+
     private static final Logger log = getLogger(LoggingCjWriter.class);
     private final StringBuilder bufJson = new StringBuilder();
     private final StringBuilder bufCj = new StringBuilder();
@@ -65,6 +66,11 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     }
 
     @Override
+    public void edgeDefault(String edgedefault) {
+        onCj(CjEvent.EdgeDefault, edgedefault);
+    }
+
+    @Override
     public void edgeEnd() {
         onCj(CjEvent.EdgeEnd, null);
     }
@@ -77,11 +83,6 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     @Override
     public void edgeType(CjEdgeType edgeType) {
         onCj(CjEvent.EdgeType, edgeType);
-    }
-
-    @Override
-    public void edgeDefault(String edgedefault) {
-        onCj(CjEvent.EdgeDefault, edgedefault);
     }
 
     @Override
@@ -132,16 +133,6 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     }
 
     @Override
-    public void language(String lang) {
-        onCj(CjEvent.Language, lang);
-    }
-
-    @Override
-    public void labelStart() {
-        onCj(CjEvent.LabelStart, null);
-    }
-
-    @Override
     public void labelEntryEnd() {
         onCj(CjEvent.LabelEntryStart, null);
     }
@@ -152,8 +143,13 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     }
 
     @Override
-    public void value(String value) {
-        onCj(CjEvent.Value, value);
+    public void labelStart() {
+        onCj(CjEvent.LabelStart, null);
+    }
+
+    @Override
+    public void language(String lang) {
+        onCj(CjEvent.Language, lang);
     }
 
     /** no newlines */
@@ -278,6 +274,11 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     @Override
     public void portStart() {
         onCj(CjEvent.PortStart, null);
+    }
+
+    @Override
+    public void value(String value) {
+        onCj(CjEvent.Value, value);
     }
 
 }

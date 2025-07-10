@@ -8,11 +8,27 @@ import java.util.Objects;
 
 /**
  * @author rbaba
-
+ * <p>
  * Provides human-readable descriptions for the GraphML element containing this &lt;desc&gt; as its first child.
- * Occurence: &lt;key&gt;, &lt;graphml&gt;, &lt;graph&gt;, &lt;node&gt;, &lt;port&gt;, &lt;edge&gt;, &lt;hyperedge&gt;, and &lt;endpoint&gt;.
+ * Occurence: &lt;key&gt;, &lt;graphml&gt;, &lt;graph&gt;, &lt;node&gt;, &lt;port&gt;, &lt;edge&gt;, &lt;hyperedge&gt;,
+ * and &lt;endpoint&gt;.
  */
 public class GraphmlDescription implements XMLValue {
+
+    public static class GraphmlDescriptionBuilder {
+
+        private String value;
+
+        public GraphmlDescription build() {
+            return new GraphmlDescription(value);
+        }
+
+        public GraphmlDescriptionBuilder value(String value) {
+            this.value = value;
+            return this;
+        }
+
+    }
     private String value;
 
     // Constructors
@@ -28,28 +44,6 @@ public class GraphmlDescription implements XMLValue {
         return new GraphmlDescriptionBuilder();
     }
 
-    public static class GraphmlDescriptionBuilder {
-        private String value;
-
-        public GraphmlDescriptionBuilder value(String value) {
-            this.value = value;
-            return this;
-        }
-
-        public GraphmlDescription build() {
-            return new GraphmlDescription(value);
-        }
-    }
-
-    // Getters and Setters
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
     // equals, hashCode, toString
     @Override
     public boolean equals(Object o) {
@@ -60,28 +54,37 @@ public class GraphmlDescription implements XMLValue {
     }
 
     @Override
+    public LinkedHashMap<String, String> getAttributes() {
+        return null;
+    }
+
+    // Getters and Setters
+    public String getValue() {
+        return value;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(value);
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override
     public String toString() {
         return "GraphmlDescription{" +
-               "value='" + value + '\'' +
-               '}';
+                "value='" + value + '\'' +
+                '}';
     }
 
     public void writeXml(XmlWriter xmlWriter) throws IOException {
-        if(value==null)
+        if (value == null)
             return;
         xmlWriter.startElement("desc");
         xmlWriter.characterData(value);
         xmlWriter.endElement("desc");
-    }
-
-    @Override
-    public LinkedHashMap<String, String> getAttributes() {
-        return null;
     }
 
 }

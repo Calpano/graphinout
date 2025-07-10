@@ -4,10 +4,15 @@ import com.calpano.graphinout.base.gio.GioElementWithDescription;
 import com.calpano.graphinout.base.gio.GioNode;
 
 public class GioNodeEntity extends AbstractGraphmlEntity<GioNode> implements GraphmlEntity<GioNode> {
+
     private final GioNode gioNode;
 
     public GioNodeEntity(GioNode gioNode) {
         this.gioNode = gioNode;
+    }
+
+    public void addCharacters(String characters) {
+        allowOnlyWhitespace(characters);
     }
 
     @Override
@@ -28,11 +33,6 @@ public class GioNodeEntity extends AbstractGraphmlEntity<GioNode> implements Gra
     public String getName() {
         return GraphmlElement.NODE;
     }
-
-    public void addCharacters(String characters) {
-        allowOnlyWhitespace(characters);
-    }
-
 
 
 }

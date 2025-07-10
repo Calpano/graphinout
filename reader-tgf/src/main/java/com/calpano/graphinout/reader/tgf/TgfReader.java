@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class TgfReader implements GioReader {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TgfReader.class);
     private static final String DELIMITER = " ";
     private static final String HASH = "#";
@@ -57,6 +58,48 @@ public class TgfReader implements GioReader {
         }
         try (Scanner scanner = new Scanner(content)) {
             processFileContent(scanner, writer);
+        }
+    }
+
+    private void ensureNodesExist(final String[] edgeParts, final GioWriter writer, final Set<String> nodesCreatedSet) throws IOException {
+        for (String nodeId : Arrays.asList(edgeParts[0], edgeParts[1])) {
+            if (!nodesCreatedSet.contains(nodeId)) {
+                LOGGER.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + ". Required nodes have been created.");
+                writer.startNode(GioNode.builder().id(nodeId).build());
+                writer.endNode(null);
+                nodesCreatedSet.add(nodeId);
+            }
+        }
+    }
+
+    private void handleWarnings(final boolean edges, final boolean nodes) {
+        if (!edges) {
+            if (!nodes) {
+                if (errorHandler != null) {
+                    errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "No nodes found in file", null));
+                }
+            } else {
+                LOGGER.warn("No edges found in the file.");
+            }
+        }
+    }
+
+    private void processEdge(final String line, final GioWriter writer, final Set<String> nodesCreatedSet) throws IOException {
+        LOGGER.info("--- edges:");
+        String[] edgeParts = line.split(DELIMITER, 3);
+        GioEndpoint sourceEndpoint = GioEndpoint.builder().node(edgeParts[0]).build();
+        GioEndpoint targetEndpoint = GioEndpoint.builder().node(edgeParts[1]).build();
+
+        List<GioEndpoint> endpointList = Arrays.asList(sourceEndpoint, targetEndpoint);
+
+        if (edgeParts.length == 2 || edgeParts.length == 3) {
+            ensureNodesExist(edgeParts, writer, nodesCreatedSet);
+            GioEdge gioEdge = GioEdge.builder().endpoints(endpointList).build();
+            if (edgeParts.length == 3) {
+                GioData.builder().value(edgeParts[2]).build();
+            }
+            writer.startEdge(gioEdge);
+            writer.endEdge();
         }
     }
 
@@ -100,46 +143,5 @@ public class TgfReader implements GioReader {
         }
     }
 
-    private void processEdge(final String line, final GioWriter writer, final Set<String> nodesCreatedSet) throws IOException {
-        LOGGER.info("--- edges:");
-        String[] edgeParts = line.split(DELIMITER, 3);
-        GioEndpoint sourceEndpoint = GioEndpoint.builder().node(edgeParts[0]).build();
-        GioEndpoint targetEndpoint = GioEndpoint.builder().node(edgeParts[1]).build();
-
-        List<GioEndpoint> endpointList = Arrays.asList(sourceEndpoint, targetEndpoint);
-
-        if (edgeParts.length == 2 || edgeParts.length == 3) {
-            ensureNodesExist(edgeParts, writer, nodesCreatedSet);
-            GioEdge gioEdge = GioEdge.builder().endpoints(endpointList).build();
-            if (edgeParts.length == 3) {
-                GioData.builder().value(edgeParts[2]).build();
-            }
-            writer.startEdge(gioEdge);
-            writer.endEdge();
-        }
-    }
-
-    private void ensureNodesExist(final String[] edgeParts, final GioWriter writer, final Set<String> nodesCreatedSet) throws IOException {
-        for (String nodeId : Arrays.asList(edgeParts[0], edgeParts[1])) {
-            if (!nodesCreatedSet.contains(nodeId)) {
-                LOGGER.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + ". Required nodes have been created.");
-                writer.startNode(GioNode.builder().id(nodeId).build());
-                writer.endNode(null);
-                nodesCreatedSet.add(nodeId);
-            }
-        }
-    }
-
-    private void handleWarnings(final boolean edges, final boolean nodes) {
-        if (!edges) {
-            if (!nodes) {
-                if (errorHandler != null) {
-                    errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "No nodes found in file", null));
-                }
-            } else {
-                LOGGER.warn("No edges found in the file.");
-            }
-        }
-    }
 }
 

@@ -82,6 +82,11 @@ public class Cj2Gio implements CjWriter {
     }
 
     @Override
+    public void edgeDefault(String edgedefault) {
+
+    }
+
+    @Override
     public void edgeEnd() {
         try {
             gio.endEdge();
@@ -96,11 +101,6 @@ public class Cj2Gio implements CjWriter {
 
     @Override
     public void edgeType(CjEdgeType edgeType) {
-
-    }
-
-    @Override
-    public void edgeDefault(String edgedefault) {
 
     }
 

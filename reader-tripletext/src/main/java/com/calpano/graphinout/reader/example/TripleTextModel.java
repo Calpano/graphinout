@@ -6,19 +6,21 @@ import java.util.Map;
 public class TripleTextModel {
 
     public static class Node {
+
         final String id;
         String label;
 
         public Node(String id) {
             this.id = id;
         }
+
     }
 
 
     private final TripleIndex<Node, String, String> index = new TripleIndex<>();
     private final Map<String, Node> nodes = new HashMap<>();
 
-    public void forEachTriple(ITripleHandler<Node,String,String> handler) {
+    public void forEachTriple(ITripleHandler<Node, String, String> handler) {
         index.forEach(handler);
     }
 
@@ -38,4 +40,5 @@ public class TripleTextModel {
     public Iterable<Node> nodes() {
         return nodes.values();
     }
+
 }

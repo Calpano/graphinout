@@ -40,6 +40,7 @@ TIP: When any one of these children is observed, the start-element is complete.
 - default
 
 == Parsing
+
 The incoming XML stream needs to be mapped to calls on _GioWriter_.
 
 [%header,cols="2,4"]

@@ -16,6 +16,10 @@ public class GioDocument extends GioExtensibleElement {
     @JsonProperty("edges")
     private final List<GioEdge> edges = new ArrayList<>();
 
+    public List<GioEdge> getEdges() {
+        return edges;
+    }
+
     public List<GioGraph> getGraphs() {
         return graphs;
     }
@@ -24,8 +28,8 @@ public class GioDocument extends GioExtensibleElement {
         return nodes;
     }
 
-    public List<GioEdge> getEdges() {
-        return edges;
+    void setEdges(List<GioEdge> edges) {
+        this.edges.addAll(edges);
     }
 
     void setGraph(List<GioGraph> graphs) {
@@ -38,10 +42,6 @@ public class GioDocument extends GioExtensibleElement {
 
     void setNodes(List<GioNode> nodes) {
         this.nodes.addAll(nodes);
-    }
-
-    void setEdges(List<GioEdge> edges) {
-        this.edges.addAll(edges);
     }
 
 

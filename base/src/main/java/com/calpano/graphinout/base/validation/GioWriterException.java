@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.validation;
 
-public abstract class GioWriterException extends IllegalStateException{
+public abstract class GioWriterException extends IllegalStateException {
 
     public final ValidatingGioWriter.CurrentElement offendingElement;
     public final ValidatingGioWriter.CurrentElement lastStartedElement;
@@ -10,4 +10,5 @@ public abstract class GioWriterException extends IllegalStateException{
         this.offendingElement = offendingElement;
         this.lastStartedElement = lastStartedElement;
     }
+
 }

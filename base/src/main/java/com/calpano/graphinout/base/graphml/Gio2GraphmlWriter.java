@@ -30,6 +30,11 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
     }
 
     @Override
+    public void baseUri(String baseUri) throws IOException {
+        this.baseuri = baseUri;
+    }
+
+    @Override
     public void data(GioData gioData) throws IOException {
         GraphmlData graphmlData = GraphmlData.builder().key(gioData.getKey()).value(gioData.getValue()).build();
         gioData.id().ifPresent(graphmlData::setId);
@@ -183,11 +188,6 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
 
     private GraphmlLocator locator(@Nullable URL url) {
         return url == null ? null : GraphmlLocator.builder().xLinkHref(url).build();
-    }
-
-    @Override
-    public void baseUri(String baseUri) throws IOException {
-        this.baseuri = baseUri;
     }
 
 }

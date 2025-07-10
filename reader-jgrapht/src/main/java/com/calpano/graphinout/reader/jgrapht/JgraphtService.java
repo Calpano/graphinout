@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class JgraphtService implements GioService {
+
     @Override
     public String id() {
         return "reader-jgrapht";
@@ -17,4 +18,5 @@ public class JgraphtService implements GioService {
     public List<GioReader> readers() {
         return Arrays.asList(new Graph6Reader(), new DotReader());
     }
+
 }

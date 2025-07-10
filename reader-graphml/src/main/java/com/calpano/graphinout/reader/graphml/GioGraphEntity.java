@@ -11,14 +11,8 @@ public class GioGraphEntity extends AbstractGraphmlEntity<GioGraph> implements G
         this.gioGraph = gioGraph;
     }
 
-    @Override
-    public GioGraph getEntity() {
-        return gioGraph;
-    }
-
-    @Override
-    public String getName() {
-        return GraphmlElement.GRAPH;
+    public void addCharacters(String characters) {
+        allowOnlyWhitespace(characters);
     }
 
     @Override
@@ -30,10 +24,15 @@ public class GioGraphEntity extends AbstractGraphmlEntity<GioGraph> implements G
         }
     }
 
-    public void addCharacters(String characters) {
-        allowOnlyWhitespace(characters);
+    @Override
+    public GioGraph getEntity() {
+        return gioGraph;
     }
 
+    @Override
+    public String getName() {
+        return GraphmlElement.GRAPH;
+    }
 
 
 }

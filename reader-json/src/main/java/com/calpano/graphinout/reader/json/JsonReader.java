@@ -15,12 +15,14 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 public class JsonReader implements GioReader {
+
     public static final String DATA = "data";
     public static final String MAPPING = "mapping";
     private @Nullable Consumer<ContentError> errorHandler;
+
     @Override
     public void errorHandler(Consumer<ContentError> errorHandler) {
-        this.errorHandler=errorHandler;
+        this.errorHandler = errorHandler;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class JsonReader implements GioReader {
 
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
-        if(inputSource.isMulti()) {
+        if (inputSource.isMulti()) {
             MultiInputSource multiInputSource = (MultiInputSource) inputSource;
             SingleInputSource dataSource = multiInputSource.getNamedSource(DATA);
             SingleInputSource mappingSource = multiInputSource.getNamedSource(MAPPING);
@@ -41,4 +43,5 @@ public class JsonReader implements GioReader {
             throw new IOException("JsonReader expects a multi-input for data and mapping");
         }
     }
+
 }

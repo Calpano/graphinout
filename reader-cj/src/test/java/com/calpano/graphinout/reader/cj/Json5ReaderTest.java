@@ -60,19 +60,41 @@ class Json5ReaderTest {
     }
 
     @Test
+    void shouldParseExampleConnectedJson5File() throws IOException {
+        URL resourceUrl = ClassLoader.getSystemResource("example.connected.json5");
+        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
+        SingleInputSource singleInputSource = SingleInputSource.of("example.connected.json5", content);
+
+        underTest.errorHandler(errorConsumer);
+        underTest.read(singleInputSource, mockGioWriter);
+
+        InOrder inOrder = Mockito.inOrder(mockGioWriter);
+        inOrder.verify(mockGioWriter).startDocument(any(GioDocument.class));
+        inOrder.verify(mockGioWriter).startGraph(any(GioGraph.class));
+
+        // Should create multiple nodes and edges based on the example file
+        // We don't verify exact counts here, just that the structure is correct
+        inOrder.verify(mockGioWriter).endGraph(Mockito.any());
+        inOrder.verify(mockGioWriter).endDocument();
+
+        // Verify no errors were captured
+        assert capturedErrors.isEmpty();
+    }
+
+    @Test
     void shouldParseJson5WithComments() throws IOException {
         String json5Content = """
-            {
-              "nodes": [
-                { "id": "a" },
-                { "id": "b" }
-              ],
-              // This is a comment
-              "edges": [
-                { "source": "a", "target": "b" }
-              ]
-            }
-            """;
+                {
+                  "nodes": [
+                    { "id": "a" },
+                    { "id": "b" }
+                  ],
+                  // This is a comment
+                  "edges": [
+                    { "source": "a", "target": "b" }
+                  ]
+                }
+                """;
 
         SingleInputSource inputSource = SingleInputSource.of("test-json5", json5Content);
 
@@ -101,32 +123,11 @@ class Json5ReaderTest {
     }
 
     @Test
-    void shouldParseExampleConnectedJson5File() throws IOException {
-        URL resourceUrl = ClassLoader.getSystemResource("example.connected.json5");
-        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-        SingleInputSource singleInputSource = SingleInputSource.of("example.connected.json5", content);
-
-        underTest.errorHandler(errorConsumer);
-        underTest.read(singleInputSource, mockGioWriter);
-
-        InOrder inOrder = Mockito.inOrder(mockGioWriter);
-        inOrder.verify(mockGioWriter).startDocument(any(GioDocument.class));
-        inOrder.verify(mockGioWriter).startGraph(any(GioGraph.class));
-
-        // Should create multiple nodes and edges based on the example file
-        // We don't verify exact counts here, just that the structure is correct
-        inOrder.verify(mockGioWriter).endGraph(Mockito.any());
-        inOrder.verify(mockGioWriter).endDocument();
-
-        // Verify no errors were captured
-        assert capturedErrors.isEmpty();
-    }
-
-    @Test
     void shouldReturnCorrectFileFormat() {
         var fileFormat = underTest.fileFormat();
         assert fileFormat.id().equals("json5");
         assert fileFormat.label().equals("Connected JSON5 Format");
         assert fileFormat.fileExtensions().contains(".json5");
     }
+
 }

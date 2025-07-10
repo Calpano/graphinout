@@ -8,6 +8,7 @@ import java.io.IOException;
 class ByteArrayInputSourceTest {
 
     static class ByteArrayInputSourceSpy extends ByteArrayInputSource {
+
         boolean isClosed = false;
 
         public ByteArrayInputSourceSpy(String name, byte[] bytes) {
@@ -20,6 +21,7 @@ class ByteArrayInputSourceTest {
             super.close();
             isClosed = true;
         }
+
     }
 
     @Test
@@ -32,4 +34,5 @@ class ByteArrayInputSourceTest {
         }
         Assertions.assertTrue(byteArrayInputSourceSpy2.isClosed);
     }
+
 }

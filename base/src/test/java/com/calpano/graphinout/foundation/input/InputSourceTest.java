@@ -9,6 +9,7 @@ class InputSourceTest {
 
 
     static class InputSourceSpy implements InputSource {
+
         boolean isClosed = false;
 
         public InputSourceSpy() {
@@ -29,6 +30,7 @@ class InputSourceTest {
         public String name() {
             return null;
         }
+
     }
 
     @Test
@@ -40,4 +42,5 @@ class InputSourceTest {
         }
         assertTrue(inputSourceSpy2.isClosed);
     }
+
 }

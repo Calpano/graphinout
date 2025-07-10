@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.validation;
 
-public abstract class GraphmlWriterException extends IllegalStateException{
+public abstract class GraphmlWriterException extends IllegalStateException {
 
     public final ValidatingGraphMlWriter.CurrentElement offendingElement;
     public final ValidatingGraphMlWriter.CurrentElement lastStartedElement;
@@ -10,4 +10,5 @@ public abstract class GraphmlWriterException extends IllegalStateException{
         this.offendingElement = offendingElement;
         this.lastStartedElement = lastStartedElement;
     }
+
 }

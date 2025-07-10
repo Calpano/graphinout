@@ -14,4 +14,5 @@ public class JgtAttribute {
         this.attributeType = attributeType;
         this.attributeValue = attributeValue;
     }
+
 }
