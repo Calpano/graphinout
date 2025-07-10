@@ -20,7 +20,6 @@
         <module>reader-jgrapht</module>
         <module>reader-adjlist</module>
         <module>engine</module>
-        <module>reader-json</module>
     </modules>
 
     <properties>
