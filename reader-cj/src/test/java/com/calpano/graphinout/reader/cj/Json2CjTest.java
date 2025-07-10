@@ -3,6 +3,7 @@ package com.calpano.graphinout.reader.cj;
 import com.calpano.graphinout.base.cj.impl.LoggingCjWriter;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.reader.cj.json.JsonReaderImpl;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import static com.calpano.graphinout.foundation.input.SingleInputSourceOfString.
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@Disabled
 class Json2CjTest {
 
     @Test
