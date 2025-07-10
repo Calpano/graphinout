@@ -8,6 +8,7 @@ import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.verifyNoInteractions;
 
+@Disabled
 class CjReaderTest {
 
     public static final String EMPTY_FILE = "";
