@@ -19,13 +19,17 @@ public interface GioWriter extends JsonElementWriter {
     void data(GioData data) throws IOException;
 
     /** can be called multiple times per data string */
-    default void dataCharacters(String data) {}
+    default void rawDataCharacters(String data) {}
 
     /** end a JSON-value like raw data object */
-    default void dataEnd() {}
+    default void startRawData() {}
 
     /** start a JSON-value like raw data object */
-    default void dataStart() {}
+    default void endRawData() {}
+
+    default void startJsonData() {}
+
+    default void endJsonData() {}
 
     void endDocument() throws IOException;
 
