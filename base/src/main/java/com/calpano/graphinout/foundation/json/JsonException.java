@@ -1,5 +1,8 @@
 package com.calpano.graphinout.foundation.json;
 
+/**
+ * Includes wrapped IOExceptions
+ */
 public class JsonException extends RuntimeException {
 
     public JsonException(final String message) {

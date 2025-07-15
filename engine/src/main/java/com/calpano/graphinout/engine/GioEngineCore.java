@@ -112,6 +112,7 @@ public class GioEngineCore {
     }
 
     private GioWriter createGioWriter(OutputStream resultOut) {
+        // FIXME create depending on desired output format
         return new Gio2GraphmlWriter(
                 new GraphmlWriterImpl(
                         new XmlWriterImpl(
