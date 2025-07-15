@@ -124,6 +124,10 @@ public enum CjType {
         return false;
     }
 
+    public boolean isArray() {
+        return jsonTypes.length == 1 && hasJsonType(JsonType.Array);
+    }
+
     private void item(CjType... itemTypes) {
         if (jsonTypes.length != 1 || jsonTypes[0] != JsonType.Array) {
             throw new IllegalArgumentException("Can only define items for array types.");
