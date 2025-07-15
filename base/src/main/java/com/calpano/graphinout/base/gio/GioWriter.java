@@ -1,5 +1,6 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.reader.Locator;
 import com.calpano.graphinout.foundation.json.JsonElementWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
@@ -35,6 +36,10 @@ public interface GioWriter extends JsonElementWriter {
 
     @Deprecated
     void key(GioKey gioKey) throws IOException;
+
+    default void listEnd(CjType cjType) {}
+
+    default void listStart(CjType cjType) {}
 
     @Deprecated
     default void onString(String s) throws JsonException {

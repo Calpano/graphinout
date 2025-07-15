@@ -4,6 +4,7 @@ import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjEdgeType;
 import com.calpano.graphinout.base.cj.CjException;
 import com.calpano.graphinout.base.cj.CjLabel;
+import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.gio.GioData;
 import com.calpano.graphinout.base.gio.GioDataType;
@@ -29,6 +30,7 @@ public class Cj2Gio implements CjWriter {
     }
 
     final GioWriter gio;
+    // FIXME remove this one
     private final StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter(false);
     private final Stack<Object> stack = new Stack<>();
 
@@ -180,6 +182,16 @@ public class Cj2Gio implements CjWriter {
     @Override
     public void language(String lang) {
 
+    }
+
+    @Override
+    public void listEnd(CjType cjType) {
+        gio.listEnd(cjType);
+    }
+
+    @Override
+    public void listStart(CjType cjType) {
+        gio.listStart(cjType);
     }
 
     @Override

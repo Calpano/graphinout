@@ -171,4 +171,7 @@ public interface CjWriter extends JsonWriter {
 
     void value(String value);
 
+    void listStart(CjType cjType);
+    void listEnd(CjType cjType);
+
 }

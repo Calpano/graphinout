@@ -96,6 +96,7 @@ public class Json2CjWriter implements JsonWriter {
         if (parseStack.isInJson()) {
             cjWriter.arrayEnd();
         }
+        cjWriter.listEnd(parseStack.peekCjType());
         parseStack.containerEnd();
     }
 
@@ -111,6 +112,7 @@ public class Json2CjWriter implements JsonWriter {
             }
             CjType cjType = Util.findExactlyOne(expected, (CjType type) -> type.hasJsonType(JsonType.Array));
             parseStack.push(cjType);
+            cjWriter.listStart(cjType);
         }
     }
 

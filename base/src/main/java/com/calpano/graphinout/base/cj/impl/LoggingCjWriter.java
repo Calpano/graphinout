@@ -3,6 +3,7 @@ package com.calpano.graphinout.base.cj.impl;
 import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjEdgeType;
 import com.calpano.graphinout.base.cj.CjException;
+import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.impl.LoggingJsonWriter;
@@ -279,6 +280,17 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     @Override
     public void value(String value) {
         onCj(CjEvent.Value, value);
+    }
+
+    @Override
+    public void listStart(CjType cjType) {
+        onCj(CjEvent.valueOf(cjType.name() + "Start"), null);
+    }
+
+    @Override
+    public void listEnd(CjType cjType) {
+        onCj(CjEvent.valueOf(cjType.name() + "End"), null);
+
     }
 
 }
