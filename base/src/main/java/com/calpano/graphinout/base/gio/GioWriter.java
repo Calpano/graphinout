@@ -18,28 +18,20 @@ public interface GioWriter extends JsonElementWriter {
     @Deprecated
     void data(GioData data) throws IOException;
 
-    /** can be called multiple times per data string */
-    default void rawDataCharacters(String data) {}
-
-    /** end a JSON-value like raw data object */
-    default void startRawData() {}
-
-    /** start a JSON-value like raw data object */
-    default void endRawData() {}
-
-    default void startJsonData() {}
-
-    default void endJsonData() {}
-
     void endDocument() throws IOException;
 
     void endEdge() throws IOException;
 
     void endGraph(@Nullable URL locator) throws IOException;
 
+    default void endJsonData() {}
+
     void endNode(@Nullable URL locator) throws IOException;
 
     void endPort() throws IOException;
+
+    /** start a JSON-value like raw data object */
+    default void endRawData() {}
 
     @Deprecated
     void key(GioKey gioKey) throws IOException;
@@ -51,6 +43,9 @@ public interface GioWriter extends JsonElementWriter {
         stringEnd();
     }
 
+    /** can be called multiple times per data string */
+    default void rawDataCharacters(String data) {}
+
     /** Receive a {@link Locator}, that can be used to retrieve line:col information about the current parse location () */
     default void setLocator(Locator locator) {}
 
@@ -60,6 +55,8 @@ public interface GioWriter extends JsonElementWriter {
 
     void startGraph(GioGraph gioGraph) throws IOException;
 
+    default void startJsonData() {}
+
     /**
      * May contain #startGraph -- DTD is a bit unclear here whether 1 or multiple graphs are allowed. 1 seems more
      * plausible.
@@ -67,5 +64,9 @@ public interface GioWriter extends JsonElementWriter {
     void startNode(GioNode node) throws IOException;
 
     void startPort(GioPort port) throws IOException;
+
+    /** end a JSON-value like raw data object */
+    default void startRawData() {}
+
 
 }
