@@ -115,6 +115,12 @@ public interface JsonElementWriter {
      */
     void onNull() throws JsonException;
 
+    default void string(String s) {
+        stringStart();
+        stringCharacters(s);
+        stringEnd();
+    }
+
     /**
      * JSON String
      */
@@ -146,6 +152,5 @@ public interface JsonElementWriter {
      */
     @SuppressWarnings("JavadocDeclaration")
     void whitespaceCharacters(String s) throws JsonException;
-
 
 }
