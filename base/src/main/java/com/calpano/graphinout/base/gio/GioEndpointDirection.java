@@ -4,7 +4,7 @@ public enum GioEndpointDirection {
 
     In("in"), Out("out"), Undirected("undir");
 
-    private final String xmlValue;
+    public final String xmlValue;
 
     GioEndpointDirection(String xmlValue) {
         this.xmlValue = xmlValue;
