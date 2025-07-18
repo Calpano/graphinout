@@ -6,6 +6,8 @@ import com.calpano.graphinout.foundation.output.OutputSink;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
 
+import java.io.IOException;
+
 public class GioGraphInOutXMLConstants {
 
     public static final String START_LOG = "#####--------start-------";
@@ -27,7 +29,7 @@ public class GioGraphInOutXMLConstants {
         return new GraphmlWriterImpl(xmlWriter);
     }
 
-    public static GraphmlWriter of(OutputSink outputSink) {
+    public static GraphmlWriter of(OutputSink outputSink) throws IOException {
         return of(new XmlWriterImpl(outputSink));
     }
 

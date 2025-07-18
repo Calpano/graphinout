@@ -24,6 +24,10 @@ public class InMemoryOutputSink implements OutputSink {
         this.buffer = buffer;
     }
 
+    public static InMemoryOutputSink create() {
+        return new InMemoryOutputSink();
+    }
+
     @Override
     public void close() throws Exception {
         log.debug("Closed OutputSink  <InMemoryOutputSink> type <{}>.", buffer.getClass().getName());

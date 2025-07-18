@@ -61,7 +61,7 @@ public class Json5Preprocessor {
                             i++;
                         }
                         if (i < json5.length()) {
-                             sb.append('\n');
+                            sb.append('\n');
                         } else {
                             // end of string
                             continue;
@@ -79,13 +79,13 @@ public class Json5Preprocessor {
                     sb.append(c);
                 }
             } else if (c == '}') {
-                if (sb.length() > 0 && sb.charAt(sb.length() - 1) == ',') {
+                if (!sb.isEmpty() && sb.charAt(sb.length() - 1) == ',') {
                     sb.setCharAt(sb.length() - 1, c);
                 } else {
                     sb.append(c);
                 }
             } else if (c == ']') {
-                if (sb.length() > 0 && sb.charAt(sb.length() - 1) == ',') {
+                if (!sb.isEmpty() && sb.charAt(sb.length() - 1) == ',') {
                     sb.setCharAt(sb.length() - 1, c);
                 } else {
                     sb.append(c);
@@ -103,4 +103,5 @@ public class Json5Preprocessor {
 
         return result;
     }
+
 }

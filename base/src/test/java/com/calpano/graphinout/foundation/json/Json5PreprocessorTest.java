@@ -19,8 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-/** For each of the files in /test/resources/json, run Json5Preprocessor on it and verify that result is still valid JSON.
- * Also verify that all URLs in source file are still unchanged present. */
+/**
+ * For each of the files in /test/resources/json, run Json5Preprocessor on it and verify that result is still valid
+ * JSON. Also verify that all URLs in source file are still unchanged present.
+ */
 public class Json5PreprocessorTest {
 
     private static final Path resourceDir = Paths.get("src", "test", "resources", "json");
@@ -28,11 +30,6 @@ public class Json5PreprocessorTest {
 
     static Stream<Path> jsonFiles() throws IOException {
         return Files.walk(resourceDir).filter(p -> p.toString().endsWith(".json"));
-    }
-
-    private List<String> findUrls(String content) {
-        Matcher matcher = URL_PATTERN.matcher(content);
-        return matcher.results().map(mr -> mr.group(0)).collect(Collectors.toList());
     }
 
     @DisplayName("Test JSON5 Preprocessor on file")
@@ -59,19 +56,19 @@ public class Json5PreprocessorTest {
     }
 
     @Test
-    @DisplayName("Test removal of single-line comments")
-    void testSingleLineCommentRemoval() {
-        String json5 = "{ \"key\": \"value\" // this is a comment\n }";
-        String expectedJson = "{ \"key\": \"value\" \n }";
+    @DisplayName("Test removal of multi-line comments")
+    void testMultiLineCommentRemoval() {
+        String json5 = "{ \"key\": /* comment */ \"value\" }";
+        String expectedJson = "{ \"key\":  \"value\" }";
         String actualJson = Json5Preprocessor.toJson(json5);
         assertEquals(expectedJson.replaceAll("\\s", ""), actualJson.replaceAll("\\s", ""));
     }
 
     @Test
-    @DisplayName("Test removal of multi-line comments")
-    void testMultiLineCommentRemoval() {
-        String json5 = "{ \"key\": /* comment */ \"value\" }";
-        String expectedJson = "{ \"key\":  \"value\" }";
+    @DisplayName("Test removal of single-line comments")
+    void testSingleLineCommentRemoval() {
+        String json5 = "{ \"key\": \"value\" // this is a comment\n }";
+        String expectedJson = "{ \"key\": \"value\" \n }";
         String actualJson = Json5Preprocessor.toJson(json5);
         assertEquals(expectedJson.replaceAll("\\s", ""), actualJson.replaceAll("\\s", ""));
     }
@@ -86,12 +83,11 @@ public class Json5PreprocessorTest {
     }
 
     @Test
-    @DisplayName("Test quoting of unquoted keys")
-    void testUnquotedKeyQuoting() {
-        String json5 = "{ key: \"value\" }";
-        String expectedJson = "{ \"key\": \"value\" }";
-        String actualJson = Json5Preprocessor.toJson(json5);
-        assertEquals(expectedJson, actualJson);
+    @DisplayName("Test removal of trailing comma in array")
+    void testTrailingCommaInArray() {
+        String json5 = "[ \"one\", \"two\", ]";
+        String processed = Json5Preprocessor.toJson(json5);
+        assertFalse(processed.contains(",]"));
     }
 
     @Test
@@ -103,11 +99,12 @@ public class Json5PreprocessorTest {
     }
 
     @Test
-    @DisplayName("Test removal of trailing comma in array")
-    void testTrailingCommaInArray() {
-        String json5 = "[ \"one\", \"two\", ]";
-        String processed = Json5Preprocessor.toJson(json5);
-        assertFalse(processed.contains(",]"));
+    @DisplayName("Test quoting of unquoted keys")
+    void testUnquotedKeyQuoting() {
+        String json5 = "{ key: \"value\" }";
+        String expectedJson = "{ \"key\": \"value\" }";
+        String actualJson = Json5Preprocessor.toJson(json5);
+        assertEquals(expectedJson, actualJson);
     }
 
     @Test
@@ -117,6 +114,11 @@ public class Json5PreprocessorTest {
         String expectedJson = "{ \"url\": \"https://example.com/path\\with\\backslashes\" }";
         String actualJson = Json5Preprocessor.toJson(json5);
         assertEquals(expectedJson.replaceAll("\\s", ""), actualJson.replaceAll("\\s", ""));
+    }
+
+    private List<String> findUrls(String content) {
+        Matcher matcher = URL_PATTERN.matcher(content);
+        return matcher.results().map(mr -> mr.group(0)).collect(Collectors.toList());
     }
 
 }

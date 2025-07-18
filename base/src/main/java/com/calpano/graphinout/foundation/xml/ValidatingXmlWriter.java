@@ -22,6 +22,11 @@ public class ValidatingXmlWriter implements XmlWriter {
     }
 
     @Override
+    public void endCDATA() throws IOException {
+        sink.endCDATA();
+    }
+
+    @Override
     public void endDocument() throws IOException {
         sink.endDocument();
     }
@@ -38,6 +43,11 @@ public class ValidatingXmlWriter implements XmlWriter {
     @Override
     public void lineBreak() throws IOException {
         sink.lineBreak();
+    }
+
+    @Override
+    public void startCDATA() throws IOException {
+        sink.startCDATA();
     }
 
     @Override

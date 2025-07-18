@@ -23,14 +23,19 @@ public class XmlWriterImpl implements XmlWriter {
     protected transient Writer writer;
     private @Nullable String name = null;
     private @Nullable Map<String, String> attributes = null;
+    private boolean hasContent = false;
+    private java.util.Stack<String> openElements = new java.util.Stack<>();
 
-    public XmlWriterImpl(OutputSink outputSink) {
+    public XmlWriterImpl(OutputSink outputSink) throws IOException {
         this.outputSink = outputSink;
+        this.out = outputSink.outputStream();
+        this.writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
     }
 
     @Override
     public void characterData(String characterData) throws IOException {
         writeBufferMaybe();
+        hasContent = true;
         log.trace("characterData [{}]", characterData);
         writer.write(characterData);
     }
@@ -50,6 +55,7 @@ public class XmlWriterImpl implements XmlWriter {
     public void endElement(String name) throws IOException {
         log.trace("endElement [{}]", name);
         if (this.name != null) {
+            // No content was written, so self-close
             writer.write("<");
             writer.write(name);
             for (Map.Entry<String, String> entry : attributes.entrySet()) {
@@ -63,6 +69,8 @@ public class XmlWriterImpl implements XmlWriter {
             writer.write(name);
             writer.write(">");
         }
+        if (!openElements.isEmpty()) openElements.pop();
+        hasContent = !openElements.isEmpty();
     }
 
     @Override
@@ -80,9 +88,23 @@ public class XmlWriterImpl implements XmlWriter {
 
     @Override
     public void startElement(String name, Map<String, String> attributes) throws IOException {
-        log.trace("startElement [{}]", name);
         writeBufferMaybe();
         buffer(name, attributes);
+        hasContent = false;
+        openElements.push(name);
+        log.trace("startElement [{}]", name);
+    }
+
+    @Override
+    public void startCDATA() throws IOException {
+        writeBufferMaybe();
+        hasContent = true;
+        writer.write("<![CDATA[");
+    }
+
+    @Override
+    public void endCDATA() throws IOException {
+        writer.write("]]>" );
     }
 
     private void buffer(String name, Map<String, String> attributes) {
@@ -99,9 +121,9 @@ public class XmlWriterImpl implements XmlWriter {
             }
             writer.write('>');
             writer.flush();
+            this.name = null;
+            this.attributes = null;
         }
-        this.name = null;
-        this.attributes = null;
     }
 
 }

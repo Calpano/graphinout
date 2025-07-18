@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+    <graph id="id--graph1" edgedefault="directed">
+        <node id="id--graph1-node1"/>
+        <node id="id--graph1-node2"/>
+        <node id="id--graph1-node3"/>
+    </graph>
+
+</graphml>

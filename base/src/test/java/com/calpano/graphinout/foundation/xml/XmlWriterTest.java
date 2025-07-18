@@ -1,45 +1,22 @@
 package com.calpano.graphinout.foundation.xml;
 
 import com.calpano.graphinout.base.GioGraphInOutXMLConstants;
-import com.calpano.graphinout.foundation.output.OutputSink;
+import com.calpano.graphinout.foundation.output.FileOutputSink;
+import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.google.common.truth.Truth.assertThat;
+
 class XmlWriterTest {
 
-    class OutputSinkMock implements OutputSink {
-
-        private final File tmpFile;
-        private transient OutputStream out;
-        private transient Writer w;
-
-        public OutputSinkMock(File file) {
-            tmpFile = file;
-        }
-
-        @Override
-        public void close() throws Exception {
-            out.close();
-        }
-
-        @Override
-        public OutputStream outputStream() throws IOException {
-            if (out == null)
-                out = new FileOutputStream(tmpFile);
-            return out;
-        }
-
-    }
 
     private final static String FILE_NAME = "test_graph_output.xml";
 
@@ -53,6 +30,19 @@ class XmlWriterTest {
             }
         })).sequential().forEach(File::deleteOnExit);
 
+    }
+
+    @Test
+    void test() throws IOException {
+        InMemoryOutputSink sink = InMemoryOutputSink.create();
+        XmlWriterImpl xmlWriter = new XmlWriterImpl(sink);
+        xmlWriter.startDocument();
+        xmlWriter.startElement("test");
+        xmlWriter.characterData("test");
+        xmlWriter.endElement("test");
+        xmlWriter.endDocument();
+        String s = sink.getBufferAsUtf8String();
+        assertThat(s).isEqualTo("<test>test</test>\n");
     }
 
     @Test
@@ -78,7 +68,7 @@ class XmlWriterTest {
         testEdgeMap.put("kc", "10");
 
         File file = new File("./target/" + FILE_NAME);
-        XmlWriterImpl instance = new XmlWriterImpl(new OutputSinkMock(file));
+        XmlWriterImpl instance = new XmlWriterImpl(new FileOutputSink(file));
         instance.startDocument();
 
 

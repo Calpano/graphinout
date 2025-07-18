@@ -41,4 +41,14 @@ public class XmlWriterSpy implements XmlWriter {
         outPut.append("::startElement->").append(name).append("->").append(attributes);
     }
 
+    @Override
+    public void startCDATA() throws IOException {
+        outPut.append("::startCDATA");
+    }
+
+    @Override
+    public void endCDATA() throws IOException {
+        outPut.append("::endCDATA");
+    }
+
 }

@@ -73,7 +73,7 @@ public class GioEngineCore {
     /**
      * Read the input, transform to GraphML and write result to resultOut. All content errors are written to logOut.
      */
-    public void read(InputSource in, OutputStream resultOut, OutputStream logOut) {
+    public void read(InputSource in, OutputStream resultOut, OutputStream logOut) throws IOException {
         GioWriter gioWriter = createGioWriter(resultOut);
         List<GioReader> availableService;
         try {
@@ -111,7 +111,7 @@ public class GioEngineCore {
         // ....
     }
 
-    private GioWriter createGioWriter(OutputStream resultOut) {
+    private GioWriter createGioWriter(OutputStream resultOut) throws IOException {
         // FIXME create depending on desired output format
         return new Gio2GraphmlWriter(
                 new GraphmlWriterImpl(

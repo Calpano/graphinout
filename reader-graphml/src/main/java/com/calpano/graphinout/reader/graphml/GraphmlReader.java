@@ -6,6 +6,7 @@ import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
+import com.calpano.graphinout.foundation.xml.XmlFactory;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import io.github.classgraph.ResourceList;
@@ -118,13 +119,11 @@ public class GraphmlReader implements GioReader {
 
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
         try {
-            factory.setNamespaceAware(true);
             SAXParser saxParser;
             GraphmlSAXHandler saxHandler;
             try {
-                saxParser = factory.newSAXParser();
+                saxParser = XmlFactory.createSaxParser();
                 saxHandler = new GraphmlSAXHandler(writer, this.errorHandler);
             } catch (ParserConfigurationException e) {
                 throw new IOException(e);
@@ -209,12 +208,7 @@ public class GraphmlReader implements GioReader {
     }
 
     void validateWellFormed(SingleInputSource inputSource) throws ParserConfigurationException, SAXException, IOException {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        factory.setValidating(false);
-        factory.setNamespaceAware(true);
-
-        SAXParser parser = factory.newSAXParser();
-
+        SAXParser parser = XmlFactory.createSaxParser();
         XMLReader reader = parser.getXMLReader();
         reader.setErrorHandler(new SimpleErrorHandler(this.errorHandler));
         reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));

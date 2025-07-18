@@ -36,6 +36,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/** to be refactored into implementing XmlWriter instead */
+@Deprecated
 class GraphmlSAXHandler extends DefaultHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GraphmlSAXHandler.class);

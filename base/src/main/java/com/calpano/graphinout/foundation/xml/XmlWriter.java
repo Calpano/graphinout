@@ -34,5 +34,7 @@ public interface XmlWriter {
 
     void startElement(String name, Map<String, String> attributes) throws IOException;
 
+    void startCDATA() throws IOException;
 
+    void endCDATA() throws IOException;
 }

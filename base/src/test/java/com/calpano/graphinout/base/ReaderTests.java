@@ -41,7 +41,7 @@ public class ReaderTests {
         return gioReader.fileFormat().fileExtensions().stream().anyMatch(resourcePath::endsWith);
     }
 
-    public static GioWriter createWriter(OutputSink outputSink, boolean validateXml, boolean validateGraphml, boolean validateGio) {
+    public static GioWriter createWriter(OutputSink outputSink, boolean validateXml, boolean validateGraphml, boolean validateGio) throws IOException {
         XmlWriter xmlWriter = new XmlWriterImpl(outputSink);
         if (validateXml) {
             xmlWriter = new ValidatingXmlWriter(xmlWriter);

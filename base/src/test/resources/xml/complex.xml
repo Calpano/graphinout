@@ -1,70 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<?xml-stylesheet type="text/xsl" href="complex.xsl"?>
-<!DOCTYPE company [
-    <!ELEMENT company (name, departments, locations)>
-    <!ELEMENT name (#PCDATA)>
-    <!ELEMENT departments (department+)>
-    <!ELEMENT department (name, employees)>
-    <!ELEMENT employees (employee*)>
-    <!ELEMENT employee (name, position, salary?, contact?)>
-    <!ELEMENT position (#PCDATA)>
-    <!ELEMENT salary (#PCDATA)>
-    <!ELEMENT contact (email?, phone?)>
-    <!ELEMENT email (#PCDATA)>
-    <!ELEMENT phone (#PCDATA)>
-    <!ELEMENT locations (location+)>
-    <!ELEMENT location (address, coordinates?)>
-    <!ELEMENT address (#PCDATA)>
-    <!ELEMENT coordinates EMPTY>
-    <!ATTLIST company
-        id ID #REQUIRED
-        founded CDATA #IMPLIED
-        industry CDATA #FIXED "Technology">
-    <!ATTLIST department
-        id ID #REQUIRED
-        budget CDATA #IMPLIED>
-    <!ATTLIST employee
-        id ID #REQUIRED
-        status (active|inactive|terminated) "active"
-        hire-date CDATA #IMPLIED>
-    <!ATTLIST coordinates
-        lat CDATA #REQUIRED
-        lon CDATA #REQUIRED>
-    <!ENTITY companyName "TechCorp Solutions">
-    <!ENTITY copyright "© 2025 TechCorp Solutions. All rights reserved.">
-    <!ENTITY nbsp "&#160;">
-    <!NOTATION jpeg PUBLIC "image/jpeg">
-    <!NOTATION png PUBLIC "image/png">
-]>
-<!-- This is a complex XML document demonstrating all XML features -->
-<company xmlns="http://example.com/company"
-         xmlns:hr="http://example.com/hr"
-         xmlns:fin="http://example.com/finance"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://example.com/company company.xsd"
-         id="comp001"
+<company id="comp001"
          founded="2010"
          industry="Technology">
-
-    <name>&companyName;</name>
 
     <departments>
         <department id="dept001" budget="500000">
             <name>Engineering</name>
             <employees>
                 <employee id="emp001" status="active" hire-date="2020-01-15">
-                    <name>John&nbsp;Doe</name>
                     <position>Senior Software Engineer</position>
-                    <hr:salary currency="USD">85000</hr:salary>
                     <contact>
                         <email>john.doe@techcorp.com</email>
                         <phone>+1-555-0123</phone>
                     </contact>
                 </employee>
                 <employee id="emp002" status="active" hire-date="2019-03-22">
-                    <name><![CDATA[Jane <Smith>]]></name>
                     <position>Lead Developer</position>
-                    <hr:salary currency="USD">95000</hr:salary>
                     <contact>
                         <email>jane.smith@techcorp.com</email>
                         <phone>+1-555-0124</phone>
@@ -84,7 +35,6 @@
                 <employee id="emp004" status="active" hire-date="2021-06-10">
                     <name>Alice Brown</name>
                     <position>Marketing Manager</position>
-                    <fin:salary currency="EUR">60000</fin:salary>
                     <contact>
                         <email>alice.brown@techcorp.com</email>
                     </contact>
@@ -106,7 +56,6 @@
 
     <!-- Mixed content example -->
     <description>
-        &companyName; is a <em>leading</em> technology company that specializes in
         <strong>software development</strong> and <code>cloud solutions</code>.
         Founded in 2010, we have grown to serve clients worldwide.
     </description>
@@ -114,12 +63,8 @@
     <!-- Processing instruction for application-specific data -->
     <?analytics track="company-data" version="2.1"?>
 
-    <!-- Legal notice using entity reference -->
-    <legal-notice>&copyright;</legal-notice>
-
     <!-- Self-closing element with attributes -->
     <metadata created="2025-07-18T10:30:00Z" version="1.0"/>
 
 </company>
-<!-- End of complex XML document -->
 
