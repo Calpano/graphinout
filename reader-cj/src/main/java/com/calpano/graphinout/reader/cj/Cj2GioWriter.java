@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Stack;
 
-public class Cj2Gio implements CjWriter {
+public class Cj2GioWriter implements CjWriter {
 
     static class CjNode {
 
@@ -34,7 +34,7 @@ public class Cj2Gio implements CjWriter {
     private final StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter(false);
     private final Stack<Object> stack = new Stack<>();
 
-    public Cj2Gio(GioWriter gio) {this.gio = gio;}
+    public Cj2GioWriter(GioWriter gio) {this.gio = gio;}
 
     @Override
     public void arrayEnd() throws JsonException {

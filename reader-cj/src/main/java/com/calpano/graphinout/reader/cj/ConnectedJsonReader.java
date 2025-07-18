@@ -33,7 +33,7 @@ public class ConnectedJsonReader implements GioReader {
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-        Cj2Gio cj2Gio = new Cj2Gio(writer);
+        Cj2GioWriter cj2Gio = new Cj2GioWriter(writer);
         Json2CjWriter json2Cj = new Json2CjWriter(cj2Gio);
         try {
             jsonReader.read(inputSource, json2Cj);
