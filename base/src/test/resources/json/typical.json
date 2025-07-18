@@ -1,0 +1,54 @@
+{
+  "bookstore": {
+    "name": "Downtown Books",
+    "location": {
+      "address": "123 Main Street",
+      "city": "San Francisco",
+      "state": "CA",
+      "zipCode": "94105"
+    },
+    "books": [
+      {
+        "id": 1,
+        "title": "The Great Gatsby",
+        "author": "F. Scott Fitzgerald",
+        "category": "fiction",
+        "year": 1925,
+        "price": 12.99,
+        "currency": "USD",
+        "inStock": true,
+        "description": "A classic American novel about the Jazz Age.",
+        "tags": ["classic", "american", "jazz age"]
+      },
+      {
+        "id": 2,
+        "title": "A Brief History of Time",
+        "author": "Stephen Hawking",
+        "category": "science",
+        "year": 1988,
+        "price": 15.99,
+        "currency": "USD",
+        "inStock": false,
+        "description": "An exploration of cosmology and physics.",
+        "tags": ["science", "physics", "cosmology"]
+      },
+      {
+        "id": 3,
+        "title": "Clean Code",
+        "author": "Robert C. Martin",
+        "category": "programming",
+        "year": 2008,
+        "price": 29.99,
+        "currency": "USD",
+        "inStock": true,
+        "description": "A handbook of agile software craftsmanship.",
+        "tags": ["programming", "software", "best practices"]
+      }
+    ],
+    "metadata": {
+      "totalBooks": 3,
+      "lastUpdated": "2025-07-18T10:30:00Z"
+    }
+  }
+}
+

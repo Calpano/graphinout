@@ -1,0 +1,525 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/company.json",
+  "title": "Complex Company Data Structure",
+  "description": "A comprehensive JSON document demonstrating all JSON features and common patterns",
+  "version": "2.1.0",
+  "company": {
+    "id": "comp001",
+    "name": "TechCorp Solutions",
+    "legalName": "TechCorp Solutions, Inc.",
+    "industry": "Technology",
+    "founded": "2010-01-15",
+    "status": "active",
+    "isPublic": true,
+    "employeeCount": 250,
+    "revenue": 50000000.75,
+    "marketCap": null,
+    "headquarters": {
+      "address": {
+        "street": "123 Tech Street",
+        "city": "San Francisco",
+        "state": "CA",
+        "zipCode": "94105",
+        "country": "USA"
+      },
+      "coordinates": {
+        "latitude": 37.7749,
+        "longitude": -122.4194
+      },
+      "timezone": "America/Los_Angeles"
+    },
+    "locations": [
+      {
+        "id": "loc001",
+        "type": "headquarters",
+        "address": {
+          "street": "123 Tech Street",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipCode": "94105",
+          "country": "USA"
+        },
+        "coordinates": {
+          "latitude": 37.7749,
+          "longitude": -122.4194
+        },
+        "established": "2010-01-15",
+        "active": true
+      },
+      {
+        "id": "loc002",
+        "type": "branch",
+        "address": {
+          "street": "456 Innovation Ave",
+          "city": "Austin",
+          "state": "TX",
+          "zipCode": "78701",
+          "country": "USA"
+        },
+        "coordinates": {
+          "latitude": 30.2672,
+          "longitude": -97.7431
+        },
+        "established": "2018-06-01",
+        "active": true
+      }
+    ],
+    "departments": [
+      {
+        "id": "dept001",
+        "name": "Engineering",
+        "budget": 500000,
+        "manager": {
+          "id": "emp001",
+          "name": "John Doe",
+          "email": "john.doe@techcorp.com"
+        },
+        "employees": [
+          {
+            "id": "emp001",
+            "personalInfo": {
+              "firstName": "John",
+              "lastName": "Doe",
+              "fullName": "John Doe",
+              "email": "john.doe@techcorp.com",
+              "phone": "+1-555-0123",
+              "dateOfBirth": "1985-03-15",
+              "age": 40
+            },
+            "employment": {
+              "position": "Senior Software Engineer",
+              "level": "Senior",
+              "department": "Engineering",
+              "hireDate": "2020-01-15",
+              "status": "active",
+              "employmentType": "full-time",
+              "remote": false
+            },
+            "compensation": {
+              "baseSalary": 85000,
+              "currency": "USD",
+              "bonus": 10000,
+              "equity": 0.01,
+              "benefits": [
+                "health insurance",
+                "dental insurance",
+                "401k",
+                "stock options"
+              ]
+            },
+            "skills": [
+              {
+                "name": "Java",
+                "level": "expert",
+                "yearsOfExperience": 8
+              },
+              {
+                "name": "Python",
+                "level": "advanced",
+                "yearsOfExperience": 5
+              },
+              {
+                "name": "JavaScript",
+                "level": "intermediate",
+                "yearsOfExperience": 3
+              }
+            ],
+            "performance": {
+              "lastReview": "2024-12-15",
+              "rating": 4.5,
+              "maxRating": 5,
+              "goals": [
+                "Lead architecture for new microservices",
+                "Mentor junior developers",
+                "Improve system performance by 20%"
+              ]
+            },
+            "emergencyContact": {
+              "name": "Jane Doe",
+              "relationship": "spouse",
+              "phone": "+1-555-0124"
+            }
+          },
+          {
+            "id": "emp002",
+            "personalInfo": {
+              "firstName": "Jane",
+              "lastName": "Smith",
+              "fullName": "Jane Smith",
+              "email": "jane.smith@techcorp.com",
+              "phone": "+1-555-0125",
+              "dateOfBirth": "1990-07-22",
+              "age": 34
+            },
+            "employment": {
+              "position": "Lead Developer",
+              "level": "Lead",
+              "department": "Engineering",
+              "hireDate": "2019-03-22",
+              "status": "active",
+              "employmentType": "full-time",
+              "remote": true
+            },
+            "compensation": {
+              "baseSalary": 95000,
+              "currency": "USD",
+              "bonus": 15000,
+              "equity": 0.015,
+              "benefits": [
+                "health insurance",
+                "dental insurance",
+                "401k",
+                "stock options",
+                "remote work stipend"
+              ]
+            },
+            "skills": [
+              {
+                "name": "React",
+                "level": "expert",
+                "yearsOfExperience": 6
+              },
+              {
+                "name": "Node.js",
+                "level": "expert",
+                "yearsOfExperience": 7
+              },
+              {
+                "name": "TypeScript",
+                "level": "advanced",
+                "yearsOfExperience": 4
+              }
+            ],
+            "performance": {
+              "lastReview": "2024-12-10",
+              "rating": 4.8,
+              "maxRating": 5,
+              "goals": [
+                "Establish frontend architecture standards",
+                "Lead cross-functional initiatives",
+                "Reduce technical debt by 30%"
+              ]
+            },
+            "emergencyContact": {
+              "name": "Robert Smith",
+              "relationship": "brother",
+              "phone": "+1-555-0126"
+            }
+          }
+        ]
+      },
+      {
+        "id": "dept002",
+        "name": "Marketing",
+        "budget": 300000,
+        "manager": {
+          "id": "emp003",
+          "name": "Alice Brown",
+          "email": "alice.brown@techcorp.com"
+        },
+        "employees": [
+          {
+            "id": "emp003",
+            "personalInfo": {
+              "firstName": "Alice",
+              "lastName": "Brown",
+              "fullName": "Alice Brown",
+              "email": "alice.brown@techcorp.com",
+              "phone": "+1-555-0127",
+              "dateOfBirth": "1988-11-05",
+              "age": 36
+            },
+            "employment": {
+              "position": "Marketing Manager",
+              "level": "Manager",
+              "department": "Marketing",
+              "hireDate": "2021-06-10",
+              "status": "active",
+              "employmentType": "full-time",
+              "remote": false
+            },
+            "compensation": {
+              "baseSalary": 75000,
+              "currency": "USD",
+              "bonus": 8000,
+              "equity": 0.005,
+              "benefits": [
+                "health insurance",
+                "dental insurance",
+                "401k"
+              ]
+            },
+            "skills": [
+              {
+                "name": "Digital Marketing",
+                "level": "expert",
+                "yearsOfExperience": 10
+              },
+              {
+                "name": "SEO",
+                "level": "advanced",
+                "yearsOfExperience": 8
+              },
+              {
+                "name": "Analytics",
+                "level": "intermediate",
+                "yearsOfExperience": 5
+              }
+            ],
+            "performance": {
+              "lastReview": "2024-11-30",
+              "rating": 4.2,
+              "maxRating": 5,
+              "goals": [
+                "Increase brand awareness by 25%",
+                "Launch new product campaign",
+                "Optimize conversion rates"
+              ]
+            },
+            "emergencyContact": {
+              "name": "Michael Brown",
+              "relationship": "spouse",
+              "phone": "+1-555-0128"
+            }
+          }
+        ]
+      }
+    ],
+    "products": [
+      {
+        "id": "prod001",
+        "name": "CloudFlow",
+        "category": "SaaS",
+        "description": "Enterprise workflow management platform",
+        "version": "3.2.1",
+        "status": "active",
+        "pricing": {
+          "model": "subscription",
+          "tiers": [
+            {
+              "name": "Starter",
+              "price": 29.99,
+              "currency": "USD",
+              "period": "month",
+              "features": [
+                "Up to 10 users",
+                "Basic workflows",
+                "Email support"
+              ]
+            },
+            {
+              "name": "Professional",
+              "price": 99.99,
+              "currency": "USD",
+              "period": "month",
+              "features": [
+                "Up to 100 users",
+                "Advanced workflows",
+                "Priority support",
+                "Analytics dashboard"
+              ]
+            },
+            {
+              "name": "Enterprise",
+              "price": 299.99,
+              "currency": "USD",
+              "period": "month",
+              "features": [
+                "Unlimited users",
+                "Custom workflows",
+                "24/7 support",
+                "Advanced analytics",
+                "API access"
+              ]
+            }
+          ]
+        },
+        "metrics": {
+          "activeUsers": 15000,
+          "monthlyRevenue": 450000,
+          "churnRate": 0.03,
+          "nps": 72
+        }
+      }
+    ],
+    "financials": {
+      "fiscalYear": 2024,
+      "currency": "USD",
+      "revenue": {
+        "total": 50000000.75,
+        "recurring": 45000000.5,
+        "oneTime": 5000000.25
+      },
+      "expenses": {
+        "total": 40000000,
+        "salaries": 25000000,
+        "benefits": 5000000,
+        "operations": 7000000,
+        "marketing": 3000000
+      },
+      "profit": {
+        "gross": 10000000.75,
+        "net": 8500000.5,
+        "margin": 0.17
+      },
+      "quarterly": [
+        {
+          "quarter": "Q1",
+          "revenue": 12000000,
+          "expenses": 9500000,
+          "profit": 2500000
+        },
+        {
+          "quarter": "Q2",
+          "revenue": 12500000.25,
+          "expenses": 10000000,
+          "profit": 2500000.25
+        },
+        {
+          "quarter": "Q3",
+          "revenue": 13000000.5,
+          "expenses": 10500000,
+          "profit": 2500000.5
+        },
+        {
+          "quarter": "Q4",
+          "revenue": 12500000,
+          "expenses": 10000000,
+          "profit": 2500000
+        }
+      ]
+    },
+    "technology": {
+      "stack": [
+        "Java",
+        "Spring Boot",
+        "React",
+        "Node.js",
+        "PostgreSQL",
+        "Redis",
+        "AWS",
+        "Docker",
+        "Kubernetes"
+      ],
+      "architecture": {
+        "type": "microservices",
+        "services": [
+          {
+            "name": "user-service",
+            "language": "Java",
+            "framework": "Spring Boot",
+            "database": "PostgreSQL",
+            "deployed": true
+          },
+          {
+            "name": "workflow-service",
+            "language": "Node.js",
+            "framework": "Express",
+            "database": "MongoDB",
+            "deployed": true
+          },
+          {
+            "name": "notification-service",
+            "language": "Python",
+            "framework": "FastAPI",
+            "database": "Redis",
+            "deployed": false
+          }
+        ]
+      },
+      "infrastructure": {
+        "cloud": "AWS",
+        "regions": [
+          "us-west-2",
+          "us-east-1",
+          "eu-west-1"
+        ],
+        "containerization": "Docker",
+        "orchestration": "Kubernetes",
+        "monitoring": [
+          "CloudWatch",
+          "Prometheus",
+          "Grafana"
+        ],
+        "cicd": "GitHub Actions"
+      }
+    },
+    "compliance": {
+      "certifications": [
+        "SOC 2 Type II",
+        "ISO 27001",
+        "GDPR Compliant"
+      ],
+      "dataRetention": {
+        "policy": "7 years",
+        "backups": "daily",
+        "encryption": "AES-256"
+      },
+      "auditLog": {
+        "enabled": true,
+        "retention": "3 years",
+        "format": "JSON"
+      }
+    },
+    "partnerships": [
+      {
+        "id": "partner001",
+        "name": "TechVendor Inc.",
+        "type": "technology",
+        "status": "active",
+        "startDate": "2022-01-01",
+        "contract": {
+          "value": 500000,
+          "currency": "USD",
+          "duration": "3 years",
+          "renewable": true
+        }
+      },
+      {
+        "id": "partner002",
+        "name": "Marketing Agency LLC",
+        "type": "service",
+        "status": "active",
+        "startDate": "2023-06-15",
+        "contract": {
+          "value": 200000,
+          "currency": "USD",
+          "duration": "2 years",
+          "renewable": false
+        }
+      }
+    ],
+    "contact": {
+      "website": "https://www.techcorp.com",
+      "email": "info@techcorp.com",
+      "phone": "+1-555-TECHCORP",
+      "socialMedia": {
+        "twitter": "@techcorp",
+        "linkedin": "company/techcorp",
+        "github": "techcorp"
+      }
+    }
+  },
+  "metadata": {
+    "version": "2.1.0",
+    "generatedAt": "2025-07-18T10:30:00.000Z",
+    "generatedBy": "CompanyDataExporter",
+    "dataIntegrity": {
+      "checksum": "sha256:a1b2c3d4e5f6789012345678901234567890abcdef",
+      "recordCount": 1,
+      "lastValidated": "2025-07-18T10:00:00.000Z"
+    },
+    "apiVersion": "v2",
+    "format": "JSON",
+    "encoding": "UTF-8",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "tags": [
+      "company-data",
+      "employee-records",
+      "financial-data",
+      "technology-stack"
+    ]
+  }
+}

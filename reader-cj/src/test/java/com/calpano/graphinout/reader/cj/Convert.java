@@ -1,6 +1,6 @@
 package com.calpano.graphinout.reader.cj;
 
-import com.calpano.graphinout.reader.cj.json.Json5Preprocessor;
+import com.calpano.graphinout.foundation.json.Json5Preprocessor;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

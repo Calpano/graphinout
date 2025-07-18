@@ -129,6 +129,7 @@ public abstract class AppendableJsonWriter implements JsonWriter {
         stack.clear();
     }
 
+    // IMPROVE is this a simplistic/wrong approach to escaping?
     @Override
     public void stringCharacters(String s) throws JsonException {
         append(s //

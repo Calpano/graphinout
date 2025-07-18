@@ -1,12 +1,14 @@
-package com.calpano.graphinout.reader.cj.json;
+package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
+import com.calpano.graphinout.foundation.json.Json5Preprocessor;
 import com.calpano.graphinout.foundation.json.JsonReader;
 import com.calpano.graphinout.foundation.json.JsonWriter;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.StreamReadFeature;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -17,6 +19,10 @@ import java.nio.charset.StandardCharsets;
 public class JsonReaderImpl implements JsonReader {
 
     private static final JsonFactory JSON_FACTORY = new JsonFactory();
+
+    static {
+        JSON_FACTORY.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature());
+    }
 
     @Override
     public void read(InputSource inputSource, JsonWriter stream) throws IOException {
@@ -60,7 +66,8 @@ public class JsonReaderImpl implements JsonReader {
             case VALUE_STRING:
                 stream.stringStart();
                 // IMPROVE: use streaming parser
-                stream.stringCharacters(parser.getValueAsString());
+                String valueAsString = parser.getValueAsString();
+                stream.stringCharacters(valueAsString);
                 stream.stringEnd();
                 break;
             case VALUE_NUMBER_INT:

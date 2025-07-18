@@ -2,7 +2,7 @@ package com.calpano.graphinout.reader.cj;
 
 import com.calpano.graphinout.base.cj.impl.LoggingCjWriter;
 import com.calpano.graphinout.foundation.input.InputSource;
-import com.calpano.graphinout.reader.cj.json.JsonReaderImpl;
+import com.calpano.graphinout.foundation.json.impl.JsonReaderImpl;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

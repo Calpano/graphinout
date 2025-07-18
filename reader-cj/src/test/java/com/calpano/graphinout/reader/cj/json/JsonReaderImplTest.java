@@ -1,6 +1,7 @@
 package com.calpano.graphinout.reader.cj.json;
 
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
+import com.calpano.graphinout.foundation.json.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

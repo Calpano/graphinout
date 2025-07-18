@@ -1,6 +1,7 @@
 package com.calpano.graphinout.reader.cj.json;
 
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
+import com.calpano.graphinout.foundation.json.Json5Preprocessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bookstore>
+    <book id="1" category="fiction">
+        <title>The Great Gatsby</title>
+        <author>F. Scott Fitzgerald</author>
+        <year>1925</year>
+        <price currency="USD">12.99</price>
+        <description>A classic American novel about the Jazz Age.</description>
+    </book>
+    <book id="2" category="science">
+        <title>A Brief History of Time</title>
+        <author>Stephen Hawking</author>
+        <year>1988</year>
+        <price currency="USD">15.99</price>
+        <description>An exploration of cosmology and physics.</description>
+    </book>
+    <book id="3" category="programming">
+        <title>Clean Code</title>
+        <author>Robert C. Martin</author>
+        <year>2008</year>
+        <price currency="USD">29.99</price>
+        <description>A handbook of agile software craftsmanship.</description>
+    </book>
+</bookstore>
+
