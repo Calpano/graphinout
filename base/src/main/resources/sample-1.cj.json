@@ -1,4 +1,6 @@
 {
+  "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
+  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
   "nodes": [
     { "id": "node1", "label": "First Node" },
     { "id": "node2", "label": "Second Node", "ports": [ "port1", { "id": "port2" } ] }
@@ -16,11 +18,17 @@
     {
       "id": "subgraph1",
       "nodes": [
-        { "id": "sub1", "label": "Sub Node" }
+        { "id": "sub1", "label": [ { "value": "Sub Node" } ] }
       ],
-      "edges": [ ]
+      "edges": [
+        {
+          "data": { "foo": "bar" },
+          "endpoints": [
+            { "direction": "in", "node": "sub1" },
+            { "direction": "out", "node": "node2" }
+          ]
+        }
+      ]
     }
-  ],
-  "foo": "bar",
-  "customProperty": "Connected JSON allows custom properties"
+  ]
 }

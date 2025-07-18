@@ -20,10 +20,10 @@ public class ConnectedJsonParsingTest {
         objectMapper.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature());
         objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
-        // load resource "simple-1.con.json"
+        // load resource "sample-1.cj.json"
         // Use ClassLoader to get the resource URL
-        java.net.URL resourceUrl = getClass().getClassLoader().getResource("simple-1.con.json");
-        assertNotNull(resourceUrl, "Resource simple-1.con.json not found.");
+        java.net.URL resourceUrl = getClass().getClassLoader().getResource("sample-1.cj.json");
+        assertNotNull(resourceUrl, "Resource sample-1.cj.json not found.");
         File jsonFile = new File(resourceUrl.getFile());
         GioDocument doc = objectMapper.readValue(jsonFile, GioDocument.class);
 
