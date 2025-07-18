@@ -22,7 +22,7 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     }
 
     public enum CjEvent {
-        EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, JsonEnd, JsonStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, Directed, EdgeType, NodeId, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Value
+        EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, JsonEnd, JsonStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, EdgeType, NodeId, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Value
     }
 
     private static final Logger log = getLogger(LoggingCjWriter.class);
@@ -40,8 +40,8 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     }
 
     @Override
-    public void baseUri(String baseuri) {
-        onCj(CjEvent.BaseUri, baseuri);
+    public void baseUri(String baseUri) {
+        onCj(CjEvent.BaseUri, baseUri);
     }
 
     @Override
@@ -64,11 +64,6 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     public void dump() {
         log.info("JSON: " + bufJson);
         log.info("CJ: " + bufCj);
-    }
-
-    @Override
-    public void edgeDefault(String edgedefault) {
-        onCj(CjEvent.EdgeDefault, edgedefault);
     }
 
     @Override
@@ -110,11 +105,6 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     @Override
     public void id(String id) {
         onCj(CjEvent.Id, id);
-    }
-
-    @Override
-    public void isDirected(boolean isDirected) {
-        onCj(CjEvent.Directed, isDirected);
     }
 
     @Override

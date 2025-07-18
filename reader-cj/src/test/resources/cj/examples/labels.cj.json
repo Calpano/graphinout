@@ -1,0 +1,39 @@
+{
+  "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
+  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+
+  "graphs": [
+    {
+      "id": "g_multi_lang",
+      "nodes": [
+        {
+          "id": "city_berlin",
+          "label": [
+            { "language": "en", "value": "Berlin" },
+            { "language": "de", "value": "Berlin" }
+          ]
+        },
+        {
+          "id": "city_paris",
+          "label": [
+            { "language": "en", "value": "Paris" },
+            { "language": "fr", "value": "Paris" }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "e_train",
+          "label": [
+            { "language": "fr", "value": "Ligne de train" },
+            { "language": "en", "value": "Train line" }
+          ],
+          "endpoints": [
+            { "node": "city_berlin" },
+            { "node": "city_paris" }
+          ]
+        }
+      ]
+    }
+  ]
+}

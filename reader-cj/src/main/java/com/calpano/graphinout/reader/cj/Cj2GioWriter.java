@@ -47,9 +47,9 @@ public class Cj2GioWriter implements CjWriter {
     }
 
     @Override
-    public void baseUri(String baseuri) {
+    public void baseUri(String baseUri) {
         try {
-            gio.baseUri(baseuri);
+            gio.baseUri(baseUri);
         } catch (IOException e) {
             throw new JsonException(e);
         }
@@ -81,11 +81,6 @@ public class Cj2GioWriter implements CjWriter {
         } catch (IOException e) {
             throw new JsonException(e);
         }
-    }
-
-    @Override
-    public void edgeDefault(String edgedefault) {
-
     }
 
     @Override
@@ -137,10 +132,6 @@ public class Cj2GioWriter implements CjWriter {
         ((CjNode) stack.peek()).id = id;
     }
 
-    @Override
-    public void isDirected(boolean isDirected) {
-
-    }
 
     @Override
     public void jsonEnd() {

@@ -10,7 +10,7 @@ import java.util.Set;
 
 public enum CjType {
 
-    Document(JsonType.Document),//
+    RootObject(JsonType.Object),//
     Graph(JsonType.Object),//
     ArrayOfGraphs(JsonType.Array),//
     Node(JsonType.Object),//
@@ -22,14 +22,13 @@ public enum CjType {
     ArrayOfPorts(JsonType.Array),//
     Endpoint(JsonType.Object),//
     ArrayOfEndpoints(JsonType.Array),//
-    LabelMonoLang(JsonType.String),//
-    LabelMultiLang(JsonType.Array),//
-    LabelMultiLangEntry(JsonType.Object),//
+    LabelStringNoLanguage(JsonType.String),//
+    ArrayOfLabelEntries(JsonType.Array),//
+    LabelEntry(JsonType.Object),//
     Value(JsonType.String),
     Language(JsonType.String),
     Direction(JsonType.String),
     EdgeType(JsonType.String),
-    EdgeDefault(JsonType.String),
     Directed(JsonType.Boolean),
     BaseUri(JsonType.String);
 
@@ -64,11 +63,10 @@ public enum CjType {
     }
 
     static {
-        Document.property("graph", "graphs").is(Graph, ArrayOfGraphs);
+        RootObject.property("graph", "graphs").is(Graph, ArrayOfGraphs);
         ArrayOfGraphs.item(Graph);
         Graph.property("id").is(Id);
-        Graph.property("label").is(LabelMonoLang, LabelMultiLang);
-        Graph.property("edgeDefault").is(EdgeDefault);
+        Graph.property("label").is(LabelStringNoLanguage, ArrayOfLabelEntries);
         Graph.property("directed").is(Directed);
         Graph.property("baseUri").is(BaseUri);
         Graph.property("node", "nodes").is(Node, ArrayOfNodes);
@@ -78,16 +76,15 @@ public enum CjType {
         Node.property("id").is(Id);
         Node.property("port", "ports").is(Port, ArrayOfPorts);
         Node.property("graph", "graphs").is(Graph, ArrayOfGraphs);
-        Node.property("label").is(LabelMonoLang, LabelMultiLang);
+        Node.property("label").is(LabelStringNoLanguage, ArrayOfLabelEntries);
         Node.property("graph", "graphs").is(Graph, ArrayOfGraphs);
 
         Port.property("id").is(Id);
         Port.property("port", "ports").is(Port, ArrayOfPorts);
-        Port.property("label").is(LabelMonoLang, LabelMultiLang);
+        Port.property("label").is(LabelStringNoLanguage, ArrayOfLabelEntries);
 
         Edge.property("id").is(Id);
-        Edge.property("label").is(LabelMonoLang, LabelMultiLang);
-        Edge.property("edgeDefault").is(EdgeDefault);
+        Edge.property("label").is(LabelStringNoLanguage, ArrayOfLabelEntries);
         Edge.property("directed").is(Directed);
         Edge.property("endpoints").is(Endpoint, ArrayOfEndpoints);
 
@@ -96,12 +93,12 @@ public enum CjType {
         Endpoint.property("direction").is(Direction);
         Endpoint.property("edgeType").is(EdgeType);
 
-        LabelMonoLang.property("lang").is(Language);
-        LabelMonoLang.property("value").is(Value);
+        LabelStringNoLanguage.property("lang").is(Language);
+        LabelStringNoLanguage.property("value").is(Value);
 
-        LabelMultiLang.item(LabelMultiLangEntry);
-        LabelMultiLangEntry.property("value").is(Value);
-        LabelMultiLangEntry.property("lang").is(Language);
+        ArrayOfLabelEntries.item(LabelEntry);
+        LabelEntry.property("value").is(Value);
+        LabelEntry.property("lang").is(Language);
 
         ArrayOfEdges.item(Edge);
         ArrayOfNodes.item(Node);

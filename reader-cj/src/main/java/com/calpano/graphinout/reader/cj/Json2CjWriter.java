@@ -42,8 +42,7 @@ public class Json2CjWriter implements JsonWriter {
         }
 
         public CjType expectedCjType(JsonType jsonType) {
-            return Util.findExactlyOne(expectedCjTypes(), (CjType type) -> type.hasJsonType(jsonType));
-
+            return Util.findExactlyOne(expectedCjTypes(), jsonType);
         }
 
         public Set<CjType> expectedCjTypes() {
@@ -95,8 +94,9 @@ public class Json2CjWriter implements JsonWriter {
     public void arrayEnd() throws JsonException {
         if (parseStack.isInJson()) {
             cjWriter.arrayEnd();
+        } else {
+            cjWriter.listEnd(parseStack.peekCjType());
         }
-        cjWriter.listEnd(parseStack.peekCjType());
         parseStack.containerEnd();
     }
 
@@ -110,7 +110,7 @@ public class Json2CjWriter implements JsonWriter {
             if (expected.isEmpty()) {
                 throw new IllegalArgumentException("Expected CJ type on stack, but found none.");
             }
-            CjType cjType = Util.findExactlyOne(expected, (CjType type) -> type.hasJsonType(JsonType.Array));
+            CjType cjType = Util.findExactlyOne(expected, JsonType.Array);
             parseStack.push(cjType);
             cjWriter.listStart(cjType);
         }
@@ -118,7 +118,6 @@ public class Json2CjWriter implements JsonWriter {
 
     @Override
     public void documentEnd() {
-        parseStack.containerEnd();
         cjWriter.documentEnd();
     }
 
@@ -144,9 +143,9 @@ public class Json2CjWriter implements JsonWriter {
                 case Endpoint -> cjWriter.endpointEnd();
                 case Port -> cjWriter.portEnd();
                 case Graph -> cjWriter.graphEnd();
-                case LabelMultiLang -> cjWriter.labelEnd();
-                case LabelMultiLangEntry -> cjWriter.labelEntryEnd();
-                case Document -> {
+                case ArrayOfLabelEntries -> cjWriter.labelEnd();
+                case LabelEntry -> cjWriter.labelEntryEnd();
+                case RootObject -> {
                     // do nothing
                 }
             }
@@ -164,7 +163,7 @@ public class Json2CjWriter implements JsonWriter {
             if (expected.isEmpty()) {
                 throw new IllegalArgumentException("Expected CJ type on stack, but found none.");
             }
-            CjType cjType = Util.findExactlyOne(expected, (CjType type) -> type.hasJsonType(JsonType.Object));
+            CjType cjType = Util.findExactlyOne(expected, JsonType.Object);
             parseStack.push(cjType);
             switch (cjType) {
                 case Graph -> cjWriter.graphStart();
@@ -172,9 +171,9 @@ public class Json2CjWriter implements JsonWriter {
                 case Port -> cjWriter.portStart();
                 case Edge -> cjWriter.edgeStart();
                 case Endpoint -> cjWriter.endpointStart();
-                case LabelMultiLang -> cjWriter.labelStart();
-                case LabelMultiLangEntry -> cjWriter.labelEntryStart();
-                case Document -> {
+                case ArrayOfLabelEntries -> cjWriter.labelStart();
+                case LabelEntry -> cjWriter.labelEntryStart();
+                case RootObject -> {
                     // do nothing
                 }
             }
@@ -208,13 +207,7 @@ public class Json2CjWriter implements JsonWriter {
             cjWriter.onBoolean(b);
             parseStack.popJsonPropertyMaybe();
         } else {
-            CjType cjType = parseStack.expectedCjType(JsonType.Boolean);
-            switch (cjType) {
-                case Directed -> cjWriter.isDirected(b);
-                default ->
-                        throw new IllegalStateException("Unreasonable expectations. You expect " + cjType + " but why?");
-            }
-            parseStack.stack.pop();
+            throw new IllegalStateException("Standard CJ has no booleans.");
         }
     }
 
@@ -290,7 +283,7 @@ public class Json2CjWriter implements JsonWriter {
     public void reset() {
         parseStack.clear();
         parseStack.expectedCjTypes.clear();
-        parseStack.expectedCjTypes.add(CjType.Document);
+        parseStack.expectedCjTypes.add(CjType.RootObject);
     }
 
     @Override
@@ -311,7 +304,7 @@ public class Json2CjWriter implements JsonWriter {
             CjType cjType = parseStack.expectedCjType(JsonType.String);
             switch (cjType) {
                 case Id -> cjWriter.id(stringBuffer.toString());
-                case LabelMonoLang -> {
+                case LabelStringNoLanguage -> {
                     cjWriter.labelStart();
                     cjWriter.labelEntryStart();
                     cjWriter.value(stringBuffer.toString());
@@ -323,7 +316,6 @@ public class Json2CjWriter implements JsonWriter {
                 case Value -> cjWriter.value(stringBuffer.toString());
                 case BaseUri -> cjWriter.baseUri(stringBuffer.toString());
                 case Direction -> cjWriter.direction(CjDirection.valueOf(stringBuffer.toString()));
-                case EdgeDefault -> cjWriter.edgeDefault(stringBuffer.toString());
                 default ->
                         throw new IllegalStateException("Unreasonable expectations. You expect " + cjType + " but why?");
             }

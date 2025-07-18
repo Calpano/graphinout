@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Stack;
 
 // TODO use for writing CJ
+@Deprecated
 public class Gio2JsonWriter implements GioWriter {
 
     enum Mode {Json, Cj}

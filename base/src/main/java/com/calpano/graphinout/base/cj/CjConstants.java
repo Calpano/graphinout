@@ -46,6 +46,8 @@ public class CjConstants {
     public static final String VERSION_DATE = "versionDate";
     public static final String VERSION_NUMBER = "versionNumber";
     public static final String CONNECTED_JSON = "connectedJson";
+    public static final String CJ_SCHEMA_LOCATION = "https://calpano.github.io/connected-json/_attachments/cj-schema.json";
+    public static final String CJ_SCHEMA_ID = "https://j-s-o-n.org/schema/connected-json/5.0.0";
 
     private CjConstants() {
         // hidden constructor

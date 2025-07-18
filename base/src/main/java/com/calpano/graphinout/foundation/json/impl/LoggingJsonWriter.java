@@ -90,7 +90,7 @@ public class LoggingJsonWriter implements JsonWriter {
 
     @Override
     public void stringCharacters(String s) throws JsonException {
-        log.info("stringCharacters: {}", s);
+        log.info("stringCharacters: '{}'", s);
     }
 
     @Override

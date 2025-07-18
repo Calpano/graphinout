@@ -54,13 +54,10 @@ public interface CjWriter extends JsonWriter {
 
 
     /** Graph base uri */
-    void baseUri(String baseuri);
+    void baseUri(String baseUri);
 
     /** endpoint.direction */
     void direction(CjDirection direction);
-
-    /** Graph property */
-    void edgeDefault(String edgedefault);
 
     /**
      * CJ Edge end event.
@@ -110,11 +107,6 @@ public interface CjWriter extends JsonWriter {
     void graphStart() throws CjException;
 
     void id(String id);
-
-    /**
-     * if this edge is directed (default: true)
-     */
-    void isDirected(boolean isDirected);
 
     /** Marker for extension data end. */
     void jsonEnd();

@@ -454,9 +454,6 @@ Contains various writer implementations and utilities for output generation.
 * `ValidatingGioWriter` - Writer with validation
 * `NoopGioWriter` - No-operation writer for testing
 
-**Format Converters:**
-* `Gio2JsonWriter` - Converter from GIO to JSON
-
 **Utilities:**
 * `NoopJsonWriter` - No-operation JSON writer
 

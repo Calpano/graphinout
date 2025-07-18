@@ -1,0 +1,42 @@
+{
+  "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
+  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+
+  "graphs": [
+    {
+      "id": "g_data",
+      "label": [ { "value": "Cities with Custom Data" } ],
+      "nodes": [
+        {
+          "id": "london",
+          "label": [ { "value": "London" } ],
+          "data": {
+            "population": 8982000,
+            "coordinates": { "lat": 51.5072, "lon": -0.1276 }
+          }
+        },
+        {
+          "id": "tokyo",
+          "label": [ { "value": "Tokyo" } ],
+          "data": {
+            "population": 13960000,
+            "coordinates": { "lat": 35.6895, "lon": 139.6917 }
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "flight_lhr_hnd",
+          "endpoints": [
+            { "node": "london" },
+            { "node": "tokyo" }
+          ],
+          "data": {
+            "distance_km": 9590,
+            "carrier": "Multiple"
+          }
+        }
+      ]
+    }
+  ]
+}

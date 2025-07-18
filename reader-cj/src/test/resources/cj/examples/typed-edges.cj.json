@@ -1,0 +1,34 @@
+{
+  "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
+  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+
+  "baseUri": "https://schema.org/",
+  "graphs": [
+    {
+      "id": "g_knowledge",
+      "nodes": [
+        { "id": "person_einstein", "label": [ { "value": "Albert Einstein" } ] },
+        { "id": "place_ulm", "label": [ { "value": "Ulm" } ] },
+        { "id": "concept_relativity", "label": [ { "value": "Theory of Relativity" } ] }
+      ],
+      "edges": [
+        {
+          "id": "e_birthPlace",
+          "typeUri": "birthPlace",
+          "endpoints": [
+            { "node": "person_einstein", "direction": "out" },
+            { "node": "place_ulm", "direction": "in" }
+          ]
+        },
+        {
+          "id": "e_knowsAbout",
+          "typeUri": "knowsAbout",
+          "endpoints": [
+            { "node": "person_einstein", "direction": "out" },
+            { "node": "concept_relativity", "direction": "in" }
+          ]
+        }
+      ]
+    }
+  ]
+}

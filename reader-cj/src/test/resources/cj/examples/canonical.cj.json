@@ -1,0 +1,84 @@
+{
+  "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
+  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+
+  "graphs": [
+    {
+      "id": "g1",
+      "meta": {
+        "canonical": true,
+        "nodeCountInGraph": 3,
+        "edgeCountInGraph": 2
+      },
+      "label": [
+        {
+          "value": "Simple Social Network"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "label": [
+            {
+              "value": "Alice"
+            }
+          ]
+        },
+        {
+          "id": "n2",
+          "label": [
+            {
+              "value": "Bob"
+            }
+          ]
+        },
+        {
+          "id": "n3",
+          "label": [
+            {
+              "value": "Charlie"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "label": [
+            {
+              "value": "knows"
+            }
+          ],
+          "endpoints": [
+            {
+              "node": "n1",
+              "direction": "out"
+            },
+            {
+              "node": "n2",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "label": [
+            {
+              "value": "knows"
+            }
+          ],
+          "endpoints": [
+            {
+              "node": "n2",
+              "direction": "out"
+            },
+            {
+              "node": "n3",
+              "direction": "in"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

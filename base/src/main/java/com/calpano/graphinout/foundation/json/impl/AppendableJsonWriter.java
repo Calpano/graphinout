@@ -56,6 +56,7 @@ public abstract class AppendableJsonWriter implements JsonWriter {
 
     @Override
     public void objectEnd() throws JsonException {
+        assert !stack.isEmpty();
         stack.pop();
         append('}');
     }

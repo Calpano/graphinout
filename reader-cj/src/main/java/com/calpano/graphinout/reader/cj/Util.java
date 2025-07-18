@@ -1,22 +1,25 @@
 package com.calpano.graphinout.reader.cj;
 
+import com.calpano.graphinout.base.cj.CjType;
+import com.calpano.graphinout.foundation.json.JsonType;
+
 import java.util.Set;
 import java.util.function.Predicate;
 
 public class Util {
 
-    public static <E> E findExactlyOne(Set<E> set, Predicate<E> predicate) {
-        E found = null;
-        for (E element : set) {
-            if (predicate.test(element)) {
+    public static CjType findExactlyOne(Set<CjType> set, JsonType jsonType) {
+        CjType found = null;
+        for (CjType element : set) {
+            if (((Predicate<CjType>) (CjType type) -> type.hasJsonType(jsonType)).test(element)) {
                 if (found != null) {
-                    throw new IllegalArgumentException("Expected exactly one element matching the predicate, but found at least two.");
+                    throw new IllegalArgumentException("Expected exactly one element matching " + jsonType + ", but found at least two in " + set);
                 }
                 found = element;
             }
         }
         if (found == null) {
-            throw new IllegalArgumentException("Expected exactly one element matching the predicate, but found none.");
+            throw new IllegalArgumentException("Expected exactly one element matching " + jsonType + ", but found none in " + set);
         }
         return found;
     }
