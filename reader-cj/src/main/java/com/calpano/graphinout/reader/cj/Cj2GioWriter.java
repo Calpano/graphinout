@@ -128,13 +128,18 @@ public class Cj2GioWriter implements CjWriter {
     }
 
     @Override
+    public void graph__canonical(boolean b) {
+        // FIXME
+    }
+
+    @Override
     public void id(String id) {
         ((CjNode) stack.peek()).id = id;
     }
 
 
     @Override
-    public void jsonEnd() {
+    public void jsonDataEnd() {
         try {
             String json = jsonWriter.json();
             gio.data(GioData.builder().key("json").value(json).build());
@@ -145,7 +150,7 @@ public class Cj2GioWriter implements CjWriter {
     }
 
     @Override
-    public void jsonStart() {
+    public void jsonDataStart() {
         // jsonSink is ready to collect JSON data
         // No specific initialization needed as jsonSink is reset in jsonEnd()
     }
@@ -183,6 +188,36 @@ public class Cj2GioWriter implements CjWriter {
     @Override
     public void listStart(CjType cjType) {
         gio.listStart(cjType);
+    }
+
+    @Override
+    public void metaEnd() {
+
+    }
+
+    @Override
+    public void metaStart() {
+
+    }
+
+    @Override
+    public void meta__edgeCountInGraph(long number) {
+
+    }
+
+    @Override
+    public void meta__edgeCountTotal(long number) {
+
+    }
+
+    @Override
+    public void meta__nodeCountInGraph(long number) {
+
+    }
+
+    @Override
+    public void meta__nodeCountTotal(long number) {
+
     }
 
     @Override

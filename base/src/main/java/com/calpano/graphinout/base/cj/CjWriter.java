@@ -106,13 +106,15 @@ public interface CjWriter extends JsonWriter {
      */
     void graphStart() throws CjException;
 
+    void graph__canonical(boolean b);
+
     void id(String id);
 
     /** Marker for extension data end. */
-    void jsonEnd();
+    void jsonDataEnd();
 
     /** Marker for extension data start. */
-    void jsonStart();
+    void jsonDataStart();
 
     void labelEnd();
 
@@ -123,6 +125,18 @@ public interface CjWriter extends JsonWriter {
     void labelStart();
 
     void language(String language);
+
+    void listEnd(CjType cjType);
+
+    void listStart(CjType cjType);
+
+    void meta__edgeCountInGraph(long number);
+
+    void meta__edgeCountTotal(long number);
+
+    void meta__nodeCountInGraph(long number);
+
+    void meta__nodeCountTotal(long number);
 
     /**
      * CJ Node end event.
@@ -163,7 +177,7 @@ public interface CjWriter extends JsonWriter {
 
     void value(String value);
 
-    void listStart(CjType cjType);
-    void listEnd(CjType cjType);
+    void metaStart();
+    void metaEnd();
 
 }

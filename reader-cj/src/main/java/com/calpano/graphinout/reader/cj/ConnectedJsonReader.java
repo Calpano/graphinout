@@ -6,8 +6,6 @@ import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.json.impl.JsonReaderImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -17,7 +15,6 @@ public class ConnectedJsonReader implements GioReader {
 
     public static final GioFileFormat FORMAT = new GioFileFormat("connected-json", "Connected JSON Format", //
             ".con.json", ".connected.json");
-    private static final Logger log = LoggerFactory.getLogger(Json5Reader.class);
     private @Nullable Consumer<ContentError> errorHandler;
 
     @Override

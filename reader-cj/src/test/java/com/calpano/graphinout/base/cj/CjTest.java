@@ -3,6 +3,7 @@ package com.calpano.graphinout.base.cj;
 
 import com.calpano.graphinout.base.cj.impl.Cj2JsonWriter;
 import com.calpano.graphinout.base.cj.impl.DelegatingCjWriter;
+import com.calpano.graphinout.base.cj.impl.LoggingCjWriter;
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
 import com.calpano.graphinout.foundation.json.JsonWriter;
 import com.calpano.graphinout.foundation.json.impl.JsonReaderImpl;
@@ -11,6 +12,7 @@ import com.calpano.graphinout.reader.cj.Json2CjWriter;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -22,12 +24,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import static com.calpano.graphinout.base.cj.impl.CjFormatter.stripCjHeader;
+import static com.calpano.graphinout.foundation.json.impl.JsonFormatter.formatDebug;
+import static com.calpano.graphinout.foundation.json.impl.JsonFormatter.removeWhitespace;
+import static com.google.common.truth.Truth.assertThat;
+
 
 /**
  *
  */
 public class CjTest {
 
+    boolean addLogging = true;
     private Path testResourcesPath;
 
     static Stream<Arguments> cjFileProvider() throws Exception {
@@ -48,25 +56,51 @@ public class CjTest {
         testCjFile(xmlFilePath);
     }
 
+    @Test
+    void test() {
+        JsonWriter jsonWriter = new Json2CjWriter(new LoggingCjWriter(false));
+        jsonWriter.documentStart();
+        // simulate { "data": { "foo":  "bar" } }
+        jsonWriter.objectStart();
+        jsonWriter.onKey("data");
+        jsonWriter.objectStart();
+        jsonWriter.onKey("foo");
+        jsonWriter.string("bar");
+        jsonWriter.objectEnd();
+        jsonWriter.objectEnd();
+        jsonWriter.documentEnd();
+    }
+
     void testCjFile(Path cjFile) throws IOException {
         // read into string
-        String in = FileUtils.readFileToString(cjFile.toFile(), StandardCharsets.UTF_8);
+        String json_in = FileUtils.readFileToString(cjFile.toFile(), StandardCharsets.UTF_8);
 
-        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of(cjFile.getFileName().toString(), in);
+        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of(cjFile.getFileName().toString(), json_in);
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-
-        // build pipeline, reverse
-        // collect the CJ stream back into JSON
         StringBuilderJsonWriter jsonWriter_out = new StringBuilderJsonWriter(true);
-        Cj2JsonWriter cj2jsonWriter = new Cj2JsonWriter(jsonWriter_out);
 
-        DelegatingCjWriter cjWriter_out = new DelegatingCjWriter(cj2jsonWriter);
-//        LoggingCjWriter cj2log = new LoggingCjWriter();
-//        cjWriter_out.addWriter(cj2log);
+        /* receive CJ events -> send JSON events  */
+        CjWriter cjWriter_out = new Cj2JsonWriter(jsonWriter_out);
 
-        JsonWriter json2cjWriter = new Json2CjWriter(cj2jsonWriter);
-        // trigger reading: read from input source and push to JsonWriter
-        jsonReader.read(inputSource, cjWriter_out);
+        if (addLogging) {
+            // insert logging into pipeline
+            DelegatingCjWriter cjWriter_out_logging = new DelegatingCjWriter(new LoggingCjWriter());
+            cjWriter_out_logging.addJsonWriter(cjWriter_out);
+            cjWriter_out = cjWriter_out_logging;
+        }
+
+        // HACK
+    //    cjWriter_out = new LoggingCjWriter();
+
+        /* receive JSON events -> send CJ events  */
+        JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(cjWriter_out);
+
+        // READ JSON -> send JSON events
+        jsonReader.read(inputSource, jsonWriter_in);
+        String json_out = jsonWriter_out.json();
+
+        assertThat(formatDebug(stripCjHeader(removeWhitespace(json_out)))) //
+                .isEqualTo(formatDebug(stripCjHeader(removeWhitespace(json_in))));
     }
 
 

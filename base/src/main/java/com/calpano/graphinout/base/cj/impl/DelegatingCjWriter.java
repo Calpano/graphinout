@@ -14,8 +14,9 @@ public class DelegatingCjWriter extends DelegatingJsonWriter implements CjWriter
         super(cjWriter);
     }
 
-    public void addCjWriter(CjWriter cjWriter) {
-        super.addWriter(cjWriter);
+    public DelegatingCjWriter addCjWriter(CjWriter cjWriter) {
+        super.addJsonWriter(cjWriter);
+        return this;
     }
 
     @Override
@@ -74,18 +75,23 @@ public class DelegatingCjWriter extends DelegatingJsonWriter implements CjWriter
     }
 
     @Override
+    public void graph__canonical(boolean b) {
+        forEachWriter(cjWriter -> cjWriter.graph__canonical(b));
+    }
+
+    @Override
     public void id(String id) {
         forEachWriter(cjWriter -> cjWriter.id(id));
     }
 
     @Override
-    public void jsonEnd() {
-        forEachWriter(CjWriter::jsonEnd);
+    public void jsonDataEnd() {
+        forEachWriter(CjWriter::jsonDataEnd);
     }
 
     @Override
-    public void jsonStart() {
-        forEachWriter(CjWriter::jsonStart);
+    public void jsonDataStart() {
+        forEachWriter(CjWriter::jsonDataStart);
     }
 
     @Override
@@ -121,6 +127,36 @@ public class DelegatingCjWriter extends DelegatingJsonWriter implements CjWriter
     @Override
     public void listStart(CjType cjType) {
         forEachWriter(cjWriter -> cjWriter.listStart(cjType));
+    }
+
+    @Override
+    public void metaEnd() {
+        forEachWriter(CjWriter::metaEnd);
+    }
+
+    @Override
+    public void metaStart() {
+        forEachWriter(CjWriter::metaStart);
+    }
+
+    @Override
+    public void meta__edgeCountInGraph(long number) {
+        forEachWriter(cjWriter -> cjWriter.meta__edgeCountInGraph(number));
+    }
+
+    @Override
+    public void meta__edgeCountTotal(long number) {
+        forEachWriter(cjWriter -> cjWriter.meta__edgeCountTotal(number));
+    }
+
+    @Override
+    public void meta__nodeCountInGraph(long number) {
+        forEachWriter(cjWriter -> cjWriter.meta__nodeCountInGraph(number));
+    }
+
+    @Override
+    public void meta__nodeCountTotal(long number) {
+        forEachWriter(cjWriter -> cjWriter.meta__nodeCountTotal(number));
     }
 
     @Override

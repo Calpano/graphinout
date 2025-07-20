@@ -2,14 +2,11 @@ package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.JsonWriter;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Stack;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Reconstructs a JSON syntax string from a {@link JsonWriter}. Reusable.
@@ -18,10 +15,10 @@ public abstract class AppendableJsonWriter implements JsonWriter {
 
     enum State {First, Later, Property}
 
-    private static final Logger log = getLogger(AppendableJsonWriter.class);
     private final Appendable appendable;
     private final Stack<State> stack = new Stack<>();
     private final boolean preserveWhitespace;
+
     public AppendableJsonWriter(Appendable appendable, boolean preserveWhitespace) {
         this.appendable = appendable;
         this.preserveWhitespace = preserveWhitespace;
@@ -56,7 +53,7 @@ public abstract class AppendableJsonWriter implements JsonWriter {
 
     @Override
     public void objectEnd() throws JsonException {
-        assert !stack.isEmpty();
+        assert !stack.isEmpty() : "stack empty";
         stack.pop();
         append('}');
     }

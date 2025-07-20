@@ -57,7 +57,7 @@ public class Gio2JsonWriter implements GioWriter {
 
     @Override
     public void baseUri(String baseUri) throws IOException {
-        jsonWriter.onKey(CjConstants.BASE_URI);
+        jsonWriter.onKey(CjConstants.ROOT__BASE_URI);
         jsonWriter.string(baseUri);
     }
 
@@ -221,7 +221,7 @@ public class Gio2JsonWriter implements GioWriter {
         jsonWriter.documentStart();
         jsonWriter.objectStart();
 
-        jsonWriter.onKey(CjConstants.CONNECTED_JSON);
+        jsonWriter.onKey(CjConstants.ROOT__CONNECTED_JSON);
         jsonWriter.objectStart();
         jsonWriter.onKey(CjConstants.VERSION_NUMBER);
         jsonWriter.string(CJ_VERSION_NUMBER);
@@ -242,18 +242,18 @@ public class Gio2JsonWriter implements GioWriter {
             jsonWriter.string(id);
         }
 
-        jsonWriter.onKey(CjConstants.ENDPOINTS);
+        jsonWriter.onKey(CjConstants.EDGE__ENDPOINTS);
         jsonWriter.arrayStart();
         for (GioEndpoint ep : edge.getEndpoints()) {
             jsonWriter.objectStart();
-            jsonWriter.onKey(CjConstants.NODE);
+            jsonWriter.onKey(CjConstants.ENDPOINT__NODE);
             jsonWriter.string(ep.getNode());
             String portId = ep.getPort();
             if (portId != null && !portId.isEmpty()) {
-                jsonWriter.onKey(CjConstants.PORT);
+                jsonWriter.onKey(CjConstants.ENDPOINT__PORT);
                 jsonWriter.string(portId);
             }
-            jsonWriter.onKey(CjConstants.DIRECTION);
+            jsonWriter.onKey(CjConstants.ENDPOINT__DIRECTION);
             jsonWriter.string(         ep.getType().xmlValue );
             // TODO type
         }
@@ -335,11 +335,11 @@ public class Gio2JsonWriter implements GioWriter {
             jsonWriter.arrayEnd();
         }
         switch (desiredArray) {
-            case ArrayOfEdges -> jsonWriter.onKey(CjConstants.EDGES);
-            case ArrayOfNodes -> jsonWriter.onKey(CjConstants.NODES);
+            case ArrayOfEdges -> jsonWriter.onKey(CjConstants.GRAPH__EDGES);
+            case ArrayOfNodes -> jsonWriter.onKey(CjConstants.GRAPH__NODES);
             case ArrayOfGraphs -> jsonWriter.onKey(CjConstants.GRAPHS);
             case ArrayOfPorts -> jsonWriter.onKey(CjConstants.PORTS);
-            case ArrayOfEndpoints -> jsonWriter.onKey(CjConstants.ENDPOINTS);
+            case ArrayOfEndpoints -> jsonWriter.onKey(CjConstants.EDGE__ENDPOINTS);
             default -> throw new IllegalStateException("Unknown desired array " + desiredArray);
         }
         jsonWriter.arrayStart();

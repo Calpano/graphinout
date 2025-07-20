@@ -1,0 +1,25 @@
+{
+  "graphs": [
+    {
+      "nodes": [
+        { "id": "london", "data": { "population": 8982000,
+            "foo": ["bar","baz", 2 ],
+            "sub": { "a":  3} } },
+        { "id": "tokyo", "data": { "population": 123456 } }
+      ],
+      "edges": [
+        {
+          "id": "flight",
+          "endpoints": [
+            { "node": "london" },
+            { "node": "tokyo" }
+          ],
+          "data": {
+            "distance_km": 9590,
+            "carrier": "Multiple"
+          }
+        }
+      ]
+    }
+  ]
+}

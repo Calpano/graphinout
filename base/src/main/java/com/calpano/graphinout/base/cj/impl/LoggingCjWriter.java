@@ -12,22 +12,36 @@ import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.EnumSet;
+import java.util.Stack;
 
+import static com.calpano.graphinout.base.cj.impl.LoggingCjWriter.JsonEvent.ArrayStart;
+import static com.calpano.graphinout.base.cj.impl.LoggingCjWriter.JsonEvent.ObjectStart;
+import static com.calpano.graphinout.base.cj.impl.LoggingCjWriter.JsonEvent.OnBoolean;
+import static com.calpano.graphinout.base.cj.impl.LoggingCjWriter.JsonEvent.OnKey;
+import static com.calpano.graphinout.base.cj.impl.LoggingCjWriter.JsonEvent.OnNull;
+import static com.calpano.graphinout.base.cj.impl.LoggingCjWriter.JsonEvent.OnNumber;
+import static com.calpano.graphinout.base.cj.impl.LoggingCjWriter.JsonEvent.OnString;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
 
     public enum JsonEvent {
-        ArrayStart, ArrayEnd, DocumentStart, DocumentEnd, ObjectStart, ObjectEnd, OnNumber, OnBoolean, OnKey, OnNull, OnString
+        ArrayStart, ArrayEnd, DocumentStart, DocumentEnd, ObjectStart, ObjectEnd, OnNumber, OnBoolean, OnKey, OnNull, StringStart, StringEnd, String, OnString
     }
 
     public enum CjEvent {
-        EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, JsonEnd, JsonStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, EdgeType, NodeId, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Value
+        ArrayOfGraphsStart, ArrayOfGraphsEnd, ArrayOfEdgesStart, ArrayOfEdgesEnd, ArrayOfNodesStart, ArrayOfNodesEnd, ArrayOfPortsStart, ArrayOfPortsEnd, ArrayOfLabelEntriesStart, ArrayOfLabelEntriesEnd, ArrayOfEndpointsStart, ArrayOfEndpointsEnd, ArrayOfLabelEntryStart, ArrayOfLabelEntryEnd, EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, EdgeType, NodeId, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Graph__Canonical, Meta__EdgeCountInGraph, Meta__EdgeCountTotal, Meta__NodeCountInGraph, Meta__NodeCountTotal, MetaEnd, MetaStart, Value, DataStart, DataEnd
     }
 
+    enum CommaState {First, Container, Key}
     private static final Logger log = getLogger(LoggingCjWriter.class);
-    private final StringBuilder bufJson = new StringBuilder();
     private final StringBuilder bufCj = new StringBuilder();
+    private final Stack<CommaState> commaStack = new Stack<>();
+    private final boolean buffering;
+
+    public LoggingCjWriter() {this(true);}
+    public LoggingCjWriter(boolean buffering) {this.buffering = buffering;}
 
     @Override
     public void arrayEnd() throws JsonException {
@@ -36,7 +50,7 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
 
     @Override
     public void arrayStart() throws JsonException {
-        onJson(JsonEvent.ArrayStart, null);
+        onJson(ArrayStart, null);
     }
 
     @Override
@@ -52,8 +66,7 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     @Override
     public void documentEnd() throws JsonException {
         onCj(CjEvent.DocumentEnd, null);
-        log.debug("CJ: " + bufCj);
-        log.debug("JSON: " + bufJson);
+        log.debug("CJ: {}", bufCj);
     }
 
     @Override
@@ -62,8 +75,7 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     }
 
     public void dump() {
-        log.info("JSON: " + bufJson);
-        log.info("CJ: " + bufCj);
+        log.info("CJ: {}", bufCj);
     }
 
     @Override
@@ -102,20 +114,23 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
 
     }
 
+    public void graph__canonical(boolean b) {
+        onCj(CjEvent.Graph__Canonical, b);
+    }
+
     @Override
     public void id(String id) {
         onCj(CjEvent.Id, id);
     }
 
     @Override
-    public void jsonEnd() {
-        onCj(CjEvent.JsonEnd, bufJson.toString());
-        bufJson.setLength(0);
+    public void jsonDataEnd() {
+        onCj(CjEvent.DataEnd, null);
     }
 
     @Override
-    public void jsonStart() {
-        onCj(CjEvent.JsonStart, null);
+    public void jsonDataStart() {
+        onCj(CjEvent.DataStart, null);
     }
 
     @Override
@@ -125,12 +140,12 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
 
     @Override
     public void labelEntryEnd() {
-        onCj(CjEvent.LabelEntryStart, null);
+        onCj(CjEvent.LabelEntryEnd, null);
     }
 
     @Override
     public void labelEntryStart() {
-        onCj(CjEvent.LabelEntryEnd, null);
+        onCj(CjEvent.LabelEntryStart, null);
     }
 
     @Override
@@ -143,9 +158,58 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
         onCj(CjEvent.Language, lang);
     }
 
+    @Override
+    public void listEnd(CjType cjType) {
+        onCj(CjEvent.valueOf(cjType.name() + "End"), null);
+
+    }
+
+    @Override
+    public void listStart(CjType cjType) {
+        onCj(CjEvent.valueOf(cjType.name() + "Start"), null);
+    }
+
     /** no newlines */
     public void logJson(String s) {
-        bufJson.append(s);
+        buffer(s);
+    }
+
+    private void buffer(String s) {
+        if (buffering) {
+            bufCj.append(s);
+        } else {
+            System.out.print(s);
+        }
+    }
+
+    @Override
+    public void metaEnd() {
+        onCj(CjEvent.MetaEnd, null);
+    }
+
+    @Override
+    public void metaStart() {
+        onCj(CjEvent.MetaStart, null);
+    }
+
+    @Override
+    public void meta__edgeCountInGraph(long number) {
+        onCj(CjEvent.Meta__EdgeCountInGraph, number);
+    }
+
+    @Override
+    public void meta__edgeCountTotal(long number) {
+        onCj(CjEvent.Meta__EdgeCountTotal, number);
+    }
+
+    @Override
+    public void meta__nodeCountInGraph(long number) {
+        onCj(CjEvent.Meta__NodeCountInGraph, number);
+    }
+
+    @Override
+    public void meta__nodeCountTotal(long number) {
+        onCj(CjEvent.Meta__NodeCountTotal, number);
     }
 
     @Override
@@ -170,68 +234,107 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
 
     @Override
     public void objectStart() throws JsonException {
-        onJson(JsonEvent.ObjectStart, null);
+        onJson(ObjectStart, null);
     }
 
     @Override
     public void onBigDecimal(BigDecimal bigDecimal) throws JsonException {
-        onJson(JsonEvent.OnNumber, "" + bigDecimal);
+        onJson(OnNumber, "" + bigDecimal);
     }
 
     @Override
     public void onBigInteger(BigInteger bigInteger) throws JsonException {
-        onJson(JsonEvent.OnNumber, "" + bigInteger);
+        onJson(OnNumber, "" + bigInteger);
     }
 
     @Override
     public void onBoolean(boolean b) throws JsonException {
-        onJson(JsonEvent.OnBoolean, "" + b);
+        onJson(OnBoolean, "" + b);
     }
 
     public void onCj(CjEvent event, @Nullable Object o) {
         if (event.name().endsWith("Start")) {
-            bufCj.append("<").append(event.name(), 0, event.name().length() - 5).append(">");
+            buffer("<");
+            buffer(event.name().substring(0,event.name().length() - 5));
+            buffer(">");
         } else if (event.name().endsWith("End")) {
-            bufCj.append("</").append(event.name(), 0, event.name().length() - 3).append(">");
+            buffer("</");
+            buffer(event.name().substring(0,event.name().length() - 3));
+            buffer(">");
         } else {
             if (o == null) {
-                bufCj.append("<").append(event.name()).append("/>");
+                buffer("<");
+                buffer(event.name());
+                buffer("/>");
             } else {
-                bufCj.append("<").append(event.name()).append(" '");
-                bufCj.append(o);
-                bufCj.append("'/>");
+                buffer("<");
+                buffer(event.name());
+                buffer(" '");
+                buffer(o.toString());
+                buffer("' />");
             }
         }
     }
 
     @Override
     public void onDouble(double d) throws JsonException {
-        onJson(JsonEvent.OnNumber, "" + d);
+        onJson(OnNumber, "" + d);
 
     }
 
     @Override
     public void onFloat(float f) throws JsonException {
-        onJson(JsonEvent.OnNumber, "" + f);
+        onJson(OnNumber, "" + f);
 
     }
 
     @Override
     public void onInteger(int i) throws JsonException {
-        onJson(JsonEvent.OnNumber, "" + i);
+        onJson(OnNumber, "" + i);
     }
 
     public void onJson(JsonEvent event, @Nullable Object o) {
+        // make comma
+        if (EnumSet.of(ArrayStart, ObjectStart, OnNumber, OnString, JsonEvent.String, OnBoolean, OnNull, OnKey).contains(event)) {
+            if (!commaStack.isEmpty()) {
+                switch (commaStack.peek()) {
+                    // First marker blocks first comma
+                    case First -> commaStack.pop();
+                    case Key -> commaStack.pop();
+                    default -> logJson(", ");
+                }
+            }
+        }
+        // manage comma stack
         switch (event) {
-            case OnKey -> logJson("【" + o + "】");
-            case OnString -> logJson(" '" + o + "'");
+            case ArrayStart, ObjectStart -> {
+                commaStack.push(CommaState.Container);
+                commaStack.push(CommaState.First);
+            }
+            case ArrayEnd, ObjectEnd -> {
+                assert !commaStack.isEmpty() : "commaStack should not be empty";
+                // remove unused First marker
+                if (commaStack.peek() == CommaState.First) {
+                    commaStack.pop();
+                }
+                commaStack.pop();
+            }
+            case OnKey -> commaStack.push(CommaState.Key);
+            default -> {
+            }
+        }
+
+        // content
+        switch (event) {
+            case OnKey -> logJson("【" + o + "】: ");
+            case OnString, String -> logJson(" '" + o + "'");
             case OnNumber -> logJson(" number(" + o + ")");
             case OnBoolean -> logJson(" boolean(" + o + ")");
             case OnNull -> logJson(" null()");
             case ArrayStart -> logJson("[");
             case ArrayEnd -> logJson("]");
-            case ObjectStart -> logJson("\n{");
-            case ObjectEnd -> logJson("}");
+            case ObjectStart -> logJson("◀{ ");
+            case ObjectEnd -> logJson(" }▶");
             case DocumentStart -> logJson("documentStart()");
             case DocumentEnd -> logJson("documentEnd()");
         }
@@ -244,12 +347,12 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
 
     @Override
     public void onLong(long l) throws JsonException {
-        onJson(JsonEvent.OnNumber, "" + l);
+        onJson(OnNumber, "" + l);
     }
 
     @Override
     public void onNull() throws JsonException {
-        onJson(JsonEvent.OnNull, null);
+        onJson(OnNull, null);
     }
 
     @Override
@@ -268,19 +371,23 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     }
 
     @Override
+    public void stringCharacters(String s) throws JsonException {
+        onJson(JsonEvent.String, s);
+    }
+
+    @Override
+    public void stringEnd() throws JsonException {
+        onJson(JsonEvent.StringEnd, null);
+    }
+
+    @Override
+    public void stringStart() throws JsonException {
+        onJson(JsonEvent.StringStart, null);
+    }
+
+    @Override
     public void value(String value) {
         onCj(CjEvent.Value, value);
-    }
-
-    @Override
-    public void listStart(CjType cjType) {
-        onCj(CjEvent.valueOf(cjType.name() + "Start"), null);
-    }
-
-    @Override
-    public void listEnd(CjType cjType) {
-        onCj(CjEvent.valueOf(cjType.name() + "End"), null);
-
     }
 
 }

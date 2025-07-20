@@ -7,6 +7,8 @@ import com.calpano.graphinout.base.cj.CjException;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.foundation.json.JsonConstants;
+import com.calpano.graphinout.foundation.json.JsonException;
+import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.JsonWriter;
 import com.calpano.graphinout.foundation.json.impl.DelegatingJsonWriter;
 
@@ -22,23 +24,36 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
     /** the version of CJ that this writer writes */
     private static final String CJ_VERSION_NUMBER = "5.0.0";
     private static final String CJ_VERSION_DATA = "2025-07-14";
-    private final Stack<CjType> stack = new Stack<>();
+    private final Stack<Object> stack = new Stack<>();
     private Mode mode = Mode.Cj;
+
 
     public Cj2JsonWriter(JsonWriter jsonWriter) {
         super(jsonWriter);
     }
 
     @Override
+    public void arrayEnd() throws JsonException {
+        super.arrayEnd();
+        pop(JsonType.Array);
+    }
+
+    @Override
+    public void arrayStart() throws JsonException {
+        super.arrayStart();
+        stack.push(JsonType.Array);
+    }
+
+    @Override
     public void baseUri(String baseUri) {
-        super.onKey(CjConstants.BASE_URI);
+        super.onKey(CjConstants.ROOT__BASE_URI);
         super.string(baseUri);
     }
 
     @Override
     public void direction(CjDirection direction) {
-        super.onKey(CjConstants.DIRECTION);
-        super.string(direction.name());
+        super.onKey(CjConstants.ENDPOINT__DIRECTION);
+        super.string(direction.value());
     }
 
     public void documentEnd() throws CjException {
@@ -60,7 +75,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
         super.string(CjConstants.CJ_SCHEMA_ID);
 
         // "connectedJson" : { ...
-        super.onKey(CjConstants.CONNECTED_JSON);
+        super.onKey(CjConstants.ROOT__CONNECTED_JSON);
         super.objectStart();
         super.onKey(CjConstants.VERSION_NUMBER);
         super.string(CJ_VERSION_NUMBER);
@@ -75,7 +90,6 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
     }
 
     public void edgeStart() throws CjException {
-        ensureInArrayOf(CjType.ArrayOfEdges);
         stack.push(CjType.Edge);
         super.objectStart();
     }
@@ -83,9 +97,9 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
     @Override
     public void edgeType(CjEdgeType edgeType) {
         switch (edgeType.source()) {
-            case URI -> super.onKey(CjConstants.TYPE_URI);
-            case Node -> super.onKey(CjConstants.TYPE_NODE);
-            case String -> super.onKey(CjConstants.TYPE);
+            case URI -> super.onKey(CjConstants.EDGE_OR_ENDPOINT__TYPE_URI);
+            case Node -> super.onKey(CjConstants.EDGE_OR_ENDPOINT__TYPE_NODE);
+            case String -> super.onKey(CjConstants.EDGE_OR_ENDPOINT__TYPE);
             default -> throw new IllegalStateException("Unexpected value: " + edgeType.source());
         }
         super.string(edgeType.type());
@@ -99,7 +113,6 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
 
     @Override
     public void endpointStart() {
-        ensureInArrayOf(CjType.ArrayOfEndpoints);
         stack.push(CjType.Endpoint);
         super.objectStart();
     }
@@ -112,12 +125,17 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
 
     @Override
     public void graphStart() throws CjException {
-        ensureInArrayOf(CjType.ArrayOfGraphs);
         stack.push(CjType.Graph);
         super.objectStart();
         // TODO compoundNode from gioGraph (not yet there)
         // TODO label from gioGraph (not yet there)
         // TODO meta ??? from gioGraph (not yet there)
+    }
+
+    @Override
+    public void graph__canonical(boolean b) {
+        super.onKey(CjConstants.CANONICAL);
+        super.onBoolean(b);
     }
 
     @Override
@@ -127,15 +145,16 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
     }
 
     @Override
-    public void jsonEnd() {
+    public void jsonDataEnd() {
         assert mode == Mode.Json;
         mode = Mode.Cj;
     }
 
     @Override
-    public void jsonStart() {
-        assert mode == Mode.Cj;
+    public void jsonDataStart() {
+        assert mode == Mode.Cj : "Expected Cj mode";
         mode = Mode.Json;
+        super.onKey(CjConstants.DATA);
     }
 
     @Override
@@ -160,7 +179,6 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
     @Override
     public void labelStart() {
         // FIXME is this right?
-        ensureInArrayOf(CjType.ArrayOfLabelEntries);
         stack.push(CjType.ArrayOfLabelEntries);
         super.objectStart();
     }
@@ -173,12 +191,61 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
 
     public void listEnd(CjType cjType) {
         assert !stack.isEmpty();
-        CjType type = stack.pop();
-        assert type == cjType;
+        CjType type = (CjType) stack.pop();
+        assert type == cjType : "Expected " + cjType + " but found " + type + ".";
+        super.arrayEnd();
     }
 
-    public void listStart(CjType cjType) {
-        stack.push(cjType);
+    public void listStart(CjType cjArrayType) {
+        assert cjArrayType.isArray();
+        stack.push(cjArrayType);
+        switch (cjArrayType) {
+            case ArrayOfEdges -> super.onKey(CjConstants.GRAPH__EDGES);
+            case ArrayOfNodes -> super.onKey(CjConstants.GRAPH__NODES);
+            case ArrayOfGraphs -> super.onKey(CjConstants.GRAPHS);
+            case ArrayOfPorts -> super.onKey(CjConstants.PORTS);
+            case ArrayOfEndpoints -> super.onKey(CjConstants.EDGE__ENDPOINTS);
+            case ArrayOfLabelEntries -> super.onKey(CjConstants.LABEL);
+            default -> throw new IllegalStateException("Unknown cjArrayType " + cjArrayType);
+        }
+        super.arrayStart();
+    }
+
+    @Override
+    public void metaEnd() {
+        super.objectEnd();
+        pop(CjType.Meta);
+    }
+
+    @Override
+    public void metaStart() {
+        stack.push(CjType.Meta);
+        super.onKey(CjConstants.GRAPH__META);
+        super.objectStart();
+    }
+
+    @Override
+    public void meta__edgeCountInGraph(long number) {
+        super.onKey(CjConstants.META__EDGE_COUNT_IN_GRAPH);
+        super.onLong(number);
+    }
+
+    @Override
+    public void meta__edgeCountTotal(long number) {
+        super.onKey(CjConstants.META__EDGE_COUNT_TOTAL);
+        super.onLong(number);
+    }
+
+    @Override
+    public void meta__nodeCountInGraph(long number) {
+        super.onKey(CjConstants.META__NODE_COUNT_IN_GRAPH);
+        super.onLong(number);
+    }
+
+    @Override
+    public void meta__nodeCountTotal(long number) {
+        super.onKey(CjConstants.META__NODE_COUNT_TOTAL);
+        super.onLong(number);
     }
 
     @Override
@@ -189,15 +256,26 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
 
     @Override
     public void nodeId(String nodeId) {
-        super.onKey(CjConstants.NODE);
+        super.onKey(CjConstants.ENDPOINT__NODE);
         super.string(nodeId);
     }
 
     @Override
     public void nodeStart() {
-        ensureInArrayOf(CjType.ArrayOfNodes);
         stack.push(CjType.Node);
         super.objectStart();
+    }
+
+    @Override
+    public void objectEnd() throws JsonException {
+        super.objectEnd();
+        pop(JsonType.Object);
+    }
+
+    @Override
+    public void objectStart() throws JsonException {
+        super.objectStart();
+        stack.push(JsonType.Object);
     }
 
     @Override
@@ -208,13 +286,12 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
 
     @Override
     public void portId(String portId) {
-        super.onKey(CjConstants.ID);
+        super.onKey(CjConstants.ENDPOINT__PORT);
         super.string(portId);
     }
 
     @Override
     public void portStart() {
-        ensureInArrayOf(CjType.ArrayOfPorts);
         stack.push(CjType.Port);
         super.objectStart();
     }
@@ -240,33 +317,17 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
         super.string(value);
     }
 
-    /**
-     * Opens an array with the correct property, if not already open
-     */
-    private void ensureInArrayOf(CjType desiredArray) {
-        assert desiredArray.isArray();
-        CjType cjType = stack.peek();
-        if (cjType.isArray()) {
-            if (cjType == desiredArray) {
-                return;
-            }
-            // close the open, wrong array
-            super.arrayEnd();
-        }
-        switch (desiredArray) {
-            case ArrayOfEdges -> super.onKey(CjConstants.EDGES);
-            case ArrayOfNodes -> super.onKey(CjConstants.NODES);
-            case ArrayOfGraphs -> super.onKey(CjConstants.GRAPHS);
-            case ArrayOfPorts -> super.onKey(CjConstants.PORTS);
-            case ArrayOfEndpoints -> super.onKey(CjConstants.ENDPOINTS);
-            case ArrayOfLabelEntries -> super.onKey(CjConstants.LABEL);
-            default -> throw new IllegalStateException("Unknown desired array " + desiredArray);
-        }
-        super.arrayStart();
+    private void pop(CjType cjType) {
+        Object o = stack.pop();
+        assert o instanceof CjType : "Expected " + cjType + " but found " + o + ".";
+        CjType x = (CjType) o;
+        assert x == cjType;
     }
 
-    private void pop(CjType cjType) {
-        CjType x = stack.pop();
+    private void pop(JsonType cjType) {
+        Object o = stack.pop();
+        assert o instanceof JsonType : "Expected " + cjType + " but found " + o + ".";
+        JsonType x = (JsonType) o;
         assert x == cjType;
     }
 

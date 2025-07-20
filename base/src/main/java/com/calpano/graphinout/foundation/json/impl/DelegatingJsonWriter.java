@@ -12,10 +12,11 @@ public class DelegatingJsonWriter implements JsonWriter {
 
     protected final List<JsonWriter> jsonWriters = new ArrayList<>();
 
-    public DelegatingJsonWriter(JsonWriter jsonWriter) {addWriter(jsonWriter);}
+    public DelegatingJsonWriter(JsonWriter jsonWriter) {addJsonWriter(jsonWriter);}
 
-    public void addWriter(JsonWriter jsonWriter) {
+    public DelegatingJsonWriter addJsonWriter(JsonWriter jsonWriter) {
         jsonWriters.add(jsonWriter);
+        return this;
     }
 
     @Override

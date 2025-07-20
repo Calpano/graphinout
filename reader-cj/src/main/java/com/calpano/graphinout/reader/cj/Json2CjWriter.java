@@ -1,19 +1,24 @@
 package com.calpano.graphinout.reader.cj;
 
 import com.calpano.graphinout.base.cj.CjDirection;
-import com.calpano.graphinout.base.cj.CjProperties;
+import com.calpano.graphinout.base.cj.CjEdgeType;
+import com.calpano.graphinout.base.cj.CjEdgeTypeSource;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.JsonWriter;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Function: Recognize some JSON events as connected JSON. Emit other JSON as meta-data.
@@ -34,6 +39,7 @@ public class Json2CjWriter implements JsonWriter {
 
         public void containerEnd() {
             stack.pop();
+            expectedCjTypes.clear();
         }
 
         public void expect(Set<CjType> expected) {
@@ -46,12 +52,19 @@ public class Json2CjWriter implements JsonWriter {
         }
 
         public Set<CjType> expectedCjTypes() {
+            // auto-add: we additionally always expect itemTypes, when in an array
+            CjType cjType = peekCjType();
+            if (cjType != null && cjType.itemTypes != null) {
+                // what member type do we expect?
+                expectedCjTypes.addAll(List.of(cjType.itemTypes));
+            }
+
             return expectedCjTypes;
         }
 
         public boolean isInJson() {
             if (stack.isEmpty()) return false;
-            return stack.peek() instanceof JsonType;
+            return stack.peek() instanceof JsonType || stack.peek() == CjType.Data;
         }
 
         public @Nullable CjType peekCjType() {
@@ -61,6 +74,12 @@ public class Json2CjWriter implements JsonWriter {
                 return (CjType) cjOrJsonType;
             }
             return null;
+        }
+
+        public void popData() {
+            if (!stack.isEmpty() && stack.peek() == CjType.Data) {
+                stack.pop();
+            }
         }
 
         public void popJsonPropertyMaybe() {
@@ -79,9 +98,9 @@ public class Json2CjWriter implements JsonWriter {
 
     }
 
+    private static final Logger log = getLogger(Json2CjWriter.class);
     /** The sink for the converted events. */
     final CjWriter cjWriter;
-
     /** The current context from root: stack of Container and String (property keys). */
     private final ParseStack parseStack = new ParseStack();
     private final StringBuilder stringBuffer = new StringBuilder();
@@ -90,10 +109,15 @@ public class Json2CjWriter implements JsonWriter {
         this.cjWriter = cjWriter;
     }
 
+    public static Json2CjWriter createWritingTo(CjWriter cjWriter) {
+        return new Json2CjWriter(cjWriter);
+    }
+
     @Override
     public void arrayEnd() throws JsonException {
         if (parseStack.isInJson()) {
             cjWriter.arrayEnd();
+            maybeEndData();
         } else {
             cjWriter.listEnd(parseStack.peekCjType());
         }
@@ -130,8 +154,10 @@ public class Json2CjWriter implements JsonWriter {
     @Override
     public void objectEnd() throws JsonException {
         if (parseStack.isInJson()) {
+            // might also pop a Data object itself
             parseStack.containerEnd();
             cjWriter.objectEnd();
+            maybeEndData();
         } else {
             CjType cjType = parseStack.peekCjType();
             if (cjType == null) {
@@ -143,11 +169,13 @@ public class Json2CjWriter implements JsonWriter {
                 case Endpoint -> cjWriter.endpointEnd();
                 case Port -> cjWriter.portEnd();
                 case Graph -> cjWriter.graphEnd();
+                case Meta -> cjWriter.metaEnd();
                 case ArrayOfLabelEntries -> cjWriter.labelEnd();
                 case LabelEntry -> cjWriter.labelEntryEnd();
-                case RootObject -> {
+                case RootObject, ConnectedJson -> {
                     // do nothing
                 }
+                default -> throw new IllegalStateException("Unexpected CJ type " + cjType + " on stack.");
             }
             parseStack.containerEnd();
         }
@@ -173,9 +201,11 @@ public class Json2CjWriter implements JsonWriter {
                 case Endpoint -> cjWriter.endpointStart();
                 case ArrayOfLabelEntries -> cjWriter.labelStart();
                 case LabelEntry -> cjWriter.labelEntryStart();
-                case RootObject -> {
+                case Meta -> cjWriter.metaStart();
+                case RootObject, ConnectedJson, Data -> {
                     // do nothing
                 }
+                default -> throw new IllegalStateException("Unexpected CJ type " + cjType + " on stack.");
             }
         }
     }
@@ -185,8 +215,9 @@ public class Json2CjWriter implements JsonWriter {
         if (parseStack.isInJson()) {
             cjWriter.onBigDecimal(bigDecimal);
             parseStack.popJsonPropertyMaybe();
+            maybeEndData();
         } else {
-            onCjNumber(bigDecimal.toString());
+            onCjNumber(bigDecimal);
         }
     }
 
@@ -195,19 +226,25 @@ public class Json2CjWriter implements JsonWriter {
         if (parseStack.isInJson()) {
             cjWriter.onBigInteger(bigInteger);
             parseStack.popJsonPropertyMaybe();
+            maybeEndData();
         } else {
-            onCjNumber(bigInteger.toString());
+            onCjNumber(bigInteger);
         }
     }
 
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     @Override
     public void onBoolean(boolean b) throws JsonException {
         if (parseStack.isInJson()) {
             cjWriter.onBoolean(b);
             parseStack.popJsonPropertyMaybe();
+            maybeEndData();
         } else {
-            throw new IllegalStateException("Standard CJ has no booleans.");
+            // are we in Canonical?
+            if (parseStack.peekCjType() == CjType.Meta) {
+                cjWriter.graph__canonical(b);
+            } else {
+                throw new IllegalStateException("Unexpected boolean value '" + b + "' in CJ.");
+            }
         }
     }
 
@@ -216,8 +253,9 @@ public class Json2CjWriter implements JsonWriter {
         if (parseStack.isInJson()) {
             cjWriter.onDouble(d);
             parseStack.popJsonPropertyMaybe();
+            maybeEndData();
         } else {
-            onCjNumber("" + d);
+            onCjNumber(d);
         }
     }
 
@@ -226,8 +264,9 @@ public class Json2CjWriter implements JsonWriter {
         if (parseStack.isInJson()) {
             cjWriter.onFloat(f);
             parseStack.popJsonPropertyMaybe();
+            maybeEndData();
         } else {
-            onCjNumber("" + f);
+            onCjNumber(f);
         }
     }
 
@@ -236,8 +275,9 @@ public class Json2CjWriter implements JsonWriter {
         if (parseStack.isInJson()) {
             cjWriter.onInteger(i);
             parseStack.popJsonPropertyMaybe();
+            maybeEndData();
         } else {
-            onCjNumber("" + i);
+            onCjNumber(i);
         }
     }
 
@@ -247,13 +287,16 @@ public class Json2CjWriter implements JsonWriter {
             cjWriter.onKey(key);
         } else {
             CjType cjType = parseStack.peekCjType();
-            String normKey = normalizeProperty(key);
             assert cjType != null;
-            CjType.CjProperty prop = cjType.properties.get(normKey);
+            CjType.CjProperty prop = cjType.properties.get(key);
             if (prop == null) {
-                // JSON property extensible -> an unknown property is generic JSON
+                log.warn("Unknown property {}.'{}' in CJ.", cjType, key);
                 parseStack.stack.push(JsonType.Property);
             } else {
+                if (key.equals("data")) {
+                    cjWriter.jsonDataStart();
+                    parseStack.push(CjType.Data);
+                }
                 parseStack.expect(prop.expected());
             }
         }
@@ -264,8 +307,9 @@ public class Json2CjWriter implements JsonWriter {
         if (parseStack.isInJson()) {
             cjWriter.onLong(l);
             parseStack.popJsonPropertyMaybe();
+            maybeEndData();
         } else {
-            onCjNumber("" + l);
+            onCjNumber(l);
         }
     }
 
@@ -274,11 +318,11 @@ public class Json2CjWriter implements JsonWriter {
         if (parseStack.isInJson()) {
             cjWriter.onNull();
             parseStack.popJsonPropertyMaybe();
+            maybeEndData();
         } else {
             throw new IllegalStateException("No null values in CJ");
         }
     }
-
 
     public void reset() {
         parseStack.clear();
@@ -300,28 +344,33 @@ public class Json2CjWriter implements JsonWriter {
         if (parseStack.isInJson()) {
             parseStack.stack.pop();
             cjWriter.stringEnd();
+            maybeEndData();
         } else {
             CjType cjType = parseStack.expectedCjType(JsonType.String);
             switch (cjType) {
                 case Id -> cjWriter.id(stringBuffer.toString());
-                case LabelStringNoLanguage -> {
-                    cjWriter.labelStart();
-                    cjWriter.labelEntryStart();
-                    cjWriter.value(stringBuffer.toString());
-                    cjWriter.labelEntryEnd();
-                    cjWriter.labelEnd();
-                    parseStack.expectedCjTypes.clear();
-                }
+                case NodeId -> cjWriter.nodeId(stringBuffer.toString());
+                case PortId -> cjWriter.portId(stringBuffer.toString());
                 case Language -> cjWriter.language(stringBuffer.toString());
                 case Value -> cjWriter.value(stringBuffer.toString());
                 case BaseUri -> cjWriter.baseUri(stringBuffer.toString());
-                case Direction -> cjWriter.direction(CjDirection.valueOf(stringBuffer.toString()));
+                case Direction -> cjWriter.direction(CjDirection.of(stringBuffer.toString()));
+                case JsonSchemaId, JsonSchemaLocation ->
+                    /* we expected this might come, but we auto-add it anyway */
+                        log.trace("Skipping '{}' as JSON schema property.", stringBuffer);
+                case ConnectedJson__VersionId, ConnectedJson__VersionDate -> {
+                    // IMPROVE verify we parse a known version
+                }
+                case EdgeTypeString ->
+                        cjWriter.edgeType(CjEdgeType.of(CjEdgeTypeSource.String, stringBuffer.toString()));
+                case EdgeTypeNodeId -> cjWriter.edgeType(CjEdgeType.of(CjEdgeTypeSource.Node, stringBuffer.toString()));
+                case EdgeTypeUri -> cjWriter.edgeType(CjEdgeType.of(CjEdgeTypeSource.URI, stringBuffer.toString()));
                 default ->
-                        throw new IllegalStateException("Unreasonable expectations. You expect " + cjType + " but why?");
+                        throw new IllegalStateException("Default case. You expect " + cjType + ". String='" + stringBuffer + "'.");
             }
             stringBuffer.setLength(0);
+            parseStack.expectedCjTypes.clear();
         }
-
     }
 
     @Override
@@ -341,19 +390,24 @@ public class Json2CjWriter implements JsonWriter {
         // ignored in CJ for now
     }
 
-    /** Normalize property names using aliases */
-    private String normalizeProperty(String property) {
-        return CjProperties.normalizeProperty(property);
+    private void maybeEndData() {
+        if (parseStack.peekCjType() == CjType.Data) {
+            parseStack.popData();
+            cjWriter.jsonDataEnd();
+        }
     }
 
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
-    private void onCjNumber(String number) {
+    private void onCjNumber(Number number) {
         CjType cjType = parseStack.expectedCjType(JsonType.Number);
         switch (cjType) {
-            case CjType.Id -> cjWriter.id(number);
+            case CjType.Id -> cjWriter.id(number.toString());
+            case CjType.Meta__NodeCountTotal -> cjWriter.meta__nodeCountTotal(number.longValue());
+            case CjType.Meta__EdgeCountTotal -> cjWriter.meta__edgeCountTotal(number.longValue());
+            case CjType.Meta__NodeCountInGraph -> cjWriter.meta__nodeCountInGraph(number.longValue());
+            case CjType.Meta__EdgeCountInGraph -> cjWriter.meta__edgeCountInGraph(number.longValue());
             default -> throw new IllegalStateException("Unreasonable expectations. You expect " + cjType + " but why?");
         }
-        parseStack.stack.pop();
+        //parseStack.stack.pop();
     }
 
 

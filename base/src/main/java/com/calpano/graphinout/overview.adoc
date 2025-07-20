@@ -336,7 +336,6 @@ Provides support for the CJ (Compact JSON) graph format, a lightweight JSON-base
 * `CjDirection` - Enumeration for edge directions
 * `CjEdgeType` - Enumeration for edge types
 * `CjConstants` - Constants for CJ format
-* `CjProperties` - Property handling for CJ format
 
 **Implementation Package (`impl`):**
 * `CjLabelImpl` - Implementation of CJ labels

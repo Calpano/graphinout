@@ -4,22 +4,21 @@ import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.foundation.json.JsonType;
 
 import java.util.Set;
-import java.util.function.Predicate;
 
 public class Util {
 
     public static CjType findExactlyOne(Set<CjType> set, JsonType jsonType) {
         CjType found = null;
         for (CjType element : set) {
-            if (((Predicate<CjType>) (CjType type) -> type.hasJsonType(jsonType)).test(element)) {
+            if (element.hasJsonType(jsonType)) {
                 if (found != null) {
-                    throw new IllegalArgumentException("Expected exactly one element matching " + jsonType + ", but found at least two in " + set);
+                    throw new IllegalArgumentException("Expected exactly one element matching '" + jsonType + "', but found at least two in " + set);
                 }
                 found = element;
             }
         }
         if (found == null) {
-            throw new IllegalArgumentException("Expected exactly one element matching " + jsonType + ", but found none in " + set);
+            throw new IllegalArgumentException("Expected exactly one element matching '" + jsonType + "', but found none in " + set);
         }
         return found;
     }
