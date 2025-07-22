@@ -1,0 +1,189 @@
+= GraphML to CJ and Back
+
+See also
+http://graphml.graphdrawing.org/primer/graphml-primer.html[]
+
+
+== GraphML to CJ
+GraphML has three data mechanisms:
+
+
+=== Typed Key-Data
+
+[%header]
+|===
+| GraphML | JSON | CjWriter
+| boolean  | boolean | boolean
+| int | number | BigInteger
+| long | number | BigInteger
+| float | number | BigDecimal
+| double | number | BigDecimal
+| string | string | string
+| Complex XML | string | **rawXml**
+|===
+
+[source,xml]
+----
+<key id="d0" for="node" attr.name="color" attr.type="string">
+    <default>yellow</default>
+  </key>
+----
+and using the def
+[source,xml]
+----
+<node id="n0">
+  <data key="d0">green</data>
+</node>
+----
+
+.Mapping to CJ
+__(Node n0)__. `Data`:
+[source,json]
+----
+{
+  "color": "green"
+}
+----
+
+=== Untyped Key-Data (XML)
+Always mapped to string.
+If the content was XML (easy to detect in XML elements started), then we need to store type hints.
+
+.GraphML def
+[source,xml]
+----
+<key id="k0" for="node">
+<default>
+  <svg:svg width="5cm" height="4cm" version="1.1">
+    <svg:desc>Default graphical representation for nodes
+    </svg:desc>
+    <svg:rect x="0.5cm" y="0.5cm" width="2cm" height="1cm"/>
+  </svg:svg>
+</default>
+</key>
+----
+and used as
+
+.GraphML usage
+[source,xml]
+----
+<node id="n0">
+  <data key="k0">
+    <svg:svg width="4cm" height="8cm" version="1.1">
+      <svg:ellipse cx="2cm" cy="4cm" rx="2cm" ry="1cm" />
+    </svg:svg>
+  </data>
+</node>
+----
+
+maps to CJ
+
+.CJ (Option A) __Node__ . `Data`:
+[source,json]
+----
+{
+  "cj:types": {
+    "k0": "rawXml"
+  },
+  "k0": "<svg:svg width=\"4cm\" height=\"8cm\" version=\"1.1\"><svg:ellipse cx=\"2cm\" cy=\"4cm\" rx=\"2cm\" ry=\"1cm\" /></svg:svg>"
+}
+----
+
+.CJ (Option B) __Node__ . `Data`:
+[source,json]
+----
+{
+  "cj:rawXml:k0": "<svg:svg width=\"4cm\" height=\"8cm\" version=\"1.1\"><svg:ellipse cx=\"2cm\" cy=\"4cm\" rx=\"2cm\" ry=\"1cm\" /></svg:svg>"
+}
+----
+
+.CJ (Option C) __Node__ . `Data`:
+[source,json]
+----
+{
+  "cj:rawXml": {
+    "k0": "<svg:svg width=\"4cm\" height=\"8cm\" version=\"1.1\"><svg:ellipse cx=\"2cm\" cy=\"4cm\" rx=\"2cm\" ry=\"1cm\" /></svg:svg>"
+  }
+}
+----
+
+TIP: This is the selected option.
+
+=== Custom XML Attributes
+Just use any undefined XML attributes.
+Often in another namespace.
+
+[source,xml]
+----
+<node id="n0" xlink:href="http://graphml.graphdrawing.org"/>
+----
+
+.Mapping to CJ
+`Document.Data`:
+[source,json]
+----
+{
+    "cj:xmlNamespaces": {
+        "xlink" : "http://www.w3.org/1999/xlink"
+    }
+}
+----
+
+__(Node n0)__. `Data`:
+[source,json]
+----
+{
+  "cj:xmlAttributes": {
+    "xlink:href": "http://graphml.graphdrawing.org"
+  }
+}
+----
+
+
+
+
+=== Locator
+.A node defined via an external URI
+[source,xml]
+----
+<node id="n0" xlink:href="http://example.com/nodes?id=123"/>
+----
+
+Just treated as <<_custom_xml_attributes>>.
+Maybe give a warning.
+
+
+== CJ to GraphML
+
+=== Data is Primitive
+Case: All nodes, that have `Data`, contain the same primitive JSON type.
+
+.GraphML
+[source,xml]
+----
+<key id="serial-123" for="node" attr.type="${given type}" />
+----
+
+=== Data is Object
+Each node property with primitive values (using a consistent type) can be mapped back to GraphML as
+
+.GraphML
+[source,xml]
+----
+<key id="serial-123" for="node"
+  attr.name="${given JSON prop key}"
+  attr.type="${given type}" />
+----
+
+Other properties with inconsistent types or complex values, are mapped as
+
+.GraphML
+[source,xml]
+----
+<key id="serial-123" for="node"
+  attr.name="${given JSON prop key}"
+  attr.type="string" />
+----
+and the value is the JSON serialized to string.
+
+

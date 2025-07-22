@@ -8,11 +8,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
-import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.SAXParser;
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -75,15 +73,6 @@ public class XmlTest {
         testXmlFile(testResourcesPath.resolve("typical.xml"));
     }
 
-    private void parseAndWriteXml(File xmlFile, XmlWriter xmlWriter) throws Exception {
-        SAXParser saxParser = XmlFactory.createSaxParser();
-        Sax2XmlWriter handler2XmlWriter = new Sax2XmlWriter(xmlWriter, null);
-        XMLReader reader = saxParser.getXMLReader();
-        reader.setProperty("http://xml.org/sax/properties/lexical-handler", handler2XmlWriter);
-        reader.setContentHandler(handler2XmlWriter);
-        reader.parse(xmlFile.getAbsolutePath());
-    }
-
     private void parseXmlString(String xml) throws Exception {
         SAXParser saxParser = XmlFactory.createSaxParser();
         saxParser.parse(new java.io.ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), new DefaultHandler());
@@ -98,7 +87,7 @@ public class XmlTest {
         // Parse and write XML
         try (InMemoryOutputSink sink = new InMemoryOutputSink()) {
             XmlWriterImpl xmlWriter = new XmlWriterImpl(sink);
-            parseAndWriteXml(filePath.toFile(), xmlWriter);
+            XmlTool.parseAndWriteXml(filePath.toFile(), xmlWriter);
 
             String processedContent = sink.getBufferAsUtf8String();
 

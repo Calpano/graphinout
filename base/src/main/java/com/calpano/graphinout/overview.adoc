@@ -256,14 +256,14 @@ interface Characters_in as "Characters<<in>>" {
     java.io.Reader
 }
 interface JSON_in as "JSON<<in>>" {
-    XmlWriter
+    JsonWriter
 }
 'out
 interface Characters_out as "Characters<<out>>" {
     Appendable
 }
 interface JSON_out as "JSON<<out>>" {
-    XmlWriter
+    JsonWriter
 }
 Characters_in -[hidden]> Characters_out
 Characters_in --u> JSON_in
@@ -303,7 +303,7 @@ interface CJ_out as "CJ<<out>>" {
 
 Characters_in -[hidden]> Characters_out
 Characters_in --u> JSON_in
-JSON_in --u> CJ_in : CJ,\nExtended CJ\n\nJson2CjWriter
+JSON_in --u> CJ_in : CJ,\n(Extended CJ)\n\nJson2CjWriter
 CJ_out --> JSON_out : CJ\n\nCj2JsonWriter
 JSON_out --> Characters_out
 CJ_in -[#blue]> CJ_out : delegate
