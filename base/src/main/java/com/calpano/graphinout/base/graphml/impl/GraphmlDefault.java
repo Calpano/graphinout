@@ -1,4 +1,6 @@
-package com.calpano.graphinout.base.graphml;
+package com.calpano.graphinout.base.graphml.impl;
+
+import com.calpano.graphinout.base.graphml.IGraphmlDefault;
 
 import java.util.LinkedHashMap;
 import java.util.Objects;
@@ -12,17 +14,20 @@ import java.util.Objects;
  * elements. The (optional) &lt;default&gt; child of &lt;key&gt; gives the default value for the corresponding function.
  * Occurence: &lt;key&gt;.
  */
-public class GraphmlDefault implements XMLValue {
+public class GraphmlDefault implements IGraphmlDefault {
 
     public static class GraphmlDefaultBuilder {
 
         private String value;
         private String defaultType;
 
-        public GraphmlDefault build() {
+        public IGraphmlDefault build() {
             return new GraphmlDefault(value, defaultType);
         }
 
+        /**
+         * FIXME should be used
+         */
         public GraphmlDefaultBuilder defaultType(String defaultType) {
             this.defaultType = defaultType;
             return this;
@@ -34,31 +39,31 @@ public class GraphmlDefault implements XMLValue {
         }
 
     }
-    public static final String TAGNAME = "default";
+
     /**
      * the default value for the corresponding function.
      */
-    private String value;
-    /**
-     * Complex type for the &lt;default&gt; element. default.type is mixed, that is, data may contain #PCDATA. Content
-     * type: extension of data-extension. type which is empty per default.
-     * <p>
-     * The name of this attribute in default is <b>default.type</b>
-     */
-    private String defaultType;
-
-    // Constructors
-    public GraphmlDefault() {
-    }
+    private final String value;
+    private final String defaultType;
 
     public GraphmlDefault(String value, String defaultType) {
         this.value = value;
         this.defaultType = defaultType;
     }
 
-    // Builder
-    public static GraphmlDefaultBuilder builder() {
-        return new GraphmlDefaultBuilder();
+    @Override
+    public LinkedHashMap<String, String> attributes() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+
+        if (defaultType != null) attributes.put("default.type", defaultType);
+
+        return attributes;
+    }
+
+
+    @Override
+    public String defaultType() {
+        return defaultType;
     }
 
     // equals, hashCode, toString
@@ -71,35 +76,13 @@ public class GraphmlDefault implements XMLValue {
                 Objects.equals(defaultType, that.defaultType);
     }
 
-    @Override
-    public LinkedHashMap<String, String> getAttributes() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (defaultType != null) attributes.put("default.type", defaultType);
-
-        return attributes;
-    }
-
     public String getDefaultType() {
         return defaultType;
-    }
-
-    // Getters and Setters
-    public String getValue() {
-        return value;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(value, defaultType);
-    }
-
-    public void setDefaultType(String defaultType) {
-        this.defaultType = defaultType;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 
     @Override
@@ -108,6 +91,11 @@ public class GraphmlDefault implements XMLValue {
                 "value='" + value + '\'' +
                 ", defaultType='" + defaultType + '\'' +
                 '}';
+    }
+
+    @Override
+    public String value() {
+        return value;
     }
 
 }

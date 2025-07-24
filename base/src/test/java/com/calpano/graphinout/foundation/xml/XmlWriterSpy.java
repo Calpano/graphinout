@@ -8,7 +8,7 @@ public class XmlWriterSpy implements XmlWriter {
     private final StringBuilder outPut = new StringBuilder();
 
     @Override
-    public void characterData(String characterData) throws IOException {
+    public void characterData(String characterData, boolean isInCdata) throws IOException {
         outPut.append("::characterData->").append(characterData);
     }
 
@@ -49,6 +49,11 @@ public class XmlWriterSpy implements XmlWriter {
     @Override
     public void endCDATA() throws IOException {
         outPut.append("::endCDATA");
+    }
+
+    @Override
+    public void raw(String rawXml) throws IOException {
+        outPut.append("::raw->").append(rawXml);
     }
 
 }

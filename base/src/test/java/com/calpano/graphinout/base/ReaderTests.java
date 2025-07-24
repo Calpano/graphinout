@@ -5,7 +5,7 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.DelegatingGraphmlWriter;
 import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
-import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
+import com.calpano.graphinout.base.graphml.impl.Graphml2XmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.validation.ValidatingGraphMlWriter;
 import com.calpano.graphinout.base.writer.DelegatingGioWriter;
@@ -47,7 +47,7 @@ public class ReaderTests {
             xmlWriter = new ValidatingXmlWriter(xmlWriter);
         }
 
-        GraphmlWriter graphmlWriter = new GraphmlWriterImpl(xmlWriter);
+        GraphmlWriter graphmlWriter = new Graphml2XmlWriter(xmlWriter);
         if (validateGraphml) {
             graphmlWriter = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), graphmlWriter);
         }

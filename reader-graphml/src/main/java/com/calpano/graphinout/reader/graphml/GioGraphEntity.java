@@ -31,7 +31,7 @@ public class GioGraphEntity extends AbstractGraphmlEntity<GioGraph> implements G
 
     @Override
     public String getName() {
-        return GraphmlElement.GRAPH;
+        return GraphmlElements.GRAPH;
     }
 
 

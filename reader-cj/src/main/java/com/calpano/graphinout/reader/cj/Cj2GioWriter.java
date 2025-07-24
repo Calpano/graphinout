@@ -30,7 +30,7 @@ public class Cj2GioWriter implements CjWriter {
     }
 
     final GioWriter gio;
-    // FIXME remove this one
+    /** used for temporary buffering of JSON data */
     private final StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter(false);
     private final Stack<Object> stack = new Stack<>();
 
@@ -73,11 +73,11 @@ public class Cj2GioWriter implements CjWriter {
     public void documentStart() {
         try {
             gio.startDocument(null);
-            gio.key(GioKey.builder().forType(GioKeyForType.All) //
-                    .attributeName("json")//
-                    .attributeType(GioDataType.typeString)//
-                    .description("Connected JSON allows custom JSON properties in all objects")//
-                    .build());
+//            gio.key(GioKey.builder().forType(GioKeyForType.All) //
+//                    .attributeName("json")//
+//                    .attributeType(GioDataType.typeString)//
+//                    .description("Connected JSON allows custom JSON properties in all objects")//
+//                    .build());
         } catch (IOException e) {
             throw new JsonException(e);
         }

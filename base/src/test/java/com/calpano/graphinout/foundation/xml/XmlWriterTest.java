@@ -7,13 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.common.truth.Truth.assertThat;
+import static java.util.Objects.requireNonNull;
 
 class XmlWriterTest {
 
@@ -22,14 +22,8 @@ class XmlWriterTest {
 
     @BeforeEach
     public void setUp() throws IOException {
-
-        Arrays.stream(new File("./target/").listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.getName().startsWith(FILE_NAME);
-            }
-        })).sequential().forEach(File::deleteOnExit);
-
+        File targetDir = new File("./target/");
+        Arrays.stream(requireNonNull(targetDir.listFiles(pathname -> pathname.getName().startsWith(FILE_NAME)))).sequential().forEach(File::deleteOnExit);
     }
 
     @Test
@@ -38,11 +32,27 @@ class XmlWriterTest {
         XmlWriterImpl xmlWriter = new XmlWriterImpl(sink);
         xmlWriter.startDocument();
         xmlWriter.startElement("test");
-        xmlWriter.characterData("test");
+        xmlWriter.characterData("test", false);
         xmlWriter.endElement("test");
         xmlWriter.endDocument();
         String s = sink.getBufferAsUtf8String();
         assertThat(s).isEqualTo("<test>test</test>\n");
+    }
+
+    @Test
+    void testCdata() throws IOException {
+        // a test XML string with CDATA sections
+        String chars = "AAA <![CDATA[BBB]]>CCC<![CDATA[DDD < & > EEE]]>FFF";
+        String xml = "<root>" + chars + "</root>";
+        Xml2StringWriter xmlWriter = new Xml2StringWriter();
+        xmlWriter.startDocument();
+        xmlWriter.startElement("root");
+        xmlWriter.characterDataWhichMayContainCdata(chars);
+        xmlWriter.endElement("root");
+        xmlWriter.endDocument();
+
+        String out = xmlWriter.string();
+        assertThat(out).isEqualTo(xml);
     }
 
     @Test

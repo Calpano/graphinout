@@ -1,5 +1,6 @@
-package com.calpano.graphinout.base.graphml;
+package com.calpano.graphinout.base.graphml.impl;
 
+import com.calpano.graphinout.base.graphml.IGraphmlDescription;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.util.Objects;
  * Occurence: &lt;key&gt;, &lt;graphml&gt;, &lt;graph&gt;, &lt;node&gt;, &lt;port&gt;, &lt;edge&gt;, &lt;hyperedge&gt;,
  * and &lt;endpoint&gt;.
  */
-public class GraphmlDescription implements XMLValue {
+public class GraphmlDescription implements IGraphmlDescription {
 
     public static class GraphmlDescriptionBuilder {
 
@@ -29,11 +30,8 @@ public class GraphmlDescription implements XMLValue {
         }
 
     }
-    private String value;
 
-    // Constructors
-    public GraphmlDescription() {
-    }
+    private final String value;
 
     public GraphmlDescription(String value) {
         this.value = value;
@@ -42,6 +40,11 @@ public class GraphmlDescription implements XMLValue {
     // Builder
     public static GraphmlDescriptionBuilder builder() {
         return new GraphmlDescriptionBuilder();
+    }
+
+    @Override
+    public LinkedHashMap<String, String> attributes() {
+        return null;
     }
 
     // equals, hashCode, toString
@@ -54,37 +57,25 @@ public class GraphmlDescription implements XMLValue {
     }
 
     @Override
-    public LinkedHashMap<String, String> getAttributes() {
-        return null;
-    }
-
-    // Getters and Setters
-    public String getValue() {
-        return value;
-    }
-
-    @Override
     public int hashCode() {
         return Objects.hash(value);
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    @Override
+    public String toString() {
+        return "GraphmlDescription{" + "value='" + value + '\'' + '}';
+    }
+
+    public String value() {
+        return value;
     }
 
     @Override
-    public String toString() {
-        return "GraphmlDescription{" +
-                "value='" + value + '\'' +
-                '}';
-    }
-
     public void writeXml(XmlWriter xmlWriter) throws IOException {
-        if (value == null)
-            return;
-        xmlWriter.startElement("desc");
-        xmlWriter.characterData(value);
-        xmlWriter.endElement("desc");
+        if (value == null) return;
+        xmlWriter.startElement(tagName());
+        xmlWriter.characterDataWhichMayContainCdata(value);
+        xmlWriter.endElement(tagName());
     }
 
 }

@@ -97,18 +97,18 @@ class GraphmlSAXHandler extends DefaultHandler {
         String tagName = tagName(uri, localName, qName);
         try {
             switch (tagName) {
-                case GraphmlElement.DATA -> endDataElement();
-                case GraphmlElement.DEFAULT -> endDefaultElement();
-                case GraphmlElement.DESC -> endDescElement();
-                case GraphmlElement.EDGE -> endEdgeElement();
-                case GraphmlElement.ENDPOINT -> endEndpointElement();
-                case GraphmlElement.GRAPH -> endGraphElement();
-                case GraphmlElement.GRAPHML -> endGraphmlElement();
-                case GraphmlElement.HYPER_EDGE -> endHyperedgeElement();
-                case GraphmlElement.KEY -> endKeyElement();
-                case GraphmlElement.LOCATOR -> endLocatorElement();
-                case GraphmlElement.NODE -> endNodeElement();
-                case GraphmlElement.PORT -> endPortElement();
+                case GraphmlElements.DATA -> endDataElement();
+                case GraphmlElements.DEFAULT -> endDefaultElement();
+                case GraphmlElements.DESC -> endDescElement();
+                case GraphmlElements.EDGE -> endEdgeElement();
+                case GraphmlElements.ENDPOINT -> endEndpointElement();
+                case GraphmlElements.GRAPH -> endGraphElement();
+                case GraphmlElements.GRAPHML -> endGraphmlElement();
+                case GraphmlElements.HYPER_EDGE -> endHyperedgeElement();
+                case GraphmlElements.KEY -> endKeyElement();
+                case GraphmlElements.LOCATOR -> endLocatorElement();
+                case GraphmlElements.NODE -> endNodeElement();
+                case GraphmlElements.PORT -> endPortElement();
                 default -> {
                     if (openEntities.peek() != null && (openEntities.peek() instanceof GioDefaultEntity || openEntities.peek() instanceof GioDataEntity || openEntities.peek() instanceof GioDescriptionEntity)) {
                         // we accept any element and forward
@@ -154,18 +154,18 @@ class GraphmlSAXHandler extends DefaultHandler {
         String tagName = tagName(uri, localName, qName);
         try {
             switch (tagName) {
-                case GraphmlElement.DATA -> startDataElement(attributes);
-                case GraphmlElement.DEFAULT -> startDefaultElement(attributes);
-                case GraphmlElement.DESC -> startDescElement(attributes);
-                case GraphmlElement.EDGE -> startEdgeElement(attributes);
-                case GraphmlElement.ENDPOINT -> startEndpointElement(attributes);
-                case GraphmlElement.GRAPH -> startGraphElement(attributes);
-                case GraphmlElement.GRAPHML -> startGraphmlElement(attributes);
-                case GraphmlElement.HYPER_EDGE -> startHyperedgeElement(attributes);
-                case GraphmlElement.KEY -> startKeyElement(attributes);
-                case GraphmlElement.LOCATOR -> startLocatorElement(attributes);
-                case GraphmlElement.NODE -> startNodeElement(attributes);
-                case GraphmlElement.PORT -> startPortElement(attributes);
+                case GraphmlElements.DATA -> startDataElement(attributes);
+                case GraphmlElements.DEFAULT -> startDefaultElement(attributes);
+                case GraphmlElements.DESC -> startDescElement(attributes);
+                case GraphmlElements.EDGE -> startEdgeElement(attributes);
+                case GraphmlElements.ENDPOINT -> startEndpointElement(attributes);
+                case GraphmlElements.GRAPH -> startGraphElement(attributes);
+                case GraphmlElements.GRAPHML -> startGraphmlElement(attributes);
+                case GraphmlElements.HYPER_EDGE -> startHyperedgeElement(attributes);
+                case GraphmlElements.KEY -> startKeyElement(attributes);
+                case GraphmlElements.LOCATOR -> startLocatorElement(attributes);
+                case GraphmlElements.NODE -> startNodeElement(attributes);
+                case GraphmlElements.PORT -> startPortElement(attributes);
                 default -> {
                     GraphmlEntity<?> entity = openEntities.peek();
                     if (entity instanceof GioDataEntity || entity instanceof GioDefaultEntity || entity instanceof GioDescriptionEntity) {
@@ -287,7 +287,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void endEdgeElement() throws IOException {
         assertCurrent("endEdge", GioEdgeEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.EDGE);
+        sendStartThisOrParentMaybe(GraphmlElements.EDGE);
         gioWriter.endEdge();
         pop(GioEdgeEntity.class);
     }
@@ -301,21 +301,21 @@ class GraphmlSAXHandler extends DefaultHandler {
         if (url != null)
             pop(GioLocatorEntity.class);
         assertCurrent("endGraph", GioGraphEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.GRAPH);
+        sendStartThisOrParentMaybe(GraphmlElements.GRAPH);
         gioWriter.endGraph(url);
         pop(GioGraphEntity.class);
     }
 
     private void endGraphmlElement() throws IOException {
         assertCurrent("endGraphML", GioDocumentEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.GRAPHML);
+        sendStartThisOrParentMaybe(GraphmlElements.GRAPHML);
         gioWriter.endDocument();
         pop(GioDocumentEntity.class);
     }
 
     private void endHyperedgeElement() throws IOException {
         assertCurrent("endHyperedge", GioEdgeEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.HYPER_EDGE);
+        sendStartThisOrParentMaybe(GraphmlElements.HYPER_EDGE);
         gioWriter.endEdge();
         pop(GioEdgeEntity.class);
     }
@@ -335,14 +335,14 @@ class GraphmlSAXHandler extends DefaultHandler {
         if (url != null)
             pop(GioLocatorEntity.class);
         assertCurrent("endNode", GioNodeEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.NODE);
+        sendStartThisOrParentMaybe(GraphmlElements.NODE);
         gioWriter.endNode(url);
         pop(GioNodeEntity.class);
     }
 
     private void endPortElement() throws IOException {
         assertCurrent("endPort", GioPortEntity.class, GioNodeEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.PORT);
+        sendStartThisOrParentMaybe(GraphmlElements.PORT);
         pop(GioPortEntity.class);
         gioWriter.endPort();
     }
@@ -379,11 +379,11 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void sendStart(String name, GraphmlEntity<?> entity) throws IOException {
         switch (name) {
-            case GraphmlElement.GRAPHML -> gioWriter.startDocument((GioDocument) entity.getEntity());
-            case GraphmlElement.GRAPH -> gioWriter.startGraph((GioGraph) entity.getEntity());
-            case GraphmlElement.NODE -> gioWriter.startNode((GioNode) entity.getEntity());
-            case GraphmlElement.PORT -> gioWriter.startPort((GioPort) entity.getEntity());
-            case GraphmlElement.EDGE, GraphmlElement.HYPER_EDGE ->
+            case GraphmlElements.GRAPHML -> gioWriter.startDocument((GioDocument) entity.getEntity());
+            case GraphmlElements.GRAPH -> gioWriter.startGraph((GioGraph) entity.getEntity());
+            case GraphmlElements.NODE -> gioWriter.startNode((GioNode) entity.getEntity());
+            case GraphmlElements.PORT -> gioWriter.startPort((GioPort) entity.getEntity());
+            case GraphmlElements.EDGE, GraphmlElements.HYPER_EDGE ->
                     gioWriter.startEdge(((GioEdgeEntity) entity).buildEdge());
             default -> throw new AssertionError("Element " + name + " should have been sent");
         }
@@ -430,7 +430,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startDataElement(Attributes attributes) throws IOException {
         assertCurrent("startData", GioDocumentEntity.class, GioGraphEntity.class, GioNodeEntity.class, GioEdgeEntity.class, GioPortEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.DATA);
+        sendStartThisOrParentMaybe(GraphmlElements.DATA);
         GioData.GioDataBuilder builder = GioData.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -456,7 +456,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startEdgeElement(Attributes attributes) throws IOException {
         assertCurrent("startEdge", GioGraphEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.EDGE);
+        sendStartThisOrParentMaybe(GraphmlElements.EDGE);
         GioEdgeEntity gioEdgeEntity = new GioEdgeEntity();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -493,7 +493,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startGraphElement(Attributes attributes) throws IOException {
         assertCurrent("startGraph", GioDocumentEntity.class, GioNodeEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.GRAPH);
+        sendStartThisOrParentMaybe(GraphmlElements.GRAPH);
         GioGraph.GioGraphBuilder builder = GioGraph.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -521,7 +521,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startHyperedgeElement(Attributes attributes) throws IOException {
         assertCurrent("startHyperedge", GioGraphEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.HYPER_EDGE);
+        sendStartThisOrParentMaybe(GraphmlElements.HYPER_EDGE);
         GioEdgeEntity gioEdgeEntity = new GioEdgeEntity();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -536,7 +536,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startKeyElement(Attributes attributes) throws IOException {
         assertCurrent("startKey", GioDocumentEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.KEY);
+        sendStartThisOrParentMaybe(GraphmlElements.KEY);
         GioKey.GioKeyBuilder builder = GioKey.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -577,7 +577,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startNodeElement(Attributes attributes) throws IOException {
         assertCurrent("startNode", GioGraphEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.NODE);
+        sendStartThisOrParentMaybe(GraphmlElements.NODE);
         GioNode.GioNodeBuilder builder = GioNode.builder();
         Map<String, String> customAttributes = new LinkedHashMap<>();
         int attributesLength = attributes.getLength();
@@ -593,7 +593,7 @@ class GraphmlSAXHandler extends DefaultHandler {
 
     private void startPortElement(Attributes attributes) throws IOException {
         assertCurrent("startPort", GioNodeEntity.class, GioPortEntity.class);
-        sendStartThisOrParentMaybe(GraphmlElement.PORT);
+        sendStartThisOrParentMaybe(GraphmlElements.PORT);
         GioPort.GioPortBuilder b = GioPort.builder();
 
         Map<String, String> customAttributes = new LinkedHashMap<>();

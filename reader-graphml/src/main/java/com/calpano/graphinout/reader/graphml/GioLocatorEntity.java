@@ -17,7 +17,7 @@ public class GioLocatorEntity extends AbstractGraphmlEntity<URL> implements Grap
 
     @Override
     public String getName() {
-        return GraphmlElement.LOCATOR;
+        return GraphmlElements.LOCATOR;
     }
 
 

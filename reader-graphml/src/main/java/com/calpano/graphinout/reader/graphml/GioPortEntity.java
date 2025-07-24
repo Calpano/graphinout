@@ -26,7 +26,7 @@ public class GioPortEntity extends AbstractGraphmlEntity<GioPort> implements Gra
 
     @Override
     public String getName() {
-        return GraphmlElement.PORT;
+        return GraphmlElements.PORT;
     }
 
 }

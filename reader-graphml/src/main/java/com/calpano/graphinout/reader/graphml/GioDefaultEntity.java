@@ -20,7 +20,7 @@ public class GioDefaultEntity extends AbstractGraphmlEntity<StringBuilder> imple
 
     @Override
     public String getName() {
-        return GraphmlElement.DEFAULT;
+        return GraphmlElements.DEFAULT;
     }
 
 }

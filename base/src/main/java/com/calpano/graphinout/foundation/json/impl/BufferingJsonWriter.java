@@ -1,4 +1,4 @@
-package com.calpano.graphinout.base.graphml;
+package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.json.JsonElementWriter;
 import com.calpano.graphinout.foundation.json.JsonException;

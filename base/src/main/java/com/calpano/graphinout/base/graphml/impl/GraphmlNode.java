@@ -1,9 +1,14 @@
-package com.calpano.graphinout.base.graphml;
+package com.calpano.graphinout.base.graphml.impl;
+
+import com.calpano.graphinout.base.graphml.IGraphmlDescription;
+import com.calpano.graphinout.base.graphml.IGraphmlLocator;
+import com.calpano.graphinout.base.graphml.IGraphmlNode;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author rbaba
@@ -16,27 +21,27 @@ import java.util.Objects;
  * The name of this Element in XML File is  <b>node</b>
  */
 
-public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
+public class GraphmlNode extends GraphmlElement implements IGraphmlNode {
 
-    public static class GraphmlNodeBuilder extends GraphmlGraphCommonElementBuilder {
+    public static class GraphmlNodeBuilder extends GraphmlElementBuilder {
 
         private String id;
-        private GraphmlLocator locator;
+        private IGraphmlLocator locator;
 
         @Override
         public GraphmlNode build() {
-            return new GraphmlNode(id, locator, extraAttrib, desc);
+            return new GraphmlNode(id, locator, attributes, desc);
         }
 
         @Override
-        public GraphmlNodeBuilder desc(GraphmlDescription desc) {
+        public GraphmlNodeBuilder desc(IGraphmlDescription desc) {
             super.desc(desc);
             return this;
         }
 
         @Override
-        public GraphmlNodeBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
-            super.extraAttrib(extraAttrib);
+        public GraphmlNodeBuilder attributes(@Nullable Map<String, String> attributes) {
+            super.attributes(attributes);
             return this;
         }
 
@@ -45,13 +50,13 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
             return this;
         }
 
-        public GraphmlNodeBuilder locator(GraphmlLocator locator) {
+        public GraphmlNodeBuilder locator(IGraphmlLocator locator) {
             this.locator = locator;
             return this;
         }
 
     }
-    public static final String TAGNAME = "node";
+
     /**
      * The identifier of a node is defined by the XML-Attribute id.
      * <b>This Attribute is mandatory.</b>
@@ -64,7 +69,7 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
      * </p>
      * The name of this Element in node is <b>locator</b>.
      */
-    private GraphmlLocator locator;
+    private IGraphmlLocator locator;
 
     // Constructors
     public GraphmlNode() {
@@ -76,19 +81,19 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
         this.id = id;
     }
 
-    public GraphmlNode(String id, GraphmlLocator locator) {
+    public GraphmlNode(String id, IGraphmlLocator locator) {
         super();
         this.id = id;
         this.locator = locator;
     }
 
-    public GraphmlNode(String id, GraphmlLocator locator, GraphmlDescription desc) {
+    public GraphmlNode(String id, IGraphmlLocator locator, GraphmlDescription desc) {
         super(desc);
         this.id = id;
         this.locator = locator;
     }
 
-    public GraphmlNode(String id, GraphmlLocator locator, @Nullable Map<String, String> extraAttrib, GraphmlDescription desc) {
+    public GraphmlNode(String id, IGraphmlLocator locator, @Nullable Map<String, String> extraAttrib, IGraphmlDescription desc) {
         super(extraAttrib, desc);
         this.id = id;
         this.locator = locator;
@@ -111,19 +116,24 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
     }
 
     @Override
-    public LinkedHashMap<String, String> getAttributes() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+    public LinkedHashMap<String, String> attributes() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>(allAttributes);
 
-        if (id != null) attributes.put("id", id);
+        if (id != null) attributes.put(ATTRIBUTE_ID, id);
         return attributes;
     }
 
+    @Override
+    public Set<String> builtInAttributeNames() {
+        return Set.of(ATTRIBUTE_ID);
+    }
+
     // Getters and Setters
-    public String getId() {
+    public String id() {
         return id;
     }
 
-    public GraphmlLocator getLocator() {
+    public IGraphmlLocator locator() {
         return locator;
     }
 
@@ -136,7 +146,7 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
         this.id = id;
     }
 
-    public void setLocator(GraphmlLocator locator) {
+    public void setLocator(IGraphmlLocator locator) {
         this.locator = locator;
     }
 
@@ -146,7 +156,7 @@ public class GraphmlNode extends GraphmlGraphCommonElement implements XMLValue {
                 "id='" + id + '\'' +
                 ", locator=" + locator +
                 ", desc=" + desc +
-                ", extraAttrib=" + extraAttrib +
+                ", extraAttrib=" + allAttributes +
                 '}';
     }
 

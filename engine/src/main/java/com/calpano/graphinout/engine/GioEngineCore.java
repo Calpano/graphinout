@@ -4,7 +4,7 @@ import com.calpano.graphinout.base.GioService;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
-import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
+import com.calpano.graphinout.base.graphml.impl.Graphml2XmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.ContentErrors;
 import com.calpano.graphinout.base.reader.InMemoryErrorHandler;
@@ -52,7 +52,7 @@ public class GioEngineCore {
         // we expect only one of them to be able to read it without throwing exceptions or reporting
         // contentErrors
         OutputSink noop = OutputSink.createNoop();
-        GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(noop)));
+        GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(new XmlWriterImpl(noop)));
         for (GioReader reader : readerCandidates) {
             InMemoryErrorHandler errorHandler = ContentErrors.createInMemory();
             reader.errorHandler(errorHandler);
@@ -61,7 +61,7 @@ public class GioEngineCore {
             }
             if (errorHandler.hasNoErrors()) {
                 // parsing worked, now for real
-                gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+                gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(new XmlWriterImpl(outputSink)));
                 // FIXME now parse again
                 return;
             }
@@ -114,7 +114,7 @@ public class GioEngineCore {
     private GioWriter createGioWriter(OutputStream resultOut) throws IOException {
         // FIXME create depending on desired output format
         return new Gio2GraphmlWriter(
-                new GraphmlWriterImpl(
+                new Graphml2XmlWriter(
                         new XmlWriterImpl(
                                 new OutputSink() {
                                     @Override

@@ -7,28 +7,12 @@ import java.util.Stack;
 /**
  * A chaining, validating {@link XmlWriter}.
  */
-public class ValidatingXmlWriter implements XmlWriter {
+public class ValidatingXmlWriter extends DelegatingXmlWriter {
 
-    protected final XmlWriter sink;
     private final Stack<String> elements = new Stack<>();
 
     public ValidatingXmlWriter(XmlWriter sink) {
-        this.sink = sink;
-    }
-
-    @Override
-    public void characterData(String characterData) throws IOException {
-        sink.characterData(characterData);
-    }
-
-    @Override
-    public void endCDATA() throws IOException {
-        sink.endCDATA();
-    }
-
-    @Override
-    public void endDocument() throws IOException {
-        sink.endDocument();
+        super(sink);
     }
 
     @Override
@@ -37,28 +21,13 @@ public class ValidatingXmlWriter implements XmlWriter {
         if (expected == null || !expected.equals(name)) {
             throw new IllegalStateException("XML nesting: Expected close of element '" + expected + "' but got '" + name + "'. Stack: " + this.elements);
         }
-        sink.endElement(name);
-    }
-
-    @Override
-    public void lineBreak() throws IOException {
-        sink.lineBreak();
-    }
-
-    @Override
-    public void startCDATA() throws IOException {
-        sink.startCDATA();
-    }
-
-    @Override
-    public void startDocument() throws IOException {
-        sink.startDocument();
+        super.endElement(name);
     }
 
     @Override
     public void startElement(String name, Map<String, String> attributes) throws IOException {
         elements.push(name);
-        sink.startElement(name, attributes);
+        super.startElement(name, attributes);
     }
 
 }

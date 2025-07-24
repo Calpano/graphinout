@@ -8,6 +8,8 @@ import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
 import com.calpano.graphinout.foundation.json.JsonWriter;
 import com.calpano.graphinout.foundation.json.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter;
+import com.calpano.graphinout.reader.cj.Cj2GioWriter;
+import com.calpano.graphinout.reader.cj.Gio2CjWriter;
 import com.calpano.graphinout.reader.cj.Json2CjWriter;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +38,6 @@ import static com.google.common.truth.Truth.assertThat;
 public class CjTest {
 
     boolean addLogging = true;
-    private Path testResourcesPath;
 
     static Stream<Arguments> cjFileProvider() throws Exception {
         Path testResourcesPath = Paths.get("src/test/resources/cj");
@@ -46,14 +47,39 @@ public class CjTest {
 
     @BeforeEach
     void setUp() {
-        testResourcesPath = Paths.get("src/test/resources/cj");
+        Path testResourcesPath = Paths.get("src/test/resources/cj");
     }
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("cjFileProvider")
     @DisplayName("Test all CJ files together")
     void testAllCjFiles(String displayPath, Path xmlFilePath) throws Exception {
-        testCjFile(xmlFilePath);
+        test_Json2Cj2Json(xmlFilePath);
+        test_Json2Cj2Gio2Cj2Json(xmlFilePath);
+    }
+
+    private void test_Json2Cj2Gio2Cj2Json(Path cjFile) throws IOException {
+        // == OUT Pipeline
+        StringBuilderJsonWriter jsonWriter_out = new StringBuilderJsonWriter(true);
+        /* receive CJ events -> send JSON events  */
+        CjWriter cjWriter_out = new Cj2JsonWriter(jsonWriter_out);
+        /* receive GIO events -> send CJ events  */
+        Gio2CjWriter gio2cjWriter = new Gio2CjWriter(cjWriter_out);
+
+        // == IN Pipeline
+        String json_in = FileUtils.readFileToString(cjFile.toFile(), StandardCharsets.UTF_8);
+        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of(cjFile.getFileName().toString(), json_in);
+        JsonReaderImpl jsonReader = new JsonReaderImpl();
+        /* receive CJ events -> send GIO events  */
+        Cj2GioWriter gioWriter_in = new Cj2GioWriter(gio2cjWriter);
+        /* receive JSON events -> send CJ events  */
+        JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(gioWriter_in);
+
+        // == READ JSON -> send JSON events
+        jsonReader.read(inputSource, jsonWriter_in);
+        String json_out = jsonWriter_out.json();
+        assertThat(formatDebug(stripCjHeader(removeWhitespace(json_out)))) //
+                .isEqualTo(formatDebug(stripCjHeader(removeWhitespace(json_in))));
     }
 
     @Test
@@ -71,7 +97,7 @@ public class CjTest {
         jsonWriter.documentEnd();
     }
 
-    void testCjFile(Path cjFile) throws IOException {
+    void test_Json2Cj2Json(Path cjFile) throws IOException {
         // read into string
         String json_in = FileUtils.readFileToString(cjFile.toFile(), StandardCharsets.UTF_8);
 

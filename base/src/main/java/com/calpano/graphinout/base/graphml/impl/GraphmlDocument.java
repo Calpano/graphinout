@@ -1,11 +1,17 @@
-package com.calpano.graphinout.base.graphml;
+package com.calpano.graphinout.base.graphml.impl;
 
+
+import com.calpano.graphinout.base.graphml.IGraphmlDescription;
+import com.calpano.graphinout.base.graphml.IGraphmlDocument;
+import com.calpano.graphinout.base.graphml.IGraphmlKey;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author rbaba
@@ -19,11 +25,11 @@ import java.util.Objects;
  * <p>
  * The name of this Element in XML File is  <b>graphml</b>
  */
-public class GraphmlDocument extends GraphmlGraphCommonElement {
+public class GraphmlDocument extends GraphmlElement implements IGraphmlDocument {
 
-    public static class GraphmlDocumentBuilder extends GraphmlGraphCommonElementBuilder {
+    public static class GraphmlDocumentBuilder extends GraphmlElementBuilder {
 
-        private ArrayList<GraphmlKey> keys;
+        private ArrayList<IGraphmlKey> keys;
 
         public GraphmlDocumentBuilder() {
             this.keys = new ArrayList<>();
@@ -31,7 +37,7 @@ public class GraphmlDocument extends GraphmlGraphCommonElement {
 
         @Override
         public GraphmlDocument build() {
-            return new GraphmlDocument(keys, extraAttrib, desc);
+            return new GraphmlDocument(keys, attributes, desc);
         }
 
         public GraphmlDocumentBuilder clearKeys() {
@@ -42,18 +48,18 @@ public class GraphmlDocument extends GraphmlGraphCommonElement {
         }
 
         @Override
-        public GraphmlDocumentBuilder desc(GraphmlDescription desc) {
+        public GraphmlDocumentBuilder desc(IGraphmlDescription desc) {
             super.desc(desc);
             return this;
         }
 
         @Override
-        public GraphmlDocumentBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
-            super.extraAttrib(extraAttrib);
+        public GraphmlDocumentBuilder attributes(@Nullable Map<String, String> attributes) {
+            super.attributes(attributes);
             return this;
         }
 
-        public GraphmlDocumentBuilder key(GraphmlKey key) {
+        public GraphmlDocumentBuilder key(IGraphmlKey key) {
             if (key != null) {
                 if (this.keys == null) {
                     this.keys = new ArrayList<>();
@@ -63,7 +69,7 @@ public class GraphmlDocument extends GraphmlGraphCommonElement {
             return this;
         }
 
-        public GraphmlDocumentBuilder keys(List<GraphmlKey> keys) {
+        public GraphmlDocumentBuilder keys(List<IGraphmlKey> keys) {
             if (keys != null) {
                 if (this.keys == null) {
                     this.keys = new ArrayList<>();
@@ -74,54 +80,42 @@ public class GraphmlDocument extends GraphmlGraphCommonElement {
         }
 
     }
-    public static final String DEFAULT_GRAPHML_XSD_URL = "http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
-    public static final String TAGNAME = "graphml";
-    /**
-     * The graphml element, like all other GraphML elements, belongs to the namespace
-     * http://graphml.graphdrawing.org/xmlns. For this reason we define this namespace as the default namespace in the
-     * document by adding the XML Attribute xmlns="http://graphml.graphdrawing.org/xmlns" to it.
-     */
-    public static final String HEADER_XMLNS = "http://graphml.graphdrawing.org/xmlns";
-    /**
-     * The  attribute, xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance", defines xsi as the XML Schema namespace.
-     */
-    public static final String HEADER_XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
-    /**
-     * The  attribute, xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
-     * http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd" , defines the XML Schema location for all elements in the
-     * GraphML namespace.
-     */
-    public static final String HEADER_XMLNS_XSI_SCHEMA_LOCATIOM = "http://graphml.graphdrawing.org/xmlns " + DEFAULT_GRAPHML_XSD_URL;
+
     /**
      * This is an Element that can be empty or null.
      * </p>
      * The name of this Element in graphML is <b>key</b>
      */
-    private @Nullable List<GraphmlKey> keys;
+    private @Nullable List<IGraphmlKey> keys;
 
     // Constructors
     public GraphmlDocument() {
         super();
     }
 
-    public GraphmlDocument(@Nullable List<GraphmlKey> keys) {
+    public GraphmlDocument(@Nullable List<IGraphmlKey> keys) {
         super();
         this.keys = keys;
     }
 
-    public GraphmlDocument(@Nullable List<GraphmlKey> keys, GraphmlDescription desc) {
+    public GraphmlDocument(@Nullable List<IGraphmlKey> keys, IGraphmlDescription desc) {
         super(desc);
         this.keys = keys;
     }
 
-    public GraphmlDocument(@Nullable List<GraphmlKey> keys, @Nullable Map<String, String> extraAttrib, GraphmlDescription desc) {
+    public GraphmlDocument(@Nullable List<IGraphmlKey> keys, @Nullable Map<String, String> extraAttrib, IGraphmlDescription desc) {
         super(extraAttrib, desc);
         this.keys = keys;
     }
 
-    // Builder
-    public static GraphmlDocumentBuilder builder() {
-        return new GraphmlDocumentBuilder();
+    @Override
+    public Map<String, String> attributes() {
+        return allAttributes != null ? new LinkedHashMap<>(allAttributes) : new LinkedHashMap<>();
+    }
+
+    @Override
+    public Set<String> builtInAttributeNames() {
+        return Set.of();
     }
 
     // equals, hashCode, toString
@@ -130,13 +124,8 @@ public class GraphmlDocument extends GraphmlGraphCommonElement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        GraphmlDocument that = (GraphmlDocument) o;
-        return Objects.equals(keys, that.keys);
-    }
-
-    // Getters and Setters
-    public @Nullable List<GraphmlKey> getKeys() {
-        return keys;
+        IGraphmlDocument that = (IGraphmlDocument) o;
+        return Objects.equals(keys(), that.keys());
     }
 
     @Override
@@ -144,8 +133,20 @@ public class GraphmlDocument extends GraphmlGraphCommonElement {
         return Objects.hash(super.hashCode(), keys);
     }
 
-    public void setKeys(@Nullable List<GraphmlKey> keys) {
+    // Getters and Setters
+    @Nullable
+    @Override
+    public List<IGraphmlKey> keys() {
+        return keys;
+    }
+
+    public void setKeys(@Nullable List<IGraphmlKey> keys) {
         this.keys = keys;
+    }
+
+    @Override
+    public String tagName() {
+        return TAGNAME;
     }
 
     @Override
@@ -153,7 +154,7 @@ public class GraphmlDocument extends GraphmlGraphCommonElement {
         return "GraphmlDocument{" +
                 "keys=" + keys +
                 ", desc=" + desc +
-                ", extraAttrib=" + extraAttrib +
+                ", extraAttrib=" + allAttributes +
                 '}';
     }
 

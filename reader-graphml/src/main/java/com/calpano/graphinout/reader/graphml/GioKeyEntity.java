@@ -16,9 +16,9 @@ public class GioKeyEntity extends AbstractGraphmlEntity<GioKey> implements Graph
 
     @Override
     public void addEntity(GraphmlEntity graphmlEntity) {
-        if (GraphmlElement.DESC.equals(graphmlEntity.getName()))
+        if (GraphmlElements.DESC.equals(graphmlEntity.getName()))
             gioKey.setDescription(((GioDescriptionEntity) graphmlEntity).getEntity().getDescription());
-        if (GraphmlElement.DEFAULT.equals(graphmlEntity.getName()))
+        if (GraphmlElements.DEFAULT.equals(graphmlEntity.getName()))
             gioKey.setDefaultValue(((GioDefaultEntity) graphmlEntity).getEntity().toString());
 
 
@@ -31,7 +31,7 @@ public class GioKeyEntity extends AbstractGraphmlEntity<GioKey> implements Graph
 
     @Override
     public String getName() {
-        return GraphmlElement.KEY;
+        return GraphmlElements.KEY;
     }
 
 

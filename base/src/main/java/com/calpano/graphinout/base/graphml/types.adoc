@@ -1,0 +1,105 @@
+= GraphML Types
+
+Spec: http://graphml.graphdrawing.org/specification/dtd.html[]
+
+.The GraphML elements
+- Document
+- Graph
+- Node
+- Edge
+- Port
+- Key
+- Data
+- Default
+- Desc
+- Endpoint
+- Hyperedge
+- Locator
+
+.Nesting
+----
+graphml
+    desc
+    key
+        desc
+    data
+    graph
+        desc
+        data
+        node
+            desc
+            data
+            port
+            graph
+        edge
+            desc
+            data
+            graph
+        hyperedge
+            desc
+            data
+            endpoint
+                desc
+            graph
+        locator
+----
+
+.GraphML Types
+[plantuml]
+....
+hide empty members
+hide circle
+
+class Document
+class Graph
+class Node {
+    id
+}
+class Edge
+class Port
+class Key
+class Data
+class Default
+class Desc
+class Endpoint
+class Hyperedge
+class Locator
+Document -- Graph
+Graph -- Node
+Graph -- Edge
+Graph -- Hyperedge
+Node -- Port
+Document -- Key
+Key -- Default
+Hyperedge -- Endpoint
+Graph --u Locator
+
+' Desc
+Document *-- Desc
+Graph *-- Desc
+Node *-- Desc
+Edge *-- Desc
+Hyperedge *-- Desc
+Endpoint *-- Desc
+Port *-- Desc
+
+' Data
+Graph *-- Data
+Node *-- Data
+Edge *-- Data
+Hyperedge *-- Data
+Port *-- Data
+Edge ..> Node
+Edge ..> Port
+Endpoint ..> Node
+Endpoint ..> Port
+
+'Nesting
+Edge --> Graph
+Hyperedge --> Graph
+Node --> Graph
+Port --> Port
+
+@enduml
+
+....

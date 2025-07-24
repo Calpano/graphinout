@@ -1,5 +1,9 @@
-package com.calpano.graphinout.base.graphml;
+package com.calpano.graphinout.base.graphml.impl;
 
+import com.calpano.graphinout.base.graphml.GraphmlDirection;
+import com.calpano.graphinout.base.graphml.IGraphmlEndpoint;
+
+import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
@@ -12,7 +16,7 @@ import java.util.Objects;
  * edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
  * @see GraphmlHyperEdge {@link GraphmlHyperEdge}
  */
-public class GraphmlEndpoint implements XMLValue {
+public class GraphmlEndpoint implements IGraphmlEndpoint {
 
     public static class GraphmlEndpointBuilder {
 
@@ -52,7 +56,7 @@ public class GraphmlEndpoint implements XMLValue {
         }
 
     }
-    public static final String TAGNAME = "endpoint";
+
     /**
      * This is an attribute that can be empty or null.
      * </p>
@@ -74,7 +78,7 @@ public class GraphmlEndpoint implements XMLValue {
      * The name of this attribute in endpoint is <b>port</b> The value of this attribute points to an existing  port,
      * and the name of the desired port must be stored in this field.
      */
-    private String port;
+    private @Nullable String port;
     /**
      * Defines the attribute for direction on this endpoint (undirected per default).
      * <p>
@@ -86,7 +90,7 @@ public class GraphmlEndpoint implements XMLValue {
      * <p>
      * The name of this element in endpoint is <b>desc</b>
      */
-    private GraphmlDescription desc;
+    private @Nullable GraphmlDescription desc;
 
     // Constructors
     public GraphmlEndpoint() {
@@ -98,11 +102,6 @@ public class GraphmlEndpoint implements XMLValue {
         this.port = port;
         this.type = type != null ? type : GraphmlDirection.Undirected;
         this.desc = desc;
-    }
-
-    // Builder
-    public static GraphmlEndpointBuilder builder() {
-        return new GraphmlEndpointBuilder();
     }
 
     // equals, hashCode, toString
@@ -119,7 +118,7 @@ public class GraphmlEndpoint implements XMLValue {
     }
 
     @Override
-    public LinkedHashMap<String, String> getAttributes() {
+    public LinkedHashMap<String, String> attributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
         if (id != null) attributes.put("id", id);
 
@@ -131,24 +130,35 @@ public class GraphmlEndpoint implements XMLValue {
         return attributes;
     }
 
-    public GraphmlDescription getDesc() {
+    @Override
+    public String tagName() {
+        return "endpoint";
+    }
+
+    @Override
+    public GraphmlDescription desc() {
         return desc;
     }
 
     // Getters and Setters
-    public String getId() {
+    @Override
+    public String id() {
         return id;
     }
 
-    public String getNode() {
+    @Override
+    public String node() {
         return node;
     }
 
-    public String getPort() {
+    @Nullable
+    @Override
+    public String port() {
         return port;
     }
 
-    public GraphmlDirection getType() {
+    @Override
+    public GraphmlDirection type() {
         return type;
     }
 

@@ -27,7 +27,7 @@ public class GioDocumentEntity extends AbstractGraphmlEntity<GioDocument> implem
 
     @Override
     public String getName() {
-        return GraphmlElement.GRAPHML;
+        return GraphmlElements.GRAPHML;
     }
 
 }

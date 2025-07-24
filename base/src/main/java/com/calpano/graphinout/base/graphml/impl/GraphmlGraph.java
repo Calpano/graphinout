@@ -1,10 +1,15 @@
-package com.calpano.graphinout.base.graphml;
+package com.calpano.graphinout.base.graphml.impl;
 
+
+import com.calpano.graphinout.base.graphml.IGraphmlDescription;
+import com.calpano.graphinout.base.graphml.IGraphmlGraph;
+import com.calpano.graphinout.base.graphml.IGraphmlLocator;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 
 /**
@@ -16,25 +21,30 @@ import java.util.Objects;
  * @see GraphmlHyperEdge {@link GraphmlHyperEdge}
  */
 
-public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue {
+public class GraphmlGraph extends GraphmlElement implements IGraphmlGraph {
 
+    /**
+     * The edgedefault attribute defines the default value of the edge attribute directed. The default value for
+     * directed is directed.
+     */
     public enum EdgeDefault {
+        /** the default */
         directed, undirected
     }
 
-    public static class GraphmlGraphBuilder extends GraphmlGraphCommonElementBuilder {
+    public static class GraphmlGraphBuilder extends GraphmlElementBuilder {
 
         private EdgeDefault edgedefault;
         private String id;
-        private GraphmlLocator locator;
+        private IGraphmlLocator locator;
 
         @Override
         public GraphmlGraph build() {
-            return new GraphmlGraph(id, edgedefault, locator, extraAttrib, desc);
+            return new GraphmlGraph(id, edgedefault, locator, attributes, desc);
         }
 
         @Override
-        public GraphmlGraphBuilder desc(GraphmlDescription desc) {
+        public GraphmlGraphBuilder desc(IGraphmlDescription desc) {
             super.desc(desc);
             return this;
         }
@@ -45,8 +55,8 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
         }
 
         @Override
-        public GraphmlGraphBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
-            super.extraAttrib(extraAttrib);
+        public GraphmlGraphBuilder attributes(@Nullable Map<String, String> attributes) {
+            super.attributes(attributes);
             return this;
         }
 
@@ -55,19 +65,19 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
             return this;
         }
 
-        public GraphmlGraphBuilder locator(GraphmlLocator locator) {
+        public GraphmlGraphBuilder locator(IGraphmlLocator locator) {
             this.locator = locator;
             return this;
         }
 
     }
-    public static final String TAGNAME = "graph";
+
     /**
      * This is an attribute that can be empty or null.
      * </p>
      * The name of this attribute in graph is <b>edgedefault</b>
      */
-    private EdgeDefault edgedefault;
+    private @Nullable EdgeDefault edgedefault;
     /**
      * This is an attribute that can be empty or null.
      * </p>
@@ -79,43 +89,13 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
      * <p/>
      * The name of this Element in graph is <b>locator</b>
      */
-    private GraphmlLocator locator;
+    private IGraphmlLocator locator;
 
-    // Constructors
-    public GraphmlGraph() {
-        super();
-    }
-
-    public GraphmlGraph(String id, EdgeDefault edgedefault) {
-        super();
-        this.edgedefault = edgedefault;
-        this.id = id;
-    }
-
-    public GraphmlGraph(String id, EdgeDefault edgedefault, GraphmlLocator locator) {
-        super();
-        this.edgedefault = edgedefault;
-        this.id = id;
-        this.locator = locator;
-    }
-
-    public GraphmlGraph(String id, EdgeDefault edgedefault, GraphmlLocator locator, GraphmlDescription desc) {
-        super(desc);
-        this.edgedefault = edgedefault;
-        this.id = id;
-        this.locator = locator;
-    }
-
-    public GraphmlGraph(String id, EdgeDefault edgedefault, GraphmlLocator locator, @Nullable Map<String, String> extraAttrib, GraphmlDescription desc) {
+    public GraphmlGraph(String id, @Nullable EdgeDefault edgedefault, IGraphmlLocator locator, @Nullable Map<String, String> extraAttrib, IGraphmlDescription desc) {
         super(extraAttrib, desc);
         this.edgedefault = edgedefault;
         this.id = id;
         this.locator = locator;
-    }
-
-    // Builder
-    public static GraphmlGraphBuilder builder() {
-        return new GraphmlGraphBuilder();
     }
 
     // equals, hashCode, toString
@@ -131,25 +111,32 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
     }
 
     @Override
-    public LinkedHashMap<String, String> getAttributes() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-        if (id != null && id.length() > 0) {
-            attributes.put("id", String.valueOf(id));
+    public LinkedHashMap<String, String> attributes() {
+        LinkedHashMap<String, String> attributes = new LinkedHashMap<>(allAttributes);
+        if (id != null && !id.isEmpty()) {
+            attributes.put(ATTRIBUTE_ID, id);
         }
-        attributes.put("edgedefault", String.valueOf(edgedefault));
+        attributes.put(ATTRIBUTE_EDGEDEFAULT, String.valueOf(edgedefault));
         return attributes;
     }
 
-    // Getters and Setters
-    public EdgeDefault getEdgedefault() {
-        return edgedefault;
+    @Override
+    public String tagName() {
+        return TAGNAME;
     }
 
+    @Override
+    public Set<String> builtInAttributeNames() {
+        return Set.of(ATTRIBUTE_ID, ATTRIBUTE_EDGEDEFAULT);
+    }
+
+    @Override
     public String getId() {
         return id;
     }
 
-    public GraphmlLocator getLocator() {
+    @Override
+    public IGraphmlLocator getLocator() {
         return locator;
     }
 
@@ -158,7 +145,13 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
         return Objects.hash(super.hashCode(), edgedefault, id, locator);
     }
 
-    public void setEdgedefault(EdgeDefault edgedefault) {
+    @Override
+    public boolean isDirectedEdges() {
+        // default is directed for null
+        return edgedefault != EdgeDefault.undirected;
+    }
+
+    public void setEdgedefault(@Nullable EdgeDefault edgedefault) {
         this.edgedefault = edgedefault;
     }
 
@@ -166,7 +159,7 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
         this.id = id;
     }
 
-    public void setLocator(GraphmlLocator locator) {
+    public void setLocator(IGraphmlLocator locator) {
         this.locator = locator;
     }
 
@@ -177,7 +170,7 @@ public class GraphmlGraph extends GraphmlGraphCommonElement implements XMLValue 
                 ", id='" + id + '\'' +
                 ", locator=" + locator +
                 ", desc=" + desc +
-                ", extraAttrib=" + extraAttrib +
+                ", extraAttrib=" + allAttributes +
                 '}';
     }
 

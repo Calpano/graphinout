@@ -1,9 +1,12 @@
-package com.calpano.graphinout.base.graphml;
+package com.calpano.graphinout.base.graphml.impl;
+
+import com.calpano.graphinout.base.graphml.IGraphmlPort;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author rbaba
@@ -21,20 +24,20 @@ import java.util.Objects;
  * Occurence: &lt;node&gt;, &lt;port&gt;.
  */
 
-public class GraphmlPort extends GraphmlElement implements XMLValue {
+public class GraphmlPort extends GraphmlElement implements IGraphmlPort {
 
     public static class GraphmlPortBuilder extends GraphmlElementBuilder {
 
         private String name;
 
         @Override
-        public GraphmlPort build() {
-            return new GraphmlPort(name, extraAttrib);
+        public IGraphmlPort build() {
+            return new GraphmlPort(name, attributes);
         }
 
         @Override
-        public GraphmlPortBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
-            super.extraAttrib(extraAttrib);
+        public GraphmlPortBuilder attributes(@Nullable Map<String, String> attributes) {
+            super.attributes(attributes);
             return this;
         }
 
@@ -44,7 +47,7 @@ public class GraphmlPort extends GraphmlElement implements XMLValue {
         }
 
     }
-    public static final String TAGNAME = "port";
+
     /**
      * This is an attribute that mandatory.
      * </p>
@@ -67,11 +70,6 @@ public class GraphmlPort extends GraphmlElement implements XMLValue {
         this.name = name;
     }
 
-    // Builder
-    public static GraphmlPortBuilder builder() {
-        return new GraphmlPortBuilder();
-    }
-
     // equals, hashCode, toString
     @Override
     public boolean equals(Object o) {
@@ -83,16 +81,27 @@ public class GraphmlPort extends GraphmlElement implements XMLValue {
     }
 
     @Override
-    public LinkedHashMap<String, String> getAttributes() {
+    public LinkedHashMap<String, String> attributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-        if (name != null && !name.isEmpty()) attributes.put("name", name);
-        if (getExtraAttrib() != null)
-            attributes.putAll(getExtraAttrib());
+        if (name != null && !name.isEmpty()) attributes.put(ATTRIBUTE_NAME, name);
+        if (customXmlAttributes() != null)
+            attributes.putAll(customXmlAttributes());
         return attributes;
     }
 
+    @Override
+    public Set<String> builtInAttributeNames() {
+        return Set.of(ATTRIBUTE_ID, ATTRIBUTE_NAME);
+    }
+
+    @Override
+    public String tagName() {
+        return TAGNAME;
+    }
+
     // Getters and Setters
-    public String getName() {
+    @Override
+    public String name() {
         return name;
     }
 
@@ -109,7 +118,7 @@ public class GraphmlPort extends GraphmlElement implements XMLValue {
     public String toString() {
         return "GraphmlPort{" +
                 "name='" + name + '\'' +
-                ", extraAttrib=" + extraAttrib +
+                ", extraAttrib=" + allAttributes +
                 '}';
     }
 

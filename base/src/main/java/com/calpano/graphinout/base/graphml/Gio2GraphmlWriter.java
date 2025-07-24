@@ -12,6 +12,18 @@ import com.calpano.graphinout.base.gio.GioKey;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.graphml.impl.GraphmlData;
+import com.calpano.graphinout.base.graphml.impl.GraphmlDescription;
+import com.calpano.graphinout.base.graphml.impl.GraphmlDocument;
+import com.calpano.graphinout.base.graphml.impl.GraphmlEdge;
+import com.calpano.graphinout.base.graphml.impl.GraphmlElement;
+import com.calpano.graphinout.base.graphml.impl.GraphmlEndpoint;
+import com.calpano.graphinout.base.graphml.impl.GraphmlGraph;
+import com.calpano.graphinout.base.graphml.impl.GraphmlHyperEdge;
+import com.calpano.graphinout.base.graphml.impl.GraphmlKey;
+import com.calpano.graphinout.base.graphml.impl.GraphmlNode;
+import com.calpano.graphinout.base.graphml.impl.GraphmlPort;
+import com.calpano.graphinout.foundation.json.impl.BufferingJsonWriter;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -36,8 +48,9 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
 
     @Override
     public void data(GioData gioData) throws IOException {
-        GraphmlData graphmlData = GraphmlData.builder().key(gioData.getKey()).value(gioData.getValue()).build();
-        gioData.id().ifPresent(graphmlData::setId);
+        GraphmlData.GraphmlDataBuilder builder = GraphmlData.builder().key(gioData.getKey()).value(gioData.getValue());
+        gioData.id().ifPresent(builder::id);
+        IGraphmlData graphmlData = builder.build();
         graphmlWriter.data(graphmlData);
     }
 
@@ -76,11 +89,12 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
 
     @Override
     public void key(GioKey gioKey) throws IOException {
-        GraphmlKey graphmlKey = GraphmlKey.builder()//
+        GraphmlKey graphmlKey = IGraphmlKey.builder()//
                 .id(gioKey.getId())//
                 .forType(GraphmlKeyForType.keyForType(gioKey.getForType().value))//
                 .build();
-        gioKey.defaultValue().ifPresent(defaultValue -> graphmlKey.setDefaultValue(GraphmlDefault.builder().value(defaultValue).build()));
+        gioKey.defaultValue().ifPresent(defaultValue -> graphmlKey.setDefaultValue(
+                IGraphmlDefault.builder().value(defaultValue).build()));
         gioKey.attributeName().ifPresent(graphmlKey::setAttrName);
         gioKey.attributeType().ifPresent(attType -> graphmlKey.setAttrType(attType.graphmlName));
         customAttributes(gioKey, graphmlKey);
@@ -93,8 +107,8 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
         GraphmlDocument graphmlDocument = new GraphmlDocument();
         desc(document, graphmlDocument);
         if (document.getCustomAttributes() != null) {
-            if (graphmlDocument.getExtraAttrib() == null) graphmlDocument.setExtraAttrib(new TreeMap<>());
-            document.getCustomAttributes().forEach((k, v) -> graphmlDocument.getExtraAttrib().put(k, v));
+            if (graphmlDocument.customXmlAttributes() == null) graphmlDocument.setAllAttributes(new TreeMap<>());
+            document.getCustomAttributes().forEach((k, v) -> graphmlDocument.customXmlAttributes().put(k, v));
         }
         // TODO: Implement baseuri handling
         graphmlWriter.startDocument(graphmlDocument);
@@ -102,6 +116,7 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
 
     @Override
     public void startEdge(GioEdge gioEdge) throws IOException {
+        assert gioEdge.isValid();
         if (gioEdge.getEndpoints().size() == 2) {
             GioEndpoint s = gioEdge.getEndpoints().get(0);
             GioEndpoint t = gioEdge.getEndpoints().get(1);
@@ -115,18 +130,12 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
                 directed = null;
             }
             if (directed != null) {
-                GraphmlEdge edge = new GraphmlEdge();
-                if (gioEdge.getId() != null) edge.setId(gioEdge.getId());
-                edge.setDirected(directed);
-                edge.setSourceId(s.getNode());
-                edge.setTargetId(t.getNode());
-                if (s.getPort() != null) {
-                    edge.setSourcePortId(s.getPort());
-                }
-                if (t.getPort() != null) {
-                    edge.setTargetPortId(t.getPort());
-                }
-                assert gioEdge.isValid();
+                GraphmlEdge edge = IGraphmlEdge.builder().id(gioEdge.getId()).directed(directed) //
+                        .sourceId(s.getNode())//
+                        .sourcePortId(s.getPort())
+                        .targetId(t.getNode()) //
+                        .targetPortId(t.getPort())
+                        .build();
                 graphmlWriter.startEdge(edge);
                 this.openEdge = edge;
                 return;
@@ -135,7 +144,7 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
         assert gioEdge.getEndpoints() != null;
         assert gioEdge.getEndpoints().size() > 2;
         // default case: hyperedge
-        GraphmlHyperEdge.GraphmlHyperEdgeBuilder builder = GraphmlHyperEdge.builder(gioEdge.getId());
+        GraphmlHyperEdge.GraphmlHyperEdgeBuilder builder = IGraphmlHyperEdge.builder(gioEdge.getId());
         gioEdge.getEndpoints().stream().map(this::graphmlEndpoint).forEach(builder::addEndpoint);
         GraphmlHyperEdge graphmlHyperEdge = builder.build();
         customAttributes(gioEdge, graphmlHyperEdge);
@@ -145,7 +154,7 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
 
     @Override
     public void startGraph(GioGraph gioGraph) throws IOException {
-        GraphmlGraph graphmlGraph = GraphmlGraph.builder().id(gioGraph.getId()).edgedefault(gioGraph.isEdgedefaultDirected() ? GraphmlGraph.EdgeDefault.directed : GraphmlGraph.EdgeDefault.undirected).build();
+        GraphmlGraph graphmlGraph = IGraphmlGraph.builder().id(gioGraph.getId()).edgedefault(gioGraph.isEdgedefaultDirected() ? GraphmlGraph.EdgeDefault.directed : GraphmlGraph.EdgeDefault.undirected).build();
         desc(gioGraph, graphmlGraph);
 
         graphmlWriter.startGraph(graphmlGraph);
@@ -165,17 +174,17 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
 
     private void customAttributes(GioElement gioElement, GraphmlElement graphmlElement) {
         if (gioElement.getCustomAttributes() != null) {
-            if (graphmlElement.getExtraAttrib() == null) graphmlElement.setExtraAttrib(new TreeMap<>());
-            graphmlElement.getExtraAttrib().putAll(gioElement.getCustomAttributes());
+            if (graphmlElement.customXmlAttributes() == null) graphmlElement.setAllAttributes(new TreeMap<>());
+            graphmlElement.customXmlAttributes().putAll(gioElement.getCustomAttributes());
         }
     }
 
-    private void desc(GioElementWithDescription elementWithDescription, GraphmlGraphCommonElement graphmlGraphCommonElement) {
-        elementWithDescription.description().ifPresent(desc -> graphmlGraphCommonElement.setDesc(GraphmlDescription.builder().value(desc).build()));
+    private void desc(GioElementWithDescription elementWithDescription, GraphmlElement GraphmlElement) {
+        elementWithDescription.description().ifPresent(desc -> GraphmlElement.setDesc(GraphmlDescription.builder().value(desc).build()));
     }
 
-    private GraphmlEndpoint graphmlEndpoint(GioEndpoint endpoint) {
-        GraphmlEndpoint graphmlEndpoint = GraphmlEndpoint.builder().id(endpoint.getId()).node(endpoint.getNode()).build();
+    private IGraphmlEndpoint graphmlEndpoint(GioEndpoint endpoint) {
+        GraphmlEndpoint graphmlEndpoint = IGraphmlEndpoint.builder().id(endpoint.getId()).node(endpoint.getNode()).build();
         Optional.ofNullable(endpoint.getPort()).ifPresent(graphmlEndpoint::setPort);
         Direction dir = switch (endpoint.getType()) {
             case In -> Direction.In;
@@ -186,8 +195,8 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
         return graphmlEndpoint;
     }
 
-    private GraphmlLocator locator(@Nullable URL url) {
-        return url == null ? null : GraphmlLocator.builder().xLinkHref(url).build();
+    private IGraphmlLocator locator(@Nullable URL url) {
+        return url == null ? null : IGraphmlLocator.builder().xLinkHref(url).build();
     }
 
 }

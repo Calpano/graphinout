@@ -10,7 +10,7 @@ package com.calpano.graphinout.reader.graphml;
  *
  * @author rbaba
  */
-public class GraphmlElement {
+public class GraphmlElements {
 
     public static final String EDGE = "edge";
     public static final String ENDPOINT = "endpoint";

@@ -1,5 +1,10 @@
 package com.calpano.graphinout.base.graphml;
 
+import com.calpano.graphinout.base.graphml.impl.GraphmlData;
+import com.calpano.graphinout.base.graphml.impl.GraphmlGraph;
+import com.calpano.graphinout.base.graphml.impl.GraphmlHyperEdge;
+import com.calpano.graphinout.base.graphml.impl.GraphmlNode;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,7 +19,7 @@ public class DelegatingGraphmlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void data(GraphmlData data) throws IOException {
+    public void data(IGraphmlData data) throws IOException {
         for (GraphmlWriter writer : writers) {
             writer.data(data);
         }
@@ -35,9 +40,9 @@ public class DelegatingGraphmlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endGraph(@Nullable GraphmlLocator graphmlLocator) throws IOException {
+    public void endGraph(@Nullable IGraphmlLocator IGraphmlLocator) throws IOException {
         for (GraphmlWriter writer : writers) {
-            writer.endGraph(graphmlLocator);
+            writer.endGraph(IGraphmlLocator);
         }
     }
 
@@ -49,7 +54,7 @@ public class DelegatingGraphmlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endNode(@Nullable GraphmlLocator locator) throws IOException {
+    public void endNode(@Nullable IGraphmlLocator locator) throws IOException {
         for (GraphmlWriter writer : writers) {
             writer.endNode(locator);
         }
@@ -63,49 +68,49 @@ public class DelegatingGraphmlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void key(GraphmlKey data) throws IOException {
+    public void key(IGraphmlKey data) throws IOException {
         for (GraphmlWriter writer : writers) {
             writer.key(data);
         }
     }
 
     @Override
-    public void startDocument(GraphmlDocument document) throws IOException {
+    public void startDocument(IGraphmlDocument document) throws IOException {
         for (GraphmlWriter writer : writers) {
             writer.startDocument(document);
         }
     }
 
     @Override
-    public void startEdge(GraphmlEdge edge) throws IOException {
+    public void startEdge(IGraphmlEdge edge) throws IOException {
         for (GraphmlWriter writer : writers) {
             writer.startEdge(edge);
         }
     }
 
     @Override
-    public void startGraph(GraphmlGraph graphmlGraph) throws IOException {
+    public void startGraph(IGraphmlGraph graphmlGraph) throws IOException {
         for (GraphmlWriter writer : writers) {
             writer.startGraph(graphmlGraph);
         }
     }
 
     @Override
-    public void startHyperEdge(GraphmlHyperEdge edge) throws IOException {
+    public void startHyperEdge(IGraphmlHyperEdge edge) throws IOException {
         for (GraphmlWriter writer : writers) {
             writer.startHyperEdge(edge);
         }
     }
 
     @Override
-    public void startNode(GraphmlNode node) throws IOException {
+    public void startNode(IGraphmlNode node) throws IOException {
         for (GraphmlWriter writer : writers) {
             writer.startNode(node);
         }
     }
 
     @Override
-    public void startPort(GraphmlPort port) throws IOException {
+    public void startPort(IGraphmlPort port) throws IOException {
         for (GraphmlWriter writer : writers) {
             writer.startPort(port);
         }

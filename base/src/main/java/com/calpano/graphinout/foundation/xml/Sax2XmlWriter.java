@@ -52,16 +52,18 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         String s = new String(ch, start, length);
-        log.trace("characters [{}].", s);
+        // log.trace("characters [{}].", s);
         try {
-            xmlWriter.characterData(s);
+            xmlWriter.characterData(s, false);
         } catch (IOException e) {
             throw new SAXException(e);
         }
     }
 
     @Override
-    public void comment(char[] ch, int start, int length) {}
+    public void comment(char[] ch, int start, int length) {
+        // no comments
+    }
 
     @Override
     public void endCDATA() throws SAXException {
@@ -86,12 +88,12 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        log.debug("XML </{}>", qName);
+        //    log.debug("XML </{}>", qName);
         String tagName = tagName(uri, localName, qName);
         try {
             xmlWriter.endElement(tagName);
         } catch (Exception e) {
-            throw buildException(ContentError.ErrorLevel.Error, e);
+            throw buildError(e);
         }
     }
 
@@ -100,12 +102,7 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     @Override
     public void error(SAXParseException e) throws SAXException {
-        throw buildException(ContentError.ErrorLevel.Error, e);
-    }
-
-    @Override
-    public void fatalError(SAXParseException e) throws SAXException {
-        throw e;
+        throw buildError(e);
     }
 
     @Override
@@ -137,7 +134,7 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        log.debug("XML <{}>.", qName);
+        // log.debug("XML <{}>.", qName);
         String tagName = tagName(uri, localName, qName);
         try {
             Map<String, String> attMap = new HashMap<>();
@@ -155,7 +152,7 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
             }
             xmlWriter.startElement(tagName, attMap);
         } catch (Exception e) {
-            throw buildException(ContentError.ErrorLevel.Error, e);
+            throw buildError(e);
         }
     }
 
@@ -170,22 +167,14 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     @Override
     public void warning(SAXParseException e) throws SAXException {
+        //noinspection ThrowableNotThrown
         buildException(ContentError.ErrorLevel.Warn, e);
     }
 
-    private @Nullable RuntimeException buildException(ContentError.ErrorLevel errorLevel, String msg) {
-        ContentError contentError = new ContentError(errorLevel, msg, locator == null ? null : new Location(locator.getLineNumber(), locator.getColumnNumber()));
-        if (errorConsumer != null) {
-            errorConsumer.accept(contentError);
-        }
-        if (errorLevel == ContentError.ErrorLevel.Error) {
-            String location = locator == null ? "N/A" : locator.getLineNumber() + ":" + locator.getColumnNumber();
-            return new RuntimeException("While parsing " + location + "\n" + "Message: " + msg);
-        } else {
-            log.warn("ContentError: " + contentError);
-            return null;
-        }
+    private RuntimeException buildError(Exception e) {
+        return buildException(ContentError.ErrorLevel.Error, e);
     }
+
 
     private @Nullable RuntimeException buildException(ContentError.ErrorLevel errorLevel, Exception e) {
         ContentError contentError = new ContentError(errorLevel, e.getMessage(), locator == null ? null : new Location(locator.getLineNumber(), locator.getColumnNumber()));
@@ -199,11 +188,6 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
             log.warn("ContentError: " + contentError, e);
             return null;
         }
-    }
-
-    private void createWarningLog(String message) {
-        this.errorConsumer.accept(new ContentError(ContentError.ErrorLevel.Warn, message, locator == null ? null : new Location(locator.getLineNumber(), locator.getColumnNumber())));
-
     }
 
 }

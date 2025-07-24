@@ -2,8 +2,8 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
-import com.calpano.graphinout.base.graphml.GraphmlDocument;
-import com.calpano.graphinout.base.graphml.GraphmlWriterImpl;
+import com.calpano.graphinout.base.graphml.impl.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.IGraphmlDocument;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
@@ -36,12 +36,12 @@ class XMLNamespaceHandlingTest {
         SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
         InMemoryOutputSink outputSink = OutputSink.createInMemory();
         GraphmlReader graphmlReader = new GraphmlReader();
-        GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
 
         String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" " + //
                 "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " + //
-                "xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns " + GraphmlDocument.DEFAULT_GRAPHML_XSD_URL + "\"" + //
+                "xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns " + IGraphmlDocument.DEFAULT_GRAPHML_XSD_URL + "\"" + //
                 " xmlns:foo=\"http://foo.com\">\n" + //
                 "\n" + //
                 "</graphml>\n"; //
@@ -58,12 +58,12 @@ class XMLNamespaceHandlingTest {
         SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
         OutputSink outputSink = OutputSink.createInMemory();
         GraphmlReader graphmlReader = new GraphmlReader();
-        GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(new XmlWriterImpl(outputSink)));
         graphmlReader.read(singleInputSource, gioWriter);
 
         String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" " + //
                 "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " + //
-                "xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns " + GraphmlDocument.DEFAULT_GRAPHML_XSD_URL + "\"" + //
+                "xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns " + IGraphmlDocument.DEFAULT_GRAPHML_XSD_URL + "\"" + //
                 " xmlns:foo=\"http://foo.com\">\n" + //
                 "\n" + //
                 "</graphml>\n"; //
@@ -78,7 +78,7 @@ class XMLNamespaceHandlingTest {
         SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
         OutputSink outputSink = OutputSink.createInMemory();
         GraphmlReader graphmlReader = new GraphmlReader();
-        GioWriter gioWriter = new Gio2GraphmlWriter(new GraphmlWriterImpl(new XmlWriterImpl(outputSink)));
+        GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(new XmlWriterImpl(outputSink)));
         List<ContentError> errorList = new ArrayList<>();
         graphmlReader.errorHandler(errorList::add);
         graphmlReader.read(singleInputSource, gioWriter);

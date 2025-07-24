@@ -27,7 +27,7 @@ public class GioDataEntity extends AbstractGraphmlEntity<GioData> implements Gra
 
     @Override
     public String getName() {
-        return GraphmlElement.DATA;
+        return GraphmlElements.DATA;
     }
 
 }

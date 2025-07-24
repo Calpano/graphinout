@@ -1,15 +1,16 @@
 package com.calpano.graphinout.foundation.output;
 
-import com.calpano.graphinout.base.graphml.GraphmlData;
-import com.calpano.graphinout.base.graphml.GraphmlDocument;
-import com.calpano.graphinout.base.graphml.GraphmlEdge;
-import com.calpano.graphinout.base.graphml.GraphmlEndpoint;
-import com.calpano.graphinout.base.graphml.GraphmlGraph;
-import com.calpano.graphinout.base.graphml.GraphmlHyperEdge;
-import com.calpano.graphinout.base.graphml.GraphmlKey;
-import com.calpano.graphinout.base.graphml.GraphmlLocator;
-import com.calpano.graphinout.base.graphml.GraphmlNode;
-import com.calpano.graphinout.base.graphml.GraphmlPort;
+import com.calpano.graphinout.base.graphml.impl.GraphmlData;
+import com.calpano.graphinout.base.graphml.impl.GraphmlEdge;
+import com.calpano.graphinout.base.graphml.impl.GraphmlGraph;
+import com.calpano.graphinout.base.graphml.impl.GraphmlHyperEdge;
+import com.calpano.graphinout.base.graphml.impl.GraphmlLocator;
+import com.calpano.graphinout.base.graphml.impl.GraphmlNode;
+import com.calpano.graphinout.base.graphml.IGraphmlDocument;
+import com.calpano.graphinout.base.graphml.IGraphmlPort;
+import com.calpano.graphinout.base.graphml.IGraphmlEndpoint;
+import com.calpano.graphinout.base.graphml.IGraphmlKey;
+import com.calpano.graphinout.base.graphml.IGraphmlLocator;
 import com.calpano.graphinout.base.validation.GraphmlWriterEndException;
 import com.calpano.graphinout.base.validation.GraphmlWriterException;
 import com.calpano.graphinout.base.validation.GraphmlWriterStartException;
@@ -55,20 +56,20 @@ public class ValidatingGraphMlWriterTest {
         @Test
         void shouldWorkAsIntendedWithEdge() throws IOException {
             GraphmlNode mockNode2 = mock(GraphmlNode.class);
-            GraphmlLocator graphmlLocator2 = mock(GraphmlLocator.class);
+            IGraphmlLocator IGraphmlLocator2 = mock(GraphmlLocator.class);
 
-            when(mockNode.getId()).thenReturn(NODE_ID_1);
-            when(mockNode2.getId()).thenReturn(NODE_ID_2);
-            when(mockEdge.getId()).thenReturn(EDGE_ID_1);
-            when(mockEdge.getSourceId()).thenReturn(NODE_ID_1);
-            when(mockEdge.getTargetId()).thenReturn(NODE_ID_2);
-            when(graphmlLocator2.getXLinkHref()).thenReturn(URI.create("http://example.com").toURL());
+            when(mockNode.id()).thenReturn(NODE_ID_1);
+            when(mockNode2.id()).thenReturn(NODE_ID_2);
+            when(mockEdge.id()).thenReturn(EDGE_ID_1);
+            when(mockEdge.source()).thenReturn(NODE_ID_1);
+            when(mockEdge.target()).thenReturn(NODE_ID_2);
+            when(IGraphmlLocator2.xlinkHref()).thenReturn(URI.create("http://example.com").toURL());
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
             underTest.startNode(mockNode);
             underTest.endNode(mockLocator);
             underTest.startNode(mockNode2);
-            underTest.endNode(graphmlLocator2);
+            underTest.endNode(IGraphmlLocator2);
             underTest.startEdge(mockEdge);
             underTest.endEdge();
             underTest.endGraph(mockLocator);
@@ -85,7 +86,7 @@ public class ValidatingGraphMlWriterTest {
 
         @Test
         void shouldWorkAsIntendedWithNode() throws IOException {
-            when(mockNode.getId()).thenReturn(NODE_ID_1);
+            when(mockNode.id()).thenReturn(NODE_ID_1);
 
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
@@ -213,8 +214,8 @@ public class ValidatingGraphMlWriterTest {
 
         @Test
         void shouldThrowExceptionWhenHyperEdgeRefersToNonExistingNode() throws IOException {
-            when(mockNode.getId()).thenReturn(NODE_ID_3);
-            when(mockHyperEdge.getEndpoints()).thenReturn(List.of(ENDPOINT_1, ENDPOINT_2));
+            when(mockNode.id()).thenReturn(NODE_ID_3);
+            when(mockHyperEdge.endpoints()).thenReturn(List.of(ENDPOINT_1, ENDPOINT_2));
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
             underTest.startNode(mockNode);
@@ -234,8 +235,8 @@ public class ValidatingGraphMlWriterTest {
         void shouldThrowExceptionWhenNodeIdIsNotUnique() throws IOException {
             GraphmlNode mockNode2 = mock(GraphmlNode.class);
 
-            when(mockNode.getId()).thenReturn(NODE_ID_1);
-            when(mockNode2.getId()).thenReturn(NODE_ID_1);
+            when(mockNode.id()).thenReturn(NODE_ID_1);
+            when(mockNode2.id()).thenReturn(NODE_ID_1);
 
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
@@ -248,8 +249,8 @@ public class ValidatingGraphMlWriterTest {
         @Test
         void shouldThrowExceptionWhenPortNameIsNotUnique() throws IOException {
 
-            when(mockNode.getId()).thenReturn(NODE_ID_1);
-            when(mockPort.getName()).thenReturn(PORT_NAME_1);
+            when(mockNode.id()).thenReturn(NODE_ID_1);
+            when(mockPort.name()).thenReturn(PORT_NAME_1);
 
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
@@ -266,13 +267,13 @@ public class ValidatingGraphMlWriterTest {
 
         @Test
         void shouldThrowExceptionWhenPortRefersNonExisting() throws IOException {
-            when(mockNode.getId()).thenReturn(NODE_ID_1);
+            when(mockNode.id()).thenReturn(NODE_ID_1);
             // edge: [node1:123] --> [node1:456]
-            when(mockEdge.getSourceId()).thenReturn(NODE_ID_1);
-            when(mockEdge.getTargetId()).thenReturn(NODE_ID_1);
-            when(mockEdge.getSourcePortId()).thenReturn("123");
-            when(mockEdge.getTargetPortId()).thenReturn("456");
-            when(mockPort.getName()).thenReturn(PORT_NAME_1);
+            when(mockEdge.source()).thenReturn(NODE_ID_1);
+            when(mockEdge.target()).thenReturn(NODE_ID_1);
+            when(mockEdge.sourcePort()).thenReturn("123");
+            when(mockEdge.targetPort()).thenReturn("456");
+            when(mockPort.name()).thenReturn(PORT_NAME_1);
 
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
@@ -297,10 +298,10 @@ public class ValidatingGraphMlWriterTest {
 
         @Test
         void shouldThrowExceptionWhenPortRefersNonExistingInHyperEdge() throws IOException {
-            when(mockNode.getId()).thenReturn(NODE_ID_1);
-            GraphmlEndpoint ENDPOINT_TEST_PORT = GraphmlEndpoint.builder().node(NODE_ID_1).port("123").build();
-            when(mockHyperEdge.getEndpoints()).thenReturn(List.of(ENDPOINT_TEST_PORT, ENDPOINT_TEST_PORT));
-            when(mockPort.getName()).thenReturn(PORT_NAME_1);
+            when(mockNode.id()).thenReturn(NODE_ID_1);
+            IGraphmlEndpoint ENDPOINT_TEST_PORT = IGraphmlEndpoint.builder().node(NODE_ID_1).port("123").build();
+            when(mockHyperEdge.endpoints()).thenReturn(List.of(ENDPOINT_TEST_PORT, ENDPOINT_TEST_PORT));
+            when(mockPort.name()).thenReturn(PORT_NAME_1);
 
             underTest.startDocument(mockDocument);
             underTest.startGraph(mockGraph);
@@ -330,20 +331,20 @@ public class ValidatingGraphMlWriterTest {
                 case "startDocument" -> underTest.startDocument(mockDocument);
                 case "startGraph" -> underTest.startGraph(mockGraph);
                 case "startNode" -> {
-                    when(mockNode.getId()).thenReturn(NODE_ID_1);
+                    when(mockNode.id()).thenReturn(NODE_ID_1);
                     underTest.startNode(mockNode);
                 }
                 case "startEdge" -> {
-                    when(mockEdge.getSourceId()).thenReturn(NODE_ID_1);
-                    when(mockEdge.getTargetId()).thenReturn(NODE_ID_2);
+                    when(mockEdge.source()).thenReturn(NODE_ID_1);
+                    when(mockEdge.target()).thenReturn(NODE_ID_2);
                     underTest.startEdge(mockEdge);
                 }
                 case "startHyperEdge" -> {
-                    when(mockHyperEdge.getEndpoints()).thenReturn(List.of(ENDPOINT_1, ENDPOINT_2));
+                    when(mockHyperEdge.endpoints()).thenReturn(List.of(ENDPOINT_1, ENDPOINT_2));
                     underTest.startHyperEdge(mockHyperEdge);
                 }
                 case "startPort" -> {
-                    when(mockPort.getName()).thenReturn(PORT_NAME_1);
+                    when(mockPort.name()).thenReturn(PORT_NAME_1);
                     underTest.startPort(mockPort);
                 }
                 case "endDocument" -> underTest.endDocument();
@@ -363,16 +364,16 @@ public class ValidatingGraphMlWriterTest {
     public static final String NODE_ID_3 = "node3";
     public static final String EDGE_ID_1 = "edge1";
     public static final String PORT_NAME_1 = "port_name_1";
-    public static final GraphmlEndpoint ENDPOINT_1 = GraphmlEndpoint.builder().node(NODE_ID_1).build();
-    public static final GraphmlEndpoint ENDPOINT_2 = GraphmlEndpoint.builder().node(NODE_ID_2).build();
+    public static final IGraphmlEndpoint ENDPOINT_1 = IGraphmlEndpoint.builder().node(NODE_ID_1).build();
+    public static final IGraphmlEndpoint ENDPOINT_2 = IGraphmlEndpoint.builder().node(NODE_ID_2).build();
     private AutoCloseable closeable;
     private ValidatingGraphMlWriter underTest;
     @Mock
-    private GraphmlLocator mockLocator;
+    private IGraphmlLocator mockLocator;
     @Mock
     private GraphmlGraph mockGraph;
     @Mock
-    private GraphmlDocument mockDocument;
+    private IGraphmlDocument mockDocument;
     @Mock
     private GraphmlNode mockNode;
     @Mock
@@ -380,11 +381,11 @@ public class ValidatingGraphMlWriterTest {
     @Mock
     private GraphmlEdge mockEdge;
     @Mock
-    private GraphmlKey mockKey;
+    private IGraphmlKey mockKey;
     @Mock
     private GraphmlData mockData;
     @Mock
-    private GraphmlPort mockPort;
+    private IGraphmlPort mockPort;
 
     @AfterEach
     public void releaseMocks() throws Exception {
@@ -395,7 +396,7 @@ public class ValidatingGraphMlWriterTest {
     void setUp() throws MalformedURLException {
         closeable = MockitoAnnotations.openMocks(this);
         underTest = new ValidatingGraphMlWriter();
-        when(mockLocator.getXLinkHref()).thenReturn(URI.create("http://example.com").toURL());
+        when(mockLocator.xlinkHref()).thenReturn(URI.create("http://example.com").toURL());
     }
 
 }

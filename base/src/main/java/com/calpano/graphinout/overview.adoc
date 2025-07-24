@@ -395,7 +395,7 @@ Comprehensive support for the GraphML format, including reading, writing, and va
 
 **Writers:**
 * `GraphmlWriter` - Interface for GraphML writing
-* `GraphmlWriterImpl` - Implementation of GraphML writer
+* `Graphml2XmlWriter` - Implementation of GraphML writer
 * `DelegatingGraphmlWriter` - Delegating writer pattern
 * `Gio2GraphmlWriter` - Converter from GIO to GraphML
 
@@ -407,7 +407,7 @@ Comprehensive support for the GraphML format, including reading, writing, and va
 * `GraphmlLocator` - Location tracking for parsing
 * `GraphmlDirection` - Direction handling
 * `BufferingJsonWriter` - Buffered JSON writing
-* `XMLValue` - XML value representation
+* `IXmlElement` - XML value representation
 * `GraphmlGraphInOutConstants` - GraphML-specific constants
 
 === Reader Package (`com.calpano.graphinout.base.reader`)

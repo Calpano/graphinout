@@ -1,4 +1,6 @@
-package com.calpano.graphinout.base.graphml;
+package com.calpano.graphinout.base.graphml.impl;
+
+import com.calpano.graphinout.base.graphml.IGraphmlLocator;
 
 import java.net.URL;
 import java.util.LinkedHashMap;
@@ -13,13 +15,13 @@ import java.util.Objects;
  * &lt;locator&gt;-child of these elements point to their definition. (If there is no &lt;locator&gt;-child the
  * graphs/nodes are defined by their content). Occurence: &lt;graph&gt;, and &lt;node&gt;
  */
-public class GraphmlLocator implements XMLValue {
+public class GraphmlLocator implements IGraphmlLocator {
 
     public static class GraphmlLocatorBuilder {
 
         private URL xLinkHref;
 
-        public GraphmlLocator build() {
+        public IGraphmlLocator build() {
             return new GraphmlLocator(xLinkHref);
         }
 
@@ -29,7 +31,7 @@ public class GraphmlLocator implements XMLValue {
         }
 
     }
-    public static final String TAGNAME = "locator";
+
     /**
      * points to the resource of this locator. This is a mandatory attribute.
      * <p>
@@ -45,11 +47,6 @@ public class GraphmlLocator implements XMLValue {
         this.xLinkHref = xLinkHref;
     }
 
-    // Builder
-    public static GraphmlLocatorBuilder builder() {
-        return new GraphmlLocatorBuilder();
-    }
-
     // equals, hashCode, toString
     @Override
     public boolean equals(Object o) {
@@ -60,15 +57,21 @@ public class GraphmlLocator implements XMLValue {
     }
 
     @Override
-    public Map<String, String> getAttributes() {
+    public Map<String, String> attributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
         attributes.put("xlink:href", xLinkHref.toExternalForm());
         // GraphML schema implies this attribute: attributes.put("xlink:type", "simple");
         return attributes;
     }
 
+    @Override
+    public String tagName() {
+        return TAGNAME;
+    }
+
     // Getters and Setters
-    public URL getXLinkHref() {
+    @Override
+    public URL xlinkHref() {
         return xLinkHref;
     }
 

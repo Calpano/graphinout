@@ -31,7 +31,7 @@ public class GioNodeEntity extends AbstractGraphmlEntity<GioNode> implements Gra
 
     @Override
     public String getName() {
-        return GraphmlElement.NODE;
+        return GraphmlElements.NODE;
     }
 
 

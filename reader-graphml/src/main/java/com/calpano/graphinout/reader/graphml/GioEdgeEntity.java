@@ -47,11 +47,11 @@ public class GioEdgeEntity extends AbstractGraphmlEntity<List<GioEndpoint>> impl
 
     @Override
     public String getName() {
-        return GraphmlElement.EDGE;
+        return GraphmlElements.EDGE;
     }
 
     public boolean resultsInGraphmlElement(String graphmlElementName) {
-        return getName().equals(GraphmlElement.EDGE) || getName().equals(GraphmlElement.HYPER_EDGE);
+        return getName().equals(GraphmlElements.EDGE) || getName().equals(GraphmlElements.HYPER_EDGE);
     }
 
 

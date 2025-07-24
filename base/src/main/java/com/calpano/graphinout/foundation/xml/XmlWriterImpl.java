@@ -23,8 +23,8 @@ public class XmlWriterImpl implements XmlWriter {
     protected transient Writer writer;
     private @Nullable String name = null;
     private @Nullable Map<String, String> attributes = null;
-    private boolean hasContent = false;
     private java.util.Stack<String> openElements = new java.util.Stack<>();
+    private boolean insideCDATA = false;  // Add this field
 
     public XmlWriterImpl(OutputSink outputSink) throws IOException {
         this.outputSink = outputSink;
@@ -33,11 +33,22 @@ public class XmlWriterImpl implements XmlWriter {
     }
 
     @Override
-    public void characterData(String characterData) throws IOException {
+    public void characterData(String characterData, boolean isInCdata) throws IOException {
         writeBufferMaybe();
-        hasContent = true;
         log.trace("characterData [{}]", characterData);
-        writer.write(characterData);
+        if (insideCDATA) {
+            // Don't encode CDATA content - write it raw
+            writer.write(characterData);
+        } else {
+            // Only encode regular character data
+            writer.write(XmlTool.xmlEncode(characterData));
+        }
+    }
+
+    @Override
+    public void endCDATA() throws IOException {
+        insideCDATA = false;  // Reset CDATA state
+        raw("]]>");
     }
 
     @Override
@@ -70,7 +81,6 @@ public class XmlWriterImpl implements XmlWriter {
             writer.write(">");
         }
         if (!openElements.isEmpty()) openElements.pop();
-        hasContent = !openElements.isEmpty();
     }
 
     @Override
@@ -80,31 +90,34 @@ public class XmlWriterImpl implements XmlWriter {
     }
 
     @Override
+    public void raw(String rawXml) throws IOException {
+        writeBufferMaybe();
+        writer.write(rawXml);
+    }
+
+    @Override
+    public void startCDATA() throws IOException {
+        System.out.println("CDATA in XmlWriterImpl");
+        writeBufferMaybe();
+        insideCDATA = true;  // Track CDATA state
+        raw("<![CDATA[");
+    }
+
+    @Override
     public void startDocument() throws IOException {
         log.trace("startDocument");
         this.out = outputSink.outputStream();
         this.writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+        writer.write("<?xml version='1.0' encoding='utf-8'?>\n");
+        writer.flush();
     }
 
     @Override
     public void startElement(String name, Map<String, String> attributes) throws IOException {
         writeBufferMaybe();
         buffer(name, attributes);
-        hasContent = false;
         openElements.push(name);
         log.trace("startElement [{}]", name);
-    }
-
-    @Override
-    public void startCDATA() throws IOException {
-        writeBufferMaybe();
-        hasContent = true;
-        writer.write("<![CDATA[");
-    }
-
-    @Override
-    public void endCDATA() throws IOException {
-        writer.write("]]>" );
     }
 
     private void buffer(String name, Map<String, String> attributes) {

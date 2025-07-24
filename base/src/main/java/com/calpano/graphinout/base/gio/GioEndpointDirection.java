@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.base.cj.CjDirection;
+
 public enum GioEndpointDirection {
 
     In("in"), Out("out"), Undirected("undir");
@@ -26,4 +28,11 @@ public enum GioEndpointDirection {
         return this == Undirected;
     }
 
+    public CjDirection toCjDirection() {
+        return switch (this) {
+            case In -> CjDirection.IN;
+            case Out -> CjDirection.OUT;
+            case Undirected -> CjDirection.UNDIR;
+        };
+    }
 }

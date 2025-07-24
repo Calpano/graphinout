@@ -1,9 +1,15 @@
-package com.calpano.graphinout.base.graphml;
+package com.calpano.graphinout.base.graphml.impl;
+
+import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
+import com.calpano.graphinout.base.graphml.IGraphmlDefault;
+import com.calpano.graphinout.base.graphml.IGraphmlDescription;
+import com.calpano.graphinout.base.graphml.IGraphmlKey;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author rbaba
@@ -22,9 +28,10 @@ import java.util.Objects;
  * elements (children of &lt;graphml&gt;) and defined by &lt;data&gt; elements. Occurence: &lt;graphml&gt;.
  * @see GraphmlData {@link GraphmlData}
  */
-public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
+public class GraphmlKey extends GraphmlElement implements IGraphmlKey {
 
-    public static class GraphmlKeyBuilder extends GraphmlGraphCommonElementBuilder {
+
+    public static class GraphmlKeyBuilder extends GraphmlElementBuilder {
 
         private String id;
         private String attrName;
@@ -44,7 +51,7 @@ public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
 
         @Override
         public GraphmlKey build() {
-            return new GraphmlKey(id, attrName, attrType, forType, defaultValue, extraAttrib, desc);
+            return new GraphmlKey(id, attrName, attrType, forType, defaultValue, attributes, desc);
         }
 
         public GraphmlKeyBuilder defaultValue(GraphmlDefault defaultValue) {
@@ -53,14 +60,14 @@ public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
         }
 
         @Override
-        public GraphmlKeyBuilder desc(GraphmlDescription desc) {
+        public GraphmlKeyBuilder desc(IGraphmlDescription desc) {
             super.desc(desc);
             return this;
         }
 
         @Override
-        public GraphmlKeyBuilder extraAttrib(@Nullable Map<String, String> extraAttrib) {
-            super.extraAttrib(extraAttrib);
+        public GraphmlKeyBuilder attributes(@Nullable Map<String, String> attributes) {
+            super.attributes(attributes);
             return this;
         }
 
@@ -75,7 +82,7 @@ public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
         }
 
     }
-    public static final String TAGNAME = "key";
+
     /**
      * identifies this &lt;key&gt;
      * <p>
@@ -107,7 +114,7 @@ public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
      * <p>
      * The name of this attribute in key is <b>default</b>
      */
-    private GraphmlDefault defaultValue;
+    private IGraphmlDefault defaultValue;
 
     // Constructors
     public GraphmlKey() {
@@ -125,18 +132,13 @@ public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
     }
 
     public GraphmlKey(String id, String attrName, String attrType, GraphmlKeyForType forType,
-                      GraphmlDefault defaultValue, @Nullable Map<String, String> extraAttrib, GraphmlDescription desc) {
+                      GraphmlDefault defaultValue, @Nullable Map<String, String> extraAttrib, IGraphmlDescription desc) {
         super(extraAttrib, desc);
         this.id = id;
         this.attrName = attrName;
         this.attrType = attrType;
         this.forType = forType;
         this.defaultValue = defaultValue;
-    }
-
-    // Builder
-    public static GraphmlKeyBuilder builder() {
-        return new GraphmlKeyBuilder();
     }
 
     // equals, hashCode, toString
@@ -153,42 +155,57 @@ public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
                 Objects.equals(defaultValue, that.defaultValue);
     }
 
-    public String getAttrName() {
+    @Override
+    public String attrName() {
         return attrName;
     }
 
-    public String getAttrType() {
+    @Override
+    public String attrType() {
         return attrType;
     }
 
     @Override
-    public LinkedHashMap<String, String> getAttributes() {
+    public LinkedHashMap<String, String> attributes() {
         LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
 
-        if (id != null) attributes.put("id", id);
+        if (id != null) attributes.put(ATTRIBUTE_ID, id);
 
-        if (attrName != null && !attrName.isEmpty()) attributes.put("attr.name", attrName);
+        if (attrName != null && !attrName.isEmpty()) attributes.put(ATTRIBUTE_ATTR_NAME, attrName);
 
-        if (attrType != null && !attrType.isEmpty()) attributes.put("attr.type", attrType);
+        if (attrType != null && !attrType.isEmpty()) attributes.put(ATTRIBUTE_ATTR_TYPE, attrType);
 
-        if (forType != null) attributes.put("for", forType.value);
+        if (forType != null) attributes.put(ATTRIBUTE_FOR, forType.value);
 
-        if (extraAttrib != null)
-            attributes.putAll(extraAttrib);
+        if (allAttributes != null)
+            attributes.putAll(allAttributes);
 
         return attributes;
     }
 
-    public GraphmlDefault getDefaultValue() {
+    @Override
+    public String tagName() {
+        return TAGNAME;
+    }
+
+    @Override
+    public Set<String> builtInAttributeNames() {
+        return Set.of(ATTRIBUTE_ID, ATTRIBUTE_FOR, ATTRIBUTE_ATTR_NAME, ATTRIBUTE_ATTR_TYPE);
+    }
+
+    @Override
+    public IGraphmlDefault defaultValue() {
         return defaultValue;
     }
 
-    public GraphmlKeyForType getForType() {
+    @Override
+    public GraphmlKeyForType forType() {
         return forType;
     }
 
     // Getters and Setters
-    public String getId() {
+    @Override
+    public String id() {
         return id;
     }
 
@@ -205,7 +222,7 @@ public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
         this.attrType = attrType;
     }
 
-    public void setDefaultValue(GraphmlDefault defaultValue) {
+    public void setDefaultValue(IGraphmlDefault defaultValue) {
         this.defaultValue = defaultValue;
     }
 
@@ -230,7 +247,7 @@ public class GraphmlKey extends GraphmlGraphCommonElement implements XMLValue {
                 ", forType=" + forType +
                 ", defaultValue=" + defaultValue +
                 ", desc=" + desc +
-                ", extraAttrib=" + extraAttrib +
+                ", extraAttrib=" + allAttributes +
                 '}';
     }
 

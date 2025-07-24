@@ -20,7 +20,7 @@ public class GioDescriptionEntity extends AbstractGraphmlEntity<GioElementWithDe
 
     @Override
     public String getName() {
-        return GraphmlElement.DESC;
+        return GraphmlElements.DESC;
     }
 
 }
