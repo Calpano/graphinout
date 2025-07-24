@@ -1,0 +1,2 @@
+All files starting with `invalid` are invalid.
+They are used in tests for specific error handling.
