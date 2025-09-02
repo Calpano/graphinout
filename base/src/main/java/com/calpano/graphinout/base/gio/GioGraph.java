@@ -46,6 +46,7 @@ public class GioGraph extends GioElementWithDescription {
         }
 
     }
+
     /**
      * This is an attribute that can be empty or null.
      * </p>
@@ -59,7 +60,7 @@ public class GioGraph extends GioElementWithDescription {
      */
     private @Nullable String id;
 
-    // Constructors
+
     public GioGraph() {
         super();
     }
@@ -77,12 +78,12 @@ public class GioGraph extends GioElementWithDescription {
         this.id = id;
     }
 
-    // Builder
+
     public static GioGraphBuilder builder() {
         return new GioGraphBuilder();
     }
 
-    // equals, hashCode, toString
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -102,7 +103,7 @@ public class GioGraph extends GioElementWithDescription {
         return Objects.hash(super.hashCode(), edgedefaultDirected, id);
     }
 
-    // Getters and Setters
+
     public boolean isEdgedefaultDirected() {
         return edgedefaultDirected;
     }

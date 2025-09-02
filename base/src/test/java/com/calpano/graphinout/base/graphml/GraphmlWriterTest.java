@@ -1,10 +1,5 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.impl.Graphml2XmlWriter;
-import com.calpano.graphinout.base.graphml.impl.GraphmlData;
-import com.calpano.graphinout.base.graphml.impl.GraphmlDescription;
-import com.calpano.graphinout.base.graphml.impl.GraphmlGraph;
-import com.calpano.graphinout.base.graphml.impl.GraphmlNode;
 import com.calpano.graphinout.foundation.xml.XmlWriterSpy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,94 +7,99 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GraphmlWriterTest {
 
-    @Spy
-    static XmlWriterSpy xmlWriterSpy;
+    @Spy static XmlWriterSpy xmlWriterSpy;
     private static GraphmlWriter graphmlWriter;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
         graphmlWriter = new Graphml2XmlWriter(xmlWriterSpy);
-        xmlWriterSpy.getOutPut().delete(0, xmlWriterSpy.getOutPut().length());
+        xmlWriterSpy.getOut().delete(0, xmlWriterSpy.getOut().length());
     }
 
     @Test
     void data() throws IOException {
-        graphmlWriter.key(IGraphmlKey.builder().id("test").attrName("attrName").attrType("attrType").forType(GraphmlKeyForType.All).build());
-        assertEquals("::startElement->key->{id=test, attr.name=attrName, attr.type=attrType, for=all}::endElement->key", xmlWriterSpy.getOutPut().toString());
+        graphmlWriter.key(IGraphmlKey.builder().id("test").forType(GraphmlKeyForType.All).attrName("attrName").attrType("attrType").build());
+        String output = xmlWriterSpy.getOut().toString();
+        assertThat(output, startsWith("<NEWLINE /><element key><atts {attr.name=attrName, attr.type=attrType, id=test}>"));
+        assertThat(output, endsWith("</element key>"));
     }
 
     @Test
-    void endDocument() throws IOException {
-        graphmlWriter.endDocument();
-        assertEquals("::endElement->graphml::endDocument", xmlWriterSpy.getOutPut().toString());
+    void documentEnd() throws IOException {
+        graphmlWriter.documentEnd();
+        assertEquals("</element graphml></DOCUMENT>", xmlWriterSpy.getOut().toString());
     }
 
     @Test
-    void endEdge() throws IOException {
-        graphmlWriter.endHyperEdge();
-        assertEquals("::endElement->hyperedge", xmlWriterSpy.getOutPut().toString());
+    void edgeEnd() throws IOException {
+        graphmlWriter.hyperEdgeEnd();
+        assertEquals("</element hyperedge>", xmlWriterSpy.getOut().toString());
     }
 
     @Test
-    void endGraph() throws IOException {
-        IGraphmlLocator locator = IGraphmlLocator.builder()
-                .xLinkHref(new URL("http:\\127.0.0.1"))
-                .build();
-        graphmlWriter.endGraph(locator);
-        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1}::endElement->locator::endElement->graph", xmlWriterSpy.getOutPut().toString());
+    void graphEnd() throws IOException {
+        // A graph must be started before it can be ended.
+        graphmlWriter.graphStart(IGraphmlGraph.builder().id("g1").edgeDefault(IGraphmlGraph.EdgeDefault.directed).build());
+        xmlWriterSpy.getOut().delete(0, xmlWriterSpy.getOut().length());
+
+        graphmlWriter.graphEnd();
+        assertEquals("</element graph>", xmlWriterSpy.getOut().toString());
     }
 
     @Test
-    void endNode() throws IOException {
-        IGraphmlLocator locator = IGraphmlLocator.builder()
-                .xLinkHref(new URL("http:\\127.0.0.1"))
-                .build();
-        locator.attributes().put("locator.extra.attrib", "local");
-        graphmlWriter.endNode(locator);
-        assertEquals("::startElement->locator->{xlink:href=http:\\127.0.0.1}::endElement->locator::endElement->node", xmlWriterSpy.getOutPut().toString());
+    void nodeEnd() throws IOException {
+        graphmlWriter.nodeEnd();
+        assertEquals("</element node>", xmlWriterSpy.getOut().toString());
     }
 
     @Test
-    void startDocument() throws IOException {
-        graphmlWriter.startDocument(IGraphmlDocument.builder().build());
-        assertEquals("::startDocument->::startElement->graphml->{xmlns=http://graphml.graphdrawing.org/xmlns, xmlns:xsi=http://www.w3.org/2001/XMLSchema-instance, xsi:schemaLocation=http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd}", xmlWriterSpy.getOutPut().toString());
-
+    void documentStart() throws IOException {
+        graphmlWriter.documentStart(IGraphmlDocument.builder().build());
+        assertEquals("<DOCUMENT><element graphml><atts {xmlns=http://graphml.graphdrawing.org/xmlns, xmlns:xsi=http://www.w3.org/2001/XMLSchema-instance, xsi:schemaLocation=http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd}><NEWLINE />", xmlWriterSpy.getOut().toString());
     }
 
     @Test
-    void startEdge() throws IOException {
-        graphmlWriter.startHyperEdge(IGraphmlHyperEdge.builder("edge1")
-                .addEndpoint(IGraphmlEndpoint.builder().id("GioEndpoint1").node("node1").type(GraphmlDirection.In).port("port1").build())
-                .addEndpoint(IGraphmlEndpoint.builder().id("GioEndpoint2").node("node2").type(GraphmlDirection.Out).port("port2").build())
+    void edgeStart() throws IOException {
+        graphmlWriter.hyperEdgeStart(IGraphmlHyperEdge.builder().id("edge1").addEndpoint(IGraphmlEndpoint.builder().id("GioEndpoint1").node("node1").type(GraphmlDirection.In).port("port1").build()).addEndpoint(IGraphmlEndpoint.builder().id("GioEndpoint2").node("node2").type(GraphmlDirection.Out).port("port2").build()).build());
+        assertEquals("<element hyperedge><atts {id=edge1}><element endpoint><atts {id=GioEndpoint1, node=node1, port=port1, type=in}></element endpoint><element endpoint><atts {id=GioEndpoint2, node=node2, port=port2, type=out}></element endpoint>", xmlWriterSpy.getOut().toString());
+    }
+
+    @Test
+    void graphStart() throws IOException {
+        IGraphmlLocator locator = IGraphmlLocator.builder().xLinkHref(new URL("http://127.0.0.1")).build();
+        graphmlWriter.graphStart(IGraphmlGraph.builder() //
+                .id("graph") //
+                .edgeDefault(IGraphmlGraph.EdgeDefault.directed) //
+                .locator(locator)//
                 .build());
-        assertEquals("::startElement->hyperedge->{id=edge1}::startElement->endpoint->{id=GioEndpoint1, node=node1, port=port1, type=in}::endElement->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=out}::endElement->endpoint", xmlWriterSpy.getOutPut().toString());
-
+        assertEquals("<NEWLINE /><element graph><atts {edgedefault=directed, id=graph}><element locator><atts {xlink:href=http://127.0.0.1, xlink:type=simple, xmlns:xlink=http://www.w3.org/TR/2000/PR-xlink-20001220/}></element locator>", xmlWriterSpy.getOut().toString());
     }
 
     @Test
-    void startGraph() throws IOException {
-        graphmlWriter.startGraph(IGraphmlGraph.builder().id("graph").edgedefault(GraphmlGraph.EdgeDefault.directed).build());
-        assertEquals("::startElement->graph->{id=graph, edgedefault=directed}", xmlWriterSpy.getOutPut().toString());
+    void nodeStart() throws IOException {
+        IGraphmlLocator locator = IGraphmlLocator.builder().xLinkHref(URI.create("http://127.0.0.1").toURL()).attribute("locator.extra.attrib", "local").build();
+        graphmlWriter.nodeStart(IGraphmlNode.builder() //
+                .id("node ") //
+                .desc(IGraphmlDescription.builder().value("GraphmlDescription").build()) //
+                .locator(locator) //
+                .build());
 
-    }
-
-    @Test
-    void startNode() throws IOException {
-        List<IGraphmlPort> gioPortList = new ArrayList<>();
-        gioPortList.add(IGraphmlPort.builder().name("port").build());
-
-        graphmlWriter.startNode(GraphmlNode.builder().desc(GraphmlDescription.builder().value("GraphmlDescription").build()).id("node ").build());
-        graphmlWriter.data(GraphmlData.builder().key("data").id("id").value("value").build());
-        assertEquals("::startElement->node->{id=node }::startElement->desc->{}::characterData->GraphmlDescription::endElement->desc::startElement->data->{id=id, key=data}::characterData->value::endElement->data", xmlWriterSpy.getOutPut().toString());
+        assertEquals("<NEWLINE /><element node><atts {id=node }>" +
+                "<element desc><atts {}>" +
+                "<raw>GraphmlDescription</raw></element desc>" +
+                "<element locator><atts {locator.extra.attrib=local, xlink:href=http://127.0.0.1, xlink:type=simple, xmlns:xlink=http://www.w3.org/TR/2000/PR-xlink-20001220/}>" +
+                "</element locator>", xmlWriterSpy.getOut().toString());
     }
 
 }

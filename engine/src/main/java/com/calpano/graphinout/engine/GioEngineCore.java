@@ -4,13 +4,14 @@ import com.calpano.graphinout.base.GioService;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
-import com.calpano.graphinout.base.graphml.impl.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.ContentErrors;
 import com.calpano.graphinout.base.reader.InMemoryErrorHandler;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.OutputSink;
+import com.calpano.graphinout.foundation.xml.Xml2AppendableWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
 import org.slf4j.Logger;
 
@@ -30,8 +31,7 @@ public class GioEngineCore {
     private static final Logger log = getLogger(GioEngineCore.class);
     private final List<GioReader> readers = new ArrayList<>();
 
-    @SuppressWarnings("unused")
-    private final Map<String, GioService> services = new HashMap<>();
+    @SuppressWarnings("unused") private final Map<String, GioService> services = new HashMap<>();
 
     public GioEngineCore() {
         loadServices();
@@ -51,8 +51,7 @@ public class GioEngineCore {
         List<GioReader> readerCandidates = selectReaders(inputSource);
         // we expect only one of them to be able to read it without throwing exceptions or reporting
         // contentErrors
-        OutputSink noop = OutputSink.createNoop();
-        GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(new XmlWriterImpl(noop)));
+        GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(Xml2AppendableWriter.createNoop()));
         for (GioReader reader : readerCandidates) {
             InMemoryErrorHandler errorHandler = ContentErrors.createInMemory();
             reader.errorHandler(errorHandler);
@@ -61,13 +60,12 @@ public class GioEngineCore {
             }
             if (errorHandler.hasNoErrors()) {
                 // parsing worked, now for real
-                gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(new XmlWriterImpl(outputSink)));
+                gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(Xml2AppendableWriter.createNoop()));
                 // FIXME now parse again
                 return;
             }
         }
-        throw new IllegalStateException(
-                "Could not find any parser able to parse " + inputSource.name());
+        throw new IllegalStateException("Could not find any parser able to parse " + inputSource.name());
     }
 
     /**
@@ -81,26 +79,24 @@ public class GioEngineCore {
         } catch (IOException e) {
             throw new RuntimeException("Error reading input", e);
         }
-        availableService.forEach(
-                gioReader -> {
-                    List<ContentError> contentErrors = new ArrayList<>();
-                    gioReader.errorHandler(contentErrors::add);
+        availableService.forEach(gioReader -> {
+            List<ContentError> contentErrors = new ArrayList<>();
+            gioReader.errorHandler(contentErrors::add);
+            try {
+                gioReader.read(in, gioWriter);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                contentErrors.forEach(contentError -> {
                     try {
-                        gioReader.read(in, gioWriter);
+                        logOut.write(contentError.toString().getBytes());
+                        logOut.write("\n".getBytes());
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    } finally {
-                        contentErrors.forEach(
-                                contentError -> {
-                                    try {
-                                        logOut.write(contentError.toString().getBytes());
-                                        logOut.write("\n".getBytes());
-                                    } catch (IOException e) {
-                                        log.error("Failed reporting contentError", e);
-                                    }
-                                });
+                        log.error("Failed reporting contentError", e);
                     }
                 });
+            }
+        });
     }
 
     public List<GioReader> readers() {
@@ -113,29 +109,25 @@ public class GioEngineCore {
 
     private GioWriter createGioWriter(OutputStream resultOut) throws IOException {
         // FIXME create depending on desired output format
-        return new Gio2GraphmlWriter(
-                new Graphml2XmlWriter(
-                        new XmlWriterImpl(
-                                new OutputSink() {
-                                    @Override
-                                    public void close() throws Exception {
-                                        resultOut.flush();
-                                        resultOut.close();
-                                    }
+        return new Gio2GraphmlWriter(new Graphml2XmlWriter(XmlWriterImpl.create(new OutputSink() {
+            @Override
+            public void close() throws Exception {
+                resultOut.flush();
+                resultOut.close();
+            }
 
-                                    @Override
-                                    public OutputStream outputStream() throws IOException {
-                                        return resultOut;
-                                    }
-                                })));
+            @Override
+            public OutputStream outputStream() throws IOException {
+                return resultOut;
+            }
+        })));
     }
 
     private void loadServices() {
         ServiceLoader<GioService> serviceLoader = ServiceLoader.load(GioService.class);
         log.info("Load GioServices ...");
         for (GioService gioService : serviceLoader) {
-            log.info(
-                    "Found service '" + gioService.id() + "' in " + gioService.getClass().getCanonicalName());
+            log.info("Found service '" + gioService.id() + "' in " + gioService.getClass().getCanonicalName());
             services.put(gioService.id(), gioService);
             for (GioReader reader : gioService.readers()) {
                 readers.add(reader);
@@ -157,17 +149,14 @@ public class GioEngineCore {
         }
 
         // 2) ask EVERY reader we have / every candidate, if it can read the given inputSource
-        return candidates.stream()
-                .filter(
-                        gioReader -> {
-                            try {
-                                return gioReader.isValid(inputSource);
-                            } catch (Exception e) {
-                                log.warn(e.getMessage());
-                                return false;
-                            }
-                        })
-                .collect(Collectors.toList());
+        return candidates.stream().filter(gioReader -> {
+            try {
+                return gioReader.isValid(inputSource);
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+                return false;
+            }
+        }).collect(Collectors.toList());
         // Fixed bug management exception handling to check other providers
         //        Iterator<GioReader> it = candidates.iterator();
         //        while (it.hasNext()) {

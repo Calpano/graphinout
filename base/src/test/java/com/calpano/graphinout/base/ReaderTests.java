@@ -4,8 +4,8 @@ import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.DelegatingGraphmlWriter;
 import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
+import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
-import com.calpano.graphinout.base.graphml.impl.Graphml2XmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.validation.ValidatingGraphMlWriter;
 import com.calpano.graphinout.base.writer.DelegatingGioWriter;
@@ -42,7 +42,7 @@ public class ReaderTests {
     }
 
     public static GioWriter createWriter(OutputSink outputSink, boolean validateXml, boolean validateGraphml, boolean validateGio) throws IOException {
-        XmlWriter xmlWriter = new XmlWriterImpl(outputSink);
+        XmlWriter xmlWriter = XmlWriterImpl.create(outputSink);
         if (validateXml) {
             xmlWriter = new ValidatingXmlWriter(xmlWriter);
         }

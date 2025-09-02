@@ -1,24 +1,20 @@
 package com.calpano.graphinout.base.validation;
 
-import com.calpano.graphinout.base.graphml.IGraphmlData;
-import com.calpano.graphinout.base.graphml.IGraphmlGraph;
-import com.calpano.graphinout.base.graphml.IGraphmlNode;
-import com.calpano.graphinout.base.graphml.impl.GraphmlData;
-import com.calpano.graphinout.base.graphml.impl.GraphmlGraph;
-import com.calpano.graphinout.base.graphml.impl.GraphmlHyperEdge;
-import com.calpano.graphinout.base.graphml.impl.GraphmlNode;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
+import com.calpano.graphinout.base.graphml.IGraphmlData;
 import com.calpano.graphinout.base.graphml.IGraphmlDocument;
 import com.calpano.graphinout.base.graphml.IGraphmlEdge;
-import com.calpano.graphinout.base.graphml.IGraphmlPort;
 import com.calpano.graphinout.base.graphml.IGraphmlEndpoint;
+import com.calpano.graphinout.base.graphml.IGraphmlGraph;
 import com.calpano.graphinout.base.graphml.IGraphmlHyperEdge;
 import com.calpano.graphinout.base.graphml.IGraphmlKey;
 import com.calpano.graphinout.base.graphml.IGraphmlLocator;
+import com.calpano.graphinout.base.graphml.IGraphmlNode;
+import com.calpano.graphinout.base.graphml.IGraphmlPort;
+import com.calpano.graphinout.base.graphml.impl.GraphmlData;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +57,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
             return allowedChildren.contains(childElement);
         }
     }
+
     private static final Logger log = getLogger(ValidatingGraphMlWriter.class);
     /**
      * remember elements we saw already; nesting order in stack
@@ -89,7 +86,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endDocument() throws IOException {
+    public void documentEnd() throws IOException {
         ensureAllowedEnd(CurrentElement.GRAPHML);
         if (!nonExistingNode.isEmpty()) {
             nonExistingNode.forEach((s, messages) -> messages.forEach(log::warn));
@@ -102,46 +99,18 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endEdge() throws IOException {
-        ensureAllowedEnd(CurrentElement.EDGE);
-    }
-
-    @Override
-    public void endGraph(@Nullable IGraphmlLocator locator) throws IOException {
-        validateLocator(locator);
-        ensureAllowedEnd(CurrentElement.GRAPH);
-    }
-
-    @Override
-    public void endHyperEdge() throws IOException {
-        ensureAllowedEnd(CurrentElement.HYPEREDGE);
-    }
-
-    @Override
-    public void endNode(@Nullable IGraphmlLocator locator) throws IOException {
-        validateLocator(locator);
-        ensureAllowedEnd(CurrentElement.NODE);
-    }
-
-    @Override
-    public void endPort() throws IOException {
-        ensureAllowedEnd(CurrentElement.PORT);
-    }
-
-    public void key(IGraphmlKey key) throws IOException {
-        ensureAllowedStart(CurrentElement.KEY);
-        validateKey(key);
-        ensureAllowedEnd(CurrentElement.KEY);
-    }
-
-    @Override
-    public void startDocument(IGraphmlDocument document) throws IOException {
+    public void documentStart(IGraphmlDocument document) throws IOException {
         ensureAllowedStart(CurrentElement.GRAPHML);
         validateGraphMl(document);
     }
 
     @Override
-    public void startEdge(IGraphmlEdge edge) throws IOException {
+    public void edgeEnd() throws IOException {
+        ensureAllowedEnd(CurrentElement.EDGE);
+    }
+
+    @Override
+    public void edgeStart(IGraphmlEdge edge) throws IOException {
         ensureAllowedStart(CurrentElement.EDGE);
         validateEdge(edge);
         investigatingTheExistenceOfTheNode(edge);
@@ -151,12 +120,23 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void startGraph(IGraphmlGraph graph) throws IOException {
-        ensureAllowedStart(CurrentElement.GRAPH);
+    public void graphEnd() throws IOException {
+        ensureAllowedEnd(CurrentElement.GRAPH);
     }
 
     @Override
-    public void startHyperEdge(IGraphmlHyperEdge hyperEdge) throws IOException {
+    public void graphStart(IGraphmlGraph graph) throws IOException {
+        ensureAllowedStart(CurrentElement.GRAPH);
+        validateLocator(graph.locator());
+    }
+
+    @Override
+    public void hyperEdgeEnd() throws IOException {
+        ensureAllowedEnd(CurrentElement.HYPEREDGE);
+    }
+
+    @Override
+    public void hyperEdgeStart(IGraphmlHyperEdge hyperEdge) throws IOException {
         ensureAllowedStart(CurrentElement.HYPEREDGE);
         validateHyperEdge(hyperEdge);
         investigatingTheExistenceOfTheNode(hyperEdge);
@@ -164,8 +144,19 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         existingEdgeIds.add(hyperEdge.id());
     }
 
+    public void key(IGraphmlKey key) throws IOException {
+        ensureAllowedStart(CurrentElement.KEY);
+        validateKey(key);
+        ensureAllowedEnd(CurrentElement.KEY);
+    }
+
     @Override
-    public void startNode(IGraphmlNode node) throws IOException {
+    public void nodeEnd() throws IOException {
+        ensureAllowedEnd(CurrentElement.NODE);
+    }
+
+    @Override
+    public void nodeStart(IGraphmlNode node) throws IOException {
         ensureAllowedStart(CurrentElement.NODE);
         validateNode(node);
         existingNodeIds.add(node.id());
@@ -173,7 +164,12 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void startPort(IGraphmlPort port) throws IOException {
+    public void portEnd() throws IOException {
+        ensureAllowedEnd(CurrentElement.PORT);
+    }
+
+    @Override
+    public void portStart(IGraphmlPort port) throws IOException {
         // FIXME port names are not unique per graph, but only unique within a node
         ensureAllowedStart(CurrentElement.PORT);
         if (port.name() == null || port.name().trim().isEmpty())
@@ -273,11 +269,7 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
     }
 
     private void validateGraphMl(IGraphmlDocument document) {
-        if (document.keys() != null) {
-            for (IGraphmlKey gioKey : document.keys()) {
-                validateKey(gioKey);
-            }
-        }
+        // always valid
     }
 
     private void validateHyperEdge(IGraphmlHyperEdge hyperEdge) throws IllegalStateException {
@@ -299,14 +291,14 @@ public class ValidatingGraphMlWriter implements GraphmlWriter {
         if (locator == null) return;
         ensureAllowedStart(CurrentElement.LOCATOR);
         ensureAllowedEnd(CurrentElement.LOCATOR);
-        if (locator.xlinkHref() == null)
-            throw new IllegalArgumentException("XLinkHref Url cannot be null or empty.");
+        if (locator.xlinkHref() == null) throw new IllegalArgumentException("XLinkHref Url cannot be null or empty.");
     }
 
     private void validateNode(IGraphmlNode node) throws IllegalStateException {
         String nodeId = node.id();
         if (nodeId == null || nodeId.isEmpty()) throw new IllegalStateException("Node must have an ID.");
         if (existingNodeIds.contains(nodeId)) throw new IllegalStateException("Node ID must be unique.");
+        validateLocator(node.locator());
     }
 
 }

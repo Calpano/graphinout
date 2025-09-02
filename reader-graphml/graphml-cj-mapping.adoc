@@ -3,10 +3,9 @@
 See also
 http://graphml.graphdrawing.org/primer/graphml-primer.html[]
 
-
 == GraphML to CJ
-GraphML has three data mechanisms:
 
+GraphML has three data mechanisms:
 
 === Typed Key-Data
 
@@ -28,7 +27,9 @@ GraphML has three data mechanisms:
     <default>yellow</default>
   </key>
 ----
+
 and using the def
+
 [source,xml]
 ----
 <node id="n0">
@@ -38,6 +39,7 @@ and using the def
 
 .Mapping to CJ
 __(Node n0)__. `Data`:
+
 [source,json]
 ----
 {
@@ -46,6 +48,7 @@ __(Node n0)__. `Data`:
 ----
 
 === Untyped Key-Data (XML)
+
 Always mapped to string.
 If the content was XML (easy to detect in XML elements started), then we need to store type hints.
 
@@ -62,6 +65,7 @@ If the content was XML (easy to detect in XML elements started), then we need to
 </default>
 </key>
 ----
+
 and used as
 
 .GraphML usage
@@ -110,6 +114,7 @@ maps to CJ
 TIP: This is the selected option.
 
 === Custom XML Attributes
+
 Just use any undefined XML attributes.
 Often in another namespace.
 
@@ -120,6 +125,7 @@ Often in another namespace.
 
 .Mapping to CJ
 `Document.Data`:
+
 [source,json]
 ----
 {
@@ -130,6 +136,7 @@ Often in another namespace.
 ----
 
 __(Node n0)__. `Data`:
+
 [source,json]
 ----
 {
@@ -139,10 +146,8 @@ __(Node n0)__. `Data`:
 }
 ----
 
-
-
-
 === Locator
+
 .A node defined via an external URI
 [source,xml]
 ----
@@ -152,10 +157,10 @@ __(Node n0)__. `Data`:
 Just treated as <<_custom_xml_attributes>>.
 Maybe give a warning.
 
-
 == CJ to GraphML
 
 === Data is Primitive
+
 Case: All nodes, that have `Data`, contain the same primitive JSON type.
 
 .GraphML
@@ -165,6 +170,7 @@ Case: All nodes, that have `Data`, contain the same primitive JSON type.
 ----
 
 === Data is Object
+
 Each node property with primitive values (using a consistent type) can be mapped back to GraphML as
 
 .GraphML
@@ -184,6 +190,7 @@ Other properties with inconsistent types or complex values, are mapped as
   attr.name="${given JSON prop key}"
   attr.type="string" />
 ----
+
 and the value is the JSON serialized to string.
 
 

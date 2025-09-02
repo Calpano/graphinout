@@ -254,7 +254,7 @@ public class Gio2JsonWriter implements GioWriter {
                 jsonWriter.string(portId);
             }
             jsonWriter.onKey(CjConstants.ENDPOINT__DIRECTION);
-            jsonWriter.string(         ep.getType().xmlValue );
+            jsonWriter.string(ep.getType().xmlValue);
             // TODO type
         }
         jsonWriter.arrayEnd();

@@ -1,33 +1,46 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.impl.GraphmlGraph;
+import com.calpano.graphinout.base.graphml.builder.GraphmlGraphBuilder;
 
-import java.util.LinkedHashMap;
-import java.util.Set;
+import javax.annotation.Nullable;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
-public interface IGraphmlGraph extends IGraphmlWithDescElement, IXmlElement {
+public interface IGraphmlGraph extends IGraphmlElementWithDescAndId {
 
-    String TAGNAME = "graph";
-    String ATTRIBUTE_EDGEDEFAULT = "edgedefault";
-
-    // Builder
-    static GraphmlGraph.GraphmlGraphBuilder builder() {
-        return new GraphmlGraph.GraphmlGraphBuilder();
+    /**
+     * The edgedefault attribute defines the default value of the edge attribute directed. The default value for
+     * directed is directed.
+     */
+    enum EdgeDefault {
+        /** the default */
+        directed, undirected
     }
 
-    @Override
-    LinkedHashMap<String, String> attributes();
+    String ATTRIBUTE_EDGE_DEFAULT = "edgedefault";
+
+    static GraphmlGraphBuilder builder() {
+        return new GraphmlGraphBuilder();
+    }
+
+    EdgeDefault edgeDefault();
+
+    default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
+        name_value.accept(ATTRIBUTE_ID, this::id);
+        name_value.accept(ATTRIBUTE_EDGE_DEFAULT, () -> edgeDefault().name());
+    }
+
+    default boolean isDirectedEdges() {
+        // default is directed for null
+        return edgeDefault() != EdgeDefault.undirected;
+    }
+
+    @Nullable
+    IGraphmlLocator locator();
 
     @Override
-    String tagName();
-
-    @Override
-    Set<String> builtInAttributeNames();
-
-    String getId();
-
-    IGraphmlLocator getLocator();
-
-    boolean isDirectedEdges();
+    default String tagName() {
+        return GraphmlElements.GRAPH;
+    }
 
 }

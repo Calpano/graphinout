@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.calpano.graphinout.reader.graphml;
+package com.calpano.graphinout.base.graphml;
 
+
+import java.util.Set;
 
 /**
  * GraphML XML element names as defined in the spec
@@ -25,5 +27,9 @@ public class GraphmlElements {
     public static final String LOCATOR = "locator";
 
     public static final String DEFAULT = "default";
+
+    public static Set<String> setOfContentElementNames() {
+        return Set.of(DATA, DESC, DEFAULT);
+    }
 
 }

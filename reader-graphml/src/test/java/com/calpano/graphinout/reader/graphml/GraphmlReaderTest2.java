@@ -30,9 +30,9 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
 
     protected List<ContentError> expectedErrors(String resourceName) {
         switch (resourceName) {
-            case "graphin/graphml/samples/greek2.graphml":
+            case "graphin/graphml/samples/invalid-greek2.graphml":
                 return Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(33, 57)));
-            case "graphin/graphml/samples/haitimap2.graphml":
+            case "graphin/graphml/samples/invalid-haitimap2.graphml":
                 return Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(25, 57)));
             case "graphin/graphml/synthetic/invalid-root.graphml":
                 return Arrays.asList( //
@@ -52,7 +52,7 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
     @Test
     void test() throws IOException {
         GioReader gioReader = new GraphmlReader();
-        String resourcePath = "graphin/graphml/synthetic/graphml-key-data.graphml.xml";
+        String resourcePath = "xml/graphml/synthetic/graphml-key-data.graphml.xml";
         List<ContentError> expectedErrors = Collections.emptyList();
         InMemoryOutputSink outputSink = new InMemoryOutputSink();
         URL resourceUrl = ClassLoader.getSystemResource(resourcePath);

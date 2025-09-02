@@ -11,6 +11,8 @@ import com.calpano.graphinout.base.gio.GioKeyForType;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.graphml.Graphml;
+import com.calpano.graphinout.base.graphml.GraphmlElements;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.Location;
 import org.slf4j.Logger;

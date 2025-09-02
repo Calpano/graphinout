@@ -23,9 +23,16 @@ class JsonFormatterTest {
                 }""";
 
         String expected = """
-{"name":"John Doe","age":30,"isStudent":false,"courses":[{
-"title":"History I","credits":3},{"title":"Math II",
-"credits":4}],"address":null}""";
+                {"name":
+                "John Doe","age":
+                30,"isStudent":
+                false,"courses":
+                [{"title":
+                "History I","credits":
+                3},{"title":
+                "Math II","credits":
+                4}],"address":
+                null}""";
 
         String formattedJson = JsonFormatter.formatDebug(json);
         assertThat(formattedJson).isEqualTo(expected);

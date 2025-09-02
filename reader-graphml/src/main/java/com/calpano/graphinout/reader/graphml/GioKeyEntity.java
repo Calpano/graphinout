@@ -1,6 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioKey;
+import com.calpano.graphinout.base.graphml.GraphmlElements;
 
 public class GioKeyEntity extends AbstractGraphmlEntity<GioKey> implements GraphmlEntity<GioKey> {
 

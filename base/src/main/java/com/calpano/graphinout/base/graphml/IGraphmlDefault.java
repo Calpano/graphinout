@@ -1,36 +1,25 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.impl.GraphmlDefault;
+import com.calpano.graphinout.base.graphml.builder.GraphmlDefaultBuilder;
 
-import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
-public interface IGraphmlDefault extends IXmlElement{
+public interface IGraphmlDefault extends IGraphmlElement {
 
-    String TAGNAME = "default";
-
-    String ATTRIBUTE_DEFAULT_TYPE = "default.type";
-
-    static GraphmlDefault.GraphmlDefaultBuilder builder() {
-        return new GraphmlDefault.GraphmlDefaultBuilder();
+    static GraphmlDefaultBuilder builder() {
+        return new GraphmlDefaultBuilder();
     }
 
-    /**
-     * Complex type for the &lt;default&gt; element. 'default.type' is mixed, that is, data may contain #PCDATA.
-     * <p>
-     * The name of this attribute in default is <b>default.type</b>
-     */
-    String defaultType();
-
-    String value();
-
-    default Set<String> builtInAttributes() {
-        return Set.of(ATTRIBUTE_DEFAULT_TYPE);
+    default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
     }
 
     @Override
     default String tagName() {
-        return "default";
+        return GraphmlElements.DEFAULT;
     }
+
+    String value();
 
 
 }

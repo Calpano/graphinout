@@ -1,11 +1,5 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.impl.GraphmlData;
-import com.calpano.graphinout.base.graphml.impl.GraphmlGraph;
-import com.calpano.graphinout.base.graphml.impl.GraphmlHyperEdge;
-import com.calpano.graphinout.base.graphml.impl.GraphmlNode;
-
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -26,44 +20,58 @@ public class DelegatingGraphmlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void endDocument() throws IOException {
+    public void documentEnd() throws IOException {
         for (GraphmlWriter writer : writers) {
-            writer.endDocument();
+            writer.documentEnd();
         }
     }
 
     @Override
-    public void endEdge() throws IOException {
+    public void documentStart(IGraphmlDocument document) throws IOException {
         for (GraphmlWriter writer : writers) {
-            writer.endEdge();
+            writer.documentStart(document);
         }
     }
 
     @Override
-    public void endGraph(@Nullable IGraphmlLocator IGraphmlLocator) throws IOException {
+    public void edgeEnd() throws IOException {
         for (GraphmlWriter writer : writers) {
-            writer.endGraph(IGraphmlLocator);
+            writer.edgeEnd();
         }
     }
 
     @Override
-    public void endHyperEdge() throws IOException {
+    public void edgeStart(IGraphmlEdge edge) throws IOException {
         for (GraphmlWriter writer : writers) {
-            writer.endHyperEdge();
+            writer.edgeStart(edge);
         }
     }
 
     @Override
-    public void endNode(@Nullable IGraphmlLocator locator) throws IOException {
+    public void graphEnd() throws IOException {
         for (GraphmlWriter writer : writers) {
-            writer.endNode(locator);
+            writer.graphEnd();
         }
     }
 
     @Override
-    public void endPort() throws IOException {
+    public void graphStart(IGraphmlGraph graphmlGraph) throws IOException {
         for (GraphmlWriter writer : writers) {
-            writer.endPort();
+            writer.graphStart(graphmlGraph);
+        }
+    }
+
+    @Override
+    public void hyperEdgeEnd() throws IOException {
+        for (GraphmlWriter writer : writers) {
+            writer.hyperEdgeEnd();
+        }
+    }
+
+    @Override
+    public void hyperEdgeStart(IGraphmlHyperEdge edge) throws IOException {
+        for (GraphmlWriter writer : writers) {
+            writer.hyperEdgeStart(edge);
         }
     }
 
@@ -75,44 +83,30 @@ public class DelegatingGraphmlWriter implements GraphmlWriter {
     }
 
     @Override
-    public void startDocument(IGraphmlDocument document) throws IOException {
+    public void nodeEnd() throws IOException {
         for (GraphmlWriter writer : writers) {
-            writer.startDocument(document);
+            writer.nodeEnd();
         }
     }
 
     @Override
-    public void startEdge(IGraphmlEdge edge) throws IOException {
+    public void nodeStart(IGraphmlNode node) throws IOException {
         for (GraphmlWriter writer : writers) {
-            writer.startEdge(edge);
+            writer.nodeStart(node);
         }
     }
 
     @Override
-    public void startGraph(IGraphmlGraph graphmlGraph) throws IOException {
+    public void portEnd() throws IOException {
         for (GraphmlWriter writer : writers) {
-            writer.startGraph(graphmlGraph);
+            writer.portEnd();
         }
     }
 
     @Override
-    public void startHyperEdge(IGraphmlHyperEdge edge) throws IOException {
+    public void portStart(IGraphmlPort port) throws IOException {
         for (GraphmlWriter writer : writers) {
-            writer.startHyperEdge(edge);
-        }
-    }
-
-    @Override
-    public void startNode(IGraphmlNode node) throws IOException {
-        for (GraphmlWriter writer : writers) {
-            writer.startNode(node);
-        }
-    }
-
-    @Override
-    public void startPort(IGraphmlPort port) throws IOException {
-        for (GraphmlWriter writer : writers) {
-            writer.startPort(port);
+            writer.portStart(port);
         }
     }
 

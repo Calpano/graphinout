@@ -1,25 +1,31 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.impl.GraphmlPort;
+import com.calpano.graphinout.base.graphml.builder.GraphmlPortBuilder;
 
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
-public interface IGraphmlPort extends IGraphmlWithDescElement {
+public interface IGraphmlPort extends IGraphmlElementWithDesc {
 
-    String TAGNAME = "port";
     String ATTRIBUTE_NAME = "name";
 
-    static GraphmlPort.GraphmlPortBuilder builder() {
-        return new GraphmlPort.GraphmlPortBuilder();
+    static GraphmlPortBuilder builder() {
+        return new GraphmlPortBuilder();
     }
 
-    LinkedHashMap<String, String> attributes();
+    /**
+     * @param name_value (name, Supplier(@Nullable value))
+     */
+    default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
+        name_value.accept(ATTRIBUTE_NAME, this::name);
+    }
 
-    Set<String> builtInAttributeNames();
-
+    /** The name of the port, quite similar to an id */
     String name();
 
-    String tagName();
+    @Override
+    default String tagName() {
+        return GraphmlElements.PORT;
+    }
 
 }

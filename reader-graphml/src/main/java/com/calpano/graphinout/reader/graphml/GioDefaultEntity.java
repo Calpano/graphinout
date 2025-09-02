@@ -1,5 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
+import com.calpano.graphinout.base.graphml.GraphmlElements;
+
 public class GioDefaultEntity extends AbstractGraphmlEntity<StringBuilder> implements GraphmlEntity<StringBuilder> {
 
     private StringBuilder builder;

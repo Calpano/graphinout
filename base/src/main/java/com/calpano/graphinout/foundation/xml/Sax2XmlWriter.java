@@ -3,6 +3,7 @@ package com.calpano.graphinout.foundation.xml;
 
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.Location;
+import com.calpano.graphinout.foundation.StringFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -22,7 +23,7 @@ import java.util.function.Consumer;
  * Listen to SAX events and map them to XmlWriter events. No stack is used, as XML validation either happened before or
  * will happen as XmlWRiter impl.
  */
-class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
+public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     private static final Logger log = LoggerFactory.getLogger(Sax2XmlWriter.class);
     private final XmlWriter xmlWriter;
@@ -30,6 +31,7 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     private final Map<String, String> namespaces = new HashMap<>();
     private Locator locator;
     private boolean isFirstElement = true;
+    private boolean isInCdata = false;
 
     public Sax2XmlWriter(XmlWriter xmlWriter, @Nullable Consumer<ContentError> errorConsumer) {
         assert xmlWriter != null;
@@ -49,26 +51,50 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
         return tagName;
     }
 
+    private Boolean inCharacters = null;
+
+    // FIXME use
+    private void maybeEndCharacterData(boolean isInCdata) throws IOException {
+        if (inCharacters != null && inCharacters == isInCdata) {
+            xmlWriter.characterDataEnd(isInCdata);
+        }
+    }
+
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         String s = new String(ch, start, length);
         // log.trace("characters [{}].", s);
         try {
-            xmlWriter.characterData(s, false);
+            if (inCharacters == null) {
+                xmlWriter.characterDataStart(isInCdata);
+            }
+            inCharacters = isInCdata;
+
+            // we need early line break normalization
+            s = StringFormatter.normalizeLineBreaks(s);
+
+            xmlWriter.characterData(s, isInCdata);
         } catch (IOException e) {
             throw new SAXException(e);
         }
     }
 
     @Override
-    public void comment(char[] ch, int start, int length) {
-        // no comments
+    public void comment(char[] ch, int start, int length) throws SAXException {
+        try {
+            maybeEndCharacterData(isInCdata);
+            // no comments
+        } catch (IOException e) {
+            throw new SAXException(e);
+        }
     }
 
     @Override
     public void endCDATA() throws SAXException {
         try {
-            xmlWriter.endCDATA();
+            maybeEndCharacterData(isInCdata);
+            isInCdata = false;
+            xmlWriter.cdataEnd();
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -80,7 +106,8 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void endDocument() throws SAXException {
         try {
-            xmlWriter.endDocument();
+            maybeEndCharacterData(isInCdata);
+            xmlWriter.documentEnd();
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -88,10 +115,10 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        //    log.debug("XML </{}>", qName);
-        String tagName = tagName(uri, localName, qName);
         try {
-            xmlWriter.endElement(tagName);
+            maybeEndCharacterData(isInCdata);
+            String tagName = tagName(uri, localName, qName);
+            xmlWriter.elementEnd(tagName);
         } catch (Exception e) {
             throw buildError(e);
         }
@@ -106,14 +133,27 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     }
 
     @Override
+    public void ignorableWhitespace(char[] chars, int start, int length)
+            throws SAXException {
+        try {
+            maybeEndCharacterData(isInCdata);
+            // FIXME combine with other charData sections
+            xmlWriter.characterData(new String(chars, start, length), false);
+        } catch (IOException e) {
+            throw new SAXException(e);
+        }
+    }
+
+    @Override
     public void setDocumentLocator(Locator locator) {
         this.locator = locator;
     }
 
     @Override
     public void startCDATA() throws SAXException {
+        isInCdata = true;
         try {
-            xmlWriter.startCDATA();
+            xmlWriter.cdataStart();
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -126,7 +166,7 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void startDocument() throws SAXException {
         try {
-            xmlWriter.startDocument();
+            xmlWriter.documentStart();
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -134,9 +174,8 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        // log.debug("XML <{}>.", qName);
-        String tagName = tagName(uri, localName, qName);
         try {
+            maybeEndCharacterData(isInCdata);
             Map<String, String> attMap = new HashMap<>();
             for (int i = 0; i < attributes.getLength(); i++) {
                 attMap.put(attributes.getQName(i), attributes.getValue(i));
@@ -150,7 +189,8 @@ class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
                 }
                 isFirstElement = false;
             }
-            xmlWriter.startElement(tagName, attMap);
+            String tagName = tagName(uri, localName, qName);
+            xmlWriter.elementStart(tagName, attMap);
         } catch (Exception e) {
             throw buildError(e);
         }

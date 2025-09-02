@@ -53,6 +53,7 @@ public class GioEndpoint extends GioElement {
         }
 
     }
+
     /**
      * Endpoint id. Don't confuse with {@link #node}.
      * <p>
@@ -84,7 +85,7 @@ public class GioEndpoint extends GioElement {
      */
     private GioEndpointDirection type = GioEndpointDirection.Undirected;
 
-    // Constructors
+
     public GioEndpoint() {
         super();
     }
@@ -105,12 +106,12 @@ public class GioEndpoint extends GioElement {
         this.type = type != null ? type : GioEndpointDirection.Undirected;
     }
 
-    // Builder
+
     public static GioEndpointBuilder builder() {
         return new GioEndpointBuilder();
     }
 
-    // equals, hashCode, toString
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -123,7 +124,7 @@ public class GioEndpoint extends GioElement {
                 type == that.type;
     }
 
-    // Getters and Setters
+
     public @Nullable String getId() {
         return id;
     }

@@ -2,12 +2,11 @@ package com.calpano.graphinout.base.graphml.impl;
 
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
 import com.calpano.graphinout.base.graphml.IGraphmlEdge;
+import com.calpano.graphinout.base.graphml.IGraphmlElementWithDescAndId;
 
 import javax.annotation.Nullable;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author rbaba
@@ -39,73 +38,8 @@ import java.util.Set;
  * </pre>
  */
 
-public class GraphmlEdge extends GraphmlElement implements IGraphmlEdge {
+public class GraphmlEdge extends GraphmlElementWithDescAndId implements IGraphmlEdge {
 
-    public static class GraphmlEdgeBuilder extends GraphmlElementBuilder {
-
-        private @Nullable String id;
-        private Boolean directed;
-        private String sourceId;
-        private String targetId;
-        private String sourcePortId;
-        private String targetPortId;
-
-        @Override
-        public GraphmlEdge build() {
-            return new GraphmlEdge(id, directed, sourceId, targetId, sourcePortId, targetPortId, attributes, desc);
-        }
-
-        @Override
-        public GraphmlEdgeBuilder desc(IGraphmlDescription desc) {
-            super.desc(desc);
-            return this;
-        }
-
-        public GraphmlEdgeBuilder directed(Boolean directed) {
-            this.directed = directed;
-            return this;
-        }
-
-        @Override
-        public GraphmlEdgeBuilder attributes(@Nullable Map<String, String> attributes) {
-            super.attributes(attributes);
-            return this;
-        }
-
-        public GraphmlEdgeBuilder id(@Nullable String id) {
-            this.id = id;
-            return this;
-        }
-
-        public GraphmlEdgeBuilder sourceId(String sourceId) {
-            this.sourceId = sourceId;
-            return this;
-        }
-
-        public GraphmlEdgeBuilder sourcePortId(String sourcePortId) {
-            this.sourcePortId = sourcePortId;
-            return this;
-        }
-
-        public GraphmlEdgeBuilder targetId(String targetId) {
-            this.targetId = targetId;
-            return this;
-        }
-
-        public GraphmlEdgeBuilder targetPortId(String targetPortId) {
-            this.targetPortId = targetPortId;
-            return this;
-        }
-
-    }
-
-    public static final String TAGNAME = "edge";
-    /**
-     * This is an attribute that can be empty or null.
-     * </p>
-     * The name of this attribute in graph is <b>id</b>
-     */
-    protected final @Nullable String id;
     /**
      * This is an attribute that can be true or false or null ot empty. The optional XML-Attribute directed declares if
      * the edge is directed or undirected. The value true declares a directed edge, the value false an undirected edge.
@@ -144,40 +78,15 @@ public class GraphmlEdge extends GraphmlElement implements IGraphmlEdge {
      */
     protected @Nullable String targetPortId;
 
-    public GraphmlEdge(@Nullable String id, @Nullable Boolean directed, String sourceId, String targetId, @Nullable String sourcePortId, @Nullable String targetPortId, @Nullable Map<String, String> extraAttrib, @Nullable IGraphmlDescription desc) {
-        super(desc);
-        this.id = id;
+    public GraphmlEdge(Map<String, String> attributes, @Nullable String id, @Nullable Boolean directed, String sourceId, String targetId, @Nullable String sourcePortId, @Nullable String targetPortId, @Nullable IGraphmlDescription desc) {
+        super(attributes, id, desc);
         this.directed = directed;
         this.sourceId = sourceId;
         this.targetId = targetId;
         this.sourcePortId = sourcePortId;
         this.targetPortId = targetPortId;
-        this.allAttributes = extraAttrib;
     }
 
-    @Override
-    public LinkedHashMap<String, String> attributes() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>(allAttributes);
-        if (id != null) attributes.put(IGraphmlEdge.ATTRIBUTE_ID, id);
-        if (directed() != null) {
-            attributes.put(ATTRIBUTE_DIRECTED, "" + directed());
-        }
-        attributes.put(ATTRIBUTE_SOURCE, source());
-        attributes.put(ATTRIBUTE_TARGET, target());
-        if (sourcePort() != null) {
-            attributes.put(ATTRIBUTE_SOURCE_PORT, sourcePort());
-        }
-        if (targetPort() != null) {
-            attributes.put(ATTRIBUTE_TARGET_PORT, targetPort());
-        }
-        if (customXmlAttributes() != null) attributes.putAll(customXmlAttributes());
-        return attributes;
-    }
-
-    @Override
-    public Set<String> builtInAttributeNames() {
-        return Set.of(IGraphmlEdge.ATTRIBUTE_ID, ATTRIBUTE_SOURCE, ATTRIBUTE_TARGET, ATTRIBUTE_DIRECTED, ATTRIBUTE_SOURCE_PORT, ATTRIBUTE_TARGET_PORT);
-    }
 
     @Nullable
     @Override
@@ -185,25 +94,23 @@ public class GraphmlEdge extends GraphmlElement implements IGraphmlEdge {
         return directed;
     }
 
-    // equals, hashCode, toString
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        GraphmlEdge that = (GraphmlEdge) o;
-        return Objects.equals(id, that.id) && Objects.equals(directed, that.directed) && Objects.equals(sourceId, that.sourceId) && Objects.equals(targetId, that.targetId) && Objects.equals(sourcePortId, that.sourcePortId) && Objects.equals(targetPortId, that.targetPortId);
+        IGraphmlEdge that = (IGraphmlEdge) o;
+        return IGraphmlElementWithDescAndId.isEqual(this, that) //
+                && Objects.equals(directed, that.directed())  //
+                && Objects.equals(sourceId, that.source()) //
+                && Objects.equals(targetId, that.target()) //
+                && Objects.equals(sourcePortId, that.sourcePort()) //
+                && Objects.equals(targetPortId, that.targetPort());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, directed, sourceId, targetId, sourcePortId, targetPortId);
-    }
-
-    @Nullable
-    @Override
-    public String id() {
-        return id;
+        return Objects.hash(super.hashCode(), directed, sourceId, targetId, sourcePortId, targetPortId);
     }
 
     @Override
@@ -217,10 +124,6 @@ public class GraphmlEdge extends GraphmlElement implements IGraphmlEdge {
         return sourcePortId;
     }
 
-    @Override
-    public String tagName() {
-        return TAGNAME;
-    }
 
     @Override
     @Nullable
@@ -236,7 +139,7 @@ public class GraphmlEdge extends GraphmlElement implements IGraphmlEdge {
 
     @Override
     public String toString() {
-        return "GraphmlEdge{" + "id='" + id + '\'' + ", directed=" + directed + ", sourceId='" + sourceId + '\'' + ", targetId='" + targetId + '\'' + ", sourcePortId='" + sourcePortId + '\'' + ", targetPortId='" + targetPortId + '\'' + ", desc=" + desc + ", extraAttrib=" + allAttributes + '}';
+        return "GraphmlEdge{" + "id='" + id() + '\'' + ", directed=" + directed + ", sourceId='" + sourceId + '\'' + ", targetId='" + targetId + '\'' + ", sourcePortId='" + sourcePortId + '\'' + ", targetPortId='" + targetPortId + '\'' + ", desc=" + desc + ", custom=" + customXmlAttributes() + '}';
     }
 
 }

@@ -5,7 +5,6 @@ import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
 import com.calpano.graphinout.foundation.json.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

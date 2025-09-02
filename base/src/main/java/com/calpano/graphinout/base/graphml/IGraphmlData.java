@@ -1,29 +1,33 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.impl.GraphmlData;
+import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 
-import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
-public interface IGraphmlData extends IGraphmlElement {
+public interface IGraphmlData extends IGraphmlElementWithId {
 
     String ATTRIBUTE_KEY = "key";
-    String ATTRIBUTE_ID = "id";
 
-    static GraphmlData.GraphmlDataBuilder builder() {
-        return new GraphmlData.GraphmlDataBuilder();
+    static GraphmlDataBuilder builder() {
+        return new GraphmlDataBuilder();
     }
 
-    String id();
-    String key();
-    String value();
+    default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
+        name_value.accept(ATTRIBUTE_ID, this::id);
+        name_value.accept(ATTRIBUTE_KEY, this::key);
+    }
+
     boolean isRawXml();
 
-    default Set<String> builtInAttributes() {
-        return Set.of(ATTRIBUTE_KEY, ATTRIBUTE_ID);
-    }
+    /** points to a {@link IGraphmlKey#id()} */
+    String key();
 
     @Override
     default String tagName() {
-        return "data";
+        return GraphmlElements.DATA;
     }
+
+    String value();
+
 }

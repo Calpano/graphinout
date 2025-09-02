@@ -1,10 +1,12 @@
 package com.calpano.graphinout.base.graphml.impl;
 
 import com.calpano.graphinout.base.graphml.GraphmlDirection;
+import com.calpano.graphinout.base.graphml.IGraphmlDescription;
+import com.calpano.graphinout.base.graphml.IGraphmlElementWithDescAndId;
 import com.calpano.graphinout.base.graphml.IGraphmlEndpoint;
 
 import javax.annotation.Nullable;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -16,53 +18,8 @@ import java.util.Objects;
  * edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
  * @see GraphmlHyperEdge {@link GraphmlHyperEdge}
  */
-public class GraphmlEndpoint implements IGraphmlEndpoint {
+public class GraphmlEndpoint extends GraphmlElementWithDescAndId implements IGraphmlEndpoint {
 
-    public static class GraphmlEndpointBuilder {
-
-        private String id;
-        private String node;
-        private String port;
-        private GraphmlDirection type = GraphmlDirection.Undirected;
-        private GraphmlDescription desc;
-
-        public GraphmlEndpoint build() {
-            return new GraphmlEndpoint(id, node, port, type, desc);
-        }
-
-        public GraphmlEndpointBuilder desc(GraphmlDescription desc) {
-            this.desc = desc;
-            return this;
-        }
-
-        public GraphmlEndpointBuilder id(String id) {
-            this.id = id;
-            return this;
-        }
-
-        public GraphmlEndpointBuilder node(String node) {
-            this.node = node;
-            return this;
-        }
-
-        public GraphmlEndpointBuilder port(String port) {
-            this.port = port;
-            return this;
-        }
-
-        public GraphmlEndpointBuilder type(GraphmlDirection type) {
-            this.type = type;
-            return this;
-        }
-
-    }
-
-    /**
-     * This is an attribute that can be empty or null.
-     * </p>
-     * The name of this attribute in endpoint is <b>id</b>
-     */
-    private String id;
     /**
      * This is an attribute is optional but dependent to port. In fact, one of the node or port values should be
      * initialized.
@@ -85,65 +42,29 @@ public class GraphmlEndpoint implements IGraphmlEndpoint {
      * The name of this attribute in endpoint is <b>type</b>
      */
     private GraphmlDirection type = GraphmlDirection.Undirected;
-    /**
-     * This ia an Element That can be empty or null.
-     * <p>
-     * The name of this element in endpoint is <b>desc</b>
-     */
-    private @Nullable GraphmlDescription desc;
 
-    // Constructors
-    public GraphmlEndpoint() {
-    }
-
-    public GraphmlEndpoint(String id, String node, String port, GraphmlDirection type, GraphmlDescription desc) {
-        this.id = id;
+    public GraphmlEndpoint(Map<String, String> attributes, @Nullable String id, String node, @Nullable String port, GraphmlDirection type, @Nullable IGraphmlDescription desc) {
+        super(attributes, id, desc);
         this.node = node;
         this.port = port;
         this.type = type != null ? type : GraphmlDirection.Undirected;
-        this.desc = desc;
     }
 
-    // equals, hashCode, toString
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GraphmlEndpoint that = (GraphmlEndpoint) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(node, that.node) &&
-                Objects.equals(port, that.port) &&
-                type == that.type &&
-                Objects.equals(desc, that.desc);
+        IGraphmlEndpoint that = (IGraphmlEndpoint) o;
+        return IGraphmlElementWithDescAndId.isEqual(this, that) //
+                && Objects.equals(node, that.node())  //
+                && Objects.equals(port, that.port()) //
+                && type == that.type();
     }
 
     @Override
-    public LinkedHashMap<String, String> attributes() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-        if (id != null) attributes.put("id", id);
-
-        if (node != null) attributes.put("node", node);
-
-        if (port != null) attributes.put("port", port);
-
-        attributes.put("type", type.xmlValue());
-        return attributes;
-    }
-
-    @Override
-    public String tagName() {
-        return "endpoint";
-    }
-
-    @Override
-    public GraphmlDescription desc() {
-        return desc;
-    }
-
-    // Getters and Setters
-    @Override
-    public String id() {
-        return id;
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), node, port, type);
     }
 
     @Override
@@ -153,49 +74,16 @@ public class GraphmlEndpoint implements IGraphmlEndpoint {
 
     @Nullable
     @Override
-    public String port() {
-        return port;
+    public String port() {return port;}
+
+    @Override
+    public String toString() {
+        return "GraphmlEndpoint{" + "id='" + id() + '\'' + ", node='" + node + '\'' + ", port='" + port + '\'' + ", type=" + type + ", desc=" + desc + ", custom=" + customXmlAttributes() + '}';
     }
 
     @Override
     public GraphmlDirection type() {
         return type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, node, port, type, desc);
-    }
-
-    public void setDesc(GraphmlDescription desc) {
-        this.desc = desc;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setNode(String node) {
-        this.node = node;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
-    public void setType(GraphmlDirection type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return "GraphmlEndpoint{" +
-                "id='" + id + '\'' +
-                ", node='" + node + '\'' +
-                ", port='" + port + '\'' +
-                ", type=" + type +
-                ", desc=" + desc +
-                '}';
     }
 
 }

@@ -1,11 +1,28 @@
-package com.calpano.graphinout.reader.graphml;
+package com.calpano.graphinout.base.graphml;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Relevant schemas:
+ * <li><a href="http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd">GraphML 1.1</a></li>
+ * <li><a href="http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">GraphML 1.0</a></li>
+ * <li><a href="http://www.yworks.com/xml/schema/graphml/1.0/ygraphml.xsd">YWorks GraphML 1.0</a></li>
+ * <li><a href="http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">YWorks GraphML 1.1</a></li>
+ */
 public class Graphml {
+
+    /** For Graphml 1.0 and 1.1, YWorks Grapml 1.1 */
+    public static String XMLNS_GRAPHML_1_x = "http://graphml.graphdrawing.org/xmlns";
+    public static String XMLNS_YWORKS_1_0 = "http://graphml.graphdrawing.org/xmlns/graphml";
+
+    /** "xsi:schemaLocation" 1.0 */
+    public static String XSI_SCHEMA_LOCATION_1_0 = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
+    /** "xsi:schemaLocation" 1.1 */
+    public static String XSI_SCHEMA_LOCATION_1_1 = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd";
+
 
     static Map<String, Set<String>> parent_child;
 
@@ -34,6 +51,5 @@ public class Graphml {
         Set<String> set = parent_child.get(parent);
         return set != null && set.contains(child);
     }
-
 
 }

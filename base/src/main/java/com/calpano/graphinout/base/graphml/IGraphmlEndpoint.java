@@ -1,38 +1,37 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.impl.GraphmlDescription;
-import com.calpano.graphinout.base.graphml.impl.GraphmlEndpoint;
+import com.calpano.graphinout.base.graphml.builder.GraphmlEndpointBuilder;
 
 import javax.annotation.Nullable;
-import java.util.LinkedHashMap;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
-public interface IGraphmlEndpoint extends IXmlElement {
+public interface IGraphmlEndpoint extends IGraphmlElementWithDescAndId {
 
-    String TAGNAME = "endpoint";
-    String ATTRIBUTE_ID = "id";
     String ATTRIBUTE_NODE = "node";
     String ATTRIBUTE_PORT = "port";
     String ATTRIBUTE_TYPE = "type";
 
-    // Builder
-    static GraphmlEndpoint.GraphmlEndpointBuilder builder() {
-        return new GraphmlEndpoint.GraphmlEndpointBuilder();
+    static GraphmlEndpointBuilder builder() {
+        return new GraphmlEndpointBuilder();
     }
 
-    @Override
-    LinkedHashMap<String, String> attributes();
-
-    @Override
-    String tagName();
-
-    GraphmlDescription desc();
-
-    String id();
+    default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
+        name_value.accept(ATTRIBUTE_ID, this::id);
+        name_value.accept(ATTRIBUTE_NODE, this::node);
+        name_value.accept(ATTRIBUTE_PORT, this::port);
+        name_value.accept(ATTRIBUTE_TYPE, () -> type().xmlValue());
+    }
 
     String node();
 
     @Nullable
     String port();
+
+    @Override
+    default String tagName() {
+        return GraphmlElements.ENDPOINT;
+    }
 
     /** GraphML edge type = direction */
     GraphmlDirection type();

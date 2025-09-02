@@ -28,6 +28,7 @@ public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWrit
     private final Set<String> endpointsNode = new HashSet<>();
     private final Set<String> endpointsPort = new HashSet<>();
     private final Set<String> nodePortName = new HashSet<>();
+
     // Constructor
     public ValidatingGioWriter() {
     }

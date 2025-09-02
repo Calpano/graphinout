@@ -1,45 +1,56 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.impl.GraphmlData;
-import com.calpano.graphinout.base.graphml.impl.GraphmlGraph;
-import com.calpano.graphinout.base.graphml.impl.GraphmlHyperEdge;
-import com.calpano.graphinout.base.graphml.impl.GraphmlNode;
-
-import javax.annotation.Nullable;
 import java.io.IOException;
 
 /**
  * For large files, we don't want to keep the entire graph object in memory.
+ * <p>
+ * DESC is considered small and attached to data object. Also DESC is always FIRST in streaming order. DEFAULT value in
+ * KEY same.
  */
 public interface GraphmlWriter {
 
     void data(IGraphmlData data) throws IOException;
 
-    void endDocument() throws IOException;
+    void documentEnd() throws IOException;
 
-    void endEdge() throws IOException;
+    /**
+     * start here.
+     *
+     * @param document includes {@link IGraphmlDescription} and {@link IGraphmlKey}
+     */
+    void documentStart(IGraphmlDocument document) throws IOException;
 
-    void endGraph(@Nullable IGraphmlLocator IGraphmlLocator) throws IOException;
+    void edgeEnd() throws IOException;
 
-    void endHyperEdge() throws IOException;
+    /** @param edge contains {@link IGraphmlDescription}, node/port ids for source/target */
+    void edgeStart(IGraphmlEdge edge) throws IOException;
 
-    void endNode(@Nullable IGraphmlLocator locator) throws IOException;
+    void graphEnd() throws IOException;
 
-    void endPort() throws IOException;
+    /** @param graphmlGraph includes {@link IGraphmlDescription}, optional {@link IGraphmlLocator} */
+    void graphStart(IGraphmlGraph graphmlGraph) throws IOException;
 
+    void hyperEdgeEnd() throws IOException;
+
+    /** @param edge includes {@link IGraphmlDescription}, {@link IGraphmlEndpoint} */
+    void hyperEdgeStart(IGraphmlHyperEdge edge) throws IOException;
+
+    /** @param data contains {@link IGraphmlDescription} */
     void key(IGraphmlKey data) throws IOException;
 
-    void startDocument(IGraphmlDocument document) throws IOException;
+    void nodeEnd() throws IOException;
 
-    void startEdge(IGraphmlEdge edge) throws IOException;
+    /** @param node contains {@link IGraphmlDescription} and optional {@link IGraphmlLocator} */
+    void nodeStart(IGraphmlNode node) throws IOException;
 
-    void startGraph(IGraphmlGraph graphmlGraph) throws IOException;
+    void portEnd() throws IOException;
 
-    void startHyperEdge(IGraphmlHyperEdge edge) throws IOException;
-
-    void startNode(IGraphmlNode node) throws IOException;
-
-    void startPort(IGraphmlPort port) throws IOException;
-
+    /**
+     * May contain <code>( PORT | DATA )*</code>.
+     *
+     * @param port contains {@link IGraphmlDescription}
+     */
+    void portStart(IGraphmlPort port) throws IOException;
 
 }

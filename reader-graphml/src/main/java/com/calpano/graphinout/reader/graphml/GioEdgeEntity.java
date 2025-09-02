@@ -3,6 +3,7 @@ package com.calpano.graphinout.reader.graphml;
 import com.calpano.graphinout.base.gio.GioEdge;
 import com.calpano.graphinout.base.gio.GioElementWithDescription;
 import com.calpano.graphinout.base.gio.GioEndpoint;
+import com.calpano.graphinout.base.graphml.GraphmlElements;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

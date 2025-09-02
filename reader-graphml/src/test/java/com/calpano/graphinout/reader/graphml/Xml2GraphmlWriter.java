@@ -1,90 +1,89 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.graphml.IGraphmlData;
-import com.calpano.graphinout.base.graphml.impl.GraphmlData;
-import com.calpano.graphinout.base.graphml.impl.GraphmlDescription;
 import com.calpano.graphinout.base.graphml.GraphmlDirection;
-import com.calpano.graphinout.base.graphml.impl.GraphmlDocument;
-import com.calpano.graphinout.base.graphml.impl.GraphmlEdge;
-import com.calpano.graphinout.base.graphml.impl.GraphmlEndpoint;
-import com.calpano.graphinout.base.graphml.impl.GraphmlGraph;
-import com.calpano.graphinout.base.graphml.impl.GraphmlHyperEdge;
-import com.calpano.graphinout.base.graphml.impl.GraphmlKey;
+import com.calpano.graphinout.base.graphml.GraphmlElements;
 import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
-import com.calpano.graphinout.base.graphml.impl.GraphmlNode;
-import com.calpano.graphinout.base.graphml.impl.GraphmlPort;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
+import com.calpano.graphinout.base.graphml.IGraphmlData;
+import com.calpano.graphinout.base.graphml.IGraphmlDefault;
+import com.calpano.graphinout.base.graphml.IGraphmlDescription;
 import com.calpano.graphinout.base.graphml.IGraphmlDocument;
 import com.calpano.graphinout.base.graphml.IGraphmlEdge;
-import com.calpano.graphinout.base.graphml.IGraphmlGraph;
-import com.calpano.graphinout.base.graphml.IGraphmlPort;
 import com.calpano.graphinout.base.graphml.IGraphmlEndpoint;
+import com.calpano.graphinout.base.graphml.IGraphmlGraph;
 import com.calpano.graphinout.base.graphml.IGraphmlHyperEdge;
 import com.calpano.graphinout.base.graphml.IGraphmlKey;
-import com.calpano.graphinout.foundation.xml.Xml2AppendableWriter;
+import com.calpano.graphinout.base.graphml.IGraphmlLocator;
+import com.calpano.graphinout.base.graphml.IGraphmlNode;
+import com.calpano.graphinout.base.graphml.IGraphmlPort;
+import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
+import com.calpano.graphinout.base.graphml.builder.GraphmlDefaultBuilder;
+import com.calpano.graphinout.base.graphml.builder.GraphmlDocumentBuilder;
+import com.calpano.graphinout.base.graphml.builder.GraphmlEndpointBuilder;
+import com.calpano.graphinout.base.graphml.builder.GraphmlGraphBuilder;
+import com.calpano.graphinout.base.graphml.builder.GraphmlHyperEdgeBuilder;
+import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
+import com.calpano.graphinout.base.graphml.builder.GraphmlLocatorBuilder;
+import com.calpano.graphinout.base.graphml.builder.GraphmlNodeBuilder;
+import com.calpano.graphinout.base.graphml.builder.GraphmlPortBuilder;
+import com.calpano.graphinout.base.graphml.impl.GraphmlDescription;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import static com.calpano.graphinout.base.graphml.GraphmlElements.DATA;
+import static com.calpano.graphinout.base.graphml.GraphmlElements.DEFAULT;
+import static com.calpano.graphinout.base.graphml.GraphmlElements.DESC;
+import static com.calpano.graphinout.base.graphml.GraphmlElements.EDGE;
+import static com.calpano.graphinout.base.graphml.GraphmlElements.ENDPOINT;
+import static com.calpano.graphinout.base.graphml.GraphmlElements.GRAPH;
+import static com.calpano.graphinout.base.graphml.GraphmlElements.GRAPHML;
+import static com.calpano.graphinout.base.graphml.GraphmlElements.HYPER_EDGE;
+import static com.calpano.graphinout.base.graphml.GraphmlElements.KEY;
+import static com.calpano.graphinout.base.graphml.GraphmlElements.LOCATOR;
+import static com.calpano.graphinout.base.graphml.GraphmlElements.NODE;
+import static com.calpano.graphinout.base.graphml.GraphmlElements.PORT;
+import static com.calpano.graphinout.base.graphml.IGraphmlData.ATTRIBUTE_KEY;
+import static com.calpano.graphinout.base.graphml.IGraphmlElementWithId.ATTRIBUTE_ID;
+import static com.calpano.graphinout.base.graphml.IGraphmlEndpoint.ATTRIBUTE_NODE;
+import static com.calpano.graphinout.base.graphml.IGraphmlEndpoint.ATTRIBUTE_PORT;
+import static com.calpano.graphinout.base.graphml.IGraphmlEndpoint.ATTRIBUTE_TYPE;
+import static com.calpano.graphinout.base.graphml.IGraphmlGraph.ATTRIBUTE_EDGE_DEFAULT;
+import static com.calpano.graphinout.base.graphml.IGraphmlPort.ATTRIBUTE_NAME;
+import static com.calpano.graphinout.foundation.xml.XmlTool.ifAttributeNotNull;
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Interprets incoming XML calls. Buffers them. Emits GraphML calls to downstream.
+ * <p>
+ * Concerns: Parsing GraphML XML vs. generic XML (as it occurs in KEY-DEFAULT or DATA elements). This is handled via
+ * {@link XmlMode} and {@link ElementContext#isRawXml}.
+ */
 public class Xml2GraphmlWriter implements XmlWriter {
 
-    enum Mode {Graphml, Data}
+    private final Map<String, Map<GraphmlKeyForType, IGraphmlKey>> dataId_for_key = new HashMap<>();
+    /** Buffers plain text and XML content */
+    private final CharacterBuffer characterBuffer = new CharacterBuffer();
 
-    // Helper class to track element context
-    private static class ElementContext {
-
-        final String elementName;
-        final Map<String, String> attributes;
-        final boolean isRawXml;
-        public GraphmlHyperEdge.GraphmlHyperEdgeBuilder hyperEdgeBuilder;
-        boolean containsRawXml;
-        // GraphML objects
-        GraphmlDocument document;
-        GraphmlGraph graph;
-        GraphmlNode node;
-        IGraphmlEndpoint endpoint;
-        IGraphmlPort port;
-        GraphmlKey key;
-        // Data element specific
-        String dataKey;
-
-        ElementContext(String elementName, Map<String, String> attributes, boolean isRawXml) {
-            this.elementName = elementName;
-            this.attributes = attributes;
-            this.isRawXml = isRawXml;
-        }
-
-    }
-
+    /** downstream writer */
     private final GraphmlWriter graphmlWriter;
-    private final LinkedList<ElementContext> elementStack = new LinkedList<>();
-    private final StringBuilder characterBuffer = new StringBuilder();
-    private final Xml2AppendableWriter rawXmlWriter = new Xml2AppendableWriter(characterBuffer);
-    private Mode mode = Mode.Graphml;
+    private final ParseContext elementStack = new ParseContext();
 
+    /**
+     * @param graphmlWriter downstream
+     */
     public Xml2GraphmlWriter(GraphmlWriter graphmlWriter) {
         this.graphmlWriter = graphmlWriter;
     }
 
     @Override
-    public void characterData(String characterData, boolean isInCdata) throws IOException {
-        if (mode == Mode.Data) {
-            rawXmlWriter.characterData(characterData, false);
-        } else {
-            // Accumulate character data for elements that need it (like data, desc, default)
-            characterBuffer.append(characterData);
-        }
-    }
-
-    @Override
-    public void endCDATA() throws IOException {
-        if (mode == Mode.Data) {
-            rawXmlWriter.endCDATA();
+    public void cdataEnd() throws IOException {
+        if (elementStack.isInterpretedAsPCDATA()) {
+            characterBuffer.cdataEnd();
         } else {
             // TODO CDATA handling - treat as character data
             throw new UnsupportedOperationException("not implemented yet");
@@ -92,46 +91,116 @@ public class Xml2GraphmlWriter implements XmlWriter {
     }
 
     @Override
-    public void endDocument() throws IOException {
-        graphmlWriter.endDocument();
+    public void cdataStart() throws IOException {
+        if (elementStack.isInterpretedAsPCDATA()) {
+            characterBuffer.cdataStart();
+        } else {
+            throw new UnsupportedOperationException("not implemented yet");
+        }
     }
 
     @Override
-    public void endElement(String name) throws IOException {
-        switch (name) {
-            case GraphmlElements.GRAPHML -> endGraphmlElement();
-            case GraphmlElements.GRAPH -> endGraphElement();
-            case GraphmlElements.NODE -> endNodeElement();
-            case GraphmlElements.EDGE -> endEdgeElement();
-            case GraphmlElements.HYPER_EDGE -> endHyperEdgeElement();
-            case GraphmlElements.PORT -> endPortElement();
-            case GraphmlElements.KEY -> endKeyElement();
-            case GraphmlElements.DATA -> endDataElement();
-            case GraphmlElements.DESC -> endDescElement();
-            case GraphmlElements.DEFAULT -> endDefaultElement();
-            case GraphmlElements.LOCATOR -> endLocatorElement();
-            case GraphmlElements.ENDPOINT -> endEndpointElement();
-            default -> {
-                if (mode == Mode.Data) {
-                    rawXmlWriter.endElement(name);
-                    assert !elementStack.isEmpty() : "Element stack is empty at END " + name;
-                    ElementContext context = elementStack.pop();
-                    assert context.elementName.equals(name);
+    public void characterData(String characterData, boolean isInCdata) throws IOException {
+        if (elementStack.isInterpretedAsPCDATA()) {
+            characterBuffer.characterData(characterData, false);
+        } else if (isContentElement()) {
+            // Accumulate character data for elements that need it (like data, desc, default)
+            characterBuffer.append(characterData);
+        }
+    }
 
-                    if (!elementStack.isEmpty()) {
-                        ElementContext top = elementStack.peek();
-                        if (top.elementName.equals(GraphmlElements.DATA) && !top.isRawXml) {
-                            top.containsRawXml = true;
-                        }
-                    }
-                } else {
+    public void characterDataEnd(boolean isInCdata) throws IOException {
+        if (characterBuffer.isEmpty()) return;
+        if (elementStack.isInterpretedAsGraphml()) {
+            ElementContext context = elementStack.peek_();
+            switch (context.elementName) {
+                case DATA -> context.dataBuilder().value(characterBuffer.getStringAndReset());
+                case DESC -> context.descBuilder().value(characterBuffer.getStringAndReset());
+                case DEFAULT -> context.defaultBuilder().value(characterBuffer.getStringAndReset());
+                default -> throw new IllegalStateException("Unknown element: " + context.elementName);
+            }
+        } else {
+            characterBuffer.characterDataEnd(isInCdata);
+        }
+    }
+
+    public void characterDataStart(boolean isInCdata) throws IOException {
+        if (elementStack.isInterpretedAsPCDATA()) {
+            characterBuffer.characterDataStart(isInCdata);
+        }
+    }
+
+    @Override
+    public void documentEnd() {
+        // we write document end on </graphml>
+    }
+
+    @Override
+    public void documentStart() {
+        // Document will be started when we encounter the graphml element
+    }
+
+    @Override
+    public void elementEnd(String name) throws IOException {
+        switch (name) {
+            case GRAPHML -> endGraphmlElement();
+            case GRAPH -> endGraphElement();
+            case NODE -> endNodeElement();
+            case EDGE -> endEdgeElement();
+            case HYPER_EDGE -> endHyperEdgeElement();
+            case PORT -> endPortElement();
+            case KEY -> endKeyElement();
+            case DATA -> endDataElement();
+            case DESC -> endDescElement();
+            case DEFAULT -> endDefaultElement();
+            case LOCATOR -> endLocatorElement();
+            case ENDPOINT -> endEndpointElement();
+            default -> {
+                if (elementStack.isInterpretedAsGraphml()) {
                     throw new IllegalStateException("Unknown element: " + name);
+                } else {
+                    // treat as raw XML
+                    characterBuffer.elementEnd(name);
+                    // remove corresponding context
+                    elementStack.pop(name);
+
+                    ElementContext parent = elementStack.peekNullable();
+                    if (parent != null) {
+                        if (!parent.isRawXml && parent.elementName.equals(DATA)) {
+                            parent.dataBuilder().containsRawXml(true);
+                        }
+                    } else {
+                        throw new IllegalStateException("No parent for element: " + name);
+                    }
                 }
             }
         }
-        if (mode == Mode.Graphml) {
-            // Clear character buffer after processing element
-            characterBuffer.setLength(0);
+    }
+
+    @Override
+    public void elementStart(String name, Map<String, String> attributes) throws IOException {
+        switch (name) {
+            case GRAPHML -> startGraphmlElement(attributes);
+            case GRAPH -> startGraphElement(attributes);
+            case NODE -> startNodeElement(attributes);
+            case EDGE -> startEdgeElement(attributes);
+            case HYPER_EDGE -> startHyperEdgeElement(attributes);
+            case PORT -> startPortElement(attributes);
+            case KEY -> startKeyElement(attributes);
+            case DATA -> startDataElement(attributes);
+            case DESC -> startDescElement(attributes);
+            case DEFAULT -> startDefaultElement(attributes);
+            case LOCATOR -> startLocatorElement(attributes);
+            case ENDPOINT -> startEndpointElement(attributes);
+            default -> {
+                if (elementStack.isInterpretedAsPCDATA()) {
+                    // push to stack and emit to rawXmlBuffer
+                    elementStack.push(name, attributes, true, null, XmlMode.PCDATA);
+                    characterBuffer.elementStart(name, attributes);
+                } else {
+                    throw new IllegalStateException("Unknown element: '" + name + "'");
+                }
+            }
         }
     }
 
@@ -140,401 +209,281 @@ public class Xml2GraphmlWriter implements XmlWriter {
         // Line breaks are typically ignored in GraphML processing
     }
 
+    // FIXME use it
+    public IGraphmlKey lookupKey(String id, GraphmlKeyForType forType) {
+        Map<GraphmlKeyForType, IGraphmlKey> subMap = dataId_for_key.getOrDefault(id, Collections.emptyMap());
+        return subMap.getOrDefault(
+                // 1) look up exact forType
+                forType,
+                // 2) look up ALL forType
+                subMap.get(GraphmlKeyForType.All));
+    }
+
     @Override
     public void raw(String rawXml) throws IOException {
-        if (mode == Mode.Data) {
-            rawXmlWriter.raw(rawXml);
+        if (elementStack.isInterpretedAsPCDATA()) {
+            characterBuffer.raw(rawXml);
         } else {
             throw new UnsupportedOperationException("no raw XML in GraphML");
         }
     }
 
-    @Override
-    public void startCDATA() throws IOException {
-        if (mode == Mode.Data) {
-            rawXmlWriter.startCDATA();
-        } else {
-            throw new UnsupportedOperationException("not implemented yet");
-        }
-    }
-
-    @Override
-    public void startDocument() {
-        // Document will be started when we encounter the graphml element
-    }
-
-    @Override
-    public void startElement(String name, Map<String, String> attributes) throws IOException {
-        switch (name) {
-            case GraphmlElements.GRAPHML -> startGraphmlElement(attributes);
-            case GraphmlElements.GRAPH -> startGraphElement(attributes);
-            case GraphmlElements.NODE -> startNodeElement(attributes);
-            case GraphmlElements.EDGE -> startEdgeElement(attributes);
-            case GraphmlElements.HYPER_EDGE -> startHyperEdgeElement(attributes);
-            case GraphmlElements.PORT -> startPortElement(attributes);
-            case GraphmlElements.KEY -> startKeyElement(attributes);
-            case GraphmlElements.DATA -> startDataElement(attributes);
-            case GraphmlElements.DESC -> startDescElement(attributes);
-            case GraphmlElements.DEFAULT -> startDefaultElement(attributes);
-            case GraphmlElements.LOCATOR -> startLocatorElement(attributes);
-            case GraphmlElements.ENDPOINT -> startEndpointElement(attributes);
-            default -> {
-                if (mode == Mode.Data) {
-                    // push to stack and emit to rawXmlBuffer
-                    ElementContext context = new ElementContext(name, attributes, true);
-                    elementStack.push(context);
-                    this.rawXmlWriter.startElement(name, attributes);
-                } else {
-                    throw new IllegalStateException("Unknown element: " + name);
-                }
-            }
-        }
-    }
-
+    /**
+     * Characters already in builder. Emitted stand-alone.
+     */
     private void endDataElement() throws IOException {
-        if (!elementStack.isEmpty()) {
-            ElementContext context = elementStack.pop();
-            GraphmlData.GraphmlDataBuilder builder = GraphmlData.builder();
+        ElementContext dataContext = elementStack.pop(GraphmlElements.DATA);
+        ElementContext parent = elementStack.peek_(GRAPHML, GRAPH, NODE, EDGE, HYPER_EDGE, PORT);
+        parent.maybeWriteStartTo(graphmlWriter);
 
-            if (context.dataKey != null) {
-                builder.key(context.dataKey);
-            }
-            builder.attributes(context.attributes);
+        GraphmlDataBuilder builder = dataContext.dataBuilder();
 
-            String content = characterBuffer.toString();//.trim();
-            if (!content.isEmpty()) {
-                if (context.containsRawXml) {
-                    builder.valueRaw(content);
-                } else {
-                    builder.value(content);
-                }
-            }
+        String dataValue = characterBuffer.getStringAndReset();
+        builder.value(dataValue);
 
-            IGraphmlData data = builder.build();
-            graphmlWriter.data(data);
-            mode = Mode.Graphml;
-        }
+        IGraphmlData data = builder.build();
+        graphmlWriter.data(data);
+
+        // reset parse mode back to Graphml
+        elementStack.mode(XmlMode.Graphml);
     }
 
     private void endDefaultElement() {
-        if (!elementStack.isEmpty()) {
-            elementStack.pop();
-            // Default content is handled by the parent element (key)
-        }
+        elementStack.pop(DEFAULT);
+
+        String defaultValue = characterBuffer.getStringAndReset();
+        IGraphmlDefault value = IGraphmlDefault.builder().value(defaultValue).build();
+        ElementContext parentContext = elementStack.peek_();
+        GraphmlKeyBuilder builder = parentContext.keyBuilder();
+        builder.defaultValue(value);
+        elementStack.mode(XmlMode.Graphml);
     }
 
-    private void endDescElement() {
-        assert !elementStack.isEmpty();
-        elementStack.pop();
+    private void endDescElement() throws IOException {
+        elementStack.pop(DESC);
         // Set description for the parent element
-        ElementContext parentContext = elementStack.peek();
-        if (parentContext != null) {
-            String desc = characterBuffer.toString().trim();
-            GraphmlDescription gDesc = GraphmlDescription.builder().value(desc).build();
-            switch (parentContext.elementName) {
-                case GraphmlElements.GRAPHML -> parentContext.document.setDesc(gDesc);
-                case GraphmlElements.GRAPH -> parentContext.graph.setDesc(gDesc);
-                case GraphmlElements.NODE -> parentContext.node.setDesc(gDesc);
-                case GraphmlElements.EDGE, GraphmlElements.HYPER_EDGE -> parentContext.hyperEdgeBuilder.desc(gDesc);
-                case GraphmlElements.KEY -> parentContext.key.setDesc(gDesc);
-            }
+        ElementContext parent = elementStack.peek_();
+        String descValue = characterBuffer.getStringAndReset();
+        GraphmlDescription desc = IGraphmlDescription.builder().value(descValue).build();
+        switch (parent.elementName) {
+            case GRAPHML -> parent.documentBuilder().desc(desc);
+            case GRAPH -> parent.graphBuilder().desc(desc);
+            case NODE -> parent.nodeBuilder().desc(desc);
+            case EDGE, HYPER_EDGE -> parent.hyperEdgeBuilder().desc(desc);
+            case KEY -> parent.keyBuilder().desc(desc);
         }
-
-
-        if (!elementStack.isEmpty()) {
-            // Description content is handled by the parent element -- not true -- bug
-        }
+        parent.maybeWriteStartTo(graphmlWriter);
+        // reset parse mode back to Graphml
+        elementStack.mode(XmlMode.Graphml);
     }
 
     private void endEdgeElement() throws IOException {
-        assert !elementStack.isEmpty();
-
-        ElementContext context = elementStack.pop();
-        assert context.elementName.equals(GraphmlElements.EDGE);
-
-        graphmlWriter.endEdge();
+        ElementContext context = elementStack.pop(EDGE);
+        context.writeEndTo(graphmlWriter);
     }
 
     private void endEndpointElement() {
-        if (!elementStack.isEmpty()) {
-            ElementContext endpointContext = elementStack.pop();
-            // Add the endpoint to the parent hyperedge builder
-            if (!elementStack.isEmpty() && endpointContext.endpoint != null) {
-                ElementContext parentContext = elementStack.peek();
-                if (parentContext.hyperEdgeBuilder != null) {
-                    parentContext.hyperEdgeBuilder.addEndpoint(endpointContext.endpoint);
-                }
-            }
+        ElementContext context = elementStack.pop(GraphmlElements.ENDPOINT);
+        // Add the endpoint to the parent hyperedge builder
+        if (!elementStack.isEmpty() && context.endpointBuilder() != null) {
+            ElementContext parentContext = elementStack.peek_();
+            assert parentContext.hyperEdgeBuilder() != null;
+            parentContext.hyperEdgeBuilder().addEndpoint(context.endpointBuilder().build());
         }
+        // TODO else: parse warning
     }
 
     private void endGraphElement() throws IOException {
-        if (!elementStack.isEmpty()) {
-            ElementContext context = elementStack.pop();
-            graphmlWriter.endGraph(context.graph != null ? context.graph.getLocator() : null);
-        }
+        elementStack.pop(GRAPH).writeEndTo(graphmlWriter);
     }
 
-    private void endGraphmlElement() {
-        if (!elementStack.isEmpty()) {
-            elementStack.pop();
-        }
+    private void endGraphmlElement() throws IOException {
+        elementStack.pop(GRAPHML).writeEndTo(graphmlWriter);
     }
 
     private void endHyperEdgeElement() throws IOException {
-        if (!elementStack.isEmpty()) {
-            ElementContext context = elementStack.pop();
-            if (context.hyperEdgeBuilder != null) {
-                GraphmlHyperEdge hyperEdge = context.hyperEdgeBuilder.build();
-                graphmlWriter.startHyperEdge(hyperEdge);
-            }
-        }
-        graphmlWriter.endHyperEdge();
+        ElementContext context = elementStack.pop(GraphmlElements.HYPER_EDGE);
+        context.writeEndTo(graphmlWriter);
     }
 
     private void endKeyElement() throws IOException {
-        if (!elementStack.isEmpty()) {
-            ElementContext context = elementStack.pop();
-            if (context.key != null) {
-                graphmlWriter.key(context.key);
-            }
-        }
+        ElementContext context = elementStack.pop(GraphmlElements.KEY);
+        ElementContext parentContext = elementStack.peek_();
+        parentContext.maybeWriteStartTo(graphmlWriter);
+
+        IGraphmlKey key = context.keyBuilder().build();
+        context.maybeWriteStartTo(graphmlWriter);
+
+        indexKey(key.id(), key.forType(), key);
     }
 
     private void endLocatorElement() {
-        if (!elementStack.isEmpty()) {
-            elementStack.pop();
-            // Locator is handled by the parent element
-        }
+        GraphmlLocatorBuilder locatorBuilder = elementStack.pop(GraphmlElements.LOCATOR).locatorBuilder();
+        IGraphmlLocator locator = locatorBuilder.build();
+        elementStack.peek_().builderWithLocatorSupport().locator(locator);
     }
 
     private void endNodeElement() throws IOException {
-        if (!elementStack.isEmpty()) {
-            ElementContext context = elementStack.pop();
-            graphmlWriter.endNode(context.node != null ? context.node.locator() : null);
-        }
+        ElementContext context = elementStack.pop(NODE);
+        context.writeEndTo(graphmlWriter);
     }
 
     private void endPortElement() throws IOException {
-        if (!elementStack.isEmpty()) {
-            elementStack.pop();
-        }
-        graphmlWriter.endPort();
+        ElementContext context = elementStack.pop(PORT);
+        context.writeEndTo(graphmlWriter);
     }
 
-    private @Nullable IGraphmlGraph findParentGraphElement() {
-        // dig in stack to find the parent Graph element
-        for (int i = elementStack.size() - 1; i >= 0; i--) {
-            ElementContext context = elementStack.get(i);
-            if (context.elementName.equals(GraphmlElements.GRAPH)) {
-                return context.graph;
-            }
-        }
-        return null;
+
+    private void indexKey(String id, GraphmlKeyForType forType, IGraphmlKey key) {
+        dataId_for_key.computeIfAbsent(id, k -> new HashMap<>()).put(forType, key);
+    }
+
+    private boolean isContentElement() {
+        ElementContext context = elementStack.peekNullable();
+        if (context == null) return false;
+        return switch (context.elementName) {
+            case DATA, DESC, DEFAULT -> true;
+            default -> false;
+        };
     }
 
     private void startDataElement(Map<String, String> attributes) {
-        ElementContext context = new ElementContext(GraphmlElements.DATA, attributes, false);
-        if (attributes != null) {
-            context.dataKey = attributes.get("key");
-        }
-        elementStack.push(context);
-        this.mode = Mode.Data;
+
+
+        GraphmlDataBuilder builder = IGraphmlData.builder();
+        builder.attributes(attributes);
+        ifAttributeNotNull(attributes, ATTRIBUTE_KEY, builder::key);
+
+        elementStack.push(DATA, attributes, false, builder, XmlMode.PCDATA);
     }
 
     private void startDefaultElement(Map<String, String> attributes) {
-        ElementContext context = new ElementContext(GraphmlElements.DEFAULT, attributes, false);
-        elementStack.push(context);
+        GraphmlDefaultBuilder builder = IGraphmlDefault.builder();
+        builder.attributes(attributes);
+        elementStack.push(DEFAULT, attributes, false, builder, XmlMode.PCDATA);
     }
 
     private void startDescElement(Map<String, String> attributes) {
-        ElementContext context = new ElementContext(GraphmlElements.DESC, attributes, false);
-        elementStack.push(context);
+        elementStack.push(DESC, attributes, false, IGraphmlDescription.builder().attributes(attributes), XmlMode.PCDATA);
     }
 
     private void startEdgeElement(Map<String, String> attributes) throws IOException {
-        ElementContext context = new ElementContext(GraphmlElements.EDGE, attributes, false);
-        String edgeId = attributes.get(IGraphmlEdge.ATTRIBUTE_ID);
-        context.hyperEdgeBuilder = IGraphmlHyperEdge.builder(edgeId);
-        context.hyperEdgeBuilder.attributes(attributes);
+        elementStack.peek_(GRAPH).maybeWriteStartTo(graphmlWriter);
 
-        boolean isDirected = requireNonNull(findParentGraphElement()).isDirectedEdges();
+        GraphmlHyperEdgeBuilder builder = IGraphmlHyperEdge.builder();
+        builder.attributes(attributes);
+        ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
+
+        // init from containing graph
+        boolean isDirected = requireNonNull(elementStack.findParentGraphElement()).isDirectedEdges();
+        // maybe overwrite from edge attributes
         @Nullable String b = attributes.get(IGraphmlEdge.ATTRIBUTE_DIRECTED);
         if (b != null) {
             isDirected = Boolean.parseBoolean(b);
         }
 
         GraphmlDirection sourceDir = isDirected ? GraphmlDirection.In : GraphmlDirection.Undirected;
-        context.hyperEdgeBuilder.addEndpoint(IGraphmlEndpoint.builder() //
+        builder.addEndpoint(IGraphmlEndpoint.builder() //
                 .node(attributes.get(IGraphmlEdge.ATTRIBUTE_SOURCE)) //
                 .port(attributes.get(IGraphmlEdge.ATTRIBUTE_SOURCE_PORT)) //
                 .type(sourceDir) //
                 .build());
         GraphmlDirection targetDir = isDirected ? GraphmlDirection.Out : GraphmlDirection.Undirected;
-        context.hyperEdgeBuilder.addEndpoint(IGraphmlEndpoint.builder() //
+        builder.addEndpoint(IGraphmlEndpoint.builder() //
                 .node(attributes.get(IGraphmlEdge.ATTRIBUTE_TARGET)) //
                 .port(attributes.get(IGraphmlEdge.ATTRIBUTE_TARGET_PORT)) //
                 .type(targetDir) //
                 .build());
 
-        GraphmlEdge edge = context.hyperEdgeBuilder.toEdge();
-        graphmlWriter.startEdge(edge);
-
-        elementStack.push(context);
+        elementStack.push(EDGE, attributes, false, builder, XmlMode.Graphml);
+        // dont start element, maybe <desc> or <data> comes
     }
 
     private void startEndpointElement(Map<String, String> attributes) {
-        GraphmlEndpoint.GraphmlEndpointBuilder builder = IGraphmlEndpoint.builder();
+        GraphmlEndpointBuilder builder = IGraphmlEndpoint.builder();
+        builder.attributes(attributes);
+        ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
+        ifAttributeNotNull(attributes, ATTRIBUTE_NODE, builder::node);
+        ifAttributeNotNull(attributes, ATTRIBUTE_PORT, builder::port);
+        ifAttributeNotNull(attributes, ATTRIBUTE_TYPE, value -> builder.type(GraphmlDirection.getDirection(value)));
 
-        if (attributes != null) {
-            String id = attributes.get("id");
-            if (id != null) {
-                builder.id(id);
-            }
-
-            String node = attributes.get("node");
-            if (node != null) {
-                builder.node(node);
-            }
-
-            String port = attributes.get("port");
-            if (port != null) {
-                builder.port(port);
-            }
-
-            String type = attributes.get("type");
-            if (type != null) {
-                builder.type(GraphmlDirection.getDirection(type));
-            }
-        }
-
-        ElementContext context = new ElementContext(GraphmlElements.ENDPOINT, attributes, false);
-        context.endpoint = builder.build();
-        elementStack.push(context);
+        elementStack.push(ENDPOINT, attributes, false, builder, XmlMode.Graphml);
+        // dont start element, maybe <desc> or <data> comes
     }
 
     private void startGraphElement(Map<String, String> attributes) throws IOException {
-        GraphmlGraph.GraphmlGraphBuilder builder = IGraphmlGraph.builder();
+        // elementStack.peek_(GRAPH, GRAPHML).maybeWriteStartTo(graphmlWriter);
 
-        if (attributes != null) {
-            String id = attributes.get("id");
-            if (id != null) {
-                builder.id(id);
-            }
+        GraphmlGraphBuilder builder = IGraphmlGraph.builder();
+        builder.attributes(attributes);
+        ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
+        ifAttributeNotNull(attributes, ATTRIBUTE_EDGE_DEFAULT, value -> //
+                builder.edgeDefault(IGraphmlGraph.EdgeDefault.valueOf(value)));
 
-            String edgeDefault = attributes.get("edgedefault");
-            if (edgeDefault != null) {
-                if ("directed".equals(edgeDefault)) {
-                    builder.edgedefault(GraphmlGraph.EdgeDefault.directed);
-                } else if ("undirected".equals(edgeDefault)) {
-                    builder.edgedefault(GraphmlGraph.EdgeDefault.undirected);
-                }
-            }
-
-            builder.attributes(attributes);
-        }
-
-        ElementContext context = new ElementContext(GraphmlElements.GRAPH, attributes, false);
-        context.graph = builder.build();
-        elementStack.push(context);
-        graphmlWriter.startGraph(context.graph);
+        elementStack.push(GRAPH, attributes, false, builder, XmlMode.Graphml);
+        // dont start element, maybe <desc> or <key> comes
     }
 
-    private void startGraphmlElement(Map<String, String> attributes) throws IOException {
-        GraphmlDocument.GraphmlDocumentBuilder builder = IGraphmlDocument.builder();
-        if (attributes != null && !attributes.isEmpty()) {
-            builder.attributes(attributes);
-        }
-        ElementContext context = new ElementContext(GraphmlElements.GRAPHML, attributes, false);
-        context.document = builder.build();
-        elementStack.push(context);
-        graphmlWriter.startDocument(context.document);
+    private void startGraphmlElement(Map<String, String> attributes) {
+        GraphmlDocumentBuilder builder = IGraphmlDocument.builder();
+        builder.attributes(attributes);
+
+        elementStack.push(GRAPHML, attributes, false, builder, XmlMode.Graphml);
+        // dont start element, maybe <desc> or <data> comes FIXME or <key>
     }
 
-    private void startHyperEdgeElement(Map<String, String> attributes) {
-        String id = null;
-        if (attributes != null) {
-            id = attributes.get("id");
-        }
+    private void startHyperEdgeElement(Map<String, String> attributes) throws IOException {
+        elementStack.peek_(GRAPH).maybeWriteStartTo(graphmlWriter);
 
-        // GraphmlHyperEdge builder requires id in constructor
-        GraphmlHyperEdge.GraphmlHyperEdgeBuilder builder = IGraphmlHyperEdge.builder(id != null ? id : "");
+        GraphmlHyperEdgeBuilder builder = IGraphmlHyperEdge.builder();
+        builder.attributes(attributes);
+        ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
 
-        ElementContext context = new ElementContext(GraphmlElements.HYPER_EDGE, attributes, false);
-        context.hyperEdgeBuilder = builder;
-        elementStack.push(context);
-        // Don't build the hyperedge yet - wait for endpoints to be added
+        elementStack.push(HYPER_EDGE, attributes, false, builder, XmlMode.Graphml);
+        // dont start element, maybe <desc> or <data> comes, or wait for endpoints to be added
     }
 
-    private void startKeyElement(Map<String, String> attributes) {
-        GraphmlKey.GraphmlKeyBuilder builder = IGraphmlKey.builder();
+    private void startKeyElement(Map<String, String> attributes) throws IOException {
+        elementStack.peek_().maybeWriteStartTo(graphmlWriter);
 
-        if (attributes != null) {
-            String id = attributes.get("id");
-            if (id != null) {
-                builder.id(id);
-            }
+        GraphmlKeyBuilder builder = IGraphmlKey.builder();
+        builder.attributes(attributes);
+        ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
+        ifAttributeNotNull(attributes, IGraphmlKey.ATTRIBUTE_FOR, value -> builder.forType(GraphmlKeyForType.keyForType(value)));
+        ifAttributeNotNull(attributes, IGraphmlKey.ATTRIBUTE_ATTR_NAME, builder::attrName);
+        ifAttributeNotNull(attributes, IGraphmlKey.ATTRIBUTE_ATTR_TYPE, builder::attrType);
 
-            String forAttr = attributes.get("for");
-            if (forAttr != null) {
-                builder.forType(GraphmlKeyForType.keyForType(forAttr));
-            }
-
-            String attrName = attributes.get("attr.name");
-            if (attrName != null) {
-                builder.attrName(attrName);
-            }
-
-            String attrType = attributes.get("attr.type");
-            if (attrType != null) {
-                builder.attrType(attrType);
-            }
-
-            builder.attributes(attributes);
-        }
-
-        ElementContext context = new ElementContext(GraphmlElements.KEY, attributes, false);
-        context.key = builder.build();
-        elementStack.push(context);
+        elementStack.push(KEY, attributes, false, builder, XmlMode.Graphml);
+        // dont start element, maybe <default> comes
     }
 
-    private void startLocatorElement(Map<String, String> attributes) {
-        ElementContext context = new ElementContext(GraphmlElements.LOCATOR, attributes, false);
-        elementStack.push(context);
+    private void startLocatorElement(Map<String, String> attributes) throws IOException {
+        elementStack.peek_().maybeWriteStartTo(graphmlWriter);
+
+        GraphmlLocatorBuilder builder = IGraphmlLocator.builder();
+        builder.attributes(attributes);
+        elementStack.push(LOCATOR, attributes, false, builder, XmlMode.Graphml);
+        // element is empty, but we wait for end
     }
 
     private void startNodeElement(Map<String, String> attributes) throws IOException {
-        GraphmlNode.GraphmlNodeBuilder builder = GraphmlNode.builder();
+        GraphmlNodeBuilder builder = IGraphmlNode.builder();
+        builder.attributes(attributes);
+        ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
 
-        if (attributes != null) {
-            String id = attributes.get("id");
-            if (id != null) {
-                builder.id(id);
-            }
-            builder.attributes(attributes);
-        }
+        elementStack.peek_(GRAPH).maybeWriteStartTo(graphmlWriter);
 
-        ElementContext context = new ElementContext(GraphmlElements.NODE, attributes, false);
-        context.node = builder.build();
-        elementStack.push(context);
-        graphmlWriter.startNode(context.node);
+        elementStack.push(NODE, attributes, false, builder, XmlMode.Graphml);
+        // dont start element, maybe <desc> or <data> comes, or wait for endpoints to be added
     }
 
     private void startPortElement(Map<String, String> attributes) throws IOException {
-        GraphmlPort.GraphmlPortBuilder builder = IGraphmlPort.builder();
+        GraphmlPortBuilder builder = IGraphmlPort.builder();
+        builder.attributes(attributes);
+        ifAttributeNotNull(attributes, ATTRIBUTE_NAME, builder::name);
 
-        if (attributes != null) {
-            String name = attributes.get("name");
-            if (name != null) {
-                builder.name(name);
-            }
-            builder.attributes(attributes);
-        }
-
-        ElementContext context = new ElementContext(GraphmlElements.PORT, attributes, false);
-        context.port = builder.build();
-        elementStack.push(context);
-        graphmlWriter.startPort(context.port);
+        ElementContext context = elementStack.push(PORT, attributes, false, builder, XmlMode.Graphml);
+        context.maybeWriteStartTo(graphmlWriter);
     }
 
 }

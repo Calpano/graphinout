@@ -1,12 +1,12 @@
 package com.calpano.graphinout.base.graphml.impl;
 
+import com.calpano.graphinout.base.graphml.IGraphmlDescription;
+import com.calpano.graphinout.base.graphml.IGraphmlElementWithDesc;
 import com.calpano.graphinout.base.graphml.IGraphmlPort;
 
 import javax.annotation.Nullable;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author rbaba
@@ -24,29 +24,7 @@ import java.util.Set;
  * Occurence: &lt;node&gt;, &lt;port&gt;.
  */
 
-public class GraphmlPort extends GraphmlElement implements IGraphmlPort {
-
-    public static class GraphmlPortBuilder extends GraphmlElementBuilder {
-
-        private String name;
-
-        @Override
-        public IGraphmlPort build() {
-            return new GraphmlPort(name, attributes);
-        }
-
-        @Override
-        public GraphmlPortBuilder attributes(@Nullable Map<String, String> attributes) {
-            super.attributes(attributes);
-            return this;
-        }
-
-        public GraphmlPortBuilder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-    }
+public class GraphmlPort extends GraphmlElementWithDesc implements IGraphmlPort {
 
     /**
      * This is an attribute that mandatory.
@@ -55,59 +33,30 @@ public class GraphmlPort extends GraphmlElement implements IGraphmlPort {
      */
     private String name;
 
-    // Constructors
-    public GraphmlPort() {
-        super();
-    }
-
-    public GraphmlPort(String name) {
-        super();
+    public GraphmlPort(Map<String, String> attributes, @Nullable IGraphmlDescription desc, String name) {
+        super(attributes, desc);
         this.name = name;
     }
 
-    public GraphmlPort(String name, @Nullable Map<String, String> extraAttrib) {
-        super(extraAttrib);
-        this.name = name;
-    }
-
-    // equals, hashCode, toString
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        GraphmlPort that = (GraphmlPort) o;
-        return Objects.equals(name, that.name);
-    }
-
-    @Override
-    public LinkedHashMap<String, String> attributes() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-        if (name != null && !name.isEmpty()) attributes.put(ATTRIBUTE_NAME, name);
-        if (customXmlAttributes() != null)
-            attributes.putAll(customXmlAttributes());
-        return attributes;
-    }
-
-    @Override
-    public Set<String> builtInAttributeNames() {
-        return Set.of(ATTRIBUTE_ID, ATTRIBUTE_NAME);
-    }
-
-    @Override
-    public String tagName() {
-        return TAGNAME;
-    }
-
-    // Getters and Setters
-    @Override
-    public String name() {
-        return name;
+        IGraphmlPort that = (IGraphmlPort) o;
+        return IGraphmlElementWithDesc.isEqual(this, that) //
+                && Objects.equals(name, that.name());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), name);
+    }
+
+
+    @Override
+    public String name() {
+        return name;
     }
 
     public void setName(String name) {
@@ -116,10 +65,7 @@ public class GraphmlPort extends GraphmlElement implements IGraphmlPort {
 
     @Override
     public String toString() {
-        return "GraphmlPort{" +
-                "name='" + name + '\'' +
-                ", extraAttrib=" + allAttributes +
-                '}';
+        return "GraphmlPort{" + "name='" + name + '\'' + ", custom=" + customXmlAttributes() + '}';
     }
 
 }

@@ -8,6 +8,7 @@ import com.calpano.graphinout.base.gio.GioGraph;
 import com.calpano.graphinout.base.gio.GioKey;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.graphml.GraphmlElements;
 import com.calpano.graphinout.base.reader.ContentError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

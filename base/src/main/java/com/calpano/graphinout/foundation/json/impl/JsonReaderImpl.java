@@ -58,7 +58,7 @@ public class JsonReaderImpl implements JsonReader {
                 token = parser.nextToken();
             }
         } catch (Throwable t) {
-            log.error("Failed",t);
+            log.error("Failed", t);
             throw t;
         } finally {
             stream.documentEnd();
@@ -85,7 +85,7 @@ public class JsonReaderImpl implements JsonReader {
                 stream.stringEnd();
                 break;
             case VALUE_NUMBER_INT:
-                if(useBigDecimals) {
+                if (useBigDecimals) {
                     BigDecimal bigDecimalValue = parser.getDecimalValue();
                     stream.onBigDecimal(bigDecimalValue);
                     return;
@@ -106,7 +106,7 @@ public class JsonReaderImpl implements JsonReader {
                 }
                 break;
             case VALUE_NUMBER_FLOAT:
-                if(useBigDecimals) {
+                if (useBigDecimals) {
                     BigDecimal bigDecimalValue = parser.getDecimalValue();
                     stream.onBigDecimal(bigDecimalValue);
                     return;

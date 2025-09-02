@@ -2,58 +2,60 @@ package com.calpano.graphinout.foundation.xml;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class XmlWriterSpy implements XmlWriter {
 
-    private final StringBuilder outPut = new StringBuilder();
+    private final StringBuilder out = new StringBuilder();
 
     @Override
     public void characterData(String characterData, boolean isInCdata) throws IOException {
-        outPut.append("::characterData->").append(characterData);
+        out.append("<chars inCdata=").append(isInCdata).append(">").append(characterData).append("</chars>");
     }
 
     @Override
-    public void endDocument() throws IOException {
-        outPut.append("::endDocument");
+    public void cdataEnd() throws IOException {
+        out.append("</CDATA>");
     }
 
     @Override
-    public void endElement(String name) throws IOException {
-        outPut.append("::endElement->").append(name);
+    public void documentEnd() throws IOException {
+        out.append("</DOCUMENT>");
     }
 
-    public StringBuilder getOutPut() {
-        return outPut;
+    @Override
+    public void elementEnd(String name) throws IOException {
+        out.append("</element ").append(name).append(">");
+    }
+
+    public StringBuilder getOut() {
+        return out;
     }
 
     @Override
     public void lineBreak() throws IOException {
-        // ignored in tests
-    }
-
-    @Override
-    public void startDocument() throws IOException {
-        outPut.append("::startDocument->");
-    }
-
-    @Override
-    public void startElement(String name, Map<String, String> attributes) throws IOException {
-        outPut.append("::startElement->").append(name).append("->").append(attributes);
-    }
-
-    @Override
-    public void startCDATA() throws IOException {
-        outPut.append("::startCDATA");
-    }
-
-    @Override
-    public void endCDATA() throws IOException {
-        outPut.append("::endCDATA");
+        out.append("<NEWLINE />");
     }
 
     @Override
     public void raw(String rawXml) throws IOException {
-        outPut.append("::raw->").append(rawXml);
+        out.append("<raw>").append(rawXml).append("</raw>");
+    }
+
+    @Override
+    public void cdataStart() throws IOException {
+        out.append("<CDATA>");
+    }
+
+    @Override
+    public void documentStart() throws IOException {
+        out.append("<DOCUMENT>");
+    }
+
+    @Override
+    public void elementStart(String name, Map<String, String> attributes) throws IOException {
+        out.append("<element ").append(name).append(">");
+        out.append("<atts ").append(new TreeMap<>(attributes)).append(">");
     }
 
 }

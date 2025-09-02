@@ -1,8 +1,9 @@
 package com.calpano.graphinout.base.graphml.impl;
 
 import com.calpano.graphinout.base.graphml.IGraphmlDefault;
+import com.calpano.graphinout.base.graphml.IGraphmlElement;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -14,83 +15,34 @@ import java.util.Objects;
  * elements. The (optional) &lt;default&gt; child of &lt;key&gt; gives the default value for the corresponding function.
  * Occurence: &lt;key&gt;.
  */
-public class GraphmlDefault implements IGraphmlDefault {
-
-    public static class GraphmlDefaultBuilder {
-
-        private String value;
-        private String defaultType;
-
-        public IGraphmlDefault build() {
-            return new GraphmlDefault(value, defaultType);
-        }
-
-        /**
-         * FIXME should be used
-         */
-        public GraphmlDefaultBuilder defaultType(String defaultType) {
-            this.defaultType = defaultType;
-            return this;
-        }
-
-        public GraphmlDefaultBuilder value(String value) {
-            this.value = value;
-            return this;
-        }
-
-    }
+public class GraphmlDefault extends GraphmlElement implements IGraphmlDefault {
 
     /**
      * the default value for the corresponding function.
      */
     private final String value;
-    private final String defaultType;
 
-    public GraphmlDefault(String value, String defaultType) {
+    public GraphmlDefault(Map<String, String> attributes, String value) {
+        super(attributes);
         this.value = value;
-        this.defaultType = defaultType;
     }
 
-    @Override
-    public LinkedHashMap<String, String> attributes() {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
-
-        if (defaultType != null) attributes.put("default.type", defaultType);
-
-        return attributes;
-    }
-
-
-    @Override
-    public String defaultType() {
-        return defaultType;
-    }
-
-    // equals, hashCode, toString
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GraphmlDefault that = (GraphmlDefault) o;
-        return Objects.equals(value, that.value) &&
-                Objects.equals(defaultType, that.defaultType);
-    }
-
-    public String getDefaultType() {
-        return defaultType;
+        IGraphmlDefault that = (IGraphmlDefault) o;
+        return IGraphmlElement.isEqual(this, that) && Objects.equals(value, that.value());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, defaultType);
+        return Objects.hash(super.hashCode(), value);
     }
 
     @Override
     public String toString() {
-        return "GraphmlDefault{" +
-                "value='" + value + '\'' +
-                ", defaultType='" + defaultType + '\'' +
-                '}';
+        return "GraphmlDefault{" + "value='" + value + '\'' + ", custom=" + customXmlAttributes() + '}';
     }
 
     @Override

@@ -42,6 +42,7 @@ public class GioNode extends GioElementWithDescription {
         }
 
     }
+
     /**
      * The identifier of a node is defined by the XML-Attribute id.
      * <b>This Attribute is mandatory.</b>
@@ -50,7 +51,7 @@ public class GioNode extends GioElementWithDescription {
      */
     private String id;
 
-    // Constructors
+
     public GioNode() {
         super();
     }
@@ -65,12 +66,12 @@ public class GioNode extends GioElementWithDescription {
         this.id = id;
     }
 
-    // Builder
+
     public static GioNodeBuilder builder() {
         return new GioNodeBuilder();
     }
 
-    // equals, hashCode, toString
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -80,7 +81,7 @@ public class GioNode extends GioElementWithDescription {
         return Objects.equals(id, gioNode.id);
     }
 
-    // Getters and Setters
+
     public String getId() {
         return id;
     }

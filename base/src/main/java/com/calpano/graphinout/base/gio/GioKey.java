@@ -74,6 +74,7 @@ public class GioKey extends GioElementWithDescription {
         }
 
     }
+
     /**
      * GraphML Type data / attribute extension
      */
@@ -96,7 +97,7 @@ public class GioKey extends GioElementWithDescription {
      */
     private @Nullable GioDataType attributeType;
 
-    // Constructors
+
     public GioKey() {
         super();
     }
@@ -122,7 +123,7 @@ public class GioKey extends GioElementWithDescription {
         this.attributeType = attributeType;
     }
 
-    // Builder
+
     public static GioKeyBuilder builder() {
         return new GioKeyBuilder();
     }
@@ -143,7 +144,7 @@ public class GioKey extends GioElementWithDescription {
         return Optional.ofNullable(defaultValue);
     }
 
-    // equals, hashCode, toString
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -157,7 +158,7 @@ public class GioKey extends GioElementWithDescription {
                 attributeType == gioKey.attributeType;
     }
 
-    // Getters and Setters
+
     public @Nullable String getAttributeName() {
         return attributeName;
     }

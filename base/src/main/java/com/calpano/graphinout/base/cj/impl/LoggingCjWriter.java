@@ -35,12 +35,14 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     }
 
     enum CommaState {First, Container, Key}
+
     private static final Logger log = getLogger(LoggingCjWriter.class);
     private final StringBuilder bufCj = new StringBuilder();
     private final Stack<CommaState> commaStack = new Stack<>();
     private final boolean buffering;
 
     public LoggingCjWriter() {this(true);}
+
     public LoggingCjWriter(boolean buffering) {this.buffering = buffering;}
 
     @Override
@@ -255,11 +257,11 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     public void onCj(CjEvent event, @Nullable Object o) {
         if (event.name().endsWith("Start")) {
             buffer("<");
-            buffer(event.name().substring(0,event.name().length() - 5));
+            buffer(event.name().substring(0, event.name().length() - 5));
             buffer(">");
         } else if (event.name().endsWith("End")) {
             buffer("</");
-            buffer(event.name().substring(0,event.name().length() - 3));
+            buffer(event.name().substring(0, event.name().length() - 3));
             buffer(">");
         } else {
             if (o == null) {

@@ -1,52 +1,134 @@
 package com.calpano.graphinout.foundation.xml;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 import java.util.TreeMap;
+import java.util.function.Function;
 
-import static com.calpano.graphinout.foundation.StringFormatter.wrapped;
+@SuppressWarnings("UnusedReturnValue")
+public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends DelegatingXmlWriter {
 
-/**
- * {@link XmlWriter}that normalizes XML by sorting attributes and stripping comments
- */
-public class NormalizingXmlWriter extends DelegatingXmlWriter implements XmlWriter {
+    public interface Action {}
 
-    public static final String GRAPHML = "graphml";
-    static final Map<String, String> graphmlDefaultAttributes = Map.of("xmlns", "http://graphml.graphdrawing.org/xmlns", //
-            "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", //
-            "xsi:schemaLocation", "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"
-    );
-    private static final int MAX_LINE_LENGTH = 60;
+    @FunctionalInterface
+    public interface AttributeAction extends Action, Function<Map<String, String>, Map<String, String>> {
 
-    public NormalizingXmlWriter(XmlWriter xmlWriter) {
-        super(xmlWriter);
+        default Map<String, String> apply(Map<String, String> attributes) {
+            return attributes(attributes);
+        }
+
+        /**
+         * Action can add, remove or modify attributes. The result is always lexicographically sorted.
+         *
+         * @param attributes immutable input
+         */
+        Map<String, String> attributes(Map<String, String> attributes);
+
     }
+
+    /** currently open mixed-content-model elements */
+    private final Stack<String> stackOfContentElements = new Stack<>();
+    private final StringBuilder charBuffer = new StringBuilder();
+    private final Map<String, Action> elementActions = new HashMap<>();
+    /** XML element names with mixed content model (#PCDATA). null = treat ALL elements as mixed content. */
+    private Set<String> contentElements = null;
+
+    /**
+     * @param downstreamXmlWriter to forward to
+     */
+    public NormalizingXmlWriter(XmlWriter downstreamXmlWriter) {super(downstreamXmlWriter);}
 
     @Override
     public void characterData(String characterData, boolean isInCdata) throws IOException {
-        if (isInCdata) {
-            // Don't normalize CDATA content - preserve it exactly
-            super.raw(wrapped(characterData, MAX_LINE_LENGTH));
-        } else {
-            // Only normalize regular character data
-            String norm = characterData.replaceAll("[\n\r\t]", "");
-            norm = norm.trim();
-            if (!norm.isEmpty()) {
-                super.characterData(wrapped(norm, MAX_LINE_LENGTH), false);
-            }
-        }
+        charBuffer.append(characterData);
     }
 
     @Override
-    public void startElement(String name, Map<String, String> attributes) throws IOException {
-        super.lineBreak();
-        // Use TreeMap to sort attributes alphabetically
-        Map<String, String> attMap = new TreeMap<>();
-        if (name.equals(GRAPHML)) {
-            attMap.putAll(graphmlDefaultAttributes);
+    public void characterDataEnd(boolean isInCdata) throws IOException {
+        // emit
+        String c = charBuffer.toString();
+        if (isInContentElement() || isInCdata) {
+            // forward only when inside a (maybe nested) content element OR when in CDATA
+            super.characterData(c, isInCdata);
+        } else {
+            //  forward only non-whitespace content
+            if (!c.trim().isEmpty()) {
+                super.characterData(c, false);
+            }
         }
-        attMap.putAll(attributes);
-        super.startElement(name, attMap);
+        charBuffer.setLength(0);
     }
+
+    @Override
+    public void characterDataStart(boolean isInCdata) {
+        _log.info("characterDataStart: {}", isInCdata);
+    }
+
+    @Override
+    public void elementEnd(String name) throws IOException {
+        if (isMixedContentElement(name)) {
+            String started = stackOfContentElements.pop();
+            assert name.equals(started);
+        }
+        super.elementEnd(name);
+    }
+
+    @Override
+    public void elementStart(String name, Map<String, String> attributes) throws IOException {
+        if (isMixedContentElement(name)) {
+            stackOfContentElements.push(name);
+        }
+        // using TreeMap to sort attributes alphabetically
+        Map<String, String> sortedAtts = new TreeMap<>();
+
+        @Nullable Action action = elementActions.get(name);
+        if (action instanceof AttributeAction attributeAction) {
+            Map<String, String> changedAtts = attributeAction.apply(attributes);
+            sortedAtts.putAll(changedAtts);
+        } else {
+            sortedAtts.putAll(attributes);
+        }
+
+        super.elementStart(name, sortedAtts);
+    }
+
+    /** @return inside a (maybe nested) content element */
+    public boolean isInContentElement() {
+        if (contentElements == null) return true;
+        return !stackOfContentElements.isEmpty();
+    }
+
+    public boolean isMixedContentElement(String name) {
+        return contentElements == null || contentElements.contains(name);
+    }
+
+    public T addAction(String name, Action action) {
+        Action prev = elementActions.put(name, action);
+        assert prev == null;
+        return this_();
+    }
+
+    /**
+     * @param contentElements use <code>null</code> to treat any XML element as content element
+     */
+    public T withContentElements(@Nullable Set<String> contentElements) {
+        if (contentElements == null) {
+            this.contentElements = null;
+        } else {
+            this.contentElements = new HashSet<>(contentElements);
+        }
+        return this_();
+    }
+
+    private T this_() {
+        //noinspection unchecked
+        return (T) this;
+    }
+
 
 }

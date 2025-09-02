@@ -1,13 +1,11 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
-import com.calpano.graphinout.base.graphml.impl.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
-import com.calpano.graphinout.foundation.input.SingleInputSource;
-import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
-import com.calpano.graphinout.foundation.output.OutputSink;
-import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
+import com.calpano.graphinout.foundation.xml.Xml2StringWriter;
+import com.calpano.graphinout.foundation.xml.XmlAssert;
+import com.calpano.graphinout.foundation.xml.XmlTool;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -20,26 +18,31 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GraphmlReaderXMLContentTest {
 
-    record Result(String actual, List<ContentError> contentErrors) {
-    }
+    record Result(String actual, List<ContentError> contentErrors) {}
 
+    /**
+     * String -> XML -> GraphML -> XML -> String
+     */
     private static Result parseGraphmlToOutputSink(Path inputSource) throws IOException {
+        // out
+        Xml2StringWriter xml2stringWriter = new Xml2StringWriter();
+        GraphmlWriter graphml2xmlWriter = new Graphml2XmlWriter(xml2stringWriter);
+        // in
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
-        SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
-        InMemoryOutputSink outputSink = OutputSink.createInMemory();
-        GraphmlReader graphmlReader = new GraphmlReader();
-        List<ContentError> contentErrors = new ArrayList<>();
-        graphmlReader.errorHandler(contentErrors::add);
-        GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(new XmlWriterImpl(outputSink)));
-        graphmlReader.read(singleInputSource, gioWriter);
-        return new Result(outputSink.getBufferAsUtf8String(), contentErrors);
+        Xml2GraphmlWriter xml2GraphmlWriter = new Xml2GraphmlWriter(graphml2xmlWriter);
+        try {
+            XmlTool.parseAndWriteXml(content, xml2GraphmlWriter);
+            List<ContentError> contentErrors = new ArrayList<>();
+            return new Result(xml2stringWriter.string(), contentErrors);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -49,7 +52,7 @@ class GraphmlReaderXMLContentTest {
     @Test
     @Disabled("See issue #84")
     void html_Content_Tag_test() throws IOException {
-        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "xml", "HTML_Content_In_Data.xml");
+        Path inputSource = Paths.get("../base/src/test/resources/graphin/graphml/xml/HTML_Content_In_Data.xml");
         Result result = parseGraphmlToOutputSink(inputSource);
         String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +//
                 "<graph>\n" + //
@@ -76,46 +79,28 @@ class GraphmlReaderXMLContentTest {
 
     @Test
     void xml_Standard_Tag_in_data_test() throws IOException {
-        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "xml", "XML_Standard_Content_In_Data.xml");
+        Path inputSource = Paths.get("../base/src/test/resources/xml/XML_Standard_Content_In_Data.xml");
         Result result = parseGraphmlToOutputSink(inputSource);
-        String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +//
-                "\n" +//
-                "<graph edgedefault=\"undirected\">\n" +//
-                "<node><data> <b>Hello</b>World </data></node>\n" +//
-                "</graph>\n" +//
-                "</graphml>\n"; //
-        assertAll("",
-                () -> assertEquals(expected, result.actual),
-                () -> assertEquals(0, result.contentErrors.size())
-        );
+        String expected = IOUtils.toString(inputSource.toUri(), StandardCharsets.UTF_8);
+        XmlAssert.xAssertThatIsSameXml(result.actual, expected);
+        assertTrue(result.contentErrors.isEmpty());
     }
 
     @Test
     void xml_Standard_Tag_in_default_test() throws IOException {
-        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "xml", "XML_Standard_Content_In_default.xml");
+        Path inputSource = Paths.get("../base/src/test/resources/xml/XML_Standard_Content_In_default.xml");
+        String expected = IOUtils.toString(inputSource.toUri(), StandardCharsets.UTF_8);
         Result result = parseGraphmlToOutputSink(inputSource);
-
-        String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +//
-                "\n" + //
-                "<key id=\"neuron_name\" for=\"node\" attr.name=\"name\" attr.type=\"string\"><default><b>Hello</b>World</default></key>\n" + //
-                "<graph edgedefault=\"undirected\">\n" + //
-                "</graph>\n" + //
-                "</graphml>\n"; //
-        assertEquals(expected, result.actual);
+        XmlAssert.xAssertThatIsSameXml(result.actual, expected);
         assertTrue(result.contentErrors.isEmpty());
     }
 
     @Test
     void xml_Standard_Tag_in_desc_test() throws IOException {
-        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "xml", "XML_Standard_Content_In_Desc.xml");
+        Path inputSource = Paths.get("../base/src/test/resources/xml/XML_Standard_Content_In_Desc.xml");
         Result result = parseGraphmlToOutputSink(inputSource);
-        String expected = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +//
-                "\n" + //
-                "<key id=\"neuron_name\" for=\"node\" attr.name=\"name\" attr.type=\"string\"><desc><b>Hello</b>World</desc></key>\n" + //
-                "<graph edgedefault=\"undirected\">\n" + //
-                "</graph>\n" + //
-                "</graphml>\n"; //
-        assertEquals(expected, result.actual);
+        String expected = IOUtils.toString(inputSource.toUri(), StandardCharsets.UTF_8);
+        XmlAssert.xAssertThatIsSameXml(result.actual, expected);
         assertTrue(result.contentErrors.isEmpty());
     }
 

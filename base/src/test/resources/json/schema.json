@@ -11,18 +11,17 @@
     "https://json-schema.org/draft/2020-12/vocab/content": true
   },
   "$dynamicAnchor": "meta",
-
   "title": "Core and Validation specifications meta-schema",
   "allOf": [
-    {"$ref": "meta/core"},
-    {"$ref": "meta/applicator"},
-    {"$ref": "meta/unevaluated"},
-    {"$ref": "meta/validation"},
-    {"$ref": "meta/meta-data"},
-    {"$ref": "meta/format-annotation"},
-    {"$ref": "meta/content"}
+    { "$ref": "meta/core" },
+    { "$ref": "meta/applicator" },
+    { "$ref": "meta/unevaluated" },
+    { "$ref": "meta/validation" },
+    { "$ref": "meta/meta-data" },
+    { "$ref": "meta/format-annotation" },
+    { "$ref": "meta/content" }
   ],
-  "type": ["object", "boolean"],
+  "type": [ "object", "boolean" ],
   "$comment": "This meta-schema also defines keywords that have appeared in previous drafts in order to prevent incompatible extensions as they remain in common use.",
   "properties": {
     "definitions": {
@@ -30,7 +29,7 @@
       "type": "object",
       "additionalProperties": { "$dynamicRef": "#meta" },
       "deprecated": true,
-      "default": {}
+      "default": { }
     },
     "dependencies": {
       "$comment": "\"dependencies\" has been split and replaced by \"dependentSchemas\" and \"dependentRequired\" in order to serve their differing semantics.",
@@ -42,7 +41,7 @@
         ]
       },
       "deprecated": true,
-      "default": {}
+      "default": { }
     },
     "$recursiveAnchor": {
       "$comment": "\"$recursiveAnchor\" has been replaced by \"$dynamicAnchor\".",

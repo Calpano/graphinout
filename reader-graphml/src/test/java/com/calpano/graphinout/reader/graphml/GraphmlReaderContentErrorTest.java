@@ -3,12 +3,10 @@ package com.calpano.graphinout.reader.graphml;
 import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
-import com.calpano.graphinout.base.graphml.impl.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
-import com.calpano.graphinout.foundation.output.OutputSink;
-import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
+import com.calpano.graphinout.foundation.xml.Xml2AppendableWriter;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,15 +39,15 @@ class GraphmlReaderContentErrorTest {
 
     @Test
     void elementsGraphmlDoesNotAllowCharacter_invalid_root() throws Exception {
-        Path inputSource = Paths.get("src", "test", "resources", "graphin", "graphml", "synthetic", "invalid-root.graphml");
+        Path inputSource = Paths.get("../base/src/test/resources/xml/graphml/synthetic/invalid-root.graphml");
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
-        try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content);
-             OutputSink outputSink = new InMemoryOutputSink()) {
+        try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content)
+        ) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
             graphmlReader.errorHandler(contentErrors::add);
-            GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(new XmlWriterImpl(outputSink)));
+            GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(Xml2AppendableWriter.createNoop()));
             graphmlReader.read(singleInputSource, gioWriter);
             List<ContentError> contentErrorsResult = contentErrors.stream().toList();
             assertEquals(3, contentErrorsResult.size());
@@ -77,19 +75,19 @@ class GraphmlReaderContentErrorTest {
         if (filePath.endsWith("graphin/graphml/invalidSchema/invalid-schema-1.graphml"))
             return;
 
-        log.info("Start To pars file [{}]", filePath);
+        log.info("Start to parse file [{}]", filePath);
         URL resourceUrl = ClassLoader.getSystemResource(filePath);
-        if (invalidFiles.removeIf(s -> resourceUrl.getPath().equals(s))) {
+
+        if (invalidFiles.stream().anyMatch(s -> resourceUrl.getPath().endsWith(s))) {
             log.info("This file is known as invalid.");
             return;
         }
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-        try (SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
-             OutputSink outputSink = new InMemoryOutputSink()) {
+        try (SingleInputSource singleInputSource = SingleInputSource.of(filePath, content)) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
             graphmlReader.errorHandler(contentErrors::add);
-            GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(new XmlWriterImpl(outputSink)));
+            GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(Xml2AppendableWriter.createNoop()));
             graphmlReader.read(singleInputSource, gioWriter);
             assertEquals(0, contentErrors.stream().count());
         }
@@ -97,9 +95,10 @@ class GraphmlReaderContentErrorTest {
 
     @BeforeEach
     void setUp() {
-        invalidFiles.add(Paths.get("target", "test-classes", "graphin", "graphml", "synthetic", "invalid-root.graphml").toUri().getPath());
-        invalidFiles.add(Paths.get("target", "test-classes", "graphin", "graphml", "samples", "haitimap2.graphml").toUri().getPath());
-        invalidFiles.add(Paths.get("target", "test-classes", "graphin", "graphml", "samples", "greek2.graphml").toUri().getPath());
+        // /Users/maxvolkel/_data_/_git/GitHubOld/graphinout/base/target/test-classes/xml/graphml/synthetic/invalid-root.graphml
+        invalidFiles.add("graphml/synthetic/invalid-root.graphml");
+        invalidFiles.add("graphml/samples/invalid-haitimap2.graphml");
+        invalidFiles.add("graphml/samples/invalid-greek2.graphml");
     }
 
 

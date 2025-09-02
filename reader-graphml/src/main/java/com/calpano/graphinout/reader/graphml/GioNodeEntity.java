@@ -2,6 +2,7 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioElementWithDescription;
 import com.calpano.graphinout.base.gio.GioNode;
+import com.calpano.graphinout.base.graphml.GraphmlElements;
 
 public class GioNodeEntity extends AbstractGraphmlEntity<GioNode> implements GraphmlEntity<GioNode> {
 

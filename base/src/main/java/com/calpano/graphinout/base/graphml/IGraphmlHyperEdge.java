@@ -1,30 +1,26 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.impl.GraphmlHyperEdge;
+import com.calpano.graphinout.base.graphml.builder.GraphmlHyperEdgeBuilder;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
-public interface IGraphmlHyperEdge extends IGraphmlWithDescElement, IXmlElement {
+public interface IGraphmlHyperEdge extends IGraphmlElementWithDescAndId {
 
-    String TAGNAME = "hyperedge";
-
-    static GraphmlHyperEdge.GraphmlHyperEdgeBuilder builder(String id) {
-        return new GraphmlHyperEdge.GraphmlHyperEdgeBuilder(id);
+    static GraphmlHyperEdgeBuilder builder() {
+        return new GraphmlHyperEdgeBuilder();
     }
-
-    @Override
-    LinkedHashMap<String, String> attributes();
-
-    @Override
-    String tagName();
-
-    @Override
-    Set<String> builtInAttributeNames();
 
     List<IGraphmlEndpoint> endpoints();
 
-    String id();
+    default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
+        name_value.accept(ATTRIBUTE_ID, this::id);
+    }
+
+    @Override
+    default String tagName() {
+        return GraphmlElements.HYPER_EDGE;
+    }
 
 }

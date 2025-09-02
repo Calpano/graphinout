@@ -14,7 +14,7 @@ public abstract class GioElementWithDescription extends GioElement {
      */
     protected @Nullable String description;
 
-    // Constructors
+
     public GioElementWithDescription() {
         super();
     }
@@ -33,7 +33,7 @@ public abstract class GioElementWithDescription extends GioElement {
         return Optional.ofNullable(description);
     }
 
-    // equals, hashCode, toString
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -43,7 +43,7 @@ public abstract class GioElementWithDescription extends GioElement {
         return Objects.equals(description, that.description);
     }
 
-    // Getters and Setters
+
     public @Nullable String getDescription() {
         return description;
     }

@@ -18,7 +18,7 @@
         "currency": "USD",
         "inStock": true,
         "description": "A classic American novel about the Jazz Age.",
-        "tags": ["classic", "american", "jazz age"]
+        "tags": [ "classic", "american", "jazz age" ]
       },
       {
         "id": 2,
@@ -30,7 +30,7 @@
         "currency": "USD",
         "inStock": false,
         "description": "An exploration of cosmology and physics.",
-        "tags": ["science", "physics", "cosmology"]
+        "tags": [ "science", "physics", "cosmology" ]
       },
       {
         "id": 3,
@@ -42,7 +42,7 @@
         "currency": "USD",
         "inStock": true,
         "description": "A handbook of agile software craftsmanship.",
-        "tags": ["programming", "software", "best practices"]
+        "tags": [ "programming", "software", "best practices" ]
       }
     ],
     "metadata": {

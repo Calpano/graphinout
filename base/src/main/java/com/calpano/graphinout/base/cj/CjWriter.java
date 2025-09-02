@@ -53,7 +53,9 @@ import com.calpano.graphinout.foundation.json.JsonWriter;
 public interface CjWriter extends JsonWriter {
 
     default void rawXmlStart() {}
+
     default void rawXmlEnd() {}
+
     default void rawXmlCharacters(String rawXml) {}
 
     /** Graph base uri */
@@ -181,6 +183,7 @@ public interface CjWriter extends JsonWriter {
     void value(String value);
 
     void metaStart();
+
     void metaEnd();
 
 }

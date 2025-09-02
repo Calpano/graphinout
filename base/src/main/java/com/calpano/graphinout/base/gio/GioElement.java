@@ -28,7 +28,7 @@ public abstract class GioElement {
         customAttributes.put(attributeName, attributeValue);
     }
 
-    // equals, hashCode, toString
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -37,7 +37,7 @@ public abstract class GioElement {
         return Objects.equals(customAttributes, that.customAttributes);
     }
 
-    // Getters and Setters
+
     public @Nullable Map<String, String> getCustomAttributes() {
         return customAttributes;
     }

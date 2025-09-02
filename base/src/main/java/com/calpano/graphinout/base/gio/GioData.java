@@ -44,6 +44,7 @@ public class GioData extends GioElement {
         }
 
     }
+
     /**
      * This is an attribute that can be empty or null.
      * </p>
@@ -61,7 +62,7 @@ public class GioData extends GioElement {
      */
     private String key;
 
-    // Constructors
+
     public GioData() {
         super();
     }
@@ -73,12 +74,12 @@ public class GioData extends GioElement {
         this.key = key;
     }
 
-    // Builder
+
     public static GioDataBuilder builder() {
         return new GioDataBuilder();
     }
 
-    // equals, hashCode, toString
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -90,7 +91,7 @@ public class GioData extends GioElement {
                 Objects.equals(key, gioData.key);
     }
 
-    // Getters and Setters
+
     public @Nullable String getId() {
         return id;
     }

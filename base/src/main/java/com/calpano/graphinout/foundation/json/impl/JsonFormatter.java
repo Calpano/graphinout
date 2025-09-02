@@ -50,7 +50,7 @@ public class JsonFormatter {
                 } else {
                     // just append
                     line.append(c);
-                    if(c==':') {
+                    if (c == ':') {
                         line.append("\n");
                         wrapped.append(line);
                         line = new StringBuilder();

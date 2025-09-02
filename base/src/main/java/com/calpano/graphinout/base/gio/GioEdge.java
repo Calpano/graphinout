@@ -72,6 +72,7 @@ public class GioEdge extends GioElementWithDescription {
         }
 
     }
+
     /**
      * This is an attribute that can be empty or null.
      * </p>
@@ -83,7 +84,7 @@ public class GioEdge extends GioElementWithDescription {
      */
     private List<GioEndpoint> endpoints;
 
-    // Constructors
+
     public GioEdge() {
         super();
     }
@@ -101,7 +102,7 @@ public class GioEdge extends GioElementWithDescription {
         this.endpoints = endpoints;
     }
 
-    // Builder
+
     public static GioEdgeBuilder builder() {
         return new GioEdgeBuilder();
     }
@@ -114,7 +115,7 @@ public class GioEdge extends GioElementWithDescription {
         endpoints.add(gioEndpoint);
     }
 
-    // equals, hashCode, toString
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -129,7 +130,7 @@ public class GioEdge extends GioElementWithDescription {
         return endpoints;
     }
 
-    // Getters and Setters
+
     public String getId() {
         return id;
     }

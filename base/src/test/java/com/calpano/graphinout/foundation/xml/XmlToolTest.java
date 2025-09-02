@@ -1,6 +1,8 @@
 package com.calpano.graphinout.foundation.xml;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -82,9 +84,63 @@ public class XmlToolTest {
                 <root z="3" a="1" b="2">
                   <child>content</child>
                 </root>""";
-        String expect = "<root a=\"1\" b=\"2\" z=\"3\"><child>content</child></root>";
+        String expect = XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n" + "<root a=\"1\" b=\"2\" z=\"3\"><child>content</child></root>";
         String result = XmlFormatter.normalize(input);
         assertThat(result).isEqualTo(expect);
     }
+
+    @Test
+    void testEncode() {
+        String in = """
+                M&amp;X xml
+                M&fake;X fake
+                M&Eacute;X html""";
+        assertThat(XmlTool.xmlEncode(in)).isEqualTo("""
+                M&amp;X xml
+                M&fake;X fake
+                M&Eacute;X html""");
+        // decode would process "&amp" to "&"
+        assertThat(XmlTool.xmlEncode(in)).isEqualTo(in);
+    }
+
+    @Test
+    void testEncodeXml() {
+        String in = """
+                <data key="d1">M&amp;X</data>
+                <data key="d2">M&amp;quot;X</data>
+                <data key="d3">M&amp;Eacute;XICO#MEXICO</data>
+                """;
+        assertThat(XmlTool.xmlEncode(in)).isEqualTo("""
+                &lt;data key="d1"&gt;M&amp;X&lt;/data&gt;
+                &lt;data key="d2"&gt;M&amp;quot;X&lt;/data&gt;
+                &lt;data key="d3"&gt;M&amp;Eacute;XICO#MEXICO&lt;/data&gt;
+                """);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"&0;"})
+    void testNegPatterns(String neg) {
+        assertThat(XmlTool.P_REF.matcher(neg).matches()).isFalse();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"&amp;", "&quot;", "&apos;", "&lt;", "&gt;", "&fake;"})
+    void testPosPatterns(String pos) {
+        assertThat(XmlTool.P_REF.matcher(pos).matches()).isTrue();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"&amp;", "&quot;", "&apos;", "&lt;", "&gt;"})
+    void testXmlPatterns(String pos) {
+        assertThat(XmlTool.P_ENTITYREF.matcher(pos).matches()).isTrue();
+    }
+
+    @Test
+    void testCharRef() {
+        String in = "b1b2b3b4b5b6b7b8b9&#13;";
+        String out = XmlTool.xmlEncode(in);
+        assertThat(out).isEqualTo(in);
+    }
+
 
 }

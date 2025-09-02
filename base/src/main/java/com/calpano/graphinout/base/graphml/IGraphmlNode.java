@@ -1,24 +1,34 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.impl.GraphmlNode;
+import com.calpano.graphinout.base.graphml.builder.GraphmlNodeBuilder;
 
-import java.util.Set;
+import javax.annotation.Nullable;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
-public interface IGraphmlNode extends IGraphmlWithDescElement {
+public interface IGraphmlNode extends IGraphmlElementWithDescAndId {
 
-    static GraphmlNode.GraphmlNodeBuilder builder() {
-        return new GraphmlNode.GraphmlNodeBuilder();
+    static GraphmlNodeBuilder builder() {
+        return new GraphmlNodeBuilder();
     }
 
-    String id();
+    static IGraphmlNode of(String id) {
+        return builder().id(id).build();
+    }
+
+    /**
+     * @param name_value (name, Supplier(@Nullable value))
+     */
+    default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
+        name_value.accept(ATTRIBUTE_ID, this::id);
+    }
+
+    @Nullable
     IGraphmlLocator locator();
-
-    default Set<String> builtInAttributes() {
-        return Set.of(ATTRIBUTE_ID);
-    }
 
     @Override
     default String tagName() {
         return "node";
     }
+
 }

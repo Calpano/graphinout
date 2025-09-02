@@ -1,8 +1,7 @@
 package com.calpano.graphinout.foundation.xml;
 
-import com.calpano.graphinout.base.GioGraphInOutXMLConstants;
+import com.calpano.graphinout.base.graphml.GraphmlElements;
 import com.calpano.graphinout.foundation.output.FileOutputSink;
-import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +16,6 @@ import static java.util.Objects.requireNonNull;
 
 class XmlWriterTest {
 
-
     private final static String FILE_NAME = "test_graph_output.xml";
 
     @BeforeEach
@@ -28,15 +26,16 @@ class XmlWriterTest {
 
     @Test
     void test() throws IOException {
-        InMemoryOutputSink sink = InMemoryOutputSink.create();
-        XmlWriterImpl xmlWriter = new XmlWriterImpl(sink);
-        xmlWriter.startDocument();
-        xmlWriter.startElement("test");
+        Xml2StringWriter xmlWriter = new Xml2StringWriter();
+        xmlWriter.documentStart();
+        xmlWriter.elementStart("test");
+        xmlWriter.characterDataStart(false);
         xmlWriter.characterData("test", false);
-        xmlWriter.endElement("test");
-        xmlWriter.endDocument();
-        String s = sink.getBufferAsUtf8String();
-        assertThat(s).isEqualTo("<test>test</test>\n");
+        xmlWriter.characterDataEnd(false);
+        xmlWriter.elementEnd("test");
+        xmlWriter.documentEnd();
+        String s = xmlWriter.string();
+        assertThat(s).isEqualTo(XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n" + "<test>test</test>");
     }
 
     @Test
@@ -45,14 +44,14 @@ class XmlWriterTest {
         String chars = "AAA <![CDATA[BBB]]>CCC<![CDATA[DDD < & > EEE]]>FFF";
         String xml = "<root>" + chars + "</root>";
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        xmlWriter.startDocument();
-        xmlWriter.startElement("root");
+        xmlWriter.documentStart();
+        xmlWriter.elementStart("root");
         xmlWriter.characterDataWhichMayContainCdata(chars);
-        xmlWriter.endElement("root");
-        xmlWriter.endDocument();
+        xmlWriter.elementEnd("root");
+        xmlWriter.documentEnd();
 
         String out = xmlWriter.string();
-        assertThat(out).isEqualTo(xml);
+        assertThat(out).isEqualTo(XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n" + xml);
     }
 
     @Test
@@ -78,31 +77,31 @@ class XmlWriterTest {
         testEdgeMap.put("kc", "10");
 
         File file = new File("./target/" + FILE_NAME);
-        XmlWriterImpl instance = new XmlWriterImpl(new FileOutputSink(file));
-        instance.startDocument();
+        XmlWriterImpl instance = XmlWriterImpl.create(new FileOutputSink(file));
+        instance.documentStart();
 
 
-        instance.startElement(GioGraphInOutXMLConstants.GRAPHML);
-        instance.startElement(GioGraphInOutXMLConstants.GRAPH, testGraphMap);
+        instance.elementStart(GraphmlElements.GRAPHML);
+        instance.elementStart(GraphmlElements.GRAPH, testGraphMap);
 
-        instance.startElement(GioGraphInOutXMLConstants.NODE, testNode1Map);
-        instance.endElement(GioGraphInOutXMLConstants.NODE);
+        instance.elementStart(GraphmlElements.NODE, testNode1Map);
+        instance.elementEnd(GraphmlElements.NODE);
 
-        instance.startElement(GioGraphInOutXMLConstants.EDGE, testEdgeMap);
-        instance.endElement(GioGraphInOutXMLConstants.EDGE);
+        instance.elementStart(GraphmlElements.EDGE, testEdgeMap);
+        instance.elementEnd(GraphmlElements.EDGE);
 
-        instance.startElement(GioGraphInOutXMLConstants.NODE, testNode2Map);
-        instance.endElement(GioGraphInOutXMLConstants.NODE);
+        instance.elementStart(GraphmlElements.NODE, testNode2Map);
+        instance.elementEnd(GraphmlElements.NODE);
 
-        instance.startElement(GioGraphInOutXMLConstants.HYPER_EDGE, testNode2Map);
-        instance.startElement(GioGraphInOutXMLConstants.ENDPOINT, testNode2Map);
-        instance.endElement(GioGraphInOutXMLConstants.ENDPOINT);
-        instance.endElement(GioGraphInOutXMLConstants.HYPER_EDGE);
+        instance.elementStart(GraphmlElements.HYPER_EDGE, testNode2Map);
+        instance.elementStart(GraphmlElements.ENDPOINT, testNode2Map);
+        instance.elementEnd(GraphmlElements.ENDPOINT);
+        instance.elementEnd(GraphmlElements.HYPER_EDGE);
 
-        instance.endElement(GioGraphInOutXMLConstants.GRAPH);
-        instance.endElement(GioGraphInOutXMLConstants.GRAPHML);
+        instance.elementEnd(GraphmlElements.GRAPH);
+        instance.elementEnd(GraphmlElements.GRAPHML);
 
-        instance.endDocument();
+        instance.documentEnd();
     }
 
 }

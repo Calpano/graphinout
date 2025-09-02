@@ -44,62 +44,225 @@ graphml
         locator
 ----
 
+.Content can appear in
+- desc
+- data
+- default
+
+.Elements with nested elements
+- graph
+** desc
+** data
+** node
+** edge
+- node
+** desc
+** data
+** port
+- port
+
+- edge
+** desc
+** data
+- hyperedge
+** desc
+** data
+- key
+** default
+
 .GraphML Types
+
 [plantuml]
 ....
 hide empty members
 hide circle
 
-class Document
-class Graph
-class Node {
+abstract class GraphmlElement {
+    custom attributes
+}
+abstract class HasId {
     id
 }
-class Edge
-class Port
-class Key
+' Desc
+HasDesc *--[#red] Desc
+abstract class HasDesc {
+    desc
+}
+abstract class HasDescAndId
+HasDesc <|-- HasDescAndId
+HasId <|-- HasDescAndId
+GraphmlElement <|-- HasDesc
+GraphmlElement <|-- HasId
+GraphmlElement <|-- Locator
+GraphmlElement <|-- Desc
+GraphmlElement <|-- Default
+
+
+class Document
+class Graph {
+    edgedefault : enum
+}
+class Node {
+}
+class Edge {
+    source
+    target
+    sourceport
+    targetport
+    directed : bool
+}
+class Port {
+    name
+}
+class Key {
+    for : enum
+}
+class Locator {
+    xlink:href
+}
+class Data {
+    key
+}
 class Data
 class Default
 class Desc
-class Endpoint
-class Hyperedge
+class Endpoint {
+    node
+    port
+    type : enum
+}
+class Hyperedge {
+}
 class Locator
-Document -- Graph
-Graph -- Node
-Graph -- Edge
-Graph -- Hyperedge
-Node -- Port
-Document -- Key
-Key -- Default
-Hyperedge -- Endpoint
-Graph --u Locator
 
-' Desc
-Document *-- Desc
-Graph *-- Desc
-Node *-- Desc
-Edge *-- Desc
-Hyperedge *-- Desc
-Endpoint *-- Desc
-Port *-- Desc
+Document *--[#red] Graph
+Graph *--[#red] Node
+Graph *--[#red] Edge
+Graph *--[#red] Hyperedge
+Node *--[#red] Port
+Document *--[#red] Key
+Key *--[#red] Default
+Hyperedge *--[#red] Endpoint
+Graph *--u[#red] Locator
+
+Document --u|> HasDesc
+Graph --u|> HasDescAndId
+Node --u|> HasDescAndId
+Edge --u|> HasDescAndId
+Hyperedge --u|> HasDescAndId
+Endpoint --u|> HasDescAndId
+Port --u|> HasDesc
+
+HasDescAndId <|-- Key
+HasId <|-- Data
 
 ' Data
-Graph *-- Data
-Node *-- Data
-Edge *-- Data
-Hyperedge *-- Data
-Port *-- Data
-Edge ..> Node
-Edge ..> Port
-Endpoint ..> Node
-Endpoint ..> Port
+Graph *--[#red] Data
+Node *--[#red] Data
+Edge *--[#red] Data
+Hyperedge *--[#red] Data
+Port *--[#red] Data
+Edge ..[#red]> Node
+Edge ..[#red]> Port
+Endpoint ..[#red]> Node
+Endpoint ..[#red]> Port
 
 'Nesting
-Edge --> Graph
-Hyperedge --> Graph
-Node --> Graph
-Port --> Port
-
-@enduml
-
+Edge --[#blue]> Graph
+Hyperedge --[#blue]> Graph
+Node --[#blue]> Graph
+Port --[#blue]> Port
 ....
+
+== DTD
+
+----
+<!-- ====================================================================== -->
+<!-- file: graphml.dtd ======================================================
+
+  This is the Document Type Definition for the release candidate of
+  GraphML version 1.0 and represents a (necessarily) looser specification
+  than the corresponding XML Schema.  It's use is discouraged, though it
+  may be necessary for some systems.
+
+  Usage:
+
+            SYSTEM "http://graphml.graphdrawing.org/dtds/1.0rc/graphml.dtd"
+
+            xmlns="http://graphml.graphdrawing.org/xmlns/1.0rc"
+
+    ====================================================================== -->
+
+<!--Parameter entity for data content -->
+<!ELEMENT data  %GRAPHML.data.content;>
+<!ATTLIST data
+    key            IDREF   #REQUIRED
+    id             ID      #IMPLIED
+>
+
+<!ELEMENT default  %GRAPHML.data.content;>
+<!ATTLIST default>
+
+<!ELEMENT key (desc?,default?)>
+<!ATTLIST key
+    id  ID       #REQUIRED
+    for (graph|node|edge|hyperedge|port|endpoint|all) "all"
+>
+
+<!ELEMENT graphml  (desc?,key*,(data|graph)*)>
+<!ATTLIST graphml>
+
+<!ELEMENT graph    (desc?,(((data|node|edge|hyperedge)*)|locator))>
+<!ATTLIST graph
+    id       ID           #IMPLIED
+    edgedefault (directed|undirected) #REQUIRED
+>
+
+<!ELEMENT node   (desc?,((((data|port)*,graph?))|locator))>
+<!ATTLIST node
+    id        ID      #REQUIRED
+>
+
+<!ELEMENT port (desc?,(data|port)*)>
+<!ATTLIST port
+               name    NMTOKEN  #REQUIRED
+>
+
+<!ELEMENT edge (desc?,data*,graph?)>
+<!ATTLIST edge
+    id         ID           #IMPLIED
+    source     IDREF        #REQUIRED
+    sourceport NMTOKEN      #IMPLIED
+    target     IDREF        #REQUIRED
+    targetport NMTOKEN      #IMPLIED
+    directed   (true|false) #IMPLIED
+>
+
+
+<!ELEMENT hyperedge  (desc?,(data|endpoint)*,graph?)>
+<!ATTLIST hyperedge
+    id     ID      #IMPLIED
+>
+
+<!ELEMENT endpoint (desc?)>
+<!ATTLIST endpoint
+    id    ID       #IMPLIED
+    node  IDREF    #REQUIRED
+    port  NMTOKEN  #IMPLIED
+    type  (in|out|undir) "undir"
+>
+
+<!ELEMENT locator EMPTY>
+<!ATTLIST locator
+    xmlns:xlink   CDATA   #FIXED  "http://www.w3.org/TR/2000/PR-xlink-20001220/"
+    xlink:href     CDATA    #REQUIRED
+    xlink:type     (simple) #FIXED    "simple"
+>
+
+<!ELEMENT desc (#PCDATA)>
+<!ATTLIST desc>
+----
+
+
+
+

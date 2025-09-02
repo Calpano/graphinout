@@ -10,13 +10,13 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.calpano.graphinout.base.cj.CjConstants.DATA;
+import static com.calpano.graphinout.base.cj.CjConstants.EDGE_OR_ENDPOINT__TYPE;
+import static com.calpano.graphinout.base.cj.CjConstants.EDGE_OR_ENDPOINT__TYPE_NODE;
+import static com.calpano.graphinout.base.cj.CjConstants.EDGE_OR_ENDPOINT__TYPE_URI;
 import static com.calpano.graphinout.base.cj.CjConstants.EDGE__ENDPOINTS;
 import static com.calpano.graphinout.base.cj.CjConstants.ENDPOINT__DIRECTION;
 import static com.calpano.graphinout.base.cj.CjConstants.ENDPOINT__NODE;
 import static com.calpano.graphinout.base.cj.CjConstants.ENDPOINT__PORT;
-import static com.calpano.graphinout.base.cj.CjConstants.EDGE_OR_ENDPOINT__TYPE;
-import static com.calpano.graphinout.base.cj.CjConstants.EDGE_OR_ENDPOINT__TYPE_NODE;
-import static com.calpano.graphinout.base.cj.CjConstants.EDGE_OR_ENDPOINT__TYPE_URI;
 import static com.calpano.graphinout.base.cj.CjConstants.GRAPHS;
 import static com.calpano.graphinout.base.cj.CjConstants.GRAPH__EDGES;
 import static com.calpano.graphinout.base.cj.CjConstants.GRAPH__META;

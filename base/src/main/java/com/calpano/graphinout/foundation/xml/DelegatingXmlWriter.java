@@ -1,6 +1,7 @@
 package com.calpano.graphinout.foundation.xml;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -25,9 +26,21 @@ public class DelegatingXmlWriter implements XmlWriter {
 
     }
 
-    private final List<XmlWriter> writers;
+    protected final List<XmlWriter> writers = new ArrayList<>();
 
-    public DelegatingXmlWriter(XmlWriter... writers) {this.writers = List.of(writers);}
+    public DelegatingXmlWriter(XmlWriter... writers) {this.writers.addAll(List.of(writers));}
+
+    public void addWriter(XmlWriter writer) {writers.add(writer);}
+
+    @Override
+    public void cdataEnd() throws IOException {
+        forEachWriter(XmlWriter::cdataEnd);
+    }
+
+    @Override
+    public void cdataStart() throws IOException {
+        forEachWriter(XmlWriter::cdataStart);
+    }
 
     @Override
     public void characterData(String characterData, boolean isInCdata) throws IOException {
@@ -35,18 +48,33 @@ public class DelegatingXmlWriter implements XmlWriter {
     }
 
     @Override
-    public void endCDATA() throws IOException {
-        forEachWriter(XmlWriter::endCDATA);
+    public void characterDataEnd(boolean isInCdata) throws IOException {
+        forEachWriter(w -> w.characterDataEnd(isInCdata));
     }
 
     @Override
-    public void endDocument() throws IOException {
-        forEachWriter(XmlWriter::endDocument);
+    public void characterDataStart(boolean isInCdata) throws IOException {
+        forEachWriter(w -> w.characterDataStart(isInCdata));
     }
 
     @Override
-    public void endElement(String name) throws IOException {
-        forEachWriter(w -> w.endElement(name));
+    public void documentEnd() throws IOException {
+        forEachWriter(XmlWriter::documentEnd);
+    }
+
+    @Override
+    public void documentStart() throws IOException {
+        forEachWriter(XmlWriter::documentStart);
+    }
+
+    @Override
+    public void elementEnd(String name) throws IOException {
+        forEachWriter(w -> w.elementEnd(name));
+    }
+
+    @Override
+    public void elementStart(String name, Map<String, String> attributes) throws IOException {
+        forEachWriter(w -> w.elementStart(name, attributes));
     }
 
     @Override
@@ -57,21 +85,6 @@ public class DelegatingXmlWriter implements XmlWriter {
     @Override
     public void raw(String rawXml) {
         forEachWriter(w -> w.raw(rawXml));
-    }
-
-    @Override
-    public void startCDATA() throws IOException {
-        forEachWriter(XmlWriter::startCDATA);
-    }
-
-    @Override
-    public void startDocument() throws IOException {
-        forEachWriter(XmlWriter::startDocument);
-    }
-
-    @Override
-    public void startElement(String name, Map<String, String> attributes) throws IOException {
-        forEachWriter(w -> w.startElement(name, attributes));
     }
 
     private void forEachWriter(XmlWriterConsumer consumer) {

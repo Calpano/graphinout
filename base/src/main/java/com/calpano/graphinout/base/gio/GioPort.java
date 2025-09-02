@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.base.graphml.IGraphmlPort;
+
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
@@ -48,6 +50,7 @@ public class GioPort extends GioElementWithDescription {
         }
 
     }
+
     /**
      * This is an attribute that mandatory.
      * </p>
@@ -55,7 +58,7 @@ public class GioPort extends GioElementWithDescription {
      */
     private final String name;
 
-    // Constructors
+
     public GioPort(String name) {
         super();
         this.name = Objects.requireNonNull(name, "name cannot be null");
@@ -66,12 +69,12 @@ public class GioPort extends GioElementWithDescription {
         this.name = Objects.requireNonNull(name, "name cannot be null");
     }
 
-    // Builder
+
     public static GioPortBuilder builder() {
         return new GioPortBuilder();
     }
 
-    // equals, hashCode, toString
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,6 +92,10 @@ public class GioPort extends GioElementWithDescription {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), name);
+    }
+
+    public IGraphmlPort toGraphml() {
+        return IGraphmlPort.builder().attributes(getCustomAttributes()).name(name).build();
     }
 
     @Override

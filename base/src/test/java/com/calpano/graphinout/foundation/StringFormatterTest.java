@@ -9,7 +9,7 @@ class StringFormatterTest {
     @Test
     void test() {
         String ten = "0123456789";
-        String actual = StringFormatter.wrapped(ten, 5);
+        String actual = StringFormatter.wrap(ten, 5);
         assertThat(actual).isEqualTo("01234\n56789");
     }
 

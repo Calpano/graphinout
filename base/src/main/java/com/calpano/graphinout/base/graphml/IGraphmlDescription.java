@@ -1,27 +1,32 @@
 package com.calpano.graphinout.base.graphml;
 
-import com.calpano.graphinout.base.graphml.impl.GraphmlDescription;
+import com.calpano.graphinout.base.graphml.builder.GraphmlDescriptionBuilder;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
-public interface IGraphmlDescription extends IXmlElement {
+public interface IGraphmlDescription extends IGraphmlElement {
 
-    static GraphmlDescription.GraphmlDescriptionBuilder builder() {
-        return new GraphmlDescription.GraphmlDescriptionBuilder();
+    static GraphmlDescriptionBuilder builder() {
+        return new GraphmlDescriptionBuilder();
     }
 
-    String value();
+    default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
+    }
 
-    default Set<String> builtInAttributes() {
+    default Set<String> graphmlAttributeNames() {
         return Set.of();
     }
 
     @Override
     default String tagName() {
-        return "desc";
+        return GraphmlElements.DESC;
     }
+
+    String value();
 
     void writeXml(XmlWriter xmlWriter) throws IOException;
 

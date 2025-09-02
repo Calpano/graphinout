@@ -1,6 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioPort;
+import com.calpano.graphinout.base.graphml.GraphmlElements;
 
 public class GioPortEntity extends AbstractGraphmlEntity<GioPort> implements GraphmlEntity<GioPort> {
 
