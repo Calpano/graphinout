@@ -1,4 +1,4 @@
-<configuration debug="true">
+<configuration debug="false">
     <!-- debug="true" helps to debug logback -->
     <!-- scan="true" is fun to reload changes every minute -->
     <!-- packagingData="true" - shows where classes were loaded from -->
