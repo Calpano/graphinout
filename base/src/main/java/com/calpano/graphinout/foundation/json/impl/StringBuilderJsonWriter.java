@@ -9,7 +9,7 @@ public class StringBuilderJsonWriter extends AppendableJsonWriter implements Jso
 
 
     public StringBuilderJsonWriter(boolean preserveWhitespace) {
-        super(new StringBuilder(), preserveWhitespace);
+        super(new StringBuilder());
     }
 
     public String json() {

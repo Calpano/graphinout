@@ -17,11 +17,9 @@ public abstract class AppendableJsonWriter implements JsonWriter {
 
     private final Appendable appendable;
     private final Stack<State> stack = new Stack<>();
-    private final boolean preserveWhitespace;
 
-    public AppendableJsonWriter(Appendable appendable, boolean preserveWhitespace) {
+    public AppendableJsonWriter(Appendable appendable) {
         this.appendable = appendable;
-        this.preserveWhitespace = preserveWhitespace;
     }
 
     public Appendable appendable() {
@@ -123,17 +121,21 @@ public abstract class AppendableJsonWriter implements JsonWriter {
         append("null");
     }
 
-    public void reset() {
-        stack.clear();
-    }
-
     // IMPROVE is this a simplistic/wrong approach to escaping?
     @Override
     public void onString(String s) throws JsonException {
+        maybeDelimiter();
+        append("\"");
+        // JSON-escape quote symbols
         append(s //
                 .replace("\\", "\\\\") //
                 .replace("\"", "\\\"") //
         );
+        append("\"");
+    }
+
+    public void reset() {
+        stack.clear();
     }
 
     private void append(String s) {
@@ -154,14 +156,15 @@ public abstract class AppendableJsonWriter implements JsonWriter {
 
     private void maybeDelimiter() {
         if (stack.isEmpty()) return;
-        if (stack.peek() == State.Property) {
-            // no delimiter
-            stack.pop();
-        } else if (stack.peek() == State.First) {
-            stack.pop();
-            stack.push(State.Later);
-        } else {
-            append(',');
+        switch (stack.peek()) {
+            case Property ->
+                // no delimiter
+                    stack.pop();
+            case First -> {
+                stack.pop();
+                stack.push(State.Later);
+            }
+            case null, default -> append(',');
         }
     }
 

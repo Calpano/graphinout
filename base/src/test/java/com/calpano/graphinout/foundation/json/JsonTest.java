@@ -8,6 +8,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -19,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * For a set of JSON test files, read into string, create {@link InputSource} on it, setup JsonReader impl, let it read
@@ -33,14 +37,6 @@ public class JsonTest {
     void setUp() {
         jsonReader = new JsonReaderImpl();
         testResourcesPath = Paths.get("src/test/resources/json");
-    }
-
-    @Test
-    @DisplayName("Test all JSON files together")
-    void testAllJsonFiles() throws IOException {
-        testJsonFile("minimal.json");
-        testJsonFile("typical.json");
-        testJsonFile("complex.json");
     }
 
     @Test
@@ -88,6 +84,13 @@ public class JsonTest {
         assertTrue(processed.contains("nested"));
     }
 
+    @ParameterizedTest
+    @DisplayName("Test all JSON files together")
+    @ValueSource(strings = {"minimal.json", "typical.json", "complex.json"})
+    void testJsonFiles(String filename) throws IOException {
+        testJsonFile(filename);
+    }
+
     @Test
     @DisplayName("Test JSON roundtrip preserves semantic structure")
     void testJsonRoundtripSemantics() throws IOException {
@@ -128,8 +131,13 @@ public class JsonTest {
 
             // Return the processed JSON string
             return writer.json();
+        } catch (Throwable t) {
+            log.warn("Failed to read \"\"\"\n"+jsonContent+"\n\"\"\"");
+            throw t;
         }
     }
+
+    private static final Logger log = getLogger(JsonTest.class);
 
     private String readJsonFile(String filename) throws IOException {
         Path filePath = testResourcesPath.resolve(filename);

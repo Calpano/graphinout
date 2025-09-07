@@ -53,7 +53,6 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     private Boolean inCharacters = null;
 
-    // FIXME use
     private void maybeEndCharacterData(boolean isInCdata) throws IOException {
         if (inCharacters != null && inCharacters == isInCdata) {
             xmlWriter.characterDataEnd(isInCdata);
@@ -83,7 +82,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     public void comment(char[] ch, int start, int length) throws SAXException {
         try {
             maybeEndCharacterData(isInCdata);
-            // no comments
+            // no comments: we drop them.
         } catch (IOException e) {
             throw new SAXException(e);
         }
