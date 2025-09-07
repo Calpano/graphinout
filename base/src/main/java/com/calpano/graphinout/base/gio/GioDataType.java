@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
 /**
- * Data types for {@link GioData} values, define in corresponding {@link GioKey}.
+ * Data types for {@link GioData} values, defined in corresponding {@link GioKey}.
  */
 public enum GioDataType {
 

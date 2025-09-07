@@ -1,7 +1,7 @@
 package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.json.JsonException;
-import com.calpano.graphinout.foundation.json.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -105,30 +105,11 @@ public class ValidatingJsonWriter implements JsonWriter {
     }
 
     @Override
-    public void stringCharacters(String s) throws JsonException {
+    public void onString(String s) throws JsonException {
         Container top = stack.peek();
         if (top != Container.String) {
             throw new IllegalStateException("Expected string start on stack, but found " + top);
         }
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-        Container top = stack.pop();
-        if (top != Container.String) {
-            throw new IllegalStateException("Expected string start on stack, but found " + top);
-        }
-    }
-
-    @Override
-    public void stringStart() throws JsonException {
-        ensureValue();
-        stack.push(Container.String);
-    }
-
-    @Override
-    public void whitespaceCharacters(String s) throws JsonException {
-        // legal at any point
     }
 
     private void ensureValue() {

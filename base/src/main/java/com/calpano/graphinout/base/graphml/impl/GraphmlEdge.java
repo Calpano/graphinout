@@ -26,15 +26,15 @@ import java.util.Objects;
  * @see GraphmlHyperEdge {@link GraphmlHyperEdge}
  *
  * <pre>
- *     <!ELEMENT edge (desc?,data*,graph?)>
- * <!ATTLIST edge
+ *     &lt;!ELEMENT edge (desc?,data*,graph?)&gt;
+ * &lt;!ATTLIST edge
  *           id         ID           #IMPLIED
  *           source     IDREF        #REQUIRED
  *           sourceport NMTOKEN      #IMPLIED
  *           target     IDREF        #REQUIRED
  *           targetport NMTOKEN      #IMPLIED
  *           directed   (true|false) #IMPLIED
- * >
+ * &gt;
  * </pre>
  */
 
@@ -139,7 +139,7 @@ public class GraphmlEdge extends GraphmlElementWithDescAndId implements IGraphml
 
     @Override
     public String toString() {
-        return "GraphmlEdge{" + "id='" + id() + '\'' + ", directed=" + directed + ", sourceId='" + sourceId + '\'' + ", targetId='" + targetId + '\'' + ", sourcePortId='" + sourcePortId + '\'' + ", targetPortId='" + targetPortId + '\'' + ", desc=" + desc + ", custom=" + customXmlAttributes() + '}';
+        return "GraphmlEdge{" + "id='" + id() + "\''" + ", directed=" + directed + ", sourceId='" + sourceId + "\''" + ", targetId='" + targetId + "\''" + ", sourcePortId='" + sourcePortId + "\''" + ", targetPortId='" + targetPortId + "\''" + ", desc=" + desc + ", custom=" + customXmlAttributes() + '}';
     }
 
 }

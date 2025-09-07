@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.writer;
 
-import com.calpano.graphinout.foundation.json.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 
 public class NoopJsonWriter implements JsonWriter {
 
@@ -50,15 +50,6 @@ public class NoopJsonWriter implements JsonWriter {
     public void onNull() {}
 
     @Override
-    public void stringCharacters(String s) {}
-
-    @Override
-    public void stringEnd() {}
-
-    @Override
-    public void stringStart() {}
-
-    @Override
-    public void whitespaceCharacters(String s) {}
+    public void onString(String s) {}
 
 }

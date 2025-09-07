@@ -166,22 +166,7 @@ public class Gio2CjWriter implements GioWriter {
     }
 
     @Override
-    public void stringCharacters(String s) throws JsonException {
-
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-
-    }
-
-    @Override
-    public void stringStart() throws JsonException {
-
-    }
-
-    @Override
-    public void whitespaceCharacters(String s) throws JsonException {
+    public void onString(String s) throws JsonException {
 
     }
 

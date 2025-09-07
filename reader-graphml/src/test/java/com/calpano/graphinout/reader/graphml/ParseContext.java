@@ -39,14 +39,14 @@ class ParseContext {
     public ElementContext peek_(String... expectedNames) {
         ElementContext context = elementStack.peek();
         assert context != null;
-        assert expectedNames.length == 0 || Set.of(expectedNames).contains(context.elementName) : "Expected element '" + Set.of(expectedNames) + "' but got '" + context.elementName + "'";
+        assert expectedNames.length == 0 || Set.of(expectedNames).contains(context.xmlElementName) : "Expected element '" + Set.of(expectedNames) + "' but got '" + context.xmlElementName + "'";
         return context;
     }
 
     public ElementContext pop(String expectedName) {
         assert !elementStack.isEmpty() : "Element stack is empty at pop";
         ElementContext context = elementStack.pop();
-        assert context.elementName.equals(expectedName) : "Expected element '" + expectedName + "' but got '" + context.elementName + "'";
+        assert context.xmlElementName.equals(expectedName) : "Expected element '" + expectedName + "' but got '" + context.xmlElementName + "'";
         return context;
     }
 
@@ -62,7 +62,7 @@ class ParseContext {
         // dig in stack to find the parent Graph element
         for (int i = elementStack.size() - 1; i >= 0; i--) {
             ElementContext context = elementStack.get(i);
-            if (context.elementName.equals(GRAPH)) {
+            if (context.xmlElementName.equals(GRAPH)) {
                 return context.graphBuilder();
             }
         }

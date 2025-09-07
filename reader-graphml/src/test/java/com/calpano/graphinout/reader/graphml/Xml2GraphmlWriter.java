@@ -113,11 +113,11 @@ public class Xml2GraphmlWriter implements XmlWriter {
         if (characterBuffer.isEmpty()) return;
         if (elementStack.isInterpretedAsGraphml()) {
             ElementContext context = elementStack.peek_();
-            switch (context.elementName) {
+            switch (context.xmlElementName) {
                 case DATA -> context.dataBuilder().value(characterBuffer.getStringAndReset());
                 case DESC -> context.descBuilder().value(characterBuffer.getStringAndReset());
                 case DEFAULT -> context.defaultBuilder().value(characterBuffer.getStringAndReset());
-                default -> throw new IllegalStateException("Unknown element: " + context.elementName);
+                default -> throw new IllegalStateException("Unknown element: " + context.xmlElementName);
             }
         } else {
             characterBuffer.characterDataEnd(isInCdata);
@@ -166,7 +166,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
 
                     ElementContext parent = elementStack.peekNullable();
                     if (parent != null) {
-                        if (!parent.isRawXml && parent.elementName.equals(DATA)) {
+                        if (!parent.isRawXml && parent.xmlElementName.equals(DATA)) {
                             parent.dataBuilder().containsRawXml(true);
                         }
                     } else {
@@ -265,7 +265,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
         ElementContext parent = elementStack.peek_();
         String descValue = characterBuffer.getStringAndReset();
         GraphmlDescription desc = IGraphmlDescription.builder().value(descValue).build();
-        switch (parent.elementName) {
+        switch (parent.xmlElementName) {
             case GRAPHML -> parent.documentBuilder().desc(desc);
             case GRAPH -> parent.graphBuilder().desc(desc);
             case NODE -> parent.nodeBuilder().desc(desc);
@@ -341,7 +341,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
     private boolean isContentElement() {
         ElementContext context = elementStack.peekNullable();
         if (context == null) return false;
-        return switch (context.elementName) {
+        return switch (context.xmlElementName) {
             case DATA, DESC, DEFAULT -> true;
             default -> false;
         };

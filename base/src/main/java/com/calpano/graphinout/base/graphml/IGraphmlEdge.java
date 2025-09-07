@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import static com.calpano.graphinout.foundation.StringFormatter.toStringOrNull;
+import static com.calpano.graphinout.foundation.text.StringFormatter.toStringOrNull;
 
 public interface IGraphmlEdge extends IGraphmlElementWithDescAndId {
 

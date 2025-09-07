@@ -1,6 +1,6 @@
 package com.calpano.graphinout.foundation.xml;
 
-import com.calpano.graphinout.foundation.StringFormatter;
+import com.calpano.graphinout.foundation.text.StringFormatter;
 import org.slf4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

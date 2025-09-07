@@ -1,6 +1,7 @@
 package com.calpano.graphinout.foundation.json;
 
 import com.calpano.graphinout.foundation.input.InputSource;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import org.slf4j.Logger;
 
 import java.io.IOException;

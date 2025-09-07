@@ -3,7 +3,7 @@ package com.calpano.graphinout.reader.jgrapht;
 import com.calpano.graphinout.base.AbstractReaderTest;
 import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioReader;
-import com.calpano.graphinout.base.validation.GraphmlValidator;
+import com.calpano.graphinout.base.validation.graphml.GraphmlValidator;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import com.calpano.graphinout.foundation.output.OutputSink;

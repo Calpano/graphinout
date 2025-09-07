@@ -15,12 +15,12 @@ import java.util.Objects;
  * edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
  * Example:
  * <pre>
- *         <hyperedge id="id--hyperedge-4N56">
- *             <desc>bla bla</desc>
- *             <endpoint node="id--node4" type="in" port="North"/>
- *             <endpoint node="id--node5" type="in"/>
- *             <endpoint node="id--node6" type="in"/>
- *         </hyperedge>
+ *         &lt;hyperedge id="id--hyperedge-4N56"&gt;
+ *             &lt;desc&gt;bla bla&lt;/desc&gt;
+ *             &lt;endpoint node="id--node4" type="in" port="North"/&gt;
+ *             &lt;endpoint node="id--node5" type="in"/&gt;
+ *             &lt;endpoint node="id--node6" type="in"/&gt;
+ *         &lt;/hyperedge&gt;
  * </pre>
  */
 public class GioEdge extends GioElementWithDescription {
@@ -34,13 +34,6 @@ public class GioEdge extends GioElementWithDescription {
 
         public GioEdge build() {
             return new GioEdge(customAttributes, description, id, endpoints);
-        }
-
-        public GioEdgeBuilder clearEndpoints() {
-            if (this.endpoints != null) {
-                this.endpoints.clear();
-            }
-            return this;
         }
 
         public GioEdgeBuilder customAttributes(@Nullable Map<String, String> customAttributes) {
@@ -156,9 +149,9 @@ public class GioEdge extends GioElementWithDescription {
     @Override
     public String toString() {
         return "GioEdge{" +
-                "id='" + id + '\'' +
+                "id='" + id + "\''" +
                 ", endpoints=" + endpoints +
-                ", description='" + getDescription() + '\'' +
+                ", description='" + getDescription() + "\''" +
                 ", customAttributes=" + getCustomAttributes() +
                 '}';
     }

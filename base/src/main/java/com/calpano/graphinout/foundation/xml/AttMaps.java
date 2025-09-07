@@ -4,7 +4,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @SuppressWarnings("UnusedReturnValue")
 public class AttMaps {
@@ -33,6 +35,15 @@ public class AttMaps {
      */
     public static boolean containsKey(@Nullable Map<String, String> map, String key) {
         return map != null && map.containsKey(key);
+    }
+
+    public static void getOrDefault( @Nullable Map<String, String> attributes, String attName, String defaultValue, BiConsumer<String, Supplier<String>> name_value) {
+        if(attributes==null) {
+            name_value.accept(attName, () -> defaultValue);
+            return;
+        }
+        String value = attributes.getOrDefault(attName,defaultValue);
+        name_value.accept(attName, () -> value);
     }
 
     /**

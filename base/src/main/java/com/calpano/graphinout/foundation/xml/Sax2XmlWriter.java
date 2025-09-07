@@ -3,7 +3,7 @@ package com.calpano.graphinout.foundation.xml;
 
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.Location;
-import com.calpano.graphinout.foundation.StringFormatter;
+import com.calpano.graphinout.foundation.text.StringFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;

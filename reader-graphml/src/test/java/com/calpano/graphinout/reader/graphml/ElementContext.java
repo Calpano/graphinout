@@ -24,8 +24,8 @@ import java.util.Map;
 /** Helper class to track element context */
 class ElementContext {
 
-    final String elementName;
-    final Map<String, String> attributes;
+    final String xmlElementName;
+    final Map<String, String> xmlAttributes;
     /** is this element representing a raw XML element? */
     final boolean isRawXml;
     /** will produce an {@link IGraphmlElement} or subtype thereof */
@@ -34,14 +34,14 @@ class ElementContext {
     private boolean isStarted;
 
     /**
-     * @param elementName aka tagName
-     * @param attributes  all XML attributes
+     * @param xmlElementName aka tagName
+     * @param xmlAttributes  all XML attributes
      * @param isRawXml    is this any raw XML element from inside a data element? If false, this is a GraphML element
      */
-    ElementContext(@Nullable ElementContext parent, String elementName, Map<String, String> attributes, boolean isRawXml, GraphmlElementBuilder<?> builder) {
+    ElementContext(@Nullable ElementContext parent, String xmlElementName, Map<String, String> xmlAttributes, boolean isRawXml, GraphmlElementBuilder<?> builder) {
         this.parent = parent;
-        this.elementName = elementName;
-        this.attributes = attributes;
+        this.xmlElementName = xmlElementName;
+        this.xmlAttributes = xmlAttributes;
         this.isRawXml = isRawXml;
         this.builder = builder;
         this.isStarted = false;
@@ -124,7 +124,7 @@ class ElementContext {
         if (parent != null) {
             parent.maybeWriteStartTo(graphmlWriter);
         }
-        switch (elementName) {
+        switch (xmlElementName) {
             case GraphmlElements.DATA -> graphmlWriter.data(dataBuilder().build());
             case GraphmlElements.GRAPHML -> graphmlWriter.documentStart(documentBuilder().build());
             case GraphmlElements.GRAPH -> graphmlWriter.graphStart(graphBuilder().build());
@@ -133,7 +133,7 @@ class ElementContext {
             case GraphmlElements.HYPER_EDGE -> graphmlWriter.hyperEdgeStart(hyperEdgeBuilder().build());
             case GraphmlElements.KEY -> graphmlWriter.key(keyBuilder().build());
             case GraphmlElements.EDGE -> graphmlWriter.edgeStart(hyperEdgeBuilder().toEdge());
-            default -> throw new IllegalArgumentException("Cannot start " + elementName);
+            default -> throw new IllegalArgumentException("Cannot start " + xmlElementName);
         }
         markAsStarted();
     }
@@ -152,14 +152,14 @@ class ElementContext {
 
     public void writeEndTo(GraphmlWriter graphmlWriter) throws IOException {
         maybeWriteStartTo(graphmlWriter);
-        switch (elementName) {
+        switch (xmlElementName) {
             case GraphmlElements.GRAPHML -> graphmlWriter.documentEnd();
             case GraphmlElements.GRAPH -> graphmlWriter.graphEnd();
             case GraphmlElements.NODE -> graphmlWriter.nodeEnd();
             case GraphmlElements.PORT -> graphmlWriter.portEnd();
             case GraphmlElements.HYPER_EDGE -> graphmlWriter.hyperEdgeEnd();
             case GraphmlElements.EDGE -> graphmlWriter.edgeEnd();
-            default -> throw new IllegalArgumentException("Cannot end " + elementName);
+            default -> throw new IllegalArgumentException("Cannot end " + xmlElementName);
         }
         markAsStarted();
     }

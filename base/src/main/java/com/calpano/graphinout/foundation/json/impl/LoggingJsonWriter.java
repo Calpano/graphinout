@@ -1,7 +1,7 @@
 package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.json.JsonException;
-import com.calpano.graphinout.foundation.json.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import org.slf4j.Logger;
 
 import java.math.BigDecimal;
@@ -89,23 +89,8 @@ public class LoggingJsonWriter implements JsonWriter {
     }
 
     @Override
-    public void stringCharacters(String s) throws JsonException {
+    public void onString(String s) throws JsonException {
         log.info("stringCharacters: '{}'", s);
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-        log.info("stringEnd");
-    }
-
-    @Override
-    public void stringStart() throws JsonException {
-        log.info("stringStart");
-    }
-
-    @Override
-    public void whitespaceCharacters(String s) throws JsonException {
-        log.info("whitespaceCharacters: {}", s);
     }
 
 }

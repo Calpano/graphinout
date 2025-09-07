@@ -130,9 +130,10 @@ public class LoggingGioWriter implements GioWriter {
     }
 
     @Override
-    public void onString(String s) {
-        log.info("GioWriter: onString(" + s + ")");
+    public void onString(String s) throws JsonException {
+        log.info("GioWriter: string(" + s + ")");
     }
+
 
     @Override
     public void startDocument(GioDocument document) throws IOException {
@@ -159,25 +160,5 @@ public class LoggingGioWriter implements GioWriter {
         log.info("GioWriter: startPort(GioPort " + port + ")");
     }
 
-    @Override
-    public void stringCharacters(String s) throws JsonException {
-        log.info("GioWriter: stringCharacters(" + s + ")");
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-        log.info("GioWriter: stringEnd()");
-
-    }
-
-    @Override
-    public void stringStart() throws JsonException {
-        log.info("GioWriter: stringStart()");
-    }
-
-    @Override
-    public void whitespaceCharacters(String s) throws JsonException {
-        log.info("GioWriter: whitespaceCharacters(" + s + ")");
-    }
 
 }

@@ -4,7 +4,7 @@ import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.json.Json5Preprocessor;
 import com.calpano.graphinout.foundation.json.JsonReader;
-import com.calpano.graphinout.foundation.json.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -74,15 +74,13 @@ public class JsonReaderImpl implements JsonReader {
                 stream.onNull();
                 break;
             case VALUE_STRING:
-                stream.stringStart();
                 // This is more efficient than parser.getValueAsString()
                 // It avoids allocating a new String for the value by using the parser's internal buffer.
                 char[] textChars = parser.getTextCharacters();
                 int textOffset = parser.getTextOffset();
                 int textLength = parser.getTextLength();
                 String s = new String(textChars, textOffset, textLength);
-                stream.stringCharacters(s);
-                stream.stringEnd();
+                stream.onString(s);
                 break;
             case VALUE_NUMBER_INT:
                 if (useBigDecimals) {

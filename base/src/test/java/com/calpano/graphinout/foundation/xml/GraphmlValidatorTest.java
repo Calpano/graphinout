@@ -1,6 +1,6 @@
 package com.calpano.graphinout.foundation.xml;
 
-import com.calpano.graphinout.base.validation.GraphmlValidator;
+import com.calpano.graphinout.base.validation.graphml.GraphmlValidator;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

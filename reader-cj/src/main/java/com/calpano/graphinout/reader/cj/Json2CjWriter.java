@@ -1,13 +1,10 @@
 package com.calpano.graphinout.reader.cj;
 
-import com.calpano.graphinout.base.cj.CjDirection;
-import com.calpano.graphinout.base.cj.CjEdgeType;
-import com.calpano.graphinout.base.cj.CjEdgeTypeSource;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.JsonType;
-import com.calpano.graphinout.foundation.json.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -331,63 +328,12 @@ public class Json2CjWriter implements JsonWriter {
     }
 
     @Override
-    public void stringCharacters(String s) throws JsonException {
+    public void onString(String s) throws JsonException {
         if (parseStack.isInJson()) {
-            cjWriter.stringCharacters(s);
+            cjWriter.onString(s);
         } else {
             stringBuffer.append(s);
         }
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-        if (parseStack.isInJson()) {
-            parseStack.stack.pop();
-            cjWriter.stringEnd();
-            maybeEndData();
-        } else {
-            CjType cjType = parseStack.expectedCjType(JsonType.String);
-            switch (cjType) {
-                case Id -> cjWriter.id(stringBuffer.toString());
-                case NodeId -> cjWriter.nodeId(stringBuffer.toString());
-                case PortId -> cjWriter.portId(stringBuffer.toString());
-                case Language -> cjWriter.language(stringBuffer.toString());
-                case Value -> cjWriter.value(stringBuffer.toString());
-                case BaseUri -> cjWriter.baseUri(stringBuffer.toString());
-                case Direction -> cjWriter.direction(CjDirection.of(stringBuffer.toString()));
-                case JsonSchemaId, JsonSchemaLocation ->
-                    /* we expected this might come, but we auto-add it anyway */
-                        log.trace("Skipping '{}' as JSON schema property.", stringBuffer);
-                case ConnectedJson__VersionId, ConnectedJson__VersionDate -> {
-                    // IMPROVE verify we parse a known version
-                }
-                case EdgeTypeString ->
-                        cjWriter.edgeType(CjEdgeType.of(CjEdgeTypeSource.String, stringBuffer.toString()));
-                case EdgeTypeNodeId -> cjWriter.edgeType(CjEdgeType.of(CjEdgeTypeSource.Node, stringBuffer.toString()));
-                case EdgeTypeUri -> cjWriter.edgeType(CjEdgeType.of(CjEdgeTypeSource.URI, stringBuffer.toString()));
-                default ->
-                        throw new IllegalStateException("Default case. You expect " + cjType + ". String='" + stringBuffer + "'.");
-            }
-            stringBuffer.setLength(0);
-            parseStack.expectedCjTypes.clear();
-        }
-    }
-
-    @Override
-    public void stringStart() throws JsonException {
-        if (parseStack.isInJson()) {
-            parseStack.push(JsonType.String);
-            cjWriter.stringStart();
-        } else {
-            parseStack.expectedCjType(JsonType.String);
-            // reset string buffer
-            stringBuffer.setLength(0);
-        }
-    }
-
-    @Override
-    public void whitespaceCharacters(String s) throws JsonException {
-        // ignored in CJ for now
     }
 
     private void maybeEndData() {

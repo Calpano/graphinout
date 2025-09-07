@@ -1,6 +1,6 @@
 package com.calpano.graphinout.foundation.json.impl;
 
-import com.calpano.graphinout.foundation.json.JsonElementWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonValueWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -13,7 +13,7 @@ import java.math.BigInteger;
 import java.util.Stack;
 import java.util.function.Consumer;
 
-public class BufferingJsonWriter implements JsonElementWriter {
+public class BufferingJsonWriter implements JsonValueWriter {
 
     @FunctionalInterface
     interface ValueConsumer extends Consumer<JsonNode> {
@@ -130,24 +130,8 @@ public class BufferingJsonWriter implements JsonElementWriter {
     }
 
     @Override
-    public void stringCharacters(String s) throws JsonException {
+    public void onString(String s) throws JsonException {
         stringBuffer.append(s);
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-        String s = stringBuffer.toString();
-        attachToTree(nodeFactory.textNode(s));
-    }
-
-    @Override
-    public void stringStart() throws JsonException {
-        stringBuffer.setLength(0);
-    }
-
-    @Override
-    public void whitespaceCharacters(String s) throws JsonException {
-        // whitespace is ignored
     }
 
     private void attachToTree(JsonNode jsonNode) {

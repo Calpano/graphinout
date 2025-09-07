@@ -6,6 +6,8 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,14 +31,18 @@ import static com.calpano.graphinout.base.cj.CjConstants.ROOT__BASE_URI;
 import static com.calpano.graphinout.base.cj.CjConstants.ROOT__CONNECTED_JSON;
 import static com.calpano.graphinout.base.cj.CjConstants.VALUE;
 
+/**
+ * The CJ JSON types. On which JSON types they are based, and which properties they have (for the object-types).
+ */
 public enum CjType {
 
+    /** aka Document */
     RootObject(JsonType.Object),//
     JsonSchemaId(JsonType.String),//
     JsonSchemaLocation(JsonType.String),//
     ConnectedJson(JsonType.Object), ConnectedJson__VersionId(JsonType.String), ConnectedJson__VersionDate(JsonType.String), BaseUri(JsonType.String),
 
-    /* Label */
+    /* This type is a Label. A Label really *is* an array or label entries. */
     ArrayOfLabelEntries(JsonType.Array),//
     LabelEntry(JsonType.Object),//
     Language(JsonType.String), Value(JsonType.String), /* Id */
@@ -72,6 +78,7 @@ public enum CjType {
     Data(JsonType.Object, JsonType.Null, JsonType.Number, JsonType.String, JsonType.Boolean, JsonType.Array),
     ;
 
+    /** A JSON object property as used in CJ */
     public static class CjProperty {
 
         final Set<String> keys;
@@ -168,13 +175,75 @@ public enum CjType {
         LabelEntry.property(LANGUAGE).is(Language);
     }
 
+    /** which properties are allowed in this type (if it is an object) */
     public final Map<String, CjProperty> properties = new HashMap<>();
     public final JsonType[] jsonTypes;
+    /** which types are allowed in this type (if it is an array) */
     public @Nullable CjType[] itemTypes;
 
     CjType(JsonType... jsonTypes) {
         this.jsonTypes = jsonTypes;
     }
+
+    // TODO remove or move to Array?
+    public void fireEnd(CjWriter cjWriter) {
+        assert isContainer() : "This event is not a container";
+        switch (this) {
+            case RootObject -> cjWriter.documentEnd();
+            case Edge -> cjWriter.edgeEnd();
+            case ArrayOfLabelEntries -> cjWriter.labelEnd();
+            case LabelEntry -> cjWriter.labelEntryEnd();
+            case Graph -> cjWriter.graphEnd();
+            case Meta -> cjWriter.metaEnd();
+            case Node -> cjWriter.nodeEnd();
+            case Port -> cjWriter.portEnd();
+            case Endpoint -> cjWriter.endpointEnd();
+            case Data -> cjWriter.jsonDataEnd();
+            default -> throw new IllegalStateException("Unexpected type: " + this);
+        }
+    }
+
+    // TODO remove or move to Array?
+    public void fireStart(CjWriter cjWriter) {
+        assert isContainer() : "This event is not a container";
+        switch (this) {
+            case RootObject -> cjWriter.documentStart();
+            case Edge -> cjWriter.edgeStart();
+            case ArrayOfLabelEntries -> cjWriter.labelStart();
+            case LabelEntry -> cjWriter.labelEntryStart();
+            case Graph -> cjWriter.graphStart();
+            case Meta -> cjWriter.metaStart();
+            case Node -> cjWriter.nodeStart();
+            case Port -> cjWriter.portStart();
+            case Endpoint -> cjWriter.endpointStart();
+            case Data -> cjWriter.jsonDataStart();
+            default -> throw new IllegalStateException("Unexpected type: " + this);
+        }
+    }
+
+    // TODO remove or move?
+    public void fireValue(CjWriter cjWriter, Object value) {
+        switch (this) {
+            case BaseUri -> cjWriter.baseUri((String) value);
+            case Language -> cjWriter.language((String) value);
+            case Value -> cjWriter.value((String) value);
+            case Id -> cjWriter.id((String) value);
+            case Meta__NodeCountTotal -> cjWriter.meta__nodeCountTotal((Long) value);
+            case Meta__EdgeCountTotal -> cjWriter.meta__edgeCountTotal((Long) value);
+            case Meta__NodeCountInGraph -> cjWriter.meta__nodeCountInGraph((Long) value);
+            case Meta__EdgeCountInGraph -> cjWriter.meta__edgeCountInGraph((Long) value);
+            case EdgeTypeUri -> cjWriter.edgeType((CjEdgeType) value);
+            case EdgeTypeNodeId -> cjWriter.edgeType((CjEdgeType) value);
+            case EdgeTypeString -> cjWriter.edgeType((CjEdgeType) value);
+            case Direction -> cjWriter.direction((CjDirection) value);
+            case NodeId -> cjWriter.nodeId((String) value);
+            case PortId -> cjWriter.portId((String) value);
+            case Meta__Canonical -> cjWriter.graph__canonical(true);
+            case JsonSchemaId, JsonSchemaLocation, ConnectedJson, ConnectedJson__VersionId,
+                 ConnectedJson__VersionDate -> throw new IllegalStateException("TODO handle Unexpected value: " + this);
+        }
+    }
+
 
     public boolean hasJsonType(JsonType jsonType) {
         for (JsonType type : jsonTypes) {
@@ -187,12 +256,27 @@ public enum CjType {
         return jsonTypes.length == 1 && hasJsonType(JsonType.Array);
     }
 
+    public boolean isContainer() {
+        return !properties.isEmpty() || (itemTypes != null && itemTypes.length > 0);
+    }
+
+    /** All allowed nested types */
+    public Set<CjType> nested() {
+        Set<CjType> nested = new HashSet<>();
+        if (itemTypes != null) {
+            nested.addAll(List.of(itemTypes));
+        }
+        for (CjProperty property : properties.values()) {
+            nested.addAll(property.expected);
+        }
+        return nested;
+    }
+
     private void item(CjType... itemTypes) {
         if (jsonTypes.length != 1 || jsonTypes[0] != JsonType.Array) {
             throw new IllegalArgumentException("Can only define items for array types.");
         }
         this.itemTypes = itemTypes;
-
     }
 
     private CjProperty property(String... keys) {

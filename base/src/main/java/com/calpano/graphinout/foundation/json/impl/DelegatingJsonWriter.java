@@ -1,7 +1,7 @@
 package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.json.JsonException;
-import com.calpano.graphinout.foundation.json.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -95,23 +95,8 @@ public class DelegatingJsonWriter implements JsonWriter {
     }
 
     @Override
-    public void stringCharacters(String s) throws JsonException {
-        jsonWriters.forEach(w -> w.stringCharacters(s));
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-        jsonWriters.forEach(JsonWriter::stringEnd);
-    }
-
-    @Override
-    public void stringStart() throws JsonException {
-        jsonWriters.forEach(JsonWriter::stringStart);
-    }
-
-    @Override
-    public void whitespaceCharacters(String s) throws JsonException {
-        jsonWriters.forEach(w -> w.whitespaceCharacters(s));
+    public void onString(String s) throws JsonException {
+        jsonWriters.forEach(w -> w.onString(s));
     }
 
 }

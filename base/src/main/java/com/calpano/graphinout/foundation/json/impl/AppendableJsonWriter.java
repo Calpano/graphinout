@@ -1,7 +1,7 @@
 package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.json.JsonException;
-import com.calpano.graphinout.foundation.json.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -129,29 +129,11 @@ public abstract class AppendableJsonWriter implements JsonWriter {
 
     // IMPROVE is this a simplistic/wrong approach to escaping?
     @Override
-    public void stringCharacters(String s) throws JsonException {
+    public void onString(String s) throws JsonException {
         append(s //
                 .replace("\\", "\\\\") //
                 .replace("\"", "\\\"") //
         );
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-        append('"');
-    }
-
-    @Override
-    public void stringStart() throws JsonException {
-        maybeDelimiter();
-        append('"');
-    }
-
-    @Override
-    public void whitespaceCharacters(String s) throws JsonException {
-        if (preserveWhitespace) {
-            append(s);
-        }
     }
 
     private void append(String s) {

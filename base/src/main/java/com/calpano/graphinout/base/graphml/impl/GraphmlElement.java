@@ -23,7 +23,7 @@ public abstract class GraphmlElement implements IGraphmlElement {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         IGraphmlElement that = (IGraphmlElement) o;
-        return Objects.equals(allAttributesNormalized(), that.allAttributesNormalized());
+        return Objects.equals(xmlPlusGraphmlAttributesNormalized(), that.xmlPlusGraphmlAttributesNormalized());
     }
 
     @Override

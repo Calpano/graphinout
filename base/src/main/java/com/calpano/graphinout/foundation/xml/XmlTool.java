@@ -95,9 +95,9 @@ public class XmlTool {
     }
 
     /**
-     * Encode the special chars <code>'"& amp;<></code> as
+     * Encode the special chars <code>'"&<></code> as
      * <pre>
-     *     & amp;apos;, & amp;quot;, & amp;amp;, & amp;lt;, & amp;gt;
+     *     &apos;, &quot;, &amp;, &lt;, &gt;
      * </pre>
      * <p>
      * <a
@@ -105,8 +105,8 @@ public class XmlTool {
      *
      * <h2>Always</h2>
      * <p>
-     * Escape '<' as '& lt;' unless '<' is starting a '< tag/ >' or other markup. Escape '&' as '& amp;' unless '&' is
-     * starting an '& entity;'. Escape control codes in XML 1.1 via Base64 or Numeric Character References.
+     * Escape '<' as '&lt;' unless '<' is starting a '<tag/>' or other markup. Escape '&' as '&amp;' unless '&' is
+     * starting an '&entity;'. Escape control codes in XML 1.1 via Base64 or Numeric Character References.
      *
      * <h2>Attribute Values</h2>
      * attr=" 'Single quotes' are ok within double quotes." attr=' "Double quotes" are ok within single quotes.' Escape

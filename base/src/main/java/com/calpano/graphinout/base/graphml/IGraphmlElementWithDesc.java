@@ -1,5 +1,6 @@
 package com.calpano.graphinout.base.graphml;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -11,6 +12,7 @@ public interface IGraphmlElementWithDesc extends IGraphmlElement {
         return IGraphmlElement.isEqual(a, b) && Objects.equals(a.desc(), b.desc());
     }
 
+    @Nullable
     IGraphmlDescription desc();
 
 }

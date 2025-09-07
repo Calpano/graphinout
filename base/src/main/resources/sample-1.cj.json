@@ -8,6 +8,7 @@
   "edges": [
     { "source": "node1", "target": "node2" },
     {
+      "data": { "foo": "bar" },
       "endpoints": [
         { "direction": "out", "node": "node1" },
         { "direction": "in", "node": "node2", "port": "port1" }

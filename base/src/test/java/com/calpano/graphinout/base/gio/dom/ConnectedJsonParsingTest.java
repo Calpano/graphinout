@@ -1,5 +1,10 @@
 package com.calpano.graphinout.base.gio.dom;
 
+import com.calpano.graphinout.base.cj.jackson.CjDocument;
+import com.calpano.graphinout.base.cj.jackson.CjEdge;
+import com.calpano.graphinout.base.cj.jackson.CjEndpoint;
+import com.calpano.graphinout.base.cj.jackson.CjGraph;
+import com.calpano.graphinout.base.cj.jackson.CjNode;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,8 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static com.google.common.truth.Truth.assertThat;
 
 public class ConnectedJsonParsingTest {
 
@@ -18,65 +22,67 @@ public class ConnectedJsonParsingTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature());
         objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        objectMapper.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         // load resource "sample-1.cj.json"
         // Use ClassLoader to get the resource URL
         java.net.URL resourceUrl = getClass().getClassLoader().getResource("sample-1.cj.json");
-        assertNotNull(resourceUrl, "Resource sample-1.cj.json not found.");
+        assertThat(resourceUrl).isNotNull();
         File jsonFile = new File(resourceUrl.getFile());
-        GioDocument doc = objectMapper.readValue(jsonFile, GioDocument.class);
-
-        System.out.println("[DEBUG_LOG] Parsed GioDocument successfully");
+        CjDocument doc = objectMapper.readValue(jsonFile, CjDocument.class);
 
         // Test document-level nodes and edges
-        assertNotNull(doc.getNodes(), "Document should have nodes");
-        assertEquals(2, doc.getNodes().size(), "Document should have 2 nodes");
+        assertThat(doc.getNodes()).isNotNull();
+        assertThat(doc.getNodes()).hasSize(2);
 
-        assertNotNull(doc.getEdges(), "Document should have edges");
-        assertEquals(2, doc.getEdges().size(), "Document should have 2 edges");
+        assertThat(doc.getEdges()).isNotNull();
+        assertThat(doc.getEdges()).hasSize(2);
 
         // Test graphs
-        assertNotNull(doc.getGraphs(), "Document should have graphs");
-        assertEquals(1, doc.getGraphs().size(), "Document should have 1 graph");
+        assertThat(doc.getGraphs()).isNotNull();
+        assertThat(doc.getGraphs()).hasSize(1);
 
         // Test first node
-        GioNode firstNode = doc.getNodes().get(0);
-        assertEquals("node1", firstNode.getId());
-        assertEquals("First Node", firstNode.getLabel());
+        CjNode firstNode = doc.getNodes().getFirst();
+        assertThat(firstNode.getId()).isEqualTo("node1");
+        assertThat(firstNode.getLabel()).isEqualTo("First Node");
 
         // Test second node with ports
-        GioNode secondNode = doc.getNodes().get(1);
-        assertEquals("node2", secondNode.getId());
-        assertEquals("Second Node", secondNode.getLabel());
-        assertNotNull(secondNode.getPorts(), "Second node should have ports");
+        CjNode secondNode = doc.getNodes().get(1);
+        assertThat(secondNode.getId()).isEqualTo("node2");
+        assertThat(secondNode.getLabel()).isEqualTo("Second Node");
+        assertThat(secondNode.getPorts()).isNotNull();
 
         // Test first edge (simple source/target)
-        GioEdge firstEdge = doc.getEdges().get(0);
-        assertEquals("node1", firstEdge.getSource());
-        assertEquals("node2", firstEdge.getTarget());
+        CjEdge firstEdge = doc.getEdges().getFirst();
+        assertThat(firstEdge.getSource()).isEqualTo("node1");
+        assertThat(firstEdge.getTarget()).isEqualTo("node2");
 
         // Test second edge (with endpoints)
-        GioEdge secondEdge = doc.getEdges().get(1);
-        assertNotNull(secondEdge.getEndpoints(), "Second edge should have endpoints");
-        assertEquals(2, secondEdge.getEndpoints().size(), "Second edge should have 2 endpoints");
+        CjEdge secondEdge = doc.getEdges().get(1);
+        assertThat(secondEdge.getEndpoints()).isNotNull();
+        assertThat(secondEdge.getEndpoints()).hasSize(2);
 
-        GioEndpoint firstEndpoint = secondEdge.getEndpoints().get(0);
-        assertEquals("out", firstEndpoint.getDirection());
-        assertEquals("node1", firstEndpoint.getNode());
+        // test extended JSON with any props, here 'data' was used
+        assertThat(secondEdge.getAdditionalProperties()).containsKey("data");
 
-        GioEndpoint secondEndpoint = secondEdge.getEndpoints().get(1);
-        assertEquals("in", secondEndpoint.getDirection());
-        assertEquals("node2", secondEndpoint.getNode());
-        assertEquals("port1", secondEndpoint.getPort());
+        CjEndpoint firstEndpoint = secondEdge.getEndpoints().getFirst();
+        assertThat(firstEndpoint.getDirection()).isEqualTo("out");
+        assertThat(firstEndpoint.getNode()).isEqualTo("node1");
+
+        CjEndpoint secondEndpoint = secondEdge.getEndpoints().get(1);
+        assertThat(secondEndpoint.getDirection()).isEqualTo("in");
+        assertThat(secondEndpoint.getNode()).isEqualTo("node2");
+        assertThat(secondEndpoint.getPort()).isEqualTo("port1");
 
         // Test subgraph
-        GioGraph subgraph = doc.getGraphs().get(0);
-        assertEquals("subgraph1", subgraph.getId());
-        assertNotNull(subgraph.getNodes(), "Subgraph should have nodes");
-        assertEquals(1, subgraph.getNodes().size(), "Subgraph should have 1 node");
+        CjGraph subgraph = doc.getGraphs().getFirst();
+        assertThat(subgraph.getId()).isEqualTo("subgraph1");
+        assertThat(subgraph.getNodes()).isNotNull();
+        assertThat(subgraph.getNodes()).hasSize(1);
 
         // Test custom properties (extensible element)
-        assertNotNull(doc.getAdditionalProperties(), "Document should have additional properties");
+        assertThat(doc.getAdditionalProperties()).isNotNull();
 
         System.out.println("[DEBUG_LOG] All assertions passed - Connected JSON parsing works correctly");
     }

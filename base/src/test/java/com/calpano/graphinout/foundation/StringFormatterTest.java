@@ -1,5 +1,6 @@
 package com.calpano.graphinout.foundation;
 
+import com.calpano.graphinout.foundation.text.StringFormatter;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;

@@ -9,7 +9,7 @@ import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.foundation.json.JsonConstants;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.JsonType;
-import com.calpano.graphinout.foundation.json.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.impl.DelegatingJsonWriter;
 
 import java.util.Stack;
@@ -47,13 +47,13 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
     @Override
     public void baseUri(String baseUri) {
         super.onKey(CjConstants.ROOT__BASE_URI);
-        super.string(baseUri);
+        onString(baseUri);
     }
 
     @Override
     public void direction(CjDirection direction) {
         super.onKey(CjConstants.ENDPOINT__DIRECTION);
-        super.string(direction.value());
+        onString(direction.value());
     }
 
     public void documentEnd() throws CjException {
@@ -70,17 +70,17 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
         //   "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
         //  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
         super.onKey(JsonConstants.DOLLAR_SCHEMA);
-        super.string(CjConstants.CJ_SCHEMA_LOCATION);
+        onString(CjConstants.CJ_SCHEMA_LOCATION);
         super.onKey(JsonConstants.DOLLAR_ID);
-        super.string(CjConstants.CJ_SCHEMA_ID);
+        onString(CjConstants.CJ_SCHEMA_ID);
 
         // "connectedJson" : { ...
         super.onKey(CjConstants.ROOT__CONNECTED_JSON);
         super.objectStart();
         super.onKey(CjConstants.VERSION_NUMBER);
-        super.string(CJ_VERSION_NUMBER);
+        onString(CJ_VERSION_NUMBER);
         super.onKey(CjConstants.VERSION_DATE);
-        super.string(CJ_VERSION_DATA);
+        onString(CJ_VERSION_DATA);
         super.objectEnd();
     }
 
@@ -102,7 +102,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
             case String -> super.onKey(CjConstants.EDGE_OR_ENDPOINT__TYPE);
             default -> throw new IllegalStateException("Unexpected value: " + edgeType.source());
         }
-        super.string(edgeType.type());
+        onString(edgeType.type());
     }
 
     @Override
@@ -141,7 +141,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
     @Override
     public void id(String id) {
         super.onKey(CjConstants.ID);
-        super.string(id);
+        onString(id);
     }
 
     @Override
@@ -186,7 +186,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
     @Override
     public void language(String language) {
         super.onKey(CjConstants.LANGUAGE);
-        super.string(language);
+        onString(language);
     }
 
     public void listEnd(CjType cjType) {
@@ -257,7 +257,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
     @Override
     public void nodeId(String nodeId) {
         super.onKey(CjConstants.ENDPOINT__NODE);
-        super.string(nodeId);
+        onString(nodeId);
     }
 
     @Override
@@ -287,7 +287,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
     @Override
     public void portId(String portId) {
         super.onKey(CjConstants.ENDPOINT__PORT);
-        super.string(portId);
+        onString(portId);
     }
 
     @Override
@@ -314,7 +314,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements CjWriter {
     @Override
     public void value(String value) {
         super.onKey(CjConstants.VALUE);
-        super.string(value);
+        onString(value);
     }
 
     private void pop(CjType cjType) {

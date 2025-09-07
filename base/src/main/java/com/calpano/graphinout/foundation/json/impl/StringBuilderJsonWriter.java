@@ -1,6 +1,6 @@
 package com.calpano.graphinout.foundation.json.impl;
 
-import com.calpano.graphinout.foundation.json.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 
 /**
  * Reconstructs a JSON syntax string from a {@link JsonWriter}. Reusable.

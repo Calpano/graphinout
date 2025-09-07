@@ -7,9 +7,6 @@ import com.calpano.graphinout.base.cj.CjLabel;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.gio.GioData;
-import com.calpano.graphinout.base.gio.GioDataType;
-import com.calpano.graphinout.base.gio.GioKey;
-import com.calpano.graphinout.base.gio.GioKeyForType;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
@@ -317,28 +314,13 @@ public class Cj2GioWriter implements CjWriter {
     }
 
     @Override
-    public void stringCharacters(String s) throws JsonException {
-        jsonWriter.stringCharacters(s);
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-        jsonWriter.stringEnd();
-    }
-
-    @Override
-    public void stringStart() throws JsonException {
-        jsonWriter.stringStart();
+    public void onString(String s) throws JsonException {
+        jsonWriter.onString(s);
     }
 
     @Override
     public void value(String value) {
 
-    }
-
-    @Override
-    public void whitespaceCharacters(String s) throws JsonException {
-        jsonWriter.whitespaceCharacters(s);
     }
 
 }

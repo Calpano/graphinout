@@ -13,10 +13,16 @@ import java.util.function.Supplier;
 public interface IGraphmlElement extends IXmlElement {
 
     static boolean isEqual(IGraphmlElement a, IGraphmlElement b) {
-        return Objects.equals(a.tagName(), b.tagName()) && Objects.equals(a.allAttributesNormalized(), b.allAttributesNormalized());
+        return Objects.equals(a.tagName(), b.tagName()) && Objects.equals(a.xmlPlusGraphmlAttributesNormalized(), b.xmlPlusGraphmlAttributesNormalized());
     }
 
-    default Map<String, String> allAttributesNormalized() {
+    /**
+     * Overwrite XML attributes with GraphML built-in attributes.
+     * TODO document
+     * <p>
+     * Skip null-values.
+     */
+    default Map<String, String> xmlPlusGraphmlAttributesNormalized() {
         Map<String, String> xmlAttributes = xmlAttributes();
         Map<String, String> map = xmlAttributes == null ? new HashMap<>() : new HashMap<>(xmlAttributes);
         graphmlAttributes((n, vs) -> {
@@ -35,12 +41,12 @@ public interface IGraphmlElement extends IXmlElement {
      */
     default Map<String, String> customXmlAttributes() {
         Map<String, String> attributes = new HashMap<>(xmlAttributes());
-        forEachGraphmlAttributeName(attributes::remove);
+        graphmlAttributes((n, vs) -> attributes.remove(n));
         return attributes;
     }
 
-    default void forEachGraphmlAttributeName(Consumer<String> name) {
-        graphmlAttributes((n, vs) -> name.accept(n));
+    default void graphmlAttributeNames(Consumer<String> attributeNameConsumer) {
+        graphmlAttributes((n, vs) -> attributeNameConsumer.accept(n));
     }
 
     /**
@@ -50,10 +56,5 @@ public interface IGraphmlElement extends IXmlElement {
      */
     void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value);
 
-    default Map<String, String> graphmlAttributes() {
-        Map<String, String> map = new HashMap<>();
-        graphmlAttributes((n, vs) -> map.put(n, vs.get()));
-        return map;
-    }
 
 }

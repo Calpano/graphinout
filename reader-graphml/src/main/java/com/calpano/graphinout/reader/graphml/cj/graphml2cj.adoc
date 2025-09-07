@@ -1,0 +1,76 @@
+= GraphML 2 CJ
+
+== g:Document
+- `<graphml>` -> cj:Document object
+- @attributes -> "data"."cj:attributes".{attributeMap}
+** including all XML namespaces
+
+- `<key>` -> Used for conversion, but omitted from doc, TODO buffer/keep in graph
+- `<desc>` -> buffer for after DATA came
+
+
+== g:Data -- must tbe buffered?
+
+- `<graphml><data>` -> cj:Document ."data"
+- `<graph><data>` -> cj:Graph ."data"
+- `<node><data>` -> cj:Node ."data"
+- `<edge><data>` -> cj:Edge ."data"
+- `<hyperedge><data>` -> cj:Edge ."data"
+- `<port><data>` -> cj:Port ."data"
+
+== g:Graph
+- `<graph>` -> cj:Graph object
+- @attributes -> "data"."cj:attributes".{attributeMap}
+
+== g:Node
+- `<node>` -> cj:Node object
+- @attributes -> "data"."cj:attributes".{attributeMap}
+
+== g:Edge
+- `<edge>` -> cj:Edge object
+- @attributes -> "data"."cj:attributes".{attributeMap}
+
+== g:HyperEdge
+- `<hyperedge>` -> cj:HyperEdge object
+- @attributes -> "data"."cj:attributes".{attributeMap}
+
+== g:Port
+- `<port>` -> cj:Port object
+- @attributes -> "data"."cj:attributes".{attributeMap}
+
+
+
+
+    void data(IGraphmlData data) throws IOException;
+
+    void edgeEnd() throws IOException;
+
+    /** @param edge contains {@link IGraphmlDescription}, node/port ids for source/target */
+    void edgeStart(IGraphmlEdge edge) throws IOException;
+
+    void graphEnd() throws IOException;
+
+    /** @param graphmlGraph includes {@link IGraphmlDescription}, optional {@link IGraphmlLocator} */
+    void graphStart(IGraphmlGraph graphmlGraph) throws IOException;
+
+    void hyperEdgeEnd() throws IOException;
+
+    /** @param edge includes {@link IGraphmlDescription}, {@link IGraphmlEndpoint} */
+    void hyperEdgeStart(IGraphmlHyperEdge edge) throws IOException;
+
+    /** @param data contains {@link IGraphmlDescription} */
+    void key(IGraphmlKey data) throws IOException;
+
+    void nodeEnd() throws IOException;
+
+    /** @param node contains {@link IGraphmlDescription} and optional {@link IGraphmlLocator} */
+    void nodeStart(IGraphmlNode node) throws IOException;
+
+    void portEnd() throws IOException;
+
+    /**
+     * May contain <code>( PORT | DATA )*</code>.
+     *
+     * @param port contains {@link IGraphmlDescription}
+     */
+    void portStart(IGraphmlPort port) throws IOException;

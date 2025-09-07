@@ -210,30 +210,9 @@ public class DelegatingGioWriter implements GioWriter {
     }
 
     @Override
-    public void stringCharacters(String s) throws JsonException {
+    public void onString(String s) throws JsonException {
         for (GioWriter writer : writers) {
-            writer.stringCharacters(s);
-        }
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-        for (GioWriter writer : writers) {
-            writer.stringEnd();
-        }
-    }
-
-    @Override
-    public void stringStart() throws JsonException {
-        for (GioWriter writer : writers) {
-            writer.stringStart();
-        }
-    }
-
-    @Override
-    public void whitespaceCharacters(String s) throws JsonException {
-        for (GioWriter writer : writers) {
-            writer.whitespaceCharacters(s);
+            writer.onString(s);
         }
     }
 

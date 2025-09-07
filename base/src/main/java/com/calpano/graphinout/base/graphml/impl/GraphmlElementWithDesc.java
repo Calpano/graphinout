@@ -20,7 +20,7 @@ public abstract class GraphmlElementWithDesc extends GraphmlElement implements I
      * <p>
      * The name of this element in graph is <b>desc</b>
      */
-    protected final IGraphmlDescription desc;
+    protected final @Nullable IGraphmlDescription desc;
 
     public GraphmlElementWithDesc(Map<String, String> attributes, @Nullable IGraphmlDescription desc) {
         super(attributes);
@@ -28,6 +28,7 @@ public abstract class GraphmlElementWithDesc extends GraphmlElement implements I
     }
 
     @Override
+    @Nullable
     public IGraphmlDescription desc() {
         return desc;
     }

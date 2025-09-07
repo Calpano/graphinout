@@ -1,6 +1,9 @@
 package com.calpano.graphinout.base.cj;
 
-import com.calpano.graphinout.foundation.json.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonValueWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
+
+import java.util.function.Consumer;
 
 /**
  * This API embeds stream of conceptual opening and closing tags (read/write events) for <em>connected JSON</em> into a
@@ -50,16 +53,14 @@ import com.calpano.graphinout.foundation.json.JsonWriter;
  *     <li>{@link CjWriter#documentEnd() CJ document end}</li>
  * </ol>
  */
-public interface CjWriter extends JsonWriter {
-
-    default void rawXmlStart() {}
-
-    default void rawXmlEnd() {}
-
-    default void rawXmlCharacters(String rawXml) {}
+public interface CjWriter extends JsonWriter, HasCjWriter {
 
     /** Graph base uri */
     void baseUri(String baseUri);
+
+    default CjWriter cjWriter() {
+        return this;
+    }
 
     /** endpoint.direction */
     void direction(CjDirection direction);
@@ -111,9 +112,20 @@ public interface CjWriter extends JsonWriter {
      */
     void graphStart() throws CjException;
 
+    /** TODO document */
     void graph__canonical(boolean b);
 
     void id(String id);
+
+    /**
+     * "data"
+     * @param jsonValue
+     */
+    default void jsonData(Consumer<JsonValueWriter> jsonValue) {
+        jsonDataStart();
+        jsonValue.accept(this);
+        jsonDataEnd();
+    }
 
     /** Marker for extension data end. */
     void jsonDataEnd();
@@ -131,9 +143,15 @@ public interface CjWriter extends JsonWriter {
 
     void language(String language);
 
+    /** TODO doc */
     void listEnd(CjType cjType);
 
+    /** TODO doc */
     void listStart(CjType cjType);
+
+    void metaEnd();
+
+    void metaStart();
 
     void meta__edgeCountInGraph(long number);
 
@@ -180,10 +198,15 @@ public interface CjWriter extends JsonWriter {
      */
     void portStart();
 
+    /** TODO doc */
+    default void rawXmlCharacters(String rawXml) {}
+
+    /** TODO doc */
+    default void rawXmlEnd() {}
+
+    /** TODO doc */
+    default void rawXmlStart() {}
+
     void value(String value);
-
-    void metaStart();
-
-    void metaEnd();
 
 }

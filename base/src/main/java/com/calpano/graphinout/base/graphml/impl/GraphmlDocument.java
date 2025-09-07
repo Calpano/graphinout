@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
+import static com.calpano.graphinout.foundation.xml.AttMaps.getOrDefault;
+
 /**
  * @author rbaba
  * @implNote GraphML consists of a graphml element and a variety of subelements: graph, key, headers. GRAPHML is an XML
@@ -37,19 +39,17 @@ public class GraphmlDocument extends GraphmlElementWithDesc implements IGraphmlD
         return IGraphmlElementWithDesc.isEqual(this, that);
     }
 
+    /**
+     * XML namespaces and schema location
+     * @param name_value (name, Supplier(@Nullable value))
+     */
     public void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
         // set XML Namespace to GraphML 1.0/1.1, if missing
-        if (!AttMaps.containsKey(xmlAttributes, XML.ATT_XMLNS)) {
-            name_value.accept(XML.ATT_XMLNS, () -> Graphml.XMLNS_GRAPHML_1_x);
-        }
+        getOrDefault(xmlAttributes, XML.ATT_XMLNS, Graphml.XMLNS_GRAPHML_1_x, name_value);
         // set XML Schema Location namespace, if missing
-        if (!AttMaps.containsKey(xmlAttributes, XML.ATT_XMLNS_XSI)) {
-            name_value.accept(XML.ATT_XMLNS_XSI, () -> XML.XMLNS_XSI);
-        }
+        getOrDefault(xmlAttributes, XML.ATT_XMLNS_XSI, XML.XMLNS_XSI, name_value);
         // set schema location to GraphML 1.1, if missing
-        if (!AttMaps.containsKey(xmlAttributes, XML.ATT_XSI_SCHEMA_LOCATION)) {
-            name_value.accept(XML.ATT_XSI_SCHEMA_LOCATION, () -> Graphml.XSI_SCHEMA_LOCATION_1_1);
-        }
+        getOrDefault(xmlAttributes, XML.ATT_XSI_SCHEMA_LOCATION, Graphml.XSI_SCHEMA_LOCATION_1_1, name_value);
     }
 
     @Override

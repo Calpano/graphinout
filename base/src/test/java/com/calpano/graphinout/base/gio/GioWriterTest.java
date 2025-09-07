@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.graphml.Gio2GraphmlWriter;
-import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.gio.Gio2GraphmlWriter;
+import com.calpano.graphinout.base.graphml.xml.Graphml2XmlWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriterSpy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;

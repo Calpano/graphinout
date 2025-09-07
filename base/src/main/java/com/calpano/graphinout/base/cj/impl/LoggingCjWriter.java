@@ -373,18 +373,8 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     }
 
     @Override
-    public void stringCharacters(String s) throws JsonException {
+    public void onString(String s) throws JsonException {
         onJson(JsonEvent.String, s);
-    }
-
-    @Override
-    public void stringEnd() throws JsonException {
-        onJson(JsonEvent.StringEnd, null);
-    }
-
-    @Override
-    public void stringStart() throws JsonException {
-        onJson(JsonEvent.StringStart, null);
     }
 
     @Override

@@ -2,17 +2,23 @@ package com.calpano.graphinout.base.gio;
 
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.reader.Locator;
-import com.calpano.graphinout.foundation.json.JsonElementWriter;
-import com.calpano.graphinout.foundation.json.JsonException;
+import com.calpano.graphinout.foundation.json.stream.JsonValueWriter;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
+import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 
 /**
+ * This interface allows pushing parser events as GIO. Usually used with more basic writers like an {@link XmlWriter} or
+ * {@link JsonWriter}.
+ * <p>
+ * Also, implementations of this interface convert GIO into syntaxes like CJ/JSON or GraphML/XML.
+ * <p>
  * For large files, we don't want to keep the entire graph object in memory.
  */
-public interface GioWriter extends JsonElementWriter {
+public interface GioWriter extends JsonValueWriter {
 
     void baseUri(String baseUri) throws IOException;
 
@@ -37,16 +43,23 @@ public interface GioWriter extends JsonElementWriter {
     @Deprecated
     void key(GioKey gioKey) throws IOException;
 
+    /**
+     * TODO implement
+     * <p>
+     * Signals a collection of the given type ends.
+     *
+     * @param cjType of collection
+     */
     default void listEnd(CjType cjType) {}
 
+    /**
+     * TODO implement
+     * <p>
+     * Signals a collection of the given type starts.
+     *
+     * @param cjType of collection
+     */
     default void listStart(CjType cjType) {}
-
-    @Deprecated
-    default void onString(String s) throws JsonException {
-        stringStart();
-        stringCharacters(s);
-        stringEnd();
-    }
 
     /** can be called multiple times per data string */
     default void rawDataCharacters(String data) {}
