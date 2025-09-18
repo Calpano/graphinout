@@ -7,8 +7,8 @@
       "id": "g1",
       "meta": {
         "canonical": true,
-        "nodeCountInGraph": 3,
-        "edgeCountInGraph": 2
+        "edgeCountInGraph": 2,
+        "nodeCountInGraph": 3
       },
       "label": [
         {

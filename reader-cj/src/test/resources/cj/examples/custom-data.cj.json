@@ -10,16 +10,16 @@
           "id": "london",
           "label": [ { "value": "London" } ],
           "data": {
-            "population": 8982000,
-            "coordinates": { "lat": 51.5072, "lon": -0.1276 }
+            "coordinates": { "lat": 51.5072, "lon": -0.1276 },
+            "population": 8982000
           }
         },
         {
           "id": "tokyo",
           "label": [ { "value": "Tokyo" } ],
           "data": {
-            "population": 13960000,
-            "coordinates": { "lat": 35.6895, "lon": 139.6917 }
+            "coordinates": { "lat": 35.6895, "lon": 139.6917 },
+            "population": 13960000
           }
         }
       ],
@@ -31,8 +31,8 @@
             { "node": "tokyo" }
           ],
           "data": {
-            "distance_km": 9590,
-            "carrier": "Multiple"
+            "carrier": "Multiple",
+            "distance_km": 9590
           }
         }
       ]

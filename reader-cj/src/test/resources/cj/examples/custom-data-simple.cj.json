@@ -2,10 +2,18 @@
   "graphs": [
     {
       "nodes": [
-        { "id": "london", "data": { "population": 8982000,
+        {
+          "id": "london",
+          "data": {
             "foo": ["bar","baz", 2 ],
-            "sub": { "a":  3} } },
-        { "id": "tokyo", "data": { "population": 123456 } }
+            "population": 8982000,
+            "sub": { "a":  3}
+          }
+        },
+        {
+          "id": "tokyo",
+          "data": { "population": 123456 }
+        }
       ],
       "edges": [
         {
@@ -15,8 +23,8 @@
             { "node": "tokyo" }
           ],
           "data": {
-            "distance_km": 9590,
-            "carrier": "Multiple"
+            "carrier": "Multiple",
+            "distance_km": 9590
           }
         }
       ]

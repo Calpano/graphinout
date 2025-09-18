@@ -1,0 +1,9 @@
+{
+  "graphs": [
+    {
+      "nodes": [
+        { "id": "node1", "label": [ { "value": "First Node" } ] }
+      ]
+    }
+  ]
+}

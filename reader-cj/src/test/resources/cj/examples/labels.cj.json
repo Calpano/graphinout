@@ -14,8 +14,8 @@
           "id": "city_berlin",
           "label": [
             { "language": "en", "value": "Berlin" },
-            { "language": "de", "value": "Berlin" }
-          ]
+            { "language": "de", "value": "Bär-lin" }
+           ]
         },
         {
           "id": "city_paris",
