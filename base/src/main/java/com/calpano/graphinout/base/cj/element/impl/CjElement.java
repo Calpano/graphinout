@@ -2,6 +2,7 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjElement;
+import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 
 import javax.annotation.Nullable;
@@ -33,7 +34,7 @@ public abstract class CjElement implements ICjElement {
         return (CjEndpointElement) this;
     }
 
-    public CjGraphElement asGraph() {
+    public ICjGraphMutable asGraph() {
         return (CjGraphElement) this;
     }
 

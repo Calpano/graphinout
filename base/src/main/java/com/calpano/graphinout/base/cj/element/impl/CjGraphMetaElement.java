@@ -2,11 +2,11 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.base.cj.element.ICjGraphMeta;
+import com.calpano.graphinout.base.cj.element.ICjGraphMetaMutable;
 
 import javax.annotation.Nullable;
 
-public class CjGraphMetaElement extends CjElement implements ICjGraphMeta {
+public class CjGraphMetaElement extends CjElement implements ICjGraphMetaMutable {
 
     private Boolean canonical;
     private Long nodeCountTotal;
@@ -19,6 +19,7 @@ public class CjGraphMetaElement extends CjElement implements ICjGraphMeta {
     }
 
 
+    @Override
     public void canonical(Boolean canonical) {
         this.canonical = canonical;
     }
@@ -34,6 +35,7 @@ public class CjGraphMetaElement extends CjElement implements ICjGraphMeta {
         return CjType.Meta;
     }
 
+    @Override
     public void edgeCountInGraph(Long edgeCountInGraph) {
         this.edgeCountInGraph = edgeCountInGraph;
     }
@@ -44,6 +46,7 @@ public class CjGraphMetaElement extends CjElement implements ICjGraphMeta {
         return edgeCountInGraph;
     }
 
+    @Override
     public void edgeCountTotal(Long edgeCountTotal) {
         this.edgeCountTotal = edgeCountTotal;
     }
@@ -66,6 +69,7 @@ public class CjGraphMetaElement extends CjElement implements ICjGraphMeta {
         cjWriter.metaEnd();
     }
 
+    @Override
     public void nodeCountInGraph(Long nodeCountInGraph) {
         this.nodeCountInGraph = nodeCountInGraph;
     }
@@ -76,6 +80,7 @@ public class CjGraphMetaElement extends CjElement implements ICjGraphMeta {
         return nodeCountInGraph;
     }
 
+    @Override
     public void nodeCountTotal(Long nodeCountTotal) {
         this.nodeCountTotal = nodeCountTotal;
     }

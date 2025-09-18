@@ -6,7 +6,6 @@ import com.calpano.graphinout.base.cj.element.impl.CjElement;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
-import java.util.function.Function;
 
 @SuppressWarnings("UnusedReturnValue")
 public class Graphml2CjStack {
@@ -22,12 +21,6 @@ public class Graphml2CjStack {
 
     public CjElement peek_() {
         return Objects.requireNonNull(current);
-    }
-
-    public void peek_push(Function<CjElement, CjElement> parentChildFun) {
-        CjElement parent = peek_();
-        CjElement child = parentChildFun.apply(parent);
-        push(child);
     }
 
     @Nullable

@@ -2,20 +2,18 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.base.cj.element.ICjLabel;
 import com.calpano.graphinout.base.cj.element.ICjLabelEntry;
+import com.calpano.graphinout.base.cj.element.ICjLabelMutable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static java.util.Optional.ofNullable;
-
 /**
  * A CJ document
  */
-public class CjLabelElement extends CjArrayElement implements ICjLabel {
+public class CjLabelElement extends CjArrayElement implements ICjLabelMutable {
 
     public CjLabelElement(CjElement parent) {
         super(parent, CjType.ArrayOfLabelEntries);
@@ -26,11 +24,11 @@ public class CjLabelElement extends CjArrayElement implements ICjLabel {
         return stream().map(x -> (ICjLabelEntry) x);
     }
 
-    public CjLabelEntryElement entry(Consumer<CjLabelEntryElement> labelEntry) {
+    @Override
+    public void entry(Consumer<CjLabelEntryElement> labelEntry) {
         CjLabelEntryElement entry = new CjLabelEntryElement(this);
         labelEntry.accept(entry);
         add(entry);
-        return entry;
     }
 
     @Override

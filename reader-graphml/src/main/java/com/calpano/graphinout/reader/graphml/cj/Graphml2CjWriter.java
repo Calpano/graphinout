@@ -4,6 +4,7 @@ import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.cj.element.impl.CjHasDataElement;
+import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.IGraphmlData;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
@@ -49,7 +50,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
     /** desc goes to data: <graphml><desc> -> .data.description */
     private static void graphmlDesc(@Nullable IGraphmlDescription desc, CjHasDataElement cjWithData) {
         if (desc == null) return;
-        cjWithData.data(mm -> mm .addProperty("description", desc.value()));
+        cjWithData.data(mm -> mm.addProperty("description", desc.value()));
     }
 
     @Override
@@ -97,15 +98,17 @@ public class Graphml2CjWriter implements GraphmlWriter {
     }
 
     @Override
-    public void edgeStart(IGraphmlEdge edge) throws IOException {
-        parseBuffer.peek_push(parent -> parent.asGraph().addEdge(edgeEvent -> {
-            edgeEvent.id(edge.id());
-            Boolean dir = Objects.requireNonNullElse(edge.directed(),
+    public void edgeStart(IGraphmlEdge graphmlEdge) throws IOException {
+        ICjGraphMutable cjGraph = parseBuffer.peek_().asGraph();
+        cjGraph.addEdge(cjEdge -> {
+            cjEdge.id(graphmlEdge.id());
+            Boolean dir = Objects.requireNonNullElse(graphmlEdge.directed(),
                     // FIXME use graph default
                     false);
-            edgeEvent.addEndpoint(ep -> ep.node(edge.source()).port(edge.sourcePort()).direction(dir ? IN : UNDIR));
-            edgeEvent.addEndpoint(ep -> ep.node(edge.target()).port(edge.targetPort()).direction(dir ? OUT : UNDIR));
-        }));
+            cjEdge.addEndpoint(ep -> ep.node(graphmlEdge.source()).port(graphmlEdge.sourcePort()).direction(dir ? IN : UNDIR));
+            cjEdge.addEndpoint(ep -> ep.node(graphmlEdge.target()).port(graphmlEdge.targetPort()).direction(dir ? OUT : UNDIR));
+            parseBuffer.push(cjEdge);
+        });
     }
 
     @Override
@@ -118,10 +121,12 @@ public class Graphml2CjWriter implements GraphmlWriter {
         // remember for coming edges
         graphStack.push(new GraphmlGraph(graphmlGraph.edgeDefault()));
 
-        parseBuffer.peek_push(parent -> parent.asDocument().addGraph(graphElement -> {
+        CjDocumentElement cjDoc = parseBuffer.peek_().asDocument();
+        cjDoc.addGraph(graphElement -> {
             graphElement.id(graphElement.id());
             graphmlDesc(graphmlGraph.desc(), graphElement);
-        }));
+            parseBuffer.push(graphElement);
+        });
 
         // FIXME
         if (graphmlGraph.locator() != null) {

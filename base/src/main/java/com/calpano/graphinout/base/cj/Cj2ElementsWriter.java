@@ -4,7 +4,7 @@ import com.calpano.graphinout.base.cj.element.ICjDocument;
 import com.calpano.graphinout.base.cj.element.ICjElement;
 import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
 import com.calpano.graphinout.base.cj.element.ICjHasIdMutable;
-import com.calpano.graphinout.base.cj.element.ICjHasMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasPortsMutable;
 import com.calpano.graphinout.base.cj.element.impl.CjDataElement;
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.cj.element.impl.CjEdgeElement;
@@ -202,7 +202,7 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
 
     @Override
     public void portStart() {
-        peek(ICjHasMutable.class).addPort(elements::push);
+        peek(ICjHasPortsMutable.class).addPort(elements::push);
     }
 
     public ICjDocument resultDoc() {

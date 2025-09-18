@@ -2,10 +2,9 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.base.cj.element.ICjDocument;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMeta;
+import com.calpano.graphinout.base.cj.element.ICjDocumentMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
-import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import java.util.stream.Stream;
 /**
  * A CJ document
  */
-public class CjDocumentElement extends CjHasDataElement implements ICjDocument, ICjHasGraphsMutable {
+public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMutable {
 
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private @Nullable String baseUri;
@@ -26,11 +25,11 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocument, 
         super(null);
     }
 
-    public CjGraphElement addGraph(Consumer<CjGraphElement> graph) {
+    @Override
+    public void addGraph(Consumer<CjGraphElement> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
-        return graphElement;
     }
 
     @Nullable
@@ -39,6 +38,7 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocument, 
         return baseUri;
     }
 
+    @Override
     public void baseUri(String baseUri) {
         this.baseUri = baseUri;
     }
@@ -57,8 +57,7 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocument, 
     @Override
     public void fire(CjWriter cjWriter) {
         cjWriter.documentStart();
-        if (baseUri != null)
-            cjWriter.baseUri(baseUri);
+        if (baseUri != null) cjWriter.baseUri(baseUri);
         fireDataMaybe(cjWriter);
 
         cjWriter.list(graphs, CjType.ArrayOfGraphs, CjGraphElement::fire);
@@ -69,14 +68,6 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocument, 
     @Override
     public Stream<ICjGraph> graphs() {
         return graphs.stream().map(x -> (ICjGraph) x);
-    }
-
-    public List<CjGraphElement> graphsMutable() {
-        return graphs;
-    }
-
-    public void setBaseUri(@Nullable String baseUri) {
-        this.baseUri = baseUri;
     }
 
 

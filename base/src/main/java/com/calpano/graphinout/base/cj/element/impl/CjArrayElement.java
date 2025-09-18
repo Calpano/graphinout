@@ -2,16 +2,17 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.element.ICjArrayMutable;
 import com.calpano.graphinout.base.cj.element.ICjElement;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class CjArrayElement extends CjElement implements ICjElement {
+public class CjArrayElement extends CjElement implements ICjElement, ICjArrayMutable {
 
-    final CjType cjType;
     protected final List<CjElement> elements = new ArrayList<>();
+    final CjType cjType;
 
     public CjArrayElement(CjElement parent, CjType cjType) {
         super(parent);
@@ -19,10 +20,7 @@ public class CjArrayElement extends CjElement implements ICjElement {
         this.cjType = cjType;
     }
 
-    public Stream<ICjElement> stream() {
-        return elements.stream().map(x -> (ICjElement) x);
-    }
-
+    @Override
     public void add(CjElement element) {
         elements.add(element);
     }
@@ -37,6 +35,11 @@ public class CjArrayElement extends CjElement implements ICjElement {
         cjType.fireStart(cjWriter);
         elements.forEach(cjElement -> cjElement.fire(cjWriter));
         cjType.fireEnd(cjWriter);
+    }
+
+    @Override
+    public Stream<ICjElement> stream() {
+        return elements.stream().map(x -> (ICjElement) x);
     }
 
 }

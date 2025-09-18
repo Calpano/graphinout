@@ -6,6 +6,6 @@ import java.util.function.Consumer;
 
 public interface ICjHasGraphsMutable extends ICjHasGraphs {
 
-    CjGraphElement addGraph(Consumer<CjGraphElement> consumer);
+    void addGraph(Consumer<CjGraphElement> consumer);
 
 }

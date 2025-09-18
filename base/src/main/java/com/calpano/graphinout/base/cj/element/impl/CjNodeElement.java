@@ -7,14 +7,14 @@ import com.calpano.graphinout.base.cj.element.ICjNode;
 import com.calpano.graphinout.base.cj.element.ICjPort;
 import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
 import com.calpano.graphinout.base.cj.element.ICjHasIdMutable;
-import com.calpano.graphinout.base.cj.element.ICjHasMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasPortsMutable;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNode, ICjHasIdMutable, ICjHasGraphsMutable, ICjHasMutable {
+public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNode, ICjHasIdMutable, ICjHasGraphsMutable, ICjHasPortsMutable {
 
     private final List<CjPortElement> ports = new java.util.ArrayList<>();
     private final List<CjGraphElement> graphs = new java.util.ArrayList<>();
@@ -24,20 +24,18 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNode, 
         super(parent);
     }
 
-    public CjGraphElement addGraph(Consumer<CjGraphElement> graph) {
+    public void addGraph(Consumer<CjGraphElement> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
-        return graphElement;
     }
 
 
-    public CjPortElement addPort(Consumer<CjPortElement> port) {
+    public void addPort(Consumer<CjPortElement> port) {
         CjPortElement portElement = new CjPortElement(this);
         port.accept(portElement);
         // TODO validate resulting portElement
         ports.add(portElement);
-        return portElement;
     }
 
     @Override

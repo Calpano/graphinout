@@ -4,8 +4,8 @@ import com.calpano.graphinout.base.cj.element.impl.CjPortElement;
 
 import java.util.function.Consumer;
 
-public interface ICjHasMutable extends ICjHasPorts {
+public interface ICjHasPortsMutable extends ICjHasPorts {
 
-    CjPortElement addPort(Consumer<CjPortElement> consumer);
+    void addPort(Consumer<CjPortElement> consumer);
 
 }

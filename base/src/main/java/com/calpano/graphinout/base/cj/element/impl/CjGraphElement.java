@@ -5,9 +5,8 @@ import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjEdge;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
 import com.calpano.graphinout.base.cj.element.ICjGraphMeta;
+import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
 import com.calpano.graphinout.base.cj.element.ICjNode;
-import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
-import com.calpano.graphinout.base.cj.element.ICjHasIdMutable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph, ICjHasIdMutable, ICjHasGraphsMutable {
+public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraphMutable {
 
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private final List<CjNodeElement> nodes = new ArrayList<>();
@@ -27,25 +26,25 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
         super(parent);
     }
 
-    public CjEdgeElement addEdge(Consumer<CjEdgeElement> edge) {
+    @Override
+    public void addEdge(Consumer<CjEdgeElement> edge) {
         CjEdgeElement edgeEvent = new CjEdgeElement(this);
         edge.accept(edgeEvent);
         edges.add(edgeEvent);
-        return edgeEvent;
     }
 
-    public CjGraphElement addGraph(Consumer<CjGraphElement> graph) {
+    @Override
+    public void addGraph(Consumer<CjGraphElement> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
-        return graphElement;
     }
 
-    public CjNodeElement addNode(Consumer<CjNodeElement> node) {
+    @Override
+    public void addNode(Consumer<CjNodeElement> node) {
         CjNodeElement n = new CjNodeElement(this);
         node.accept(n);
         nodes.add(n);
-        return n;
     }
 
     @Override
@@ -56,10 +55,6 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
     @Override
     public Stream<ICjEdge> edges() {
         return edges.stream().map(x -> (ICjEdge) x);
-    }
-
-    public List<CjEdgeElement> edgesMutable() {
-        return edges;
     }
 
     @Override
@@ -88,10 +83,12 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
         return id;
     }
 
+    @Override
     public void id(String id) {
         this.id = id;
     }
 
+    @Override
     public void meta(Consumer<CjGraphMetaElement> meta) {
         this.meta = new CjGraphMetaElement(this);
         meta.accept(this.meta);
@@ -106,10 +103,6 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
     @Override
     public Stream<ICjNode> nodes() {
         return nodes.stream().map(x -> (ICjNode) x);
-    }
-
-    public List<CjNodeElement> nodesMutable() {
-        return nodes;
     }
 
 }

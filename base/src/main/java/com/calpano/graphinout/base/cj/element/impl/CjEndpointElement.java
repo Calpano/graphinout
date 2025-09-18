@@ -3,13 +3,13 @@ package com.calpano.graphinout.base.cj.element.impl;
 import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.base.cj.element.ICjEndpoint;
+import com.calpano.graphinout.base.cj.element.ICjEndpointMutable;
 
 import javax.annotation.Nullable;
 
 import static java.util.Optional.ofNullable;
 
-public class CjEndpointElement extends CjHasDataElement implements ICjEndpoint {
+public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMutable {
 
     private String node;
     private @Nullable String port;
@@ -53,11 +53,13 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpoint {
         return node;
     }
 
+    @Override
     public CjEndpointElement node(String node) {
         this.node = node;
         return this;
     }
 
+    @Override
     public CjEndpointElement port(@Nullable String port) {
         this.port = port;
         return this;
@@ -69,6 +71,7 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpoint {
         return port;
     }
 
+    @Override
     public void type(@Nullable String type) {
         this.type = type;
     }
@@ -79,6 +82,7 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpoint {
         return type;
     }
 
+    @Override
     public void typeNode(@Nullable String typeNode) {
         this.typeNode = typeNode;
     }
@@ -89,6 +93,7 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpoint {
         return typeNode;
     }
 
+    @Override
     public void typeUri(@Nullable String typeUri) {
         this.typeUri = typeUri;
     }

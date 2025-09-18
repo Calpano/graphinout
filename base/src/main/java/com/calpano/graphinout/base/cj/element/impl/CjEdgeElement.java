@@ -3,11 +3,9 @@ package com.calpano.graphinout.base.cj.element.impl;
 import com.calpano.graphinout.base.cj.CjEdgeType;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.base.cj.element.ICjEdge;
+import com.calpano.graphinout.base.cj.element.ICjEdgeMutable;
 import com.calpano.graphinout.base.cj.element.ICjEndpoint;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
-import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
-import com.calpano.graphinout.base.cj.element.ICjHasIdMutable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -17,7 +15,7 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 
-public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdge, ICjHasIdMutable, ICjHasGraphsMutable {
+public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMutable {
 
     private final List<CjEndpointElement> endpoints = new ArrayList<>();
     private final List<CjGraphElement> graphs = new ArrayList<>();
@@ -28,17 +26,18 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdge, 
         super(parent);
     }
 
+    @Override
     public void addEndpoint(Consumer<CjEndpointElement> endpoint) {
         CjEndpointElement endpointElement = new CjEndpointElement(this);
         endpoint.accept(endpointElement);
         endpoints.add(endpointElement);
     }
 
-    public CjGraphElement addGraph(Consumer<CjGraphElement> graph) {
+    @Override
+    public void addGraph(Consumer<CjGraphElement> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
-        return graphElement;
     }
 
     @Override
@@ -46,10 +45,12 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdge, 
         return CjType.Edge;
     }
 
+    @Override
     public CjEdgeType edgeType() {
         return edgeType;
     }
 
+    @Override
     public void edgeType(CjEdgeType edgeType) {
         this.edgeType = edgeType;
     }
@@ -84,6 +85,7 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdge, 
         return id;
     }
 
+    @Override
     public void id(@Nullable String id) {
         this.id = id;
     }
