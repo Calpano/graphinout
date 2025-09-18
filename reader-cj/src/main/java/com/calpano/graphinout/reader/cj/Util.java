@@ -1,27 +1,6 @@
 package com.calpano.graphinout.reader.cj;
 
-import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.foundation.json.JsonType;
-
-import java.util.Set;
-
 public class Util {
-
-    public static CjType findExactlyOne(Set<CjType> set, JsonType jsonType) {
-        CjType found = null;
-        for (CjType element : set) {
-            if (element.hasJsonType(jsonType)) {
-                if (found != null) {
-                    throw new IllegalArgumentException("Expected exactly one element matching '" + jsonType + "', but found at least two in " + set);
-                }
-                found = element;
-            }
-        }
-        if (found == null) {
-            throw new IllegalArgumentException("Expected exactly one element matching '" + jsonType + "', but found none in " + set);
-        }
-        return found;
-    }
 
     /**
      * Is this a valid ISO language code as defined in <a href="https://datatracker.ietf.org/doc/html/rfc5646">RFC

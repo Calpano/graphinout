@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.cj;
 
+import com.calpano.graphinout.foundation.json.json5.Json5Reader;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
@@ -7,7 +8,7 @@ import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
-import com.calpano.graphinout.foundation.json.Json5Preprocessor;
+import com.calpano.graphinout.foundation.json.json5.Json5Preprocessor;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

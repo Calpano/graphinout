@@ -185,6 +185,22 @@ public enum CjType {
         this.jsonTypes = jsonTypes;
     }
 
+    public static CjType findExactlyOne(Set<CjType> set, JsonType jsonType) {
+        CjType found = null;
+        for (CjType element : set) {
+            if (element.hasJsonType(jsonType)) {
+                if (found != null) {
+                    throw new IllegalArgumentException("Expected exactly one element matching '" + jsonType + "', but found at least two in " + set);
+                }
+                found = element;
+            }
+        }
+        if (found == null) {
+            throw new IllegalArgumentException("Expected exactly one element matching '" + jsonType + "', but found none in " + set);
+        }
+        return found;
+    }
+
     // TODO remove or move to Array?
     public void fireEnd(CjWriter cjWriter) {
         assert isContainer() : "This event is not a container";

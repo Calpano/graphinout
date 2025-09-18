@@ -1,7 +1,7 @@
-package com.calpano.graphinout.reader.cj.json;
+package com.calpano.graphinout.foundation.json;
 
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
-import com.calpano.graphinout.foundation.json.Json5Preprocessor;
+import com.calpano.graphinout.foundation.json.json5.Json5Preprocessor;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
@@ -15,9 +15,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.calpano.graphinout.foundation.input.SingleInputSourceOfString.inputSource;
-import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES;
 
-class Json5PreprocessorTest {
+class Json5Preprocessor2Test {
 
     /** Testing JSON 5 extensions */
     static final List<SingleInputSourceOfString> inputsJson5 = List.of(

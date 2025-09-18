@@ -25,11 +25,11 @@ public class GraphmlValidator {
     /**
      * includes parseInfo and attribute types extension; from http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd
      */
-    static final String xmlSchemaResource = "/graphml-1.1.xsd.xml";
+    static final String xmlSchemaResource = "/schema/graphml-1.1.xsd.xml";
     /**
      * From http://graphml.graphdrawing.org/dtds/1.0rc/graphml.dtd
      */
-    static final String dtdResource = "/graphml-1.0rc.dtd";
+    static final String dtdResource = "/schema/graphml-1.0rc.dtd";
     private static final Logger log = getLogger(GraphmlValidator.class);
 
     /**

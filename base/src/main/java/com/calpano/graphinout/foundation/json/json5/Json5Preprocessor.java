@@ -1,4 +1,4 @@
-package com.calpano.graphinout.foundation.json;
+package com.calpano.graphinout.foundation.json.json5;
 
 public class Json5Preprocessor {
 

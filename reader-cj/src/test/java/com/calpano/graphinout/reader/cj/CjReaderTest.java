@@ -36,7 +36,10 @@ class CjReaderTest {
     private Consumer<ContentError> errorConsumer;
 
     private static Stream<String> getResourceFilePaths() {
-        return new ClassGraph().scan().getAllResources().stream().map(Resource::getPath).filter(ConnectedJsonReader.FORMAT::matches);
+        return new ClassGraph().scan().getAllResources().stream()
+                .map(Resource::getPath).
+                filter(ConnectedJsonReader.FORMAT::matches)
+                .filter(path -> !path.contains("/extended/"));
     }
 
     @AfterEach

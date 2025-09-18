@@ -1,4 +1,4 @@
-package com.calpano.graphinout.reader.cj;
+package com.calpano.graphinout.base.cj;
 
 import com.calpano.graphinout.base.cj.impl.LoggingCjWriter;
 import com.calpano.graphinout.foundation.input.InputSource;
@@ -48,7 +48,7 @@ class Json2CjTest {
     @Test
     void testCompleteExample() throws URISyntaxException, IOException {
         String resourceName = "example.connected.json5";
-        ClassLoader classLoader = Convert.class.getClassLoader();
+        ClassLoader classLoader = getClass().getClassLoader();
         URL resourceUrl = classLoader.getResource(resourceName);
         assertNotNull(resourceUrl, "Resource file should exist: " + resourceName);
 

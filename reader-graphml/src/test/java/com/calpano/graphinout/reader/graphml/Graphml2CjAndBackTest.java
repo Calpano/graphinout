@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  *
  */
-public class CjGraphmlTest {
+public class Graphml2CjAndBackTest {
 
     static Stream<Arguments> graphmlFileProvider() throws Exception {
         return Stream.concat(XmlTest.graphmlFileProvider(), graphmlFileProvider_local());

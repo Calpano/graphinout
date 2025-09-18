@@ -1,4 +1,4 @@
-package com.calpano.graphinout.reader.cj;
+package com.calpano.graphinout.foundation.json.json5;
 
 import com.calpano.graphinout.base.gio.GioDocument;
 import com.calpano.graphinout.base.gio.GioEdge;
@@ -11,7 +11,6 @@ import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import com.calpano.graphinout.foundation.json.Json5Preprocessor;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;

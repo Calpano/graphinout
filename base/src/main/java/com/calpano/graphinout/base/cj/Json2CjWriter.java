@@ -1,10 +1,5 @@
-package com.calpano.graphinout.reader.cj;
+package com.calpano.graphinout.base.cj;
 
-import com.calpano.graphinout.base.cj.CjDirection;
-import com.calpano.graphinout.base.cj.CjEdgeType;
-import com.calpano.graphinout.base.cj.CjEdgeTypeSource;
-import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
@@ -48,7 +43,7 @@ public class Json2CjWriter implements JsonWriter {
         }
 
         public CjType expectedCjType(JsonType jsonType) {
-            return Util.findExactlyOne(expectedCjTypes(), jsonType);
+            return CjType.findExactlyOne(expectedCjTypes(), jsonType);
         }
 
         public Set<CjType> expectedCjTypes() {
@@ -137,7 +132,7 @@ public class Json2CjWriter implements JsonWriter {
             if (expected.isEmpty()) {
                 throw new IllegalArgumentException("Expected CJ type on stack, but found none.");
             }
-            CjType cjType = Util.findExactlyOne(expected, JsonType.Array);
+            CjType cjType = CjType.findExactlyOne(expected, JsonType.Array);
             parseStack.push(cjType);
             if(cjType == CjType.ArrayOfLabelEntries) {
                cjWriter.labelStart();
@@ -197,7 +192,7 @@ public class Json2CjWriter implements JsonWriter {
             if (expected.isEmpty()) {
                 throw new IllegalArgumentException("Expected CJ type on stack, but found none.");
             }
-            CjType cjType = Util.findExactlyOne(expected, JsonType.Object);
+            CjType cjType = CjType.findExactlyOne(expected, JsonType.Object);
             parseStack.push(cjType);
             switch (cjType) {
                 case Graph -> cjWriter.graphStart();

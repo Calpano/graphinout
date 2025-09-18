@@ -1,5 +1,6 @@
 package com.calpano.graphinout.foundation.json;
 
+import com.calpano.graphinout.foundation.json.json5.Json5Preprocessor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -1,7 +1,5 @@
-package com.calpano.graphinout.reader.cj;
+package com.calpano.graphinout.base.cj;
 
-import com.calpano.graphinout.base.cj.Cj2ElementsWriter;
-import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.element.ICjData;
 import com.calpano.graphinout.base.cj.element.ICjDocument;
 import com.calpano.graphinout.base.cj.element.ICjEdge;
@@ -49,11 +47,11 @@ public class CjElementsParsingTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"sample-3.cj.canonical.json",
-            "sample-2.cj.canonical.json",
-            "sample-2b.cj.canonical.json",
-            "sample-1b.cj.canonical.json",
-            "sample-1.cj.canonical.json"
+    @ValueSource(strings = {"json/cj/canonical/sample-3.cj.canonical.json",
+            "json/cj/canonical/sample-2.cj.canonical.json",
+            "json/cj/canonical/sample-2b.cj.canonical.json",
+            "json/cj/canonical/sample-1b.cj.canonical.json",
+            "json/cj/canonical/sample-1.cj.canonical.json"
     })
     public void testParse(String resourceName) throws IOException {
         ICjDocument doc = toCjDoc(resourceName);
@@ -62,7 +60,7 @@ public class CjElementsParsingTest {
 
     @Test
     public void testParseConnectedJsonDocument() throws IOException {
-        ICjDocument doc = toCjDoc("sample-1.cj.canonical.json");
+        ICjDocument doc = toCjDoc("json/cj/canonical/sample-1.cj.canonical.json");
         // Test document-level nodes and edges
         ICjGraph graph_0 = doc.graphs().findFirst().orElseThrow();
 

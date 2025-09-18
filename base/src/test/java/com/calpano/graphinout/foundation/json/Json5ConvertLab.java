@@ -1,6 +1,6 @@
-package com.calpano.graphinout.reader.cj;
+package com.calpano.graphinout.foundation.json;
 
-import com.calpano.graphinout.foundation.json.Json5Preprocessor;
+import com.calpano.graphinout.foundation.json.json5.Json5Preprocessor;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -10,12 +10,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class Convert {
+public class Json5ConvertLab {
 
     public static void main(String[] args) throws URISyntaxException {
         try {
             String resourceName = "example.connected.json5";
-            ClassLoader classLoader = Convert.class.getClassLoader();
+            ClassLoader classLoader = Json5ConvertLab.class.getClassLoader();
             URL resourceUrl = classLoader.getResource(resourceName);
             Path inputPath = Paths.get(resourceUrl.toURI());
             String json5Content = Files.readString(inputPath, StandardCharsets.UTF_8);

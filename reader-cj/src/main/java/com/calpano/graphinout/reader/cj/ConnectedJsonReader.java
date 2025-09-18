@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.cj;
 
+import com.calpano.graphinout.base.cj.Json2CjWriter;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
@@ -14,7 +15,7 @@ import java.util.function.Consumer;
 public class ConnectedJsonReader implements GioReader {
 
     public static final GioFileFormat FORMAT = new GioFileFormat("connected-json", "Connected JSON Format", //
-            ".con.json", ".connected.json");
+            ".con.json", ".connected.json",".cj.json");
     private @Nullable Consumer<ContentError> errorHandler;
 
     @Override

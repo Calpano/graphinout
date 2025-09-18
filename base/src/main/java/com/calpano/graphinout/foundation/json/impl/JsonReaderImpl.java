@@ -2,7 +2,7 @@ package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import com.calpano.graphinout.foundation.json.Json5Preprocessor;
+import com.calpano.graphinout.foundation.json.json5.Json5Preprocessor;
 import com.calpano.graphinout.foundation.json.JsonReader;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.fasterxml.jackson.core.JsonFactory;

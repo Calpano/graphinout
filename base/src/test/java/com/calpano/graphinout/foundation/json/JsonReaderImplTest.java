@@ -1,4 +1,4 @@
-package com.calpano.graphinout.reader.cj.json;
+package com.calpano.graphinout.foundation.json;
 
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
 import com.calpano.graphinout.foundation.json.impl.JsonReaderImpl;

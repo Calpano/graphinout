@@ -7,6 +7,10 @@ import java.math.BigInteger;
 
 public interface IJsonPrimitive extends IJsonValue {
 
+    default <T> T baseT() {
+        return (T) base();
+    }
+
     default void fire(JsonWriter jsonWriter) {
         switch (jsonType()) {
             case Null -> jsonWriter.onNull();

@@ -1,4 +1,4 @@
-package com.calpano.graphinout.reader.cj;
+package com.calpano.graphinout.foundation.json;
 
 import com.calpano.graphinout.base.gio.GioDocument;
 import com.calpano.graphinout.base.gio.GioEdge;
@@ -7,6 +7,7 @@ import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
+import com.calpano.graphinout.foundation.json.json5.Json5Reader;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +62,7 @@ class Json5ReaderTest {
 
     @Test
     void shouldParseExampleConnectedJson5File() throws IOException {
-        URL resourceUrl = ClassLoader.getSystemResource("example.connected.json5");
+        URL resourceUrl = ClassLoader.getSystemResource("json5/cj-extended-json5/example.connected.json5");
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
         SingleInputSource singleInputSource = SingleInputSource.of("example.connected.json5", content);
 

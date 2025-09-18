@@ -28,7 +28,7 @@ public class CjJacksonParsingTest {
 
         // load resource "sample-1.cj.json"
         // Use ClassLoader to get the resource URL
-        java.net.URL resourceUrl = getClass().getClassLoader().getResource("sample-1.cj.json");
+        java.net.URL resourceUrl = getClass().getClassLoader().getResource("json/cj/extended/sample-1.cj.json");
         assertThat(resourceUrl).isNotNull();
         File jsonFile = new File(resourceUrl.getFile());
         CjJacksonDocument doc = objectMapper.readValue(jsonFile, CjJacksonDocument.class);
