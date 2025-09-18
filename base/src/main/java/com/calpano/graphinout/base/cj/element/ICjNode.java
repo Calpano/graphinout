@@ -3,10 +3,9 @@ package com.calpano.graphinout.base.cj.element;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface ICjNode extends ICjNodeProperties, ICjWithGraphs {
+public interface ICjNode extends ICjWithId, ICjWithGraphs {
 
     @Nullable
     ICjData data();

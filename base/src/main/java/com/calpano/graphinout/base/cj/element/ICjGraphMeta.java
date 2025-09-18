@@ -1,4 +1,22 @@
 package com.calpano.graphinout.base.cj.element;
 
-public interface ICjGraphMeta extends ICjGraphMetaProperties {
+import javax.annotation.Nullable;
+
+public interface ICjGraphMeta {
+
+    @Nullable
+    Boolean canonical();
+
+    @Nullable
+    Long edgeCountInGraph();
+
+    @Nullable
+    Long edgeCountTotal();
+
+    @Nullable
+    Long nodeCountInGraph();
+
+    @Nullable
+    Long nodeCountTotal();
+
 }

@@ -1,13 +1,19 @@
 package com.calpano.graphinout.base.cj.element;
 
+import com.calpano.graphinout.base.cj.CjEdgeType;
+
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Stream;
 
-public interface ICjEdge extends ICjEdgeProperties, ICjWithGraphs {
+public interface ICjEdge extends ICjWithGraphs, ICjWithId {
+
 
     @Nullable
     ICjData data();
+
+    @Nullable
+    CjEdgeType edgeType();
 
     Stream<ICjEndpoint> endpoints();
 
@@ -19,7 +25,7 @@ public interface ICjEdge extends ICjEdgeProperties, ICjWithGraphs {
      * IllegalStateException if this edge has more than one source.
      */
     default @Nullable ICjEndpoint source() throws IllegalStateException {
-        List<ICjEndpoint> sources = endpoints().filter(ICjEndpointProperties::isSource).toList();
+        List<ICjEndpoint> sources = endpoints().filter(ICjEndpoint::isSource).toList();
         if (sources.size() == 1) {
             return sources.getFirst();
         } else if (sources.isEmpty()) {
@@ -30,7 +36,7 @@ public interface ICjEdge extends ICjEdgeProperties, ICjWithGraphs {
     }
 
     default @Nullable ICjEndpoint target() throws IllegalStateException {
-        List<ICjEndpoint> targets = endpoints().filter(ICjEndpointProperties::isTarget).toList();
+        List<ICjEndpoint> targets = endpoints().filter(ICjEndpoint::isTarget).toList();
         if (targets.size() == 1) {
             return targets.getFirst();
         } else if (targets.isEmpty()) {

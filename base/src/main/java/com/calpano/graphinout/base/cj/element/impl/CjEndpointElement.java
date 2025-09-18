@@ -4,7 +4,6 @@ import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjEndpoint;
-import com.calpano.graphinout.base.cj.element.ICjEndpointProperties;
 
 import javax.annotation.Nullable;
 

@@ -1,12 +1,15 @@
 package com.calpano.graphinout.base.cj.element;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import javax.annotation.Nullable;
 
-public interface ICjLabelEntry extends ICjElement, ICjLabelEntryProperties {
+public interface ICjLabelEntry extends ICjElement {
 
     @Nullable
     ICjData data();
+
+    @Nullable
+    String language();
+
+    String value();
 
 }

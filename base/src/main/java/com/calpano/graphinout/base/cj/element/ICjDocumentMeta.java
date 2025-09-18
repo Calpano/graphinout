@@ -1,4 +1,13 @@
 package com.calpano.graphinout.base.cj.element;
 
-public interface ICjDocumentMeta extends ICjDocumentMetaProperties {
+import javax.annotation.Nullable;
+
+public interface ICjDocumentMeta {
+
+    @Nullable
+    String versionDate();
+
+    @Nullable
+    String versionNumber();
+
 }

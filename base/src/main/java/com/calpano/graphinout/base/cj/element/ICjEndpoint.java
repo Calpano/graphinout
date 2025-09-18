@@ -1,12 +1,38 @@
 package com.calpano.graphinout.base.cj.element;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.calpano.graphinout.base.cj.CjDirection;
 
 import javax.annotation.Nullable;
 
-public interface ICjEndpoint extends ICjEndpointProperties {
+public interface ICjEndpoint {
 
     @Nullable
     ICjData data();
+
+    @Nullable
+    CjDirection direction();
+
+    default boolean isSource() {
+        return direction() == CjDirection.IN;
+    }
+
+    default boolean isTarget() {
+        return direction() == CjDirection.OUT;
+    }
+
+    String node();
+
+    @Nullable
+    String port();
+
+    @Nullable
+    String type();
+
+    @Nullable
+    String typeNode();
+
+    @Nullable
+    String typeUri();
+
 
 }
