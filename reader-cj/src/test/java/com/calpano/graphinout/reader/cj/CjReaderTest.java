@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.verifyNoInteractions;
 
-@Disabled
+//@Disabled
 class CjReaderTest {
 
     public static final String EMPTY_FILE = "";

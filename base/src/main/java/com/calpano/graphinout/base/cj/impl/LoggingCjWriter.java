@@ -31,7 +31,7 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
     }
 
     public enum CjEvent {
-        ArrayOfGraphsStart, ArrayOfGraphsEnd, ArrayOfEdgesStart, ArrayOfEdgesEnd, ArrayOfNodesStart, ArrayOfNodesEnd, ArrayOfPortsStart, ArrayOfPortsEnd, ArrayOfLabelEntriesStart, ArrayOfLabelEntriesEnd, ArrayOfEndpointsStart, ArrayOfEndpointsEnd, ArrayOfLabelEntryStart, ArrayOfLabelEntryEnd, EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, EdgeType, NodeId, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Graph__Canonical, Meta__EdgeCountInGraph, Meta__EdgeCountTotal, Meta__NodeCountInGraph, Meta__NodeCountTotal, MetaEnd, MetaStart, Value, DataStart, DataEnd
+        ArrayOfGraphsStart, ArrayOfGraphsEnd, ArrayOfEdgesStart, ArrayOfEdgesEnd, ArrayOfNodesStart, ArrayOfNodesEnd, ArrayOfPortsStart, ArrayOfPortsEnd, ArrayOfLabelEntriesStart, ArrayOfLabelEntriesEnd, ArrayOfEndpointsStart, ArrayOfEndpointsEnd, ArrayOfLabelEntryStart, ArrayOfLabelEntryEnd, EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, EdgeType, NodeId, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Meta__Canonical, Meta__EdgeCountInGraph, Meta__EdgeCountTotal, Meta__NodeCountInGraph, Meta__NodeCountTotal, MetaEnd, MetaStart, Value, DataStart, DataEnd
     }
 
     enum CommaState {First, Container, Key}
@@ -116,8 +116,8 @@ public class LoggingCjWriter extends LoggingJsonWriter implements CjWriter {
 
     }
 
-    public void graph__canonical(boolean b) {
-        onCj(CjEvent.Graph__Canonical, b);
+    public void meta__canonical(boolean b) {
+        onCj(CjEvent.Meta__Canonical, b);
     }
 
     @Override

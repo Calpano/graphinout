@@ -5,9 +5,6 @@ public class CjConstants {
     /** Graph base URI for RDF interpretation */
     public static final String ROOT__BASE_URI = "baseUri";
 
-    /** Graph */
-    public static final String CANONICAL = "canonical";
-
     /** Data */
     public static final String DATA = "data";
     /** Edge endpoint direction (in/out/undir) */

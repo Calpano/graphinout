@@ -6,21 +6,30 @@ import javax.annotation.Nullable;
 
 public interface ICjEndpointProperties {
 
+    @Nullable
+    CjDirection direction();
+
+    default boolean isSource() {
+        return direction() == CjDirection.IN;
+    }
+
+    default boolean isTarget() {
+        return direction() == CjDirection.OUT;
+    }
+
     String node();
 
     @Nullable
     String port();
 
     @Nullable
-    CjDirection direction();
+    String type();
 
     @Nullable
-    String type();
+    String typeNode();
 
     @Nullable
     String typeUri();
 
-    @Nullable
-    String typeNode();
 
 }

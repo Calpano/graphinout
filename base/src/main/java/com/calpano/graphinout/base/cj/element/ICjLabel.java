@@ -1,12 +1,10 @@
 package com.calpano.graphinout.base.cj.element;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
+import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
+public interface ICjLabel extends ICjElement {
 
-public interface ICjLabel extends ICjLabelProperties {
-
-    @Nullable
-    JsonNode data();
+    Stream<ICjLabelEntry> entries();
 
 }

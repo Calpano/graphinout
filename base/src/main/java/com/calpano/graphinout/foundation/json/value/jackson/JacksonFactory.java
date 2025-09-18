@@ -5,7 +5,7 @@ import com.calpano.graphinout.foundation.json.value.IAppendableJsonObject;
 import com.calpano.graphinout.foundation.json.value.IJsonArray;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonObject;
-import com.calpano.graphinout.foundation.json.value.IJsonValue;
+import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import java.math.BigDecimal;
@@ -28,42 +28,42 @@ public class JacksonFactory implements IJsonFactory {
     }
 
     @Override
-    public IJsonValue createBigDecimal(BigDecimal bigDecimal) {
+    public IJsonPrimitive createBigDecimal(BigDecimal bigDecimal) {
         return JacksonPrimitive.of(nodeFactory.numberNode(bigDecimal));
     }
 
     @Override
-    public IJsonValue createBigInteger(BigInteger bigInteger) {
+    public IJsonPrimitive createBigInteger(BigInteger bigInteger) {
         return JacksonPrimitive.of(nodeFactory.numberNode(bigInteger));
     }
 
     @Override
-    public IJsonValue createBoolean(boolean b) {
+    public IJsonPrimitive createBoolean(boolean b) {
         return JacksonPrimitive.of(nodeFactory.booleanNode(b));
     }
 
     @Override
-    public IJsonValue createDouble(double d) {
+    public IJsonPrimitive createDouble(double d) {
         return JacksonPrimitive.of(nodeFactory.numberNode(d));
     }
 
     @Override
-    public IJsonValue createFloat(float f) {
+    public IJsonPrimitive createFloat(float f) {
         return JacksonPrimitive.of(nodeFactory.numberNode(f));
     }
 
     @Override
-    public IJsonValue createInteger(int i) {
+    public IJsonPrimitive createInteger(int i) {
         return JacksonPrimitive.of(nodeFactory.numberNode(i));
     }
 
     @Override
-    public IJsonValue createLong(long l) {
+    public IJsonPrimitive createLong(long l) {
         return JacksonPrimitive.of(nodeFactory.numberNode(l));
     }
 
     @Override
-    public IJsonValue createNull() {
+    public IJsonPrimitive createNull() {
         return JacksonPrimitive.of(nodeFactory.nullNode());
     }
 
@@ -78,7 +78,7 @@ public class JacksonFactory implements IJsonFactory {
     }
 
     @Override
-    public IJsonValue createString(String s) {
+    public IJsonPrimitive createString(String s) {
         return JacksonPrimitive.of(nodeFactory.textNode(s));
     }
 

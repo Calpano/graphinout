@@ -1,5 +1,8 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
+import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.element.ICjLabelEntry;
+
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
@@ -19,6 +22,13 @@ public abstract class CjWithDataAndLabelElement extends CjWithDataElement {
 
     public @Nullable CjLabelElement label() {
         return labelElement;
+    }
+
+    protected void fireLabelMaybe(CjWriter cjWriter) {
+        if(labelElement!=null) {
+            labelElement.fire(cjWriter);
+        }
+
     }
 
 }

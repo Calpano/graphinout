@@ -75,8 +75,8 @@ public class DelegatingCjWriter extends DelegatingJsonWriter implements CjWriter
     }
 
     @Override
-    public void graph__canonical(boolean b) {
-        forEachWriter(cjWriter -> cjWriter.graph__canonical(b));
+    public void meta__canonical(boolean b) {
+        forEachWriter(cjWriter -> cjWriter.meta__canonical(b));
     }
 
     @Override

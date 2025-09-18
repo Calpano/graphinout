@@ -2,35 +2,20 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.foundation.json.value.IAppendableJsonObject;
-import com.calpano.graphinout.foundation.json.value.IJsonFactory;
+import com.calpano.graphinout.base.cj.element.ICjData;
+import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
+import com.calpano.graphinout.foundation.json.impl.MagicMutableJsonValue;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
-import com.calpano.graphinout.foundation.json.value.jackson.JacksonAppendableObject;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.calpano.graphinout.foundation.json.value.java.JavaJsonFactory;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Set;
 
-public class CjDataElement extends CjWithDataElement implements ICjElement, IAppendableJsonObject {
+public class CjDataElement extends CjWithDataElement implements ICjData {
 
-    private JacksonAppendableObject dataObject = null;
+    private final MagicMutableJsonValue magic = new MagicMutableJsonValue(JavaJsonFactory.INSTANCE, null);
 
     CjDataElement(@Nullable CjWithDataElement parent) {
         super(parent);
-    }
-
-    @Override
-    public IAppendableJsonObject addProperty(String key, IJsonValue jsonValue) {
-        ensureDataObject();
-        return dataObject.addProperty(key, jsonValue);
-    }
-
-    @Override
-    public Object base() {
-        ensureDataObject();
-        return dataObject.base();
     }
 
     @Override
@@ -40,41 +25,22 @@ public class CjDataElement extends CjWithDataElement implements ICjElement, IApp
 
     @Override
     public void fire(CjWriter cjWriter) {
-        cjWriter.jsonDataStart();
-        dataObject.fire(cjWriter);
-        cjWriter.jsonDataEnd();
+        if (!magic.isEmpty()) {
+            cjWriter.jsonDataStart();
+            magic.fire(cjWriter);
+            cjWriter.jsonDataEnd();
+        }
     }
 
-
-    @Override
-    public IJsonFactory factory() {
-        ensureDataObject();
-        return dataObject.factory();
+    /** set the given value as the current state */
+    public void jsonNode(IJsonValue jsonValue) {
+        this.magic.addMerge(jsonValue);
     }
 
     @Nullable
     @Override
-    public IJsonValue get(String key) {
-        if (dataObject == null) return null;
-        return dataObject.get(key);
-    }
-
-    @Override
-    public Set<String> keys() {
-        if (dataObject == null) return Collections.emptySet();
-        return dataObject.keys();
-    }
-
-    @Override
-    public int size() {
-        if (dataObject == null) return 0;
-        return dataObject.size();
-    }
-
-    private void ensureDataObject() {
-        if (dataObject == null) {
-            dataObject = new JacksonAppendableObject(new ObjectNode(JsonNodeFactory.instance));
-        }
+    public IMagicMutableJsonValue jsonValueMutable() {
+        return magic;
     }
 
 }

@@ -61,7 +61,7 @@ import static java.util.Objects.requireNonNull;
  * Interprets incoming XML calls. Buffers them. Emits GraphML calls to downstream.
  * <p>
  * Concerns: Parsing GraphML XML vs. generic XML (as it occurs in KEY-DEFAULT or DATA elements). This is handled via
- * {@link XmlMode} and {@link ElementContext#isRawXml}.
+ * {@link XmlMode} and {@link XmlElementContext#isRawXml}.
  */
 public class Xml2GraphmlWriter implements XmlWriter {
 
@@ -71,7 +71,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
 
     /** downstream writer */
     private final GraphmlWriter graphmlWriter;
-    private final ParseContext elementStack = new ParseContext();
+    private final XmlParseContext elementStack = new XmlParseContext();
 
     /**
      * @param graphmlWriter downstream
@@ -112,7 +112,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
     public void characterDataEnd(boolean isInCdata) throws IOException {
         if (characterBuffer.isEmpty()) return;
         if (elementStack.isInterpretedAsGraphml()) {
-            ElementContext context = elementStack.peek_();
+            XmlElementContext context = elementStack.peek_();
             switch (context.xmlElementName) {
                 case DATA -> context.dataBuilder().value(characterBuffer.getStringAndReset());
                 case DESC -> context.descBuilder().value(characterBuffer.getStringAndReset());
@@ -164,7 +164,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
                     // remove corresponding context
                     elementStack.pop(name);
 
-                    ElementContext parent = elementStack.peekNullable();
+                    XmlElementContext parent = elementStack.peekNullable();
                     if (parent != null) {
                         if (!parent.isRawXml && parent.xmlElementName.equals(DATA)) {
                             parent.dataBuilder().containsRawXml(true);
@@ -232,8 +232,8 @@ public class Xml2GraphmlWriter implements XmlWriter {
      * Characters already in builder. Emitted stand-alone.
      */
     private void endDataElement() throws IOException {
-        ElementContext dataContext = elementStack.pop(GraphmlElements.DATA);
-        ElementContext parent = elementStack.peek_(GRAPHML, GRAPH, NODE, EDGE, HYPER_EDGE, PORT);
+        XmlElementContext dataContext = elementStack.pop(GraphmlElements.DATA);
+        XmlElementContext parent = elementStack.peek_(GRAPHML, GRAPH, NODE, EDGE, HYPER_EDGE, PORT);
         parent.maybeWriteStartTo(graphmlWriter);
 
         GraphmlDataBuilder builder = dataContext.dataBuilder();
@@ -253,7 +253,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
 
         String defaultValue = characterBuffer.getStringAndReset();
         IGraphmlDefault value = IGraphmlDefault.builder().value(defaultValue).build();
-        ElementContext parentContext = elementStack.peek_();
+        XmlElementContext parentContext = elementStack.peek_();
         GraphmlKeyBuilder builder = parentContext.keyBuilder();
         builder.defaultValue(value);
         elementStack.mode(XmlMode.Graphml);
@@ -262,7 +262,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
     private void endDescElement() throws IOException {
         elementStack.pop(DESC);
         // Set description for the parent element
-        ElementContext parent = elementStack.peek_();
+        XmlElementContext parent = elementStack.peek_();
         String descValue = characterBuffer.getStringAndReset();
         GraphmlDescription desc = IGraphmlDescription.builder().value(descValue).build();
         switch (parent.xmlElementName) {
@@ -278,15 +278,15 @@ public class Xml2GraphmlWriter implements XmlWriter {
     }
 
     private void endEdgeElement() throws IOException {
-        ElementContext context = elementStack.pop(EDGE);
+        XmlElementContext context = elementStack.pop(EDGE);
         context.writeEndTo(graphmlWriter);
     }
 
     private void endEndpointElement() {
-        ElementContext context = elementStack.pop(GraphmlElements.ENDPOINT);
+        XmlElementContext context = elementStack.pop(GraphmlElements.ENDPOINT);
         // Add the endpoint to the parent hyperedge builder
         if (!elementStack.isEmpty() && context.endpointBuilder() != null) {
-            ElementContext parentContext = elementStack.peek_();
+            XmlElementContext parentContext = elementStack.peek_();
             assert parentContext.hyperEdgeBuilder() != null;
             parentContext.hyperEdgeBuilder().addEndpoint(context.endpointBuilder().build());
         }
@@ -302,13 +302,13 @@ public class Xml2GraphmlWriter implements XmlWriter {
     }
 
     private void endHyperEdgeElement() throws IOException {
-        ElementContext context = elementStack.pop(GraphmlElements.HYPER_EDGE);
+        XmlElementContext context = elementStack.pop(GraphmlElements.HYPER_EDGE);
         context.writeEndTo(graphmlWriter);
     }
 
     private void endKeyElement() throws IOException {
-        ElementContext context = elementStack.pop(GraphmlElements.KEY);
-        ElementContext parentContext = elementStack.peek_();
+        XmlElementContext context = elementStack.pop(GraphmlElements.KEY);
+        XmlElementContext parentContext = elementStack.peek_();
         parentContext.maybeWriteStartTo(graphmlWriter);
 
         IGraphmlKey key = context.keyBuilder().build();
@@ -324,12 +324,12 @@ public class Xml2GraphmlWriter implements XmlWriter {
     }
 
     private void endNodeElement() throws IOException {
-        ElementContext context = elementStack.pop(NODE);
+        XmlElementContext context = elementStack.pop(NODE);
         context.writeEndTo(graphmlWriter);
     }
 
     private void endPortElement() throws IOException {
-        ElementContext context = elementStack.pop(PORT);
+        XmlElementContext context = elementStack.pop(PORT);
         context.writeEndTo(graphmlWriter);
     }
 
@@ -339,7 +339,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
     }
 
     private boolean isContentElement() {
-        ElementContext context = elementStack.peekNullable();
+        XmlElementContext context = elementStack.peekNullable();
         if (context == null) return false;
         return switch (context.xmlElementName) {
             case DATA, DESC, DEFAULT -> true;
@@ -482,7 +482,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
         builder.attributes(attributes);
         ifAttributeNotNull(attributes, ATTRIBUTE_NAME, builder::name);
 
-        ElementContext context = elementStack.push(PORT, attributes, false, builder, XmlMode.Graphml);
+        XmlElementContext context = elementStack.push(PORT, attributes, false, builder, XmlMode.Graphml);
         context.maybeWriteStartTo(graphmlWriter);
     }
 

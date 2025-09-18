@@ -61,6 +61,7 @@ public class Graphml2XmlWriter implements GraphmlWriter {
 
     @Override
     public void documentStart(IGraphmlDocument doc) throws IOException {
+        assert doc != null;
         log.trace("startDocument [{}]", doc);
         xmlWriter.documentStart();
         xmlWriter.elementStart(GraphmlElements.GRAPHML, doc.xmlPlusGraphmlAttributesNormalized());

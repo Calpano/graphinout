@@ -46,7 +46,7 @@ public class Json5PreprocessorTest {
             // A simple way to check for valid JSON is to try to parse it.
             JsonReader jsonReader = new com.calpano.graphinout.foundation.json.impl.JsonReaderImpl();
             com.calpano.graphinout.foundation.input.InputSource inputSource = com.calpano.graphinout.foundation.input.SingleInputSourceOfString.of(jsonFile.toString(), processedContent);
-            com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter writer = new com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter(false);
+            com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter writer = new com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter();
             jsonReader.read(inputSource, writer);
         }, "Processed content should be valid JSON for " + jsonFile);
 

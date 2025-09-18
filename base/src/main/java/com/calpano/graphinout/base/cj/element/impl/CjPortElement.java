@@ -2,13 +2,17 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.base.cj.element.ICjPortProperties;
+import com.calpano.graphinout.base.cj.element.ICjPort;
+import com.calpano.graphinout.base.cj.element.ICjWithMutableId;
+import com.calpano.graphinout.base.cj.element.ICjWithMutablePorts;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
-public class CjPortElement extends CjWithDataElement implements ICjPortProperties, ICjElement {
+public class CjPortElement extends CjWithDataAndLabelElement implements ICjPort, ICjWithMutableId, ICjWithMutablePorts {
 
     private final List<CjPortElement> ports = new ArrayList<>();
 
@@ -19,6 +23,14 @@ public class CjPortElement extends CjWithDataElement implements ICjPortPropertie
     }
 
     @Override
+    public CjPortElement addPort(Consumer<CjPortElement> consumer) {
+        CjPortElement portElement = new CjPortElement(this);
+        consumer.accept(portElement);
+        ports.add(portElement);
+        return portElement;
+    }
+
+    @Override
     public CjType cjType() {
         return CjType.Port;
     }
@@ -26,18 +38,30 @@ public class CjPortElement extends CjWithDataElement implements ICjPortPropertie
     @Override
     public void fire(CjWriter cjWriter) {
         cjWriter.portStart();
-        cjWriter.id(id);
+        cjWriter.maybe(id, cjWriter::id);
         fireDataMaybe(cjWriter);
+        fireLabelMaybe(cjWriter);
+        cjWriter.list(ports, CjType.ArrayOfPorts, CjPortElement::fire);
         cjWriter.portEnd();
-    }
-
-    public List<CjPortElement> getPorts() {
-        return ports;
     }
 
     @Override
     public String id() {
         return id;
+    }
+
+    @Override
+    public void id(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public Stream<ICjPort> ports() {
+        return ports.stream().map(x -> (ICjPort) x);
+    }
+
+    public List<CjPortElement> portsMutable() {
+        return ports;
     }
 
     public void setId(String id) {

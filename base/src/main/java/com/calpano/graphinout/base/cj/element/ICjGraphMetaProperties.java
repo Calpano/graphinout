@@ -8,15 +8,15 @@ public interface ICjGraphMetaProperties {
     Boolean canonical();
 
     @Nullable
-    Integer nodeCountTotal();
+    Long nodeCountTotal();
 
     @Nullable
-    Integer edgeCountTotal();
+    Long edgeCountTotal();
 
     @Nullable
-    Integer nodeCountInGraph();
+    Long nodeCountInGraph();
 
     @Nullable
-    Integer edgeCountInGraph();
+    Long edgeCountInGraph();
 
 }

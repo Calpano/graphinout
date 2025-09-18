@@ -1,6 +1,7 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.element.ICjElement;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 
 import javax.annotation.Nullable;
@@ -14,6 +15,10 @@ public abstract class CjElement implements ICjElement {
     CjElement(@Nullable CjElement parent) {
         this.parent = parent;
         this.isStarted = false;
+    }
+
+    public CjWithDataElement asWithData() {
+        return (CjWithDataElement) this;
     }
 
     public CjDocumentElement asDocument() {
@@ -34,10 +39,6 @@ public abstract class CjElement implements ICjElement {
 
     public CjNodeElement asNode() {
         return (CjNodeElement) this;
-    }
-
-    public CjWithDataElement asObject() {
-        return (CjWithDataElement) this;
     }
 
     public CjPortElement asPort() {

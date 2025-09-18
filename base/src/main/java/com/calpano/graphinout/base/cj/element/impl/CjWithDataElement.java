@@ -1,6 +1,8 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -14,12 +16,18 @@ public abstract class CjWithDataElement extends CjElement {
         super(parent);
     }
 
-    public void data(Consumer<CjDataElement> data) {
-        this.dataElement = new CjDataElement(this);
+    public void data(Consumer<IMagicMutableJsonValue> consumer) {
+        dataElement(de -> consumer.accept(de.jsonValueMutable()));
     }
 
     public @Nullable CjDataElement data() {
         return dataElement;
+    }
+
+    public void dataElement(Consumer<CjDataElement> consumer) {
+        // attach
+        this.dataElement = new CjDataElement(this);
+        consumer.accept(dataElement);
     }
 
     public void fireDataMaybe(CjWriter cjWriter) {

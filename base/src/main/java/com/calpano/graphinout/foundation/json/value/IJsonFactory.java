@@ -14,62 +14,62 @@ public interface IJsonFactory {
     /**
      * Create JSON Number
      */
-    IJsonValue createBigDecimal(BigDecimal bigDecimal);
+    IJsonPrimitive createBigDecimal(BigDecimal bigDecimal);
 
     /**
      * JSON Number
      */
-    IJsonValue createBigInteger(BigInteger bigInteger);
+    IJsonPrimitive createBigInteger(BigInteger bigInteger);
 
     /** Convenience method only used for writing JSON */
-    default IJsonValue createBoolean(@Nullable Boolean b) {
+    default IJsonPrimitive createBoolean(@Nullable Boolean b) {
         return b == null ? createNull() : createBoolean(b.booleanValue());
     }
 
     /**
      * JSON Boolean
      */
-    IJsonValue createBoolean(boolean b);
+    IJsonPrimitive createBoolean(boolean b);
 
     /**
      * JSON Number with decimals, which may be larger than Java {@link Float#MAX_VALUE}
      */
-    IJsonValue createDouble(double d);
+    IJsonPrimitive createDouble(double d);
 
     /**
      * JSON Number with decimals, which is less than or equal to Java {@link Float#MAX_VALUE}
      */
-    IJsonValue createFloat(float f);
+    IJsonPrimitive createFloat(float f);
 
     /** Convenience method only used for writing JSON */
-    default IJsonValue createFloat(@Nullable Float f) {
+    default IJsonPrimitive createFloat(@Nullable Float f) {
         return f == null ? createNull() : createFloat(f.floatValue());
     }
 
     /**
      * JSON Number without decimals, which is less than or equal to Java {@link Integer#MAX_VALUE}
      */
-    IJsonValue createInteger(int i);
+    IJsonPrimitive createInteger(int i);
 
     /** Convenience method only used for writing JSON */
-    default IJsonValue createInteger(@Nullable Integer i) {
+    default IJsonPrimitive createInteger(@Nullable Integer i) {
         return i == null ? createNull() : createInteger(i.intValue());
     }
 
     /**
      * JSON Number without decimals, which may be larger than Java {@link Integer#MAX_VALUE}
      */
-    IJsonValue createLong(long l);
+    IJsonPrimitive createLong(long l);
 
     /** Convenience method only used for writing JSON */
-    default IJsonValue createLong(@Nullable Long l) {
+    default IJsonPrimitive createLong(@Nullable Long l) {
         return l == null ? createNull() : createLong(l.longValue());
     }
 
     /**
      * JSON Null
      */
-    IJsonValue createNull();
+    IJsonPrimitive createNull();
 
     IJsonObject createObject();
 
@@ -78,6 +78,6 @@ public interface IJsonFactory {
     /**
      * JSON String
      */
-    IJsonValue createString(String s);
+    IJsonPrimitive createString(String s);
 
 }

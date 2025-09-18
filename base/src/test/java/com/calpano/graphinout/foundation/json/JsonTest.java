@@ -125,7 +125,7 @@ public class JsonTest {
         // Create a StringBuilderJsonWriter to capture the output
 
         try (SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test-json", jsonContent)) {
-            StringBuilderJsonWriter writer = new StringBuilderJsonWriter(true);
+            StringBuilderJsonWriter writer = new StringBuilderJsonWriter();
             // Process the JSON through the reader/writer pipeline
             jsonReader.read(inputSource, writer);
 

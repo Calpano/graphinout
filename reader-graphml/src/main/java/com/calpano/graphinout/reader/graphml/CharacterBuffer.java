@@ -4,7 +4,7 @@ import com.calpano.graphinout.foundation.xml.DelegatingXmlWriter;
 import com.calpano.graphinout.foundation.xml.Xml2AppendableWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
-class CharacterBuffer extends DelegatingXmlWriter implements XmlWriter {
+public class CharacterBuffer extends DelegatingXmlWriter implements XmlWriter {
 
     private final StringBuilder characterBuffer;
 

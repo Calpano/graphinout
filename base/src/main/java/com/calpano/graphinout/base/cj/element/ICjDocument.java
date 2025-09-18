@@ -4,15 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Stream;
 
-public interface ICjDocument extends ICjDocumentProperties {
+public interface ICjDocument extends ICjDocumentProperties, ICjWithGraphs {
 
     @Nullable
     ICjDocumentMeta connectedJson();
 
     @Nullable
-    JsonNode data();
-
-    List<ICjGraph> graphs();
+    ICjData data();
 
 }

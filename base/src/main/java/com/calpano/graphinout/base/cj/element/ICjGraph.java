@@ -1,25 +1,23 @@
 package com.calpano.graphinout.base.cj.element;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.stream.Stream;
 
-public interface ICjGraph extends ICjGraphProperties {
+public interface ICjGraph extends ICjGraphProperties, ICjElement {
 
     @Nullable
-    ICjGraphMeta meta();
+    ICjData data();
+
+    Stream<ICjEdge> edges();
+
+    Stream<ICjGraph> graphs();
 
     @Nullable
     ICjLabel label();
 
     @Nullable
-    JsonNode data();
+    ICjGraphMeta meta();
 
-    List<ICjNode> nodes();
-
-    List<ICjEdge> edges();
-
-    List<ICjGraph> graphs();
+    Stream<ICjNode> nodes();
 
 }

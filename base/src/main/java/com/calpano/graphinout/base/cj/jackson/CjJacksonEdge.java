@@ -5,22 +5,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CjEdge extends CjExtensibleElement {
+public class CjJacksonEdge extends CjJacksonExtensibleElement {
 
     @JsonProperty("endpoints")
-    private final List<CjEndpoint> endpoints = new ArrayList<>();
+    private final List<CjJacksonEndpoint> endpoints = new ArrayList<>();
     @JsonProperty("id")
-    private Object id;
+    private String id;
     @JsonProperty("source")
-    private Object source;
+    private String source;
     @JsonProperty("target")
-    private Object target;
+    private String target;
     @JsonProperty("sourcePort")
-    private Object sourcePort;
+    private String sourcePort;
     @JsonProperty("targetPort")
-    private Object targetPort;
+    private String targetPort;
     @JsonProperty("label")
-    private Object label;
+    private String label;
 
     @JsonProperty("directed")
     private Boolean directed;
@@ -29,27 +29,27 @@ public class CjEdge extends CjExtensibleElement {
         return directed;
     }
 
-    public List<CjEndpoint> getEndpoints() {
+    public List<CjJacksonEndpoint> getEndpoints() {
         return endpoints;
     }
 
-    public Object getId() {
+    public String getId() {
         return id;
     }
 
-    public Object getLabel() {
+    public String getLabel() {
         return label;
     }
 
-    public Object getSource() {
+    public String getSource() {
         return source;
     }
 
-    public Object getSourcePort() {
+    public String getSourcePort() {
         return sourcePort;
     }
 
-    public Object getTarget() {
+    public String getTarget() {
         return target;
     }
 
@@ -61,32 +61,32 @@ public class CjEdge extends CjExtensibleElement {
         this.directed = directed;
     }
 
-    public void setEndpoints(List<CjEndpoint> endpoints) {
+    public void setEndpoints(List<CjJacksonEndpoint> endpoints) {
         this.endpoints.clear();
         this.endpoints.addAll(endpoints);
     }
 
-    public void setId(Object id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public void setLabel(Object label) {
+    public void setLabel(String label) {
         this.label = label;
     }
 
-    public void setSource(Object source) {
+    public void setSource(String source) {
         this.source = source;
     }
 
-    public void setSourcePort(Object sourcePort) {
+    public void setSourcePort(String sourcePort) {
         this.sourcePort = sourcePort;
     }
 
-    public void setTarget(Object target) {
+    public void setTarget(String target) {
         this.target = target;
     }
 
-    public void setTargetPort(Object targetPort) {
+    public void setTargetPort(String targetPort) {
         this.targetPort = targetPort;
     }
 

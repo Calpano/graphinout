@@ -1,21 +1,23 @@
 package com.calpano.graphinout.base.gio.dom;
 
-import com.calpano.graphinout.base.cj.jackson.CjDocument;
-import com.calpano.graphinout.base.cj.jackson.CjEdge;
-import com.calpano.graphinout.base.cj.jackson.CjEndpoint;
-import com.calpano.graphinout.base.cj.jackson.CjGraph;
-import com.calpano.graphinout.base.cj.jackson.CjNode;
+import com.calpano.graphinout.base.cj.jackson.CjJacksonDocument;
+import com.calpano.graphinout.base.cj.jackson.CjJacksonEdge;
+import com.calpano.graphinout.base.cj.jackson.CjJacksonEndpoint;
+import com.calpano.graphinout.base.cj.jackson.CjJacksonGraph;
+import com.calpano.graphinout.base.cj.jackson.CjJacksonNode;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import static com.google.common.truth.Truth.assertThat;
 
-public class ConnectedJsonParsingTest {
+public class CjJacksonParsingTest {
 
     @Test
     public void testParseConnectedJsonDocument() throws IOException {
@@ -29,7 +31,7 @@ public class ConnectedJsonParsingTest {
         java.net.URL resourceUrl = getClass().getClassLoader().getResource("sample-1.cj.json");
         assertThat(resourceUrl).isNotNull();
         File jsonFile = new File(resourceUrl.getFile());
-        CjDocument doc = objectMapper.readValue(jsonFile, CjDocument.class);
+        CjJacksonDocument doc = objectMapper.readValue(jsonFile, CjJacksonDocument.class);
 
         // Test document-level nodes and edges
         assertThat(doc.getNodes()).isNotNull();
@@ -43,40 +45,44 @@ public class ConnectedJsonParsingTest {
         assertThat(doc.getGraphs()).hasSize(1);
 
         // Test first node
-        CjNode firstNode = doc.getNodes().getFirst();
+        CjJacksonNode firstNode = doc.getNodes().getFirst();
         assertThat(firstNode.getId()).isEqualTo("node1");
         assertThat(firstNode.getLabel()).isEqualTo("First Node");
 
         // Test second node with ports
-        CjNode secondNode = doc.getNodes().get(1);
+        CjJacksonNode secondNode = doc.getNodes().get(1);
         assertThat(secondNode.getId()).isEqualTo("node2");
         assertThat(secondNode.getLabel()).isEqualTo("Second Node");
         assertThat(secondNode.getPorts()).isNotNull();
 
         // Test first edge (simple source/target)
-        CjEdge firstEdge = doc.getEdges().getFirst();
+        CjJacksonEdge firstEdge = doc.getEdges().getFirst();
         assertThat(firstEdge.getSource()).isEqualTo("node1");
         assertThat(firstEdge.getTarget()).isEqualTo("node2");
 
         // Test second edge (with endpoints)
-        CjEdge secondEdge = doc.getEdges().get(1);
+        CjJacksonEdge secondEdge = doc.getEdges().get(1);
         assertThat(secondEdge.getEndpoints()).isNotNull();
         assertThat(secondEdge.getEndpoints()).hasSize(2);
 
         // test extended JSON with any props, here 'data' was used
-        assertThat(secondEdge.getAdditionalProperties()).containsKey("data");
+        Map<String, JsonNode> secondEdgeData = secondEdge.getAdditionalProperties();
+        assertThat(secondEdgeData).isNotNull();
+        JsonNode data = secondEdgeData.get("data");
+        assertThat(data.get("foo")).isNotNull();
+        assertThat(data.get("foo").asText()).isEqualTo("bar");
 
-        CjEndpoint firstEndpoint = secondEdge.getEndpoints().getFirst();
+        CjJacksonEndpoint firstEndpoint = secondEdge.getEndpoints().getFirst();
         assertThat(firstEndpoint.getDirection()).isEqualTo("out");
         assertThat(firstEndpoint.getNode()).isEqualTo("node1");
 
-        CjEndpoint secondEndpoint = secondEdge.getEndpoints().get(1);
+        CjJacksonEndpoint secondEndpoint = secondEdge.getEndpoints().get(1);
         assertThat(secondEndpoint.getDirection()).isEqualTo("in");
         assertThat(secondEndpoint.getNode()).isEqualTo("node2");
         assertThat(secondEndpoint.getPort()).isEqualTo("port1");
 
         // Test subgraph
-        CjGraph subgraph = doc.getGraphs().getFirst();
+        CjJacksonGraph subgraph = doc.getGraphs().getFirst();
         assertThat(subgraph.getId()).isEqualTo("subgraph1");
         assertThat(subgraph.getNodes()).isNotNull();
         assertThat(subgraph.getNodes()).hasSize(1);

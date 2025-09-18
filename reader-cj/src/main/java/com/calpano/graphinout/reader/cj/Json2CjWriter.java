@@ -1,5 +1,8 @@
 package com.calpano.graphinout.reader.cj;
 
+import com.calpano.graphinout.base.cj.CjDirection;
+import com.calpano.graphinout.base.cj.CjEdgeType;
+import com.calpano.graphinout.base.cj.CjEdgeTypeSource;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
@@ -100,7 +103,6 @@ public class Json2CjWriter implements JsonWriter {
     final CjWriter cjWriter;
     /** The current context from root: stack of Container and String (property keys). */
     private final ParseStack parseStack = new ParseStack();
-    private final StringBuilder stringBuffer = new StringBuilder();
 
     public Json2CjWriter(CjWriter cjWriter) {
         this.cjWriter = cjWriter;
@@ -116,7 +118,11 @@ public class Json2CjWriter implements JsonWriter {
             cjWriter.arrayEnd();
             maybeEndData();
         } else {
-            cjWriter.listEnd(parseStack.peekCjType());
+            CjType cjType = parseStack.peekCjType();
+            if(cjType == CjType.ArrayOfLabelEntries) {
+                cjWriter.labelEnd();
+            }
+            cjWriter.listEnd(cjType);
         }
         parseStack.containerEnd();
     }
@@ -133,6 +139,9 @@ public class Json2CjWriter implements JsonWriter {
             }
             CjType cjType = Util.findExactlyOne(expected, JsonType.Array);
             parseStack.push(cjType);
+            if(cjType == CjType.ArrayOfLabelEntries) {
+               cjWriter.labelStart();
+            }
             cjWriter.listStart(cjType);
         }
     }
@@ -238,7 +247,7 @@ public class Json2CjWriter implements JsonWriter {
         } else {
             // are we in Canonical?
             if (parseStack.peekCjType() == CjType.Meta) {
-                cjWriter.graph__canonical(b);
+                cjWriter.meta__canonical(b);
             } else {
                 throw new IllegalStateException("Unexpected boolean value '" + b + "' in CJ.");
             }
@@ -331,8 +340,45 @@ public class Json2CjWriter implements JsonWriter {
     public void onString(String s) throws JsonException {
         if (parseStack.isInJson()) {
             cjWriter.onString(s);
+            parseStack.popJsonPropertyMaybe();
+            maybeEndData();
         } else {
-            stringBuffer.append(s);
+            // FIXME handle strings, if we expect them
+            if( parseStack.expectedCjTypes.size() == 1) {
+                // we know how to interpret it
+                // FIXME interpret
+                CjType expect = parseStack.expectedCjTypes.iterator().next();
+                switch (expect) {
+                    // document level
+                    case JsonSchemaLocation, JsonSchemaId -> {
+                        // TODO ...
+                    }
+                    case BaseUri -> cjWriter.baseUri(s);
+                    case ConnectedJson__VersionDate -> {}
+                    case ConnectedJson__VersionId -> {}
+                    case Meta__Canonical -> cjWriter.meta__canonical(Boolean.parseBoolean(s));
+                    case Meta__EdgeCountInGraph -> cjWriter.meta__edgeCountInGraph(Long.parseLong(s));
+                    case Meta__EdgeCountTotal -> cjWriter.meta__edgeCountTotal(Long.parseLong(s));
+                    case Meta__NodeCountInGraph -> cjWriter.meta__nodeCountInGraph(Long.parseLong(s));
+                    case Meta__NodeCountTotal -> cjWriter.meta__nodeCountTotal(Long.parseLong(s));
+                    // all
+                    case Id -> cjWriter.id(s);
+                    // label
+                    case Language -> cjWriter.language(s);
+                    case Value -> cjWriter.value(s);
+                    // node, port
+                    case NodeId -> cjWriter.nodeId(s);
+                    case PortId -> cjWriter.portId(s);
+                    // edge, endpoint
+                    case Direction -> cjWriter.direction(CjDirection.of(s));
+                    case EdgeTypeNodeId -> cjWriter.edgeType(CjEdgeType.of(CjEdgeTypeSource.Node, s));
+                    case EdgeTypeString -> cjWriter.edgeType(CjEdgeType.of(CjEdgeTypeSource.String, s));
+                    case EdgeTypeUri -> cjWriter.edgeType(CjEdgeType.of(CjEdgeTypeSource.URI, s));
+                    default -> throw new UnsupportedOperationException("TODO implement string interpretation for " + expect + " in CJ.");
+                }
+            } else {
+                throw new IllegalStateException("Ambiguous string value '" + s + "' in CJ. Expecting " + parseStack.expectedCjTypes() );
+            }
         }
     }
 

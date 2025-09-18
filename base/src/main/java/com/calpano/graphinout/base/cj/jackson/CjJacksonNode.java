@@ -2,7 +2,7 @@ package com.calpano.graphinout.base.cj.jackson;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CjNode extends CjExtensibleElement {
+public class CjJacksonNode extends CjJacksonExtensibleElement {
 
     @JsonProperty("id")
     private Object id;

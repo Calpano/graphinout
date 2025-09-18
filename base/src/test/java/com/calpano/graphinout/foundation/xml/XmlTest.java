@@ -43,8 +43,8 @@ public class XmlTest {
     private static final Logger log = getLogger(XmlTest.class);
     private Path testResourcesPath;
 
-    static Stream<Arguments> graphmlFileProvider() throws Exception {
-        Path testResourcesPath = Paths.get("../base/src/test/resources/xml/graphml/synthetic/errors");
+    public static Stream<Arguments> graphmlFileProvider() throws Exception {
+        Path testResourcesPath = Paths.get("../base/src/test/resources/xml/graphml");
         int baseLen = testResourcesPath.toString().length() + 1;
         return Files.walk(testResourcesPath).filter(Files::isRegularFile).filter(p -> {
             String pathName = p.toString().toLowerCase();
@@ -52,7 +52,7 @@ public class XmlTest {
         }).map(p -> Arguments.of(p.toString().substring(baseLen).replace('\\', '/'), p));
     }
 
-    static Stream<Arguments> xmlFileProvider() throws Exception {
+    public static Stream<Arguments> xmlFileProvider() throws Exception {
         Path testResourcesPath = Paths.get("src/test/resources/xml");
         int baseLen = testResourcesPath.toString().length() + 1;
         return Files.walk(testResourcesPath).filter(Files::isRegularFile).filter(p -> p.toString().endsWith(".xml") || p.toString().endsWith(".graphml")).map(p -> Arguments.of(p.toString().substring(baseLen).replace('\\', '/'), p));

@@ -238,7 +238,7 @@ public enum CjType {
             case Direction -> cjWriter.direction((CjDirection) value);
             case NodeId -> cjWriter.nodeId((String) value);
             case PortId -> cjWriter.portId((String) value);
-            case Meta__Canonical -> cjWriter.graph__canonical(true);
+            case Meta__Canonical -> cjWriter.meta__canonical(true);
             case JsonSchemaId, JsonSchemaLocation, ConnectedJson, ConnectedJson__VersionId,
                  ConnectedJson__VersionDate -> throw new IllegalStateException("TODO handle Unexpected value: " + this);
         }

@@ -1,4 +1,4 @@
-package com.calpano.graphinout.base.cj.element.impl;
+package com.calpano.graphinout.base.cj.element;
 
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;

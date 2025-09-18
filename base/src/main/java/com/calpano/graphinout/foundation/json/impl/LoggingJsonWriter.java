@@ -11,86 +11,109 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class LoggingJsonWriter implements JsonWriter {
 
+    public enum Output {Log, SystemOut}
+
     private static final Logger log = getLogger(LoggingJsonWriter.class);
+    private final Output output;
+
+    public LoggingJsonWriter() {
+        this(Output.Log);
+    }
+
+    public LoggingJsonWriter(Output output) {
+        this.output = output;
+    }
 
     @Override
     public void arrayEnd() throws JsonException {
-        log.info("arrayEnd");
+        output("arrayEnd");
     }
 
     @Override
     public void arrayStart() throws JsonException {
-        log.info("arrayStart");
+        output("arrayStart");
     }
 
     @Override
     public void documentEnd() {
-        log.info("documentEnd");
+        output("documentEnd");
     }
 
     @Override
     public void documentStart() {
-        log.info("documentStart");
+        output("documentStart");
     }
 
     @Override
     public void objectEnd() throws JsonException {
-        log.info("objectEnd");
+        output("objectEnd");
     }
 
     @Override
     public void objectStart() throws JsonException {
-        log.info("objectStart");
+        output("objectStart");
     }
 
     @Override
     public void onBigDecimal(BigDecimal bigDecimal) {
-        log.info("onBigDecimal: {}", bigDecimal);
+        output("onBigDecimal: {}", bigDecimal);
     }
 
     @Override
     public void onBigInteger(BigInteger bigIntegerValue) {
-        log.info("onBigInteger: {}", bigIntegerValue);
+        output("onBigInteger: {}", bigIntegerValue);
     }
 
     @Override
     public void onBoolean(boolean b) throws JsonException {
-        log.info("onBoolean: {}", b);
+        output("onBoolean: {}", b);
     }
 
     @Override
     public void onDouble(double d) throws JsonException {
-        log.info("onDouble: {}", d);
+        output("onDouble: {}", d);
     }
 
     @Override
     public void onFloat(float f) throws JsonException {
-        log.info("onFloat: {}", f);
+        output("onFloat: {}", f);
     }
 
     @Override
     public void onInteger(int i) throws JsonException {
-        log.info("onInteger: {}", i);
+        output("onInteger: {}", i);
     }
 
     @Override
     public void onKey(String key) throws JsonException {
-        log.info("onKey: {}", key);
+        output("onKey: '{}'", key);
     }
 
     @Override
     public void onLong(long l) throws JsonException {
-        log.info("onLong: {}", l);
+        output("onLong: {}", l);
     }
 
     @Override
     public void onNull() throws JsonException {
-        log.info("onNull");
+        output("onNull");
     }
 
     @Override
     public void onString(String s) throws JsonException {
-        log.info("stringCharacters: '{}'", s);
+        output("string: '{}'", s);
+    }
+
+    private void output(String s, Object... o) {
+        switch (output) {
+            case Log:
+                log.info(s, o);
+                break;
+            case SystemOut:
+                String pattern = s.replace("{}", "%s");
+                System.out.printf("[" + pattern + "]", o);
+                break;
+        }
     }
 
 }

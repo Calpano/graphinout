@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CjExtensibleElement {
+public class CjJacksonExtensibleElement {
 
     private final Map<String, JsonNode> additionalProperties = new HashMap<>();
 

@@ -33,4 +33,10 @@ public interface IJsonPrimitive extends IJsonValue {
         }
     }
 
+    default boolean isArray() {return false;}
+
+    default boolean isObject() {return false;}
+
+    default boolean isPrimitive() {return true;}
+
 }

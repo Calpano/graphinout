@@ -13,6 +13,11 @@ public enum GioDataType {
     typeString("string", String.class);
 
     public final Class<?> clazz;
+
+    public String graphmlName() {
+        return graphmlName;
+    }
+
     public final String graphmlName;
 
     GioDataType(String graphmlName, Class<?> clazz) {

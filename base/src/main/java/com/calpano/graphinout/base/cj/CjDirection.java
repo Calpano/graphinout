@@ -25,6 +25,14 @@ public enum CjDirection {
         return UNDIR; // default
     }
 
+    public boolean isDirected() {
+        return this == IN || this == OUT;
+    }
+
+    public boolean isUndirected() {
+        return this == UNDIR;
+    }
+
     public String value() {
         return value;
     }

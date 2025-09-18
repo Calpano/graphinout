@@ -1,6 +1,6 @@
-package com.calpano.graphinout.reader.graphml;
+package com.calpano.graphinout.reader.graphml.cj;
 
-import com.calpano.graphinout.base.graphml.GraphmlElements;
+import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.IGraphmlElement;
 import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
@@ -15,42 +15,62 @@ import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlLocatorBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlNodeBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlPortBuilder;
+import com.calpano.graphinout.base.graphml.builder.IIdBuilder;
 import com.calpano.graphinout.base.graphml.builder.ILocatorBuilder;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /** Helper class to track element context */
-class ElementContext {
+public class Cj2GraphmlContext {
 
-    final String xmlElementName;
-    final Map<String, String> xmlAttributes;
-    /** is this element representing a raw XML element? */
-    final boolean isRawXml;
+    final CjType cjType;
     /** will produce an {@link IGraphmlElement} or subtype thereof */
     private final GraphmlElementBuilder<?> builder;
-    private final @Nullable ElementContext parent;
+    private final @Nullable Cj2GraphmlContext parent;
+    private final Map<CjType, List<Cj2GraphmlContext>> children = new HashMap<>();
     private boolean isStarted;
 
-    /**
-     * @param xmlElementName aka tagName
-     * @param xmlAttributes  all XML attributes
-     * @param isRawXml    is this any raw XML element from inside a data element? If false, this is a GraphML element
-     */
-    ElementContext(@Nullable ElementContext parent, String xmlElementName, Map<String, String> xmlAttributes, boolean isRawXml, GraphmlElementBuilder<?> builder) {
+    Cj2GraphmlContext(@Nullable Cj2GraphmlContext parent, CjType cjType, GraphmlElementBuilder<?> builder) {
         this.parent = parent;
-        this.xmlElementName = xmlElementName;
-        this.xmlAttributes = xmlAttributes;
-        this.isRawXml = isRawXml;
+        if (parent != null) {
+            parent.addChild(this);
+        }
+        this.cjType = cjType;
         this.builder = builder;
         this.isStarted = false;
+    }
+
+    public IIdBuilder builderWithIdSupport() {
+        IIdBuilder builder = builder();
+        assert builder != null;
+        return builder;
     }
 
     public ILocatorBuilder builderWithLocatorSupport() {
         ILocatorBuilder builder = builder();
         assert builder != null;
         return builder;
+    }
+
+    public void child1(CjType cjType, Consumer<Cj2GraphmlContext> consumer) {
+        consumer.accept(child1(cjType));
+    }
+
+    public @Nullable Cj2GraphmlContext child1(CjType cjType) {
+        List<Cj2GraphmlContext> list = children(cjType);
+        assert list.size() <= 1;
+        return list.isEmpty() ? null : list.getFirst();
+    }
+
+    public List<Cj2GraphmlContext> children(CjType cjType) {
+        return children.getOrDefault(cjType, Collections.emptyList());
     }
 
     public GraphmlDataBuilder dataBuilder() {
@@ -95,6 +115,12 @@ class ElementContext {
         return builder;
     }
 
+    public IIdBuilder idBuilder() {
+        IIdBuilder builder = builder();
+        assert builder != null;
+        return builder;
+    }
+
     public boolean isStarted() {
         return isStarted;
     }
@@ -119,21 +145,22 @@ class ElementContext {
     }
 
     public void maybeWriteStartTo(GraphmlWriter graphmlWriter) throws IOException {
-        if (isStarted())
-            return;
+        if (isStarted()) return;
         if (parent != null) {
             parent.maybeWriteStartTo(graphmlWriter);
         }
-        switch (xmlElementName) {
-            case GraphmlElements.DATA -> graphmlWriter.data(dataBuilder().build());
-            case GraphmlElements.GRAPHML -> graphmlWriter.documentStart(documentBuilder().build());
-            case GraphmlElements.GRAPH -> graphmlWriter.graphStart(graphBuilder().build());
-            case GraphmlElements.NODE -> graphmlWriter.nodeStart(nodeBuilder().build());
-            case GraphmlElements.PORT -> graphmlWriter.portStart(portBuilder().build());
-            case GraphmlElements.HYPER_EDGE -> graphmlWriter.hyperEdgeStart(hyperEdgeBuilder().build());
-            case GraphmlElements.KEY -> graphmlWriter.key(keyBuilder().build());
-            case GraphmlElements.EDGE -> graphmlWriter.edgeStart(hyperEdgeBuilder().toEdge());
-            default -> throw new IllegalArgumentException("Cannot start " + xmlElementName);
+        switch (cjType) {
+            // FIXME decide when to emit doc start
+            case CjType.RootObject -> graphmlWriter.documentStart(documentBuilder().build());
+            case CjType.Graph -> graphmlWriter.graphStart(graphBuilder().build());
+            case CjType.Node -> graphmlWriter.nodeStart(nodeBuilder().build());
+            case CjType.Port -> graphmlWriter.portStart(portBuilder().build());
+            case CjType.Edge -> {
+                // TODO write edge or hyperedge - see another impl for that
+                graphmlWriter.hyperEdgeStart(hyperEdgeBuilder().build());
+                graphmlWriter.edgeStart(hyperEdgeBuilder().toEdge());
+            }
+            default -> throw new IllegalArgumentException("Cannot start " + cjType);
         }
         markAsStarted();
     }
@@ -152,16 +179,29 @@ class ElementContext {
 
     public void writeEndTo(GraphmlWriter graphmlWriter) throws IOException {
         maybeWriteStartTo(graphmlWriter);
-        switch (xmlElementName) {
-            case GraphmlElements.GRAPHML -> graphmlWriter.documentEnd();
-            case GraphmlElements.GRAPH -> graphmlWriter.graphEnd();
-            case GraphmlElements.NODE -> graphmlWriter.nodeEnd();
-            case GraphmlElements.PORT -> graphmlWriter.portEnd();
-            case GraphmlElements.HYPER_EDGE -> graphmlWriter.hyperEdgeEnd();
-            case GraphmlElements.EDGE -> graphmlWriter.edgeEnd();
-            default -> throw new IllegalArgumentException("Cannot end " + xmlElementName);
+        switch (cjType) {
+            case CjType.RootObject -> graphmlWriter.documentEnd();
+            case CjType.Graph -> graphmlWriter.graphEnd();
+            case CjType.Node -> graphmlWriter.nodeEnd();
+            case CjType.Port -> graphmlWriter.portEnd();
+            case CjType.Edge -> {
+                // TODO write edge or hyperedge - see another impl for that
+                graphmlWriter.hyperEdgeEnd();
+                graphmlWriter.edgeEnd();
+            }
+            default -> throw new IllegalArgumentException("Cannot end " + cjType);
         }
         markAsStarted();
+    }
+
+    private void addChild(Cj2GraphmlContext child) {
+        children.compute(child.cjType, (k, v) -> {
+            if (v == null) {
+                v = new ArrayList<>();
+            }
+            v.add(child);
+            return v;
+        });
     }
 
     private <T extends GraphmlElementBuilder<T>> T builder() {

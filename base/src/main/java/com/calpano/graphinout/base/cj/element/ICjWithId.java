@@ -2,11 +2,9 @@ package com.calpano.graphinout.base.cj.element;
 
 import javax.annotation.Nullable;
 
-public interface ICjLabelProperties {
+public interface ICjWithId extends ICjElement {
 
     @Nullable
-    String language();
-
-    String value();
+    String id();
 
 }

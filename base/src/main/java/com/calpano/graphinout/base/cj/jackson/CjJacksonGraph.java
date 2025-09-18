@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CjGraph extends CjExtensibleElement {
+public class CjJacksonGraph extends CjJacksonExtensibleElement {
 
     @JsonProperty("nodes")
-    private final List<CjNode> nodes = new ArrayList<>();
+    private final List<CjJacksonNode> nodes = new ArrayList<>();
     @JsonProperty("edges")
-    private final List<CjEdge> edges = new ArrayList<>();
+    private final List<CjJacksonEdge> edges = new ArrayList<>();
     @JsonProperty("id")
     private Object id;
     @JsonProperty("directed")
@@ -23,7 +23,7 @@ public class CjGraph extends CjExtensibleElement {
         return directed;
     }
 
-    public List<CjEdge> getEdges() {
+    public List<CjJacksonEdge> getEdges() {
         return edges;
     }
 
@@ -35,7 +35,7 @@ public class CjGraph extends CjExtensibleElement {
         return label;
     }
 
-    public List<CjNode> getNodes() {
+    public List<CjJacksonNode> getNodes() {
         return nodes;
     }
 
@@ -43,7 +43,7 @@ public class CjGraph extends CjExtensibleElement {
         this.directed = directed;
     }
 
-    public void setEdges(List<CjEdge> edges) {
+    public void setEdges(List<CjJacksonEdge> edges) {
         this.edges.clear();
         this.edges.addAll(edges);
     }
@@ -56,7 +56,7 @@ public class CjGraph extends CjExtensibleElement {
         this.label = label;
     }
 
-    public void setNodes(List<CjNode> nodes) {
+    public void setNodes(List<CjJacksonNode> nodes) {
         this.nodes.clear();
         this.nodes.addAll(nodes);
     }

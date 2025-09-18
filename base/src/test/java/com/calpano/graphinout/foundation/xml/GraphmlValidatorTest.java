@@ -13,36 +13,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GraphmlValidatorTest {
 
-    static String goodGraphml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
-            "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\"  \n" + //
-            "      xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + //
-            "      xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns \n" + //
-            "        http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" + //
-            "  <graph id=\"G\" edgedefault=\"undirected\">\n" + //
-            "    <node id=\"n0\"/>\n" + //
-            "    <node id=\"n1\"/>\n" + //
-            "    <node id=\"n2\"/>\n" + //
-            "    <edge id=\"e0\" source=\"n0\" target=\"n2\"/>\n" + //
-            "    <edge id=\"e1\" source=\"n0\" target=\"n1\"/>\n" + //
-            "  </graph>\n" + //
-            "</graphml>";
+    static String goodGraphml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+              <graph id="G" edgedefault="undirected">
+                <node id="n0"/>
+                <node id="n1"/>
+                <node id="n2"/>
+                <edge id="e0" source="n0" target="n2"/>
+                <edge id="e1" source="n0" target="n1"/>
+              </graph>
+            </graphml>""";
 
-    static String badGraphml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
-            "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\"  \n" + //
-            "      xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + //
-            "      xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns \n" + //
-            "        http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" + //
-            "  <graph id=\"G\" edgedefault=\"undirected\">\n" + //
-            "    <node id=\"n0\"/>\n" + //
-            "    <node id=\"n1\"/>\n" + //
-
-            "    <funnybunny/>\n" + //
-
-            "    <node id=\"n2\"/>\n" + //
-            "    <edge id=\"e0\" source=\"n0\" target=\"n2\"/>\n" + //
-            "    <edge id=\"e1\" source=\"n0\" target=\"n1\"/>\n" + //
-            "  </graph>\n" + //
-            "</graphml>";
+    static String badGraphml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+              <graph id="G" edgedefault="undirected">
+                <node id="n0"/>
+                <node id="n1"/>
+                <funnybunny/>
+                <node id="n2"/>
+                <edge id="e0" source="n0" target="n2"/>
+                <edge id="e1" source="n0" target="n1"/>
+              </graph>
+            </graphml>""";
 
     @Test
     void isValidGraphml() {

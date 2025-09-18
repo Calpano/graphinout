@@ -7,6 +7,6 @@ import javax.annotation.Nullable;
 public interface ICjEndpoint extends ICjEndpointProperties {
 
     @Nullable
-    JsonNode data();
+    ICjData data();
 
 }

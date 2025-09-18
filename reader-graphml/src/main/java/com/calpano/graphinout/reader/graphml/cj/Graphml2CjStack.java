@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.graphml.cj;
 
+import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.cj.element.impl.CjElement;
 
@@ -8,7 +9,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 @SuppressWarnings("UnusedReturnValue")
-public class CjElementContextStack {
+public class Graphml2CjStack {
 
     private CjElement root;
     /** top of stack */
@@ -31,8 +32,15 @@ public class CjElementContextStack {
 
     @Nullable
     public CjElement pop() {
+        CjElement element = current;
         current = current.parent;
-        return current;
+        return element;
+    }
+
+    public void pop(CjType expectedCjType) {
+        CjElement element = pop();
+        assert element != null;
+        assert element.cjType() == expectedCjType : "Expected "+expectedCjType+" but got "+element.cjType();
     }
 
     public CjElement push(CjElement cjElement) {
@@ -42,7 +50,7 @@ public class CjElementContextStack {
     }
 
     public CjDocumentElement pushRoot() {
-        root = new CjDocumentElement(null);
+        root = new CjDocumentElement();
         current = root;
         return root.asDocument();
     }

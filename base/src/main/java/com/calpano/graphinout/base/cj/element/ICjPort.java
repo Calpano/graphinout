@@ -1,18 +1,16 @@
 package com.calpano.graphinout.base.cj.element;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.stream.Stream;
 
 public interface ICjPort extends ICjPortProperties {
 
     @Nullable
-    ICjLabel label();
-
-    List<ICjPort> ports();
+    ICjData data();
 
     @Nullable
-    JsonNode data();
+    ICjLabel label();
+
+    Stream<ICjPort> ports();
 
 }

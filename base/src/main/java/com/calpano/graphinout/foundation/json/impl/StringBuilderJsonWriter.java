@@ -8,7 +8,7 @@ import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 public class StringBuilderJsonWriter extends AppendableJsonWriter implements JsonWriter {
 
 
-    public StringBuilderJsonWriter(boolean preserveWhitespace) {
+    public StringBuilderJsonWriter() {
         super(new StringBuilder());
     }
 

@@ -3,13 +3,14 @@ package com.calpano.graphinout.base.cj.element.impl;
 import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.element.ICjEndpoint;
 import com.calpano.graphinout.base.cj.element.ICjEndpointProperties;
 
 import javax.annotation.Nullable;
 
 import static java.util.Optional.ofNullable;
 
-public class CjEndpointElement extends CjWithDataElement implements ICjEndpointProperties, ICjElement {
+public class CjEndpointElement extends CjWithDataElement implements ICjEndpoint {
 
     private String node;
     private @Nullable String port;

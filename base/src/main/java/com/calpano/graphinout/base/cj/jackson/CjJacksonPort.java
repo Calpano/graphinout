@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CjPort extends CjExtensibleElement {
+public class CjJacksonPort extends CjJacksonExtensibleElement {
 
     @JsonProperty("ports")
-    private final List<CjPort> ports = new ArrayList<>();
+    private final List<CjJacksonPort> ports = new ArrayList<>();
     @JsonProperty("id")
     private Object id;
 
@@ -16,7 +16,7 @@ public class CjPort extends CjExtensibleElement {
         return id;
     }
 
-    public List<CjPort> getPorts() {
+    public List<CjJacksonPort> getPorts() {
         return ports;
     }
 
@@ -24,7 +24,7 @@ public class CjPort extends CjExtensibleElement {
         this.id = id;
     }
 
-    public void setPorts(List<CjPort> ports) {
+    public void setPorts(List<CjJacksonPort> ports) {
         this.ports.clear();
         this.ports.addAll(ports);
     }

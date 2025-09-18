@@ -6,9 +6,8 @@ import com.calpano.graphinout.base.graphml.impl.GraphmlEdge;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class GraphmlEdgeBuilder extends GraphmlElementWithDescBuilder<GraphmlEdgeBuilder> {
+public class GraphmlEdgeBuilder extends GraphmlElementWithDescAndIdBuilder<GraphmlEdgeBuilder> implements IIdBuilder {
 
-    private @Nullable String id;
     private Boolean directed;
     private String sourceId;
     private String targetId;
@@ -34,11 +33,6 @@ public class GraphmlEdgeBuilder extends GraphmlElementWithDescBuilder<GraphmlEdg
     @Override
     public GraphmlEdgeBuilder attributes(@Nullable Map<String, String> attributes) {
         super.attributes(attributes);
-        return this;
-    }
-
-    public GraphmlEdgeBuilder id(@Nullable String id) {
-        this.id = id;
         return this;
     }
 

@@ -10,10 +10,11 @@ import java.util.Set;
 
 import static com.calpano.graphinout.base.graphml.GraphmlElements.GRAPH;
 
-class ParseContext {
+/** Used for parsing XML as GraphML */
+public class XmlParseContext {
 
     /** we use a LinkedList so we can peek deeper */
-    private final LinkedList<ElementContext> elementStack = new LinkedList<>();
+    private final LinkedList<XmlElementContext> elementStack = new LinkedList<>();
     private XmlMode mode = XmlMode.Graphml;
 
     public boolean isEmpty() {
@@ -32,26 +33,26 @@ class ParseContext {
         this.mode = xmlMode;
     }
 
-    public @Nullable ElementContext peekNullable() {
+    public @Nullable XmlElementContext peekNullable() {
         return elementStack.peek();
     }
 
-    public ElementContext peek_(String... expectedNames) {
-        ElementContext context = elementStack.peek();
+    public XmlElementContext peek_(String... expectedNames) {
+        XmlElementContext context = elementStack.peek();
         assert context != null;
         assert expectedNames.length == 0 || Set.of(expectedNames).contains(context.xmlElementName) : "Expected element '" + Set.of(expectedNames) + "' but got '" + context.xmlElementName + "'";
         return context;
     }
 
-    public ElementContext pop(String expectedName) {
+    public XmlElementContext pop(String expectedName) {
         assert !elementStack.isEmpty() : "Element stack is empty at pop";
-        ElementContext context = elementStack.pop();
+        XmlElementContext context = elementStack.pop();
         assert context.xmlElementName.equals(expectedName) : "Expected element '" + expectedName + "' but got '" + context.xmlElementName + "'";
         return context;
     }
 
-    public ElementContext push(String elementName, Map<String, String> attributes, boolean isRawXml, GraphmlElementBuilder<?> builder, XmlMode xmlMode) {
-        ElementContext context = new ElementContext(peekNullable(), elementName, attributes, isRawXml, builder);
+    public XmlElementContext push(String elementName, Map<String, String> attributes, boolean isRawXml, GraphmlElementBuilder<?> builder, XmlMode xmlMode) {
+        XmlElementContext context = new XmlElementContext(peekNullable(), elementName, attributes, isRawXml, builder);
         elementStack.push(context);
         this.mode = xmlMode;
         return context;
@@ -61,7 +62,7 @@ class ParseContext {
     GraphmlGraphBuilder findParentGraphElement() {
         // dig in stack to find the parent Graph element
         for (int i = elementStack.size() - 1; i >= 0; i--) {
-            ElementContext context = elementStack.get(i);
+            XmlElementContext context = elementStack.get(i);
             if (context.xmlElementName.equals(GRAPH)) {
                 return context.graphBuilder();
             }

@@ -28,7 +28,7 @@ public class Cj2GioWriter implements CjWriter {
 
     final GioWriter gio;
     /** used for temporary buffering of JSON data */
-    private final StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter(false);
+    private final StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter();
     private final Stack<Object> stack = new Stack<>();
 
     public Cj2GioWriter(GioWriter gio) {this.gio = gio;}
@@ -125,7 +125,7 @@ public class Cj2GioWriter implements CjWriter {
     }
 
     @Override
-    public void graph__canonical(boolean b) {
+    public void meta__canonical(boolean b) {
         // FIXME
     }
 

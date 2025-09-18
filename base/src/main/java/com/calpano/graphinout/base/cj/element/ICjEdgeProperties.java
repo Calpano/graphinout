@@ -1,19 +1,12 @@
 package com.calpano.graphinout.base.cj.element;
 
+import com.calpano.graphinout.base.cj.CjEdgeType;
+
 import javax.annotation.Nullable;
 
-public interface ICjEdgeProperties {
+public interface ICjEdgeProperties extends ICjWithId {
 
     @Nullable
-    String id();
-
-    @Nullable
-    String type();
-
-    @Nullable
-    String typeNode();
-
-    @Nullable
-    String typeUri();
+    CjEdgeType edgeType();
 
 }

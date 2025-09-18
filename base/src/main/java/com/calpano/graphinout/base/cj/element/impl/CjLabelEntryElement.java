@@ -2,18 +2,23 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.base.cj.element.ICjLabelProperties;
+import com.calpano.graphinout.base.cj.element.ICjLabelEntry;
+import com.calpano.graphinout.base.cj.element.ICjLabelEntryProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.annotation.Nullable;
 
 import static java.util.Optional.ofNullable;
 
-public class CjLabelEntryElement implements ICjLabelProperties, ICjElement {
+public class CjLabelEntryElement extends CjWithDataElement implements ICjLabelEntryProperties, ICjLabelEntry {
 
     private @Nullable String language;
     private String value;
     private @Nullable JsonNode data;
+
+    CjLabelEntryElement(@Nullable CjElement parent) {
+        super(parent);
+    }
 
     @Override
     public CjType cjType() {
@@ -22,10 +27,11 @@ public class CjLabelEntryElement implements ICjLabelProperties, ICjElement {
 
     @Override
     public void fire(CjWriter cjWriter) {
-        cjWriter.labelStart();
+        cjWriter.labelEntryStart();
+        // alphabetic order
+        cjWriter.maybe(language, cjWriter::language);
         cjWriter.value(value);
-        ofNullable(language).ifPresent(cjWriter::language);
-        cjWriter.labelEnd();
+        cjWriter.labelEntryEnd();
     }
 
     @Nullable

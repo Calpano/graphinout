@@ -1,27 +1,32 @@
 package com.calpano.graphinout.base.cj.jackson;
 
+import com.calpano.graphinout.base.cj.CjDirection;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CjEndpoint extends CjExtensibleElement {
+public class CjJacksonEndpoint extends CjJacksonExtensibleElement {
 
     @JsonProperty("direction")
     private String direction;
 
     @JsonProperty("node")
-    private Object node;
+    private String node;
 
     @JsonProperty("port")
-    private Object port;
+    private String port;
+
+    public CjDirection cjDirection() {
+        return CjDirection.of(direction);
+    }
 
     public String getDirection() {
         return direction;
     }
 
-    public Object getNode() {
+    public String getNode() {
         return node;
     }
 
-    public Object getPort() {
+    public String getPort() {
         return port;
     }
 
@@ -29,11 +34,11 @@ public class CjEndpoint extends CjExtensibleElement {
         this.direction = direction;
     }
 
-    public void setNode(Object node) {
+    public void setNode(String node) {
         this.node = node;
     }
 
-    public void setPort(Object port) {
+    public void setPort(String port) {
         this.port = port;
     }
 

@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.graphml.cj;
 
+import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.cj.element.impl.CjWithDataElement;
@@ -39,7 +40,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
     }
 
     private final Map<String, GraphmlKey> keyDefinitions = new HashMap<>();
-    private final CjElementContextStack parseBuffer = new CjElementContextStack();
+    private final Graphml2CjStack parseBuffer = new Graphml2CjStack();
     private final CjWriter cjWriter;
     private final Stack<GraphmlGraph> graphStack = new Stack<>();
 
@@ -48,7 +49,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
     /** desc goes to data: <graphml><desc> -> .data.description */
     private static void graphmlDesc(@Nullable IGraphmlDescription desc, CjWithDataElement cjWithData) {
         if (desc == null) return;
-        cjWithData.data(_data -> _data.addProperty("description", desc.value()));
+        cjWithData.data(mm -> mm .addProperty("description", desc.value()));
     }
 
     @Override
@@ -56,7 +57,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
         // process keyDefs to find mapped attName
         assert !keyDefinitions.isEmpty();
         GraphmlKey key = keyDefinitions.get(data.key());
-        assert key != null;
+        assert key != null : "Found no <key> for '" + data.key() + "'";
         String propName = key.attrName();
         assert propName != null;
 
@@ -70,16 +71,12 @@ public class Graphml2CjWriter implements GraphmlWriter {
         }
 
         // attach to next element on the stack
-        parseBuffer.peek_().asObject().data().addProperty(propName, value);
+        parseBuffer.peek_().asWithData().data(mm -> mm.addProperty(propName, value));
     }
 
     @Override
     public void documentEnd() throws IOException {
         writeAllTo(cjWriter);
-    }
-
-    public void writeAllTo(CjWriter cjWriter) {
-        parseBuffer.root_().asDocument().fire(cjWriter);
     }
 
     @Override
@@ -91,12 +88,12 @@ public class Graphml2CjWriter implements GraphmlWriter {
         // GraphML document attributes, like XML namespaces, become /data/cj:attributes
         // <graphml ATTS> ->  /data/cj:attributes/{attName}
         document.xmlPlusGraphmlAttributesNormalized().forEach((key, value) -> //
-                documentEvent.data().addProperty(key, value));
+                documentEvent.data(mm -> mm.addProperty(key, value)));
     }
 
     @Override
     public void edgeEnd() throws IOException {
-
+        parseBuffer.pop(CjType.Edge);
     }
 
     @Override
@@ -115,7 +112,6 @@ public class Graphml2CjWriter implements GraphmlWriter {
     public void graphEnd() throws IOException {
 
     }
-
 
     @Override
     public void graphStart(IGraphmlGraph graphmlGraph) throws IOException {
@@ -145,7 +141,6 @@ public class Graphml2CjWriter implements GraphmlWriter {
 
     @Override
     public void key(IGraphmlKey key) throws IOException {
-        assert !keyDefinitions.isEmpty();
         keyDefinitions.put(key.id(), (GraphmlKey) key);
     }
 
@@ -167,6 +162,10 @@ public class Graphml2CjWriter implements GraphmlWriter {
     @Override
     public void portStart(IGraphmlPort port) throws IOException {
 
+    }
+
+    public void writeAllTo(CjWriter cjWriter) {
+        parseBuffer.root_().asDocument().fire(cjWriter);
     }
 
 }

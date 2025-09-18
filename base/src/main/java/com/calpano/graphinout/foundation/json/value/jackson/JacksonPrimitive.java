@@ -3,7 +3,6 @@ package com.calpano.graphinout.foundation.json.value.jackson;
 import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
-import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.fasterxml.jackson.databind.node.ValueNode;
 
 public class JacksonPrimitive implements IJsonPrimitive {
@@ -12,7 +11,7 @@ public class JacksonPrimitive implements IJsonPrimitive {
 
     public JacksonPrimitive(ValueNode primitive) {this.primitive = primitive;}
 
-    public static IJsonValue of(ValueNode valueNode) {
+    public static IJsonPrimitive of(ValueNode valueNode) {
         return new JacksonPrimitive(valueNode);
     }
 

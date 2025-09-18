@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 public interface IJsonObject extends IJsonValue {
 
@@ -14,10 +15,15 @@ public interface IJsonObject extends IJsonValue {
     default void fire(JsonWriter jsonWriter) {
         jsonWriter.objectStart();
         keys().forEach(key -> {
+            jsonWriter.onKey(key);
             IJsonValue value = get_(key);
             value.fire(jsonWriter);
         });
         jsonWriter.objectEnd();
+    }
+
+    default void forEach(BiConsumer<String, IJsonValue> key_value) {
+        keys().forEach(key -> key_value.accept(key, get_(key)));
     }
 
     @Nullable
@@ -28,6 +34,16 @@ public interface IJsonObject extends IJsonValue {
         return Objects.requireNonNull(get(key));
     }
 
+    default boolean hasProperty(String propertyStep) {
+        return keys().contains(propertyStep);
+    }
+
+    default boolean isArray() {return false;}
+
+    default boolean isObject() {return true;}
+
+    default boolean isPrimitive() {return false;}
+
     default JsonType jsonType() {
         return JsonType.Object;
     }
@@ -35,5 +51,7 @@ public interface IJsonObject extends IJsonValue {
     Set<String> keys();
 
     int size();
+
+    ;
 
 }

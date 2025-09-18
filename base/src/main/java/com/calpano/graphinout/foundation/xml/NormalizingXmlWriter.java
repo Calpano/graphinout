@@ -65,8 +65,9 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
     }
 
     @Override
-    public void characterDataStart(boolean isInCdata) {
-        _log.info("characterDataStart: {}", isInCdata);
+    public void characterDataStart(boolean isInCdata)
+    {
+        //   _log.info("characterDataStart: {}", isInCdata);
     }
 
     @Override

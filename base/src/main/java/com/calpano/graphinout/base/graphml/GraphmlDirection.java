@@ -1,5 +1,6 @@
 package com.calpano.graphinout.base.graphml;
 
+import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.gio.Direction;
 
 /**
@@ -32,6 +33,14 @@ public enum GraphmlDirection {
             case In -> In;
             case Out -> Out;
             case Undirected -> Undirected;
+        };
+    }
+
+    public static GraphmlDirection ofCj(CjDirection direction) {
+        return switch (direction) {
+            case IN -> In;
+            case OUT -> Out;
+            case UNDIR -> Undirected;
         };
     }
 

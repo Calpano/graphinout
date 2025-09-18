@@ -3,6 +3,8 @@ package com.calpano.graphinout.base.cj;
 import com.calpano.graphinout.foundation.json.stream.JsonValueWriter;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -53,9 +55,9 @@ import java.util.function.Consumer;
  *     <li>{@link CjWriter#documentEnd() CJ document end}</li>
  * </ol>
  */
-public interface CjWriter extends JsonWriter, HasCjWriter {
+public interface CjWriter extends JsonWriter, HasCjWriter, JsonTypeStringWriter {
 
-    /** Graph base uri */
+    /** Document base uri */
     void baseUri(String baseUri);
 
     default CjWriter cjWriter() {
@@ -113,12 +115,13 @@ public interface CjWriter extends JsonWriter, HasCjWriter {
     void graphStart() throws CjException;
 
     /** TODO document */
-    void graph__canonical(boolean b);
+    void meta__canonical(boolean b);
 
     void id(String id);
 
     /**
      * "data"
+     *
      * @param jsonValue
      */
     default void jsonData(Consumer<JsonValueWriter> jsonValue) {
@@ -208,5 +211,19 @@ public interface CjWriter extends JsonWriter, HasCjWriter {
     default void rawXmlStart() {}
 
     void value(String value);
+
+   default <T> void list(List<T> list, CjType cjArrayType, BiConsumer<T,CjWriter> element_writer) {
+       if(!list.isEmpty()) {
+           listStart(cjArrayType);
+           list.forEach(x->element_writer.accept(x,this));
+           listEnd(cjArrayType);
+       }
+   }
+
+    default <T> void  maybe(T object, Consumer<T> consumer) {
+       if(object!=null) {
+            consumer.accept(object);
+        }
+    }
 
 }
