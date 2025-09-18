@@ -3,8 +3,8 @@ package com.calpano.graphinout.base.cj.element.impl;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjPort;
-import com.calpano.graphinout.base.cj.element.ICjWithMutableId;
-import com.calpano.graphinout.base.cj.element.ICjWithMutablePorts;
+import com.calpano.graphinout.base.cj.element.ICjHasIdMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasMutable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class CjPortElement extends CjWithDataAndLabelElement implements ICjPort, ICjWithMutableId, ICjWithMutablePorts {
+public class CjPortElement extends CjHasDataAndLabelElement implements ICjPort, ICjHasIdMutable, ICjHasMutable {
 
     private final List<CjPortElement> ports = new ArrayList<>();
 
     private String id;
 
-    CjPortElement(@Nullable CjWithDataElement parent) {
+    CjPortElement(@Nullable CjHasDataElement parent) {
         super(parent);
     }
 

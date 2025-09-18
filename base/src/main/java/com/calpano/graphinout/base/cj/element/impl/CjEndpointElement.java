@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 import static java.util.Optional.ofNullable;
 
-public class CjEndpointElement extends CjWithDataElement implements ICjEndpoint {
+public class CjEndpointElement extends CjHasDataElement implements ICjEndpoint {
 
     private String node;
     private @Nullable String port;
@@ -18,7 +18,7 @@ public class CjEndpointElement extends CjWithDataElement implements ICjEndpoint 
     private @Nullable String typeUri;
     private @Nullable String typeNode;
 
-    CjEndpointElement(@Nullable CjWithDataElement parent) {
+    CjEndpointElement(@Nullable CjHasDataElement parent) {
         super(parent);
     }
 

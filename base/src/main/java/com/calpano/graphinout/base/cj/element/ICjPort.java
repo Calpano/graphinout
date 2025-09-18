@@ -3,7 +3,7 @@ package com.calpano.graphinout.base.cj.element;
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
-public interface ICjPort extends ICjWithId {
+public interface ICjPort extends ICjHasId {
 
     @Nullable
     ICjData data();

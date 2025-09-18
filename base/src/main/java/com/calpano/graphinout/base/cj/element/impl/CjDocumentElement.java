@@ -5,7 +5,7 @@ import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjDocument;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMeta;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
-import com.calpano.graphinout.base.cj.element.ICjWithMutableGraphs;
+import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 /**
  * A CJ document
  */
-public class CjDocumentElement extends CjWithDataElement implements ICjDocument, ICjWithMutableGraphs {
+public class CjDocumentElement extends CjHasDataElement implements ICjDocument, ICjHasGraphsMutable {
 
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private @Nullable String baseUri;

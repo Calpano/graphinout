@@ -6,16 +6,10 @@ import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjEdge;
 import com.calpano.graphinout.base.cj.element.ICjEndpoint;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
-import com.calpano.graphinout.base.cj.element.ICjWithMutableGraphs;
-import com.calpano.graphinout.base.cj.element.ICjWithMutableId;
-import com.google.common.collect.Table;
-import com.google.j2objc.annotations.Property;
-import jdk.jfr.Description;
-import org.checkerframework.common.aliasing.qual.Unique;
-import org.checkerframework.common.returnsreceiver.qual.This;
+import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasIdMutable;
 
 import javax.annotation.Nullable;
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -23,14 +17,14 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 
-public class CjEdgeElement extends CjWithDataAndLabelElement implements ICjEdge, ICjWithMutableId, ICjWithMutableGraphs {
+public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdge, ICjHasIdMutable, ICjHasGraphsMutable {
 
     private final List<CjEndpointElement> endpoints = new ArrayList<>();
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private @Nullable String id;
     private CjEdgeType edgeType;
 
-    CjEdgeElement(@Nullable CjWithDataElement parent) {
+    CjEdgeElement(@Nullable CjHasDataElement parent) {
         super(parent);
     }
 

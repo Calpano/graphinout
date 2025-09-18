@@ -17,8 +17,8 @@ public abstract class CjElement implements ICjElement {
         this.isStarted = false;
     }
 
-    public CjWithDataElement asWithData() {
-        return (CjWithDataElement) this;
+    public CjHasDataElement asWithData() {
+        return (CjHasDataElement) this;
     }
 
     public CjDocumentElement asDocument() {

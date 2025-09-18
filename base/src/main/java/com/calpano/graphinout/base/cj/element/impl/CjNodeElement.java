@@ -5,22 +5,22 @@ import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
 import com.calpano.graphinout.base.cj.element.ICjNode;
 import com.calpano.graphinout.base.cj.element.ICjPort;
-import com.calpano.graphinout.base.cj.element.ICjWithMutableGraphs;
-import com.calpano.graphinout.base.cj.element.ICjWithMutableId;
-import com.calpano.graphinout.base.cj.element.ICjWithMutablePorts;
+import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasIdMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasMutable;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class CjNodeElement extends CjWithDataAndLabelElement implements ICjNode, ICjWithMutableId, ICjWithMutableGraphs, ICjWithMutablePorts {
+public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNode, ICjHasIdMutable, ICjHasGraphsMutable, ICjHasMutable {
 
     private final List<CjPortElement> ports = new java.util.ArrayList<>();
     private final List<CjGraphElement> graphs = new java.util.ArrayList<>();
     private String id;
 
-    CjNodeElement(@Nullable CjWithDataElement parent) {
+    CjNodeElement(@Nullable CjHasDataElement parent) {
         super(parent);
     }
 

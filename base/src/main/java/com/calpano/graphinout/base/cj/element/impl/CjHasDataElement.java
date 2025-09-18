@@ -2,17 +2,16 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 /** Helper class to track element context */
-public abstract class CjWithDataElement extends CjElement {
+public abstract class CjHasDataElement extends CjElement {
 
     private @Nullable CjDataElement dataElement;
 
-    CjWithDataElement(@Nullable CjElement parent) {
+    CjHasDataElement(@Nullable CjElement parent) {
         super(parent);
     }
 

@@ -10,11 +10,11 @@ import com.calpano.graphinout.foundation.json.value.java.JavaJsonFactory;
 
 import javax.annotation.Nullable;
 
-public class CjDataElement extends CjWithDataElement implements ICjData {
+public class CjDataElement extends CjHasDataElement implements ICjData {
 
     private final MagicMutableJsonValue magic = new MagicMutableJsonValue(JavaJsonFactory.INSTANCE, null);
 
-    CjDataElement(@Nullable CjWithDataElement parent) {
+    CjDataElement(@Nullable CjHasDataElement parent) {
         super(parent);
     }
 

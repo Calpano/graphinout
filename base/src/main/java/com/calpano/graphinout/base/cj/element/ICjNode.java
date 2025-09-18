@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-public interface ICjNode extends ICjWithId, ICjWithGraphs {
+public interface ICjNode extends ICjHasId, ICjHasGraphs {
 
     @Nullable
     ICjData data();

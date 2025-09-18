@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.annotation.Nullable;
 
-public class CjLabelEntryElement extends CjWithDataElement implements ICjLabelEntry {
+public class CjLabelEntryElement extends CjHasDataElement implements ICjLabelEntry {
 
     private @Nullable String language;
     private String value;

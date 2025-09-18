@@ -1,17 +1,16 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.base.cj.element.ICjLabelEntry;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 /** Luckily, all CJ elements with a label also have data */
-public abstract class CjWithDataAndLabelElement extends CjWithDataElement {
+public abstract class CjHasDataAndLabelElement extends CjHasDataElement {
 
     @Nullable CjLabelElement labelElement;
 
-    CjWithDataAndLabelElement(@Nullable CjElement parent) {
+    CjHasDataAndLabelElement(@Nullable CjElement parent) {
         super(parent);
     }
 

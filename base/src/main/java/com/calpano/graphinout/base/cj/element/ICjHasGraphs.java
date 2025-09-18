@@ -2,8 +2,8 @@ package com.calpano.graphinout.base.cj.element;
 
 import java.util.stream.Stream;
 
-public interface ICjWithPorts extends ICjElement {
+public interface ICjHasGraphs extends ICjElement {
 
-    Stream<ICjPort> ports();
+    Stream<ICjGraph> graphs();
 
 }

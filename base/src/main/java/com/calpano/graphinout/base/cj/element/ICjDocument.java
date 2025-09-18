@@ -2,7 +2,7 @@ package com.calpano.graphinout.base.cj.element;
 
 import javax.annotation.Nullable;
 
-public interface ICjDocument extends  ICjWithGraphs {
+public interface ICjDocument extends ICjHasGraphs {
 
     @Nullable
     ICjDocumentMeta connectedJson();

@@ -2,9 +2,9 @@ package com.calpano.graphinout.base.cj;
 
 import com.calpano.graphinout.base.cj.element.ICjDocument;
 import com.calpano.graphinout.base.cj.element.ICjElement;
-import com.calpano.graphinout.base.cj.element.ICjWithMutableGraphs;
-import com.calpano.graphinout.base.cj.element.ICjWithMutableId;
-import com.calpano.graphinout.base.cj.element.ICjWithMutablePorts;
+import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasIdMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasMutable;
 import com.calpano.graphinout.base.cj.element.impl.CjDataElement;
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.cj.element.impl.CjEdgeElement;
@@ -16,8 +16,8 @@ import com.calpano.graphinout.base.cj.element.impl.CjLabelElement;
 import com.calpano.graphinout.base.cj.element.impl.CjLabelEntryElement;
 import com.calpano.graphinout.base.cj.element.impl.CjNodeElement;
 import com.calpano.graphinout.base.cj.element.impl.CjPortElement;
-import com.calpano.graphinout.base.cj.element.impl.CjWithDataAndLabelElement;
-import com.calpano.graphinout.base.cj.element.impl.CjWithDataElement;
+import com.calpano.graphinout.base.cj.element.impl.CjHasDataAndLabelElement;
+import com.calpano.graphinout.base.cj.element.impl.CjHasDataElement;
 import com.calpano.graphinout.base.cj.impl.CjJson2JavaJsonWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
@@ -83,12 +83,12 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
 
     @Override
     public void graphStart() throws CjException {
-        peek(ICjWithMutableGraphs.class).addGraph(elements::push);
+        peek(ICjHasGraphsMutable.class).addGraph(elements::push);
     }
 
     @Override
     public void id(String id) {
-        peek(ICjWithMutableId.class).id(id);
+        peek(ICjHasIdMutable.class).id(id);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
     @Override
     public void jsonDataStart() {
         // prepare buffering json data
-        peek(CjWithDataElement.class).dataElement(elements::push);
+        peek(CjHasDataElement.class).dataElement(elements::push);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
 
     @Override
     public void labelStart() {
-        peek(CjWithDataAndLabelElement.class).label(elements::push);
+        peek(CjHasDataAndLabelElement.class).label(elements::push);
     }
 
     @Override
@@ -202,7 +202,7 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
 
     @Override
     public void portStart() {
-        peek(ICjWithMutablePorts.class).addPort(elements::push);
+        peek(ICjHasMutable.class).addPort(elements::push);
     }
 
     public ICjDocument resultDoc() {

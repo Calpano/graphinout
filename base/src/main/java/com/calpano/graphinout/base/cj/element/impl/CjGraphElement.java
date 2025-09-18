@@ -6,8 +6,8 @@ import com.calpano.graphinout.base.cj.element.ICjEdge;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
 import com.calpano.graphinout.base.cj.element.ICjGraphMeta;
 import com.calpano.graphinout.base.cj.element.ICjNode;
-import com.calpano.graphinout.base.cj.element.ICjWithMutableGraphs;
-import com.calpano.graphinout.base.cj.element.ICjWithMutableId;
+import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasIdMutable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class CjGraphElement extends CjWithDataAndLabelElement implements ICjGraph, ICjWithMutableId, ICjWithMutableGraphs {
+public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph, ICjHasIdMutable, ICjHasGraphsMutable {
 
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private final List<CjNodeElement> nodes = new ArrayList<>();
@@ -23,7 +23,7 @@ public class CjGraphElement extends CjWithDataAndLabelElement implements ICjGrap
     private String id;
     private @Nullable CjGraphMetaElement meta;
 
-    CjGraphElement(@Nullable CjWithDataElement parent) {
+    CjGraphElement(@Nullable CjHasDataElement parent) {
         super(parent);
     }
 

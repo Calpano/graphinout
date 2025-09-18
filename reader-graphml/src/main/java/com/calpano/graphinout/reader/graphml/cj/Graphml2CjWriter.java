@@ -3,7 +3,7 @@ package com.calpano.graphinout.reader.graphml.cj;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.calpano.graphinout.base.cj.element.impl.CjWithDataElement;
+import com.calpano.graphinout.base.cj.element.impl.CjHasDataElement;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.IGraphmlData;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
@@ -47,7 +47,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
     public Graphml2CjWriter(CjWriter cjWriter) {this.cjWriter = cjWriter;}
 
     /** desc goes to data: <graphml><desc> -> .data.description */
-    private static void graphmlDesc(@Nullable IGraphmlDescription desc, CjWithDataElement cjWithData) {
+    private static void graphmlDesc(@Nullable IGraphmlDescription desc, CjHasDataElement cjWithData) {
         if (desc == null) return;
         cjWithData.data(mm -> mm .addProperty("description", desc.value()));
     }
