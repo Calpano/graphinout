@@ -1,0 +1,217 @@
+= GraphML 2 CJ
+:toc:
+
+Describes the bi-directional mapping between GraphML and CJ formats.
+
+== Document
+|===
+| CJ | GraphML
+
+| cj:Document | `<graphml>`
+
+| `.baseUri`
+| --Mapped to a `<data>` element
+
+| -- Used for conversion, but types mapped to JSON types.
+| `<key id="` _key_ ` attr.name="` _attName_ `"/>`
+
+
+
+2+e| In every GraphML element
+| -> `.data.cj:attributes`.{attributeMap}
+| @xml attributes, including all XML namespaces
+
+2+h| Children
+| `.data.description` (JSON string)
+| `<desc>`
+
+| `.data.` _attName_ (JSON _attType_)
+| `<data id="` _id_ `" key='` _key_ `'>` (id ignored, key for lookup)
+
+|===
+
+
+== Graph
+
+|===
+| CJ | GraphML
+
+| cj:Graph | `<graph>`
+
+| -- (Read at import time and inline) | `<locator>` can define a remote graph URL.
+
+| --(Interpreted at import time) | `@edgeDefault`
+
+| `.id` | `@id`
+
+2+e| In every GraphML element
+| -> `.data.cj:attributes`.{attributeMap}
+| @xml attributes
+
+2+h| Children
+| `.data.description`
+| `<desc>`
+
+| `.data.` _attName_ (JSON _attType_)
+| `<data id="` _id_ `" key='` _key_ `'>`
+
+
+|===
+
+
+
+== Node
+
+|===
+| CJ | GraphML
+
+| cj:Node | `<node>`
+
+2+e| In every GraphML element
+| -> `.data.cj:attributes`.{attributeMap}
+| @xml attributes
+
+| `.id` | `@id`
+
+2+h| Children
+| `.data.description`
+| `<desc>`
+
+| `.data.` _attName_ (JSON _attType_)
+| `<data id="` _id_ `" key='` _key_ `'>`
+
+|===
+
+
+=== Port
+
+|===
+| CJ | GraphML
+
+| cj:Port | `<port>`
+
+2+e| In every GraphML element
+| -> `.data.cj:attributes`.{attributeMap}
+| @xml attributes
+
+| `.id` | `@name`
+
+2+h| Children
+| `.data.description`
+| `<desc>`
+
+| `.data.` _attName_ (JSON _attType_)
+| `<data id="` _id_ `" key='` _key_ `'>`
+
+|===
+
+
+== Edge
+
+|===
+| CJ | GraphML
+
+| cj:Edge | `<edge>` or `<hyperedge>`
+
+2+e| In every GraphML element
+| -> `.data.cj:attributes`.{attributeMap}
+| @xml attributes
+
+| `.id` | `@id`
+
+2+h| Children
+| `.data.description`
+| `<desc>`
+
+| `.data.` _attName_ (JSON _attType_)
+| `<data id="` _id_ `" key='` _key_ `'>`
+|===
+
+.Mapping a GraphML Edge (Bi-Edge)
+Defines five attributes:
+
+- source (required)
+- sourceport (optional)
+- target (required)
+- targetport (optional)
+- directed (optional, defaults to true)
+
+becomes a cj:Edge with
+
+.cj:Edge
+- cj:Endpoint 1
+** `"node="` _sourceport_
+** `"port="` _sourceport_ `"`
+** graphml:directed
+*** =true -> `"direction"="in"`
+*** =false -> `"direction"="undir"`
+- cj:Endpoint 2
+** `"node="` _target_
+** `"port="` _targetport_ `"`
+** graphml:directed
+*** =true -> `"direction"="out"`
+*** =false -> `"direction"="undir"`
+
+
+
+
+
+=== Endpoint
+
+|===
+| CJ | GraphML
+
+| cj:Endpoint | `<endpoint>`
+
+2+e| In every GraphML element
+| -> `.data.cj:attributes`.{attributeMap}
+| @xml attributes
+
+| `.id` | `@id`
+
+2+h| Children
+| `.data.description`
+| `<desc>`
+
+| `.data.` _attName_ (JSON _attType_)
+| `<data key='` _id_ `'>`
+|===
+
+.GraphML Endpoint
+It defines these XML attributes:
+
+- id (optional)
+- node (required)
+- port (optional)
+- type (optional, defaults to `"undir"`), on of {`"in"`,`"out"`,`"undir"`}
+
+becomes a cj:Edge with cj:Endpoints:
+
+.cj:Endpoint
+* `"node="` _node_ `"` (JSON string)
+* If defined: `"port="` _port_ `"`  (JSON string)
+* `"direction="` _type_ `"` (JSON string)
+
+
+
+== CJ Extensions
+CJ Canonical allows a `"data"` property on all CJ objects.
+CJ Extended allows arbitrary custom properties on all CJ objects.
+
+== GraphML Extensions
+GraphML allows
+
+- Custom XML attributes on any element
+- `<data>` in most GraphML elements.
+** XML content in `<data>` and `<key><default>`, including with custom namespaces. E.g. SVG can be embedded.
+
+We map XML strings to
+
+.XML Strings in JSON
+[source,json]
+----
+{
+    "type": "xml",
+    "value": "...<svg>...</svg>"
+}
+----

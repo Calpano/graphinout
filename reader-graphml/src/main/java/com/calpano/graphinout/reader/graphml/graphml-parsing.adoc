@@ -1,5 +1,7 @@
-= GraphML Parsing
+= GraphML Parsing - NOTES
 :toc:
+
+NOTE: These are unfinished, temporary notes.
 
 .Structural Nesting in GioWriter
 [plantuml]
@@ -7,14 +9,16 @@
 hide empty members
 hide circles
 class graphml
+class edgeOrHyperedge as "edge or\nhyperedge"
 
 graphml ..> graph
 graphml ..> data
 
 graph ..> data
 graph ..> node
-graph ..> edge
-graph ..> hyperedge
+graph ..> edgeOrHyperedge
+'graph ..> edge
+'graph ..> hyperedge
 
 node ..> data
 node ..> port
@@ -23,11 +27,12 @@ node ..> graph
 port ..> data
 port ..> port
 
-edge ..> data
-edge ..> graph
-
-hyperedge ..> data
-hyperedge ..> graph
+edgeOrHyperedge ..> data
+edgeOrHyperedge ..> graph
+'edge ..> data
+'edge ..> graph
+'hyperedge ..> data
+'hyperedge ..> graph
 ....
 
 TIP: When any one of these children is observed, the start-element is complete.

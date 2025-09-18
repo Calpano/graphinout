@@ -1,5 +1,7 @@
 = GraphML to CJ and Back
 
+NOTE: These are unfinished, temporary notes.
+
 See also
 http://graphml.graphdrawing.org/primer/graphml-primer.html[]
 
