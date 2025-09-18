@@ -5,7 +5,9 @@ import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjEdgeMutable;
 import com.calpano.graphinout.base.cj.element.ICjEndpoint;
+import com.calpano.graphinout.base.cj.element.ICjEndpointMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
+import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import static java.util.Optional.ofNullable;
 
 public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMutable {
 
-    private final List<CjEndpointElement> endpoints = new ArrayList<>();
+    private final List<ICjEndpointMutable> endpoints = new ArrayList<>();
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private @Nullable String id;
     private CjEdgeType edgeType;
@@ -27,14 +29,14 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
     }
 
     @Override
-    public void addEndpoint(Consumer<CjEndpointElement> endpoint) {
+    public void addEndpoint(Consumer<ICjEndpointMutable> endpoint) {
         CjEndpointElement endpointElement = new CjEndpointElement(this);
         endpoint.accept(endpointElement);
         endpoints.add(endpointElement);
     }
 
     @Override
-    public void addGraph(Consumer<CjGraphElement> graph) {
+    public void addGraph(Consumer<ICjGraphMutable> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
@@ -67,9 +69,9 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
         cjWriter.maybe(id, cjWriter::id);
         fireLabelMaybe(cjWriter);
         ofNullable(edgeType()).ifPresent(cjWriter::edgeType);
-        cjWriter.list(endpoints, CjType.ArrayOfEndpoints, CjEndpointElement::fire);
+        cjWriter.list(endpoints, CjType.ArrayOfEndpoints, ICjEndpoint::fire);
         fireDataMaybe(cjWriter);
-        cjWriter.list(graphs, CjType.ArrayOfGraphs, CjGraphElement::fire);
+        cjWriter.list(graphs, CjType.ArrayOfGraphs, ICjGraph::fire);
 
         cjWriter.edgeEnd();
     }

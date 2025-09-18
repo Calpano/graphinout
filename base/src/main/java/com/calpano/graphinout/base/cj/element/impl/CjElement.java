@@ -2,7 +2,6 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjElement;
-import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 
 import javax.annotation.Nullable;
@@ -16,34 +15,6 @@ public abstract class CjElement implements ICjElement {
     CjElement(@Nullable CjElement parent) {
         this.parent = parent;
         this.isStarted = false;
-    }
-
-    public CjHasDataElement asWithData() {
-        return (CjHasDataElement) this;
-    }
-
-    public CjDocumentElement asDocument() {
-        return (CjDocumentElement) this;
-    }
-
-    public CjEdgeElement asEdge() {
-        return (CjEdgeElement) this;
-    }
-
-    public CjEndpointElement asEndpoint() {
-        return (CjEndpointElement) this;
-    }
-
-    public ICjGraphMutable asGraph() {
-        return (CjGraphElement) this;
-    }
-
-    public CjNodeElement asNode() {
-        return (CjNodeElement) this;
-    }
-
-    public CjPortElement asPort() {
-        return (CjPortElement) this;
     }
 
     public boolean isStarted() {
@@ -65,6 +36,12 @@ public abstract class CjElement implements ICjElement {
         }
         cjType().fireStart(cjWriter);
         markAsStarted();
+    }
+
+    @Nullable
+    @Override
+    public ICjElement parent() {
+        return parent;
     }
 
     // TODO remove?

@@ -1,9 +1,10 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
+import com.calpano.graphinout.base.cj.element.ICjDocumentMetaMutable;
+
 import javax.annotation.Nullable;
 
 public class CjDocumentMetaElement implements ICjDocumentMetaMutable {
-
 
     private String versionNumber;
     private String versionDate;

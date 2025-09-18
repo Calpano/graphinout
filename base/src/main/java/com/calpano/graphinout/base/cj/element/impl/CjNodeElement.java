@@ -3,18 +3,17 @@ package com.calpano.graphinout.base.cj.element.impl;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
-import com.calpano.graphinout.base.cj.element.ICjNode;
+import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
+import com.calpano.graphinout.base.cj.element.ICjNodeMutable;
 import com.calpano.graphinout.base.cj.element.ICjPort;
-import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
-import com.calpano.graphinout.base.cj.element.ICjHasIdMutable;
-import com.calpano.graphinout.base.cj.element.ICjHasPortsMutable;
+import com.calpano.graphinout.base.cj.element.ICjPortMutable;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNode, ICjHasIdMutable, ICjHasGraphsMutable, ICjHasPortsMutable {
+public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMutable {
 
     private final List<CjPortElement> ports = new java.util.ArrayList<>();
     private final List<CjGraphElement> graphs = new java.util.ArrayList<>();
@@ -24,14 +23,14 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNode, 
         super(parent);
     }
 
-    public void addGraph(Consumer<CjGraphElement> graph) {
+    public void addGraph(Consumer<ICjGraphMutable> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
     }
 
 
-    public void addPort(Consumer<CjPortElement> port) {
+    public void addPort(Consumer<ICjPortMutable> port) {
         CjPortElement portElement = new CjPortElement(this);
         port.accept(portElement);
         // TODO validate resulting portElement
@@ -59,10 +58,6 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNode, 
     @Override
     public Stream<ICjGraph> graphs() {
         return graphs.stream().map(x -> (ICjGraph) x);
-    }
-
-    public List<CjGraphElement> graphsMutable() {
-        return graphs;
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMeta;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
+import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     }
 
     @Override
-    public void addGraph(Consumer<CjGraphElement> graph) {
+    public void addGraph(Consumer<ICjGraphMutable> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);

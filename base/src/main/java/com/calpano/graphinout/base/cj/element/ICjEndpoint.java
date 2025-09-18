@@ -4,10 +4,7 @@ import com.calpano.graphinout.base.cj.CjDirection;
 
 import javax.annotation.Nullable;
 
-public interface ICjEndpoint {
-
-    @Nullable
-    ICjData data();
+public interface ICjEndpoint extends ICjHasData {
 
     @Nullable
     CjDirection direction();

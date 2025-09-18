@@ -1,23 +1,23 @@
 package com.calpano.graphinout.base.cj;
 
+import com.calpano.graphinout.base.cj.element.ICjDataMutable;
 import com.calpano.graphinout.base.cj.element.ICjDocument;
+import com.calpano.graphinout.base.cj.element.ICjDocumentMutable;
+import com.calpano.graphinout.base.cj.element.ICjEdgeMutable;
 import com.calpano.graphinout.base.cj.element.ICjElement;
+import com.calpano.graphinout.base.cj.element.ICjEndpointMutable;
+import com.calpano.graphinout.base.cj.element.ICjGraphMetaMutable;
+import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasDataMutable;
 import com.calpano.graphinout.base.cj.element.ICjHasGraphsMutable;
 import com.calpano.graphinout.base.cj.element.ICjHasIdMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasLabelMutable;
 import com.calpano.graphinout.base.cj.element.ICjHasPortsMutable;
-import com.calpano.graphinout.base.cj.element.impl.CjDataElement;
+import com.calpano.graphinout.base.cj.element.ICjLabelEntryMutable;
+import com.calpano.graphinout.base.cj.element.ICjLabelMutable;
+import com.calpano.graphinout.base.cj.element.ICjNodeMutable;
+import com.calpano.graphinout.base.cj.element.ICjPortMutable;
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.calpano.graphinout.base.cj.element.impl.CjEdgeElement;
-import com.calpano.graphinout.base.cj.element.impl.CjElement;
-import com.calpano.graphinout.base.cj.element.impl.CjEndpointElement;
-import com.calpano.graphinout.base.cj.element.impl.CjGraphElement;
-import com.calpano.graphinout.base.cj.element.impl.CjGraphMetaElement;
-import com.calpano.graphinout.base.cj.element.impl.CjLabelElement;
-import com.calpano.graphinout.base.cj.element.impl.CjLabelEntryElement;
-import com.calpano.graphinout.base.cj.element.impl.CjNodeElement;
-import com.calpano.graphinout.base.cj.element.impl.CjPortElement;
-import com.calpano.graphinout.base.cj.element.impl.CjHasDataAndLabelElement;
-import com.calpano.graphinout.base.cj.element.impl.CjHasDataElement;
 import com.calpano.graphinout.base.cj.impl.CjJson2JavaJsonWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
@@ -31,17 +31,17 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
 
     @Override
     public void baseUri(String baseUri) {
-        peek(CjDocumentElement.class).baseUri(baseUri);
+        peek(ICjDocumentMutable.class).baseUri(baseUri);
     }
 
     @Override
     public void direction(CjDirection direction) {
-        peek(CjEndpointElement.class).direction(direction);
+        peek(ICjEndpointMutable.class).direction(direction);
     }
 
     @Override
     public void documentEnd() throws JsonException {
-        pop(CjDocumentElement.class);
+        pop(ICjDocumentMutable.class);
     }
 
     @Override
@@ -53,32 +53,32 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
 
     @Override
     public void edgeEnd() {
-        pop(CjEdgeElement.class);
+        pop(ICjEdgeMutable.class);
     }
 
     @Override
     public void edgeStart() {
-        peek(CjGraphElement.class).addEdge(elements::push);
+        peek(ICjGraphMutable.class).addEdge(elements::push);
     }
 
     @Override
     public void edgeType(CjEdgeType edgeType) {
-        peek(CjEdgeElement.class).edgeType(edgeType);
+        peek(ICjEdgeMutable.class).edgeType(edgeType);
     }
 
     @Override
     public void endpointEnd() {
-        pop(CjEndpointElement.class);
+        pop(ICjEndpointMutable.class);
     }
 
     @Override
     public void endpointStart() {
-        peek(CjEdgeElement.class).addEndpoint(elements::push);
+        peek(ICjEdgeMutable.class).addEndpoint(elements::push);
     }
 
     @Override
     public void graphEnd() throws CjException {
-        pop(CjGraphElement.class);
+        pop(ICjGraphMutable.class);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
     @Override
     public void jsonDataEnd() {
         // need to attach resulting json to element on stack
-        CjDataElement dataElement = pop(CjDataElement.class);
+        ICjDataMutable dataElement = pop(ICjDataMutable.class);
         IJsonValue json = super.jsonValue();
         dataElement.jsonNode(json);
         super.reset();
@@ -103,32 +103,32 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
     @Override
     public void jsonDataStart() {
         // prepare buffering json data
-        peek(CjHasDataElement.class).dataElement(elements::push);
+        peek(ICjHasDataMutable.class).dataElement(elements::push);
     }
 
     @Override
     public void labelEnd() {
-        pop(CjLabelElement.class);
+        pop(ICjLabelMutable.class);
     }
 
     @Override
     public void labelEntryEnd() {
-        pop(CjLabelEntryElement.class);
+        pop(ICjLabelEntryMutable.class);
     }
 
     @Override
     public void labelEntryStart() {
-        peek(CjLabelElement.class).entry(elements::push);
+        peek(ICjLabelMutable.class).entry(elements::push);
     }
 
     @Override
     public void labelStart() {
-        peek(CjHasDataAndLabelElement.class).label(elements::push);
+        peek(ICjHasLabelMutable.class).label(elements::push);
     }
 
     @Override
     public void language(String language) {
-        peek(CjLabelEntryElement.class).language(language);
+        peek(ICjLabelEntryMutable.class).language(language);
     }
 
     @Override
@@ -142,62 +142,62 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
 
     @Override
     public void metaEnd() {
-        pop(CjGraphMetaElement.class);
+        pop(ICjGraphMetaMutable.class);
     }
 
     @Override
     public void metaStart() {
-        peek(CjGraphElement.class).meta(elements::push);
+        peek(ICjGraphMutable.class).meta(elements::push);
     }
 
     @Override
     public void meta__canonical(boolean b) {
-        peek(CjGraphMetaElement.class).canonical(b);
+        peek(ICjGraphMetaMutable.class).canonical(b);
     }
 
     @Override
     public void meta__edgeCountInGraph(long number) {
-        peek(CjGraphMetaElement.class).edgeCountInGraph(number);
+        peek(ICjGraphMetaMutable.class).edgeCountInGraph(number);
     }
 
     @Override
     public void meta__edgeCountTotal(long number) {
-        peek(CjGraphMetaElement.class).edgeCountTotal(number);
+        peek(ICjGraphMetaMutable.class).edgeCountTotal(number);
     }
 
     @Override
     public void meta__nodeCountInGraph(long number) {
-        peek(CjGraphMetaElement.class).nodeCountInGraph(number);
+        peek(ICjGraphMetaMutable.class).nodeCountInGraph(number);
     }
 
     @Override
     public void meta__nodeCountTotal(long number) {
-        peek(CjGraphMetaElement.class).nodeCountTotal(number);
+        peek(ICjGraphMetaMutable.class).nodeCountTotal(number);
     }
 
     @Override
     public void nodeEnd() {
-        pop(CjNodeElement.class);
+        pop(ICjNodeMutable.class);
     }
 
     @Override
     public void nodeId(String nodeId) {
-        peek(CjEndpointElement.class).node(nodeId);
+        peek(ICjEndpointMutable.class).node(nodeId);
     }
 
     @Override
     public void nodeStart() {
-        peek(CjGraphElement.class).addNode(elements::push);
+        peek(ICjGraphMutable.class).addNode(elements::push);
     }
 
     @Override
     public void portEnd() {
-        pop(CjPortElement.class);
+        pop(ICjPortMutable.class);
     }
 
     @Override
     public void portId(String portId) {
-        peek(CjEndpointElement.class).port(portId);
+        peek(ICjEndpointMutable.class).port(portId);
     }
 
     @Override
@@ -211,7 +211,7 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
 
     @Override
     public void value(String value) {
-        peek(CjLabelEntryElement.class).value(value);
+        peek(ICjLabelEntryMutable.class).value(value);
     }
 
     private <T extends ICjElement> T peek(Class<T> clazz) {
@@ -222,7 +222,7 @@ public class Cj2ElementsWriter extends CjJson2JavaJsonWriter implements CjWriter
         throw new IllegalStateException("Expected " + clazz + " but was " + e);
     }
 
-    private <T extends CjElement> T pop(Class<T> clazz) {
+    private <T extends ICjElement> T pop(Class<T> clazz) {
         ICjElement e = elements.pop();
         if (clazz.isInstance(e)) {
             return clazz.cast(e);

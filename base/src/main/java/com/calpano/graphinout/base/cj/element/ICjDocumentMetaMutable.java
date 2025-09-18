@@ -1,6 +1,4 @@
-package com.calpano.graphinout.base.cj.element.impl;
-
-import com.calpano.graphinout.base.cj.element.ICjDocumentMeta;
+package com.calpano.graphinout.base.cj.element;
 
 public interface ICjDocumentMetaMutable extends ICjDocumentMeta {
 

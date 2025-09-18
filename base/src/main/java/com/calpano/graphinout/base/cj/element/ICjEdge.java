@@ -6,19 +6,12 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Stream;
 
-public interface ICjEdge extends ICjHasGraphs, ICjHasId {
-
-
-    @Nullable
-    ICjData data();
+public interface ICjEdge extends ICjElement, ICjHasGraphs, ICjHasId, ICjHasData, ICjHasLabel {
 
     @Nullable
     CjEdgeType edgeType();
 
     Stream<ICjEndpoint> endpoints();
-
-    @Nullable
-    ICjLabel label();
 
     /**
      * If this edge has exactly one endpoint with direction=IN, then this methods returns it. @throws

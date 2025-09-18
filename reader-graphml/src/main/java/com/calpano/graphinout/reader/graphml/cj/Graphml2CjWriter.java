@@ -2,9 +2,9 @@ package com.calpano.graphinout.reader.graphml.cj;
 
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.calpano.graphinout.base.cj.element.impl.CjHasDataElement;
+import com.calpano.graphinout.base.cj.element.ICjDocumentMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
+import com.calpano.graphinout.base.cj.element.ICjHasDataMutable;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.IGraphmlData;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
@@ -48,7 +48,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
     public Graphml2CjWriter(CjWriter cjWriter) {this.cjWriter = cjWriter;}
 
     /** desc goes to data: <graphml><desc> -> .data.description */
-    private static void graphmlDesc(@Nullable IGraphmlDescription desc, CjHasDataElement cjWithData) {
+    private static void graphmlDesc(@Nullable IGraphmlDescription desc, ICjHasDataMutable cjWithData) {
         if (desc == null) return;
         cjWithData.data(mm -> mm.addProperty("description", desc.value()));
     }
@@ -81,15 +81,15 @@ public class Graphml2CjWriter implements GraphmlWriter {
     }
 
     @Override
-    public void documentStart(IGraphmlDocument document) throws IOException {
-        CjDocumentElement documentEvent = parseBuffer.pushRoot();
+    public void documentStart(IGraphmlDocument graphmlDocument) throws IOException {
+        ICjDocumentMutable cjDoc = parseBuffer.pushRoot();
 
-        graphmlDesc(document.desc(), documentEvent);
+        graphmlDesc(graphmlDocument.desc(), cjDoc);
 
-        // GraphML document attributes, like XML namespaces, become /data/cj:attributes
+        // GraphML graphmlDocument attributes, like XML namespaces, become /data/cj:attributes
         // <graphml ATTS> ->  /data/cj:attributes/{attName}
-        document.xmlPlusGraphmlAttributesNormalized().forEach((key, value) -> //
-                documentEvent.data(mm -> mm.addProperty(key, value)));
+        graphmlDocument.xmlPlusGraphmlAttributesNormalized().forEach((key, value) -> //
+                cjDoc.data(mm -> mm.addProperty(key, value)));
     }
 
     @Override
@@ -121,7 +121,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
         // remember for coming edges
         graphStack.push(new GraphmlGraph(graphmlGraph.edgeDefault()));
 
-        CjDocumentElement cjDoc = parseBuffer.peek_().asDocument();
+        ICjDocumentMutable cjDoc = parseBuffer.peek_().asDocument();
         cjDoc.addGraph(graphElement -> {
             graphElement.id(graphElement.id());
             graphmlDesc(graphmlGraph.desc(), graphElement);
@@ -170,7 +170,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
     }
 
     public void writeAllTo(CjWriter cjWriter) {
-        parseBuffer.root_().asDocument().fire(cjWriter);
+        parseBuffer.root_().fire(cjWriter);
     }
 
 }

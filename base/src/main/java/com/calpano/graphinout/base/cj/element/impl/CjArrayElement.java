@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public class CjArrayElement extends CjElement implements ICjElement, ICjArrayMutable {
 
-    protected final List<CjElement> elements = new ArrayList<>();
+    protected final List<ICjElement> elements = new ArrayList<>();
     final CjType cjType;
 
     public CjArrayElement(CjElement parent, CjType cjType) {
@@ -21,7 +21,7 @@ public class CjArrayElement extends CjElement implements ICjElement, ICjArrayMut
     }
 
     @Override
-    public void add(CjElement element) {
+    public void add(ICjElement element) {
         elements.add(element);
     }
 

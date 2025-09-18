@@ -3,10 +3,13 @@ package com.calpano.graphinout.base.cj.element.impl;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjEdge;
+import com.calpano.graphinout.base.cj.element.ICjEdgeMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
 import com.calpano.graphinout.base.cj.element.ICjGraphMeta;
+import com.calpano.graphinout.base.cj.element.ICjGraphMetaMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
 import com.calpano.graphinout.base.cj.element.ICjNode;
+import com.calpano.graphinout.base.cj.element.ICjNodeMutable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -27,21 +30,21 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
     }
 
     @Override
-    public void addEdge(Consumer<CjEdgeElement> edge) {
+    public void addEdge(Consumer<ICjEdgeMutable> edge) {
         CjEdgeElement edgeEvent = new CjEdgeElement(this);
         edge.accept(edgeEvent);
         edges.add(edgeEvent);
     }
 
     @Override
-    public void addGraph(Consumer<CjGraphElement> graph) {
+    public void addGraph(Consumer<ICjGraphMutable> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
     }
 
     @Override
-    public void addNode(Consumer<CjNodeElement> node) {
+    public void addNode(Consumer<ICjNodeMutable> node) {
         CjNodeElement n = new CjNodeElement(this);
         node.accept(n);
         nodes.add(n);
@@ -89,7 +92,7 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
     }
 
     @Override
-    public void meta(Consumer<CjGraphMetaElement> meta) {
+    public void meta(Consumer<ICjGraphMetaMutable> meta) {
         this.meta = new CjGraphMetaElement(this);
         meta.accept(this.meta);
     }

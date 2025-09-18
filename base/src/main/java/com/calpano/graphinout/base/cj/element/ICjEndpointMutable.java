@@ -1,19 +1,21 @@
 package com.calpano.graphinout.base.cj.element;
 
-import com.calpano.graphinout.base.cj.element.impl.CjEndpointElement;
+import com.calpano.graphinout.base.cj.CjDirection;
 
 import javax.annotation.Nullable;
 
-public interface ICjEndpointMutable extends ICjEndpoint {
+public interface ICjEndpointMutable extends ICjElement, ICjEndpoint, ICjHasDataMutable {
 
-    CjEndpointElement node(String node);
+    ICjEndpointMutable direction(CjDirection direction);
 
-    CjEndpointElement port(@Nullable String port);
+    ICjEndpointMutable node(String node);
 
-    void type(@Nullable String type);
+    ICjEndpointMutable port(@Nullable String port);
 
-    void typeNode(@Nullable String typeNode);
+    ICjEndpointMutable type(@Nullable String type);
 
-    void typeUri(@Nullable String typeUri);
+    ICjEndpointMutable typeNode(@Nullable String typeNode);
+
+    ICjEndpointMutable typeUri(@Nullable String typeUri);
 
 }

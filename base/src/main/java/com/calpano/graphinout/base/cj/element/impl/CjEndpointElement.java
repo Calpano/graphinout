@@ -33,7 +33,8 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
         return direction;
     }
 
-    public CjEndpointElement direction(CjDirection direction) {
+    @Override
+    public ICjEndpointMutable direction(CjDirection direction) {
         this.direction = direction;
         return this;
     }
@@ -54,13 +55,13 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
     }
 
     @Override
-    public CjEndpointElement node(String node) {
+    public ICjEndpointMutable node(String node) {
         this.node = node;
         return this;
     }
 
     @Override
-    public CjEndpointElement port(@Nullable String port) {
+    public ICjEndpointMutable port(@Nullable String port) {
         this.port = port;
         return this;
     }
@@ -72,8 +73,9 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
     }
 
     @Override
-    public void type(@Nullable String type) {
+    public ICjEndpointMutable type(@Nullable String type) {
         this.type = type;
+        return this;
     }
 
     @Nullable
@@ -83,8 +85,9 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
     }
 
     @Override
-    public void typeNode(@Nullable String typeNode) {
+    public ICjEndpointMutable typeNode(@Nullable String typeNode) {
         this.typeNode = typeNode;
+        return this;
     }
 
     @Nullable
@@ -94,8 +97,9 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
     }
 
     @Override
-    public void typeUri(@Nullable String typeUri) {
+    public ICjEndpointMutable typeUri(@Nullable String typeUri) {
         this.typeUri = typeUri;
+        return this;
     }
 
     @Nullable

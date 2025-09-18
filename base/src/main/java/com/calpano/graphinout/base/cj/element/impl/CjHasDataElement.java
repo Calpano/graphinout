@@ -1,6 +1,7 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.element.ICjData;
 import com.calpano.graphinout.base.cj.element.ICjHasDataMutable;
 import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
 
@@ -23,12 +24,12 @@ public abstract class CjHasDataElement extends CjElement implements ICjHasDataMu
 
     @Nullable
     @Override
-    public CjDataElement data() {
+    public ICjData data() {
         return dataElement;
     }
 
     @Override
-    public void dataElement(Consumer<CjDataElement> consumer) {
+    public void dataElement(Consumer<ICjData> consumer) {
         // attach
         this.dataElement = new CjDataElement(this);
         consumer.accept(dataElement);
