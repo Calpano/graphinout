@@ -1,0 +1,326 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+  "title": "Connected JSON (5.0.1)",
+  "description": "A JSON schema for Connected JSON v5.0.0. Connected JSON is a format for exchanging connected data like graphs and networks.",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "id": {
+      "description": "A unique identifier. Its scope of uniqueness depends on the element it identifies (e.g., document, graph, or node).",
+      "type": "string"
+    },
+    "label": {
+      "description": "A multilingual label, represented as an array of language-value pairs.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "language": {
+            "description": "An optional language tag, typically following BCP 47.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The required string value of the label.",
+            "type": "string"
+          },
+          "data": {
+            "description": "Optional user-defined data attached to the label.",
+            "$ref": "#/definitions/data"
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+    },
+    "data": {
+      "description": "A placeholder for any user-defined JSON data."
+    },
+    "port": {
+      "description": "A connection point on a node, which can be nested.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "A required identifier for the port, unique within its parent node.",
+          "$ref": "#/definitions/id"
+        },
+        "label": {
+          "description": "An optional label for the port.",
+          "$ref": "#/definitions/label"
+        },
+        "ports": {
+          "description": "An optional array of sub-ports for creating hierarchical port structures.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/port"
+          },
+          "default": [ ]
+        },
+        "data": {
+          "description": "Optional user-defined data attached to the port.",
+          "$ref": "#/definitions/data"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "edgeEndpoint": {
+      "description": "Defines one end of an edge, connecting it to a node and specifying the direction.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "node": {
+          "description": "The required ID of the node this endpoint connects to.",
+          "$ref": "#/definitions/id"
+        },
+        "port": {
+          "description": "The optional ID of the port on the node to connect to.",
+          "$ref": "#/definitions/id"
+        },
+        "direction": {
+          "description": "Specifies the direction of the connection relative to the edge. Defaults to 'undir'.",
+          "enum": [
+            "in",
+            "out",
+            "undir"
+          ],
+          "default": "undir"
+        },
+        "type": {
+          "description": "A string defining the relation type. Overridden by typeUri or typeNode.",
+          "type": "string"
+        },
+        "typeUri": {
+          "description": "A URI defining the relation type. Has precedence over type and typeNode.",
+          "type": "string",
+          "format": "uri"
+        },
+        "typeNode": {
+          "description": "A node ID that defines the relation type. Has precedence over type.",
+          "$ref": "#/definitions/id"
+        },
+        "data": {
+          "description": "Optional user-defined data attached to the endpoint.",
+          "$ref": "#/definitions/data"
+        }
+      },
+      "required": [
+        "node"
+      ]
+    },
+    "node": {
+      "description": "Represents a node in the graph.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "A required, unique identifier for the node within the top-level graph.",
+          "$ref": "#/definitions/id"
+        },
+        "label": {
+          "description": "An optional label for the node.",
+          "$ref": "#/definitions/label"
+        },
+        "ports": {
+          "description": "An optional array of ports belonging to this node.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/port"
+          },
+          "default": [ ]
+        },
+        "data": {
+          "description": "Optional user-defined data attached to the node.",
+          "$ref": "#/definitions/data"
+        },
+        "graphs": {
+          "description": "Optional nested subgraphs, turning this into a compound node.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/graph"
+          },
+          "default": [ ]
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "edge": {
+      "description": "Represents a hyperedge connecting two or more nodes.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "An optional, unique identifier for the edge within the top-level graph.",
+          "$ref": "#/definitions/id"
+        },
+        "label": {
+          "description": "An optional label for the edge.",
+          "$ref": "#/definitions/label"
+        },
+        "type": {
+          "description": "A string defining the default relation type for all endpoints.",
+          "type": "string"
+        },
+        "typeUri": {
+          "description": "A URI defining the default relation type for all endpoints.",
+          "type": "string",
+          "format": "uri"
+        },
+        "typeNode": {
+          "description": "A node ID defining the default relation type for all endpoints.",
+          "$ref": "#/definitions/id"
+        },
+        "endpoints": {
+          "description": "A required array of endpoints defining the nodes this edge connects.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/edgeEndpoint"
+          },
+          "minItems": 1
+        },
+        "data": {
+          "description": "Optional user-defined data attached to the edge.",
+          "$ref": "#/definitions/data"
+        },
+        "graphs": {
+          "description": "Optional nested subgraphs, turning this into a compound edge.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/graph"
+          },
+          "default": [ ]
+        }
+      },
+      "required": [
+        "endpoints"
+      ]
+    },
+    "graphMetadata": {
+      "description": "Metadata about a graph, useful for streaming and processing.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canonical": {
+          "description": "If true, indicates the graph follows Canonical CJ ordering and formatting.",
+          "type": "boolean",
+          "default": false
+        },
+        "nodeCountTotal": {
+          "description": "Total number of nodes in this graph and all its subgraphs.",
+          "type": "integer"
+        },
+        "edgeCountTotal": {
+          "description": "Total number of edges in this graph and all its subgraphs.",
+          "type": "integer"
+        },
+        "nodeCountInGraph": {
+          "description": "Number of nodes directly within this graph (excluding subgraphs).",
+          "type": "integer"
+        },
+        "edgeCountInGraph": {
+          "description": "Number of edges directly within this graph (excluding subgraphs).",
+          "type": "integer"
+        }
+      }
+    },
+    "graph": {
+      "description": "The main container for nodes and edges. Can be nested to create subgraphs.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "An optional identifier for the graph, unique within the document if at the top level.",
+          "$ref": "#/definitions/id"
+        },
+        "meta": {
+          "description": "Optional metadata for the graph.",
+          "$ref": "#/definitions/graphMetadata"
+        },
+        "label": {
+          "description": "An optional label for the graph.",
+          "$ref": "#/definitions/label"
+        },
+        "data": {
+          "description": "Optional user-defined data attached to the graph.",
+          "$ref": "#/definitions/data"
+        },
+        "nodes": {
+          "description": "An array of nodes belonging to this graph.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/node"
+          },
+          "default": [ ]
+        },
+        "edges": {
+          "description": "An array of edges belonging to this graph.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/edge"
+          },
+          "default": [ ]
+        },
+        "graphs": {
+          "description": "An array of nested subgraphs.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/graph"
+          },
+          "default": [ ]
+        }
+      }
+    },
+    "documentMetadata": {
+      "description": "Metadata about the Connected JSON document itself.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "versionDate": {
+          "description": "The specification version date used by the document, e.g., '2025-07-14'.",
+          "type": "string"
+        },
+        "versionNumber": {
+          "description": "The specification version number used by the document, e.g., '5.0.0'.",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "properties": {
+    "$schema": {
+      "description": "An optional JSON schema URI.",
+      "type": "string"
+    },
+    "$id": {
+      "description": "An optional JSON schema ID, typically a URI.",
+      "type": "string"
+    },
+    "connectedJson": {
+      "description": "Optional metadata about the Connected JSON document.",
+      "$ref": "#/definitions/documentMetadata"
+    },
+    "baseUri": {
+      "description": "An optional base URI for interpreting relative URIs, particularly for RDF conversion.",
+      "type": "string",
+      "format": "uri"
+    },
+    "data": {
+      "description": "Optional user-defined data attached to the document.",
+      "$ref": "#/definitions/data"
+    },
+    "graphs": {
+      "description": "The main array of top-level graphs in the document.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/graph"
+      },
+      "default": [ ]
+    }
+  }
+}
