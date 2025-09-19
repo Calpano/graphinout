@@ -28,31 +28,16 @@ import static com.google.common.truth.Truth.assertThat;
 
 
 /**
- *
+ * FIXME no graphml yet
  */
 public class Cj2GraphmlAndBackTest {
 
     boolean addLogging = true;
 
-    @Test
-    void test() {
-        JsonWriter jsonWriter = new Json2CjWriter(new LoggingCjWriter(false));
-        jsonWriter.documentStart();
-        // simulate { "data": { "foo":  "bar" } }
-        jsonWriter.objectStart();
-        jsonWriter.onKey("data");
-        jsonWriter.objectStart();
-        jsonWriter.onKey("foo");
-        jsonWriter.onString("bar");
-        jsonWriter.objectEnd();
-        jsonWriter.objectEnd();
-        jsonWriter.documentEnd();
-    }
-
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.calpano.graphinout.base.cj.CjFileProvider#cjFileProvider")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjFilesCanonical")
     @DisplayName("Test JSON-CJ-Graphml-CJ-JSON - all files together")
-    void test_json_cj_graphml_cj_json_AllCjFiles(String displayPath, Path path) throws Exception {
+    void test_json_cj_graphml_cj_json_CanonicalCjFiles(String displayPath, Path path) throws Exception {
         String json_in = FileUtils.readFileToString(path.toFile(), StandardCharsets.UTF_8);
         SingleInputSourceOfString inputSource = SingleInputSourceOfString.of(path.getFileName().toString(), json_in);
         StringBuilderJsonWriter jsonWriter_out = new StringBuilderJsonWriter();

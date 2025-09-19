@@ -20,6 +20,20 @@ public class JacksonPrimitive implements IJsonPrimitive {
         return primitive;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T castTo(Class<T> clazz) {
+        if (clazz.equals(String.class)) {
+            return (T) primitive.asText();
+        } else if (clazz.equals(Boolean.class)) {
+            return (T) Boolean.valueOf(primitive.asBoolean());
+        } else if (clazz.equals(Number.class)) {
+            return (T) primitive.numberValue();
+        } else if (clazz.equals(ValueNode.class)) {
+            return (T) primitive;
+        }
+        throw new IllegalArgumentException("Unsupported type: " + clazz.getName());
+    }
+
     @Override
     public IJsonFactory factory() {
         return JacksonFactory.INSTANCE;

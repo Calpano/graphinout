@@ -1,6 +1,4 @@
-package com.calpano.graphinout.foundation.json;
-
-import com.calpano.graphinout.foundation.json.json5.Json5Preprocessor;
+package com.calpano.graphinout.foundation.json.json5;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

@@ -37,6 +37,7 @@ public interface ICjElement {
 
     CjType cjType();
 
+    /** Fires this element, including start and end and its children. */
     void fire(ICjWriter cjWriter);
 
     @Nullable

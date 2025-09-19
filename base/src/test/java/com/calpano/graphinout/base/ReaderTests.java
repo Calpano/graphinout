@@ -10,14 +10,13 @@ import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.validation.graphml.ValidatingGraphMlWriter;
 import com.calpano.graphinout.base.writer.DelegatingGioWriter;
 import com.calpano.graphinout.base.writer.ValidatingGioWriter;
+import com.calpano.graphinout.foundation.TestFileProvider;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import com.calpano.graphinout.foundation.output.OutputSink;
 import com.calpano.graphinout.foundation.xml.ValidatingXmlWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
@@ -29,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -37,7 +35,7 @@ public class ReaderTests {
 
     private static final Logger log = getLogger(ReaderTests.class);
 
-    public static boolean canRead(GioReader gioReader, String resourcePath) {
+    public static boolean hasReadableFileExtension(GioReader gioReader, String resourcePath) {
         return gioReader.fileFormat().fileExtensions().stream().anyMatch(resourcePath::endsWith);
     }
 
@@ -60,19 +58,17 @@ public class ReaderTests {
     }
 
     public static void forEachReadableResource(GioReader gioReader, Consumer<String> resourcePathConsumer) {
-        getAllTestResourceFilePaths().filter(resourcePath -> ReaderTests.canRead(gioReader, resourcePath)).forEach(resourcePathConsumer);
+        TestFileProvider.getAllTestResourcePaths() //
+                .filter(resourcePath -> ReaderTests.hasReadableFileExtension(gioReader, resourcePath)) //
+                .forEach(resourcePathConsumer);
     }
 
-    public static Stream<String> getAllTestResourceFilePaths() {
-        return new ClassGraph().scan().getAllResources().stream().map(Resource::getPath);
-    }
-
-    public static List<ContentError> readResourceToSink(GioReader gioReader, String resourcePath, OutputSink outputSink, boolean validateXml, boolean validateGraphml, boolean validateGio) throws IOException {
+    public static List<ContentError> readResourceToSink(GioReader gioReader, String resourcePath, OutputSink outputSink) throws IOException {
         URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
         log.info("Reading " + resourceUrl + " as " + gioReader.fileFormat());
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
         SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
-        List<ContentError> contentErrors = readTo(inputSource, gioReader, outputSink, validateXml, validateGraphml, validateGio);
+        List<ContentError> contentErrors = readTo(inputSource, gioReader, outputSink);
         return contentErrors;
     }
 
@@ -81,15 +77,14 @@ public class ReaderTests {
      * @param inputSource
      * @param gioReader
      * @param outputSink
-     * @param validateXml
-     * @param validateGraphml
-     * @param validateGio
      * @return all content errors reported
      * @throws IOException
      */
-    public static List<ContentError> readTo(SingleInputSource inputSource, GioReader gioReader, OutputSink outputSink, //
-                                            boolean validateXml, boolean validateGraphml, boolean validateGio) throws IOException {
+    public static List<ContentError> readTo(SingleInputSource inputSource, GioReader gioReader, OutputSink outputSink) throws IOException {
         List<ContentError> contentErrors = new ArrayList<>();
+        boolean validateXml =true;
+        boolean validateGraphml=true;
+        boolean validateGio=true;
         GioWriter gioWriter = ReaderTests.createWriter(outputSink, validateXml, validateGraphml, validateGio);
         gioReader.errorHandler(contentErrors::add);
         gioReader.read(inputSource, gioWriter);
@@ -102,7 +97,7 @@ public class ReaderTests {
      */
     public static void testReadResourceToGraph(GioReader gioReader, String resourcePath, List<ContentError> expectedErrors) throws IOException {
         InMemoryOutputSink outputSink = new InMemoryOutputSink();
-        List<ContentError> contentErrors = readResourceToSink(gioReader, resourcePath, outputSink, true, true, true);
+        List<ContentError> contentErrors = readResourceToSink(gioReader, resourcePath, outputSink);
 
         Assertions.assertEquals(expectedErrors.toString(), contentErrors.toString(), "expected=" + expectedErrors + " actual=" + contentErrors);
         Assertions.assertEquals(expectedErrors, contentErrors, "expected=" + expectedErrors + " actual=" + contentErrors);

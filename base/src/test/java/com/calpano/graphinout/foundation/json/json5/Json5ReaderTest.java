@@ -1,4 +1,4 @@
-package com.calpano.graphinout.foundation.json;
+package com.calpano.graphinout.foundation.json.json5;
 
 import com.calpano.graphinout.base.gio.GioDocument;
 import com.calpano.graphinout.base.gio.GioEdge;
@@ -7,7 +7,6 @@ import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import com.calpano.graphinout.foundation.json.json5.Json5Reader;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

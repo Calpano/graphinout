@@ -1,6 +1,5 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.gio.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.xml.Graphml2XmlWriter;
@@ -22,16 +21,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 class GraphmlReaderTest {
 
     private static final Logger log = LoggerFactory.getLogger(GraphmlReaderTest.class);
-
-    private static Stream<String> getAllGraphmlFiles() {
-        return ReaderTests.getAllTestResourceFilePaths()
-                .filter(path -> path.endsWith(".graphml"));
-    }
 
     @Test
     void read() throws Exception {
@@ -48,7 +41,7 @@ class GraphmlReaderTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getAllGraphmlFiles")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResources")
     void readAllGraphmlFiles(String filePath) throws Exception {
         log.info("Start To pars file [{}]", filePath);
         URL resourceUrl = ClassLoader.getSystemResource(filePath);

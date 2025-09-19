@@ -50,7 +50,7 @@ class DotReaderTest2 extends AbstractReaderTest {
             Writer w = null;
             InMemoryOutputSink outputSink = OutputSink.createInMemory();
             try {
-                ReaderTests.readResourceToSink(gioReader, resourcePath, outputSink, true, true, true);
+                ReaderTests.readResourceToSink(gioReader, resourcePath, outputSink);
                 String s = new String(outputSink.getByteBuffer().toByteArray(), StandardCharsets.UTF_8);
                 GraphmlValidator.isValidGraphml(SingleInputSource.of("parsed", s));
                 log.info("Read:\n" + s);
@@ -64,7 +64,7 @@ class DotReaderTest2 extends AbstractReaderTest {
     void testOneResource() throws IOException {
         String path = "dot/synthetics/synthetic2.dot";
         InMemoryOutputSink outputSink = OutputSink.createInMemory();
-        ReaderTests.readResourceToSink(new DotReader(), path, outputSink, true, true, true);
+        ReaderTests.readResourceToSink(new DotReader(), path, outputSink);
         String s = new String(outputSink.getByteBuffer().toByteArray(), StandardCharsets.UTF_8);
         GraphmlValidator.isValidGraphml(SingleInputSource.of("parsed", s));
         log.info("Read:\n" + s);

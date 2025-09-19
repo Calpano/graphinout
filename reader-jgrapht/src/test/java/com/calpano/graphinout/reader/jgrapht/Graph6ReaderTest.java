@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,14 +28,14 @@ class Graph6ReaderTest extends AbstractReaderTest {
 
     @Test
     void test() {
-        // stream incoming test resource as XML to the logger
         GioReader gioReader = new Graph6Reader();
+        // stream incoming test resource as XML to the logger
         ReaderTests.forEachReadableResource(gioReader, resourcePath -> {
             Writer w = null;
             InMemoryOutputSink outputSink = OutputSink.createInMemory();
             try {
-                ReaderTests.readResourceToSink(gioReader, resourcePath, outputSink, true, true, true);
-                String s = new String(outputSink.getByteBuffer().toByteArray(), StandardCharsets.UTF_8);
+                ReaderTests.readResourceToSink(gioReader, resourcePath, outputSink);
+                String s = outputSink.getBufferAsUtf8String();
                 GraphmlValidator.isValidGraphml(SingleInputSource.of("parsed", s));
                 log.info("Read:\n" + s);
             } catch (IOException e) {

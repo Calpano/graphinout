@@ -69,7 +69,7 @@ class CjReaderTest {
 
 
     @ParameterizedTest
-    @MethodSource("getResourceFilePaths")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjFilesCanonical")
     void shouldWorkAsIntended(String filePath) throws IOException {
         URL resourceUrl = ClassLoader.getSystemResource(filePath);
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);

@@ -20,6 +20,12 @@
             <artifactId>base</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!-- until we replace GIO by CJ -->
+        <dependency>
+            <groupId>com.calpano.graphinout</groupId>
+            <artifactId>reader-graphml</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

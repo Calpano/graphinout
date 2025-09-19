@@ -1,10 +1,9 @@
-package com.calpano.graphinout.base.cj;
+package com.calpano.graphinout.reader.cj;
 
 import com.calpano.graphinout.base.cj.stream.util.LoggingCjWriter;
 import com.calpano.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -19,24 +18,58 @@ import static com.calpano.graphinout.foundation.input.SingleInputSourceOfString.
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Disabled
-class Json2CjTest {
+//@Disabled
+class Json2CjExtendedTest {
+
+    public static final String ALIAS_JSON = """
+            {
+              "node": [
+                { "id": "n1", "name": "Node with alias" }
+              ],
+              "edge": [
+                { "from": "n1", "to": "n1" }
+              ]
+            }
+            """;
+    public static final String ENDPOINTS_JSON = """
+            {
+              "nodes": [
+                { "id": "n1" },
+                { "id": "n2" }
+              ],
+              "edges": [
+                {
+                  "endpoints": [
+                    { "direction": "in", "node": "n1" },
+                    { "direction": "out", "node": "n2" }
+                  ]
+                }
+              ]
+            }
+            """;
+    public static final String SIMPLE_JSON = """
+            {
+              "nodes": [
+                { "id": "n1" }
+              ]
+            }
+            """;
+    public static final String SIMPLE_JSON1 = """
+            {
+              "nodes": [
+                { "id": "n1", "label": "Node 1" },
+                { "id": "n2", "label": "Node 2" }
+              ],
+              "edges": [
+                { "source": "n1", "target": "n2" }
+              ]
+            }
+            """;
 
     @Test
     void testAliasSupport() throws IOException {
-        String aliasJson = """
-                {
-                  "node": [
-                    { "id": "n1", "name": "Node with alias" }
-                  ],
-                  "edge": [
-                    { "from": "n1", "to": "n1" }
-                  ]
-                }
-                """;
-
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-        InputSource inputSource = inputSource("alias.json", aliasJson);
+        InputSource inputSource = inputSource("alias.json", ALIAS_JSON);
         LoggingCjWriter cjSink = new LoggingCjWriter();
         Json2CjWriter sink = new Json2CjWriter(cjSink);
 
@@ -70,25 +103,9 @@ class Json2CjTest {
 
     @Test
     void testEndpointsSupport() throws IOException {
-        String endpointsJson = """
-                {
-                  "nodes": [
-                    { "id": "n1" },
-                    { "id": "n2" }
-                  ],
-                  "edges": [
-                    {
-                      "endpoints": [
-                        { "direction": "in", "node": "n1" },
-                        { "direction": "out", "node": "n2" }
-                      ]
-                    }
-                  ]
-                }
-                """;
 
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-        InputSource inputSource = inputSource("endpoints.json", endpointsJson);
+        InputSource inputSource = inputSource("endpoints.json", ENDPOINTS_JSON);
         LoggingCjWriter cjSink = new LoggingCjWriter();
         Json2CjWriter sink = new Json2CjWriter(cjSink);
 
@@ -100,15 +117,8 @@ class Json2CjTest {
 
     @Test
     void testOneNode() throws Exception {
-        String simpleJson = """
-                {
-                  "nodes": [
-                    { "id": "n1" }
-                  ]
-                }
-                """;
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-        try (InputSource inputSource = inputSource("one-node-test", simpleJson)) {
+        try (InputSource inputSource = inputSource("one-node-test", SIMPLE_JSON)) {
             LoggingCjWriter cjSink = new LoggingCjWriter();
             Json2CjWriter sink = new Json2CjWriter(cjSink);
 
@@ -119,20 +129,9 @@ class Json2CjTest {
 
     @Test
     void testSimpleNodeEdgeJson() throws IOException {
-        String simpleJson = """
-                {
-                  "nodes": [
-                    { "id": "n1", "label": "Node 1" },
-                    { "id": "n2", "label": "Node 2" }
-                  ],
-                  "edges": [
-                    { "source": "n1", "target": "n2" }
-                  ]
-                }
-                """;
 
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-        InputSource inputSource = inputSource("simple.json", simpleJson);
+        InputSource inputSource = inputSource("simple.json", SIMPLE_JSON1);
         LoggingCjWriter cjSink = new LoggingCjWriter();
         Json2CjWriter sink = new Json2CjWriter(cjSink);
 

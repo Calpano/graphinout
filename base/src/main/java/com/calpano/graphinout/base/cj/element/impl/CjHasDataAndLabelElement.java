@@ -28,11 +28,5 @@ public abstract class CjHasDataAndLabelElement extends CjHasDataElement implemen
         return labelElement;
     }
 
-    protected void fireLabelMaybe(ICjWriter cjWriter) {
-        if(labelElement!=null) {
-            labelElement.fire(cjWriter);
-        }
-
-    }
 
 }

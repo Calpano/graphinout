@@ -1,10 +1,10 @@
 package com.calpano.graphinout.foundation.xml;
 
+import com.calpano.graphinout.foundation.TestFileProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 import org.slf4j.Logger;
@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -43,35 +42,14 @@ public class XmlTest {
     private static final Logger log = getLogger(XmlTest.class);
     private Path testResourcesPath;
 
-    public static Stream<Arguments> graphmlFileProvider() throws Exception {
-        Path testResourcesPath = Paths.get("../base/src/test/resources/xml/graphml");
-        int baseLen = testResourcesPath.toString().length() + 1;
-        return Files.walk(testResourcesPath).filter(Files::isRegularFile).filter(p -> {
-            String pathName = p.toString().toLowerCase();
-            return pathName.endsWith(".graphml") || pathName.endsWith(".graphml.xml");
-        }).map(p -> Arguments.of(p.toString().substring(baseLen).replace('\\', '/'), p));
-    }
-
-    public static Stream<Arguments> xmlFileProvider() throws Exception {
-        Path testResourcesPath = Paths.get("src/test/resources/xml");
-        int baseLen = testResourcesPath.toString().length() + 1;
-        return Files.walk(testResourcesPath).filter(Files::isRegularFile).filter(p -> p.toString().endsWith(".xml") || p.toString().endsWith(".graphml")).map(p -> Arguments.of(p.toString().substring(baseLen).replace('\\', '/'), p));
-    }
 
     @BeforeEach
     void setUp() {
-        testResourcesPath = Paths.get("src/test/resources/xml");
+        testResourcesPath = Paths.get(TestFileProvider.SRC_TEST_RESOURCES + "xml");
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("graphmlFileProvider")
-    @DisplayName("Test all GraphML files as XML files")
-    void testAllGraphmlFiles(String displayPath, Path xmlFilePath) throws Exception {
-        testXmlFile(xmlFilePath);
-    }
-
-    @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("xmlFileProvider")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#xmlFiles")
     @DisplayName("Test all XML files together")
     void testAllXmlFiles(String displayPath, Path xmlFilePath) throws Exception {
         testXmlFile(xmlFilePath);

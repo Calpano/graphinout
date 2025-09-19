@@ -31,8 +31,8 @@ public class Cj2CjElementsTest {
     boolean addLogging = true;
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.calpano.graphinout.base.cj.CjFileProvider#cjFileProvider")
-    @DisplayName("Test all CJ files together")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjFilesCanonical")
+    @DisplayName("Test all Canonical CJ files together")
     void test_Json2Cj2Elements2Cj2Json(String displayPath, Path xmlFilePath) throws Exception {
         // == OUT Pipeline
         Cj2ElementsWriter cj2ElementsWriter = new Cj2ElementsWriter();

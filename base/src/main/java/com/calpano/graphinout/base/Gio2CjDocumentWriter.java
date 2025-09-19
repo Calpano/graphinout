@@ -41,13 +41,13 @@ public class Gio2CjDocumentWriter extends Json2JavaJsonWriter implements GioWrit
 
     private static void copyCustomAttributes(GioElement gio, ICjHasDataMutable cj) {
         ofNullable(gio.getCustomAttributes()).ifPresent(customAttributes -> {
-            customAttributes.forEach((key, value) -> cj.data(data -> //
+            customAttributes.forEach((key, value) -> cj.addData(data -> //
                     data.addProperty(List.of("cj:attributes", key), value)));
         });
     }
 
     private static void copyDesc(GioElementWithDescription gio, ICjHasDataMutable cj) {
-        ofNullable(gio.getDescription()).ifPresent(desc -> cj.data(data -> data.addProperty("description", desc)));
+        ofNullable(gio.getDescription()).ifPresent(desc -> cj.addData(data -> data.addProperty("description", desc)));
     }
 
     private static void copyId(GioElementWithId gio, ICjHasIdMutable cj) {
@@ -120,7 +120,7 @@ public class Gio2CjDocumentWriter extends Json2JavaJsonWriter implements GioWrit
 
             gioEdge.getEndpoints().forEach(gEp -> {
                 cjEdge.addEndpoint(cjEp -> {
-                    cjEp.data(data -> data.addProperty("id", gEp.getId()));
+                    cjEp.addData(data -> data.addProperty("id", gEp.getId()));
                     ofNullable(gEp.getPort()).ifPresent(cjEp::port);
                     cjEp.node(gEp.getNode());
                     cjEp.direction(gEp.getType().toCjDirection());

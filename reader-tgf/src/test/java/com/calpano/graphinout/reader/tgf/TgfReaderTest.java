@@ -7,9 +7,8 @@ import com.calpano.graphinout.base.gio.GioGraph;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.foundation.TestFileProvider;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,8 +47,8 @@ class TgfReaderTest {
     @Mock
     private Consumer<ContentError> mockErrorConsumer;
 
-    private static Stream<String> getResourceFilePaths() {
-        return new ClassGraph().scan().getAllResources().stream().map(Resource::getPath).filter(path -> path.endsWith(".tgf"));
+    private static Stream<String> tgfResourcePaths() {
+        return TestFileProvider.getAllTestResourcePaths().filter(path -> path.endsWith(".tgf"));
     }
 
     @AfterEach
@@ -120,7 +119,7 @@ class TgfReaderTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getResourceFilePaths")
+    @MethodSource("tgfResourcePaths")
     void shouldWorkAsIntended(String filePath) throws IOException {
         URL resourceUrl = ClassLoader.getSystemResource(filePath);
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);

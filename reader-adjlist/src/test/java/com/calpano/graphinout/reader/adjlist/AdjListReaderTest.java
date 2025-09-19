@@ -6,9 +6,8 @@ import com.calpano.graphinout.base.gio.GioGraph;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.foundation.TestFileProvider;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,8 +42,8 @@ class AdjListReaderTest {
     private List<ContentError> capturedErrors;
     private Consumer<ContentError> errorConsumer;
 
-    private static Stream<String> getResourceFilePaths() {
-        return new ClassGraph().scan().getAllResources().stream().map(Resource::getPath).filter(path -> path.endsWith(".adjlist"));
+    private static Stream<String> adjListResourcePaths() {
+        return TestFileProvider.getAllTestResourcePaths().filter(path -> path.endsWith(".adjlist"));
     }
 
     @AfterEach
@@ -129,7 +128,7 @@ class AdjListReaderTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getResourceFilePaths")
+    @MethodSource("adjListResourcePaths")
     void shouldWorkAsIntended(String filePath) throws IOException {
         URL resourceUrl = ClassLoader.getSystemResource(filePath);
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);

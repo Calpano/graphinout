@@ -1,9 +1,12 @@
 package com.calpano.graphinout.base.cj.element;
 
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
+
+import static java.util.Optional.ofNullable;
 
 public interface ICjHasData extends ICjElement {
 
@@ -22,6 +25,15 @@ public interface ICjHasData extends ICjElement {
             }
         }
     }
+
+    default void fireDataMaybe(ICjWriter cjWriter) {
+        onDataValue(jsonValue->{
+            cjWriter.jsonDataStart();
+            jsonValue.fire(cjWriter);
+            cjWriter.jsonDataEnd();
+        });
+    }
+
 
 
 }

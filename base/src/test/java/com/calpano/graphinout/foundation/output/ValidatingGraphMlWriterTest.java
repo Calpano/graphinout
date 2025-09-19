@@ -2,13 +2,13 @@ package com.calpano.graphinout.foundation.output;
 
 import com.calpano.graphinout.base.graphml.IGraphmlDocument;
 import com.calpano.graphinout.base.graphml.IGraphmlEndpoint;
+import com.calpano.graphinout.base.graphml.IGraphmlGraph;
 import com.calpano.graphinout.base.graphml.IGraphmlKey;
 import com.calpano.graphinout.base.graphml.IGraphmlLocator;
 import com.calpano.graphinout.base.graphml.IGraphmlNode;
 import com.calpano.graphinout.base.graphml.IGraphmlPort;
 import com.calpano.graphinout.base.graphml.impl.GraphmlData;
 import com.calpano.graphinout.base.graphml.impl.GraphmlEdge;
-import com.calpano.graphinout.base.graphml.impl.GraphmlGraph;
 import com.calpano.graphinout.base.graphml.impl.GraphmlHyperEdge;
 import com.calpano.graphinout.base.graphml.impl.GraphmlLocator;
 import com.calpano.graphinout.base.graphml.impl.GraphmlNode;
@@ -364,7 +364,7 @@ public class ValidatingGraphMlWriterTest {
     @Mock
     private IGraphmlLocator mockLocator;
     @Mock
-    private GraphmlGraph mockGraph;
+    private IGraphmlGraph mockGraph;
     @Mock
     private IGraphmlDocument mockDocument;
     private final GraphmlNode node1 = IGraphmlNode.builder().id(NODE_ID_1).build();
@@ -381,6 +381,8 @@ public class ValidatingGraphMlWriterTest {
 
     @AfterEach
     public void releaseMocks() throws Exception {
+        // happens only in Mockit failure cases
+        if(closeable==null) return;
         closeable.close();
     }
 

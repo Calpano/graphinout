@@ -32,7 +32,6 @@ import com.calpano.graphinout.base.graphml.builder.GraphmlPortBuilder;
 import com.calpano.graphinout.base.graphml.impl.GraphmlEdge;
 import com.calpano.graphinout.base.graphml.impl.GraphmlEndpoint;
 import com.calpano.graphinout.foundation.json.JsonException;
-import com.calpano.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -46,15 +45,13 @@ import java.util.stream.Stream;
  */
 public class Cj2GraphmlWriter extends Json2StringWriter implements ICjWriter {
 
-    /** used for temporary buffering of JSON data */
-    private final StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter();
     /** data@id -> key@for -> <key> */
     private final Map<String, Map<GraphmlKeyForType, IGraphmlKey>> dataId_for_key = new HashMap<>();
     /** downstream writer */
     private final Cj2GraphmlStack elementStack = new Cj2GraphmlStack();
-    private final GraphmlWriter graphmlWriter;
+    private final GraphmlWriter gWriter;
 
-    public Cj2GraphmlWriter(GraphmlWriter graphmlWriter) {this.graphmlWriter = graphmlWriter;}
+    public Cj2GraphmlWriter(GraphmlWriter gWriter) {this.gWriter = gWriter;}
 
 
     @Override
@@ -73,7 +70,7 @@ public class Cj2GraphmlWriter extends Json2StringWriter implements ICjWriter {
     public void documentEnd() throws JsonException {
         Cj2GraphmlContext ctxRoot = elementStack.pop(CjType.RootObject);
         try {
-            writeTo(ctxRoot, graphmlWriter);
+            writeTo(ctxRoot, gWriter);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -367,7 +364,7 @@ public class Cj2GraphmlWriter extends Json2StringWriter implements ICjWriter {
         builder.attrName(attName);
         builder.attrType(attType);
         IGraphmlKey graphmlKey = builder.build();
-        graphmlWriter.key(graphmlKey);
+        gWriter.key(graphmlKey);
     }
 
 

@@ -1,6 +1,5 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;
@@ -25,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -36,10 +34,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class GraphmlSAXSchemaValidationTest {
 
     private static final Logger log = getLogger(GraphmlReaderTest2.class);
-
-    private static Stream<String> getAllGraphmlFiles() {
-        return ReaderTests.getAllTestResourceFilePaths().filter(path -> path.endsWith(".graphml"));
-    }
 
     protected Map<String, Long> expectedErrors(@Nonnull String resourceName) {
         Map<String, Long> errorLongMap = new HashMap<>();
@@ -73,7 +67,7 @@ public class GraphmlSAXSchemaValidationTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getAllGraphmlFiles")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResourcePaths")
     void readAllGraphmlFiles(String filePath) throws Exception {
 
         URL resourceUrl = ClassLoader.getSystemResource(filePath);

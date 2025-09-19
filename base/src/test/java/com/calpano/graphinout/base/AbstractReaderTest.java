@@ -17,7 +17,7 @@ public abstract class AbstractReaderTest {
     private static final Logger log = getLogger(AbstractReaderTest.class);
 
     protected List<ContentError> expectedErrors(String resourceName) {
-        if (resourceName.equals("graphin/graphml/samples/graph1_test.graphml"))
+        if (resourceName.endsWith("graph1_test.graphml"))
             return
                     Arrays.asList(
                             new ContentError(

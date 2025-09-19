@@ -7,15 +7,15 @@ import java.math.BigInteger;
 
 public interface IJsonPrimitive extends IJsonValue {
 
-    default <T> T baseT() {
-        return (T) base();
+    default <T> T castTo(Class<T> clazz) {
+        return clazz.cast(base());
     }
 
     default void fire(JsonWriter jsonWriter) {
         switch (jsonType()) {
             case Null -> jsonWriter.onNull();
-            case Boolean -> jsonWriter.onBoolean((Boolean) base());
-            case String -> jsonWriter.onString((String) base());
+            case Boolean -> jsonWriter.onBoolean( castTo(Boolean.class));
+            case String -> jsonWriter.onString(  castTo(String.class));
             case Number -> {
                 // TODO use same Number to primitive code as elsewhere
                 Object base = base();

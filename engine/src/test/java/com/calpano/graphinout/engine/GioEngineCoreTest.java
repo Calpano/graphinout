@@ -4,6 +4,7 @@ import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.ContentErrors;
+import com.calpano.graphinout.foundation.TestFileProvider;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import org.apache.commons.io.FileUtils;
@@ -47,7 +48,7 @@ class GioEngineCoreTest {
     @Disabled("needs to fix the generic JsonReader")
     void test() {
         // find all resources
-        ReaderTests.getAllTestResourceFilePaths().forEach(this::testResource);
+        TestFileProvider.getAllTestResourcePaths().forEach(this::testResource);
 
 
 //        byte[] graphmlBytes1;
@@ -104,11 +105,8 @@ class GioEngineCoreTest {
 
     private void testResourceWithReader(GioReader gioReader, SingleInputSource inputSource, String resourcePath) throws IOException {
         InMemoryOutputSink outputSink = new InMemoryOutputSink();
-        boolean validateXml = true;
-        boolean validateGraphml = true;
-        boolean validateGio = true;
         try {
-            List<ContentError> contentErrors = ReaderTests.readTo(inputSource, gioReader, outputSink, validateXml, validateGraphml, validateGio);
+            List<ContentError> contentErrors = ReaderTests.readTo(inputSource, gioReader, outputSink);
             if (ContentErrors.hasErrors(contentErrors)) {
                 log.warn("Resource '{}' interpreted as '{}' contentErrors: {}", resourcePath, gioReader.fileFormat().id(), contentErrors);
                 writeContentErrorsFile(contentErrors, gioReader.fileFormat().id(), resourcePath);

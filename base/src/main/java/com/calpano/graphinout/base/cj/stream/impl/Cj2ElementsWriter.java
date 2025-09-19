@@ -108,7 +108,7 @@ public class Cj2ElementsWriter extends Json2JavaJsonWriter implements ICjWriter 
     @Override
     public void jsonDataStart() {
         // prepare buffering json data
-        peek(ICjHasDataMutable.class).dataElement(elements::push);
+        peek(ICjHasDataMutable.class).addDataElement(elements::push);
     }
 
     @Override

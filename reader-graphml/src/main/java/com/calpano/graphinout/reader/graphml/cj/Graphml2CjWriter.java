@@ -50,7 +50,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
     /** desc goes to data: <graphml><desc> -> .data.description */
     private static void graphmlDesc(@Nullable IGraphmlDescription desc, ICjHasDataMutable cjWithData) {
         if (desc == null) return;
-        cjWithData.data(mm -> mm.addProperty("description", desc.value()));
+        cjWithData.addData(mm -> mm.addProperty("description", desc.value()));
     }
 
     @Override
@@ -72,7 +72,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
         }
 
         // attach to next element on the stack
-        parseBuffer.peek_().asWithData().data(mm -> mm.addProperty(propName, value));
+        parseBuffer.peek_().asWithData().addData(mm -> mm.addProperty(propName, value));
     }
 
     @Override
@@ -89,7 +89,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
         // GraphML graphmlDocument attributes, like XML namespaces, become /data/cj:attributes
         // <graphml ATTS> ->  /data/cj:attributes/{attName}
         graphmlDocument.xmlPlusGraphmlAttributesNormalized().forEach((key, value) -> //
-                cjDoc.data(mm -> mm.addProperty(key, value)));
+                cjDoc.addData(mm -> mm.addProperty(key, value)));
     }
 
     @Override

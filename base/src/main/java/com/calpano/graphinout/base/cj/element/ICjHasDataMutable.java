@@ -6,8 +6,8 @@ import java.util.function.Consumer;
 
 public interface ICjHasDataMutable extends ICjHasData {
 
-    void data(Consumer<IMagicMutableJsonValue> consumer);
+    void addData(Consumer<IMagicMutableJsonValue> consumer);
 
-    void dataElement(Consumer<ICjData> consumer);
+    void addDataElement(Consumer<ICjData> consumer);
 
 }

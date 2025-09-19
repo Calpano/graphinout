@@ -11,15 +11,11 @@ import com.calpano.graphinout.foundation.xml.XmlWriter;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -28,24 +24,8 @@ public class GraphmlTest {
 
     private static final Logger log = getLogger(GraphmlTest.class);
 
-    private static Stream<Arguments> allGraphmlFilesFrom(String path) throws IOException {
-        Path testResourcesPath = Path.of(path);
-        // Path testResourcesPath = Paths.get("src/test/resources/graphin/graphml/synthetic/errors");
-        int baseLen = testResourcesPath.toString().length() + 1;
-        return Files.walk(testResourcesPath).filter(Files::isRegularFile).filter(p -> {
-            String pathName = p.toString().toLowerCase();
-            return pathName.endsWith(".graphml") || pathName.endsWith(".graphml.xml");
-        }).map(p -> Arguments.of(p.toString().substring(baseLen).replace('\\', '/'), p));
-    }
-
-    static Stream<Arguments> graphmlFileProvider() throws Exception {
-        return Stream.concat( //
-                allGraphmlFilesFrom("src/test/resources/graphin/graphml"), //
-                allGraphmlFilesFrom("../base/src/test/resources/xml/graphml"));
-    }
-
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("graphmlFileProvider")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlFiles")
     @DisplayName("Test all GraphML files together")
     void testAllGraphmlFiles(String displayPath, Path xmlFilePath) throws Exception {
         testGraphmlFile(xmlFilePath);

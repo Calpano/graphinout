@@ -25,7 +25,7 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
     private String id;
     private @Nullable CjGraphMetaElement meta;
 
-    CjGraphElement(@Nullable CjHasDataElement parent) {
+    public CjGraphElement(@Nullable CjHasDataElement parent) {
         super(parent);
     }
 
@@ -62,12 +62,7 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
 
     @Override
     public void fire(ICjWriter cjWriter) {
-        cjWriter.graphStart();
-        cjWriter.maybe(id, cjWriter::id);
-        cjWriter.maybe(meta, meta -> meta.fire(cjWriter));
-        // TODO meta
-        fireDataMaybe(cjWriter);
-        fireLabelMaybe(cjWriter);
+        fireStartChunk(cjWriter);
 
         cjWriter.list(nodes, CjType.ArrayOfNodes, CjNodeElement::fire);
         cjWriter.list(edges, CjType.ArrayOfEdges, CjEdgeElement::fire);

@@ -1,10 +1,18 @@
 package com.calpano.graphinout.base.cj.element;
 
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
+
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
+
 public interface ICjHasLabel extends ICjElement {
+
+    default void fireLabelMaybe(ICjWriter cjWriter) {
+        ofNullable(label()).ifPresent(l -> l.fire(cjWriter));
+    }
 
     @Nullable
     ICjLabel label();
@@ -13,5 +21,6 @@ public interface ICjHasLabel extends ICjElement {
         ICjLabel label = label();
         return label == null ? Collections.emptyList() : label.entries().toList();
     }
+
 
 }

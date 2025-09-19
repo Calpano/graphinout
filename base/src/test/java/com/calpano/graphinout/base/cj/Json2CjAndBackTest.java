@@ -23,8 +23,8 @@ import static com.google.common.truth.Truth.assertThat;
 public class Json2CjAndBackTest {
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.calpano.graphinout.base.cj.CjFileProvider#cjFileProvider")
-    @DisplayName("Test JSON-CJ-JSON - all files together")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjFilesCanonical")
+    @DisplayName("Test JSON-Canonical CJ-JSON - all files together")
     void test_json_cj_json_AllCjFiles(String displayPath, Path path) throws Exception {
         String json_in = FileUtils.readFileToString(path.toFile(), StandardCharsets.UTF_8);
         SingleInputSourceOfString inputSource = SingleInputSourceOfString.of(path.getFileName().toString(), json_in);

@@ -19,7 +19,7 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
     private final List<CjGraphElement> graphs = new java.util.ArrayList<>();
     private String id;
 
-    CjNodeElement(@Nullable CjHasDataElement parent) {
+    public CjNodeElement(@Nullable CjHasDataElement parent) {
         super(parent);
     }
 
@@ -44,16 +44,13 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
 
     @Override
     public void fire(ICjWriter cjWriter) {
-        cjWriter.nodeStart();
-        // streaming order: id, label, data, ports, graphs
-        cjWriter.maybe(id, cjWriter::id);
-        fireLabelMaybe(cjWriter);
-        cjWriter.list(ports, CjType.ArrayOfPorts, CjPortElement::fire);
-        fireDataMaybe(cjWriter);
+        fireStartChunk(cjWriter);
+
         cjWriter.list(graphs, CjType.ArrayOfGraphs, CjGraphElement::fire);
 
         cjWriter.nodeEnd();
     }
+
 
     @Override
     public Stream<ICjGraph> graphs() {

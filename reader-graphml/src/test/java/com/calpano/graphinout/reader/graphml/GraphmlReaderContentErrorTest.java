@@ -1,10 +1,10 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.gio.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.xml.Graphml2XmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
+import com.calpano.graphinout.foundation.TestFileProvider;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.xml.Xml2AppendableWriter;
 import org.apache.commons.io.IOUtils;
@@ -30,12 +30,8 @@ class GraphmlReaderContentErrorTest {
 
     private static final Logger log = LoggerFactory.getLogger(GraphmlReaderContentErrorTest.class);
 
-    private List<String> invalidFiles = new ArrayList<>();
+    private final List<String> invalidFiles = new ArrayList<>();
 
-    private static Stream<String> getAllGraphmlFiles() {
-        return ReaderTests.getAllTestResourceFilePaths()
-                .filter(path -> path.endsWith(".graphml"));
-    }
 
     @Test
     void elementsGraphmlDoesNotAllowCharacter_invalid_root() throws Exception {
@@ -68,7 +64,8 @@ class GraphmlReaderContentErrorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getAllGraphmlFiles")
+
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResources")
     void readAllGraphmlFiles(String filePath) throws Exception {
 
         // FIXME #115

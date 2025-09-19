@@ -1,11 +1,12 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.stream.ICjWriter;
+import com.calpano.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMeta;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
 import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.stream.Stream;
 /**
  * A CJ document
  */
-public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMutable {
+public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMutable, ICjDocumentChunkMutable {
 
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private @Nullable String baseUri;
@@ -57,14 +58,11 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
 
     @Override
     public void fire(ICjWriter cjWriter) {
-        cjWriter.documentStart();
-        if (baseUri != null) cjWriter.baseUri(baseUri);
-        fireDataMaybe(cjWriter);
-
+        fireStartChunk(cjWriter);
         cjWriter.list(graphs, CjType.ArrayOfGraphs, CjGraphElement::fire);
-
         cjWriter.documentEnd();
     }
+
 
     @Override
     public Stream<ICjGraph> graphs() {
