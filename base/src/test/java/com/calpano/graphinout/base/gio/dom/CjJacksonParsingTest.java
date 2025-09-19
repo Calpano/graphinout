@@ -1,10 +1,10 @@
 package com.calpano.graphinout.base.gio.dom;
 
-import com.calpano.graphinout.base.cj.jackson.CjJacksonDocument;
-import com.calpano.graphinout.base.cj.jackson.CjJacksonEdge;
-import com.calpano.graphinout.base.cj.jackson.CjJacksonEndpoint;
-import com.calpano.graphinout.base.cj.jackson.CjJacksonGraph;
-import com.calpano.graphinout.base.cj.jackson.CjJacksonNode;
+import com.calpano.graphinout.base.cj.helper.jackson.CjJacksonDocument;
+import com.calpano.graphinout.base.cj.helper.jackson.CjJacksonEdge;
+import com.calpano.graphinout.base.cj.helper.jackson.CjJacksonEndpoint;
+import com.calpano.graphinout.base.cj.helper.jackson.CjJacksonGraph;
+import com.calpano.graphinout.base.cj.helper.jackson.CjJacksonNode;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;

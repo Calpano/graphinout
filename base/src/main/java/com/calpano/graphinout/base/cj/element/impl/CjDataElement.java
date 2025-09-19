@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjDataMutable;
 import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
 import com.calpano.graphinout.foundation.json.impl.MagicMutableJsonValue;
@@ -24,7 +24,7 @@ public class CjDataElement extends CjHasDataElement implements ICjDataMutable {
     }
 
     @Override
-    public void fire(CjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter) {
         if (!magic.isEmpty()) {
             cjWriter.jsonDataStart();
             magic.fire(cjWriter);

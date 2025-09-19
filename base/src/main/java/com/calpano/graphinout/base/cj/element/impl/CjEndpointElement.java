@@ -2,7 +2,7 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjEndpointMutable;
 
 import javax.annotation.Nullable;
@@ -40,7 +40,7 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
     }
 
     @Override
-    public void fire(CjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter) {
         cjWriter.endpointStart();
         cjWriter.nodeId(node);
         ofNullable(port).ifPresent(cjWriter::portId);

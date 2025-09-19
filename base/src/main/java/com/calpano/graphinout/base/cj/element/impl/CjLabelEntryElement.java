@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjLabelEntryMutable;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -23,7 +23,7 @@ public class CjLabelEntryElement extends CjHasDataElement implements ICjLabelEnt
     }
 
     @Override
-    public void fire(CjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter) {
         cjWriter.labelEntryStart();
         // alphabetic order
         cjWriter.maybe(language, cjWriter::language);

@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjLabelEntry;
 import com.calpano.graphinout.base.cj.element.ICjLabelEntryMutable;
 import com.calpano.graphinout.base.cj.element.ICjLabelMutable;
@@ -33,7 +33,7 @@ public class CjLabelElement extends CjArrayElement implements ICjLabelMutable {
     }
 
     @Override
-    public void fire(CjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter) {
         // IMPROVE handle generics better
         List<CjLabelEntryElement> list = new ArrayList<>();
         entries().forEach(e -> list.add((CjLabelEntryElement) e));

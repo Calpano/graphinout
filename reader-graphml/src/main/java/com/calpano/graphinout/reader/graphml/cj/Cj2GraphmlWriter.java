@@ -1,13 +1,14 @@
 package com.calpano.graphinout.reader.graphml.cj;
 
+import com.calpano.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
 import com.calpano.graphinout.base.cj.CjDirection;
-import com.calpano.graphinout.base.cj.CjEdgeType;
+import com.calpano.graphinout.base.cj.ICjEdgeType;
 import com.calpano.graphinout.base.cj.CjException;
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.base.cj.impl.CjJson2StringWriter;
-import com.calpano.graphinout.base.cj.jackson.CjJacksonEdge;
-import com.calpano.graphinout.base.cj.jackson.CjJacksonEndpoint;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
+import com.calpano.graphinout.foundation.json.stream.impl.Json2StringWriter;
+import com.calpano.graphinout.base.cj.helper.jackson.CjJacksonEdge;
+import com.calpano.graphinout.base.cj.helper.jackson.CjJacksonEndpoint;
 import com.calpano.graphinout.base.gio.GioDataType;
 import com.calpano.graphinout.base.graphml.GraphmlDirection;
 import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
@@ -31,7 +32,7 @@ import com.calpano.graphinout.base.graphml.builder.GraphmlPortBuilder;
 import com.calpano.graphinout.base.graphml.impl.GraphmlEdge;
 import com.calpano.graphinout.base.graphml.impl.GraphmlEndpoint;
 import com.calpano.graphinout.foundation.json.JsonException;
-import com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter;
+import com.calpano.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -40,9 +41,10 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- *
+ * Modern impl. CJ to Graphml, directly, no GIO involved.
+ * FIXME this duplicates {@link Cj2ElementsWriter} plus CjDocument2GraphmlWriter.
  */
-public class Cj2GraphmlWriter extends CjJson2StringWriter implements CjWriter {
+public class Cj2GraphmlWriter extends Json2StringWriter implements ICjWriter {
 
     /** used for temporary buffering of JSON data */
     private final StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter();
@@ -92,7 +94,7 @@ public class Cj2GraphmlWriter extends CjJson2StringWriter implements CjWriter {
     }
 
     @Override
-    public void edgeType(CjEdgeType edgeType) {
+    public void edgeType(ICjEdgeType edgeType) {
         // CJ edge type encoded as Graphml:DATA
         Cj2GraphmlContext ctx = elementStack.peek_(CjType.Edge, CjType.Endpoint);
         if (ctx.cjType == CjType.Edge) {
@@ -127,11 +129,6 @@ public class Cj2GraphmlWriter extends CjJson2StringWriter implements CjWriter {
     public void graphStart() throws CjException {
         GraphmlGraphBuilder builder = IGraphmlGraph.builder();
         elementStack.push(CjType.Graph, builder);
-    }
-
-    @Override
-    public void meta__canonical(boolean b) {
-        // FIXME peek & set prop
     }
 
     @Override
@@ -222,6 +219,11 @@ public class Cj2GraphmlWriter extends CjJson2StringWriter implements CjWriter {
     @Override
     public void metaStart() {
         // TODO GraphML extensions for graph stats
+    }
+
+    @Override
+    public void meta__canonical(boolean b) {
+        // FIXME peek & set prop
     }
 
     @Override

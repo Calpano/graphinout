@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjArrayMutable;
 import com.calpano.graphinout.base.cj.element.ICjElement;
 
@@ -31,7 +31,7 @@ public class CjArrayElement extends CjElement implements ICjElement, ICjArrayMut
     }
 
     @Override
-    public void fire(CjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter) {
         cjType.fireStart(cjWriter);
         elements.forEach(cjElement -> cjElement.fire(cjWriter));
         cjType.fireEnd(cjWriter);

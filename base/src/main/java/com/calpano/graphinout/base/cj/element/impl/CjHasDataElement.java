@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjData;
 import com.calpano.graphinout.base.cj.element.ICjHasDataMutable;
 import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
@@ -35,7 +35,7 @@ public abstract class CjHasDataElement extends CjElement implements ICjHasDataMu
         consumer.accept(dataElement);
     }
 
-    public void fireDataMaybe(CjWriter cjWriter) {
+    public void fireDataMaybe(ICjWriter cjWriter) {
         if (dataElement == null) return;
         dataElement.fire(cjWriter);
     }

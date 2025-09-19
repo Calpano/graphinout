@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjEdge;
 import com.calpano.graphinout.base.cj.element.ICjEdgeMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
@@ -61,7 +61,7 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
     }
 
     @Override
-    public void fire(CjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter) {
         cjWriter.graphStart();
         cjWriter.maybe(id, cjWriter::id);
         cjWriter.maybe(meta, meta -> meta.fire(cjWriter));

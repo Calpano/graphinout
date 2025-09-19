@@ -2,8 +2,6 @@ package com.calpano.graphinout.foundation.json.stream;
 
 
 import com.calpano.graphinout.foundation.json.JsonException;
-import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
-import com.calpano.graphinout.foundation.json.value.IJsonValue;
 
 /**
  * SAJ: <em>S</em>AX-like <em>A</em>PI for <em>J</em>SON aka "Streaming API for JSON". Inspired from the XML SAX API.

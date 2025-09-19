@@ -6,7 +6,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public interface JsonPrimitiveWriter extends HasJsonValueWriter {
+public interface JsonPrimitiveWriter extends IHasJsonValueWriter {
 
     /**
      * JSON Number

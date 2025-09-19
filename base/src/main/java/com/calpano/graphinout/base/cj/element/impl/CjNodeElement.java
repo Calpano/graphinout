@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
 import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
 import com.calpano.graphinout.base.cj.element.ICjNodeMutable;
@@ -43,7 +43,7 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
     }
 
     @Override
-    public void fire(CjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter) {
         cjWriter.nodeStart();
         // streaming order: id, label, data, ports, graphs
         cjWriter.maybe(id, cjWriter::id);

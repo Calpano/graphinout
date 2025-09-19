@@ -1,6 +1,7 @@
 package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.json.JsonException;
+import com.calpano.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.calpano.graphinout.foundation.json.value.java.JavaJsonFactory;

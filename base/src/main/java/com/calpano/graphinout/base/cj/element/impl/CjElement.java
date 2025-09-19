@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjElement;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 
@@ -29,7 +29,7 @@ public abstract class CjElement implements ICjElement {
     }
 
     // TODO remove?
-    public void maybeWriteStartTo(CjWriter cjWriter) throws IOException {
+    public void maybeWriteStartTo(ICjWriter cjWriter) throws IOException {
         if (isStarted()) return;
         if (parent != null) {
             parent.maybeWriteStartTo(cjWriter);
@@ -45,7 +45,7 @@ public abstract class CjElement implements ICjElement {
     }
 
     // TODO remove?
-    public void writeEndTo(CjWriter cjWriter) throws IOException {
+    public void writeEndTo(ICjWriter cjWriter) throws IOException {
         maybeWriteStartTo(cjWriter);
         cjType().fireEnd(cjWriter);
     }

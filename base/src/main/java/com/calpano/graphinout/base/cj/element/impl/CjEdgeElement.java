@@ -1,8 +1,8 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
-import com.calpano.graphinout.base.cj.CjEdgeType;
+import com.calpano.graphinout.base.cj.ICjEdgeType;
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjEdgeMutable;
 import com.calpano.graphinout.base.cj.element.ICjEndpoint;
 import com.calpano.graphinout.base.cj.element.ICjEndpointMutable;
@@ -22,7 +22,7 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
     private final List<ICjEndpointMutable> endpoints = new ArrayList<>();
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private @Nullable String id;
-    private CjEdgeType edgeType;
+    private ICjEdgeType edgeType;
 
     CjEdgeElement(@Nullable CjHasDataElement parent) {
         super(parent);
@@ -48,12 +48,12 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
     }
 
     @Override
-    public CjEdgeType edgeType() {
+    public ICjEdgeType edgeType() {
         return edgeType;
     }
 
     @Override
-    public void edgeType(CjEdgeType edgeType) {
+    public void edgeType(ICjEdgeType edgeType) {
         this.edgeType = edgeType;
     }
 
@@ -63,7 +63,7 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
     }
 
     @Override
-    public void fire(CjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter) {
         cjWriter.edgeStart();
         // streaming order: id, label, type, typeUri, typeNode, endpoints, data, graphs
         cjWriter.maybe(id, cjWriter::id);

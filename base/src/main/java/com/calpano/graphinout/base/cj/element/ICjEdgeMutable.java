@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.cj.element;
 
-import com.calpano.graphinout.base.cj.CjEdgeType;
+import com.calpano.graphinout.base.cj.ICjEdgeType;
 
 import java.util.function.Consumer;
 
@@ -8,6 +8,6 @@ public interface ICjEdgeMutable extends ICjEdge, ICjHasIdMutable, ICjHasGraphsMu
 
     void addEndpoint(Consumer<ICjEndpointMutable> endpoint);
 
-    void edgeType(CjEdgeType edgeType);
+    void edgeType(ICjEdgeType edgeType);
 
 }

@@ -1,7 +1,7 @@
 package com.calpano.graphinout.reader.graphml.cj;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
 import com.calpano.graphinout.base.cj.element.ICjHasDataMutable;
@@ -42,10 +42,10 @@ public class Graphml2CjWriter implements GraphmlWriter {
 
     private final Map<String, GraphmlKey> keyDefinitions = new HashMap<>();
     private final Graphml2CjStack parseBuffer = new Graphml2CjStack();
-    private final CjWriter cjWriter;
+    private final ICjWriter cjWriter;
     private final Stack<GraphmlGraph> graphStack = new Stack<>();
 
-    public Graphml2CjWriter(CjWriter cjWriter) {this.cjWriter = cjWriter;}
+    public Graphml2CjWriter(ICjWriter cjWriter) {this.cjWriter = cjWriter;}
 
     /** desc goes to data: <graphml><desc> -> .data.description */
     private static void graphmlDesc(@Nullable IGraphmlDescription desc, ICjHasDataMutable cjWithData) {
@@ -169,7 +169,7 @@ public class Graphml2CjWriter implements GraphmlWriter {
 
     }
 
-    public void writeAllTo(CjWriter cjWriter) {
+    public void writeAllTo(ICjWriter cjWriter) {
         parseBuffer.root_().fire(cjWriter);
     }
 

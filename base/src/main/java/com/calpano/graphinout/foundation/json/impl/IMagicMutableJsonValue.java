@@ -27,6 +27,13 @@ public interface IMagicMutableJsonValue extends IJsonValue, IAppendableJsonObjec
      */
     void addProperty(List<String> propertySteps, IJsonValue value);
 
+
+    default IMagicMutableJsonValue addProperty(List<String> propertySteps, String valueString) {
+        IJsonValue string = factory().createString(valueString);
+        addProperty(propertySteps, string);
+        return this;
+    }
+
     default IMagicMutableJsonValue addProperty(String propertyKey, String valueString) {
         IJsonValue string = factory().createString(valueString);
         addProperty(propertyKey, string);

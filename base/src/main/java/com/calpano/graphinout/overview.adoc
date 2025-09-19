@@ -331,9 +331,9 @@ Contains shared constants and core definitions used throughout the system.
 Provides support for the CJ (Compact JSON) graph format, a lightweight JSON-based representation of graphs.
 
 .Key Classes
-* `CjWriter` - Interface for writing CJ format
+* `ICjWriter` - Interface for writing CJ format
 * `CjDirection` - Enumeration for edge directions
-* `CjEdgeType` - Enumeration for edge types
+* `ICjEdgeType` - Enumeration for edge types
 * `CjConstants` - Constants for CJ format
 
 .Implementation Package (`impl`)

@@ -1,5 +1,0 @@
-= Gio DOM
-
-Allows Jackson to parse JSON (such as `sample-1.cj.json`) to Java classes modelling CJ.
-
-TODO implement cj.element API

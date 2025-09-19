@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.cj.element;
 
-import com.calpano.graphinout.base.cj.CjEdgeType;
+import com.calpano.graphinout.base.cj.ICjEdgeType;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 public interface ICjEdge extends ICjElement, ICjHasGraphs, ICjHasId, ICjHasData, ICjHasLabel {
 
     @Nullable
-    CjEdgeType edgeType();
+    ICjEdgeType edgeType();
 
     Stream<ICjEndpoint> endpoints();
 

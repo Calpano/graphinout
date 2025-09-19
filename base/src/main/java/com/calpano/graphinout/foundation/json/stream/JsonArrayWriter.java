@@ -4,7 +4,7 @@ import com.calpano.graphinout.foundation.json.JsonException;
 
 import java.util.function.Consumer;
 
-public interface JsonArrayWriter extends HasJsonValueWriter {
+public interface JsonArrayWriter extends IHasJsonValueWriter {
 
     default void array(Consumer<JsonValueWriter> consumer) {
         jsonValueWriter().arrayStart();

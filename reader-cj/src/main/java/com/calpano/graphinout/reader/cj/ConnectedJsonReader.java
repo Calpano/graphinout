@@ -1,17 +1,21 @@
 package com.calpano.graphinout.reader.cj;
 
-import com.calpano.graphinout.base.cj.Json2CjWriter;
+import com.calpano.graphinout.base.cj.stream.impl.Cj2GioWriter;
+import com.calpano.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.foundation.input.InputSource;
-import com.calpano.graphinout.foundation.json.impl.JsonReaderImpl;
+import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.function.Consumer;
 
+/**
+ * Reads .cj files (connected JSON) into a {@link GioWriter}.
+ */
 public class ConnectedJsonReader implements GioReader {
 
     public static final GioFileFormat FORMAT = new GioFileFormat("connected-json", "Connected JSON Format", //

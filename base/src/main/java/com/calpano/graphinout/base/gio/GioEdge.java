@@ -23,7 +23,7 @@ import java.util.Objects;
  *         &lt;/hyperedge&gt;
  * </pre>
  */
-public class GioEdge extends GioElementWithDescription {
+public class GioEdge extends GioElementWithDescription implements GioElementWithId {
 
     public static class GioEdgeBuilder {
 
@@ -149,9 +149,9 @@ public class GioEdge extends GioElementWithDescription {
     @Override
     public String toString() {
         return "GioEdge{" +
-                "id='" + id + "\''" +
+                "id='" + id + "''" +
                 ", endpoints=" + endpoints +
-                ", description='" + getDescription() + "\''" +
+                ", description='" + getDescription() + "''" +
                 ", customAttributes=" + getCustomAttributes() +
                 '}';
     }

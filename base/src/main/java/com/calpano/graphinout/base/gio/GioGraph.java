@@ -12,7 +12,7 @@ import java.util.Objects;
  * <b>In the output we avoid the edge and change them all to Hyperedge.</b>
  * @see GioEdge {@link GioEdge}
  */
-public class GioGraph extends GioElementWithDescription {
+public class GioGraph extends GioElementWithDescription  implements GioElementWithId{
 
     public static class GioGraphBuilder {
 

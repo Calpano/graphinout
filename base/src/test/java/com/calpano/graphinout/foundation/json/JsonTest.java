@@ -2,8 +2,8 @@ package com.calpano.graphinout.foundation.json;
 
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
-import com.calpano.graphinout.foundation.json.impl.JsonReaderImpl;
-import com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter;
+import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.calpano.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -38,7 +38,7 @@ import com.calpano.graphinout.base.graphml.builder.GraphmlNodeBuilder;
 import com.calpano.graphinout.base.graphml.impl.GraphmlEdge;
 import com.calpano.graphinout.base.graphml.impl.GraphmlElement;
 import com.calpano.graphinout.base.graphml.impl.GraphmlHyperEdge;
-import com.calpano.graphinout.foundation.json.impl.BufferingJsonWriter;
+import com.calpano.graphinout.foundation.json.stream.impl.BufferingJsonWriter;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

@@ -13,7 +13,7 @@ import java.util.Objects;
  * edges can be either specified by an edge element or by a hyperedge element containing two endpoint elements.
  * @see GioEdge {@link GioEdge}
  */
-public class GioEndpoint extends GioElement {
+public class GioEndpoint extends GioElement implements GioElementWithId {
 
     public static class GioEndpointBuilder {
 

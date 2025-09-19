@@ -14,7 +14,7 @@ import java.util.Objects;
  * <p>
  * The name of this Element in XML File is  <b>node</b>
  */
-public class GioNode extends GioElementWithDescription {
+public class GioNode extends GioElementWithDescription implements GioElementWithId {
 
     public static class GioNodeBuilder {
 

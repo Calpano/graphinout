@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMeta;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
@@ -56,7 +56,7 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     }
 
     @Override
-    public void fire(CjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter) {
         cjWriter.documentStart();
         if (baseUri != null) cjWriter.baseUri(baseUri);
         fireDataMaybe(cjWriter);

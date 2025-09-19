@@ -5,7 +5,7 @@ import com.calpano.graphinout.foundation.json.JsonException;
 import java.util.function.Consumer;
 
 /** writes properties into an object */
-public interface JsonPropertyWriter extends HasJsonValueWriter {
+public interface JsonPropertyWriter extends IHasJsonValueWriter {
 
     /**
      * JSON object property key. Only legal within 'objectStart' and 'objectEnd'

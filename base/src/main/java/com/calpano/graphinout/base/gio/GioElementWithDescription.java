@@ -14,7 +14,6 @@ public abstract class GioElementWithDescription extends GioElement {
      */
     protected @Nullable String description;
 
-
     public GioElementWithDescription() {
         super();
     }

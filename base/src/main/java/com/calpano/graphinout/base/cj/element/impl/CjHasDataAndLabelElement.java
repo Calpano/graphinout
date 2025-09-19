@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjHasLabelMutable;
 import com.calpano.graphinout.base.cj.element.ICjLabelMutable;
 
@@ -28,7 +28,7 @@ public abstract class CjHasDataAndLabelElement extends CjHasDataElement implemen
         return labelElement;
     }
 
-    protected void fireLabelMaybe(CjWriter cjWriter) {
+    protected void fireLabelMaybe(ICjWriter cjWriter) {
         if(labelElement!=null) {
             labelElement.fire(cjWriter);
         }

@@ -1,6 +1,6 @@
 package com.calpano.graphinout.base.cj;
 
-import com.calpano.graphinout.base.cj.impl.CjLabelImpl;
+import com.calpano.graphinout.base.cj.helper.CjLabelImpl;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

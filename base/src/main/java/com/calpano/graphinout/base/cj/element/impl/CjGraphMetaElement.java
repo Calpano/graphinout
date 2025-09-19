@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjGraphMetaMutable;
 
 import javax.annotation.Nullable;
@@ -58,7 +58,7 @@ public class CjGraphMetaElement extends CjElement implements ICjGraphMetaMutable
     }
 
     @Override
-    public void fire(CjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter) {
         // alphabetic order
         cjWriter.metaStart();
         cjWriter.maybe(canonical, cjWriter::meta__canonical);

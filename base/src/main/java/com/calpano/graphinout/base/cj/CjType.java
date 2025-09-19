@@ -1,5 +1,6 @@
 package com.calpano.graphinout.base.cj;
 
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.foundation.json.JsonConstants;
 import com.calpano.graphinout.foundation.json.JsonType;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -202,7 +203,7 @@ public enum CjType {
     }
 
     // TODO remove or move to Array?
-    public void fireEnd(CjWriter cjWriter) {
+    public void fireEnd(ICjWriter cjWriter) {
         assert isContainer() : "This event is not a container";
         switch (this) {
             case RootObject -> cjWriter.documentEnd();
@@ -220,7 +221,7 @@ public enum CjType {
     }
 
     // TODO remove or move to Array?
-    public void fireStart(CjWriter cjWriter) {
+    public void fireStart(ICjWriter cjWriter) {
         assert isContainer() : "This event is not a container";
         switch (this) {
             case RootObject -> cjWriter.documentStart();
@@ -238,7 +239,7 @@ public enum CjType {
     }
 
     // TODO remove or move?
-    public void fireValue(CjWriter cjWriter, Object value) {
+    public void fireValue(ICjWriter cjWriter, Object value) {
         switch (this) {
             case BaseUri -> cjWriter.baseUri((String) value);
             case Language -> cjWriter.language((String) value);
@@ -248,9 +249,9 @@ public enum CjType {
             case Meta__EdgeCountTotal -> cjWriter.meta__edgeCountTotal((Long) value);
             case Meta__NodeCountInGraph -> cjWriter.meta__nodeCountInGraph((Long) value);
             case Meta__EdgeCountInGraph -> cjWriter.meta__edgeCountInGraph((Long) value);
-            case EdgeTypeUri -> cjWriter.edgeType((CjEdgeType) value);
-            case EdgeTypeNodeId -> cjWriter.edgeType((CjEdgeType) value);
-            case EdgeTypeString -> cjWriter.edgeType((CjEdgeType) value);
+            case EdgeTypeUri -> cjWriter.edgeType((ICjEdgeType) value);
+            case EdgeTypeNodeId -> cjWriter.edgeType((ICjEdgeType) value);
+            case EdgeTypeString -> cjWriter.edgeType((ICjEdgeType) value);
             case Direction -> cjWriter.direction((CjDirection) value);
             case NodeId -> cjWriter.nodeId((String) value);
             case PortId -> cjWriter.portId((String) value);

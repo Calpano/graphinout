@@ -1,16 +1,16 @@
 package com.calpano.graphinout.reader.graphml;
 
 
-import com.calpano.graphinout.base.cj.Cj2ElementsWriter;
-import com.calpano.graphinout.base.cj.CjWriter;
-import com.calpano.graphinout.base.cj.Json2CjWriter;
+import com.calpano.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
+import com.calpano.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.calpano.graphinout.base.cj.element.ICjDocument;
-import com.calpano.graphinout.base.cj.impl.Cj2JsonWriter;
-import com.calpano.graphinout.base.cj.impl.DelegatingCjWriter;
-import com.calpano.graphinout.base.cj.impl.LoggingCjWriter;
+import com.calpano.graphinout.base.cj.stream.impl.Cj2JsonWriter;
+import com.calpano.graphinout.base.cj.stream.util.DelegatingCjWriter;
+import com.calpano.graphinout.base.cj.stream.util.LoggingCjWriter;
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
-import com.calpano.graphinout.foundation.json.impl.JsonReaderImpl;
-import com.calpano.graphinout.foundation.json.impl.StringBuilderJsonWriter;
+import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.calpano.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-import static com.calpano.graphinout.base.cj.impl.CjFormatter.stripCjHeader;
+import static com.calpano.graphinout.base.cj.CjFormatter.stripCjHeader;
 import static com.calpano.graphinout.foundation.json.impl.JsonFormatter.formatDebug;
 import static com.calpano.graphinout.foundation.json.impl.JsonFormatter.removeWhitespace;
 import static com.google.common.truth.Truth.assertThat;
@@ -58,7 +58,7 @@ public class Cj2GraphmlAndBackTest {
         StringBuilderJsonWriter jsonWriter_out = new StringBuilderJsonWriter();
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         /* receive CJ events -> send JSON events  */
-        CjWriter cjWriter_out = new Cj2JsonWriter(jsonWriter_out);
+        ICjWriter cjWriter_out = new Cj2JsonWriter(jsonWriter_out);
         if (addLogging) {
             // insert logging into pipeline
             DelegatingCjWriter cjWriter_out_logging = new DelegatingCjWriter(new LoggingCjWriter());

@@ -1,7 +1,7 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.CjWriter;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjPort;
 import com.calpano.graphinout.base.cj.element.ICjPortMutable;
 
@@ -34,7 +34,7 @@ public class CjPortElement extends CjHasDataAndLabelElement implements ICjPortMu
     }
 
     @Override
-    public void fire(CjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter) {
         cjWriter.portStart();
         cjWriter.maybe(id, cjWriter::id);
         fireDataMaybe(cjWriter);
