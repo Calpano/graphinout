@@ -1,0 +1,67 @@
+= Path Resolver
+
+A universal resolver to traverse nested Java objects.
+
+== Mechanisms
+- Adapt any incoming object to either `IMapLike` or `IListLike` using a registry of <<Type Adapters>>.
+- Navigate in the essential collection one <<Step>> down
+
+=== Step
+A setp in a path. We have these steps:
+
+[cols="2h,^1m,8"]
+|===
+| Name | Syntax | Description
+
+| Any | .. | All child-nodes in the collection, recursively. Includes root.
+| List 1 | [7] | Get the element at index 7 from array-like. If not an array, return nothing.
+| List All | [*] | Get all elements from array-like. If not an array, return nothing.
+| Map 1 | foo | Get the value associated with key `foo` from map-like. If not a map, return nothing.
+| Map All | * | All child-nodes in the map. Does not include the map itself.
+If not a map, return nothing.
+|===
+
+=== Type Adapters
+A registry of adapters, each converting a source type to a target type.
+
+=== Essential Collections
+Like JSON, only `IMapLike` and `IListLike` are used.
+
+
+.Architecture
+[plantuml]
+....
+hide empty members
+hide circle
+
+class Result
+Result *-- "n" String : steps
+Result *-- "n" Object : values
+
+
+class PathResolver
+PathResolver *-- TypeAdapters : registers\nIMapLike,\nIListLike
+
+Step ..> PathResolver : steps
+
+PathResolver .. IMapLike : uses
+PathResolver .. IListLike : uses
+
+class TypeAdapters
+TypeAdapters *-- MapMap
+interface IMapLike {
+    List<String> keys()
+    Object get(String key)
+}
+interface IListLike {
+    int size()
+    Object get(int index)
+}
+interface ITypeAdapter
+TypeAdapters *-- ITypeAdapter
+
+class resultList as "List<Result>"
+resultList *-- Result
+
+PathResolver ..> resultList
+....
