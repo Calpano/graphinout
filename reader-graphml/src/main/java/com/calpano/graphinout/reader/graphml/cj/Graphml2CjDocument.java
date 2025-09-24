@@ -47,6 +47,7 @@ import com.calpano.graphinout.foundation.util.path.IMapLike;
 import com.calpano.graphinout.foundation.util.path.KPaths;
 import com.calpano.graphinout.foundation.util.path.PathResolver;
 import com.calpano.graphinout.foundation.util.path.Result;
+import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -60,9 +61,11 @@ import static com.calpano.graphinout.foundation.util.Nullables.ifPresentAccept;
 import static com.calpano.graphinout.foundation.util.Nullables.mapOrDefault;
 import static com.calpano.graphinout.foundation.util.Nullables.nonNullOrDefault;
 import static java.util.Optional.ofNullable;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class Graphml2CjDocument implements GraphmlWriter {
 
+    private static final Logger log = getLogger(Graphml2CjDocument.class);
     /** doc-level */
     private final Map<String, GraphmlKey> keyDefinitions = new HashMap<>();
     private final PowerStackOnClasses<ICjElement> stack = PowerStackOnClasses.create();
@@ -97,7 +100,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
         // process keyDefs to find mapped attName
         assert !keyDefinitions.isEmpty() : "got data " + graphmlKey + " but no keyDef for it";
         GraphmlKey key = keyDefinitions.get(graphmlKey);
-        assert key != null : "Found no <key> for '" + graphmlKey + "'";
+        assert key != null : "Found no <key> for '" + graphmlKey + "'. Have " + keyDefinitions.keySet();
         String propName = key.attrName();
         assert propName != null : "Key '" + graphmlKey + "' has no attrName?";
         String graphmlDataValue = graphmlData.value();
@@ -115,24 +118,22 @@ public class Graphml2CjDocument implements GraphmlWriter {
             //  parse JSON
             IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(graphmlDataValue);
             cjHasData.addData(json -> json.set(jsonValue));
+        } else if (key.attrName().equals(CjGraphmlMapping.GraphmlDataElement.BaseUri.attrName)) {
+            // map back to native CJ baseUri
+            if (cjHasData instanceof ICjDocumentChunkMutable) {
+                ((ICjDocumentChunkMutable) cjHasData).baseUri(graphmlDataValue);
+            } else {
+                // treat as generic data
+                copyData(graphmlData, key, cjHasData);
+            }
         } else if (key.attrName().equals(CjGraphmlMapping.GraphmlDataElement.SyntheticNode.attrName)) {
             // TODO the node at which this data is attached is just synthetic, not needed in CJ
-
 
             // map back to json
             // FIXME parse JSON instead
             cjHasData.addData(json -> json.set(graphmlDataValue));
         } else {// other, generic GraphML <data> tags
-            cjHasData.addData(json -> //
-                    json.addProperty(propName, j -> {
-                        if (graphmlData.isRawXml()) {
-                            j.addProperty(IJsonTypedStringWriter.TYPE, "xml");
-                            j.addProperty(IJsonTypedStringWriter.VALUE, graphmlDataValue);
-                        } else {
-                            j.set(graphmlData.value());
-                            json.addProperty(propName, graphmlData.value());
-                        }
-                    }));
+            copyData(graphmlData, key, cjHasData);
         }
 
     }
@@ -271,6 +272,24 @@ public class Graphml2CjDocument implements GraphmlWriter {
 
     public CjDocumentElement resultDoc() {
         return cjDoc;
+    }
+
+    private void copyData(IGraphmlData graphmlData, GraphmlKey key, ICjHasDataMutable cjHasData) {
+        String propName = key.attrName();
+        assert propName != null : "Key '" + key + "' has no attrName?";
+        String graphmlDataValue = graphmlData.value();
+
+        cjHasData.addData(json -> //
+                json.addProperty(propName, j -> {
+                    if (graphmlData.isRawXml()) {
+                        j.addProperty(IJsonTypedStringWriter.TYPE, "xml");
+                        j.addProperty(IJsonTypedStringWriter.VALUE, graphmlDataValue);
+                    } else {
+                        j.set(graphmlData.value());
+                        json.addProperty(propName, graphmlData.value());
+                    }
+                }));
+
     }
 
     private void copyId(IGraphmlElementWithId graphmlElementWithId, ICjHasIdMutable cjHasId) {

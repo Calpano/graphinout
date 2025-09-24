@@ -107,7 +107,7 @@ public class CjDocument2Graphml {
         // prepare <key> for CJ:baseUri (graphml has no baseUri)
         List<IGraphmlData> graphmlDatas = new ArrayList<>();
         ifPresentAccept(cjDoc.baseUri(), baseUri -> //
-                graphmlDatas.add(IGraphmlData.ofPlainString(GraphmlDataElement.BaseUri.name(), baseUri)));
+                graphmlDatas.add(GraphmlDataElement.BaseUri.toGraphmlData(baseUri)));
 
         // <!ELEMENT graphml  (desc?,key*,(data|graph)*)>
         graphmlWriter.documentStart(graphmlBuilder.build());
