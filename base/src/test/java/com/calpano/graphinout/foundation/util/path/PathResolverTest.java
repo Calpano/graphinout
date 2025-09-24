@@ -33,15 +33,14 @@ class PathResolverTest {
     @Test
     void test2() throws IOException {
         String json = """
-                {
-                    "a1": [
-                        {"b": "a1-b"},
-                        {"c": "a1-c"}
-                    ],
-                    "a2": [
-                        {"b": "a2-b"},
-                        {"c": "a2-c"}
-                    ]
+                { "a1": [
+                    {"b": "a1-b"},
+                    {"c": "a1-c"}
+                  ],
+                  "a2": [
+                    {"b": "a2-b"},
+                    {"c": "a2-c"}
+                  ]
                 }
                 """;
         IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(json);
@@ -95,11 +94,7 @@ class PathResolverTest {
     @Test
     void testNonExistentPath() throws IOException {
         String json = """
-                {
-                    "a": {
-                        "b": "c"
-                    }
-                }
+                { "a": { "b": "c" } }
                 """;
         IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(json);
         PathResolver resolver = new PathResolver();
@@ -109,17 +104,7 @@ class PathResolverTest {
     @Test
     void testDeeplyNestedStructure() throws IOException {
         String json = """
-                {
-                    "a": {
-                        "b": [
-                            {
-                                "c": {
-                                    "d": "found me"
-                                }
-                            }
-                        ]
-                    }
-                }
+                { "a": { "b": [ { "c": { "d": "found me" } } ] } }
                 """;
         IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(json);
         PathResolver resolver = new PathResolver();
