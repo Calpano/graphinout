@@ -2,11 +2,13 @@ package com.calpano.graphinout.foundation.util.path;
 
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.value.IJsonObject;
+import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.calpano.graphinout.foundation.json.value.java.JavaJsonObject;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -62,6 +64,79 @@ class PathResolverTest {
     @Test
     void testTypes() {
         assertThat(TypeAdapters.allInterfacesOf(JavaJsonObject.class)).contains(IJsonObject.class);
+    }
+
+    @Test
+    void testEmptyObject() throws IOException {
+        String json = "{}";
+        IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(json);
+        PathResolver resolver = new PathResolver();
+        assertThat(resolver.resolveAll(jsonValue, List.of("*"))).isEmpty();
+        assertThat(resolver.resolveAll(jsonValue, List.of("a"))).isEmpty();
+    }
+
+    @Test
+    void testEmptyList() throws IOException {
+        String json = "[]";
+        IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(json);
+        PathResolver resolver = new PathResolver();
+        assertThat(resolver.resolveAll(jsonValue, List.of("[*]"))).isEmpty();
+        assertThat(resolver.resolveAll(jsonValue, List.of("[0]"))).isEmpty();
+    }
+
+    @Test
+    void testIndexOutOfBounds() throws IOException {
+        String json = "[1, 2, 3]";
+        IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(json);
+        PathResolver resolver = new PathResolver();
+        assertThat(resolver.resolveAll(jsonValue, List.of("[5]"))).isEmpty();
+    }
+
+    @Test
+    void testNonExistentPath() throws IOException {
+        String json = """
+                {
+                    "a": {
+                        "b": "c"
+                    }
+                }
+                """;
+        IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(json);
+        PathResolver resolver = new PathResolver();
+        assertThat(resolver.resolveAll(jsonValue, List.of("a", "x", "y"))).isEmpty();
+    }
+
+    @Test
+    void testDeeplyNestedStructure() throws IOException {
+        String json = """
+                {
+                    "a": {
+                        "b": [
+                            {
+                                "c": {
+                                    "d": "found me"
+                                }
+                            }
+                        ]
+                    }
+                }
+                """;
+        IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(json);
+        PathResolver resolver = new PathResolver();
+        List<Result> results = resolver.resolveAll(jsonValue, List.of("a", "b", "[0]", "c", "d"));
+        assertThat(results).hasSize(1);
+        Object value = results.getFirst().value();
+        assert value instanceof IJsonPrimitive;
+        IJsonPrimitive jsonPrimitive = (IJsonPrimitive) value;
+        assertThat(jsonPrimitive.asString()).isEqualTo("found me");
+    }
+
+    @Test
+    void testCustomObjectWithoutAdapter() {
+        class CustomObject {}
+        PathResolver resolver = new PathResolver();
+        List<Result> results = resolver.resolveAll(new CustomObject(), List.of("a"));
+        assertThat(results).isEmpty();
     }
 
 }
