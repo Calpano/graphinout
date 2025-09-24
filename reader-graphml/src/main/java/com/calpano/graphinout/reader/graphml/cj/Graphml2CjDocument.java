@@ -40,6 +40,8 @@ import com.calpano.graphinout.base.graphml.IGraphmlNode;
 import com.calpano.graphinout.base.graphml.IGraphmlPort;
 import com.calpano.graphinout.base.graphml.impl.GraphmlKey;
 import com.calpano.graphinout.foundation.json.stream.IJsonTypedStringWriter;
+import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.calpano.graphinout.foundation.util.PowerStackOnClasses;
 import com.calpano.graphinout.foundation.util.path.IMapLike;
 import com.calpano.graphinout.foundation.util.path.KPaths;
@@ -110,8 +112,9 @@ public class Graphml2CjDocument implements GraphmlWriter {
             })));
             // FIXME emit cjLabel, attach to parent before it is emitted
         } else if (key.attrName().equals(CjGraphmlMapping.GraphmlDataElement.CjJsonData.attrName)) {// map back to json
-            // FIXME parse JSON instead
-            cjHasData.addData(json -> json.set(graphmlDataValue));
+            //  parse JSON
+            IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(graphmlDataValue);
+            cjHasData.addData(json -> json.set(jsonValue));
         } else if (key.attrName().equals(CjGraphmlMapping.GraphmlDataElement.SyntheticNode.attrName)) {
             // TODO the node at which this data is attached is just synthetic, not needed in CJ
 
@@ -285,7 +288,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
         pathResolver.registerMap(ICjDocument.class, value -> //
                 IMapLike.ofProperty("graphs", () -> value.graphs().toList()));
         pathResolver.registerMap(ICjGraph.class, value -> //
-                IMapLike.ofProperty("nodes",()->value.nodes().toList()));
+                IMapLike.ofProperty("nodes", () -> value.nodes().toList()));
         pathResolver.registerMap(ICjNode.class, value -> //
                 IMapLike.ofProperty("data", value::data));
 
@@ -298,7 +301,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
             return b == true;
         }).toList();
 
-        for(Result data:data_with_syntheticNode) {
+        for (Result data : data_with_syntheticNode) {
             assert data.values().size() == 4;
             assert data.values().get(0) instanceof ICjDocument;
             assert data.values().get(1) instanceof ICjGraph;
