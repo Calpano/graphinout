@@ -5,9 +5,10 @@ A universal resolver to traverse nested Java objects.
 == Mechanisms
 - Adapt any incoming object to either `IMapLike` or `IListLike` using a registry of <<Type Adapters>>.
 - Navigate in the essential collection one <<Step>> down
+- Concatenate the <<Result,results>>
 
 === Step
-A setp in a path. We have these steps:
+A step in a path. We have these steps:
 
 [cols="2h,^1m,8"]
 |===
@@ -20,6 +21,10 @@ A setp in a path. We have these steps:
 | Map All | * | All child-nodes in the map. Does not include the map itself.
 If not a map, return nothing.
 |===
+
+=== Result
+The result of resolving a path.  Contains the steps (Strings) and the values (Objects).
+The first value is the root object.
 
 === Type Adapters
 A registry of adapters, each converting a source type to a target type.
