@@ -1,6 +1,7 @@
 package com.calpano.graphinout.reader.graphml.cj;
 
 import com.calpano.graphinout.base.cj.CjDirection;
+import com.calpano.graphinout.base.cj.ICjEdgeType;
 import com.calpano.graphinout.base.cj.element.ICjData;
 import com.calpano.graphinout.base.cj.element.ICjDocument;
 import com.calpano.graphinout.base.cj.element.ICjDocumentChunkMutable;
@@ -114,6 +115,10 @@ public class Graphml2CjDocument implements GraphmlWriter {
                 entry.value(cjEntry.value());
             })));
             // FIXME emit cjLabel, attach to parent before it is emitted
+        } else if (key.attrName().equals(CjGraphmlMapping.GraphmlDataElement.EdgeType.attrName)) {// map back to json
+            ICjEdgeType edgeType = ICjEdgeType.fromJsonString(graphmlDataValue);
+            assert cjHasData instanceof ICjEdgeMutable;
+            ((ICjEdgeMutable) cjHasData).edgeType(edgeType);
         } else if (key.attrName().equals(CjGraphmlMapping.GraphmlDataElement.CjJsonData.attrName)) {// map back to json
             //  parse JSON
             IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(graphmlDataValue);

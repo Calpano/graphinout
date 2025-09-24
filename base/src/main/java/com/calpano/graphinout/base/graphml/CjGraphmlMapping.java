@@ -42,9 +42,7 @@ public interface CjGraphmlMapping {
          */
         BaseUri("baseUri", GraphmlKeyForType.Graphml, GraphmlDataType.typeString, "Connected JSON allows custom JSON properties in all objects"),
 
-        EdgeTypeSource("edgeTypeSource", GraphmlKeyForType.Edge, GraphmlDataType.typeString, "Connected JSON edgeType"),
-
-        EdgeTypeValue("edgeTypeValue", GraphmlKeyForType.Edge, GraphmlDataType.typeString, "Connected JSON edgeType"),
+        EdgeType("edgeType", GraphmlKeyForType.Edge, GraphmlDataType.typeString, "Connected JSON edgeType {'source'=..., 'type'=...}"),
 
         Label("label", GraphmlKeyForType.All, GraphmlDataType.typeString, "Connected JSON label"),
 

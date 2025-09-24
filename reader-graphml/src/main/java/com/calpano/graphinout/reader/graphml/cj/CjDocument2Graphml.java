@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.graphml.cj;
 
+import com.calpano.graphinout.base.cj.ICjEdgeType;
 import com.calpano.graphinout.base.cj.element.ICjData;
 import com.calpano.graphinout.base.cj.element.ICjDocument;
 import com.calpano.graphinout.base.cj.element.ICjEdge;
@@ -97,8 +98,7 @@ public class CjDocument2Graphml {
         if (cjDoc.baseUri() != null) {
             keys.add(GraphmlDataElement.BaseUri.toGraphmlKey());
         }
-        keys.add(GraphmlDataElement.EdgeTypeSource.toGraphmlKey());
-        keys.add(GraphmlDataElement.EdgeTypeValue.toGraphmlKey());
+        keys.add(GraphmlDataElement.EdgeType.toGraphmlKey());
         keys.add(GraphmlDataElement.Label.toGraphmlKey());
         keys.add(GraphmlDataElement.SyntheticNode.toGraphmlKey());
         // prepare <key> for CJ:data (graphml needs it pre-declared)
@@ -191,8 +191,8 @@ public class CjDocument2Graphml {
         // CJ edge type encoded as Graphml:DATA
         ifPresentAccept(cjEdge.edgeType(), edgeType -> {
             try {
-                graphmlWriter.data(GraphmlDataElement.EdgeTypeSource.toGraphmlData(edgeType.source().name()));
-                graphmlWriter.data(GraphmlDataElement.EdgeTypeValue.toGraphmlData(edgeType.type()));
+                String json = ICjEdgeType.toJsonString(edgeType);
+                graphmlWriter.data(GraphmlDataElement.EdgeType.toGraphmlData(json));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

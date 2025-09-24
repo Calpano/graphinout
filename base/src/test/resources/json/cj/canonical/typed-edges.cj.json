@@ -7,9 +7,9 @@
     {
       "id": "g_knowledge",
       "nodes": [
+        { "id": "concept_relativity", "label": [ { "value": "Theory of Relativity" } ] },
         { "id": "person_einstein", "label": [ { "value": "Albert Einstein" } ] },
-        { "id": "place_ulm", "label": [ { "value": "Ulm" } ] },
-        { "id": "concept_relativity", "label": [ { "value": "Theory of Relativity" } ] }
+        { "id": "place_ulm", "label": [ { "value": "Ulm" } ] }
       ],
       "edges": [
         {
