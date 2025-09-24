@@ -9,13 +9,25 @@ import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-/** Can I extend arbitrary classes with additional methods by registering matching interfaces? */
+/**
+ * Manages a registry of {@link ITypeAdapter}s and provides methods to find and apply them.
+ * <p>
+ * This class allows for extending arbitrary classes with additional behaviors by registering adapters that can convert
+ * them to desired interface types like {@link IMapLike} or {@link IListLike}. It supports searching for adapters for
+ * super-classes and interfaces if a direct adapter is not found.
+ */
 public class TypeAdapters {
 
     private static final Logger log = getLogger(TypeAdapters.class);
     /** sourceType - targetType  - adapter */
     private final MapMap<Class<?>, Class<?>, ITypeAdapter<?, ?>> adapters = new MapMap<>();
 
+    /**
+     * Recursively finds all interfaces implemented by a given class and its super-classes/interfaces.
+     *
+     * @param type the class to inspect.
+     * @return a {@link Set} of all implemented interfaces.
+     */
     public static Set<Class<?>> allInterfacesOf(Class<?> type) {
         Set<Class<?>> result = new HashSet<>();
         for (Class<?> interfaceType : type.getInterfaces()) {
@@ -33,7 +45,16 @@ public class TypeAdapters {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Adapts a value to the specified target type, throwing an exception if no adapter is found.
+     *
+     * @param value      the object to adapt.
+     * @param targetType the class of the target type.
+     * @param <T>        the source type.
+     * @param <A>        the target type.
+     * @return the adapted object.
+     * @throws IllegalArgumentException if no suitable adapter can be found.
+     */
     public <T, A> A adaptOrThrow(T value, Class<A> targetType) {
         Class<?> sourceType = value.getClass();
         ITypeAdapter<T, A> adapter = findAdapterFromTo(sourceType, targetType, null);
@@ -43,6 +64,15 @@ public class TypeAdapters {
         return adapter.toAdapted(value);
     }
 
+    /**
+     * Adapts a value to the specified target type.
+     *
+     * @param value      the object to adapt.
+     * @param targetType the class of the target type.
+     * @param <T>        the source type.
+     * @param <A>        the target type.
+     * @return the adapted object, or {@code null} if no suitable adapter can be found.
+     */
     public <T, A> @Nullable A adaptTo(T value, Class<A> targetType) {
         Class<?> sourceType = value.getClass();
         ITypeAdapter<T, A> adapter = findAdapterFromTo(sourceType, targetType, null);
@@ -52,15 +82,42 @@ public class TypeAdapters {
         return adapter.toAdapted(value);
     }
 
-    /** Simplistic exact lookup */
+    /**
+     * Finds an adapter that exactly matches the given source and target types, without searching super-types or interfaces.
+     *
+     * @param sourceType the source class.
+     * @param targetType the target class.
+     * @param <T>        the source type.
+     * @param <A>        the target type.
+     * @return the matching {@link ITypeAdapter}, or {@code null} if not found.
+     */
     public <T, A> @Nullable ITypeAdapter<T, A> exactAdapterFromTo(Class<?> sourceType, Class<?> targetType) {
         return (ITypeAdapter<T, A>) adapters.get(sourceType, targetType);
     }
 
+    /**
+     * Finds an adapter for the given source and target types, searching super-classes and interfaces if no direct adapter is found.
+     *
+     * @param sourceType the source class.
+     * @param targetType the target class.
+     * @param <A>        the target type.
+     * @param <T>        the source type.
+     * @return the matching {@link ITypeAdapter}, or {@code null} if not found.
+     */
     public <A, T> @Nullable ITypeAdapter<T, A> findAdapterFromTo(Class<?> sourceType, Class<A> targetType) {
         return findAdapterFromTo(sourceType, targetType, null);
     }
 
+    /**
+     * Internal implementation for finding an adapter, with a mechanism to avoid cycles during recursive search.
+     *
+     * @param sourceType   the source class.
+     * @param targetType   the target class.
+     * @param alreadyTried a set of classes that have already been checked, to prevent infinite loops.
+     * @param <A>          the target type.
+     * @param <T>          the source type.
+     * @return the matching {@link ITypeAdapter}, or {@code null} if not found.
+     */
     public <A, T> @Nullable ITypeAdapter<T, A> findAdapterFromTo(Class<?> sourceType, Class<A> targetType, @Nullable HashSet<Class<?>> alreadyTried) {
         ITypeAdapter<T, A> adapter = exactAdapterFromTo(sourceType, targetType);
         if (adapter != null)
@@ -91,6 +148,15 @@ public class TypeAdapters {
         return findAdapterFromTo(superType, targetType, tried);
     }
 
+    /**
+     * Registers a new type adapter.
+     *
+     * @param sourceType the class of the source type.
+     * @param targetType the class of the target type.
+     * @param adapter    the adapter to register.
+     * @param <T>        the source type.
+     * @param <A>        the target type.
+     */
     public <T, A> void register(Class<T> sourceType, Class<A> targetType, ITypeAdapter<T, A> adapter) {
         adapters.put(sourceType, targetType, adapter);
     }
