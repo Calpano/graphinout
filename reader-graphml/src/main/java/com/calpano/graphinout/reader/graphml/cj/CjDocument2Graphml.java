@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.graphml.cj;
 
+import com.calpano.graphinout.base.cj.element.ICjData;
 import com.calpano.graphinout.base.cj.element.ICjDocument;
 import com.calpano.graphinout.base.cj.element.ICjEdge;
 import com.calpano.graphinout.base.cj.element.ICjEndpoint;
@@ -33,6 +34,7 @@ import com.calpano.graphinout.base.graphml.builder.GraphmlGraphBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlHyperEdgeBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlNodeBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlPortBuilder;
+import com.calpano.graphinout.foundation.json.value.IJsonValue;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -197,14 +199,7 @@ public class CjDocument2Graphml {
         });
 
         writeCjLabelAsGraphmlData(cjEdge.label());
-
-        toGraphmlData(cjEdge, gd -> {
-            try {
-                graphmlWriter.data(gd);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        writeData_Json(cjEdge);
 
         cjEdge.graphs().forEach(cjGraph -> {
             try {
@@ -278,6 +273,7 @@ public class CjDocument2Graphml {
         graphmlWriter.nodeStart(graphmlBuilder.build());
 
         writeCjLabelAsGraphmlData(cjNode.label());
+        writeData_Json(cjNode);
 
         // ports, graphs
         cjNode.ports().forEach(cjPort -> {
@@ -315,6 +311,12 @@ public class CjDocument2Graphml {
         graphmlWriter.portEnd();
     }
 
+    private void toGraphmlData(ICjHasData cjHasData, Consumer<IGraphmlData> graphmlDataConsumer) {
+        cjHasData.onDataValue(json -> graphmlDataConsumer.accept( //
+                GraphmlDataElement.CjJsonData.toGraphmlData(json.toJsonString()) //
+        ));
+    }
+
 /*
     private void indexKey(IGraphmlKey key) {
         Map<GraphmlKeyForType, IGraphmlKey> subMap = dataId_for_key.computeIfAbsent(key.id(), k -> new HashMap<>());
@@ -323,18 +325,22 @@ public class CjDocument2Graphml {
     }
 */
 
-    private void toGraphmlData(ICjHasData cjHasData, Consumer<IGraphmlData> graphmlDataConsumer) {
-        cjHasData.onDataValue(json -> graphmlDataConsumer.accept( //
-                GraphmlDataElement.CjJsonData.toGraphmlData(json.toJsonString()) //
-        ));
-    }
-
     private void writeData_Description(ICjHasData cjHasData, GraphmlElementWithDescBuilder<?> gHasDesc) {
         assert cjHasData != null;
         cjHasData.onDataValue(json -> {
             json.resolve(CjGraphmlMapping.CjDataProperty.Description.cjPropertyKey, desc -> //
                     gHasDesc.desc(IGraphmlDescription.builder().value(desc.asString()).build()));
         });
+    }
+
+    private void writeData_Json(ICjHasData cjHasData) throws IOException {
+        ICjData data = cjHasData.data();
+        if (data == null) return;
+        IJsonValue value = data.jsonValue();
+        if (value != null) {
+            IGraphmlData gd = GraphmlDataElement.CjJsonData.toGraphmlData(value.toJsonString());
+            graphmlWriter.data(gd);
+        }
     }
 
     private void write_CustomAttributes(ICjHasData cjHasData, GraphmlElementBuilder<?> graphmlElement) {
