@@ -301,6 +301,10 @@ public class CjDocument2Graphml {
         write_CustomAttributes(cjPort, portBuilder);
         writeData_Description(cjPort, portBuilder);
         graphmlWriter.portStart(portBuilder.build());
+
+        writeCjLabelAsGraphmlData(cjPort.label());
+        writeData_Json(cjPort);
+
         cjPort.ports().forEach(subCjPort -> {
             try {
                 writePort(subCjPort);
