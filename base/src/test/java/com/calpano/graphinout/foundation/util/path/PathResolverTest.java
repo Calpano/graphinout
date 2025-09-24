@@ -8,7 +8,6 @@ import com.calpano.graphinout.foundation.json.value.java.JavaJsonObject;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;

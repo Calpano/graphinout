@@ -24,7 +24,6 @@ import com.calpano.graphinout.base.gio.GioKey;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.graphml.CjGraphmlMapping;
 import com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty;
 import com.calpano.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
 import com.calpano.graphinout.foundation.util.PowerStackOnClasses;

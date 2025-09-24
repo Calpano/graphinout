@@ -4,7 +4,7 @@ import com.calpano.graphinout.base.cj.element.impl.CjLabelElement;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class CjLabelTest {
 

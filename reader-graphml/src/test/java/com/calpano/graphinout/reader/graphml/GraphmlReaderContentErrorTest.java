@@ -4,7 +4,6 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.gio.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.xml.Graphml2XmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
-import com.calpano.graphinout.foundation.TestFileProvider;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.xml.Xml2AppendableWriter;
 import org.apache.commons.io.IOUtils;
@@ -22,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

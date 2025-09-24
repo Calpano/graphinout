@@ -5,7 +5,6 @@ import com.calpano.graphinout.base.graphml.Graphml;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
 import com.calpano.graphinout.base.graphml.IGraphmlDocument;
 import com.calpano.graphinout.base.graphml.IGraphmlElementWithDesc;
-import com.calpano.graphinout.foundation.xml.AttMaps;
 import com.calpano.graphinout.foundation.xml.XML;
 
 import javax.annotation.Nullable;

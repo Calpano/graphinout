@@ -3,7 +3,6 @@ package com.calpano.graphinout.foundation.json.value.java;
 import com.calpano.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
-import com.calpano.graphinout.foundation.json.value.IJsonValueMutable;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

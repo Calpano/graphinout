@@ -1,10 +1,10 @@
 package com.calpano.graphinout.foundation.json.value.jackson;
 
-import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
-import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonArray;
+import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonObject;
+import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 

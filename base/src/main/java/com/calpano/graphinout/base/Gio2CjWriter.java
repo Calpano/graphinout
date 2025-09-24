@@ -1,8 +1,8 @@
 package com.calpano.graphinout.base;
 
-import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjDocument;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMutable;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.gio.GioWriter;
 
 import java.io.IOException;

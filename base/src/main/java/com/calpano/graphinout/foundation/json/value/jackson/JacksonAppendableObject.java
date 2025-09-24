@@ -1,7 +1,7 @@
 package com.calpano.graphinout.foundation.json.value.jackson;
 
-import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
+import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

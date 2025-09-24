@@ -1,12 +1,12 @@
 package com.calpano.graphinout.base.cj;
 
-import com.calpano.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
+import com.calpano.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.calpano.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
+import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
-import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

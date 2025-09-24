@@ -1,7 +1,7 @@
 package com.calpano.graphinout.foundation.json.stream.impl;
 
-import com.calpano.graphinout.foundation.json.stream.JsonValueWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
+import com.calpano.graphinout.foundation.json.stream.JsonValueWriter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BigIntegerNode;
