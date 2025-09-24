@@ -11,6 +11,7 @@ import com.calpano.graphinout.base.cj.stream.ICjWriter;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -22,20 +23,16 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
     private @Nullable String id;
     private ICjEdgeType edgeType;
 
-    public CjEdgeElement(@Nullable CjHasDataElement parent) {
-        super(parent);
-    }
-
     @Override
     public void addEndpoint(Consumer<ICjEndpointMutable> endpoint) {
-        CjEndpointElement endpointElement = new CjEndpointElement(this);
+        CjEndpointElement endpointElement = new CjEndpointElement();
         endpoint.accept(endpointElement);
         endpoints.add(endpointElement);
     }
 
     @Override
     public void addGraph(Consumer<ICjGraphMutable> graph) {
-        CjGraphElement graphElement = new CjGraphElement(this);
+        CjGraphElement graphElement = new CjGraphElement();
         graph.accept(graphElement);
         graphs.add(graphElement);
     }
@@ -57,7 +54,7 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
 
     @Override
     public Stream<ICjEndpoint> endpoints() {
-        return endpoints.stream().map(x -> (ICjEndpoint) x);
+        return endpoints.stream().map(x -> (ICjEndpoint) x).sorted(Comparator.comparing(ICjEndpoint::node));
     }
 
     @Override

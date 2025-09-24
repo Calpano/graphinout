@@ -2,6 +2,7 @@ package com.calpano.graphinout.base.graphml;
 
 import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.gio.Direction;
+import com.calpano.graphinout.base.gio.GioEndpointDirection;
 
 /**
  * @author rbaba
@@ -46,6 +47,14 @@ public enum GraphmlDirection {
 
     public boolean isDirected() {
         return isDirected;
+    }
+
+    public GioEndpointDirection toGio() {
+        return switch (this) {
+            case In -> GioEndpointDirection.In;
+            case Out -> GioEndpointDirection.Out;
+            case Undirected -> GioEndpointDirection.Undirected;
+        };
     }
 
     public String xmlValue() {

@@ -119,8 +119,11 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonTypedStringWri
      */
     void graphStart() throws CjException;
 
-    /** TODO document */
-    void meta__canonical(boolean b);
+    void connectedJsonStart();
+    void connectedJson__canonical(boolean b);
+    void connectedJson__versionDate(String s);
+    void connectedJson__versionNumber(String s);
+    void connectedJsonEnd();
 
     void id(String id);
 
@@ -156,18 +159,6 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonTypedStringWri
 
     /** TODO doc */
     void listStart(CjType cjType);
-
-    void metaEnd();
-
-    void metaStart();
-
-    void meta__edgeCountInGraph(long number);
-
-    void meta__edgeCountTotal(long number);
-
-    void meta__nodeCountInGraph(long number);
-
-    void meta__nodeCountTotal(long number);
 
     /**
      * CJ Node end event.

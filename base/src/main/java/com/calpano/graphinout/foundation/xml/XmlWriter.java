@@ -65,7 +65,7 @@ public interface XmlWriter {
     default void characterDataWhichMayContainCdata(String s) throws IOException {
         // mini parser to split s at CDATA sections.
         int current = 0;
-        _log.info("parsing {}", s);
+        //_log.info("parsing {}", s);
         int startCdata;
         while ((startCdata = s.indexOf(CDATA_START, current)) != -1) {
             if (startCdata > current) {

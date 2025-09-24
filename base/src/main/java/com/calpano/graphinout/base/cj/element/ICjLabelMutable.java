@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 
 public interface ICjLabelMutable extends ICjLabel {
 
-    void entry(Consumer<ICjLabelEntryMutable> labelEntry);
+    /** as many as you like */
+    void addEntry(Consumer<ICjLabelEntryMutable> labelEntry);
 
 }

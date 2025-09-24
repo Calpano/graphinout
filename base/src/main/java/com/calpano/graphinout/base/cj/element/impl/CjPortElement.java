@@ -1,11 +1,10 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjPort;
 import com.calpano.graphinout.base.cj.element.ICjPortMutable;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -17,13 +16,9 @@ public class CjPortElement extends CjHasDataAndLabelElement implements ICjPortMu
 
     private String id;
 
-    CjPortElement(@Nullable CjHasDataElement parent) {
-        super(parent);
-    }
-
     @Override
     public void addPort(Consumer<ICjPortMutable> consumer) {
-        CjPortElement portElement = new CjPortElement(this);
+        CjPortElement portElement = new CjPortElement();
         consumer.accept(portElement);
         ports.add(portElement);
     }

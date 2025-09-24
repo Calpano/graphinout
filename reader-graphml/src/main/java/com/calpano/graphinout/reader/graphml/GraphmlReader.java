@@ -34,7 +34,6 @@ public class GraphmlReader implements GioReader {
 
     static class SimpleErrorHandler implements ErrorHandler {
 
-
         private final Consumer<ContentError> errorConsumer;
 
         public SimpleErrorHandler(Consumer<ContentError> errorConsumer) {
@@ -47,7 +46,6 @@ public class GraphmlReader implements GioReader {
             if (errorConsumer != null) {
                 errorConsumer.accept(contentError);
             }
-
         }
 
         @Override

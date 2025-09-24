@@ -13,6 +13,14 @@ public interface IGraphmlData extends IGraphmlElementWithId {
         return new GraphmlDataBuilder();
     }
 
+    static IGraphmlData ofPlainString(String key, String value) {
+        return builder().key(key).value(value).build();
+    }
+
+    static IGraphmlData ofRawXml(String key, String value) {
+        return builder().key(key).value(value).containsRawXml(true).build();
+    }
+
     default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
         name_value.accept(ATTRIBUTE_ID, this::id);
         name_value.accept(ATTRIBUTE_KEY, this::key);

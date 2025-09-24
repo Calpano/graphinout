@@ -2,15 +2,15 @@ package com.calpano.graphinout.base.cj.stream.impl;
 
 import com.calpano.graphinout.base.cj.CjConstants;
 import com.calpano.graphinout.base.cj.CjDirection;
-import com.calpano.graphinout.base.cj.ICjEdgeType;
 import com.calpano.graphinout.base.cj.CjException;
 import com.calpano.graphinout.base.cj.CjType;
+import com.calpano.graphinout.base.cj.ICjEdgeType;
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.foundation.json.JsonConstants;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.JsonType;
-import com.calpano.graphinout.foundation.json.stream.impl.DelegatingJsonWriter;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.impl.DelegatingJsonWriter;
 
 import java.util.Arrays;
 import java.util.Stack;
@@ -33,8 +33,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     @Override
     public void arrayEnd() throws JsonException {
         super.arrayEnd();
-        pop(JsonType.Array, CjType.ArrayOfLabelEntries, CjType.ArrayOfGraphs,
-                CjType.ArrayOfGraphs, CjType.ArrayOfPorts, CjType.ArrayOfEdges, CjType.ArrayOfNodes, CjType.ArrayOfEndpoints);
+        pop(JsonType.Array, CjType.ArrayOfLabelEntries, CjType.ArrayOfGraphs, CjType.ArrayOfGraphs, CjType.ArrayOfPorts, CjType.ArrayOfEdges, CjType.ArrayOfNodes, CjType.ArrayOfEndpoints);
     }
 
     @Override
@@ -51,9 +50,42 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     }
 
     @Override
+    public void connectedJsonEnd() {
+        super.objectEnd();
+        pop(CjType.ConnectedJson);
+    }
+
+    @Override
+    public void connectedJsonStart() {
+        push(CjType.ConnectedJson);
+        super.onKey(CjConstants.ROOT__CONNECTED_JSON);
+        super.objectStart();
+    }
+
+    @Override
+    public void connectedJson__canonical(boolean b) {
+        super.onKey(CjConstants.CONNECTED_JSON__CANONICAL);
+        super.onBoolean(b);
+    }
+
+    @Override
+    public void connectedJson__versionDate(String versionDate) {
+        super.onKey(CjConstants.CONNECTED_JSON__VERSION_DATE);
+        onString(versionDate);
+    }
+
+    @Override
+    public void connectedJson__versionNumber(String versionNumber) {
+        super.onKey(CjConstants.CONNECTED_JSON__VERSION_NUMBER);
+        onString(versionNumber);
+    }
+
+    @Override
     public void direction(CjDirection direction) {
-        super.onKey(CjConstants.ENDPOINT__DIRECTION);
-        onString(direction.value());
+        if (direction != CjDirection.DEFAULT) {
+            super.onKey(CjConstants.ENDPOINT__DIRECTION);
+            onString(direction.value());
+        }
     }
 
     public void documentEnd() throws CjException {
@@ -77,9 +109,9 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
         // "connectedJson" : { ...
         super.onKey(CjConstants.ROOT__CONNECTED_JSON);
         super.objectStart();
-        super.onKey(CjConstants.VERSION_NUMBER);
+        super.onKey(CjConstants.CONNECTED_JSON__VERSION_NUMBER);
         onString(CJ_VERSION_NUMBER);
-        super.onKey(CjConstants.VERSION_DATE);
+        super.onKey(CjConstants.CONNECTED_JSON__VERSION_DATE);
         onString(CJ_VERSION_DATA);
         super.objectEnd();
     }
@@ -133,12 +165,6 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     }
 
     @Override
-    public void meta__canonical(boolean b) {
-        super.onKey(CjConstants.META__CANONICAL);
-        super.onBoolean(b);
-    }
-
-    @Override
     public void id(String id) {
         super.onKey(CjConstants.ID);
         onString(id);
@@ -180,17 +206,13 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     public void labelStart() {
         // FIXME is this right?
         push(CjType.ArrayOfLabelEntries);
-    //    super.arrayStart();
+        //    super.arrayStart();
     }
 
     @Override
     public void language(String language) {
         super.onKey(CjConstants.LANGUAGE);
         onString(language);
-    }
-
-    private <T> T pop() {
-        return (T) stack.pop();
     }
 
     public void listEnd(CjType cjType) {
@@ -212,43 +234,6 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
             default -> throw new IllegalStateException("Unknown cjArrayType " + cjArrayType);
         }
         super.arrayStart();
-    }
-
-    @Override
-    public void metaEnd() {
-        super.objectEnd();
-        pop(CjType.Meta);
-    }
-
-    @Override
-    public void metaStart() {
-        push(CjType.Meta);
-        super.onKey(CjConstants.GRAPH__META);
-        super.objectStart();
-    }
-
-    @Override
-    public void meta__edgeCountInGraph(long number) {
-        super.onKey(CjConstants.META__EDGE_COUNT_IN_GRAPH);
-        super.onLong(number);
-    }
-
-    @Override
-    public void meta__edgeCountTotal(long number) {
-        super.onKey(CjConstants.META__EDGE_COUNT_TOTAL);
-        super.onLong(number);
-    }
-
-    @Override
-    public void meta__nodeCountInGraph(long number) {
-        super.onKey(CjConstants.META__NODE_COUNT_IN_GRAPH);
-        super.onLong(number);
-    }
-
-    @Override
-    public void meta__nodeCountTotal(long number) {
-        super.onKey(CjConstants.META__NODE_COUNT_TOTAL);
-        super.onLong(number);
     }
 
     @Override
@@ -321,10 +306,13 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     }
 
     private boolean isActiveArray() {
-        if (stack.isEmpty())
-            return false;
+        if (stack.isEmpty()) return false;
         Object o = stack.peek();
         return o instanceof CjType && ((CjType) o).isArray() || o instanceof JsonType && ((JsonType) o) == JsonType.Array;
+    }
+
+    private <T> T pop() {
+        return (T) stack.pop();
     }
 
     private void pop(CjType cjType) {
@@ -336,12 +324,10 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
 
     private void pop(Object... expectedCjTypes) {
         Object o = stack.pop();
-        if (expectedCjTypes == null || expectedCjTypes.length == 0)
-            return;
+        if (expectedCjTypes == null || expectedCjTypes.length == 0) return;
         assert o instanceof JsonType || o instanceof CjType : "Expected one of " + Arrays.toString(expectedCjTypes) + " but found " + o + ".";
         for (Object cjType : expectedCjTypes) {
-            if (o == cjType)
-                return;
+            if (o == cjType) return;
         }
         throw new AssertionError("Expected one of " + Arrays.toString(expectedCjTypes) + " but found " + o + ".");
     }

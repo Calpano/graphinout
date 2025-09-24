@@ -2,9 +2,11 @@ package com.calpano.graphinout.foundation.json.stream.impl;
 
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import com.calpano.graphinout.foundation.json.json5.Json5Preprocessor;
+import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
 import com.calpano.graphinout.foundation.json.JsonReader;
+import com.calpano.graphinout.foundation.json.json5.Json5Preprocessor;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
+import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -19,17 +21,33 @@ import java.nio.charset.StandardCharsets;
 public class JsonReaderImpl implements JsonReader {
 
     private static final JsonFactory JSON_FACTORY = new JsonFactory();
-    final boolean useBigDecimals;
 
     static {
         JSON_FACTORY.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature());
     }
+
+    final boolean useBigDecimals;
 
     public JsonReaderImpl() {
         this(true);
     }
 
     public JsonReaderImpl(boolean useBigDecimals) {this.useBigDecimals = useBigDecimals;}
+
+    public static IJsonValue readToJsonValue(String json) {
+        Json2JavaJsonWriter writer = new Json2JavaJsonWriter();
+        try {
+            read_(SingleInputSourceOfString.of("input-string", json), writer);
+            return writer.jsonValue();
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    public static void read_(SingleInputSourceOfString inputSource, JsonWriter jsonWriter) throws IOException {
+        JsonReaderImpl jsonReader = new JsonReaderImpl();
+        jsonReader.read(inputSource, jsonWriter);
+    }
 
     @Override
     public void read(InputSource inputSource, JsonWriter stream) throws IOException {
@@ -39,15 +57,21 @@ public class JsonReaderImpl implements JsonReader {
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
 
         // Read the entire content as string for JSON5 preprocessing
-        String content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
+        String json5content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
+        readJson5String(json5content, stream);
+    }
 
-        if (content.isEmpty()) {
+    public void readJson5String(String json5content, JsonWriter stream) throws IOException {
+        if (json5content.isEmpty()) {
             return;
         }
 
         // Preprocess JSON5 content to make it compatible with standard JSON
-        String preprocessedContent = Json5Preprocessor.toJson(content);
+        String preprocessedContent = Json5Preprocessor.toJson(json5content);
+        readStandardJsonString(preprocessedContent, stream);
+    }
 
+    public void readStandardJsonString(String preprocessedContent, JsonWriter stream) throws IOException {
         // Create Jackson parser for JSON parsing
         try (JsonParser parser = JSON_FACTORY.createParser(preprocessedContent)) {
             // Parse the JSON content
@@ -63,6 +87,7 @@ public class JsonReaderImpl implements JsonReader {
         } finally {
             stream.documentEnd();
         }
+
     }
 
     private void parseJsonValue(JsonParser parser, JsonToken token, JsonWriter stream) throws IOException {

@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -69,11 +70,12 @@ class CjReaderTest {
 
 
     @ParameterizedTest
-    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjFilesCanonical")
-    void shouldWorkAsIntended(String filePath) throws IOException {
-        URL resourceUrl = ClassLoader.getSystemResource(filePath);
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
+    void shouldWorkAsIntended(String displayName, Path filePath) throws IOException {
+        URL resourceUrl = ClassLoader.getSystemResource(filePath.toString());
+        assert resourceUrl != null : "Resource file should exist: " + filePath;
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-        SingleInputSource singleInputSource = SingleInputSource.of(filePath, content);
+        SingleInputSource singleInputSource = SingleInputSource.of(filePath.toString(), content);
 
         underTest.read(singleInputSource, mockGioWriter);
 

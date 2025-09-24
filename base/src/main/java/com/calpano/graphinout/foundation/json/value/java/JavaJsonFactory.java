@@ -1,7 +1,7 @@
 package com.calpano.graphinout.foundation.json.value.java;
 
-import com.calpano.graphinout.foundation.json.value.IAppendableJsonArray;
-import com.calpano.graphinout.foundation.json.value.IAppendableJsonObject;
+import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
+import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonArray;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonObject;
@@ -20,8 +20,8 @@ public class JavaJsonFactory implements IJsonFactory {
     }
 
     @Override
-    public IAppendableJsonArray createArrayAppendable() {
-        return new JavaJsonAppendableArray();
+    public IJsonArrayAppendable createArrayAppendable() {
+        return new JavaJsonArray();
     }
 
     @Override
@@ -70,8 +70,8 @@ public class JavaJsonFactory implements IJsonFactory {
     }
 
     @Override
-    public IAppendableJsonObject createObjectAppendable() {
-        return new JavaJsonAppendableObject();
+    public IJsonObjectAppendable createObjectAppendable() {
+        return new JavaJsonObject();
     }
 
     @Override

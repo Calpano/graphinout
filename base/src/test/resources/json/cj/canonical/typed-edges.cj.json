@@ -24,8 +24,8 @@
           "id": "e_knowsAbout",
           "typeUri": "knowsAbout",
           "endpoints": [
-            { "node": "person_einstein", "direction": "out" },
-            { "node": "concept_relativity", "direction": "in" }
+            { "node": "concept_relativity", "direction": "in" },
+            { "node": "person_einstein", "direction": "out" }
           ]
         }
       ]

@@ -2,8 +2,8 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjEndpointMutable;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 
 import javax.annotation.Nullable;
 
@@ -18,19 +18,14 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
     private @Nullable String typeUri;
     private @Nullable String typeNode;
 
-    CjEndpointElement(@Nullable CjHasDataElement parent) {
-        super(parent);
-    }
-
     @Override
     public CjType cjType() {
         return CjType.Endpoint;
     }
 
-    @Nullable
     @Override
     public CjDirection direction() {
-        return direction;
+        return direction == null ? CjDirection.UNDIR : direction;
     }
 
     @Override

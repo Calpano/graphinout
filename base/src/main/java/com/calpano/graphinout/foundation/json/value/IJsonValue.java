@@ -2,7 +2,9 @@ package com.calpano.graphinout.foundation.json.value;
 
 import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.impl.Json2StringWriter;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -13,12 +15,32 @@ public interface IJsonValue {
         return (IJsonArray) this;
     }
 
+    default Boolean asBoolean() {
+        return asPrimitive().castTo(Boolean.class);
+    }
+
+    default IJsonContainer asContainer() throws ClassCastException {
+        return (IJsonContainer) this;
+    }
+
+    default IJsonValueMutable asMutable() throws ClassCastException {
+        return (IJsonValueMutable) this;
+    }
+
+    default Number asNumber() {
+        return asPrimitive().castTo(Number.class);
+    }
+
     default IJsonObject asObject() throws ClassCastException {
         return (IJsonObject) this;
     }
 
     default IJsonPrimitive asPrimitive() throws ClassCastException {
         return (IJsonPrimitive) this;
+    }
+
+    default String asString() {
+        return asPrimitive().castTo(String.class);
     }
 
     /** the underlying implementation */
@@ -45,7 +67,20 @@ public interface IJsonValue {
         }
     }
 
+    default boolean isAppendable() {
+        return (this instanceof IJsonObjectAppendable || this instanceof IJsonArrayAppendable);
+    }
+
     boolean isArray();
+
+    default boolean isContainer() {
+        return isArray() || isObject();
+    }
+
+    /** Mutable is stronger than Appendable */
+    default boolean isMutable() {
+        return (this instanceof IJsonObjectMutable || this instanceof IJsonArrayMutable);
+    }
 
     boolean isObject();
 
@@ -59,19 +94,11 @@ public interface IJsonValue {
         }
     }
 
-    /**
-     * Resolve the path on this value.
-     *
-     * @param jsonPath may only contain String or Integer steps. Use {@link JsonPaths} to create a path.
-     * @param consumer is called on a value if found.
-     * @throws IllegalArgumentException if the path tries to resolve a property in an array or an index in an object.
-     *                                  Other cases of not found result in an empty consumer.
-     */
-    default void resolve(Object jsonPath, Consumer<IJsonValue> consumer) throws IllegalArgumentException {
+    default @Nullable IJsonValue resolve(Object jsonPath) {
         List<Object> path = JsonPaths.of(jsonPath);
 
         // base case
-        if (path.isEmpty()) consumer.accept(this);
+        if (path.isEmpty()) return this;
 
         // take first step
         Object step = path.getFirst();
@@ -80,7 +107,7 @@ public interface IJsonValue {
             if (isObject()) {
                 IJsonValue value = asObject().get(propertyKey);
                 if (value != null) {
-                    value.resolve(path.subList(1, path.size()), consumer);
+                    return value.resolve(path.subList(1, path.size()));
                 }
             } else {
                 throw new IllegalArgumentException("Cannot resolve property on non-object value");
@@ -92,14 +119,34 @@ public interface IJsonValue {
                 if (index < array.size()) {
                     IJsonValue value = array.get(index);
                     if (value != null) {
-                        value.resolve(path.subList(1, path.size()), consumer);
+                        return value.resolve(path.subList(1, path.size()));
                     }
                 }
             }
         } else {
             throw new IllegalArgumentException("Invalid path step: " + step);
         }
+
+        return null;
     }
 
+    /**
+     * Resolve the path on this value.
+     *
+     * @param jsonPath may only contain String or Integer steps. Use {@link JsonPaths} to create a path.
+     * @param consumer is called on a value if found.
+     * @throws IllegalArgumentException if the path tries to resolve a property in an array or an index in an object.
+     *                                  Other cases of not found result in an empty consumer.
+     */
+    default void resolve(Object jsonPath, Consumer<IJsonValue> consumer) throws IllegalArgumentException {
+        IJsonValue value = resolve(jsonPath);
+        if (value != null) consumer.accept(value);
+    }
+
+    default String toJsonString() {
+        Json2StringWriter w = new Json2StringWriter();
+        fire(w);
+        return w.jsonString();
+    }
 
 }

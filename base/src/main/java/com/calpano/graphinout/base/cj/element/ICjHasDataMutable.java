@@ -4,7 +4,7 @@ import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
 
 import java.util.function.Consumer;
 
-public interface ICjHasDataMutable extends ICjHasData {
+public interface ICjHasDataMutable extends ICjHasData, ICjChunkMutable {
 
     void addData(Consumer<IMagicMutableJsonValue> consumer);
 

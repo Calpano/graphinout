@@ -10,6 +10,8 @@ public enum CjDirection {
     OUT("out"),
     UNDIR("undir");
 
+    public static final CjDirection DEFAULT = CjDirection.UNDIR;
+
     private final String value;
 
     CjDirection(String value) {

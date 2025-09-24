@@ -6,12 +6,18 @@ import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-import static java.util.Optional.ofNullable;
-
 public interface ICjHasData extends ICjElement {
 
     @Nullable
     ICjData data();
+
+    default @Nullable IJsonValue jsonValue() {
+        ICjData data = data();
+        if (data == null) {
+            return null;
+        }
+        return data.jsonValue();
+    }
 
     /**
      * @param consumer is called if data is present.

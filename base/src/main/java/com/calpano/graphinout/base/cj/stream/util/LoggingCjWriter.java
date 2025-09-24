@@ -1,9 +1,9 @@
 package com.calpano.graphinout.base.cj.stream.util;
 
 import com.calpano.graphinout.base.cj.CjDirection;
-import com.calpano.graphinout.base.cj.ICjEdgeType;
 import com.calpano.graphinout.base.cj.CjException;
 import com.calpano.graphinout.base.cj.CjType;
+import com.calpano.graphinout.base.cj.ICjEdgeType;
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.stream.impl.LoggingJsonWriter;
@@ -31,7 +31,11 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
     }
 
     public enum CjEvent {
-        ArrayOfGraphsStart, ArrayOfGraphsEnd, ArrayOfEdgesStart, ArrayOfEdgesEnd, ArrayOfNodesStart, ArrayOfNodesEnd, ArrayOfPortsStart, ArrayOfPortsEnd, ArrayOfLabelEntriesStart, ArrayOfLabelEntriesEnd, ArrayOfEndpointsStart, ArrayOfEndpointsEnd, ArrayOfLabelEntryStart, ArrayOfLabelEntryEnd, EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, EdgeType, NodeId, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Meta__Canonical, Meta__EdgeCountInGraph, Meta__EdgeCountTotal, Meta__NodeCountInGraph, Meta__NodeCountTotal, MetaEnd, MetaStart, Value, DataStart, DataEnd
+        ArrayOfGraphsStart, ArrayOfGraphsEnd, ArrayOfEdgesStart, ArrayOfEdgesEnd, ArrayOfNodesStart, ArrayOfNodesEnd, ArrayOfPortsStart, ArrayOfPortsEnd, ArrayOfLabelEntriesStart, ArrayOfLabelEntriesEnd, ArrayOfEndpointsStart, ArrayOfEndpointsEnd, ArrayOfLabelEntryStart, ArrayOfLabelEntryEnd,
+
+        ConnectedJsonStart, ConnectedJsonEnd, ConnectedJson__Canonical, ConnectedJson__VersionDate, ConnectedJson__VersionNumber,
+
+        EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, EdgeType, NodeId, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Value, DataStart, DataEnd
     }
 
     enum CommaState {First, Container, Key}
@@ -58,6 +62,28 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
     @Override
     public void baseUri(String baseUri) {
         onCj(CjEvent.BaseUri, baseUri);
+    }
+
+    @Override
+    public void connectedJsonEnd() {
+        onCj(CjEvent.ConnectedJsonEnd, null);
+    }
+
+    @Override
+    public void connectedJsonStart() {
+        onCj(CjEvent.ConnectedJsonStart, null);
+    }
+
+    public void connectedJson__canonical(boolean b) {
+        onCj(CjEvent.ConnectedJson__Canonical, b);
+    }
+
+    public void connectedJson__versionDate(String versionDate) {
+        onCj(CjEvent.ConnectedJson__VersionDate, versionDate);
+    }
+
+    public void connectedJson__versionNumber(String versionNumber) {
+        onCj(CjEvent.ConnectedJson__VersionNumber, versionNumber);
     }
 
     @Override
@@ -116,10 +142,6 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
 
     }
 
-    public void meta__canonical(boolean b) {
-        onCj(CjEvent.Meta__Canonical, b);
-    }
-
     @Override
     public void id(String id) {
         onCj(CjEvent.Id, id);
@@ -174,44 +196,6 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
     /** no newlines */
     public void logJson(String s) {
         buffer(s);
-    }
-
-    private void buffer(String s) {
-        if (buffering) {
-            bufCj.append(s);
-        } else {
-            System.out.print(s);
-        }
-    }
-
-    @Override
-    public void metaEnd() {
-        onCj(CjEvent.MetaEnd, null);
-    }
-
-    @Override
-    public void metaStart() {
-        onCj(CjEvent.MetaStart, null);
-    }
-
-    @Override
-    public void meta__edgeCountInGraph(long number) {
-        onCj(CjEvent.Meta__EdgeCountInGraph, number);
-    }
-
-    @Override
-    public void meta__edgeCountTotal(long number) {
-        onCj(CjEvent.Meta__EdgeCountTotal, number);
-    }
-
-    @Override
-    public void meta__nodeCountInGraph(long number) {
-        onCj(CjEvent.Meta__NodeCountInGraph, number);
-    }
-
-    @Override
-    public void meta__nodeCountTotal(long number) {
-        onCj(CjEvent.Meta__NodeCountTotal, number);
     }
 
     @Override
@@ -358,6 +342,11 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
     }
 
     @Override
+    public void onString(String s) throws JsonException {
+        onJson(JsonEvent.String, s);
+    }
+
+    @Override
     public void portEnd() {
         onCj(CjEvent.PortEnd, null);
     }
@@ -373,13 +362,16 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
     }
 
     @Override
-    public void onString(String s) throws JsonException {
-        onJson(JsonEvent.String, s);
-    }
-
-    @Override
     public void value(String value) {
         onCj(CjEvent.Value, value);
+    }
+
+    private void buffer(String s) {
+        if (buffering) {
+            bufCj.append(s);
+        } else {
+            System.out.print(s);
+        }
     }
 
 }

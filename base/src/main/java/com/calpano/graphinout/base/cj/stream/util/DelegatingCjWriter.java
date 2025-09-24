@@ -1,8 +1,8 @@
 package com.calpano.graphinout.base.cj.stream.util;
 
 import com.calpano.graphinout.base.cj.CjDirection;
-import com.calpano.graphinout.base.cj.ICjEdgeType;
 import com.calpano.graphinout.base.cj.CjType;
+import com.calpano.graphinout.base.cj.ICjEdgeType;
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.DelegatingJsonWriter;
 
@@ -22,6 +22,31 @@ public class DelegatingCjWriter extends DelegatingJsonWriter implements ICjWrite
     @Override
     public void baseUri(String baseUri) {
         forEachWriter(cjWriter -> cjWriter.baseUri(baseUri));
+    }
+
+    @Override
+    public void connectedJsonEnd() {
+        forEachWriter(ICjWriter::connectedJsonEnd);
+    }
+
+    @Override
+    public void connectedJsonStart() {
+        forEachWriter(ICjWriter::connectedJsonStart);
+    }
+
+    @Override
+    public void connectedJson__canonical(boolean b) {
+        forEachWriter(cjWriter -> cjWriter.connectedJson__canonical(b));
+    }
+
+    @Override
+    public void connectedJson__versionDate(String s) {
+        forEachWriter(cjWriter -> cjWriter.connectedJson__versionDate(s));
+    }
+
+    @Override
+    public void connectedJson__versionNumber(String s) {
+        forEachWriter(cjWriter -> cjWriter.connectedJson__versionNumber(s));
     }
 
     @Override
@@ -75,11 +100,6 @@ public class DelegatingCjWriter extends DelegatingJsonWriter implements ICjWrite
     }
 
     @Override
-    public void meta__canonical(boolean b) {
-        forEachWriter(cjWriter -> cjWriter.meta__canonical(b));
-    }
-
-    @Override
     public void id(String id) {
         forEachWriter(cjWriter -> cjWriter.id(id));
     }
@@ -127,36 +147,6 @@ public class DelegatingCjWriter extends DelegatingJsonWriter implements ICjWrite
     @Override
     public void listStart(CjType cjType) {
         forEachWriter(cjWriter -> cjWriter.listStart(cjType));
-    }
-
-    @Override
-    public void metaEnd() {
-        forEachWriter(ICjWriter::metaEnd);
-    }
-
-    @Override
-    public void metaStart() {
-        forEachWriter(ICjWriter::metaStart);
-    }
-
-    @Override
-    public void meta__edgeCountInGraph(long number) {
-        forEachWriter(cjWriter -> cjWriter.meta__edgeCountInGraph(number));
-    }
-
-    @Override
-    public void meta__edgeCountTotal(long number) {
-        forEachWriter(cjWriter -> cjWriter.meta__edgeCountTotal(number));
-    }
-
-    @Override
-    public void meta__nodeCountInGraph(long number) {
-        forEachWriter(cjWriter -> cjWriter.meta__nodeCountInGraph(number));
-    }
-
-    @Override
-    public void meta__nodeCountTotal(long number) {
-        forEachWriter(cjWriter -> cjWriter.meta__nodeCountTotal(number));
     }
 
     @Override

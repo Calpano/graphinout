@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
-import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjHasLabelMutable;
 import com.calpano.graphinout.base.cj.element.ICjLabelMutable;
 
@@ -12,20 +11,18 @@ public abstract class CjHasDataAndLabelElement extends CjHasDataElement implemen
 
     @Nullable CjLabelElement labelElement;
 
-    CjHasDataAndLabelElement(@Nullable CjElement parent) {
-        super(parent);
-    }
-
-    @Override
-    public void label(Consumer<ICjLabelMutable> label) {
-        this.labelElement = new CjLabelElement(this);
-        label.accept(labelElement);
-    }
-
     @Nullable
     @Override
     public CjLabelElement label() {
         return labelElement;
+    }
+
+    @Override
+    public void setLabel(Consumer<ICjLabelMutable> label) {
+        if (this.labelElement == null) {
+            this.labelElement = new CjLabelElement();
+        }
+        label.accept(labelElement);
     }
 
 

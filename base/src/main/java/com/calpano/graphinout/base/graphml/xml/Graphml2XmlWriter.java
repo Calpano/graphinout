@@ -78,7 +78,7 @@ public class Graphml2XmlWriter implements GraphmlWriter {
 
     @Override
     public void edgeStart(IGraphmlEdge edge) throws IOException {
-        boolean isDirectedInGraph = graphStack.peek().isDirectedEdges();
+        boolean isDirectedInGraph = IGraphmlGraph.EdgeDefault.isDirected(graphStack.peek().edgeDefault());
         xmlWriter.lineBreak();
         Map<String, String> allAttributesNormalized = edge.xmlPlusGraphmlAttributesNormalized();
         if (edge.directed() != null) {

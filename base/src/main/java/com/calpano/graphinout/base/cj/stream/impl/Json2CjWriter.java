@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 
@@ -119,7 +120,7 @@ public class Json2CjWriter implements JsonWriter {
             maybeEndData();
         } else {
             CjType cjType = parseStack.peekCjType();
-            if(cjType == CjType.ArrayOfLabelEntries) {
+            if (cjType == CjType.ArrayOfLabelEntries) {
                 cjWriter.labelEnd();
             }
             cjWriter.listEnd(cjType);
@@ -139,8 +140,8 @@ public class Json2CjWriter implements JsonWriter {
             }
             CjType cjType = CjType.findExactlyOne(expected, JsonType.Array);
             parseStack.push(cjType);
-            if(cjType == CjType.ArrayOfLabelEntries) {
-               cjWriter.labelStart();
+            if (cjType == CjType.ArrayOfLabelEntries) {
+                cjWriter.labelStart();
             }
             cjWriter.listStart(cjType);
         }
@@ -175,10 +176,10 @@ public class Json2CjWriter implements JsonWriter {
                 case Endpoint -> cjWriter.endpointEnd();
                 case Port -> cjWriter.portEnd();
                 case Graph -> cjWriter.graphEnd();
-                case Meta -> cjWriter.metaEnd();
+                case ConnectedJson -> cjWriter.connectedJsonEnd();
                 case ArrayOfLabelEntries -> cjWriter.labelEnd();
                 case LabelEntry -> cjWriter.labelEntryEnd();
-                case RootObject, ConnectedJson -> {
+                case RootObject -> {
                     // do nothing
                 }
                 default -> throw new IllegalStateException("Unexpected CJ type " + cjType + " on stack.");
@@ -207,8 +208,8 @@ public class Json2CjWriter implements JsonWriter {
                 case Endpoint -> cjWriter.endpointStart();
                 case ArrayOfLabelEntries -> cjWriter.labelStart();
                 case LabelEntry -> cjWriter.labelEntryStart();
-                case Meta -> cjWriter.metaStart();
-                case RootObject, ConnectedJson, Data -> {
+                case ConnectedJson -> cjWriter.connectedJsonStart();
+                case RootObject, Data -> {
                     // do nothing
                 }
                 default -> throw new IllegalStateException("Unexpected CJ type " + cjType + " on stack.");
@@ -246,8 +247,8 @@ public class Json2CjWriter implements JsonWriter {
             maybeEndData();
         } else {
             // are we in Canonical?
-            if (parseStack.peekCjType() == CjType.Meta) {
-                cjWriter.meta__canonical(b);
+            if (parseStack.peekCjType() == CjType.ConnectedJson) {
+                cjWriter.connectedJson__canonical(b);
             } else {
                 throw new IllegalStateException("Unexpected boolean value '" + b + "' in CJ.");
             }
@@ -330,12 +331,6 @@ public class Json2CjWriter implements JsonWriter {
         }
     }
 
-    public void reset() {
-        parseStack.clear();
-        parseStack.expectedCjTypes.clear();
-        parseStack.expectedCjTypes.add(CjType.RootObject);
-    }
-
     @Override
     public void onString(String s) throws JsonException {
         if (parseStack.isInJson()) {
@@ -344,9 +339,8 @@ public class Json2CjWriter implements JsonWriter {
             maybeEndData();
         } else {
             // FIXME handle strings, if we expect them
-            if( parseStack.expectedCjTypes.size() == 1) {
+            if (parseStack.expectedCjTypes.size() == 1) {
                 // we know how to interpret it
-                // FIXME interpret
                 CjType expect = parseStack.expectedCjTypes.iterator().next();
                 switch (expect) {
                     // document level
@@ -354,13 +348,10 @@ public class Json2CjWriter implements JsonWriter {
                         // TODO ...
                     }
                     case BaseUri -> cjWriter.baseUri(s);
-                    case ConnectedJson__VersionDate -> {}
-                    case ConnectedJson__VersionId -> {}
-                    case Meta__Canonical -> cjWriter.meta__canonical(Boolean.parseBoolean(s));
-                    case Meta__EdgeCountInGraph -> cjWriter.meta__edgeCountInGraph(Long.parseLong(s));
-                    case Meta__EdgeCountTotal -> cjWriter.meta__edgeCountTotal(Long.parseLong(s));
-                    case Meta__NodeCountInGraph -> cjWriter.meta__nodeCountInGraph(Long.parseLong(s));
-                    case Meta__NodeCountTotal -> cjWriter.meta__nodeCountTotal(Long.parseLong(s));
+                    case ConnectedJson__VersionDate -> cjWriter.connectedJson__versionDate(s);
+                    case ConnectedJson__VersionNumber -> cjWriter.connectedJson__versionNumber(s);
+                    // look how tolerant we are
+                    case ConnectedJson__Canonical -> cjWriter.connectedJson__canonical(Boolean.parseBoolean(s));
                     // all
                     case Id -> cjWriter.id(s);
                     // label
@@ -374,12 +365,19 @@ public class Json2CjWriter implements JsonWriter {
                     case EdgeTypeNodeId -> cjWriter.edgeType(ICjEdgeType.of(CjEdgeTypeSource.Node, s));
                     case EdgeTypeString -> cjWriter.edgeType(ICjEdgeType.of(CjEdgeTypeSource.String, s));
                     case EdgeTypeUri -> cjWriter.edgeType(ICjEdgeType.of(CjEdgeTypeSource.URI, s));
-                    default -> throw new UnsupportedOperationException("TODO implement string interpretation for " + expect + " in CJ.");
+                    default ->
+                            throw new UnsupportedOperationException("TODO implement string interpretation for " + expect + " in CJ.");
                 }
             } else {
-                throw new IllegalStateException("Ambiguous string value '" + s + "' in CJ. Expecting " + parseStack.expectedCjTypes() );
+                throw new IllegalStateException("Ambiguous string value '" + s + "' in CJ. Expecting " + parseStack.expectedCjTypes());
             }
         }
+    }
+
+    public void reset() {
+        parseStack.clear();
+        parseStack.expectedCjTypes.clear();
+        parseStack.expectedCjTypes.add(CjType.RootObject);
     }
 
     private void maybeEndData() {
@@ -391,13 +389,10 @@ public class Json2CjWriter implements JsonWriter {
 
     private void onCjNumber(Number number) {
         CjType cjType = parseStack.expectedCjType(JsonType.Number);
-        switch (cjType) {
-            case CjType.Id -> cjWriter.id(number.toString());
-            case CjType.Meta__NodeCountTotal -> cjWriter.meta__nodeCountTotal(number.longValue());
-            case CjType.Meta__EdgeCountTotal -> cjWriter.meta__edgeCountTotal(number.longValue());
-            case CjType.Meta__NodeCountInGraph -> cjWriter.meta__nodeCountInGraph(number.longValue());
-            case CjType.Meta__EdgeCountInGraph -> cjWriter.meta__edgeCountInGraph(number.longValue());
-            default -> throw new IllegalStateException("Unreasonable expectations. You expect " + cjType + " but why?");
+        if (Objects.requireNonNull(cjType) == CjType.Id) {
+            cjWriter.id(number.toString());
+        } else {
+            throw new IllegalStateException("Unreasonable expectations. You expect " + cjType + " but why?");
         }
         //parseStack.stack.pop();
     }

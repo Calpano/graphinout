@@ -4,14 +4,12 @@ import com.calpano.graphinout.base.cj.stream.ICjWriter;
 
 import javax.annotation.Nullable;
 
-import static java.util.Optional.ofNullable;
-
 
 /**
  * The part of a CJ document which can be sent in one go. Memory requirements for all data in this chunk are expected to
  * be below 50 MB.
  */
-public interface ICjDocumentChunk extends ICjHasData {
+public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
 
     @Nullable
     String baseUri();
@@ -21,7 +19,8 @@ public interface ICjDocumentChunk extends ICjHasData {
 
     default void fireStartChunk(ICjWriter cjWriter) {
         cjWriter.documentStart();
-        ofNullable(baseUri()).ifPresent(cjWriter::baseUri);
+        cjWriter.maybe(baseUri(), cjWriter::baseUri);
+        cjWriter.maybe(connectedJson(), cj -> cj.fire(cjWriter));
         fireDataMaybe(cjWriter);
     }
 

@@ -12,6 +12,15 @@ public enum GioDataType {
     typeDouble("double", double.class), //
     typeString("string", String.class);
 
+    public static GioDataType fromGraphmlName(String graphmlName) {
+        for (GioDataType d : values()) {
+            if (d.graphmlName.equals(graphmlName)) {
+                return d;
+            }
+        }
+        throw new IllegalArgumentException("Could not interpret '" + graphmlName + "' as GioDataType");
+    }
+
     public final Class<?> clazz;
 
     public String graphmlName() {

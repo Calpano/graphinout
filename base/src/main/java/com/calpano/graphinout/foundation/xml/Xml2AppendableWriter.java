@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Map;
 
+import static java.util.Map.Entry.comparingByKey;
+
 /**
  * Simple XmlWriter implementation that writes to a StringWriter
  */
@@ -88,7 +90,7 @@ public class Xml2AppendableWriter implements XmlWriter {
         maybeWriteOpeningTagClosingAngleBracket();
         appendable.append("<");
         appendable.append(name);
-        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+        for (Map.Entry<String, String> entry : attributes.entrySet().stream().sorted(comparingByKey()).toList()) {
             appendable.append(" ");
             appendable.append(entry.getKey());
             appendable.append("=\"");

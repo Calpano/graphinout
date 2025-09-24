@@ -13,8 +13,9 @@ public class GraphmlDataBuilder extends GraphmlElementWithIdBuilder<GraphmlDataB
         return new GraphmlData(id, attributes, value, containsRawXml, key);
     }
 
-    public void containsRawXml(boolean containsRawXml) {
+    public GraphmlDataBuilder containsRawXml(boolean containsRawXml) {
         this.containsRawXml = containsRawXml;
+        return this;
     }
 
     public GraphmlDataBuilder key(String key) {

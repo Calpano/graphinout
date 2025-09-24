@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.ObjIntConsumer;
 
-public interface IJsonArray extends IJsonValue {
+public interface IJsonArray extends IJsonContainer {
 
     default void fire(JsonWriter jsonWriter) {
         jsonWriter.arrayStart();
@@ -40,18 +40,11 @@ public interface IJsonArray extends IJsonValue {
 
     default boolean isArray() {return true;}
 
-    default boolean isEmpty() {
-        return size() == 0;
-    }
-
     default boolean isObject() {return false;}
 
-    default boolean isPrimitive() {return false;}
 
     default JsonType jsonType() {
         return JsonType.Array;
     }
-
-    int size();
 
 }

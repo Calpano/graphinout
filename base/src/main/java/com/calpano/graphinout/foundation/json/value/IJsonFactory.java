@@ -9,7 +9,7 @@ public interface IJsonFactory {
 
     IJsonArray createArray();
 
-    IAppendableJsonArray createArrayAppendable();
+    IJsonArrayAppendable createArrayAppendable();
 
     /**
      * Create JSON Number
@@ -71,9 +71,26 @@ public interface IJsonFactory {
      */
     IJsonPrimitive createNull();
 
+    default IJsonValue createNumber(Number value) {
+        if (value instanceof BigDecimal) {
+            return createBigDecimal((BigDecimal) value);
+        } else if (value instanceof BigInteger) {
+            return createBigInteger((BigInteger) value);
+        } else if (value instanceof Double) {
+            return createDouble(value.doubleValue());
+        } else if (value instanceof Float) {
+            return createFloat(value.floatValue());
+        } else if (value instanceof Long) {
+            return createLong(value.longValue());
+        } else if (value instanceof Integer) {
+            return createInteger(value.intValue());
+        }
+        throw new IllegalArgumentException("Unsupported type: " + value.getClass().getName());
+    }
+
     IJsonObject createObject();
 
-    IAppendableJsonObject createObjectAppendable();
+    IJsonObjectAppendable createObjectAppendable();
 
     /**
      * JSON String

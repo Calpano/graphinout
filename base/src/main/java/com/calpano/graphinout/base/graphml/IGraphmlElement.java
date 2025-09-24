@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.graphml;
 
+import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +42,11 @@ public interface IGraphmlElement extends IXmlElement {
      * <a href="http://graphml.graphdrawing.org/specification.html">here</a>, bottom of page
      */
     default Map<String, String> customXmlAttributes() {
-        Map<String, String> attributes = new HashMap<>(xmlAttributes());
+        @Nullable Map<String, String> map = xmlAttributes();
+        if (map == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, String> attributes = new HashMap<>(map);
         graphmlAttributes((n, vs) -> attributes.remove(n));
         return attributes;
     }

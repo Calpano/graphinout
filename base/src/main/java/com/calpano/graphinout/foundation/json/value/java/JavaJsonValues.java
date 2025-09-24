@@ -1,8 +1,12 @@
 package com.calpano.graphinout.foundation.json.value.java;
 
+import com.calpano.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
+import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
+import com.calpano.graphinout.foundation.json.value.IJsonValueMutable;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -24,11 +28,23 @@ public class JavaJsonValues {
             return JavaJsonFactory.INSTANCE.createNull();
         }
         if (isArray(javaJson)) {
-            return JavaJsonAppendableArray.of((List) javaJson);
+            return JavaJsonArray.of((List) javaJson);
         } else if (isObject(javaJson)) {
-            return JavaJsonAppendableObject.of((Map) javaJson);
+            return JavaJsonObject.of((Map) javaJson);
         }
         return JavaJsonPrimitive.of(javaJson);
+    }
+
+    public static IJsonValue ofJsonString(String jsonString) {
+        // parse
+        JsonReaderImpl reader = new JsonReaderImpl();
+        Json2JavaJsonWriter w = new Json2JavaJsonWriter();
+        try {
+            reader.readStandardJsonString(jsonString, w);
+            return w.jsonValue();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

@@ -23,6 +23,7 @@ public class TestFileProvider {
 
     public static final String SRC_TEST_RESOURCES = "../base/src/test/resources/";
     public static final Set<String> FILTER_GRAPHML = Set.of(".graphml.xml", ".graphml");
+    public static final Set<String> EXTENSIONS_CJ_JSON = Set.of(".cj.json", ".cj");
     static final List<SingleInputSourceOfString> jsonInputs = List.of( //
             inputSource("number", "{\"foo\":42}"),//
             inputSource("string", "{\"foo\":\"bar\"}"),//
@@ -71,17 +72,21 @@ public class TestFileProvider {
 
     /** Canonical and extended */
     public static Stream<Arguments> cjFilesAll() throws Exception {
-        return files(SRC_TEST_RESOURCES + "json/cj", Set.of(".cj.json", ".cj"));
+        return files(SRC_TEST_RESOURCES + "json/cj", EXTENSIONS_CJ_JSON);
     }
 
     /** Only canonical */
     public static Stream<Arguments> cjFilesCanonical() throws Exception {
-        return files(SRC_TEST_RESOURCES + "json/cj/canonical", Set.of(".cj.json", ".cj"));
+        return files(SRC_TEST_RESOURCES + "json/cj/canonical", EXTENSIONS_CJ_JSON);
+    }
+
+    public static Stream<Arguments> cjResourcesCanonical() throws Exception {
+        return resources(  "json/cj/canonical", EXTENSIONS_CJ_JSON);
     }
 
     /** Only extended */
     public static Stream<Arguments> cjFilesExtended() throws Exception {
-        return files(SRC_TEST_RESOURCES + "json/cj/canonical", Set.of(".cj.json", ".cj"));
+        return files(SRC_TEST_RESOURCES + "json/cj/canonical", EXTENSIONS_CJ_JSON);
     }
 
     /**
@@ -135,7 +140,7 @@ public class TestFileProvider {
     }
 
     public static Stream<Arguments> json5InputSources() {
-        return inputsJson5.stream().map(is->Arguments.of(is.name(),is));
+        return inputsJson5.stream().map(is -> Arguments.of(is.name(), is));
     }
 
     public static Stream<Arguments> jsonFiles() throws Exception {
@@ -144,6 +149,18 @@ public class TestFileProvider {
 
     public static Stream<SingleInputSourceOfString> jsonInputSources() {
         return jsonInputs.stream();
+    }
+
+    private static Stream<Arguments> resources(String resourceRootPath, Set<String> allowedExtensions) throws IOException {
+        Path testResourcesPath = Paths.get(resourceRootPath);
+        int baseLen = testResourcesPath.toString().length() + 1;
+        return getAllTestResourcePaths() //
+                .filter(path -> path.startsWith(resourceRootPath))//
+                .filter(path -> hasExtension(allowedExtensions.toArray(new String[0])).test(path)) //
+                .map(p -> Arguments.of( //
+                        // pretty name
+                        p.substring(baseLen).replace('\\', '/'), //
+                        p));
     }
 
     /** includes all graphml files */

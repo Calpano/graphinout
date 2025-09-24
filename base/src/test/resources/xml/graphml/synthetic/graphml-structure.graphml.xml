@@ -32,9 +32,9 @@
     <!--  graph with subgraph -->
     <graph id="id--graph5" edgedefault="undirected">
         <node id="id--graph5-node1">
-            <graph id="id--graph5-node1-graph1">
+            <graph id="id--graph5-node1-graph1" edgedefault="directed">
                 <node id="id--graph5-node1-graph1-node1">
-                    <graph id="id--graph5-node1-graph1-node1-graph1">
+                    <graph id="id--graph5-node1-graph1-node1-graph1" edgedefault="directed">
                         <node id="id--graph5-node1-graph1-node1-graph1-node1"/>
                     </graph>
                 </node>

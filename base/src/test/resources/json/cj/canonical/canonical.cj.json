@@ -1,15 +1,12 @@
 {
   "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
   "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
-
+  "connectedJson": {
+    "canonical": true
+  },
   "graphs": [
     {
       "id": "g1",
-      "meta": {
-        "canonical": true,
-        "edgeCountInGraph": 2,
-        "nodeCountInGraph": 3
-      },
       "label": [
         {
           "value": "Simple Social Network"

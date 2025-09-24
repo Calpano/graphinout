@@ -165,7 +165,9 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
 
     @Override
     public void startGraph(GioGraph gioGraph) throws IOException {
-        GraphmlGraphBuilder builder = IGraphmlGraph.builder().id(gioGraph.getId()).edgeDefault(gioGraph.isEdgedefaultDirected() ? IGraphmlGraph.EdgeDefault.directed : IGraphmlGraph.EdgeDefault.undirected);
+        GraphmlGraphBuilder builder = IGraphmlGraph.builder() //
+                .id(gioGraph.getId()) //
+                .edgeDefault(gioGraph.isEdgedefaultDirected() ? IGraphmlGraph.EdgeDefault.directed : IGraphmlGraph.EdgeDefault.undirected);
         desc(gioGraph, builder);
         graphmlWriter.graphStart(builder.build());
     }

@@ -1,6 +1,5 @@
 package com.calpano.graphinout.base.cj;
 
-import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.foundation.json.JsonConstants;
 import com.calpano.graphinout.foundation.json.JsonType;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -41,7 +40,11 @@ public enum CjType {
     RootObject(JsonType.Object),//
     JsonSchemaId(JsonType.String),//
     JsonSchemaLocation(JsonType.String),//
-    ConnectedJson(JsonType.Object), ConnectedJson__VersionId(JsonType.String), ConnectedJson__VersionDate(JsonType.String), BaseUri(JsonType.String),
+    ConnectedJson(JsonType.Object), //
+    ConnectedJson__VersionNumber(JsonType.String),//
+    ConnectedJson__VersionDate(JsonType.String),//
+    ConnectedJson__Canonical(JsonType.Boolean),//
+    BaseUri(JsonType.String),//
 
     /* This type is a Label. A Label really *is* an array or label entries. */
     ArrayOfLabelEntries(JsonType.Array),//
@@ -52,11 +55,6 @@ public enum CjType {
     ArrayOfGraphs(JsonType.Array),//
     Graph(JsonType.Object),//
     Meta(JsonType.Object),//
-    Meta__Canonical(JsonType.Boolean),//
-    Meta__NodeCountTotal(JsonType.Number),//
-    Meta__EdgeCountTotal(JsonType.Number),//
-    Meta__NodeCountInGraph(JsonType.Number),//
-    Meta__EdgeCountInGraph(JsonType.Number),//
 
     ArrayOfNodes(JsonType.Array),//
     Node(JsonType.Object),//
@@ -119,8 +117,9 @@ public enum CjType {
         RootObject.property(JsonConstants.DOLLAR_ID).is(JsonSchemaId);
         RootObject.property(JsonConstants.DOLLAR_SCHEMA).is(JsonSchemaLocation);
         RootObject.property(ROOT__CONNECTED_JSON).is(ConnectedJson);
-        ConnectedJson.property(CjConstants.VERSION_NUMBER).is(ConnectedJson__VersionId);
-        ConnectedJson.property(CjConstants.VERSION_DATE).is(ConnectedJson__VersionDate);
+        ConnectedJson.property(CjConstants.CONNECTED_JSON__VERSION_NUMBER).is(ConnectedJson__VersionNumber);
+        ConnectedJson.property(CjConstants.CONNECTED_JSON__VERSION_DATE).is(ConnectedJson__VersionDate);
+        ConnectedJson.property(CjConstants.CONNECTED_JSON__CANONICAL).is(ConnectedJson__Canonical);
         RootObject.property(ROOT__BASE_URI).is(BaseUri);
         RootObject.property(GRAPHS).is(ArrayOfGraphs);
         RootObject.property(DATA).is(Data);
@@ -133,11 +132,6 @@ public enum CjType {
         Graph.property(GRAPH__NODES).is(ArrayOfNodes);
         Graph.property(GRAPH__EDGES).is(ArrayOfEdges);
         Graph.property(GRAPHS).is(ArrayOfGraphs);
-        Meta.property(CjConstants.META__CANONICAL).is(CjType.Meta__Canonical);
-        Meta.property(CjConstants.META__NODE_COUNT_IN_GRAPH).is(CjType.Meta__NodeCountInGraph);
-        Meta.property(CjConstants.META__NODE_COUNT_TOTAL).is(CjType.Meta__NodeCountTotal);
-        Meta.property(CjConstants.META__EDGE_COUNT_IN_GRAPH).is(CjType.Meta__EdgeCountInGraph);
-        Meta.property(CjConstants.META__EDGE_COUNT_TOTAL).is(CjType.Meta__EdgeCountTotal);
 
         ArrayOfNodes.item(Node);
         Node.property(ID).is(Id);
@@ -201,66 +195,6 @@ public enum CjType {
         }
         return found;
     }
-
-    // TODO remove or move to Array?
-    public void fireEnd(ICjWriter cjWriter) {
-        assert isContainer() : "This event is not a container";
-        switch (this) {
-            case RootObject -> cjWriter.documentEnd();
-            case Edge -> cjWriter.edgeEnd();
-            case ArrayOfLabelEntries -> cjWriter.labelEnd();
-            case LabelEntry -> cjWriter.labelEntryEnd();
-            case Graph -> cjWriter.graphEnd();
-            case Meta -> cjWriter.metaEnd();
-            case Node -> cjWriter.nodeEnd();
-            case Port -> cjWriter.portEnd();
-            case Endpoint -> cjWriter.endpointEnd();
-            case Data -> cjWriter.jsonDataEnd();
-            default -> throw new IllegalStateException("Unexpected type: " + this);
-        }
-    }
-
-    // TODO remove or move to Array?
-    public void fireStart(ICjWriter cjWriter) {
-        assert isContainer() : "This event is not a container";
-        switch (this) {
-            case RootObject -> cjWriter.documentStart();
-            case Edge -> cjWriter.edgeStart();
-            case ArrayOfLabelEntries -> cjWriter.labelStart();
-            case LabelEntry -> cjWriter.labelEntryStart();
-            case Graph -> cjWriter.graphStart();
-            case Meta -> cjWriter.metaStart();
-            case Node -> cjWriter.nodeStart();
-            case Port -> cjWriter.portStart();
-            case Endpoint -> cjWriter.endpointStart();
-            case Data -> cjWriter.jsonDataStart();
-            default -> throw new IllegalStateException("Unexpected type: " + this);
-        }
-    }
-
-    // TODO remove or move?
-    public void fireValue(ICjWriter cjWriter, Object value) {
-        switch (this) {
-            case BaseUri -> cjWriter.baseUri((String) value);
-            case Language -> cjWriter.language((String) value);
-            case Value -> cjWriter.value((String) value);
-            case Id -> cjWriter.id((String) value);
-            case Meta__NodeCountTotal -> cjWriter.meta__nodeCountTotal((Long) value);
-            case Meta__EdgeCountTotal -> cjWriter.meta__edgeCountTotal((Long) value);
-            case Meta__NodeCountInGraph -> cjWriter.meta__nodeCountInGraph((Long) value);
-            case Meta__EdgeCountInGraph -> cjWriter.meta__edgeCountInGraph((Long) value);
-            case EdgeTypeUri -> cjWriter.edgeType((ICjEdgeType) value);
-            case EdgeTypeNodeId -> cjWriter.edgeType((ICjEdgeType) value);
-            case EdgeTypeString -> cjWriter.edgeType((ICjEdgeType) value);
-            case Direction -> cjWriter.direction((CjDirection) value);
-            case NodeId -> cjWriter.nodeId((String) value);
-            case PortId -> cjWriter.portId((String) value);
-            case Meta__Canonical -> cjWriter.meta__canonical(true);
-            case JsonSchemaId, JsonSchemaLocation, ConnectedJson, ConnectedJson__VersionId,
-                 ConnectedJson__VersionDate -> throw new IllegalStateException("TODO handle Unexpected value: " + this);
-        }
-    }
-
 
     public boolean hasJsonType(JsonType jsonType) {
         for (JsonType type : jsonTypes) {

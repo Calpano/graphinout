@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.calpano.graphinout.foundation.util.Nullables.nonNullOrDefault;
+
 
 /**
  * @author rbaba
@@ -42,7 +44,7 @@ public class GraphmlGraph extends GraphmlElementWithDescAndId implements IGraphm
     }
 
     public EdgeDefault edgeDefault() {
-        return edgedefault == null ? EdgeDefault.undirected : edgedefault;
+        return nonNullOrDefault(edgedefault, EdgeDefault.DEFAULT_EDGE_DEFAULT);
     }
 
     @Override
@@ -52,13 +54,13 @@ public class GraphmlGraph extends GraphmlElementWithDescAndId implements IGraphm
         if (!super.equals(o)) return false;
         IGraphmlGraph that = (IGraphmlGraph) o;
         return IGraphmlElementWithDescAndId.isEqual(this, that) //
-                && edgedefault == that.edgeDefault()  //
+                && edgeDefault() == that.edgeDefault()  //
                 && Objects.equals(locator, that.locator());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), edgedefault, id, locator);
+        return Objects.hash(super.hashCode(), edgeDefault(), id, locator);
     }
 
     @Override
@@ -68,7 +70,7 @@ public class GraphmlGraph extends GraphmlElementWithDescAndId implements IGraphm
 
     @Override
     public String toString() {
-        return "GraphmlGraph{" + "edgeDefault=" + edgedefault + ", id='" + id + '\'' + ", locator=" + locator + ", desc=" + desc() + ", custom=" + customXmlAttributes() + '}';
+        return "GraphmlGraph{" + "edgeDefault=" + edgeDefault() + ", id='" + id + '\'' + ", locator=" + locator + ", desc=" + desc() + ", custom=" + customXmlAttributes() + '}';
     }
 
 }

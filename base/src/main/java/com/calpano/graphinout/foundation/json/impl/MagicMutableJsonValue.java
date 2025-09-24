@@ -2,9 +2,10 @@ package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
-import com.calpano.graphinout.foundation.json.value.IAppendableJsonArray;
-import com.calpano.graphinout.foundation.json.value.IAppendableJsonObject;
+import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
+import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
+import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 
 import javax.annotation.Nullable;
@@ -14,6 +15,12 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class MagicMutableJsonValue implements IMagicMutableJsonValue {
+
+    public IJsonPrimitive asPrimitive() throws ClassCastException {
+        if(value==null) return null;
+        return value.asPrimitive();
+    }
+
 
     private final IJsonFactory factory;
     /** null = empty, which is different from a JSON null */
@@ -37,13 +44,13 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
             // depends on current type
             switch (this.jsonType().valueType()) {
                 case Array -> {
-                    IAppendableJsonArray array = (IAppendableJsonArray) this.value.asArray();
+                    IJsonArrayAppendable array = (IJsonArrayAppendable) this.value.asArray();
                     array.add(value);
                 }
                 case Primitive -> {
                     // magic cast to array
                     IJsonValue prevValue = this.value;
-                    IAppendableJsonArray array = factory.createArrayAppendable();
+                    IJsonArrayAppendable array = factory.createArrayAppendable();
                     array.add(prevValue);
                     array.add(value);
                     this.value = array;
@@ -57,6 +64,15 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
     @Override
     public void addProperty(List<String> propertySteps, IJsonValue value) {
         appendMerge(propertySteps, value);
+    }
+
+    @Override
+    public void set(IJsonValue value) throws IllegalStateException {
+        if(this.isEmpty()) {
+            this.value = value;
+        } else {
+            throw new IllegalStateException("Cannot set value on non-empty value");
+        }
     }
 
     @Override
@@ -131,6 +147,7 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
         return value;
     }
 
+
     @Override
     public Set<String> keys() {
         if (value == null) return Collections.emptySet();
@@ -163,8 +180,8 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
         }
     }
 
-    private MagicMutableJsonValue magicToObjectWithProperty(String propertyStep, Consumer<IAppendableJsonObject> objectConsumer) {
-        IAppendableJsonObject appendableObject = factory.createObjectAppendable();
+    private MagicMutableJsonValue magicToObjectWithProperty(String propertyStep, Consumer<IJsonObjectAppendable> objectConsumer) {
+        IJsonObjectAppendable appendableObject = factory.createObjectAppendable();
         this.value = appendableObject;
         MagicMutableJsonValue leaf = new MagicMutableJsonValue(factory, null);
         objectConsumer.accept(appendableObject);
@@ -172,6 +189,14 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
         appendableObject.addProperty(propertyStep, leaf);
         return leaf;
     }
+
+    @Override
+    public void addProperty(String propertyKey, Consumer<IMagicMutableJsonValue> subValueConsumer) {
+        MagicMutableJsonValue leaf = new MagicMutableJsonValue(factory, null);
+        addProperty(propertyKey,leaf);
+        subValueConsumer.accept(leaf);
+    }
+
 
     private MagicMutableJsonValue navigateTo(String propertyKey) {
         if (this.isEmpty()) {
@@ -186,7 +211,7 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
                 }
                 case Object -> {
                     MagicMutableJsonValue leaf = new MagicMutableJsonValue(factory, null);
-                    ((IAppendableJsonObject) value).addProperty(propertyKey, leaf);
+                    ((IJsonObjectAppendable) value).addProperty(propertyKey, leaf);
                     return leaf;
                 }
                 case Array -> throw new IllegalStateException("Array cannot get property '" + propertyKey + "'");

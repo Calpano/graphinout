@@ -15,6 +15,11 @@ public class Json2StringWriter implements JsonWriter {
     private final StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter();
 
     @Override
+    public String toString() {
+        return jsonWriter.json();
+    }
+
+    @Override
     public void arrayEnd() throws JsonException {
         jsonWriter.arrayEnd();
     }

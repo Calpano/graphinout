@@ -3,8 +3,6 @@ package com.calpano.graphinout.base.cj.element;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
 
-import javax.annotation.Nullable;
-
 public interface ICjElement {
 
     default ICjDocumentMutable asDocument() {
@@ -39,8 +37,5 @@ public interface ICjElement {
 
     /** Fires this element, including start and end and its children. */
     void fire(ICjWriter cjWriter);
-
-    @Nullable
-    ICjElement parent();
 
 }

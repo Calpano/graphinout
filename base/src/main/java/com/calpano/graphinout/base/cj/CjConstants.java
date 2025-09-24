@@ -40,16 +40,12 @@ public class CjConstants {
     /** Label */
     public static final String VALUE = "value";
 
-    public static final String VERSION_DATE = "versionDate";
-    public static final String VERSION_NUMBER = "versionNumber";
+    public static final String CONNECTED_JSON__VERSION_DATE = "versionDate";
+    public static final String CONNECTED_JSON__VERSION_NUMBER = "versionNumber";
+    public static final String CONNECTED_JSON__CANONICAL = "canonical";
     public static final String ROOT__CONNECTED_JSON = "connectedJson";
     public static final String CJ_SCHEMA_LOCATION = "https://calpano.github.io/connected-json/_attachments/cj-schema.json";
     public static final String CJ_SCHEMA_ID = "https://j-s-o-n.org/schema/connected-json/5.0.0";
-    public static final String META__CANONICAL = "canonical";
-    public static final String META__NODE_COUNT_TOTAL = "nodeCountTotal";
-    public static final String META__EDGE_COUNT_TOTAL = "edgeCountTotal";
-    public static final String META__NODE_COUNT_IN_GRAPH = "nodeCountInGraph";
-    public static final String META__EDGE_COUNT_IN_GRAPH = "edgeCountInGraph";
 
     private CjConstants() {
         // hidden constructor

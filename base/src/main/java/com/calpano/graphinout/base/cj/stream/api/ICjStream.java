@@ -9,9 +9,11 @@ import com.calpano.graphinout.base.cj.element.ICjGraphChunkMutable;
 import com.calpano.graphinout.base.cj.element.ICjNodeChunk;
 import com.calpano.graphinout.base.cj.element.ICjNodeChunkMutable;
 
+import java.util.function.Consumer;
+
 /**
  * A coarse-granular streaming CJ API. Assumptions: data is small.
- *
+ * <p>
  * This is the API that should replace GioWriter.
  */
 public interface ICjStream {
@@ -26,6 +28,7 @@ public interface ICjStream {
 
     void documentEnd();
 
+    /** Next expect: 0...n graphs */
     void documentStart(ICjDocumentChunk document);
 
     void edgeEnd();

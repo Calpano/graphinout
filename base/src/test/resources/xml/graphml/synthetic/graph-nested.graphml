@@ -2,7 +2,7 @@
 <graphml>
     <graph edgedefault="directed" id="">
         <node id="node2-with-graph">
-            <graph>
+            <graph edgedefault="directed">
                 <node id="node-nested"/>
             </graph>
         </node>

@@ -39,8 +39,8 @@ public class CjValidator {
         builder.regularExpressionFactory(JoniRegularExpressionFactory.getInstance());
         SchemaValidatorsConfig config = builder.build();
 
-// Due to the mapping the schema will be retrieved from the classpath at classpath:schema/example-main.json.
-// If the schema data does not specify an $id the absolute IRI of the schema location will be used as the $id.
+        // Due to the mapping the schema will be retrieved from the classpath at classpath:schema/example-main.json.
+        // If the schema data does not specify an $id the absolute IRI of the schema location will be used as the $id.
         JsonSchema schema = jsonSchemaFactory.getSchema(SchemaLocation.of(Cj.SCHEMA_URL), config);
 
         // read input source to string

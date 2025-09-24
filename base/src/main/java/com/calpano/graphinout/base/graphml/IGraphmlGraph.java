@@ -8,14 +8,31 @@ import java.util.function.Supplier;
 
 public interface IGraphmlGraph extends IGraphmlElementWithDescAndId {
 
+
     /**
-     * The edgedefault attribute defines the default value of the edge attribute directed. The default value for
-     * directed is directed.
+     * Spec.html: "edgedefault (optional). The edgedefault attribute defines the default value of the edge attribute
+     * directed. The default value for directed is directed."
+     * <p>
+     * DTD: "edgedefault (directed|undirected) #REQUIRED"
+     * <p>
+     * Our interpretation: null = directed
      */
     enum EdgeDefault {
         /** the default */
-        directed, undirected
+        directed, undirected;
+
+        /** See {@link IGraphmlGraph#edgeDefault()} */
+        public static final EdgeDefault DEFAULT_EDGE_DEFAULT = directed;
+
+        public static boolean isDirected(@Nullable EdgeDefault edgeDefaultOrNull) {
+            return edgeDefaultOrNull == null || edgeDefaultOrNull == EdgeDefault.directed;
+        }
+
+        public String graphmlString() {
+            return name();
+        }
     }
+
 
     String ATTRIBUTE_EDGE_DEFAULT = "edgedefault";
 
@@ -23,16 +40,18 @@ public interface IGraphmlGraph extends IGraphmlElementWithDescAndId {
         return new GraphmlGraphBuilder();
     }
 
+    /**
+     * Spec.html: "edgedefault (optional). The edgedefault attribute defines the default value of the edge attribute
+     * directed. The default value for directed is directed."
+     * <p>
+     * DTD: "edgedefault (directed|undirected) #REQUIRED"
+     * <p>Our interpretation: null = directed
+     */
     EdgeDefault edgeDefault();
 
     default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
         name_value.accept(ATTRIBUTE_ID, this::id);
         name_value.accept(ATTRIBUTE_EDGE_DEFAULT, () -> edgeDefault().name());
-    }
-
-    default boolean isDirectedEdges() {
-        // default is directed for null
-        return edgeDefault() != EdgeDefault.undirected;
     }
 
     @Nullable

@@ -15,8 +15,8 @@
             {
               "id": "node-2-A",
               "ports": [
-                { "id": "node-2-A-A" },
-                { "id": "node-2-A-B" }
+                { "id": "port-2-A-A" },
+                { "id": "port-2-A-B" }
               ]
             }
           ]
@@ -25,8 +25,8 @@
       "edges": [
         {
           "endpoints": [
-            { "node": "node-1", "port": "node-1-A" },
-            { "node": "node-2", "port": "node-2-A-B" }
+            { "node": "node-1", "port": "port-1-A" },
+            { "node": "node-2", "port": "port-2-A-B" }
           ]
         }
       ]

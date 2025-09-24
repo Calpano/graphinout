@@ -1,12 +1,15 @@
 package com.calpano.graphinout.reader.graphml;
 
 
-import com.calpano.graphinout.foundation.TestFileUtil;
+import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
+import com.calpano.graphinout.base.cj.stream.util.LoggingCjWriter;
 import com.calpano.graphinout.base.graphml.xml.Graphml2XmlWriter;
+import com.calpano.graphinout.foundation.TestFileUtil;
 import com.calpano.graphinout.foundation.xml.Xml2StringWriter;
 import com.calpano.graphinout.foundation.xml.XmlAssert;
 import com.calpano.graphinout.foundation.xml.XmlTool;
-import com.calpano.graphinout.reader.graphml.cj.Cj2GraphmlWriter;
+import com.calpano.graphinout.reader.graphml.cj.CjDocument2Graphml;
+import com.calpano.graphinout.reader.graphml.cj.Graphml2CjDocument;
 import com.calpano.graphinout.reader.graphml.cj.Graphml2CjWriter;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  */
 public class Graphml2CjAndBackTest {
-
 
     /**
      * Verify the GraphMl files are valid XML
@@ -44,14 +46,11 @@ public class Graphml2CjAndBackTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlFiles")
-    @DisplayName("Test all GraphMl files as: XML->Graphml->Cj->Graphml->CJ")
-    void testAllXml_Graphml_Cj_Graphml_Xml(String displayPath, Path xmlFilePath) throws Exception {
+    @DisplayName("Test parse GraphMl files as: XML->Graphml->Cj")
+    void testAllXml_Graphml_Cj(String displayPath, Path xmlFilePath) throws Exception {
         // == OUT Pipeline
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xmlWriter);
-        /* receive CJ events -> send Graphml events  */
-        Cj2GraphmlWriter cj2GraphmlWriter = new Cj2GraphmlWriter(graphml2XmlWriter);
-        Graphml2CjWriter graphml2cjWriter = new Graphml2CjWriter(cj2GraphmlWriter);
+        Graphml2CjWriter graphml2cjWriter = new Graphml2CjWriter(new LoggingCjWriter(false));
         Xml2GraphmlWriter xml2GraphmlWriter = new Xml2GraphmlWriter(graphml2cjWriter);
 
         // == IN
@@ -69,6 +68,39 @@ public class Graphml2CjAndBackTest {
                 throw e;
             }
         }
+    }
+
+    @ParameterizedTest(name = "{index}: {0}")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlFiles")
+    @DisplayName("Test all GraphMl files as: XML->Graphml->Cj->Graphml->XML")
+    void testAllXml_Graphml_Cj_Graphml_Xml(String displayPath, Path xmlFilePath) throws Exception {
+        // == XML -> GraphML -> CJ doc
+        // GraphML -> CJ
+        Graphml2CjDocument graphml2cjStream = new Graphml2CjDocument();
+        Xml2GraphmlWriter xml2GraphmlWriter = new Xml2GraphmlWriter(graphml2cjStream);
+        // == IN
+        String xml_in = FileUtils.readFileToString(xmlFilePath.toFile(), UTF_8);
+        try {
+            XmlTool.parseAndWriteXml(xmlFilePath.toFile(), xml2GraphmlWriter);
+            if (TestFileUtil.isInvalid(xmlFilePath)) {
+                fail("Expected an exception on an invalid file");
+            }
+        } catch (Exception e) {
+            if (TestFileUtil.isInvalid(xmlFilePath)) {
+                // perfect, we failed on an invalid file
+                return;
+            } else {
+                throw e;
+            }
+        }
+        CjDocumentElement cjDoc = graphml2cjStream.resultDoc();
+
+        // ==  CJ doc -> Graphml -> XML
+        Xml2StringWriter xmlWriter = new Xml2StringWriter();
+        Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xmlWriter);
+        // CJ -> GraphML
+        CjDocument2Graphml cjDocument2Graphml = new CjDocument2Graphml(graphml2XmlWriter);
+        cjDocument2Graphml.writeDocumentToGraphml(cjDoc);
 
         String xml_out = xmlWriter.string();
         GraphmlAssert.xAssertThatIsSameGraphml(xml_out, xml_in);

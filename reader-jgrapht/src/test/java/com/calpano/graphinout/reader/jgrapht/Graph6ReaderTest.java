@@ -31,7 +31,6 @@ class Graph6ReaderTest extends AbstractReaderTest {
         GioReader gioReader = new Graph6Reader();
         // stream incoming test resource as XML to the logger
         ReaderTests.forEachReadableResource(gioReader, resourcePath -> {
-            Writer w = null;
             InMemoryOutputSink outputSink = OutputSink.createInMemory();
             try {
                 ReaderTests.readResourceToSink(gioReader, resourcePath, outputSink);

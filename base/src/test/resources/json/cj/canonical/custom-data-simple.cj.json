@@ -1,4 +1,8 @@
 {
+  "connectedJson": {
+    "versionDate": "2025-07-14",
+    "versionNumber": "5.0.0"
+  },
   "graphs": [
     {
       "nodes": [

@@ -2,11 +2,11 @@ package com.calpano.graphinout.foundation.json.stream.impl;
 
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
-import com.calpano.graphinout.foundation.json.value.IAppendableJsonArray;
-import com.calpano.graphinout.foundation.json.value.IAppendableJsonObject;
+import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
+import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
-import com.calpano.graphinout.foundation.json.value.java.JavaJsonAppendableArray;
-import com.calpano.graphinout.foundation.json.value.java.JavaJsonAppendableObject;
+import com.calpano.graphinout.foundation.json.value.java.JavaJsonArray;
+import com.calpano.graphinout.foundation.json.value.java.JavaJsonObject;
 import com.calpano.graphinout.foundation.json.value.java.JavaJsonPrimitive;
 
 import javax.annotation.Nullable;
@@ -24,12 +24,12 @@ public class Json2JavaJsonWriter implements JsonWriter {
 
     @Override
     public void arrayEnd() throws JsonException {
-        pop(IAppendableJsonArray.class);
+        pop(IJsonArrayAppendable.class);
     }
 
     @Override
     public void arrayStart() throws JsonException {
-        JavaJsonAppendableArray array = new JavaJsonAppendableArray();
+        JavaJsonArray array = new JavaJsonArray();
         attach(array);
         stack.push(array);
     }
@@ -51,12 +51,12 @@ public class Json2JavaJsonWriter implements JsonWriter {
 
     @Override
     public void objectEnd() throws JsonException {
-        pop(IAppendableJsonObject.class);
+        pop(IJsonObjectAppendable.class);
     }
 
     @Override
     public void objectStart() throws JsonException {
-        IAppendableJsonObject object = new JavaJsonAppendableObject();
+        IJsonObjectAppendable object = new JavaJsonObject();
         attach(object);
         stack.push(object);
     }
@@ -93,7 +93,7 @@ public class Json2JavaJsonWriter implements JsonWriter {
 
     @Override
     public void onKey(String key) throws JsonException {
-        assert stack.peek() instanceof IAppendableJsonObject;
+        assert stack.peek() instanceof IJsonObjectAppendable;
         stack.push(key);
     }
 
@@ -122,11 +122,11 @@ public class Json2JavaJsonWriter implements JsonWriter {
             root = value;
         } else {
             Object o = stack.peek();
-            if (o instanceof IAppendableJsonArray parent) {
+            if (o instanceof IJsonArrayAppendable parent) {
                 parent.add(value);
             } else {
                 String key = pop(String.class);
-                IAppendableJsonObject obj = (IAppendableJsonObject) stack.peek();
+                IJsonObjectAppendable obj = (IJsonObjectAppendable) stack.peek();
                 obj.addProperty(key, value);
             }
         }

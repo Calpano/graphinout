@@ -4,7 +4,8 @@ import java.util.function.Consumer;
 
 public interface ICjHasLabelMutable extends ICjHasLabel {
 
-    void label(Consumer<ICjLabelMutable> label);
+    /** at most one per element */
+    void setLabel(Consumer<ICjLabelMutable> label);
 
 
 }

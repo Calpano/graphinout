@@ -1,5 +1,6 @@
 package com.calpano.graphinout.base.graphml.impl;
 
+import com.calpano.graphinout.base.graphml.GraphmlDataType;
 import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
 import com.calpano.graphinout.base.graphml.IGraphmlDefault;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
@@ -9,6 +10,8 @@ import com.calpano.graphinout.base.graphml.IGraphmlKey;
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.calpano.graphinout.foundation.util.Nullables.nonNullOrDefault;
 
 /**
  * @author rbaba
@@ -54,13 +57,13 @@ public class GraphmlKey extends GraphmlElementWithDescAndId implements IGraphmlK
      * <p>
      * The name of this attribute in key is <b>default</b>
      */
-    private final IGraphmlDefault defaultValue;
+    private final @Nullable IGraphmlDefault defaultValue;
 
     public GraphmlKey(Map<String, String> extraAttrib, String id, IGraphmlDescription desc, //
-                      String attrName, String attrType, @Nullable GraphmlKeyForType forType, IGraphmlDefault defaultValue) {
+                      @Nullable String attrName, @Nullable String attrType, @Nullable GraphmlKeyForType forType, @Nullable IGraphmlDefault defaultValue) {
         super(extraAttrib, id, desc);
-        this.attrName = attrName;
-        this.attrType = attrType;
+        this.attrName = nonNullOrDefault(attrName, id);
+        this.attrType = nonNullOrDefault(attrType, GraphmlDataType.typeString.graphmlName);
         this.forType = forType;
         this.defaultValue = defaultValue;
     }
@@ -76,7 +79,7 @@ public class GraphmlKey extends GraphmlElementWithDescAndId implements IGraphmlK
     }
 
     @Override
-    public IGraphmlDefault defaultValue() {
+    public @Nullable IGraphmlDefault defaultValue() {
         return defaultValue;
     }
 

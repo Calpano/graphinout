@@ -3,6 +3,7 @@ package com.calpano.graphinout.base.cj.element.impl;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMeta;
+import com.calpano.graphinout.base.cj.element.ICjDocumentMetaMutable;
 import com.calpano.graphinout.base.cj.element.ICjDocumentMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
 import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
@@ -19,17 +20,14 @@ import java.util.stream.Stream;
  */
 public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMutable, ICjDocumentChunkMutable {
 
+    /** All directed graphs in this document */
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private @Nullable String baseUri;
-    private ICjDocumentMeta connectedJson;
-
-    public CjDocumentElement() {
-        super(null);
-    }
+    private @Nullable CjDocumentMetaElement connectedJson;
 
     @Override
     public void addGraph(Consumer<ICjGraphMutable> graph) {
-        CjGraphElement graphElement = new CjGraphElement(this);
+        CjGraphElement graphElement = new CjGraphElement();
         graph.accept(graphElement);
         graphs.add(graphElement);
     }
@@ -48,6 +46,14 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     @Override
     public CjType cjType() {
         return CjType.RootObject;
+    }
+
+    @Override
+    public void connectedJson(Consumer<ICjDocumentMetaMutable> consumer) {
+        if (this.connectedJson == null) {
+            this.connectedJson = new CjDocumentMetaElement();
+        }
+        consumer.accept(connectedJson);
     }
 
     @Override

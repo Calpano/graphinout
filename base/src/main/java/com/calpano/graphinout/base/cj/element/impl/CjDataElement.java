@@ -1,8 +1,8 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
-import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.element.ICjDataMutable;
+import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
 import com.calpano.graphinout.foundation.json.impl.MagicMutableJsonValue;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
@@ -10,12 +10,12 @@ import com.calpano.graphinout.foundation.json.value.java.JavaJsonFactory;
 
 import javax.annotation.Nullable;
 
-public class CjDataElement extends CjHasDataElement implements ICjDataMutable {
+public class CjDataElement implements ICjDataMutable {
 
     private final MagicMutableJsonValue magic = new MagicMutableJsonValue(JavaJsonFactory.INSTANCE, null);
 
     CjDataElement(@Nullable CjHasDataElement parent) {
-        super(parent);
+        super();
     }
 
     @Override
@@ -31,9 +31,16 @@ public class CjDataElement extends CjHasDataElement implements ICjDataMutable {
             cjWriter.jsonDataEnd();
         }
     }
- @Override
+
+    @Override
     public void jsonNode(IJsonValue jsonValue) {
         this.magic.addMerge(jsonValue);
+    }
+
+    @Nullable
+    @Override
+    public IJsonValue jsonValue() {
+        return magic.jsonValue();
     }
 
     @Nullable

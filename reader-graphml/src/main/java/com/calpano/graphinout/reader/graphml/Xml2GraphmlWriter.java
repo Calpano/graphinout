@@ -375,7 +375,8 @@ public class Xml2GraphmlWriter implements XmlWriter {
         ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
 
         // init from containing graph
-        boolean isDirected = requireNonNull(elementStack.findParentGraphElement()).isDirectedEdges();
+        boolean isDirected = IGraphmlGraph.EdgeDefault.isDirected(requireNonNull(elementStack.findParentGraphElement()).edgeDefault());
+
         // maybe overwrite from edge attributes
         @Nullable String b = attributes.get(IGraphmlEdge.ATTRIBUTE_DIRECTED);
         if (b != null) {

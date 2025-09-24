@@ -32,4 +32,14 @@ public interface ICjEndpoint extends ICjHasData {
     String typeUri();
 
 
+    default boolean isDirected() {
+        CjDirection direction = direction();
+        return direction != null && direction != CjDirection.UNDIR;
+    }
+
+    default boolean isUndirected() {
+        CjDirection direction = direction();
+        return direction == null || direction == CjDirection.UNDIR;
+    }
+
 }

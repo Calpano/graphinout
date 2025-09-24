@@ -20,6 +20,14 @@ public interface IGraphmlEdge extends IGraphmlElementWithDescAndId {
         return new GraphmlEdgeBuilder();
     }
 
+    /**
+     * This is an attribute that can be true or false or null ot empty. The optional XML-Attribute directed declares if
+     * the edge is directed or undirected. The value true declares a directed edge, the value false an undirected edge.
+     * If the direction is not explicitly defined, the default direction is applied to this edge as defined in the
+     * enclosing graph.
+     * </p>
+     * The name of this attribute in graph is <b>directed</b>
+     */
     @Nullable
     Boolean directed();
 

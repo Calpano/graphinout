@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-public interface IJsonObject extends IJsonValue {
+public interface IJsonObject extends IJsonContainer {
 
     @Override
     default void fire(JsonWriter jsonWriter) {
@@ -49,9 +49,5 @@ public interface IJsonObject extends IJsonValue {
     }
 
     Set<String> keys();
-
-    int size();
-
-    ;
 
 }

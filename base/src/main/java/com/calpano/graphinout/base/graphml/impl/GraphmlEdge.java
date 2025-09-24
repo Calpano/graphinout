@@ -40,14 +40,6 @@ import java.util.Objects;
 
 public class GraphmlEdge extends GraphmlElementWithDescAndId implements IGraphmlEdge {
 
-    /**
-     * This is an attribute that can be true or false or null ot empty. The optional XML-Attribute directed declares if
-     * the edge is directed or undirected. The value true declares a directed edge, the value false an undirected edge.
-     * If the direction is not explicitely defined, the default direction is applied to this edge as defined in the
-     * enclosing graph.
-     * </p>
-     * The name of this attribute in graph is <b>directed</b>
-     */
     protected final @Nullable Boolean directed;
     /**
      * This is an attribute that can be empty or null.
@@ -139,7 +131,7 @@ public class GraphmlEdge extends GraphmlElementWithDescAndId implements IGraphml
 
     @Override
     public String toString() {
-        return "GraphmlEdge{" + "id='" + id() + "\''" + ", directed=" + directed + ", sourceId='" + sourceId + "\''" + ", targetId='" + targetId + "\''" + ", sourcePortId='" + sourcePortId + "\''" + ", targetPortId='" + targetPortId + "\''" + ", desc=" + desc + ", custom=" + customXmlAttributes() + '}';
+        return "GraphmlEdge{" + "id='" + id() + "''" + ", directed=" + directed + ", sourceId='" + sourceId + "''" + ", targetId='" + targetId + "''" + ", sourcePortId='" + sourcePortId + "''" + ", targetPortId='" + targetPortId + "''" + ", desc=" + desc + ", custom=" + customXmlAttributes() + '}';
     }
 
 }

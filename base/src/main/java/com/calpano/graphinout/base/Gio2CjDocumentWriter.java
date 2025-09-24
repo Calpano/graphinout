@@ -13,7 +13,6 @@ import com.calpano.graphinout.base.cj.element.ICjHasPortsMutable;
 import com.calpano.graphinout.base.cj.element.ICjNodeMutable;
 import com.calpano.graphinout.base.cj.element.ICjPortMutable;
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.calpano.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
 import com.calpano.graphinout.base.gio.GioData;
 import com.calpano.graphinout.base.gio.GioDocument;
 import com.calpano.graphinout.base.gio.GioEdge;
@@ -25,29 +24,35 @@ import com.calpano.graphinout.base.gio.GioKey;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.graphml.CjGraphmlMapping;
+import com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty;
+import com.calpano.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
+import com.calpano.graphinout.foundation.util.PowerStackOnClasses;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Stack;
 
 import static java.util.Optional.ofNullable;
 
 public class Gio2CjDocumentWriter extends Json2JavaJsonWriter implements GioWriter {
 
-    private final Stack<ICjElement> stack = new Stack<>();
+    private final PowerStackOnClasses<ICjElement> stack = PowerStackOnClasses.create();
     private ICjDocumentMutable document;
 
     private static void copyCustomAttributes(GioElement gio, ICjHasDataMutable cj) {
         ofNullable(gio.getCustomAttributes()).ifPresent(customAttributes -> {
             customAttributes.forEach((key, value) -> cj.addData(data -> //
-                    data.addProperty(List.of("cj:attributes", key), value)));
+                    data.addProperty(List.of(
+                            CjDataProperty.CustomXmlAttributes.cjPropertyKey
+                            , key), value)));
         });
     }
 
     private static void copyDesc(GioElementWithDescription gio, ICjHasDataMutable cj) {
-        ofNullable(gio.getDescription()).ifPresent(desc -> cj.addData(data -> data.addProperty("description", desc)));
+        ofNullable(gio.getDescription()).ifPresent(desc -> cj.addData(data -> //
+                data.addProperty(CjDataProperty.Description.cjPropertyKey, desc)));
     }
 
     private static void copyId(GioElementWithId gio, ICjHasIdMutable cj) {
@@ -167,24 +172,11 @@ public class Gio2CjDocumentWriter extends Json2JavaJsonWriter implements GioWrit
     }
 
     private <T extends ICjElement> T peek(Class<T> elementType) {
-        if (stack.isEmpty()) {
-            throw new IllegalStateException("No element to peek.");
-        }
-        ICjElement top = stack.peek();
-        if (!elementType.isInstance(top)) {
-            throw new IllegalStateException("Expected " + elementType + " but was " + top);
-        }
-        return elementType.cast(top);
+        return stack.peek(elementType);
     }
 
     private void pop(Class<? extends ICjElement> elementType) {
-        if (stack.isEmpty()) {
-            throw new IllegalStateException("No element to pop.");
-        }
-        ICjElement top = stack.pop();
-        if (!elementType.isInstance(top)) {
-            throw new IllegalStateException("Expected " + elementType + " but was " + top);
-        }
+        stack.pop(elementType);
     }
 
     private void push(ICjElement element) {
