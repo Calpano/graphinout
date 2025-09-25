@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.calpano.graphinout.foundation.util.Nullables.ifPresentAccept;
+
 public class GraphmlHyperEdgeBuilder extends GraphmlElementWithDescAndIdBuilder<GraphmlHyperEdgeBuilder> {
 
     private final ArrayList<IGraphmlEndpoint> endpoints = new ArrayList<>();
@@ -21,8 +23,8 @@ public class GraphmlHyperEdgeBuilder extends GraphmlElementWithDescAndIdBuilder<
     }
 
     public GraphmlHyperEdge build() {
-        if (endpoints.size() < 2)
-            throw new IllegalStateException("Require at least 2 endpoints in hyperedge, got " + endpoints.size());
+//        if (endpoints.size() < 2)
+//            throw new IllegalStateException("Require at least 2 endpoints in hyperedge, got " + endpoints.size());
         return new GraphmlHyperEdge(id, attributes, desc, endpoints);
     }
 
@@ -32,24 +34,40 @@ public class GraphmlHyperEdgeBuilder extends GraphmlElementWithDescAndIdBuilder<
 
     public GraphmlEdge toEdge() {
         assert isBiEdge();
-
         GraphmlEdgeBuilder builder = IGraphmlEdge.builder();
-        builder.id(attributes.get(IGraphmlElementWithId.ATTRIBUTE_ID));
+        if (attributes != null) {
+            ifPresentAccept(attributes.get(IGraphmlElementWithId.ATTRIBUTE_ID), builder::id);
+            Map<String, String> atts = new HashMap<>(attributes);
+            atts.remove(IGraphmlEdge.ATTRIBUTE_DIRECTED);
+            builder.attributes(atts);
+        }
+        ifPresentAccept(desc, builder::desc);
 
-        Map<String, String> atts = new HashMap<>(attributes);
-        atts.remove(IGraphmlEdge.ATTRIBUTE_DIRECTED);
-        builder.attributes(atts);
+        assert endpoints.size() == 2;
+        IGraphmlEndpoint ep0 = endpoints.get(0);
+        IGraphmlEndpoint ep1 = endpoints.get(1);
+        assert ep0.type().isDirected() == ep1.type().isDirected();
+        if (ep0.type().isDirected()) {
+            // directed edge
+            assert ep0.type() != ep1.type() : "dir must be different";
+            IGraphmlEndpoint source = endpoints.stream().filter(e -> e.type() == GraphmlDirection.In).findFirst().orElseThrow();
+            IGraphmlEndpoint target = endpoints.stream().filter(e -> e.type() == GraphmlDirection.Out).findFirst().orElseThrow();
+            // FIXME set only if different from the default in the graph
+            builder.directed(source.type() != GraphmlDirection.Undirected);
+            builder.sourceId(source.node());
+            builder.sourcePortId(source.port());
+            builder.targetId(target.node());
+            builder.targetPortId(target.port());
+        } else {
+            // undirected edge
+            // FIXME set only if different from the default in the graph
+            builder.directed(false);
+            builder.sourceId(ep0.node());
+            builder.sourcePortId(ep0.port());
+            builder.targetId(ep1.node());
+            builder.targetPortId(ep1.port());
+        }
 
-        builder.desc(desc);
-        IGraphmlEndpoint source = endpoints.stream().filter(e -> e.type() == GraphmlDirection.In).findFirst().orElse(endpoints.get(0));
-        IGraphmlEndpoint target = endpoints.stream().filter(e -> e.type() == GraphmlDirection.Out).findFirst().orElse(endpoints.get(1));
-
-        // FIXME set only if different from the default
-        builder.directed(source.type() != GraphmlDirection.Undirected);
-        builder.sourceId(source.id());
-        builder.sourcePortId(source.port());
-        builder.targetId(target.id());
-        builder.targetPortId(target.port());
         return builder.build();
     }
 

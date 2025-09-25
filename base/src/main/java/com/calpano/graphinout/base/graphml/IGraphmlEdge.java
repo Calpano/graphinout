@@ -43,6 +43,10 @@ public interface IGraphmlEdge extends IGraphmlElementWithDescAndId {
     @Nullable
     String id();
 
+    default boolean isValid() {
+        return source() != null && target() != null;
+    }
+
     String source();
 
     @Nullable

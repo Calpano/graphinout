@@ -171,6 +171,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
 
     @Override
     public void edgeStart(IGraphmlEdge graphmlEdge) {
+        assert graphmlEdge.isValid();
         stack.peek(ICjGraphMutable.class).addEdge(cjEdge -> {
             stack.push(cjEdge);
             copyId(graphmlEdge, cjEdge);

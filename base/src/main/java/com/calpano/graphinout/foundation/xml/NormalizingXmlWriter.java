@@ -1,22 +1,33 @@
 package com.calpano.graphinout.foundation.xml;
 
+import com.calpano.graphinout.foundation.util.MapMap;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 @SuppressWarnings("UnusedReturnValue")
 public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends DelegatingXmlWriter {
 
-    public interface Action {}
+
+    public interface Action {
+
+        enum Kind {Attribute, ElementSkip}
+
+        Kind kind();
+
+    }
 
     @FunctionalInterface
     public interface AttributeAction extends Action, Function<Map<String, String>, Map<String, String>> {
+
+        default Kind kind() { return Kind.Attribute;}
 
         default Map<String, String> apply(Map<String, String> attributes) {
             return attributes(attributes);
@@ -31,10 +42,29 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
 
     }
 
+    @FunctionalInterface
+    public interface ElementSkipAction extends Action, BiPredicate<String, Map<String, String>> {
+
+        default Kind kind() { return Kind.ElementSkip;}
+
+        /**
+         * Action can skip an element
+         *
+         * @param attributes immutable input
+         * @return null to remove the element
+         */
+        boolean skip(String elementName, Map<String, String> attributes);
+
+        default boolean test(String name, Map<String, String> attributes) {
+            return skip(name, attributes);
+        }
+
+    }
     /** currently open mixed-content-model elements */
     private final Stack<String> stackOfContentElements = new Stack<>();
     private final StringBuilder charBuffer = new StringBuilder();
-    private final Map<String, Action> elementActions = new HashMap<>();
+    private final MapMap<String, Action.Kind, Action> elementActions = MapMap.create();
+    private String skipElementsUntil = null;
     /** XML element names with mixed content model (#PCDATA). null = treat ALL elements as mixed content. */
     private Set<String> contentElements = null;
 
@@ -43,13 +73,27 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
      */
     public NormalizingXmlWriter(XmlWriter downstreamXmlWriter) {super(downstreamXmlWriter);}
 
+    public T addAction(String name, Action action) {
+        Action prev = elementActions.put(name, action.kind(), action);
+        assert prev == null : "action already added for name=" + name + " action=" + action;
+        return this_();
+    }
+
     @Override
     public void characterData(String characterData, boolean isInCdata) throws IOException {
+        if (skipElementsUntil != null) {
+            // we are in skipMode
+            return;
+        }
         charBuffer.append(characterData);
     }
 
     @Override
     public void characterDataEnd(boolean isInCdata) throws IOException {
+        if (skipElementsUntil != null) {
+            // we are in skipMode
+            return;
+        }
         // emit
         String c = charBuffer.toString();
         if (isInContentElement() || isInCdata) {
@@ -65,13 +109,27 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
     }
 
     @Override
-    public void characterDataStart(boolean isInCdata)
-    {
+    public void characterDataStart(boolean isInCdata) {
+        if (skipElementsUntil != null) {
+            // we are in skipMode
+            return;
+        }
         //   _log.info("characterDataStart: {}", isInCdata);
     }
 
     @Override
     public void elementEnd(String name) throws IOException {
+        // deactivate skipMode?
+        if (name.equals(skipElementsUntil)) {
+            skipElementsUntil = null;
+            // but skip this elementEnd
+            return;
+        }
+        if (skipElementsUntil != null) {
+            // we are in skipMode
+            return;
+        }
+
         if (isMixedContentElement(name)) {
             String started = stackOfContentElements.pop();
             assert name.equals(started);
@@ -81,14 +139,31 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
 
     @Override
     public void elementStart(String name, Map<String, String> attributes) throws IOException {
+        if (skipElementsUntil != null) {
+            // skip element
+            return;
+        }
+
         if (isMixedContentElement(name)) {
             stackOfContentElements.push(name);
         }
+
+        @Nullable Action elementAction = elementActions.get(name, Action.Kind.ElementSkip);
+        if (elementAction != null) {
+            assert elementAction instanceof ElementSkipAction : "action is not an instance of " + ElementSkipAction.class.getSimpleName();
+            boolean skip = ((ElementSkipAction) elementAction).test(name, attributes);
+            if (skip) {
+                // skip it
+                skipElementsUntil = name;
+                return;
+            }
+        }
+
+        // work on attributes
+        Action attAction = elementActions.get(name, Action.Kind.Attribute);
         // using TreeMap to sort attributes alphabetically
         Map<String, String> sortedAtts = new TreeMap<>();
-
-        @Nullable Action action = elementActions.get(name);
-        if (action instanceof AttributeAction attributeAction) {
+        if (attAction instanceof AttributeAction attributeAction) {
             Map<String, String> changedAtts = attributeAction.apply(attributes);
             sortedAtts.putAll(changedAtts);
         } else {
@@ -106,12 +181,6 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
 
     public boolean isMixedContentElement(String name) {
         return contentElements == null || contentElements.contains(name);
-    }
-
-    public T addAction(String name, Action action) {
-        Action prev = elementActions.put(name, action);
-        assert prev == null;
-        return this_();
     }
 
     /**

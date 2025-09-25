@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <graphml>
-    <key attr.name="type" attr.type="string" id="type"/>
     <key attr.name="myLabel" attr.type="string" id="label"/>
     <graph edgedefault="directed" id="">
         <node id="s1"><data key="label">Source 1</data></node>
         <node id="t1"><data key="label">Target 1</data></node>
         <node id="t2"><data key="label">Target 2</data></node>
 
-        <edge                  source="s1" target="t1"><data key="type">directed</data></edge>
-        <edge directed="false" source="s1" target="t2"><data key="type">undirected</data></edge>
+        <edge                  source="s1" target="t1"/>
+        <edge directed="false" source="s1" target="t2"/>
     </graph>
 </graphml>

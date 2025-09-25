@@ -73,6 +73,20 @@
 
         <node id="id--node3"/>
 
+        <!--  ports -->
+        <node id="id--node4">
+            <port name="North"/>
+            <port name="South"/>
+        </node>
+        <node id="id--node5">
+            <port name="North"/>
+            <port name="South"/>
+        </node>
+        <node id="id--node6">
+            <port name="North"/>
+            <port name="South"/>
+        </node>
+
         <edge id="id--edge-12" source="id--node1" target="id--node2"/>
         <edge id="id--edge-4S6N" source="id--node4" sourceport="South" target="id--node6" targetport="North"/>
         <!-- directions -->
@@ -86,18 +100,5 @@
             <endpoint node="id--node5" type="in"/>
             <endpoint node="id--node6" type="in"/>
         </hyperedge>
-        <!-- node after edge; ports -->
-        <node id="id--node4">
-            <port name="North"/>
-            <port name="South"/>
-        </node>
-        <node id="id--node5">
-            <port name="North"/>
-            <port name="South"/>
-        </node>
-        <node id="id--node6">
-            <port name="North"/>
-            <port name="South"/>
-        </node>
     </graph>
 </graphml>

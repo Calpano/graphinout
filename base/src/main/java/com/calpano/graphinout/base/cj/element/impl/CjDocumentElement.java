@@ -8,6 +8,9 @@ import com.calpano.graphinout.base.cj.element.ICjDocumentMutable;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
 import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
+import com.calpano.graphinout.base.cj.stream.impl.Cj2JsonWriter;
+import com.calpano.graphinout.foundation.json.stream.impl.Json2StringWriter;
+import com.fasterxml.jackson.core.io.SegmentedStringWriter;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -75,5 +78,12 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
         return graphs.stream().map(x -> (ICjGraph) x);
     }
 
+
+    public String toCjJsonString() {
+        Json2StringWriter json2StringWriter = new Json2StringWriter();
+        Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
+        fire(cj2JsonWriter);
+        return json2StringWriter.jsonString();
+    }
 
 }

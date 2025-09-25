@@ -134,7 +134,8 @@ public class CjDocument2Graphml {
     }
 
     public void writeEdge(ICjEdge cjEdge) throws IOException {
-        List<ICjEndpoint> cjEps = new ArrayList<>(cjEdge.endpoints().toList());
+        List<ICjEndpoint> cjEndpointsList = cjEdge.endpoints().toList();
+        List<ICjEndpoint> cjEps = new ArrayList<>(cjEndpointsList);
         Collections.sort(cjEps, Comparator.comparing(ICjEndpoint::node));
         Boolean directed = null;
         if (cjEps.size() == 2) {
@@ -172,8 +173,6 @@ public class CjDocument2Graphml {
         if (cjEps.size() != 2 || directed == null) {
             // default case: hyperedge
             GraphmlHyperEdgeBuilder builder = IGraphmlHyperEdge.builder().id(cjEdge.id());
-            graphmlWriter.hyperEdgeStart(builder.build());
-            // FIXME all endpoints
             for (ICjEndpoint cjEp : cjEps) {
                 GraphmlEndpointBuilder graphmlEndpoint = IGraphmlEndpoint.builder();
                 graphmlEndpoint.node(cjEp.node());
@@ -186,6 +185,7 @@ public class CjDocument2Graphml {
 
                 builder.addEndpoint(graphmlEndpoint.build());
             }
+            graphmlWriter.hyperEdgeStart(builder.build());
         }
 
         // CJ edge type encoded as Graphml:DATA

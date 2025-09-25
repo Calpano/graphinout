@@ -27,6 +27,7 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
     public void addEndpoint(Consumer<ICjEndpointMutable> endpoint) {
         CjEndpointElement endpointElement = new CjEndpointElement();
         endpoint.accept(endpointElement);
+        assert endpointElement.node() != null;
         endpoints.add(endpointElement);
     }
 

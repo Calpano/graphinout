@@ -41,10 +41,11 @@ public class GraphmlEndpoint extends GraphmlElementWithDescAndId implements IGra
      * <p>
      * The name of this attribute in endpoint is <b>type</b>
      */
-    private GraphmlDirection type = GraphmlDirection.Undirected;
+    private GraphmlDirection type;
 
     public GraphmlEndpoint(Map<String, String> attributes, @Nullable String id, String node, @Nullable String port, GraphmlDirection type, @Nullable IGraphmlDescription desc) {
         super(attributes, id, desc);
+        assert node != null;
         this.node = node;
         this.port = port;
         this.type = type != null ? type : GraphmlDirection.Undirected;

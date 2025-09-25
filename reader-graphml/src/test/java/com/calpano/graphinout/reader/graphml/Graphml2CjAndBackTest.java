@@ -15,17 +15,21 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
 
 import java.nio.file.Path;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.slf4j.LoggerFactory.getLogger;
 
 
 /**
  *
  */
 public class Graphml2CjAndBackTest {
+
+    private static final Logger log = getLogger(Graphml2CjAndBackTest.class);
 
     /**
      * Verify the GraphMl files are valid XML
@@ -94,6 +98,9 @@ public class Graphml2CjAndBackTest {
             }
         }
         CjDocumentElement cjDoc = graphml2cjStream.resultDoc();
+
+        // FIXME KILL
+        log.info("CJ.json:\n{}", cjDoc.toCjJsonString());
 
         // ==  CJ doc -> Graphml -> XML
         Xml2StringWriter xmlWriter = new Xml2StringWriter();

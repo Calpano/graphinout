@@ -1,5 +1,6 @@
 package com.calpano.graphinout.reader.graphml;
 
+import com.calpano.graphinout.base.graphml.CjGraphmlMapping;
 import com.calpano.graphinout.base.graphml.Graphml;
 import com.calpano.graphinout.foundation.xml.AttMaps;
 import com.calpano.graphinout.foundation.xml.NormalizingXmlWriter;
@@ -7,6 +8,7 @@ import com.calpano.graphinout.foundation.xml.XML;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import static com.calpano.graphinout.base.graphml.GraphmlElements.GRAPH;
@@ -18,8 +20,26 @@ import static com.calpano.graphinout.base.graphml.GraphmlElements.KEY;
  */
 public class NormalizingGraphmlWriter extends NormalizingXmlWriter<NormalizingGraphmlWriter> implements XmlWriter {
 
+    static Set<String> skippedKeyIds = Set.of(
+            CjGraphmlMapping.GraphmlDataElement.EdgeType.attrName,
+            CjGraphmlMapping.GraphmlDataElement.Label.attrName,
+            CjGraphmlMapping.GraphmlDataElement.CjJsonData.attrName,
+            CjGraphmlMapping.GraphmlDataElement.SyntheticNode.attrName
+            );
+
     public NormalizingGraphmlWriter(XmlWriter downstreamXmlWriter) {
         super(downstreamXmlWriter);
+
+        // skip some <key> elements
+        addAction(KEY, (ElementSkipAction) (name, atts) -> {
+            String id = atts.get("id");
+            return skippedKeyIds.contains(id);
+        });
+
+        addAction(KEY, (AttributeAction) atts ->
+                // remove redundant default <key for="all"/>
+                AttMaps.removeIf(new TreeMap<>(atts), "for", "all"));
+
         addAction(GRAPHML, (AttributeAction) atts -> {
             Map<String, String> result = new TreeMap<>(atts);
 
@@ -41,13 +61,17 @@ public class NormalizingGraphmlWriter extends NormalizingXmlWriter<NormalizingGr
             result.putIfAbsent(XML.ATT_XSI_SCHEMA_LOCATION, Graphml.XSI_SCHEMA_LOCATION_1_1);
             return result;
         });
-        addAction(GRAPH, (AttributeAction) atts ->
-                // remove redundant default <graph edgedefault="undirected"/>
-                AttMaps.removeIf(new TreeMap<>(atts), "edgedefault", "undirected"));
+        addAction(GRAPH, (AttributeAction) atts -> {
+            TreeMap<String, String> sortedAtts = new TreeMap<>(atts);
+            // remove redundant default <graph edgedefault="undirected"/>
+            AttMaps.removeIf(sortedAtts, "edgedefault", "undirected");
+            // remove parseInfo, i.e. <graph> attributes names starting with "parse."
+            for (String parseKey : sortedAtts.keySet().stream().filter(k -> k.startsWith("parse.")).toList()) {
+                sortedAtts.remove(parseKey);
+            }
+            return sortedAtts;
+        });
 
-        addAction(KEY, (AttributeAction) atts ->
-                // remove redundant default <key for="all"/>
-                AttMaps.removeIf(new TreeMap<>(atts), "for", "all"));
     }
 
 }

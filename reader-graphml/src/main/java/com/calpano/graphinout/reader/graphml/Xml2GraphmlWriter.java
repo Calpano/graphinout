@@ -27,6 +27,7 @@ import com.calpano.graphinout.base.graphml.builder.GraphmlLocatorBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlNodeBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlPortBuilder;
 import com.calpano.graphinout.base.graphml.impl.GraphmlDescription;
+import com.calpano.graphinout.base.graphml.impl.GraphmlEndpoint;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import javax.annotation.Nullable;
@@ -288,7 +289,8 @@ public class Xml2GraphmlWriter implements XmlWriter {
         if (!elementStack.isEmpty() && context.endpointBuilder() != null) {
             XmlElementContext parentContext = elementStack.peek_();
             assert parentContext.hyperEdgeBuilder() != null;
-            parentContext.hyperEdgeBuilder().addEndpoint(context.endpointBuilder().build());
+            GraphmlEndpoint graphmlEndpoint = context.endpointBuilder().build();
+            parentContext.hyperEdgeBuilder().addEndpoint(graphmlEndpoint);
         }
         // TODO else: parse warning
     }
