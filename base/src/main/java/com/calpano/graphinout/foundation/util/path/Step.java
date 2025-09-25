@@ -1,5 +1,6 @@
 package com.calpano.graphinout.foundation.util.path;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,9 +46,10 @@ class Step {
         List<String> keys = map.keys();
         List<Result> result = new ArrayList<>(keys.size());
         for (String key : keys) {
-            Object value = map.get(key);
-            assert value != null : "Found key '" + key + "' but no value.";
-            result.add(Result.ofStep(key, value));
+            @Nullable Object value = map.get(key);
+            if (value != null) {
+                result.add(Result.ofStep(key, value));
+            }
         }
         return result;
     }
@@ -101,7 +103,7 @@ class Step {
                 return map == null ? Collections.emptyList() : mapAll(map);
             }
             case Any -> {
-                return pr.resolveAny( root);
+                return pr.resolveAny(root);
             }
             default -> throw new IllegalArgumentException("Unknown step kind: " + kind());
         }
@@ -111,8 +113,6 @@ class Step {
     public String toString() {
         return "'" + step + "'(" + kind() + ")";
     }
-
-
 
 
 }

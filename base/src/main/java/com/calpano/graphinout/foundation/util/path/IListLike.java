@@ -12,6 +12,18 @@ import java.util.function.Supplier;
  */
 public interface IListLike {
 
+    IListLike EMPTY = new IListLike() {
+        @Override
+        public Object get(int index) {
+            return null;
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+    };
+
     /**
      * Creates an {@link IListLike} instance from a size and a function to retrieve elements by index.
      *

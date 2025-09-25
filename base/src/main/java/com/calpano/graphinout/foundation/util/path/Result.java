@@ -1,5 +1,7 @@
 package com.calpano.graphinout.foundation.util.path;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +44,20 @@ public class Result {
     }
 
     /**
+     * @return all directChildren results, but each 'prefixed' by root result
+     */
+    public static List<Result> concatResults(Result root, List<Result> directChildren) {
+        List<Result> results = new ArrayList<>(directChildren.size());
+        for (Result directChild : directChildren) {
+            List<Object> path = concat(root.path(), directChild.path());
+            List<Object> values = concat(root.values(), directChild.values());
+            Result result = of(path, values);
+            results.add(result);
+        }
+        return results;
+    }
+
+    /**
      * Static factory method to create a new {@link Result}.
      *
      * @param path   the list of path segments.
@@ -73,6 +89,22 @@ public class Result {
         assert step != null;
         assert value != null;
         return of(List.of(step), List.of(value));
+    }
+
+    /**
+     * @return path = (this, step); values = ( this, directChildren)
+     */
+    public List<Result> append(String step, List<Object> directChildren) {
+        List<Result> results = new ArrayList<>(directChildren.size());
+        for (Object directChild : directChildren) {
+            List<Object> path = new ArrayList<>(path());
+            path.add(step);
+            List<Object> values = new ArrayList<>(values());
+            values.add(directChild);
+            Result result = of(path, values);
+            results.add(result);
+        }
+        return results;
     }
 
     @Override

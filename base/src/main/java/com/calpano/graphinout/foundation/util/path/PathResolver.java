@@ -1,7 +1,9 @@
 package com.calpano.graphinout.foundation.util.path;
 
+import com.calpano.graphinout.base.cj.element.ICjData;
 import com.calpano.graphinout.foundation.json.value.IJsonArray;
 import com.calpano.graphinout.foundation.json.value.IJsonObject;
+import com.calpano.graphinout.foundation.json.value.IJsonValue;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -11,8 +13,8 @@ import java.util.Map;
 /**
  * A utility for resolving paths within hierarchical data structures.
  * <p>
- * This class allows navigating object graphs using a simple path language. It can be extended to support custom data types
- * by registering {@link ITypeAdapter}s that convert them into {@link IMapLike} or {@link IListLike} structures.
+ * This class allows navigating object graphs using a simple path language. It can be extended to support custom data
+ * types by registering {@link ITypeAdapter}s that convert them into {@link IMapLike} or {@link IListLike} structures.
  * <p>
  * By default, it supports {@link java.util.Map}, {@link java.util.List}, {@link IJsonObject}, and {@link IJsonArray}.
  */
@@ -28,8 +30,15 @@ public class PathResolver {
         // add trivial adapters
         registerList(List.class, IListLike::ofList);
         registerMap(Map.class, IMapLike::ofMap);
-        registerMap(IJsonObject.class, jo -> IMapLike.of(() -> jo.keys().stream().sorted().toList(), jo::get));
-        registerList(IJsonArray.class, ja -> IListLike.of(ja::size, ja::get));
+        // add JSON adapters
+        registerMap(IJsonObject.class, IJsonValue::asMapLike);
+        registerList(IJsonArray.class, IJsonValue::asListLike);
+        registerMap(ICjData.class, data -> {
+            IJsonValue jsonValue = data.jsonValue();
+            if (jsonValue == null) return IMapLike.EMPTY;
+            return jsonValue.asMapLike();
+        });
+
     }
 
     /**
@@ -39,6 +48,86 @@ public class PathResolver {
      */
     public static PathResolver create() {
         return new PathResolver();
+    }
+
+    static List<Object> getDirectChildrenOf1(TypeAdapters typeAdapters, Object root) {
+        assert root != null;
+        List<Object> results = new ArrayList<>();
+        // must convert to map or list
+        @Nullable ITypeAdapter<Object, IMapLike> mapAdapter = typeAdapters.findAdapterFromTo(root.getClass(), IMapLike.class, false);
+        if (mapAdapter != null) {
+            IMapLike adapted = mapAdapter.toAdapted(root);
+            adapted.keys().forEach(key -> {
+                Object child = adapted.get(key);
+                if (child != null)
+                    results.add(child);
+            });
+        }
+        @Nullable ITypeAdapter<Object, IListLike> listAdapter = typeAdapters.findAdapterFromTo(root.getClass(), IListLike.class, false);
+        if (listAdapter != null) {
+            IListLike adapted = listAdapter.toAdapted(root);
+            for (int i = 0; i < adapted.size(); i++) {
+                Object child = adapted.get(i);
+                if (child != null)
+                    results.add(child);
+            }
+        }
+        return results;
+    }
+
+    static List<Object> getDirectChildrenOfList(TypeAdapters typeAdapters, List<Object> roots) {
+        List<Object> results = new ArrayList<>();
+        for (Object root : roots) {
+            assert root != null;
+            List<Object> directChildren = getDirectChildrenOf1(typeAdapters, root);
+            results.addAll(directChildren);
+        }
+        return results;
+    }
+
+    static List<Result> resolveDirectChildren(TypeAdapters typeAdapters, Object root) {
+        List<Result> results = new ArrayList<>();
+        // must convert to map or list
+        @Nullable ITypeAdapter<Object, IMapLike> mapAdapter = typeAdapters.findAdapterFromTo(root.getClass(), IMapLike.class, false);
+        if (mapAdapter != null) {
+            IMapLike adapted = mapAdapter.toAdapted(root);
+            results.addAll(Step.mapAll(adapted));
+        }
+        @Nullable ITypeAdapter<Object, IListLike> listAdapter = typeAdapters.findAdapterFromTo(root.getClass(), IListLike.class, false);
+        if (listAdapter != null) {
+            IListLike adapted = listAdapter.toAdapted(root);
+            results.addAll(Step.listAll(adapted));
+        }
+        return results;
+    }
+
+    /**
+     * Recursively navigates through all children of the given roots, collecting all possible results. This is
+     * equivalent to a deep traversal of the object graph.
+     *
+     * @param root for starting {@link Result}s.
+     * @return a list containing the initial roots plus all their descendants.
+     */
+    public List<Result> addAnyChild(Object root) {
+        // each any-child is ONE STEP (..) derived from roots.
+        List<Result> anyChildFull = new ArrayList<>();
+
+        assert root != null;
+        // each root itself is a .. child of itself
+        Result rootChildFull = Result.ofStep("..", root);
+        anyChildFull.add(rootChildFull);
+
+        // breadth-first search through the tree of maps/lists
+        List<Object> current = List.of(root);
+        while (!current.isEmpty()) {
+            current = getDirectChildrenOfList(typeAdapters(), current);
+            for(Object child : current) {
+                Result childFull = Result.ofStep("..", child);
+                anyChildFull.add(childFull);
+            }
+        }
+
+        return anyChildFull;
     }
 
     /**
@@ -84,8 +173,8 @@ public class PathResolver {
     /**
      * Resolves a single path step against a previous result.
      * <p>
-     * This may result in multiple results if the step is a wildcard. The path of the new results will be a concatenation
-     * of the root's path and the new step.
+     * This may result in multiple results if the step is a wildcard. The path of the new results will be a
+     * concatenation of the root's path and the new step.
      *
      * @param root the starting {@link Result}.
      * @param step the path step to resolve.
@@ -94,77 +183,7 @@ public class PathResolver {
     public List<Result> resolve1(Result root, String step) {
         List<Result> rootResults = resolve1(root.value(), step);
         // concat root results with child results
-        return concatResults(root, rootResults);
-    }
-
-    /**
-     * Recursively navigates through all children of the given roots, collecting all possible results.
-     * This is equivalent to a deep traversal of the object graph.
-     *
-     * @param roots the list of starting {@link Result}s.
-     * @return a list containing the initial roots plus all their descendants.
-     */
-    public List<Result> addAnyChild(List<Result> roots) {
-        List<Result> results = new ArrayList<>(roots);
-
-        List<Result> current = roots;
-        while (!current.isEmpty()) {
-            current = resolveDirectChildren(typeAdapters(), current);
-            for(Result result : current) {
-                assert !results.contains(result);
-            }
-            results.addAll(current);
-        }
-        return results;
-    }
-
-
-    static List<Result> resolveDirectChildren(TypeAdapters typeAdapters, List<Result> roots) {
-        List<Result> results = new ArrayList<>();
-        for (Result root : roots) {
-            List<Result> directChildren = allDirectChildren(typeAdapters, root.value());
-            // concat root results with child results
-            results.addAll(concatResults(root, directChildren));
-        }
-        return results;
-    }
-
-    private static List<Result> concatResults(Result root, List<Result> directChildren) {
-        List<Result> results = new ArrayList<>();
-        for(Result directChild : directChildren) {
-            List<Object> path = Result.concat(root.path(), directChild.path());
-            List<Object> values = Result.concat(root.values(), directChild.values());
-            Result result = Result.of(path, values);
-            results.add(result);
-        }
-        return results;
-    }
-
-    static List<Result> allDirectChildren(TypeAdapters typeAdapters, Object root) {
-        List<Result> results = new ArrayList<>();
-        // must convert to map or list
-        @Nullable ITypeAdapter<Object, IMapLike> mapAdapter = typeAdapters.findAdapterFromTo(root.getClass(), IMapLike.class);
-        if (mapAdapter != null) {
-            IMapLike adapted = mapAdapter.toAdapted(root);
-            results.addAll(Step.mapAll(adapted));
-        }
-        @Nullable ITypeAdapter<Object, IListLike> listAdapter = typeAdapters.findAdapterFromTo(root.getClass(), IListLike.class);
-        if (listAdapter != null) {
-            IListLike adapted = listAdapter.toAdapted(root);
-            results.addAll(Step.listAll(adapted));
-        }
-        return results;
-    }
-
-    /**
-     * Resolves all descendants of a root object.
-     *
-     * @param root the object from which to start resolution.
-     * @return a list of all {@link Result}s found under the root.
-     */
-    public List<Result> resolveAny(Object root) {
-        List<Result> roots = List.of(Result.ofRoot(root));
-        return addAnyChild(roots);
+        return Result.concatResults(root, rootResults);
     }
 
     /**
@@ -185,8 +204,8 @@ public class PathResolver {
     /**
      * Resolves a multi-step path against a root object.
      * <p>
-     * The path syntax supports property names for map-like objects and bracketed indices for list-like objects.
-     * See {@link Step} for more details.
+     * The path syntax supports property names for map-like objects and bracketed indices for list-like objects. See
+     * {@link Step} for more details.
      *
      * @param root at which to resolve the path.
      * @param path a list of strings representing the path steps.
@@ -210,6 +229,16 @@ public class PathResolver {
             current = resolve1(current, step);
         }
         return current;
+    }
+
+    /**
+     * Resolves all descendants of a root object.
+     *
+     * @param root the object from which to start resolution.
+     * @return a list of all {@link Result}s found under the root.
+     */
+    public List<Result> resolveAny(Object root) {
+        return addAnyChild(root);
     }
 
     /**

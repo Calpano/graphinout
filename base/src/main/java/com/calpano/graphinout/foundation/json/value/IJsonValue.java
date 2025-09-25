@@ -3,6 +3,8 @@ package com.calpano.graphinout.foundation.json.value;
 import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.Json2StringWriter;
+import com.calpano.graphinout.foundation.util.path.IListLike;
+import com.calpano.graphinout.foundation.util.path.IMapLike;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -21,6 +23,23 @@ public interface IJsonValue {
 
     default IJsonContainer asContainer() throws ClassCastException {
         return (IJsonContainer) this;
+    }
+
+    default IListLike asListLike() {
+        if (isArray()) {
+            IJsonArray arr = asArray();
+            return IListLike.of(arr::size, arr::get);
+        } else
+            return IListLike.EMPTY;
+    }
+
+    default IMapLike asMapLike() {
+        if (isObject()) {
+            IJsonObject obj = asObject();
+            return IMapLike.of(() -> obj.keys().stream().sorted().toList(), obj::get);
+        } else {
+            return IMapLike.EMPTY;
+        }
     }
 
     default IJsonValueMutable asMutable() throws ClassCastException {

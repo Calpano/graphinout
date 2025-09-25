@@ -14,6 +14,18 @@ import java.util.function.Supplier;
  */
 public interface IMapLike {
 
+    IMapLike EMPTY = new IMapLike() {
+        @Override
+        public Object get(String key) {
+            return null;
+        }
+
+        @Override
+        public List<String> keys() {
+            return List.of();
+        }
+    };
+
     /**
      * Creates an {@link IMapLike} instance from a list of keys and a function to retrieve values.
      *
@@ -94,7 +106,8 @@ public interface IMapLike {
      * Retrieves the value associated with the given key.
      *
      * @param key the key whose associated value is to be returned.
-     * @return the value to which the specified key is mapped, or {@code null} if this map contains no mapping for the key.
+     * @return the value to which the specified key is mapped, or {@code null} if this map contains no mapping for the
+     * key.
      */
     Object get(String key);
 

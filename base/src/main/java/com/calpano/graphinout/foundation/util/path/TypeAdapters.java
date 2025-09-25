@@ -46,6 +46,49 @@ public class TypeAdapters {
     }
 
     /**
+     * Internal implementation for finding an adapter, with a mechanism to avoid cycles during recursive search.
+     *
+     * @param <A>                the target type.
+     * @param <T>                the source type.
+     * @param originalSourceType the source class for logging
+     * @param refinedSourceType  the refined source class to look up
+     * @param targetType         the target class.
+     * @param alreadyTried       a set of classes that have already been checked, to prevent infinite loops.
+     * @param warnIfNoneFound
+     * @return the matching {@link ITypeAdapter}, or {@code null} if not found.
+     */
+    public <A, T> @Nullable ITypeAdapter<T, A> _findAdapterFromTo(Class<?> originalSourceType, Class<?> refinedSourceType, Class<A> targetType, @Nullable HashSet<Class<?>> alreadyTried, boolean warnIfNoneFound) {
+        ITypeAdapter<T, A> adapter = exactAdapterFromTo(refinedSourceType, targetType);
+        if (adapter != null) return adapter;
+
+        // hard mode
+        log.trace("No direct adapter from {} to {}", refinedSourceType.getSimpleName(), targetType.getSimpleName());
+        HashSet<Class<?>> tried = alreadyTried == null ? new HashSet<>() : alreadyTried;
+        tried.add(refinedSourceType);
+
+        //try interfaces of sourceType
+        for (Class<?> interfaceType : allInterfacesOf(refinedSourceType)) {
+            adapter = exactAdapterFromTo(interfaceType, targetType);
+            if (adapter != null) {
+                log.trace("FOUND interface adapter from {} ({}) to {}", interfaceType.getSimpleName(), originalSourceType.getSimpleName(), targetType.getSimpleName());
+                return adapter;
+            }
+            tried.add(interfaceType);
+            log.trace("No interface adapter from {} ({}) to {}", interfaceType.getSimpleName(), originalSourceType.getSimpleName(), targetType.getSimpleName());
+        }
+        // try super-types
+        Class<?> superType = refinedSourceType.getSuperclass();
+        if (superType == null) {
+            // found no adapter yet and have no more super-types to try
+            if (warnIfNoneFound) {
+                log.warn("No adapter found from={} to target={}. Tried types: {}", originalSourceType.getSimpleName(), targetType.getSimpleName(), tried);
+            }
+            return null;
+        }
+        return _findAdapterFromTo(originalSourceType, superType, targetType, tried, warnIfNoneFound);
+    }
+
+    /**
      * Adapts a value to the specified target type, throwing an exception if no adapter is found.
      *
      * @param value      the object to adapt.
@@ -57,7 +100,7 @@ public class TypeAdapters {
      */
     public <T, A> A adaptOrThrow(T value, Class<A> targetType) {
         Class<?> sourceType = value.getClass();
-        ITypeAdapter<T, A> adapter = findAdapterFromTo(sourceType, targetType, null);
+        ITypeAdapter<T, A> adapter = _findAdapterFromTo(sourceType, sourceType, targetType, null, true);
         if (adapter == null) {
             throw new IllegalArgumentException("No adapter registered for " + value.getClass() + " (or any of its super-types) -> " + targetType);
         }
@@ -75,7 +118,7 @@ public class TypeAdapters {
      */
     public <T, A> @Nullable A adaptTo(T value, Class<A> targetType) {
         Class<?> sourceType = value.getClass();
-        ITypeAdapter<T, A> adapter = findAdapterFromTo(sourceType, targetType, null);
+        ITypeAdapter<T, A> adapter = _findAdapterFromTo(sourceType, sourceType, targetType, null, false);
         if (adapter == null) {
             return null;
         }
@@ -83,7 +126,8 @@ public class TypeAdapters {
     }
 
     /**
-     * Finds an adapter that exactly matches the given source and target types, without searching super-types or interfaces.
+     * Finds an adapter that exactly matches the given source and target types, without searching super-types or
+     * interfaces.
      *
      * @param sourceType the source class.
      * @param targetType the target class.
@@ -96,56 +140,18 @@ public class TypeAdapters {
     }
 
     /**
-     * Finds an adapter for the given source and target types, searching super-classes and interfaces if no direct adapter is found.
+     * Finds an adapter for the given source and target types, searching super-classes and interfaces if no direct
+     * adapter is found.
      *
-     * @param sourceType the source class.
-     * @param targetType the target class.
-     * @param <A>        the target type.
-     * @param <T>        the source type.
+     * @param <A>             the target type.
+     * @param <T>             the source type.
+     * @param sourceType      the source class.
+     * @param targetType      the target class.
+     * @param warnIfNoneFound
      * @return the matching {@link ITypeAdapter}, or {@code null} if not found.
      */
-    public <A, T> @Nullable ITypeAdapter<T, A> findAdapterFromTo(Class<?> sourceType, Class<A> targetType) {
-        return findAdapterFromTo(sourceType, targetType, null);
-    }
-
-    /**
-     * Internal implementation for finding an adapter, with a mechanism to avoid cycles during recursive search.
-     *
-     * @param sourceType   the source class.
-     * @param targetType   the target class.
-     * @param alreadyTried a set of classes that have already been checked, to prevent infinite loops.
-     * @param <A>          the target type.
-     * @param <T>          the source type.
-     * @return the matching {@link ITypeAdapter}, or {@code null} if not found.
-     */
-    public <A, T> @Nullable ITypeAdapter<T, A> findAdapterFromTo(Class<?> sourceType, Class<A> targetType, @Nullable HashSet<Class<?>> alreadyTried) {
-        ITypeAdapter<T, A> adapter = exactAdapterFromTo(sourceType, targetType);
-        if (adapter != null)
-            return adapter;
-
-        // hard mode
-        log.trace("No direct adapter from {} to {}", sourceType.getSimpleName(), targetType.getSimpleName());
-        HashSet<Class<?>> tried = alreadyTried == null ? new HashSet<>() : alreadyTried;
-        tried.add(sourceType);
-
-        //try interfaces of sourceType
-        for (Class<?> interfaceType : allInterfacesOf(sourceType)) {
-            adapter = exactAdapterFromTo(interfaceType, targetType);
-            if (adapter != null) {
-                log.trace("FOUND interface adapter from {} ({}) to {}", interfaceType.getSimpleName(), sourceType.getSimpleName(), targetType.getSimpleName());
-                return adapter;
-            }
-            tried.add(interfaceType);
-            log.trace("No interface adapter from {} ({}) to {}", interfaceType.getSimpleName(), sourceType.getSimpleName(), targetType.getSimpleName());
-        }
-        // try super-types
-        Class<?> superType = sourceType.getSuperclass();
-        if (superType == null) {
-            // found no adapter yet and have no more super-types to try
-            log.warn("No adapter found to {}. Tried types: {}", targetType.getSimpleName(), tried);
-            return null;
-        }
-        return findAdapterFromTo(superType, targetType, tried);
+    public <A, T> @Nullable ITypeAdapter<T, A> findAdapterFromTo(Class<?> sourceType, Class<A> targetType, boolean warnIfNoneFound) {
+        return _findAdapterFromTo(sourceType, sourceType, targetType, null, warnIfNoneFound);
     }
 
     /**
