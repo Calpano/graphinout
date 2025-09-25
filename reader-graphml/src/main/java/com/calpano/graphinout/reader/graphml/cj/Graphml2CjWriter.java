@@ -2,6 +2,7 @@ package com.calpano.graphinout.reader.graphml.cj;
 
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
+import com.calpano.graphinout.foundation.util.Nullables;
 
 public class Graphml2CjWriter extends Graphml2CjDocument implements GraphmlWriter {
 
@@ -13,7 +14,7 @@ public class Graphml2CjWriter extends Graphml2CjDocument implements GraphmlWrite
 
     @Override
     public void documentEnd() {
-        super.resultDoc().fire(cjWriter);
+        Nullables.ifPresentAccept(resultDoc(), doc->doc.fire(cjWriter));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.calpano.graphinout.base.graphml.impl;
 
+import com.calpano.graphinout.base.graphml.CjGraphmlMapping;
 import com.calpano.graphinout.base.graphml.GraphmlDataType;
 import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
 import com.calpano.graphinout.base.graphml.IGraphmlDefault;
@@ -105,6 +106,10 @@ public class GraphmlKey extends GraphmlElementWithDescAndId implements IGraphmlK
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, attrName, attrType, forType, defaultValue);
+    }
+
+    public boolean is(CjGraphmlMapping.GraphmlDataElement graphmlDataElement) {
+        return attrName.equals(graphmlDataElement.attrName);
     }
 
 

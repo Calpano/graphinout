@@ -91,7 +91,7 @@ public class CjDocument2Graphml {
         GraphmlDocumentBuilder graphmlBuilder = IGraphmlDocument.builder();
         // map _SOME_ cjData to native graphMl constructs
         writeData_Description(cjDoc, graphmlBuilder);
-        write_CustomAttributes(cjDoc, graphmlBuilder);
+        writeData_CustomAttributes(cjDoc, graphmlBuilder);
 
         // define which data types are used in this document
         List<IGraphmlKey> keys = new ArrayList<>();
@@ -115,12 +115,12 @@ public class CjDocument2Graphml {
             graphmlWriter.key(key);
         }
 
-        // emit other cjData as graphMl data
-        toGraphmlData(cjDoc, graphmlDatas::add);
         // emit graphml document level data
         for (IGraphmlData graphmlData : graphmlDatas) {
             graphmlWriter.data(graphmlData);
         }
+        // emit other cjData as graphMl data
+        writeData_Json(cjDoc);
 
         cjDoc.graphs().forEach(cjGraph -> {
             try {
@@ -164,7 +164,7 @@ public class CjDocument2Graphml {
                 ifPresentAccept(targetEp.port(), edgeBuilder::targetPortId);
 
                 writeData_Description(cjEdge, edgeBuilder);
-                write_CustomAttributes(cjEdge, edgeBuilder);
+                writeData_CustomAttributes(cjEdge, edgeBuilder);
 
                 graphmlWriter.edgeStart(edgeBuilder.build());
             }
@@ -182,7 +182,7 @@ public class CjDocument2Graphml {
                 ifPresentAccept(cjEp.port(), graphmlEndpoint::port);
 
                 writeData_Description(cjEdge, builder);
-                write_CustomAttributes(cjEdge, builder);
+                writeData_CustomAttributes(cjEdge, builder);
 
                 builder.addEndpoint(graphmlEndpoint.build());
             }
@@ -220,7 +220,7 @@ public class CjDocument2Graphml {
         GraphmlGraphBuilder graphmlBuilder = IGraphmlGraph.builder();
 
         ifPresentAccept(cjGraph.id(), graphmlBuilder::id);
-        write_CustomAttributes(cjGraph, graphmlBuilder);
+        writeData_CustomAttributes(cjGraph, graphmlBuilder);
         new GraphmlParseInfo(GraphmlParseInfo.Ids.free, GraphmlParseInfo.Ids.free, GraphmlParseInfo.ParseOrder.nodesfirst, (int) cjGraph.countNodesDirect(), (int) cjGraph.countEdgesDirect()).toXmlAttributes(graphmlBuilder::attribute);
 
         writeData_Description(cjGraph, graphmlBuilder);
@@ -268,7 +268,7 @@ public class CjDocument2Graphml {
     public void writeNode(ICjNode cjNode) throws IOException {
         GraphmlNodeBuilder graphmlBuilder = IGraphmlNode.builder();
         ifPresentAccept(cjNode.id(), graphmlBuilder::id);
-        write_CustomAttributes(cjNode, graphmlBuilder);
+        writeData_CustomAttributes(cjNode, graphmlBuilder);
         writeData_Description(cjNode, graphmlBuilder);
         graphmlWriter.nodeStart(graphmlBuilder.build());
 
@@ -298,7 +298,7 @@ public class CjDocument2Graphml {
     public void writePort(ICjPort cjPort) throws IOException {
         GraphmlPortBuilder portBuilder = IGraphmlPort.builder();
         portBuilder.name(cjPort.id());
-        write_CustomAttributes(cjPort, portBuilder);
+        writeData_CustomAttributes(cjPort, portBuilder);
         writeData_Description(cjPort, portBuilder);
         graphmlWriter.portStart(portBuilder.build());
 
@@ -315,10 +315,11 @@ public class CjDocument2Graphml {
         graphmlWriter.portEnd();
     }
 
-    private void toGraphmlData(ICjHasData cjHasData, Consumer<IGraphmlData> graphmlDataConsumer) {
-        cjHasData.onDataValue(json -> graphmlDataConsumer.accept( //
-                GraphmlDataElement.CjJsonData.toGraphmlData(json.toJsonString()) //
-        ));
+    private void writeData_CustomAttributes(ICjHasData cjHasData, GraphmlElementBuilder<?> graphmlElement) {
+        cjHasData.onDataValue(json -> {
+            json.resolve(CjGraphmlMapping.CjDataProperty.CustomXmlAttributes.cjPropertyKey, xmlAttributes -> //
+                    xmlAttributes.onProperties((k, v) -> graphmlElement.attribute(k, v.asString())));
+        });
     }
 
 /*
@@ -329,6 +330,7 @@ public class CjDocument2Graphml {
     }
 */
 
+    /** Write CJ .data.description to GraphMl {@code <desc>} in builder */
     private void writeData_Description(ICjHasData cjHasData, GraphmlElementWithDescBuilder<?> gHasDesc) {
         assert cjHasData != null;
         cjHasData.onDataValue(json -> {
@@ -337,6 +339,7 @@ public class CjDocument2Graphml {
         });
     }
 
+    /** Write CJ .data to GraphMl {@code <data>} */
     private void writeData_Json(ICjHasData cjHasData) throws IOException {
         ICjData data = cjHasData.data();
         if (data == null) return;
@@ -345,13 +348,6 @@ public class CjDocument2Graphml {
             IGraphmlData gd = GraphmlDataElement.CjJsonData.toGraphmlData(value.toJsonString());
             graphmlWriter.data(gd);
         }
-    }
-
-    private void write_CustomAttributes(ICjHasData cjHasData, GraphmlElementBuilder<?> graphmlElement) {
-        cjHasData.onDataValue(json -> {
-            json.resolve(CjGraphmlMapping.CjDataProperty.CustomXmlAttributes.cjPropertyKey, xmlAttributes -> //
-                    xmlAttributes.onProperties((k, v) -> graphmlElement.attribute(k, v.asString())));
-        });
     }
 
 

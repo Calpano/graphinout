@@ -24,6 +24,7 @@ import com.calpano.graphinout.base.cj.element.impl.CjGraphElement;
 import com.calpano.graphinout.base.cj.element.impl.CjNodeElement;
 import com.calpano.graphinout.base.graphml.CjGraphmlMapping;
 import com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty;
+import com.calpano.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement;
 import com.calpano.graphinout.base.graphml.GraphmlDirection;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.IGraphmlData;
@@ -40,6 +41,7 @@ import com.calpano.graphinout.base.graphml.IGraphmlKey;
 import com.calpano.graphinout.base.graphml.IGraphmlNode;
 import com.calpano.graphinout.base.graphml.IGraphmlPort;
 import com.calpano.graphinout.base.graphml.impl.GraphmlKey;
+import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
 import com.calpano.graphinout.foundation.json.stream.IJsonTypedStringWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
@@ -91,10 +93,9 @@ public class Graphml2CjDocument implements GraphmlWriter {
     public void data(IGraphmlData graphmlData) {
         ICjHasDataMutable cjHasData = stack.peek(ICjHasDataMutable.class);
 
-        // map <data id="..." key="...">...</data>
+        // the <data> element itself might have an id-attribute; we store it
         ifPresentAccept(graphmlData.id(), id -> //
-                cjHasData.addData(json -> //
-                        json.addProperty(CjDataProperty.DataId.cjPropertyKey, id)));
+                cjHasData.addData(json -> json.addProperty(CjDataProperty.DataId.cjPropertyKey, id)));
 
         String graphmlKey = graphmlData.key();
         assert graphmlKey != null;
@@ -106,24 +107,25 @@ public class Graphml2CjDocument implements GraphmlWriter {
         assert propName != null : "Key '" + graphmlKey + "' has no attrName?";
         String graphmlDataValue = graphmlData.value();
 
-        if (key.attrName().equals(CjGraphmlMapping.GraphmlDataElement.Label.attrName)) {
-            ICjLabel cjLabel = ICjLabel.fromJson(graphmlDataValue);
+        // interpret GraphMl <data> and map (back to) CJ
+        if (key.is(GraphmlDataElement.Label)) {
+            // read CJ label encoded in GraphMl data as JSON string
+            ICjLabel cjLabel = ICjLabel.fromPlainTextOrJson(graphmlDataValue);
             // attach to parent
             ICjHasLabelMutable hasLabel = (ICjHasLabelMutable) cjHasData;
             hasLabel.setLabel(label -> cjLabel.entries().forEach(cjEntry -> label.addEntry(entry -> {
                 entry.language(cjEntry.language());
                 entry.value(cjEntry.value());
             })));
-            // FIXME emit cjLabel, attach to parent before it is emitted
-        } else if (key.attrName().equals(CjGraphmlMapping.GraphmlDataElement.EdgeType.attrName)) {// map back to json
+        } else if (key.is(GraphmlDataElement.EdgeType)) {// map back to json
             ICjEdgeType edgeType = ICjEdgeType.fromJsonString(graphmlDataValue);
             assert cjHasData instanceof ICjEdgeMutable;
             ((ICjEdgeMutable) cjHasData).edgeType(edgeType);
-        } else if (key.attrName().equals(CjGraphmlMapping.GraphmlDataElement.CjJsonData.attrName)) {// map back to json
+        } else if (key.is(GraphmlDataElement.CjJsonData)) {// map back to json
             //  parse JSON
             IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(graphmlDataValue);
             cjHasData.addData(json -> json.set(jsonValue));
-        } else if (key.attrName().equals(CjGraphmlMapping.GraphmlDataElement.BaseUri.attrName)) {
+        } else if (key.is(GraphmlDataElement.BaseUri)) {
             // map back to native CJ baseUri
             if (cjHasData instanceof ICjDocumentChunkMutable) {
                 ((ICjDocumentChunkMutable) cjHasData).baseUri(graphmlDataValue);
@@ -131,12 +133,12 @@ public class Graphml2CjDocument implements GraphmlWriter {
                 // treat as generic data
                 copyData(graphmlData, key, cjHasData);
             }
-        } else if (key.attrName().equals(CjGraphmlMapping.GraphmlDataElement.SyntheticNode.attrName)) {
-            // TODO the node at which this data is attached is just synthetic, not needed in CJ
-
-            // map back to json
-            // FIXME parse JSON instead
-            cjHasData.addData(json -> json.set(graphmlDataValue));
+        } else if (key.is(GraphmlDataElement.SyntheticNode)) {
+            assert graphmlDataValue.equals("true");
+            // add a marker in CJ node, so we can strip it out once the full document is constructed
+            assert cjHasData instanceof ICjNodeMutable;
+            cjHasData.addData(json -> json.addProperty(CjGraphmlMapping.CjDataProperty.SyntheticNode.cjPropertyKey,
+                    json.factory().createBoolean(true)));
         } else {// other, generic GraphML <data> tags
             copyData(graphmlData, key, cjHasData);
         }
@@ -146,7 +148,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
     @Override
     public void documentEnd() {
         this.cjDoc = stack.pop(CjDocumentElement.class);
-        // postProcess(this.cjDoc);
+        postProcess(this.cjDoc);
     }
 
     @Override
@@ -305,7 +307,8 @@ public class Graphml2CjDocument implements GraphmlWriter {
         // remove synthetic nodes and put their graph as direct child of parent graph
 
         // FIND [../graphs/nodes/*/data] WHERE [./syntheticNode = true]
-        // FIXME how to do the '..' part?
+
+
         List<String> path = KPaths.of("../graphs/[$graph]/nodes/[$node]/data");
 
         PathResolver pathResolver = PathResolver.create();
@@ -316,24 +319,34 @@ public class Graphml2CjDocument implements GraphmlWriter {
         pathResolver.registerMap(ICjNode.class, value -> //
                 IMapLike.ofProperty("data", value::data));
 
+        // FIXME KILL
+        List<String> testpath = KPaths.of("../graphs");
+        List<Result> test = pathResolver.resolveAll(cjDoc, testpath);
+
+
+
         List<Result> graph_node_data = pathResolver.resolveAll(cjDoc, path);
         List<Result> data_with_syntheticNode = graph_node_data.stream().filter(o -> {
-            List<Result> list = pathResolver.resolve1(o.value(), "syntheticNode");
-            assert list.size() == 1;
-            assert list.getFirst().value() instanceof Boolean;
-            Boolean b = (Boolean) list.getFirst().value();
-            return b == true;
+            List<Result> list = pathResolver.resolve1(o.value(), CjDataProperty.SyntheticNode.cjPropertyKey);
+            if (list.isEmpty()) return false;
+            assert list.size() == 1 : "Exactly one result for 'syntheticNode' in " + o.value() + ". Got " + list.size();
+            assert list.getFirst().value() instanceof IMagicMutableJsonValue;
+            IMagicMutableJsonValue mm = (IMagicMutableJsonValue) list.getFirst().value();
+            return mm.asPrimitive().asBoolean() == true;
         }).toList();
 
         for (Result data : data_with_syntheticNode) {
-            assert data.values().size() == 4;
-            assert data.values().get(0) instanceof ICjDocument;
-            assert data.values().get(1) instanceof ICjGraph;
-            assert data.values().get(2) instanceof ICjNode;
-            assert data.values().get(3) instanceof ICjData;
-            CjGraphElement graph = (CjGraphElement) data.values().get(1);
-            CjNodeElement syntheticNode = (CjNodeElement) data.values().get(2);
-            ICjData data_ = (ICjData) data.values().get(3);
+            assert data.values().size() == 7;
+            assert data.values().get(0) instanceof ICjDocument : "root is always at 0";
+            assert data.values().get(1) instanceof ICjDocument : "reached via '..'  step as well";
+            assert data.values().get(2) instanceof List : "array of graphs";
+            assert data.values().get(3) instanceof ICjGraph : "reached via 'graphs' step";
+            assert data.values().get(4) instanceof List : "array of nodes";
+            assert data.values().get(5) instanceof ICjNode : "reached via 'nodes' step";
+            assert data.values().get(6) instanceof ICjData : "reached via 'data' step";
+            CjGraphElement graph = (CjGraphElement) data.values().get(3);
+            CjNodeElement syntheticNode = (CjNodeElement) data.values().get(5);
+            ICjData data_ = (ICjData) data.values().get(6);
 
             List<ICjGraph> subGraphs = syntheticNode.graphs().toList();
             assert subGraphs.size() == 1;

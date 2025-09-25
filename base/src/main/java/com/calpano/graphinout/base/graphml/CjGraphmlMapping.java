@@ -1,5 +1,6 @@
 package com.calpano.graphinout.base.graphml;
 
+import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
 
@@ -25,7 +26,14 @@ public interface CjGraphmlMapping {
         CustomXmlAttributes("graphml:xmlAttributes"),
 
         /** Graph-level default directedness of edges. */
-        EdgeDefault("graphml:edgeDefault");
+        EdgeDefault("graphml:edgeDefault"),
+
+        /**
+         * Transient marker for synthetic nodes which had been created in the first place in GraphML to represent
+         * graph-graph nesting, which GraphMl does not allow, so graph-synthNode-graph is needed.
+         * Usually removed in post-processing a {@link CjDocumentElement}.
+         */
+        SyntheticNode("graphml:syntheticNode");
 
         public final String cjPropertyKey;
 

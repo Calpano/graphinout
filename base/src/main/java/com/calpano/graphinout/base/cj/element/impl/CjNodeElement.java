@@ -24,7 +24,6 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
         graphs.add(graphElement);
     }
 
-
     public void addPort(Consumer<ICjPortMutable> port) {
         CjPortElement portElement = new CjPortElement();
         port.accept(portElement);
@@ -46,7 +45,6 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
         cjWriter.nodeEnd();
     }
 
-
     @Override
     public Stream<ICjGraph> graphs() {
         return graphs.stream().map(x -> (ICjGraph) x);
@@ -61,7 +59,6 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
     public void id(String id) {
         this.id = id;
     }
-
 
     @Override
     public Stream<ICjPort> ports() {

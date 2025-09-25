@@ -20,7 +20,7 @@ class CjLabelTest {
         assertNotNull(json);
         assertThat(json).isEqualTo("""
                 [{"language":"de","value":"Gummibärchen"},{"value":"gummy bear"}]""");
-        ICjLabel label2 = ICjLabel.fromJson(json);
+        ICjLabel label2 = ICjLabel.fromPlainTextOrJson(json);
         assertThat(json).isEqualTo(label2.toJsonString());
     }
 

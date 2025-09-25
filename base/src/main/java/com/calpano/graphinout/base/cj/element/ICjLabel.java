@@ -7,30 +7,37 @@ import com.calpano.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.Json2StringWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.stream.Stream;
 
 import static com.calpano.graphinout.foundation.util.Nullables.mapOrNull;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public interface ICjLabel extends ICjElement {
 
-    static ICjLabel fromJson(String json) {
-        Json2JavaJsonWriter json2JavaJsonWriter = new Json2JavaJsonWriter();
-        try {
-            JsonReaderImpl jsonReader = new JsonReaderImpl();
-            jsonReader.read(SingleInputSourceOfString.of("json", json), json2JavaJsonWriter);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        IJsonValue jsonValue = json2JavaJsonWriter.jsonValue();
+    Logger _log = getLogger(ICjLabel.class);
+
+    static ICjLabel fromPlainTextOrJson(String plainTextOrJson) {
         CjLabelElement cjLabelElement = new CjLabelElement();
-        jsonValue.asArray().forEach(jsonEntry -> {
-            cjLabelElement.addEntry(cjEntry -> {
-                cjEntry.language(mapOrNull(jsonEntry.asObject().get("language"), IJsonValue::asString));
-                cjEntry.value(mapOrNull(jsonEntry.asObject().get("value"), IJsonValue::asString));
+        try {
+            Json2JavaJsonWriter json2JavaJsonWriter = new Json2JavaJsonWriter();
+            JsonReaderImpl jsonReader = new JsonReaderImpl();
+            jsonReader.read(SingleInputSourceOfString.of("json", plainTextOrJson), json2JavaJsonWriter);
+            IJsonValue jsonValue = json2JavaJsonWriter.jsonValue();
+            jsonValue.asArray().forEach(jsonEntry -> {
+                cjLabelElement.addEntry(cjEntry -> {
+                    cjEntry.language(mapOrNull(jsonEntry.asObject().get("language"), IJsonValue::asString));
+                    cjEntry.value(mapOrNull(jsonEntry.asObject().get("value"), IJsonValue::asString));
+                });
             });
-        });
+        } catch (IOException e) {
+            _log.debug("Could not parse JSON from <<" + plainTextOrJson + ">>");
+            cjLabelElement.addEntry(cjEntry -> {
+                cjEntry.value(plainTextOrJson);
+            });
+        }
         return cjLabelElement;
     }
 
