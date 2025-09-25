@@ -35,7 +35,7 @@ class XMLNamespaceHandlingTest {
         Path pathIn = Path.of("../base/src/test/resources/xml/namespace/XMLNamespaceHandlingTest1.xml");
         String expected = """
                 <?xml version="1.0" encoding="UTF-8"?>
-                <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd">
                 </graphml>""";
         String actual = parse(pathIn);
         assertEquals(expected, actual);
@@ -46,7 +46,7 @@ class XMLNamespaceHandlingTest {
         Path pathIn = Path.of("../base/src/test/resources/xml/namespace/XMLNamespaceHandlingTest2.xml");
         String expected = """
                 <?xml version="1.0" encoding="UTF-8"?>
-                <graphml xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd" xmlns:foo="http://foo.com" xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:foo="http://foo.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd">
                 </graphml>"""; //
         String actual = parse(pathIn);
         assertEquals(expected, actual);
