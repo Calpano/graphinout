@@ -25,7 +25,9 @@ import com.calpano.graphinout.base.cj.element.impl.CjNodeElement;
 import com.calpano.graphinout.base.graphml.CjGraphmlMapping;
 import com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty;
 import com.calpano.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement;
+import com.calpano.graphinout.base.graphml.GraphmlDataType;
 import com.calpano.graphinout.base.graphml.GraphmlDirection;
+import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.IGraphmlData;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
@@ -102,7 +104,12 @@ public class Graphml2CjDocument implements GraphmlWriter {
         // process keyDefs to find mapped attName
         assert !keyDefinitions.isEmpty() : "got data " + graphmlKey + " but no keyDef for it";
         GraphmlKey key = keyDefinitions.get(graphmlKey);
-        assert key != null : "Found no <key> for '" + graphmlKey + "'. Have " + keyDefinitions.keySet();
+
+        if (key == null) {
+            log.warn("Found no <key id=...> for <data key='" + graphmlKey + "'>. Have these keys: " + keyDefinitions.keySet() + ". Assuming type string.");
+            key = new GraphmlKey(null, graphmlKey, IGraphmlDescription.builder().value("auto-created missing key").build(), graphmlKey, GraphmlDataType.typeString.graphmlName(), GraphmlKeyForType.All, null);
+        }
+
         String propName = key.attrName();
         assert propName != null : "Key '" + graphmlKey + "' has no attrName?";
         String graphmlDataValue = graphmlData.value();
@@ -137,8 +144,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
             assert graphmlDataValue.equals("true");
             // add a marker in CJ node, so we can strip it out once the full document is constructed
             assert cjHasData instanceof ICjNodeMutable;
-            cjHasData.addData(json -> json.addProperty(CjGraphmlMapping.CjDataProperty.SyntheticNode.cjPropertyKey,
-                    json.factory().createBoolean(true)));
+            cjHasData.addData(json -> json.addProperty(CjGraphmlMapping.CjDataProperty.SyntheticNode.cjPropertyKey, json.factory().createBoolean(true)));
         } else {// other, generic GraphML <data> tags
             copyData(graphmlData, key, cjHasData);
         }
@@ -322,7 +328,6 @@ public class Graphml2CjDocument implements GraphmlWriter {
         // FIXME KILL
         List<String> testpath = KPaths.of("../graphs");
         List<Result> test = pathResolver.resolveAll(cjDoc, testpath);
-
 
 
         List<Result> graph_node_data = pathResolver.resolveAll(cjDoc, path);

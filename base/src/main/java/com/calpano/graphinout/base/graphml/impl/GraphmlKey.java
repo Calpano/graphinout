@@ -60,7 +60,7 @@ public class GraphmlKey extends GraphmlElementWithDescAndId implements IGraphmlK
      */
     private final @Nullable IGraphmlDefault defaultValue;
 
-    public GraphmlKey(Map<String, String> extraAttrib, String id, IGraphmlDescription desc, //
+    public GraphmlKey(@Nullable Map<String, String> extraAttrib, String id, IGraphmlDescription desc, //
                       @Nullable String attrName, @Nullable String attrType, @Nullable GraphmlKeyForType forType, @Nullable IGraphmlDefault defaultValue) {
         super(extraAttrib, id, desc);
         this.attrName = nonNullOrDefault(attrName, id);
