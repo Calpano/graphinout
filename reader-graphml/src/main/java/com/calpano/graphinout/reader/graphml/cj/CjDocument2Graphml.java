@@ -10,8 +10,10 @@ import com.calpano.graphinout.base.cj.element.ICjHasData;
 import com.calpano.graphinout.base.cj.element.ICjLabel;
 import com.calpano.graphinout.base.cj.element.ICjNode;
 import com.calpano.graphinout.base.cj.element.ICjPort;
+import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.graphml.CjGraphmlMapping;
 import com.calpano.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement;
+import com.calpano.graphinout.base.graphml.GraphmlDataType;
 import com.calpano.graphinout.base.graphml.GraphmlDirection;
 import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
 import com.calpano.graphinout.base.graphml.GraphmlParseInfo;
@@ -35,17 +37,23 @@ import com.calpano.graphinout.base.graphml.builder.GraphmlGraphBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlHyperEdgeBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlNodeBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlPortBuilder;
+import com.calpano.graphinout.base.graphml.impl.GraphmlKey;
+import com.calpano.graphinout.foundation.json.JsonType;
+import com.calpano.graphinout.foundation.json.value.IJsonObject;
+import com.calpano.graphinout.foundation.json.value.IJsonTypedString;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
+import com.calpano.graphinout.foundation.json.value.java.JavaJsonObject;
+import com.calpano.graphinout.foundation.util.MapSet;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import static com.calpano.graphinout.foundation.util.Nullables.ifPresentAccept;
 
@@ -55,17 +63,10 @@ import static com.calpano.graphinout.foundation.util.Nullables.ifPresentAccept;
 public class CjDocument2Graphml {
 
     private final GraphmlWriter graphmlWriter;
-
-    /** data@id -> key@for -> <key> */
-    private final Map<String, Map<GraphmlKeyForType, IGraphmlKey>> dataId_for_key = new HashMap<>();
+    private final List<IGraphmlKey> keys = new ArrayList<>();
 
     public CjDocument2Graphml(GraphmlWriter graphmlWriter) {
         this.graphmlWriter = graphmlWriter;
-    }
-
-    public static void writeToGraphml(ICjDocument cjDoc, GraphmlWriter graphmlWriter) throws IOException {
-        assert cjDoc != null;
-        new CjDocument2Graphml(graphmlWriter).writeDocumentToGraphml(cjDoc);
     }
 
 //    // FIXME use it
@@ -78,11 +79,34 @@ public class CjDocument2Graphml {
 //                subMap.get(GraphmlKeyForType.All));
 //    }
 
+    public static boolean mapsToIndividualGraphmlProperties(IJsonValue value) {
+        if (!value.isObject()) return false;
+        IJsonObject o = value.asObject();
+        // are all properties primitive values?
+        return o.properties().filter(e->!e.getKey().startsWith("graphml:")).map(Map.Entry::getValue) //
+                .allMatch(v -> IJsonValue.isPrimitive(v) || IJsonTypedString.isTypedString(v));
+    }
+
+    public static void writeToGraphml(ICjDocument cjDoc, GraphmlWriter graphmlWriter) throws IOException {
+        assert cjDoc != null;
+        new CjDocument2Graphml(graphmlWriter).writeDocumentToGraphml(cjDoc);
+    }
+
     public void writeCjLabelAsGraphmlData(@Nullable ICjLabel cjLabel) throws IOException {
         if (cjLabel == null) {
             return;
         }
-        this.graphmlWriter.data(GraphmlDataElement.Label.toGraphmlData(cjLabel.toJsonString()));
+
+        String value;
+        if (cjLabel.entries().count() == 1 && cjLabel.entries().toList().getFirst().language() == null) {
+            // represent as simple string
+            value = cjLabel.entries().toList().getFirst().value();
+        } else {
+            // represent as JSON
+            value = cjLabel.toJsonString();
+        }
+
+        this.graphmlWriter.data(GraphmlDataElement.Label.toGraphmlData(value));
     }
 
     /** Write given document to GraphML */
@@ -94,13 +118,60 @@ public class CjDocument2Graphml {
         writeData_CustomAttributes(cjDoc, graphmlBuilder);
 
         // define which data types are used in this document
-        List<IGraphmlKey> keys = new ArrayList<>();
         if (cjDoc.baseUri() != null) {
             keys.add(GraphmlDataElement.BaseUri.toGraphmlKey());
         }
         keys.add(GraphmlDataElement.EdgeType.toGraphmlKey());
         keys.add(GraphmlDataElement.Label.toGraphmlKey());
-        keys.add(GraphmlDataElement.SyntheticNode.toGraphmlKey());
+
+        // are synthetic nodes used in this doc?
+        boolean usesSyntheticNodes = findAllDatas((CjDocumentElement) cjDoc) //
+                .map(ICjData::jsonValue).filter(Objects::nonNull) //
+                .filter(IJsonValue::isObject).map(IJsonValue::asObject) //
+                .anyMatch(o -> o.hasProperty(CjGraphmlMapping.CjDataProperty.SyntheticNode.cjPropertyKey));
+        if (usesSyntheticNodes) {
+            keys.add(GraphmlDataElement.SyntheticNode.toGraphmlKey());
+        }
+
+        MapSet<String, Object> usedTypes = MapSet.create();
+        findAllDatas((CjDocumentElement) cjDoc) //
+                .map(ICjData::jsonValue).filter(Objects::nonNull) //
+                .filter(IJsonValue::isObject).map(IJsonValue::asObject) //
+                .flatMap(IJsonObject::properties).forEach(prop -> {
+                    IJsonValue value = prop.getValue();
+                    Object type;
+                    if(IJsonTypedString.isTypedString(value)) {
+                        type = "TypedString";
+                    } else {
+                        type = value.jsonType();
+                    }
+                    usedTypes.add(prop.getKey(), type);
+                });
+        // add key elements for all simple usedTypes
+        usedTypes.forEach((key, set) -> {
+            if(key.startsWith("graphml:")) {
+                // these are representing data in CJ that has a native GraphML construct,
+                // so no need to express additionally as <key> / <data>
+                return;
+            }
+
+            if (set.size() != 1) return;
+            Object type = set.iterator().next();
+            if(type instanceof JsonType jsonType) {
+                if (jsonType.valueType() == JsonType.ValueType.Primitive) {
+                    keys.add(new GraphmlKey(null, key, //
+                            IGraphmlDescription.builder().value("cj-json to graphml").build(), //
+                            key, CjGraphmlMapping.toGraphmlType(jsonType).graphmlName, GraphmlKeyForType.All, null));
+                }
+            } else if (type.equals("TypedString")) {
+                keys.add(new GraphmlKey(null, key, //
+                        IGraphmlDescription.builder().value("Typed string").build(), //
+                        key, GraphmlDataType.typeString.graphmlName, GraphmlKeyForType.All, null));
+            } else {
+                throw new AssertionError("Unknown type: " + type);
+            }
+        });
+
         // prepare <key> for CJ:data (graphml needs it pre-declared)
         keys.add(GraphmlDataElement.CjJsonData.toGraphmlKey());
 
@@ -315,11 +386,8 @@ public class CjDocument2Graphml {
         graphmlWriter.portEnd();
     }
 
-    private void writeData_CustomAttributes(ICjHasData cjHasData, GraphmlElementBuilder<?> graphmlElement) {
-        cjHasData.onDataValue(json -> {
-            json.resolve(CjGraphmlMapping.CjDataProperty.CustomXmlAttributes.cjPropertyKey, xmlAttributes -> //
-                    xmlAttributes.onProperties((k, v) -> graphmlElement.attribute(k, v.asString())));
-        });
+    private Stream<ICjData> findAllDatas(CjDocumentElement cjDoc) {
+        return cjDoc.allElements().filter(e -> e instanceof ICjHasData).map(e -> ((ICjHasData) e).data()).filter(Objects::nonNull);
     }
 
 /*
@@ -330,6 +398,13 @@ public class CjDocument2Graphml {
     }
 */
 
+    private void writeData_CustomAttributes(ICjHasData cjHasData, GraphmlElementBuilder<?> graphmlElement) {
+        cjHasData.onDataValue(json -> {
+            json.resolve(CjGraphmlMapping.CjDataProperty.CustomXmlAttributes.cjPropertyKey, xmlAttributes -> //
+                    xmlAttributes.onProperties((k, v) -> graphmlElement.attribute(k, v.asString())));
+        });
+    }
+
     /** Write CJ .data.description to GraphMl {@code <desc>} in builder */
     private void writeData_Description(ICjHasData cjHasData, GraphmlElementWithDescBuilder<?> gHasDesc) {
         assert cjHasData != null;
@@ -339,14 +414,62 @@ public class CjDocument2Graphml {
         });
     }
 
+    private IGraphmlKey findKey(String id) {
+        return keys.stream().filter(graphmlKey -> graphmlKey.id_().equals(id)) //
+                .findFirst().orElse(null);
+    }
+
     /** Write CJ .data to GraphMl {@code <data>} */
     private void writeData_Json(ICjHasData cjHasData) throws IOException {
         ICjData data = cjHasData.data();
         if (data == null) return;
         IJsonValue value = data.jsonValue();
         if (value != null) {
-            IGraphmlData gd = GraphmlDataElement.CjJsonData.toGraphmlData(value.toJsonString());
-            graphmlWriter.data(gd);
+            if(value.isPrimitive() || value.isArray()) {
+                IGraphmlData graphmlData = GraphmlDataElement.CjJsonData.toGraphmlData(value.toJsonString());
+                graphmlWriter.data(graphmlData);
+                return;
+            }
+            // copy to new, mutable object
+            JavaJsonObject mutableObject = JavaJsonObject.copyOf(value.asObject());
+            mutableObject.removePropertyIf( key -> key.startsWith("graphml:"));
+
+            // decide how to express this data in GraphML
+            if (mapsToIndividualGraphmlProperties(mutableObject)) {
+                // write as individual properties
+                mutableObject.forEach((key, val) -> //
+                {
+                    IGraphmlKey graphmlKey = findKey(key);
+                    assert graphmlKey != null : "no key found for " + key + " in " + keys;
+                    IGraphmlData graphmlData = toGraphmlData(graphmlKey, val);
+                    try {
+                        graphmlWriter.data(graphmlData);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            } else {
+                IGraphmlData graphmlData = GraphmlDataElement.CjJsonData.toGraphmlData(value.toJsonString());
+                graphmlWriter.data(graphmlData);
+            }
+        }
+    }
+
+    private IGraphmlData toGraphmlData(IGraphmlKey key, IJsonValue jsonValue) {
+        if(IJsonTypedString.isTypedString(jsonValue)) {
+            // special
+            IJsonTypedString typedString = IJsonTypedString.asJsonTypedString(jsonValue);
+            if(typedString.type().equals(IJsonTypedString.TYPE_XML)) {
+                String xml = typedString.value();
+                return IGraphmlData.ofRawXml(key.id(), xml);
+            } else {
+                throw new IllegalArgumentException("Unknown type for JsonTypedString '" + typedString.type() +
+                        "'");
+            }
+        } else if (jsonValue.isPrimitive()) {
+            return key.toGraphmlData(""+jsonValue.asPrimitive().base());
+        } else {
+            return key.toGraphmlData(jsonValue.toJsonString());
         }
     }
 

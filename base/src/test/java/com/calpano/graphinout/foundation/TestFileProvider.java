@@ -80,13 +80,13 @@ public class TestFileProvider {
         return files(SRC_TEST_RESOURCES + "json/cj/canonical", EXTENSIONS_CJ_JSON);
     }
 
-    public static Stream<Arguments> cjResourcesCanonical() throws Exception {
-        return resources(  "json/cj/canonical", EXTENSIONS_CJ_JSON);
-    }
-
     /** Only extended */
     public static Stream<Arguments> cjFilesExtended() throws Exception {
         return files(SRC_TEST_RESOURCES + "json/cj/canonical", EXTENSIONS_CJ_JSON);
+    }
+
+    public static Stream<Arguments> cjResourcesCanonical() throws Exception {
+        return resources("json/cj/canonical", EXTENSIONS_CJ_JSON);
     }
 
     /**

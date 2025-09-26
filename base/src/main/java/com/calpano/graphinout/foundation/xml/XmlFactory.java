@@ -22,12 +22,13 @@ public class XmlFactory {
             factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
             factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            // report namespace declarations as attributes
+            factory.setFeature("http://xml.org/sax/features/namespace-prefixes",true);
         } catch (Exception e) {
             // Some parsers may not support all features
             log.warn("Warning: Could not set a security feature on the SAX parser.");
         }
-        SAXParser saxParser = factory.newSAXParser();
-        return saxParser;
+        return factory.newSAXParser();
     }
 
 }

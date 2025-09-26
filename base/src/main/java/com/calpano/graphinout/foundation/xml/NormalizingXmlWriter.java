@@ -13,7 +13,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 @SuppressWarnings("UnusedReturnValue")
-public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends DelegatingXmlWriter {
+public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> implements XmlWriter {
 
 
     public interface Action {
@@ -27,8 +27,6 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
     @FunctionalInterface
     public interface AttributeAction extends Action, Function<Map<String, String>, Map<String, String>> {
 
-        default Kind kind() { return Kind.Attribute;}
-
         default Map<String, String> apply(Map<String, String> attributes) {
             return attributes(attributes);
         }
@@ -40,12 +38,14 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
          */
         Map<String, String> attributes(Map<String, String> attributes);
 
+        default Kind kind() {return Kind.Attribute;}
+
     }
 
     @FunctionalInterface
     public interface ElementSkipAction extends Action, BiPredicate<String, Map<String, String>> {
 
-        default Kind kind() { return Kind.ElementSkip;}
+        default Kind kind() {return Kind.ElementSkip;}
 
         /**
          * Action can skip an element
@@ -60,10 +60,12 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
         }
 
     }
+
     /** currently open mixed-content-model elements */
     private final Stack<String> stackOfContentElements = new Stack<>();
     private final StringBuilder charBuffer = new StringBuilder();
     private final MapMap<String, Action.Kind, Action> elementActions = MapMap.create();
+    private final XmlWriter xmlWriter;
     private String skipElementsUntil = null;
     /** XML element names with mixed content model (#PCDATA). null = treat ALL elements as mixed content. */
     private Set<String> contentElements = null;
@@ -71,12 +73,22 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
     /**
      * @param downstreamXmlWriter to forward to
      */
-    public NormalizingXmlWriter(XmlWriter downstreamXmlWriter) {super(downstreamXmlWriter);}
+    public NormalizingXmlWriter(XmlWriter downstreamXmlWriter) {this.xmlWriter = downstreamXmlWriter;}
 
     public T addAction(String name, Action action) {
         Action prev = elementActions.put(name, action.kind(), action);
         assert prev == null : "action already added for name=" + name + " action=" + action;
         return this_();
+    }
+
+    @Override
+    public void cdataEnd() throws IOException {
+        xmlWriter.cdataEnd();
+    }
+
+    @Override
+    public void cdataStart() throws IOException {
+        xmlWriter.cdataStart();
     }
 
     @Override
@@ -96,13 +108,15 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
         }
         // emit
         String c = charBuffer.toString();
+        if(charBuffer.isEmpty())
+            return;
         if (isInContentElement() || isInCdata) {
             // forward only when inside a (maybe nested) content element OR when in CDATA
-            super.characterData(c, isInCdata);
+            xmlWriter.characterData(c, isInCdata);
         } else {
             //  forward only non-whitespace content
             if (!c.trim().isEmpty()) {
-                super.characterData(c, false);
+                xmlWriter.characterData(c, false);
             }
         }
         charBuffer.setLength(0);
@@ -112,9 +126,20 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
     public void characterDataStart(boolean isInCdata) {
         if (skipElementsUntil != null) {
             // we are in skipMode
+            //noinspection UnnecessaryReturnStatement
             return;
         }
         //   _log.info("characterDataStart: {}", isInCdata);
+    }
+
+    @Override
+    public void documentEnd() throws IOException {
+        xmlWriter.documentEnd();
+    }
+
+    @Override
+    public void documentStart() throws IOException {
+        xmlWriter.documentStart();
     }
 
     @Override
@@ -134,7 +159,7 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
             String started = stackOfContentElements.pop();
             assert name.equals(started);
         }
-        super.elementEnd(name);
+        xmlWriter.elementEnd(name);
     }
 
     @Override
@@ -170,7 +195,7 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
             sortedAtts.putAll(attributes);
         }
 
-        super.elementStart(name, sortedAtts);
+        xmlWriter.elementStart(name, sortedAtts);
     }
 
     /** @return inside a (maybe nested) content element */
@@ -181,6 +206,16 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> extends Del
 
     public boolean isMixedContentElement(String name) {
         return contentElements == null || contentElements.contains(name);
+    }
+
+    @Override
+    public void lineBreak() throws IOException {
+        xmlWriter.lineBreak();
+    }
+
+    @Override
+    public void raw(String rawXml) throws IOException {
+        xmlWriter.raw(rawXml);
     }
 
     /**

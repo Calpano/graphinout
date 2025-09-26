@@ -1,16 +1,11 @@
 package com.calpano.graphinout.foundation.json.stream;
 
+import com.calpano.graphinout.foundation.json.value.IJsonTypedString;
+
 /**
- * Our custom JSON extension: Typed strings. This transports the fact that a string should not be XML encoded when
- * written. Instead, it contains #PCDATA, i.e., XML tags, which should be emitted as-is.
- * <p>
- * Encodes as <code>{ "type": "xml", "value": "foo<em>bar</em>" }</code>. Design alternative would have been to encode
- * as <code>{ "xml": "foo<em>bar</em>" }</code>.
+ * See {@link IJsonTypedString}.
  */
 public interface IJsonTypedStringWriter extends IHasJsonValueWriter {
-
-    String TYPE = "type";
-    String VALUE = "value";
 
     /**
      * @param type  string type
@@ -19,10 +14,10 @@ public interface IJsonTypedStringWriter extends IHasJsonValueWriter {
     default void onTypedString(String type, String value) {
         jsonValueWriter().objectStart();
 
-        jsonValueWriter().onKey(TYPE);
+        jsonValueWriter().onKey(IJsonTypedString.TYPE);
         jsonValueWriter().onString(type);
 
-        jsonValueWriter().onKey(VALUE);
+        jsonValueWriter().onKey(IJsonTypedString.VALUE);
         jsonValueWriter().onString(value);
 
         jsonValueWriter().objectEnd();

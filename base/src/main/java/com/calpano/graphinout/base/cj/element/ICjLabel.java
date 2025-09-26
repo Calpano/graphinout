@@ -9,7 +9,6 @@ import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.util.stream.Stream;
 
 import static com.calpano.graphinout.foundation.util.Nullables.mapOrNull;
@@ -39,6 +38,11 @@ public interface ICjLabel extends ICjElement {
             });
         }
         return cjLabelElement;
+    }
+
+    @Override
+    default Stream<ICjElement> directChildren() {
+        return entries().map(x -> x);
     }
 
     Stream<ICjLabelEntry> entries();

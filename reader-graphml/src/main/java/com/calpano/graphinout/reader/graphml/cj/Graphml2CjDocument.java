@@ -44,8 +44,8 @@ import com.calpano.graphinout.base.graphml.IGraphmlNode;
 import com.calpano.graphinout.base.graphml.IGraphmlPort;
 import com.calpano.graphinout.base.graphml.impl.GraphmlKey;
 import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
-import com.calpano.graphinout.foundation.json.stream.IJsonTypedStringWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.calpano.graphinout.foundation.json.value.IJsonTypedString;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.calpano.graphinout.foundation.util.PowerStackOnClasses;
 import com.calpano.graphinout.foundation.util.path.IMapLike;
@@ -217,7 +217,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
             }
 
             if (graphmlGraph.locator() != null) {
-                // FIXME
+                // FIXME ad to CJ data
                 throw new IllegalArgumentException("CJ has no locator support");
             }
         });
@@ -296,8 +296,8 @@ public class Graphml2CjDocument implements GraphmlWriter {
         cjHasData.addData(json -> //
                 json.addProperty(propName, j -> {
                     if (graphmlData.isRawXml()) {
-                        j.addProperty(IJsonTypedStringWriter.TYPE, "xml");
-                        j.addProperty(IJsonTypedStringWriter.VALUE, graphmlDataValue);
+                        j.addProperty(IJsonTypedString.TYPE,  IJsonTypedString.TYPE_XML);
+                        j.addProperty(IJsonTypedString.VALUE, graphmlDataValue);
                     } else {
                         j.set(graphmlData.value());
                         json.addProperty(propName, graphmlData.value());
@@ -326,11 +326,6 @@ public class Graphml2CjDocument implements GraphmlWriter {
         pathResolver.registerMap(ICjNode.class, value -> //
                 IMapLike.ofProperty("data", value::data));
 
-        // FIXME KILL
-        List<String> testpath = KPaths.of("../graphs");
-        List<Result> test = pathResolver.resolveAll(cjDoc, testpath);
-
-
         List<Result> graph_node_data = pathResolver.resolveAll(cjDoc, path);
         List<Result> data_with_syntheticNode = graph_node_data.stream().filter(o -> {
             List<Result> list = pathResolver.resolve1(o.value(), CjDataProperty.SyntheticNode.cjPropertyKey);
@@ -352,7 +347,6 @@ public class Graphml2CjDocument implements GraphmlWriter {
             assert data.values().get(6) instanceof ICjData : "reached via 'data' step";
             CjGraphElement graph = (CjGraphElement) data.values().get(3);
             CjNodeElement syntheticNode = (CjNodeElement) data.values().get(5);
-            ICjData data_ = (ICjData) data.values().get(6);
 
             List<ICjGraph> subGraphs = syntheticNode.graphs().toList();
             assert subGraphs.size() == 1;

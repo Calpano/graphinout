@@ -2,6 +2,8 @@ package com.calpano.graphinout.foundation.xml;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Map.Entry.comparingByKey;
@@ -11,11 +13,18 @@ import static java.util.Map.Entry.comparingByKey;
  */
 public class Xml2AppendableWriter implements XmlWriter {
 
+    public enum AttributeOrderPerElement {
+        /** which is random, when coming from a SAX parser */
+        AsWritten, Lexicographic
+    }
+
     protected final Appendable appendable;
+    private final AttributeOrderPerElement attributeOrder;
     private @Nullable String openedTagName = null;
 
-    public Xml2AppendableWriter(Appendable appendable) {
+    public Xml2AppendableWriter(Appendable appendable, AttributeOrderPerElement attributeOrderPerElement) {
         this.appendable = appendable;
+        this.attributeOrder = attributeOrderPerElement;
     }
 
     public static Xml2AppendableWriter createNoop() {
@@ -34,7 +43,7 @@ public class Xml2AppendableWriter implements XmlWriter {
             public Appendable append(char c) throws IOException {
                 return this;
             }
-        });
+        }, AttributeOrderPerElement.Lexicographic);
     }
 
     @Override
@@ -73,10 +82,10 @@ public class Xml2AppendableWriter implements XmlWriter {
 
     @Override
     public void elementEnd(String name) throws IOException {
-        if (this.openedTagName != null) {
+        if (noContentWasWrittenAfterStartingLastElement()) {
             // No content was written, so self-close
             appendable.append("/>");
-            this.openedTagName = null;
+            resetSelfClosingElementMarker();
         } else {
             // proper XML closing element
             appendable.append("</");
@@ -85,12 +94,18 @@ public class Xml2AppendableWriter implements XmlWriter {
         }
     }
 
+    /** auto-sort attributes on write */
     @Override
     public void elementStart(String name, Map<String, String> attributes) throws IOException {
         maybeWriteOpeningTagClosingAngleBracket();
         appendable.append("<");
         appendable.append(name);
-        for (Map.Entry<String, String> entry : attributes.entrySet().stream().sorted(comparingByKey()).toList()) {
+        List<Map.Entry<String, String>> attList = attributes.entrySet().stream().toList();
+        if (attributeOrder == AttributeOrderPerElement.Lexicographic) {
+            attList = new ArrayList<>(attList);
+            attList.sort(comparingByKey());
+        }
+        for (Map.Entry<String, String> entry : attList) {
             appendable.append(" ");
             appendable.append(entry.getKey());
             appendable.append("=\"");
@@ -99,7 +114,7 @@ public class Xml2AppendableWriter implements XmlWriter {
             appendable.append("\"");
         }
         // note we didnt write the '>' or '/>' yet
-        this.openedTagName = name;
+        markStartedElementWithNoContentYetAs(name);
     }
 
     @Override
@@ -114,11 +129,23 @@ public class Xml2AppendableWriter implements XmlWriter {
         appendable.append(rawXml);
     }
 
+    private void markStartedElementWithNoContentYetAs(String name) {
+        this.openedTagName = name;
+    }
+
     private void maybeWriteOpeningTagClosingAngleBracket() throws IOException {
-        if (this.openedTagName != null) {
+        if (noContentWasWrittenAfterStartingLastElement()) {
             appendable.append('>');
-            this.openedTagName = null;
+            resetSelfClosingElementMarker();
         }
+    }
+
+    private boolean noContentWasWrittenAfterStartingLastElement() {
+        return openedTagName != null;
+    }
+
+    private void resetSelfClosingElementMarker() {
+        this.openedTagName = null;
     }
 
 }

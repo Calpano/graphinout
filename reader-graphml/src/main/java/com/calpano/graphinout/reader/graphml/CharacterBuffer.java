@@ -10,7 +10,7 @@ public class CharacterBuffer extends DelegatingXmlWriter implements XmlWriter {
 
     public CharacterBuffer() {
         characterBuffer = new StringBuilder();
-        Xml2AppendableWriter rawXmlWriter = new Xml2AppendableWriter(characterBuffer);
+        Xml2AppendableWriter rawXmlWriter = new Xml2AppendableWriter(characterBuffer, Xml2AppendableWriter.AttributeOrderPerElement.Lexicographic);
         super.addWriter(rawXmlWriter);
     }
 

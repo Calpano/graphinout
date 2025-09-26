@@ -11,6 +11,10 @@ public class PowerStackOnClasses<S> {
         return new PowerStackOnClasses<>();
     }
 
+    public S peek() {
+        return stack.peek();
+    }
+
     /**
      * Peeks the top element and expects it to be of the given clazz.
      *

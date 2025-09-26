@@ -2,10 +2,13 @@ package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjType;
+import com.calpano.graphinout.base.cj.element.ICjElement;
 import com.calpano.graphinout.base.cj.element.ICjEndpointMutable;
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
 
 import javax.annotation.Nullable;
+
+import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 

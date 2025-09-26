@@ -20,6 +20,22 @@ public interface XmlWriter {
             <?xml version="1.0" encoding="UTF-8"?>""";
 
     /**
+     * TODO DOCUMENT
+     *
+     * @param uri
+     * @param localName
+     * @param qName
+     * @return
+     */
+    static String tagName(String uri, String localName, String qName) {
+        if (uri.isEmpty() || localName.isEmpty()) {
+            return qName;
+        } else {
+            return localName;
+        }
+    }
+
+    /**
      * CDATA sections are signaled redundantly in two ways: 1) In {@link #cdataStart()} and <code>cdataEnd()</code>. 2)
      * in the flag in {@link #characterData(String, boolean)}.
      */
@@ -106,13 +122,31 @@ public interface XmlWriter {
      *
      * @param name redundantly, the ending elements name.
      */
+    @Deprecated
     void elementEnd(String name) throws IOException;
+
+    default void elementEnd(String uri, String localName, String qName) throws IOException {
+        elementEnd(tagName(uri, localName, qName));
+    }
 
     default void elementStart(String name) throws IOException {
         elementStart(name, Collections.emptyMap());
     }
 
-    void elementStart(String name, Map<String, String> attributes) throws IOException;
+    /**
+     *
+     * @param uri
+     * @param localName
+     * @param qName
+     * @param attributes "The order of attributes in the list is unspecified, and will vary from implementation to implementation."
+     * @throws IOException
+     */
+    default void elementStart(String uri, String localName, String qName, Map<String, String> attributes) throws IOException {
+        elementStart(tagName(uri, localName, qName), attributes);
+    }
+
+    @Deprecated
+    void elementStart(String tagName, Map<String, String> attributes) throws IOException;
 
     /**
      * Write a \n to the output. Line breaks can also occur within {@link #characterData(String, boolean)}.

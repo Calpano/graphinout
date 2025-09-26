@@ -6,16 +6,21 @@ import com.calpano.graphinout.foundation.json.value.IJsonValue;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public interface ICjData extends ICjElement {
+
+    @Override
+    default Stream<ICjElement> directChildren() {
+        return Stream.empty();
+    }
 
     default @Nullable IJsonValue jsonValue() {
         IMagicMutableJsonValue mutableJsonValue = jsonValueMutable();
         if (mutableJsonValue == null) {
             return null;
         }
-        if (mutableJsonValue.jsonType() == JsonType.Undefined)
-            return null;
+        if (mutableJsonValue.jsonType() == JsonType.Undefined) return null;
         return mutableJsonValue;
     }
 

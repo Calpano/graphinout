@@ -2,6 +2,7 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.graphml.CjGraphmlMapping;
 import com.calpano.graphinout.base.graphml.Graphml;
+import com.calpano.graphinout.base.graphml.IGraphmlGraph;
 import com.calpano.graphinout.foundation.xml.AttMaps;
 import com.calpano.graphinout.foundation.xml.NormalizingXmlWriter;
 import com.calpano.graphinout.foundation.xml.XML;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import static com.calpano.graphinout.base.graphml.GraphmlElements.DESC;
 import static com.calpano.graphinout.base.graphml.GraphmlElements.GRAPH;
 import static com.calpano.graphinout.base.graphml.GraphmlElements.GRAPHML;
 import static com.calpano.graphinout.base.graphml.GraphmlElements.KEY;
@@ -35,6 +37,9 @@ public class NormalizingGraphmlWriter extends NormalizingXmlWriter<NormalizingGr
             String id = atts.get("id");
             return skippedKeyIds.contains(id);
         });
+
+        // <desc> elements not deemed important for tests
+        addAction(DESC, (ElementSkipAction) (name, atts) -> true);
 
         addAction(KEY, (AttributeAction) atts ->
                 // remove redundant default <key for="all"/>
@@ -63,8 +68,10 @@ public class NormalizingGraphmlWriter extends NormalizingXmlWriter<NormalizingGr
         });
         addAction(GRAPH, (AttributeAction) atts -> {
             TreeMap<String, String> sortedAtts = new TreeMap<>(atts);
-            // remove redundant default <graph edgedefault="undirected"/>
-            AttMaps.removeIf(sortedAtts, "edgedefault", "undirected");
+
+            // remove redundant edgedefault="directed"
+            AttMaps.removeIf(sortedAtts, "edgedefault", IGraphmlGraph.EdgeDefault.DEFAULT_EDGE_DEFAULT.graphmlString());
+
             // remove parseInfo, i.e. <graph> attributes names starting with "parse."
             for (String parseKey : sortedAtts.keySet().stream().filter(k -> k.startsWith("parse.")).toList()) {
                 sortedAtts.remove(parseKey);

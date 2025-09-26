@@ -2,6 +2,7 @@ package com.calpano.graphinout.foundation.json.value.java;
 
 import com.calpano.graphinout.foundation.json.stream.impl.Json2StringWriter;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
+import com.calpano.graphinout.foundation.json.value.IJsonObject;
 import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
@@ -14,6 +15,12 @@ import java.util.TreeMap;
 public class JavaJsonObject implements IJsonObjectMutable {
 
     private final Map<String, IJsonValue> map = new TreeMap<>();
+
+    public static JavaJsonObject copyOf(IJsonObject object) {
+        JavaJsonObject copy = new JavaJsonObject();
+        object.forEach(copy::addProperty);
+        return copy;
+    }
 
     public static IJsonObjectAppendable of(Map<String, IJsonValue> map) {
         return new JavaJsonObject().putAll(map);

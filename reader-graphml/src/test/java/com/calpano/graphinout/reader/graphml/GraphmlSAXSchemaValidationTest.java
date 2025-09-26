@@ -54,7 +54,7 @@ public class GraphmlSAXSchemaValidationTest {
             List<ContentError> contentErrors = new ArrayList<>();
             graphmlReader.errorHandler(contentErrors::add);
             boolean isValid = graphmlReader.isValid(singleInputSource);
-            Map<String, Long> expectedErrors = expectedErrors("graphin/graphml/aws/AWS - Analytics.graphml");
+            Map<String, Long> expectedErrors = expectedErrors("xml/graphml/aws/AWS - Analytics.graphml");
 
             Map<String, Long> map = contentErrors.stream().collect(Collectors.groupingBy(ContentError::toString, Collectors.counting()));
             for (Map.Entry<String, Long> entry : map.entrySet()) {

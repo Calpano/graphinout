@@ -10,7 +10,6 @@ import com.calpano.graphinout.base.cj.element.ICjGraphMutable;
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.calpano.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.Json2StringWriter;
-import com.fasterxml.jackson.core.io.SegmentedStringWriter;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

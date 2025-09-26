@@ -1,5 +1,6 @@
 package com.calpano.graphinout.foundation.xml;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -11,7 +12,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import java.io.File;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,6 +24,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class XmlTool {
 
     @SuppressWarnings("HttpUrlsUsage") public static final String PROPERTIES_LEXICAL_HANDLER = "http://xml.org/sax/properties/lexical-handler";
+    // The 5 XML predefined entities
+    final static Set<String> xmlEntities = Set.of("amp", "lt", "gt", "quot", "apos");
     private static final Logger log = getLogger(XmlTool.class);
     /**
      * NameStartChar  ::= ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] |
@@ -39,9 +44,12 @@ public class XmlTool {
     static Pattern P_ENTITYREF = Pattern.compile("&" + NAMESTART + "(" + NAME + ")*;");
     /** CharRef  ::=   '&#' [0-9]+ ';' | '&#x' [0-9a-fA-F]+ ';' */
     static Pattern P_CHARREF = Pattern.compile("&#([0-9]+|#x([0-9a-fA-F]+));");
-
     /** any ref */
     static Pattern P_REF = Pattern.compile(P_ENTITYREF.pattern() + "|" + P_CHARREF.pattern());
+
+    public static String ampEncode(String raw) {
+        return raw.replace("&", "&amp;");
+    }
 
     public static <T extends ContentHandler & LexicalHandler> XMLReader createXmlReaderOn(T contentHandlerAndLexicalHandler) throws SAXException, ParserConfigurationException {
         SAXParser saxParser = XmlFactory.createSaxParser();
@@ -49,6 +57,47 @@ public class XmlTool {
         reader.setProperty(PROPERTIES_LEXICAL_HANDLER, contentHandlerAndLexicalHandler);
         reader.setContentHandler(contentHandlerAndLexicalHandler);
         return reader;
+    }
+
+    /**
+     * This allows weird XML (including things like an '{@code }&nbsp;}') to be parsed by SAX parsers.
+     * <p>
+     * Replace all HTML entities with their Unicode entity equivalents, except the 5 XML predefined entities. E.g.
+     * '{@code &Eacute;}' becomes '{@code &#201;}'.
+     *
+     * @param xmlContent which may contain (X)HTML entities
+     * @return content with the HTML entities replaced
+     */
+    public static String htmlEntitiesToDecimalEntities(String xmlContent) {
+
+        Pattern entityPattern = Pattern.compile("&(?:([a-zA-Z]+)|#(?:x([0-9a-fA-F]+)|([0-9]+)));", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = entityPattern.matcher(xmlContent);
+        StringBuilder sb = new StringBuilder();
+        while (matcher.find()) {
+            if (matcher.group(1) != null) { // named entity
+                String name = matcher.group(1);
+                boolean isXmlEntity = xmlEntities.contains(name.toLowerCase());
+                if (isXmlEntity) {
+                    // no need to simplify
+                    matcher.appendReplacement(sb, "&" + name + ";");
+                } else if (HtmlEntities.contains(name)) {
+                    String replacement = HtmlEntities.getReplacement(name);
+                    assert replacement != null;
+                    matcher.appendReplacement(sb, replacement);
+                } else {
+                    // leave unknown as is
+                    matcher.appendReplacement(sb, "&" + name + ";");
+                }
+            } else if (matcher.group(2) != null) { // hex
+                int charValue = Integer.parseInt(matcher.group(2), 16);
+                matcher.appendReplacement(sb, Character.toString((char) charValue));
+            } else if (matcher.group(3) != null) { // decimal
+                int charValue = Integer.parseInt(matcher.group(3));
+                matcher.appendReplacement(sb, Character.toString((char) charValue));
+            }
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     public static void ifAttributeNotNull(Map<String, String> attributes, String attributeName, Consumer<String> consumer) {
@@ -73,7 +122,15 @@ public class XmlTool {
     public static void parseAndWriteXml(File xmlFile, XmlWriter xmlWriter) throws Exception {
         Sax2XmlWriter handler2XmlWriter = new Sax2XmlWriter(xmlWriter, xmlError -> log.warn("Error " + xmlError));
         XMLReader reader = XmlTool.createXmlReaderOn(handler2XmlWriter);
-        reader.parse(xmlFile.getAbsolutePath());
+
+        String content = FileUtils.readFileToString(xmlFile, StandardCharsets.UTF_8);
+        content = XmlTool.htmlEntitiesToDecimalEntities(content);
+        StringReader sr = new StringReader(content);
+        InputSource inputSource = new InputSource(xmlFile.getAbsolutePath());
+        inputSource.setCharacterStream(sr);
+        reader.parse(inputSource);
+
+//        reader.parse(xmlFile.getAbsolutePath());
     }
 
     public static void parseAndWriteXml(String xml, XmlWriter xmlWriter) throws Exception {
@@ -144,10 +201,6 @@ public class XmlTool {
                 .replace("<", "&lt;") //
                 .replace(">", "&gt;");
         return res;
-    }
-
-    public static String ampEncode(String raw) {
-        return raw.replace("&", "&amp;");
     }
 
 

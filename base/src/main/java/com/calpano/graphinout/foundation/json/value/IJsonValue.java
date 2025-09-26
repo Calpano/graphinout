@@ -13,6 +13,21 @@ import java.util.function.Consumer;
 
 public interface IJsonValue {
 
+    static boolean isPrimitive(@Nullable IJsonValue value) {
+        if (value == null)
+            return true;
+        return value.isPrimitive();
+    }
+
+    /**
+     * A special typed
+     * @param value
+     * @return
+     */
+    static boolean isTypedString(IJsonValue value) {
+        return value.isPrimitive();
+    }
+
     default IJsonArray asArray() throws ClassCastException {
         return (IJsonArray) this;
     }

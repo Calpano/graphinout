@@ -1,8 +1,10 @@
 package com.calpano.graphinout.base.graphml;
 
 import com.calpano.graphinout.base.gio.GioDataType;
+import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -56,10 +58,10 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
     default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
         name_value.accept(ATTRIBUTE_ID, this::id);
         name_value.accept(ATTRIBUTE_FOR, () -> forType().value);
-        if(!Objects.equals(id(), attrName())) {
+        if (!Objects.equals(id(), attrName())) {
             name_value.accept(ATTRIBUTE_ATTR_NAME, this::attrName);
         }
-        if(!GraphmlDataType.typeString.graphmlName.equals(attrType())) {
+        if (!GraphmlDataType.typeString.graphmlName.equals(attrType())) {
             name_value.accept(ATTRIBUTE_ATTR_TYPE, this::attrType);
         }
     }
@@ -68,6 +70,10 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
     @Override
     String id();
 
+    default @Nonnull String id_() {
+        return Objects.requireNonNull(id());
+    }
+
     @Override
     default String tagName() {
         return GraphmlElements.KEY;
@@ -75,6 +81,13 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
 
     default GioDataType toGioDataType() {
         return GioDataType.fromGraphmlName(attrType());
+    }
+
+    default IGraphmlData toGraphmlData(String value) {
+        return new GraphmlDataBuilder()//
+                .key(id())//
+                .value(value)//
+                .build();
     }
 
 }

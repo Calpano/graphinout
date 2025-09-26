@@ -84,7 +84,7 @@ public interface IListLike {
      * @param index index of the element to return.
      * @return the element at the specified position in this list.
      */
-    Object get(int index);
+    Object get(int index) throws ArrayIndexOutOfBoundsException;
 
     /**
      * @return the number of elements in this list.

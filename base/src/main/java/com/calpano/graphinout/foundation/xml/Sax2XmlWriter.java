@@ -16,6 +16,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -39,23 +40,12 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
         this.errorConsumer = errorConsumer;
     }
 
-    private static String tagName(String uri, String localName, String qName) {
-        String tagName = localName;
-        if (uri.isEmpty()) tagName = qName;
-        else if (tagName.isEmpty()) {
-            tagName = qName;
-        }
-        if (localName.isEmpty()) {
-            tagName = qName;
-        }
-        return tagName;
-    }
-
     private Boolean inCharacters = null;
 
     private void maybeEndCharacterData(boolean isInCdata) throws IOException {
         if (inCharacters != null && inCharacters == isInCdata) {
             xmlWriter.characterDataEnd(isInCdata);
+            inCharacters = null;
         }
     }
 
@@ -116,8 +106,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         try {
             maybeEndCharacterData(isInCdata);
-            String tagName = tagName(uri, localName, qName);
-            xmlWriter.elementEnd(tagName);
+            xmlWriter.elementEnd(uri, localName, qName);
         } catch (Exception e) {
             throw buildError(e);
         }
@@ -177,7 +166,9 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
             maybeEndCharacterData(isInCdata);
             Map<String, String> attMap = new HashMap<>();
             for (int i = 0; i < attributes.getLength(); i++) {
-                attMap.put(attributes.getQName(i), attributes.getValue(i));
+                String attributesQName = attributes.getQName(i);
+                String attributesValue = attributes.getValue(i);
+                attMap.put(attributesQName, attributesValue);
             }
             // On the first element, add all namespace declarations as xmlns attributes
             if (isFirstElement) {
@@ -188,8 +179,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
                 }
                 isFirstElement = false;
             }
-            String tagName = tagName(uri, localName, qName);
-            xmlWriter.elementStart(tagName, attMap);
+            xmlWriter.elementStart(uri,localName,qName, attMap);
         } catch (Exception e) {
             throw buildError(e);
         }

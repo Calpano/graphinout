@@ -14,6 +14,7 @@ import com.calpano.graphinout.base.graphml.IGraphmlKey;
 import com.calpano.graphinout.base.graphml.IGraphmlLocator;
 import com.calpano.graphinout.base.graphml.IGraphmlNode;
 import com.calpano.graphinout.base.graphml.IGraphmlPort;
+import com.calpano.graphinout.foundation.util.Nullables;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 import org.slf4j.Logger;
 
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 
+import static com.calpano.graphinout.foundation.util.Nullables.ifPresentAccept;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class Graphml2XmlWriter implements GraphmlWriter {
@@ -142,16 +144,23 @@ public class Graphml2XmlWriter implements GraphmlWriter {
         if (attributes.get(IGraphmlKey.ATTRIBUTE_FOR) != null && attributes.get(IGraphmlKey.ATTRIBUTE_FOR).equals("all"))
             attributes.remove(IGraphmlKey.ATTRIBUTE_FOR);
         xmlWriter.elementStart(GraphmlElements.KEY, attributes);
-        if (graphmlKey.desc() != null) {
-            graphmlKey.desc().writeXml(xmlWriter);
-        }
-        IGraphmlDefault defaultValue = graphmlKey.defaultValue();
-        if (defaultValue != null) {
-            xmlWriter.elementStart(GraphmlElements.DEFAULT, defaultValue.xmlPlusGraphmlAttributesNormalized());
-            // FIXME maybe not always correct
-            xmlWriter.raw(defaultValue.value());
-            xmlWriter.elementEnd(GraphmlElements.DEFAULT);
-        }
+        ifPresentAccept(graphmlKey.desc(), desc -> {
+            try {
+                desc.writeXml(xmlWriter);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        ifPresentAccept(graphmlKey.defaultValue(), defaultValue ->{
+            try {
+                xmlWriter.elementStart(GraphmlElements.DEFAULT, defaultValue.xmlPlusGraphmlAttributesNormalized());
+                // FIXME maybe not always correct
+                xmlWriter.raw(defaultValue.value());
+                xmlWriter.elementEnd(GraphmlElements.DEFAULT);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         xmlWriter.elementEnd(GraphmlElements.KEY);
     }
 

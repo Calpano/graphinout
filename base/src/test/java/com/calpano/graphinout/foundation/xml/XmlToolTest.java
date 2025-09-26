@@ -9,6 +9,28 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class XmlToolTest {
+    @Test
+    void testEntities2() {
+        String input = "&QUOT;";
+        String result = XmlTool.htmlEntitiesToDecimalEntities(input);
+        assertThat(result).isEqualTo("&QUOT;");
+    }
+    @Test
+    void testEntities3() {
+        String input = "<data key=\"d3\">M&Eacute;XICO#MEXICO</data>";
+        String result = XmlTool.htmlEntitiesToDecimalEntities(input);
+        assertThat(result).isEqualTo("<data key=\"d3\">M&#201;XICO#MEXICO</data>");
+    }
+
+    @Test
+    void testEntities() {
+        assertThat(HtmlEntities.getReplacement("&QUOT;")).isNull();
+        assertThat(HtmlEntities.getReplacement("&quot;")).isNull();
+        assertThat(HtmlEntities.contains("Eacute")).isTrue();
+        String input = "<root>content &nbsp;foo Café de Paris. &euro;&QUOT;&quot;</root>";
+        String result = XmlTool.htmlEntitiesToDecimalEntities(input);
+        assertThat(result).isEqualTo("<root>content &#160;foo Café de Paris. &#8364;&QUOT;&quot;</root>");
+    }
 
     @Test
     public void testNormalizeAttributeSorting() {

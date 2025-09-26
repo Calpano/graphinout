@@ -70,6 +70,7 @@ public class XmlFormatter {
             reader.setProperty(XmlTool.PROPERTIES_LEXICAL_HANDLER, sax2xmlWriter);
             reader.setErrorHandler(sax2xmlWriter);
 
+            xml = XmlTool.htmlEntitiesToDecimalEntities(xml);
             InputSource inputSource = new InputSource(new StringReader(xml));
             reader.parse(inputSource);
             return xmlWriter.string();

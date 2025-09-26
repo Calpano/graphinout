@@ -1,13 +1,17 @@
 package com.calpano.graphinout.base.cj.element.impl;
 
 import com.calpano.graphinout.base.cj.CjType;
+import com.calpano.graphinout.base.cj.element.ICjElement;
 import com.calpano.graphinout.base.cj.element.ICjLabelEntryMutable;
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class CjLabelEntryElement extends CjHasDataElement implements ICjLabelEntryMutable {
+
 
     private @Nullable String language;
     private String value;

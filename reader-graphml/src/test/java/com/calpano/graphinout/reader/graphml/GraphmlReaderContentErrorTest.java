@@ -67,7 +67,7 @@ class GraphmlReaderContentErrorTest {
     void readAllGraphmlFiles(String filePath) throws Exception {
 
         // FIXME #115
-        if (filePath.endsWith("graphin/graphml/invalidSchema/invalid-schema-1.graphml"))
+        if (filePath.endsWith("xml/graphml/invalidSchema/invalid-schema-1.graphml"))
             return;
 
         log.info("Start to parse file [{}]", filePath);

@@ -45,7 +45,7 @@ public class GraphmlTest {
         XmlFormatter.normalize(xml_in);
 
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        XmlWriter xmlWriter_out = new DelegatingXmlWriter(new Xml2AppendableWriter(System.out), xmlWriter);
+        XmlWriter xmlWriter_out = new DelegatingXmlWriter(new Xml2AppendableWriter(System.out, Xml2AppendableWriter.AttributeOrderPerElement.Lexicographic), xmlWriter);
         /* receive GraphMl events -> send XML events */
         Graphml2XmlWriter graphml2xml = new Graphml2XmlWriter(xmlWriter_out);
         /* receive XML events -> send Graphml events  */
