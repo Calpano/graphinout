@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <key attr.name="country1" attr.type="string" for="node" id="d1"/>
+    <key attr.name="country2" attr.type="string" for="node" id="d2"/>
+    <key attr.name="country3" attr.type="string" for="node" id="d3"/>
+    <graph edgedefault="undirected">
+        <node id="AGU_Aguascalientes">
+            <data key="d1">M&amp;X</data>
+            <data key="d2">M&quot;X</data>
+            <data key="d3">M&Eacute;XICO#MEXICO</data>
+        </node>
+    </graph>
+</graphml>
