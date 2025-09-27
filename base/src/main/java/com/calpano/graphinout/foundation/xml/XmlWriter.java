@@ -20,22 +20,6 @@ public interface XmlWriter {
             <?xml version="1.0" encoding="UTF-8"?>""";
 
     /**
-     * TODO DOCUMENT
-     *
-     * @param uri
-     * @param localName
-     * @param qName
-     * @return
-     */
-    static String tagName(String uri, String localName, String qName) {
-        if (uri.isEmpty() || localName.isEmpty()) {
-            return qName;
-        } else {
-            return localName;
-        }
-    }
-
-    /**
      * CDATA sections are signaled redundantly in two ways: 1) In {@link #cdataStart()} and <code>cdataEnd()</code>. 2)
      * in the flag in {@link #characterData(String, boolean)}.
      */
@@ -118,35 +102,48 @@ public interface XmlWriter {
     void documentStart() throws IOException;
 
     /**
+     *
+     * @param uri       '{@code http://example.org/schema/1.0}' -- the current namespace, often '' empty string.
+     * @param localName 'myElement' - excludes all namespace prefixes
+     * @param qName     'x:myElement' verbatim as written in XML
+     */
+    void elementEnd(String uri, String localName, String qName) throws IOException;
+
+    /**
      * This allows creating malformed XML but makes understanding errors easier
      *
-     * @param name redundantly, the ending elements name.
+     * @param xmlName redundantly, the ending elements name.
      */
-    @Deprecated
-    void elementEnd(String name) throws IOException;
-
-    default void elementEnd(String uri, String localName, String qName) throws IOException {
-        elementEnd(tagName(uri, localName, qName));
+    default void elementEnd(IXmlName xmlName) throws IOException {
+        elementEnd(xmlName.uri(), xmlName.localName(), xmlName.qName());
     }
 
-    default void elementStart(String name) throws IOException {
-        elementStart(name, Collections.emptyMap());
+    default void elementStart(IXmlName xmlName) throws IOException {
+        elementStart(xmlName.uri(), xmlName.localName(), xmlName.qName(), Collections.emptyMap());
+    }
+
+    default void elementStart(IXmlName xmlName, Map<String, String> attributes) throws IOException {
+        elementStart(xmlName.uri(), xmlName.localName(), xmlName.qName(), attributes);
+    }
+
+    default void elementStart(String uri, String localName, String qName) throws IOException {
+        elementStart(uri, localName, qName, Collections.emptyMap());
     }
 
     /**
      *
-     * @param uri
-     * @param localName
-     * @param qName
-     * @param attributes "The order of attributes in the list is unspecified, and will vary from implementation to implementation."
-     * @throws IOException
+     * @param uri        '{@code http://example.org/schema/1.0}' -- the current namespace, often '' empty string.
+     * @param localName  'myElement' - excludes all namespace prefixes
+     * @param qName      'x:myElement' verbatim as written in XML
+     * @param attributes "The order of attributes in the list is unspecified, and will vary from implementation to
+     *                   implementation."
      */
-    default void elementStart(String uri, String localName, String qName, Map<String, String> attributes) throws IOException {
-        elementStart(tagName(uri, localName, qName), attributes);
-    }
+    void elementStart(String uri, String localName, String qName, Map<String, String> attributes) throws IOException;
 
     @Deprecated
-    void elementStart(String tagName, Map<String, String> attributes) throws IOException;
+    default void elementStart(String tagName, Map<String, String> attributes) throws IOException {
+        elementStart(IXmlName.of(tagName), attributes);
+    }
 
     /**
      * Write a \n to the output. Line breaks can also occur within {@link #characterData(String, boolean)}.

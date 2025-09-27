@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,11 +29,11 @@ class XmlWriterTest {
     void test() throws IOException {
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
         xmlWriter.documentStart();
-        xmlWriter.elementStart("test");
+        xmlWriter.elementStart(IXmlName.of("test"));
         xmlWriter.characterDataStart(false);
         xmlWriter.characterData("test", false);
         xmlWriter.characterDataEnd(false);
-        xmlWriter.elementEnd("test");
+        xmlWriter.elementEnd(IXmlName.of("test"));
         xmlWriter.documentEnd();
         String s = xmlWriter.string();
         assertThat(s).isEqualTo(XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n" + "<test>test</test>");
@@ -45,9 +46,9 @@ class XmlWriterTest {
         String xml = "<root>" + chars + "</root>";
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
         xmlWriter.documentStart();
-        xmlWriter.elementStart("root");
+        xmlWriter.elementStart(IXmlName.of("root"));
         xmlWriter.characterDataWhichMayContainCdata(chars);
-        xmlWriter.elementEnd("root");
+        xmlWriter.elementEnd(IXmlName.of("root"));
         xmlWriter.documentEnd();
 
         String out = xmlWriter.string();
@@ -81,25 +82,25 @@ class XmlWriterTest {
         instance.documentStart();
 
 
-        instance.elementStart(GraphmlElements.GRAPHML);
+        instance.elementStart(IXmlName.of(GraphmlElements.GRAPHML), Collections.emptyMap());
         instance.elementStart(GraphmlElements.GRAPH, testGraphMap);
 
         instance.elementStart(GraphmlElements.NODE, testNode1Map);
-        instance.elementEnd(GraphmlElements.NODE);
+        instance.elementEnd(IXmlName.of(GraphmlElements.NODE));
 
         instance.elementStart(GraphmlElements.EDGE, testEdgeMap);
-        instance.elementEnd(GraphmlElements.EDGE);
+        instance.elementEnd(IXmlName.of(GraphmlElements.EDGE));
 
         instance.elementStart(GraphmlElements.NODE, testNode2Map);
-        instance.elementEnd(GraphmlElements.NODE);
+        instance.elementEnd(IXmlName.of(GraphmlElements.NODE));
 
         instance.elementStart(GraphmlElements.HYPER_EDGE, testNode2Map);
         instance.elementStart(GraphmlElements.ENDPOINT, testNode2Map);
-        instance.elementEnd(GraphmlElements.ENDPOINT);
-        instance.elementEnd(GraphmlElements.HYPER_EDGE);
+        instance.elementEnd(IXmlName.of(GraphmlElements.ENDPOINT));
+        instance.elementEnd(IXmlName.of(GraphmlElements.HYPER_EDGE));
 
-        instance.elementEnd(GraphmlElements.GRAPH);
-        instance.elementEnd(GraphmlElements.GRAPHML);
+        instance.elementEnd(IXmlName.of(GraphmlElements.GRAPH));
+        instance.elementEnd(IXmlName.of(GraphmlElements.GRAPHML));
 
         instance.documentEnd();
     }

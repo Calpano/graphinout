@@ -1,5 +1,6 @@
 package com.calpano.graphinout.foundation.xml.element;
 
+import com.calpano.graphinout.foundation.xml.IXmlName;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import java.io.IOException;
@@ -12,13 +13,11 @@ public class XmlElement extends XmlNode {
 
     /** we keep order, but in general SAX parsers have NO ORDER in their attributes */
     final Map<String, String> attributes = new LinkedHashMap<>();
-    final String tagName;
+    final IXmlName xmlName;
     final List<XmlNode> children = new ArrayList<>();
 
-    public XmlElement(String tagName) {this.tagName = tagName;}
-
-    public XmlElement(String name, Map<String, String> attributes) {
-        this.tagName = name;
+    public XmlElement(IXmlName xmlName, Map<String, String> attributes) {
+        this.xmlName = xmlName;
         this.attributes.putAll(attributes);
     }
 
@@ -35,11 +34,11 @@ public class XmlElement extends XmlNode {
     }
 
     public void fire(XmlWriter writer) throws IOException {
-        writer.elementStart(tagName, attributes);
+        writer.elementStart(xmlName, attributes);
         for (XmlNode node : children) {
             node.fire(writer);
         }
-        writer.elementEnd(tagName);
+        writer.elementEnd(xmlName);
     }
 
 

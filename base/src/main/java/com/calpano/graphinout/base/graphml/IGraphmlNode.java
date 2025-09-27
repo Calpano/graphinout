@@ -28,7 +28,7 @@ public interface IGraphmlNode extends IGraphmlElementWithDescAndId {
 
     @Override
     default String tagName() {
-        return "node";
+        return GraphmlElements.NODE;
     }
 
 }

@@ -27,7 +27,7 @@ class Sax2XmlWriterTest {
                 Mockito.mockingDetails(xmlWriter).printInvocations());
 
         inOrder.verify(xmlWriter).documentStart();
-        inOrder.verify(xmlWriter).elementStart(eq("aaa"), eq(Collections.emptyMap()));
+        inOrder.verify(xmlWriter).elementStart(eq(""),eq("aaa"),eq("aaa"), eq(Collections.emptyMap()));
         inOrder.verify(xmlWriter).characterDataStart(eq(false));
         inOrder.verify(xmlWriter).characterData(eq(" bbb "), eq(false));
         inOrder.verify(xmlWriter).cdataStart();
@@ -35,7 +35,7 @@ class Sax2XmlWriterTest {
         inOrder.verify(xmlWriter).cdataEnd();
         inOrder.verify(xmlWriter).characterData(eq(" "), eq(false));
         inOrder.verify(xmlWriter).characterDataEnd(eq(false));
-        inOrder.verify(xmlWriter).elementEnd(eq("aaa"));
+        inOrder.verify(xmlWriter).elementEnd(eq(""),eq("aaa"),eq("aaa"));
         inOrder.verify(xmlWriter).documentEnd();
     }
 

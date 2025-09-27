@@ -66,6 +66,17 @@ public class Nullables {
         }
     }
 
+    /**
+     * If the given value is not null, call the given consumer with it.
+     *
+     * @param <T> The type of the value
+     */
+    public static <T,E extends Throwable> void ifPresentAcceptThrowing(@Nullable T value, ThrowingConsumer<@NonNull T,E> consumer) throws E{
+        if (value != null) {
+            consumer.accept(value);
+        }
+    }
+
     public static <T, R> void ifPresentAccept(@Nullable T value, Function<T, R> mapFun, Consumer<R> consumer) {
         if (value == null) return;
         R r = mapFun.apply(value);

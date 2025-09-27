@@ -16,18 +16,18 @@ public class ValidatingXmlWriter extends DelegatingXmlWriter {
     }
 
     @Override
-    public void elementEnd(String name) throws IOException {
+    public void elementEnd(String uri, String localName, String qName) throws IOException {
         String expected = elements.pop();
-        if (expected == null || !expected.equals(name)) {
-            throw new IllegalStateException("XML nesting: Expected close of element '" + expected + "' but got '" + name + "'. Stack: " + this.elements);
+        if (expected == null || !expected.equals(localName)) {
+            throw new IllegalStateException("XML nesting: Expected close of element '" + expected + "' but got '" + localName + "'. Stack: " + this.elements);
         }
-        super.elementEnd(name);
+        super.elementEnd(uri, localName, qName);
     }
 
     @Override
-    public void elementStart(String name, Map<String, String> attributes) throws IOException {
-        elements.push(name);
-        super.elementStart(name, attributes);
+    public void elementStart(String uri, String localName, String qName, Map<String, String> attributes) throws IOException {
+        elements.push(localName);
+        super.elementStart(uri, localName, qName, attributes);
     }
 
 }

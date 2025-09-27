@@ -108,7 +108,7 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> implements 
         }
         // emit
         String c = charBuffer.toString();
-        if(charBuffer.isEmpty())
+        if (charBuffer.isEmpty())
             return;
         if (isInContentElement() || isInCdata) {
             // forward only when inside a (maybe nested) content element OR when in CDATA
@@ -143,9 +143,9 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> implements 
     }
 
     @Override
-    public void elementEnd(String name) throws IOException {
+    public void elementEnd(String uri, String localName, String qName) throws IOException {
         // deactivate skipMode?
-        if (name.equals(skipElementsUntil)) {
+        if (localName.equals(skipElementsUntil)) {
             skipElementsUntil = null;
             // but skip this elementEnd
             return;
@@ -155,37 +155,37 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> implements 
             return;
         }
 
-        if (isMixedContentElement(name)) {
+        if (isMixedContentElement(localName)) {
             String started = stackOfContentElements.pop();
-            assert name.equals(started);
+            assert localName.equals(started);
         }
-        xmlWriter.elementEnd(name);
+        xmlWriter.elementEnd(uri,localName,qName);
     }
 
     @Override
-    public void elementStart(String name, Map<String, String> attributes) throws IOException {
+    public void elementStart(String uri, String localName, String qName, Map<String, String> attributes) throws IOException {
         if (skipElementsUntil != null) {
             // skip element
             return;
         }
 
-        if (isMixedContentElement(name)) {
-            stackOfContentElements.push(name);
+        if (isMixedContentElement(localName)) {
+            stackOfContentElements.push(localName);
         }
 
-        @Nullable Action elementAction = elementActions.get(name, Action.Kind.ElementSkip);
+        @Nullable Action elementAction = elementActions.get(localName, Action.Kind.ElementSkip);
         if (elementAction != null) {
             assert elementAction instanceof ElementSkipAction : "action is not an instance of " + ElementSkipAction.class.getSimpleName();
-            boolean skip = ((ElementSkipAction) elementAction).test(name, attributes);
+            boolean skip = ((ElementSkipAction) elementAction).test(localName, attributes);
             if (skip) {
                 // skip it
-                skipElementsUntil = name;
+                skipElementsUntil = localName;
                 return;
             }
         }
 
         // work on attributes
-        Action attAction = elementActions.get(name, Action.Kind.Attribute);
+        Action attAction = elementActions.get(localName, Action.Kind.Attribute);
         // using TreeMap to sort attributes alphabetically
         Map<String, String> sortedAtts = new TreeMap<>();
         if (attAction instanceof AttributeAction attributeAction) {
@@ -195,7 +195,7 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> implements 
             sortedAtts.putAll(attributes);
         }
 
-        xmlWriter.elementStart(name, sortedAtts);
+        xmlWriter.elementStart(uri, localName, qName, sortedAtts);
     }
 
     /** @return inside a (maybe nested) content element */

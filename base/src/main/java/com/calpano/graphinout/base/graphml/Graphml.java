@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.graphml;
 
+import com.calpano.graphinout.foundation.xml.IXmlName;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,13 +19,10 @@ public class Graphml {
     /** For Graphml 1.0 and 1.1, YWorks Grapml 1.1 */
     public static String XMLNS_GRAPHML_1_x = "http://graphml.graphdrawing.org/xmlns";
     public static String XMLNS_YWORKS_1_0 = "http://graphml.graphdrawing.org/xmlns/graphml";
-
     /** "xsi:schemaLocation" 1.0 */
     public static String XSI_SCHEMA_LOCATION_1_0 = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
     /** "xsi:schemaLocation" 1.1 */
     public static String XSI_SCHEMA_LOCATION_1_1 = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd";
-
-
     static Map<String, Set<String>> parent_child;
 
     static {
@@ -50,6 +49,10 @@ public class Graphml {
     public static boolean isXmlChildElementWithIndependentGioWriterCall(String parent, String child) {
         Set<String> set = parent_child.get(parent);
         return set != null && set.contains(child);
+    }
+
+    public static IXmlName xmlNameOf(String graphmlLocalName) {
+        return IXmlName.of(XMLNS_GRAPHML_1_x, graphmlLocalName, graphmlLocalName);
     }
 
 }

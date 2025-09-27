@@ -67,14 +67,15 @@ public class DelegatingXmlWriter implements XmlWriter {
         forEachWriter(XmlWriter::documentStart);
     }
 
+
     @Override
-    public void elementEnd(String name) throws IOException {
-        forEachWriter(w -> w.elementEnd(name));
+    public void elementStart(String uri, String localName, String qName, Map<String, String> attributes) throws IOException {
+        forEachWriter(w->w.elementStart(uri, localName, qName, attributes));
     }
 
     @Override
-    public void elementStart(String name, Map<String, String> attributes) throws IOException {
-        forEachWriter(w -> w.elementStart(name, attributes));
+    public void elementEnd(String uri, String localName, String qName) throws IOException {
+        forEachWriter(w->w.elementEnd(uri, localName, qName));
     }
 
     @Override

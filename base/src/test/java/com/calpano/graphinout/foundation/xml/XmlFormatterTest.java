@@ -9,7 +9,7 @@ class XmlFormatterTest {
     @Test
     void testAmp() {
         String in = XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n<foo>bar&Eacute;</foo>";
-        String out = XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n<foo>bar&Eacute;</foo>";
+        String out = XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n<foo>barÉ</foo>";
         assertThat(XmlFormatter.normalize(in)).isEqualTo(out);
     }
 

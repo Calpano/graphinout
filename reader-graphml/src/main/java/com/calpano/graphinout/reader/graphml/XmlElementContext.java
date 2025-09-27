@@ -16,6 +16,7 @@ import com.calpano.graphinout.base.graphml.builder.GraphmlLocatorBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlNodeBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlPortBuilder;
 import com.calpano.graphinout.base.graphml.builder.ILocatorBuilder;
+import com.calpano.graphinout.foundation.xml.IXmlName;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -24,7 +25,7 @@ import java.util.Map;
 /** Helper class to track element context */
 public class XmlElementContext {
 
-    final String xmlElementName;
+    final IXmlName xmlElementName;
     final Map<String, String> xmlAttributes;
     /** is this element representing a raw XML element? */
     final boolean isRawXml;
@@ -38,7 +39,7 @@ public class XmlElementContext {
      * @param xmlAttributes  all XML attributes
      * @param isRawXml    is this any raw XML element from inside a data element? If false, this is a GraphML element
      */
-    XmlElementContext(@Nullable XmlElementContext parent, String xmlElementName, Map<String, String> xmlAttributes, boolean isRawXml, GraphmlElementBuilder<?> builder) {
+    XmlElementContext(@Nullable XmlElementContext parent, IXmlName xmlElementName, Map<String, String> xmlAttributes, boolean isRawXml, GraphmlElementBuilder<?> builder) {
         this.parent = parent;
         this.xmlElementName = xmlElementName;
         this.xmlAttributes = xmlAttributes;
@@ -124,7 +125,7 @@ public class XmlElementContext {
         if (parent != null) {
             parent.maybeWriteStartTo(graphmlWriter);
         }
-        switch (xmlElementName) {
+        switch (xmlElementName.localName()) {
             case GraphmlElements.DATA -> graphmlWriter.data(dataBuilder().build());
             case GraphmlElements.GRAPHML -> graphmlWriter.documentStart(documentBuilder().build());
             case GraphmlElements.GRAPH -> graphmlWriter.graphStart(graphBuilder().build());
@@ -152,7 +153,7 @@ public class XmlElementContext {
 
     public void writeEndTo(GraphmlWriter graphmlWriter) throws IOException {
         maybeWriteStartTo(graphmlWriter);
-        switch (xmlElementName) {
+        switch (xmlElementName.localName()) {
             case GraphmlElements.GRAPHML -> graphmlWriter.documentEnd();
             case GraphmlElements.GRAPH -> graphmlWriter.graphEnd();
             case GraphmlElements.NODE -> graphmlWriter.nodeEnd();

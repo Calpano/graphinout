@@ -2,6 +2,7 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.graphml.builder.GraphmlElementBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlGraphBuilder;
+import com.calpano.graphinout.foundation.xml.IXmlName;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -44,14 +45,14 @@ public class XmlParseContext {
         return context;
     }
 
-    public XmlElementContext pop(String expectedName) {
+    public XmlElementContext pop(String expectedLocalName) {
         assert !elementStack.isEmpty() : "Element stack is empty at pop";
         XmlElementContext context = elementStack.pop();
-        assert context.xmlElementName.equals(expectedName) : "Expected element '" + expectedName + "' but got '" + context.xmlElementName + "'";
+        assert context.xmlElementName.equals(expectedLocalName) : "Expected element '" + expectedLocalName + "' but got '" + context.xmlElementName + "'";
         return context;
     }
 
-    public XmlElementContext push(String elementName, Map<String, String> attributes, boolean isRawXml, GraphmlElementBuilder<?> builder, XmlMode xmlMode) {
+    public XmlElementContext push(IXmlName elementName, Map<String, String> attributes, boolean isRawXml, GraphmlElementBuilder<?> builder, XmlMode xmlMode) {
         XmlElementContext context = new XmlElementContext(peekNullable(), elementName, attributes, isRawXml, builder);
         elementStack.push(context);
         this.mode = xmlMode;

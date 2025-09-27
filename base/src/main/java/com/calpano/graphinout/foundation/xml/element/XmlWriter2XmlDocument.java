@@ -1,10 +1,10 @@
 package com.calpano.graphinout.foundation.xml.element;
 
 import com.calpano.graphinout.foundation.util.PowerStackOnClasses;
+import com.calpano.graphinout.foundation.xml.IXmlName;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.Map;
 
 public class XmlWriter2XmlDocument implements XmlWriter {
@@ -14,55 +14,51 @@ public class XmlWriter2XmlDocument implements XmlWriter {
     @Nullable XmlDocument xmlDocument;
 
     @Override
-    public void cdataEnd() throws IOException {
+    public void cdataEnd() {
         buf.append(CDATA_END);
     }
 
     @Override
-    public void cdataStart() throws IOException {
+    public void cdataStart() {
         buf.append(CDATA_START);
     }
 
     @Override
-    public void characterData(String characterData, boolean isInCdata) throws IOException {
+    public void characterData(String characterData, boolean isInCdata) {
         buf.append(characterData);
     }
 
-    public void characterDataEnd(boolean isInCdata) throws IOException {
+    public void characterDataEnd(boolean isInCdata) {
         String text = buf.toString();
         if (!text.isEmpty()) {
             stack.peek(XmlElement.class).addChild(new XmlText(text));
         }
     }
 
-    public void characterDataStart(boolean isInCdata) throws IOException {
+    public void characterDataStart(boolean isInCdata) {
         buf.setLength(0);
     }
 
     @Override
-    public void documentEnd() throws IOException {
+    public void documentEnd() {
         this.xmlDocument = stack.pop(XmlDocument.class);
     }
 
     @Override
-    public void documentStart() throws IOException {
+    public void documentStart() {
         stack.push(new XmlDocument());
     }
 
     @Override
-    public void elementEnd(String name) throws IOException {
-        // deprecated
+    public void elementEnd(String uri, String localName, String qName) {
+        stack.pop(XmlElement.class);
     }
 
     @Override
-    public void elementEnd(String uri, String localName, String qName) throws IOException {
-        XmlElement element = stack.pop(XmlElement.class);
-    }
-
-    @Override
-    public void elementStart(String uri, String localName, String qName, Map<String, String> attributes) throws IOException {
+    public void elementStart(String uri, String localName, String qName, Map<String, String> attributes) {
         XmlNode parent = stack.peek();
-        XmlElement child = stack.push(new XmlElement(qName, attributes));
+        IXmlName xmlName = IXmlName.of(uri, localName, qName);
+        XmlElement child = stack.push(new XmlElement(xmlName, attributes));
         if (parent instanceof XmlDocument doc) {
             doc.setRoot(child);
         } else if (parent instanceof XmlElement element) {
@@ -73,16 +69,11 @@ public class XmlWriter2XmlDocument implements XmlWriter {
     }
 
     @Override
-    public void elementStart(String tagName, Map<String, String> attributes) throws IOException {
-        // deprecated
-    }
-
-    @Override
     public void lineBreak() {
     }
 
     @Override
-    public void raw(String rawXml) throws IOException {
+    public void raw(String rawXml) {
         stack.peek(XmlElement.class).addChild(new XmlRaw(rawXml));
     }
 

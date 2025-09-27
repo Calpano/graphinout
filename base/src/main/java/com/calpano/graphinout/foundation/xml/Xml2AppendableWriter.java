@@ -30,17 +30,17 @@ public class Xml2AppendableWriter implements XmlWriter {
     public static Xml2AppendableWriter createNoop() {
         return new Xml2AppendableWriter(new Appendable() {
             @Override
-            public Appendable append(CharSequence csq) throws IOException {
+            public Appendable append(CharSequence csq) {
                 return this;
             }
 
             @Override
-            public Appendable append(CharSequence csq, int start, int end) throws IOException {
+            public Appendable append(CharSequence csq, int start, int end) {
                 return this;
             }
 
             @Override
-            public Appendable append(char c) throws IOException {
+            public Appendable append(char c) {
                 return this;
             }
         }, AttributeOrderPerElement.Lexicographic);
@@ -81,7 +81,7 @@ public class Xml2AppendableWriter implements XmlWriter {
     }
 
     @Override
-    public void elementEnd(String name) throws IOException {
+    public void elementEnd(String uri, String localName, String qName) throws IOException {
         if (noContentWasWrittenAfterStartingLastElement()) {
             // No content was written, so self-close
             appendable.append("/>");
@@ -89,17 +89,17 @@ public class Xml2AppendableWriter implements XmlWriter {
         } else {
             // proper XML closing element
             appendable.append("</");
-            appendable.append(name);
+            appendable.append(localName);
             appendable.append(">");
         }
     }
 
     /** auto-sort attributes on write */
     @Override
-    public void elementStart(String name, Map<String, String> attributes) throws IOException {
+    public void elementStart(String uri, String localName, String qName, Map<String, String> attributes) throws IOException {
         maybeWriteOpeningTagClosingAngleBracket();
         appendable.append("<");
-        appendable.append(name);
+        appendable.append(localName);
         List<Map.Entry<String, String>> attList = attributes.entrySet().stream().toList();
         if (attributeOrder == AttributeOrderPerElement.Lexicographic) {
             attList = new ArrayList<>(attList);
@@ -114,7 +114,7 @@ public class Xml2AppendableWriter implements XmlWriter {
             appendable.append("\"");
         }
         // note we didnt write the '>' or '/>' yet
-        markStartedElementWithNoContentYetAs(name);
+        markStartedElementWithNoContentYetAs(localName);
     }
 
     @Override

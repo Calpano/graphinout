@@ -1,6 +1,8 @@
 package com.calpano.graphinout.base.graphml.impl;
 
+import com.calpano.graphinout.base.graphml.Graphml;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
+import com.calpano.graphinout.foundation.xml.IXmlName;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import java.io.IOException;
@@ -48,10 +50,11 @@ public class GraphmlDescription extends GraphmlElement implements IGraphmlDescri
     @Override
     public void writeXml(XmlWriter xmlWriter) throws IOException {
         if (value == null) return;
-        xmlWriter.elementStart(tagName());
+        IXmlName xmlName = Graphml.xmlNameOf(tagName());
+        xmlWriter.elementStart(xmlName);
         xmlWriter.raw(value);
         // xmlWriter.characterDataWhichMayContainCdata(value);
-        xmlWriter.elementEnd(tagName());
+        xmlWriter.elementEnd(xmlName);
     }
 
 }
