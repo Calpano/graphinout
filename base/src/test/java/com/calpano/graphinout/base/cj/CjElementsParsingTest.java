@@ -7,6 +7,7 @@ import com.calpano.graphinout.base.cj.element.ICjEndpoint;
 import com.calpano.graphinout.base.cj.element.ICjGraph;
 import com.calpano.graphinout.base.cj.element.ICjNode;
 import com.calpano.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
+import com.calpano.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.calpano.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.calpano.graphinout.base.cj.stream.util.DelegatingCjWriter;
 import com.calpano.graphinout.base.cj.stream.util.LoggingCjWriter;
@@ -16,6 +17,7 @@ import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.stream.impl.LoggingJsonWriter;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import org.apache.commons.io.IOUtils;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -40,9 +42,9 @@ public class CjElementsParsingTest {
         SingleInputSource singleInputSource = SingleInputSource.of(resourceUrl.toString(), content);
 
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-        Json2CjWriter sink = new Json2CjWriter(cjWriter);
+        Json2CjWriter json2Cj = new Json2CjWriter(cjWriter);
         DelegatingJsonWriter jsonWriter = new DelegatingJsonWriter(new LoggingJsonWriter(LoggingJsonWriter.Output.SystemOut));
-        jsonWriter.addJsonWriter(sink);
+        jsonWriter.addJsonWriter(json2Cj);
         jsonReader.read(singleInputSource, jsonWriter);
 
         return cj2elements.resultDoc();

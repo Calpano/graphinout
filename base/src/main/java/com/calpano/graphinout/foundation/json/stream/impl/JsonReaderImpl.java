@@ -82,7 +82,7 @@ public class JsonReaderImpl implements JsonReader {
                 token = parser.nextToken();
             }
         } catch (Throwable t) {
-            //log.error("Failed", t);
+            log.error("Failed", t);
             throw t;
         } finally {
             stream.documentEnd();

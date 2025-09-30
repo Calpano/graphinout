@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMutable {
 
-    private final List<ICjEndpointMutable> endpoints = new ArrayList<>();
+    private final List<ICjEndpoint> endpoints = new ArrayList<>();
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private @Nullable String id;
     private ICjEdgeType edgeType;
@@ -27,7 +27,7 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
     public void addEndpoint(Consumer<ICjEndpointMutable> endpoint) {
         CjEndpointElement endpointElement = new CjEndpointElement();
         endpoint.accept(endpointElement);
-        assert endpointElement.node() != null;
+        assert endpointElement.node() != null : "Endpoint must have a node";
         endpoints.add(endpointElement);
     }
 
@@ -39,8 +39,20 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
     }
 
     @Override
+    public void attachEndpoint(ICjEndpoint endpoint) {
+        assert endpoint.node() != null : "Endpoint must have a node";
+        endpoints.add(endpoint);
+    }
+
+    @Override
     public CjType cjType() {
         return CjType.Edge;
+    }
+
+    @Override
+    public void createEndpoint(Consumer<ICjEndpointMutable> endpoint) {
+        CjEndpointElement endpointElement = new CjEndpointElement();
+        endpoint.accept(endpointElement);
     }
 
     @Override

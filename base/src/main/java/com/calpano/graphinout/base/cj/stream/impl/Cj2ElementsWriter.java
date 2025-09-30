@@ -97,12 +97,15 @@ public class Cj2ElementsWriter extends Json2JavaJsonWriter implements ICjWriter 
 
     @Override
     public void endpointEnd() {
-        stack.pop(ICjEndpointMutable.class);
+        // attach endpoint now, because edge validates it
+        ICjEndpointMutable endpoint = stack.pop(ICjEndpointMutable.class);
+        stack.peek(ICjEdgeMutable.class).attachEndpoint(endpoint);
     }
 
     @Override
     public void endpointStart() {
-        stack.peek(ICjEdgeMutable.class).addEndpoint(stack::push);
+        stack.peek(ICjEdgeMutable.class).createEndpoint(stack::push);
+
     }
 
     @Override
