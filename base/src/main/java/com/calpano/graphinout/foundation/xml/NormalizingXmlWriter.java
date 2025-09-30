@@ -63,7 +63,6 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> implements 
 
     /** currently open mixed-content-model elements */
     private final Stack<String> stackOfContentElements = new Stack<>();
-    private final StringBuilder charBuffer = new StringBuilder();
     private final MapMap<String, Action.Kind, Action> elementActions = MapMap.create();
     private final XmlWriter xmlWriter;
     private String skipElementsUntil = null;
@@ -81,56 +80,30 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> implements 
         return this_();
     }
 
-    @Override
-    public void cdataEnd() throws IOException {
-        xmlWriter.cdataEnd();
-    }
-
-    @Override
-    public void cdataStart() throws IOException {
-        xmlWriter.cdataStart();
-    }
-
-    @Override
-    public void characterData(String characterData, boolean isInCdata) throws IOException {
+    public void characters(String characters, CharactersKind kind) throws IOException {
         if (skipElementsUntil != null) {
             // we are in skipMode
             return;
         }
-        charBuffer.append(characterData);
-    }
-
-    @Override
-    public void characterDataEnd(boolean isInCdata) throws IOException {
-        if (skipElementsUntil != null) {
-            // we are in skipMode
+        if(characters.isEmpty())
             return;
-        }
-        // emit
-        String c = charBuffer.toString();
-        if (charBuffer.isEmpty())
-            return;
-        if (isInContentElement() || isInCdata) {
+        if (isInContentElement() || kind== CharactersKind.CDATA) {
             // forward only when inside a (maybe nested) content element OR when in CDATA
-            xmlWriter.characterData(c, isInCdata);
+            xmlWriter.characters(characters, kind);
         } else {
             //  forward only non-whitespace content
-            if (!c.trim().isEmpty()) {
-                xmlWriter.characterData(c, false);
+            if (!characters.trim().isEmpty()) {
+                xmlWriter.characters(characters, kind);
             }
         }
-        charBuffer.setLength(0);
     }
 
-    @Override
-    public void characterDataStart(boolean isInCdata) {
-        if (skipElementsUntil != null) {
-            // we are in skipMode
-            //noinspection UnnecessaryReturnStatement
-            return;
-        }
-        //   _log.info("characterDataStart: {}", isInCdata);
+    public void charactersEnd() {
     }
+
+    public void charactersStart() {
+    }
+
 
     @Override
     public void documentEnd() throws IOException {
@@ -159,7 +132,7 @@ public class NormalizingXmlWriter<T extends NormalizingXmlWriter<T>> implements 
             String started = stackOfContentElements.pop();
             assert localName.equals(started);
         }
-        xmlWriter.elementEnd(uri,localName,qName);
+        xmlWriter.elementEnd(uri, localName, qName);
     }
 
     @Override

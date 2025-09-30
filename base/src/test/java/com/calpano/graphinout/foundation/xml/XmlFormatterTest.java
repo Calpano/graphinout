@@ -7,29 +7,38 @@ import static com.google.common.truth.Truth.assertThat;
 class XmlFormatterTest {
 
     @Test
-    void testAmp() {
-        String in = XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n<foo>bar&Eacute;</foo>";
-        String out = XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n<foo>barÉ</foo>";
-        assertThat(XmlFormatter.normalize(in)).isEqualTo(out);
-    }
-
-    @Test
-    void testQuot() {
-        String in = XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n<foo>bar&quot;</foo>";
-        String out = XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n<foo>bar\"</foo>";
-        assertThat(XmlFormatter.normalize(in)).isEqualTo(out);
-    }
-
-    @Test
     void test() {
         String a = "<?xml version='1.0' encoding='utf-8'?>";
         assertThat(XmlFormatter.normalizeXmlDecl(a)).isEqualTo(XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8);
     }
 
     @Test
+    void testEAcute() {
+        // NOTE undeclared HTML entities are not allowed
+        String inContent = "&Eacute;";
+        String outContent = XmlTool.normaliseLikeEntityPreprocessingThenSaxParsing(inContent);
+        String outXml = XmlTests.wrapInRoot(outContent);
+        // what would SAX have in memory?
+        assertThat(outXml).isEqualTo("""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <root>&Eacute;</root>""");
+    }
+
+    @Test
     void testEnc() {
-        String a = XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n<foo>bar's</foo>";
-        assertThat(XmlFormatter.normalize(a)).isEqualTo(a);
+        String content = "bar's";
+        String normXml = XmlTests.wrapInRoot(XmlTool.normaliseLikeEntityPreprocessingThenSaxParsing(content));
+        String xml = XmlTests.wrapInRoot(content);
+        assertThat(normXml).isEqualTo(normXml);
+    }
+
+    @Test
+    void testQuot() {
+        String inContent = "bar&quot;";
+        String inNormXml = XmlTests.wrapInRoot(XmlTool.normaliseLikeEntityPreprocessingThenSaxParsing(inContent));
+        // what would SAX have in memory?
+        String out = XmlTests.wrapInRoot("bar\"");
+        assertThat(inNormXml).isEqualTo(out);
     }
 
     @Test
@@ -51,13 +60,6 @@ class XmlFormatterTest {
         assertThat(XmlFormatter.wrap(in, 100)).isEqualTo(in);
         assertThat(XmlFormatter.wrap(in, 1000)).isEqualTo(in);
         assertThat(XmlFormatter.wrap(in, 30)).isEqualTo(in);
-    }
-
-    @Test
-    void testCharRef() {
-        String in = "b1b2b3b4b5b6b7b8b9&#13;";
-        String out = XmlFormatter.normalize(in);
-        assertThat(out).isEqualTo(in);
     }
 
 }

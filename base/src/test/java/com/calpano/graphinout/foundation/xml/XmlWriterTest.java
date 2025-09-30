@@ -30,9 +30,9 @@ class XmlWriterTest {
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
         xmlWriter.documentStart();
         xmlWriter.elementStart(IXmlName.of("test"));
-        xmlWriter.characterDataStart(false);
-        xmlWriter.characterData("test", false);
-        xmlWriter.characterDataEnd(false);
+        xmlWriter.charactersStart();
+        xmlWriter.characters("test", CharactersKind.Default);
+        xmlWriter.charactersEnd();
         xmlWriter.elementEnd(IXmlName.of("test"));
         xmlWriter.documentEnd();
         String s = xmlWriter.string();
@@ -83,19 +83,19 @@ class XmlWriterTest {
 
 
         instance.elementStart(IXmlName.of(GraphmlElements.GRAPHML), Collections.emptyMap());
-        instance.elementStart(GraphmlElements.GRAPH, testGraphMap);
+        instance.elementStart(IXmlName.of(GraphmlElements.GRAPH), testGraphMap);
 
-        instance.elementStart(GraphmlElements.NODE, testNode1Map);
+        instance.elementStart(IXmlName.of(GraphmlElements.NODE), testNode1Map);
         instance.elementEnd(IXmlName.of(GraphmlElements.NODE));
 
-        instance.elementStart(GraphmlElements.EDGE, testEdgeMap);
+        instance.elementStart(IXmlName.of(GraphmlElements.EDGE), testEdgeMap);
         instance.elementEnd(IXmlName.of(GraphmlElements.EDGE));
 
-        instance.elementStart(GraphmlElements.NODE, testNode2Map);
+        instance.elementStart(IXmlName.of(GraphmlElements.NODE), testNode2Map);
         instance.elementEnd(IXmlName.of(GraphmlElements.NODE));
 
-        instance.elementStart(GraphmlElements.HYPER_EDGE, testNode2Map);
-        instance.elementStart(GraphmlElements.ENDPOINT, testNode2Map);
+        instance.elementStart(IXmlName.of(GraphmlElements.HYPER_EDGE), testNode2Map);
+        instance.elementStart(IXmlName.of(GraphmlElements.ENDPOINT), testNode2Map);
         instance.elementEnd(IXmlName.of(GraphmlElements.ENDPOINT));
         instance.elementEnd(IXmlName.of(GraphmlElements.HYPER_EDGE));
 

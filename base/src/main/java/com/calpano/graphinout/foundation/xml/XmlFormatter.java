@@ -1,6 +1,8 @@
 package com.calpano.graphinout.foundation.xml;
 
 import com.calpano.graphinout.foundation.text.StringFormatter;
+import com.calpano.graphinout.foundation.xml.element.XmlDocument;
+import com.calpano.graphinout.foundation.xml.element.XmlWriter2XmlDocument;
 import org.slf4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -44,6 +46,17 @@ public class XmlFormatter {
      * Does not preserve whitespace.
      */
     public static String normalize(String rawXml) {
+        Xml2StringWriter w = new Xml2StringWriter(Xml2AppendableWriter.AttributeOrderPerElement.Lexicographic, true);
+        try {
+            XmlTool.parseAndWriteXml(rawXml,w);
+            return w.string();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Deprecated
+    public static String normalize_OLD(String rawXml) {
         return normalize(rawXml, Set.of(), NormalizingXmlWriter::new);
     }
 
@@ -70,7 +83,7 @@ public class XmlFormatter {
             reader.setProperty(XmlTool.PROPERTIES_LEXICAL_HANDLER, sax2xmlWriter);
             reader.setErrorHandler(sax2xmlWriter);
 
-            xml = XmlTool.htmlEntitiesToDecimalEntities(xml);
+            //xml = XmlTool.htmlEntitiesToDecimalEntities(xml);
             InputSource inputSource = new InputSource(new StringReader(xml));
             reader.parse(inputSource);
             return xmlWriter.string();
@@ -80,6 +93,23 @@ public class XmlFormatter {
         } catch (IOException e) {
             throw new RuntimeException("IO in parse XML", e);
         } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String normalizeAttributeOrder(String xml) {
+        // read into doc
+        XmlWriter2XmlDocument xmlWriter2XmlDocument = new XmlWriter2XmlDocument();
+        try {
+            XmlTool.parseAndWriteXml(xml, xmlWriter2XmlDocument);
+            XmlDocument xmlDoc = xmlWriter2XmlDocument.resultDoc();
+            // write to string with sorted atts
+            Xml2StringWriter xml2string = new Xml2StringWriter(Xml2AppendableWriter.AttributeOrderPerElement.Lexicographic, true);
+            if (xmlDoc != null) {
+                xmlDoc.fire(xml2string);
+            }
+            return xml2string.string();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

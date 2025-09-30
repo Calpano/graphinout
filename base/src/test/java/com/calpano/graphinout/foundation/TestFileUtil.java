@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.fail;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -32,6 +34,7 @@ public class TestFileUtil {
     }
 
     private static final Logger log = getLogger(TestFileUtil.class);
+    static Pattern INVALID_MARKER = Pattern.compile("invalid([a-z]*).*");
 
     public static File expectedFile(Path path) {
         return tagFile(path.toFile(), "EXPECTED");
@@ -44,13 +47,30 @@ public class TestFileUtil {
     }
 
     /**
+     * Does the file start with 'invalidXML-' ? or any other marker instead of XML?
+     * <p>
      * TODO switch to use -INVALID as marker at end of file name.
      *
      * @param path
+     * @param markers can optionally accept only some
      * @return
      */
-    public static boolean isInvalid(Path path) {
-        return path.toFile().getName().toLowerCase(Locale.ROOT).startsWith("invalid-");
+    public static boolean isInvalid(Path path, String... markers) {
+        String fileName = path.toFile().getName().toLowerCase(Locale.ROOT);
+
+        Matcher m = INVALID_MARKER.matcher(fileName);
+        if (m.matches()) {
+            if (markers == null || markers.length == 0)
+                return true;
+
+            String foundMarker = m.group(1);
+            for (String marker : Set.of(markers)) {
+                if (foundMarker.equals(marker.toLowerCase(Locale.ROOT))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static RecordMode recordMode() {

@@ -28,7 +28,13 @@ public class HtmlEntities {
         assert prev == null : "Duplicate entity name: " + entityName;
     }
 
-    public static @Nullable String getReplacement(String name) {
+    /**
+     * Returns the Unicode decimal code for the given HTML entity name.
+     *
+     * @param name e.g. 'nbsp'
+     * @return format: '{@code &#1234;}'
+     */
+    public static @Nullable String getDecimalReplacement(String name) {
         initOnce();
         int[] codepoints = htmlEntities.get(name);
         if (codepoints == null)
@@ -2161,10 +2167,6 @@ public class HtmlEntities {
         define("zscr", 120015);
         define("zwj", 8205);
         define("zwnj", 8204);
-    }
-
-    public static void main(String[] args) {
-        new HtmlEntities();
     }
 
 }

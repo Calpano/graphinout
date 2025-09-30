@@ -103,22 +103,23 @@ public class XmlTest {
         saxParser.parse(new java.io.ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), new DefaultHandler());
     }
 
-    private void testXmlFile(Path filePath) throws Exception {
-        assertTrue(Files.exists(filePath), "XML test file should exist: " + filePath);
-        String inString = Files.readString(filePath);
-        assertNotNull(inString);
-        assertFalse(inString.trim().isEmpty());
+    /** Read XML, write via XmlWriter to string */
+    private void testXmlFile(Path xmlFilePath) throws Exception {
+        assertTrue(Files.exists(xmlFilePath), "XML test file should exist: " + xmlFilePath);
+        String xmlIn = Files.readString(xmlFilePath);
+        assertNotNull(xmlIn);
+        assertFalse(xmlIn.trim().isEmpty());
 
         // Parse and write XML
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        XmlTool.parseAndWriteXml(filePath.toFile(), xmlWriter);
+        XmlTool.parseAndWriteXml(xmlFilePath.toFile(), xmlWriter);
         String outString = xmlWriter.string();
 
         // Validate processed XML is not empty and is well-formed
         assertNotNull(outString);
         assertFalse(outString.trim().isEmpty());
-        assertDoesNotThrow(() -> parseXmlString(outString), "Processed XML should be valid for " + filePath);
-        String inNorm = XmlFormatter.normalize(inString);
+        assertDoesNotThrow(() -> parseXmlString(outString), "Processed XML should be valid for " + xmlFilePath);
+        String inNorm = XmlFormatter.normalize(xmlIn);
         String outNorm = XmlFormatter.normalize(outString);
         String inSimple = XmlFormatter.simplifyForDebug(inNorm);
         String outSimple = XmlFormatter.simplifyForDebug(outNorm);

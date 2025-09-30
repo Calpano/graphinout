@@ -1,5 +1,6 @@
 package com.calpano.graphinout.foundation.xml.element;
 
+import com.calpano.graphinout.foundation.xml.CharactersKind;
 import com.calpano.graphinout.foundation.xml.IXmlName;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
@@ -32,6 +33,7 @@ public class XmlElement extends XmlNode {
     public void addChild(XmlRaw raw) {
         children.add(raw);
     }
+
 
     public void fire(XmlWriter writer) throws IOException {
         writer.elementStart(xmlName, attributes);

@@ -7,19 +7,24 @@ public class XmlWriterSpy implements XmlWriter {
 
     private final StringBuilder out = new StringBuilder();
 
-    @Override
-    public void cdataEnd() {
-        out.append("</CDATA>");
+    public void characters(String characters, CharactersKind kind) {
+        out.append("<chars kind=").append(kind).append(">").append(characters).append("</chars>");
     }
 
-    @Override
-    public void cdataStart() {
-        out.append("<CDATA>");
+    public void charactersEnd() {
+        out.append("<charsEnd />");
     }
 
-    @Override
-    public void characterData(String characterData, boolean isInCdata) {
-        out.append("<chars inCdata=").append(isInCdata).append(">").append(characterData).append("</chars>");
+    public void charactersSectionEnd(CharactersKind kind) {
+        out.append("<charsSectionEnd kind=").append(kind).append(">");
+    }
+
+    public void charactersSectionStart(CharactersKind kind) {
+        out.append("<charsSectionStart kind=").append(kind).append(">");
+    }
+
+    public void charactersStart() {
+        out.append("<charsStart />");
     }
 
     @Override
@@ -56,5 +61,6 @@ public class XmlWriterSpy implements XmlWriter {
     public void raw(String rawXml) {
         out.append("<raw>").append(rawXml).append("</raw>");
     }
+
 
 }

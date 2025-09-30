@@ -30,6 +30,7 @@ import com.calpano.graphinout.base.graphml.builder.GraphmlNodeBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlPortBuilder;
 import com.calpano.graphinout.base.graphml.impl.GraphmlDescription;
 import com.calpano.graphinout.base.graphml.impl.GraphmlEndpoint;
+import com.calpano.graphinout.foundation.xml.CharactersKind;
 import com.calpano.graphinout.foundation.xml.IXmlName;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
@@ -84,36 +85,16 @@ public class Xml2GraphmlWriter implements XmlWriter {
         this.graphmlWriter = graphmlWriter;
     }
 
-    @Override
-    public void cdataEnd() throws IOException {
-        if (elementStack.isInterpretedAsPCDATA()) {
-            characterBuffer.cdataEnd();
-        } else {
-            // TODO CDATA handling - treat as character data
-            throw new UnsupportedOperationException("not implemented yet");
-        }
-    }
-
-    @Override
-    public void cdataStart() throws IOException {
-        if (elementStack.isInterpretedAsPCDATA()) {
-            characterBuffer.cdataStart();
-        } else {
-            throw new UnsupportedOperationException("not implemented yet");
-        }
-    }
-
-    @Override
-    public void characterData(String characterData, boolean isInCdata) throws IOException {
-        if (elementStack.isInterpretedAsPCDATA()) {
-            characterBuffer.characterData(characterData, false);
+    public void characters(String characters, CharactersKind kind) {
+        if (elementStack.isInterpretedAsGenericPCDATA()) {
+            characterBuffer.characters(characters, CharactersKind.PreserveWhitespace);
         } else if (isContentElement()) {
             // Accumulate character data for elements that need it (like data, desc, default)
-            characterBuffer.append(characterData);
+            characterBuffer.append(characters);
         }
     }
 
-    public void characterDataEnd(boolean isInCdata) throws IOException {
+    public void charactersEnd() {
         if (characterBuffer.isEmpty()) return;
         if (elementStack.isInterpretedAsGraphml()) {
             XmlElementContext context = elementStack.peek_();
@@ -124,13 +105,13 @@ public class Xml2GraphmlWriter implements XmlWriter {
                 default -> throw new IllegalStateException("Unknown element: " + context.xmlElementName);
             }
         } else {
-            characterBuffer.characterDataEnd(isInCdata);
+            characterBuffer.charactersEnd();
         }
     }
 
-    public void characterDataStart(boolean isInCdata) throws IOException {
-        if (elementStack.isInterpretedAsPCDATA()) {
-            characterBuffer.characterDataStart(isInCdata);
+    public void charactersStart() {
+        if (elementStack.isInterpretedAsGenericPCDATA()) {
+            characterBuffer.charactersStart();
         }
     }
 
@@ -199,10 +180,10 @@ public class Xml2GraphmlWriter implements XmlWriter {
             case LOCATOR -> startLocatorElement(attributes);
             case ENDPOINT -> startEndpointElement(attributes);
             default -> {
-                if (elementStack.isInterpretedAsPCDATA()) {
+                if (elementStack.isInterpretedAsGenericPCDATA()) {
                     // push to stack and emit to rawXmlBuffer
                     IXmlName xmlName = IXmlName.of(uri, localName, qName);
-                    elementStack.push(xmlName, attributes, true, null, XmlMode.PCDATA);
+                    elementStack.push(xmlName, attributes, true, null, XmlMode.GENERIC_PC_DATA);
                     characterBuffer.elementStart(xmlName, attributes);
                 } else {
                     throw new IllegalStateException("Unknown element: '" + localName + "'");
@@ -228,7 +209,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
 
     @Override
     public void raw(String rawXml) throws IOException {
-        if (elementStack.isInterpretedAsPCDATA()) {
+        if (elementStack.isInterpretedAsGenericPCDATA()) {
             characterBuffer.raw(rawXml);
         } else {
             throw new UnsupportedOperationException("no raw XML in GraphML");
@@ -360,19 +341,18 @@ public class Xml2GraphmlWriter implements XmlWriter {
         builder.attributes(attributes);
         ifAttributeNotNull(attributes, ATTRIBUTE_KEY, builder::key);
 
-        elementStack.push(
-                Graphml.xmlNameOf(GraphmlElements.DATA), attributes, false, builder, XmlMode.PCDATA);
+        elementStack.push(Graphml.xmlNameOf(GraphmlElements.DATA), attributes, false, builder, XmlMode.GENERIC_PC_DATA);
     }
 
     private void startDefaultElement(Map<String, String> attributes) {
         GraphmlDefaultBuilder builder = IGraphmlDefault.builder();
         builder.attributes(attributes);
-        elementStack.push(Graphml.xmlNameOf(DEFAULT), attributes, false, builder, XmlMode.PCDATA);
+        elementStack.push(Graphml.xmlNameOf(DEFAULT), attributes, false, builder, XmlMode.GENERIC_PC_DATA);
     }
 
     private void startDescElement(Map<String, String> attributes) {
         GraphmlElementBuilder<?> builder = IGraphmlDescription.builder().attributes(attributes);
-        elementStack.push(Graphml.xmlNameOf(DESC), attributes, false, builder, XmlMode.PCDATA);
+        elementStack.push(Graphml.xmlNameOf(DESC), attributes, false, builder, XmlMode.GENERIC_PC_DATA);
     }
 
     private void startEdgeElement(Map<String, String> attributes) throws IOException {

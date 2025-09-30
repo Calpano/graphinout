@@ -3,7 +3,6 @@ package com.calpano.graphinout.foundation.xml;
 
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.Location;
-import com.calpano.graphinout.foundation.text.StringFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -16,7 +15,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -32,37 +30,20 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     private final Map<String, String> namespaces = new HashMap<>();
     private Locator locator;
     private boolean isFirstElement = true;
-    private boolean isInCdata = false;
+    private final  SaxCharBuffer charBuffer;
 
     public Sax2XmlWriter(XmlWriter xmlWriter, @Nullable Consumer<ContentError> errorConsumer) {
         assert xmlWriter != null;
         this.xmlWriter = xmlWriter;
         this.errorConsumer = errorConsumer;
-    }
-
-    private Boolean inCharacters = null;
-
-    private void maybeEndCharacterData(boolean isInCdata) throws IOException {
-        if (inCharacters != null && inCharacters == isInCdata) {
-            xmlWriter.characterDataEnd(isInCdata);
-            inCharacters = null;
-        }
+        this.charBuffer = new SaxCharBuffer(xmlWriter);
     }
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         String s = new String(ch, start, length);
-        // log.trace("characters [{}].", s);
         try {
-            if (inCharacters == null) {
-                xmlWriter.characterDataStart(isInCdata);
-            }
-            inCharacters = isInCdata;
-
-            // we need early line break normalization
-            s = StringFormatter.normalizeLineBreaks(s);
-
-            xmlWriter.characterData(s, isInCdata);
+            charBuffer.characters(s);
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -71,7 +52,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void comment(char[] ch, int start, int length) throws SAXException {
         try {
-            maybeEndCharacterData(isInCdata);
+            charBuffer.charactersEnd();
             // no comments: we drop them.
         } catch (IOException e) {
             throw new SAXException(e);
@@ -81,9 +62,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void endCDATA() throws SAXException {
         try {
-            maybeEndCharacterData(isInCdata);
-            isInCdata = false;
-            xmlWriter.cdataEnd();
+            charBuffer.kindEnd();
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -95,7 +74,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void endDocument() throws SAXException {
         try {
-            maybeEndCharacterData(isInCdata);
+            charBuffer.charactersEnd();
             xmlWriter.documentEnd();
         } catch (IOException e) {
             throw new SAXException(e);
@@ -105,7 +84,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         try {
-            maybeEndCharacterData(isInCdata);
+            charBuffer.charactersEnd();
             xmlWriter.elementEnd(uri, localName, qName);
         } catch (Exception e) {
             throw buildError(e);
@@ -124,9 +103,8 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     public void ignorableWhitespace(char[] chars, int start, int length)
             throws SAXException {
         try {
-            maybeEndCharacterData(isInCdata);
-            // FIXME combine with other charData sections
-            xmlWriter.characterData(new String(chars, start, length), false);
+            charBuffer.kindStart(CharactersKind.IgnorableWhitespace);
+            charBuffer.characters(new String(chars, start, length));
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -139,9 +117,8 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     @Override
     public void startCDATA() throws SAXException {
-        isInCdata = true;
         try {
-            xmlWriter.cdataStart();
+            charBuffer.kindStart(CharactersKind.CDATA);
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -163,7 +140,9 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         try {
-            maybeEndCharacterData(isInCdata);
+            // if this element starts, the previous one ended
+            // as in 'this <em>very cool</em> planet'
+            charBuffer.charactersEnd();
             Map<String, String> attMap = new HashMap<>();
             for (int i = 0; i < attributes.getLength(); i++) {
                 String attributesQName = attributes.getQName(i);

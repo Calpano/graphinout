@@ -1,42 +1,51 @@
 package com.calpano.graphinout.foundation.xml.element;
 
 import com.calpano.graphinout.foundation.util.PowerStackOnClasses;
+import com.calpano.graphinout.foundation.xml.CharactersKind;
 import com.calpano.graphinout.foundation.xml.IXmlName;
+import com.calpano.graphinout.foundation.xml.XmlTool;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import javax.annotation.Nullable;
 import java.util.Map;
 
+/**
+ * If we XML encode on writing, we must XML decode on reading.
+ */
 public class XmlWriter2XmlDocument implements XmlWriter {
 
+    /** accumulate CDATA and normal sections */
     private final StringBuilder buf = new StringBuilder();
     PowerStackOnClasses<XmlNode> stack = PowerStackOnClasses.create();
     @Nullable XmlDocument xmlDocument;
 
-    @Override
-    public void cdataEnd() {
-        buf.append(CDATA_END);
-    }
+    public void characters(String characters, CharactersKind kind) {
+        if (characters.isEmpty()) return;
 
-    @Override
-    public void cdataStart() {
-        buf.append(CDATA_START);
-    }
-
-    @Override
-    public void characterData(String characterData, boolean isInCdata) {
-        buf.append(characterData);
-    }
-
-    public void characterDataEnd(boolean isInCdata) {
-        String text = buf.toString();
-        if (!text.isEmpty()) {
-            stack.peek(XmlElement.class).addChild(new XmlText(text));
+        String s = characters;
+        switch (kind) {
+            case Default, PreserveWhitespace -> {
+                s = XmlTool.xmlDecode(s);
+            }
+            case IgnorableWhitespace -> {
+                assert s.trim().isEmpty();
+            }
+            case CDATA -> {
+                // dont touch it
+            }
         }
+
+        stack.peek(XmlText.class).addSection(s, kind);
     }
 
-    public void characterDataStart(boolean isInCdata) {
-        buf.setLength(0);
+    public void charactersEnd() {
+        stack.pop(XmlText.class);
+    }
+
+    public void charactersStart() {
+        XmlElement parent = stack.peek(XmlElement.class);
+        XmlText text = stack.push(new XmlText());
+        parent.addChild(text);
     }
 
     @Override
@@ -81,5 +90,6 @@ public class XmlWriter2XmlDocument implements XmlWriter {
     public XmlDocument resultDoc() {
         return xmlDocument;
     }
+
 
 }

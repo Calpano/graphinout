@@ -60,11 +60,11 @@ public class Graphml2CjAndBackTest {
         // == IN
         try {
             XmlTool.parseAndWriteXml(xmlFilePath.toFile(), xml2GraphmlWriter);
-            if (TestFileUtil.isInvalid(xmlFilePath)) {
+            if (TestFileUtil.isInvalid(xmlFilePath, "xml", "graphml")) {
                 fail("Expected an exception on an invalid file");
             }
         } catch (Exception e) {
-            if (TestFileUtil.isInvalid(xmlFilePath)) {
+            if (TestFileUtil.isInvalid(xmlFilePath, "xml", "graphml")) {
                 // perfect, we failed on an invalid file
             } else {
                 throw e;
@@ -84,11 +84,11 @@ public class Graphml2CjAndBackTest {
         String xml_in = FileUtils.readFileToString(xmlFilePath.toFile(), UTF_8);
         try {
             XmlTool.parseAndWriteXml(xmlFilePath.toFile(), xml2GraphmlWriter);
-            if (TestFileUtil.isInvalid(xmlFilePath)) {
+            if (TestFileUtil.isInvalid(xmlFilePath, "xml", "graphml")) {
                 fail("Expected an exception on an invalid file");
             }
         } catch (Exception e) {
-            if (TestFileUtil.isInvalid(xmlFilePath)) {
+            if (TestFileUtil.isInvalid(xmlFilePath, "xml", "graphml")) {
                 // perfect, we failed on an invalid file
                 return;
             } else {
@@ -116,7 +116,7 @@ public class Graphml2CjAndBackTest {
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlFiles")
     @DisplayName("XML->Graphml->XML (Test all GraphMl files)")
     void testAllXml_Graphml_Xml(String displayPath, Path xmlFilePath) throws Exception {
-        if (TestFileUtil.isInvalid(xmlFilePath)) return;
+        if (TestFileUtil.isInvalid(xmlFilePath, "xml", "graphml")) return;
 
         // == OUT Pipeline
         Xml2StringWriter xmlWriter = new Xml2StringWriter();

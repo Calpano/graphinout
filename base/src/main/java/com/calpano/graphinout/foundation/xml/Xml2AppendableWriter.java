@@ -19,12 +19,22 @@ public class Xml2AppendableWriter implements XmlWriter {
     }
 
     protected final Appendable appendable;
+    private final boolean xmlEncodeOnWrite;
     private final AttributeOrderPerElement attributeOrder;
     private @Nullable String openedTagName = null;
 
     public Xml2AppendableWriter(Appendable appendable, AttributeOrderPerElement attributeOrderPerElement) {
+        this(appendable, attributeOrderPerElement, true);
+    }
+
+
+    /**
+     * @param xmlEncodeOnWrite default should be true; false helps debugging
+     */
+    public Xml2AppendableWriter(Appendable appendable, AttributeOrderPerElement attributeOrderPerElement, boolean xmlEncodeOnWrite) {
         this.appendable = appendable;
         this.attributeOrder = attributeOrderPerElement;
+        this.xmlEncodeOnWrite = xmlEncodeOnWrite;
     }
 
     public static Xml2AppendableWriter createNoop() {
@@ -46,27 +56,28 @@ public class Xml2AppendableWriter implements XmlWriter {
         }, AttributeOrderPerElement.Lexicographic);
     }
 
-    @Override
-    public void cdataEnd() throws IOException {
-        raw(CDATA_END);
-    }
-
-    @Override
-    public void cdataStart() throws IOException {
+    public void characters(String characters, CharactersKind kind) throws IOException {
         maybeWriteOpeningTagClosingAngleBracket();
-        raw(CDATA_START);
-    }
-
-    @Override
-    public void characterData(String characterData, boolean isInCdata) throws IOException {
-        maybeWriteOpeningTagClosingAngleBracket();
-        if (isInCdata) {
+        if (kind == CharactersKind.CDATA) {
             // Don't encode CDATA content - write it raw
-            appendable.append(characterData);
+            raw(CDATA_START);
+            appendable.append(characters);
+            raw(CDATA_END);
         } else {
             // Only encode regular character data
-            appendable.append(XmlTool.xmlEncode(characterData));
+            String toAppend = characters;
+            if (xmlEncodeOnWrite) {
+                toAppend = XmlTool.xmlEncode(characters);
+            }
+            appendable.append(toAppend);
         }
+    }
+
+    public void charactersEnd() {
+    }
+
+    public void charactersStart() throws IOException {
+        maybeWriteOpeningTagClosingAngleBracket();
     }
 
     @Override
@@ -147,5 +158,6 @@ public class Xml2AppendableWriter implements XmlWriter {
     private void resetSelfClosingElementMarker() {
         this.openedTagName = null;
     }
+
 
 }

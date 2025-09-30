@@ -23,11 +23,12 @@ public class XmlParseContext {
     }
 
     public boolean isInterpretedAsGraphml() {
-        return mode != XmlMode.PCDATA;
+        return mode != XmlMode.GENERIC_PC_DATA;
     }
 
-    public boolean isInterpretedAsPCDATA() {
-        return mode == XmlMode.PCDATA;
+    /** i.e. XML is not interpreted as GraphML here */
+    public boolean isInterpretedAsGenericPCDATA() {
+        return mode == XmlMode.GENERIC_PC_DATA;
     }
 
     public void mode(XmlMode xmlMode) {

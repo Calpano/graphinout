@@ -32,29 +32,16 @@ public class DelegatingXmlWriter implements XmlWriter {
 
     public void addWriter(XmlWriter writer) {writers.add(writer);}
 
-    @Override
-    public void cdataEnd() throws IOException {
-        forEachWriter(XmlWriter::cdataEnd);
+    public void characters(String characters, CharactersKind kind) {
+        forEachWriter(w -> w.characters(characters, kind));
     }
 
-    @Override
-    public void cdataStart() throws IOException {
-        forEachWriter(XmlWriter::cdataStart);
+    public void charactersEnd() {
+        forEachWriter(XmlWriter::charactersEnd);
     }
 
-    @Override
-    public void characterData(String characterData, boolean isInCdata) throws IOException {
-        forEachWriter(w -> w.characterData(characterData, isInCdata));
-    }
-
-    @Override
-    public void characterDataEnd(boolean isInCdata) throws IOException {
-        forEachWriter(w -> w.characterDataEnd(isInCdata));
-    }
-
-    @Override
-    public void characterDataStart(boolean isInCdata) throws IOException {
-        forEachWriter(w -> w.characterDataStart(isInCdata));
+    public void charactersStart() {
+        forEachWriter(XmlWriter::charactersStart);
     }
 
     @Override
@@ -67,15 +54,14 @@ public class DelegatingXmlWriter implements XmlWriter {
         forEachWriter(XmlWriter::documentStart);
     }
 
-
     @Override
-    public void elementStart(String uri, String localName, String qName, Map<String, String> attributes) throws IOException {
-        forEachWriter(w->w.elementStart(uri, localName, qName, attributes));
+    public void elementEnd(String uri, String localName, String qName) throws IOException {
+        forEachWriter(w -> w.elementEnd(uri, localName, qName));
     }
 
     @Override
-    public void elementEnd(String uri, String localName, String qName) throws IOException {
-        forEachWriter(w->w.elementEnd(uri, localName, qName));
+    public void elementStart(String uri, String localName, String qName, Map<String, String> attributes) throws IOException {
+        forEachWriter(w -> w.elementStart(uri, localName, qName, attributes));
     }
 
     @Override
@@ -91,6 +77,5 @@ public class DelegatingXmlWriter implements XmlWriter {
     private void forEachWriter(XmlWriterConsumer consumer) {
         writers.forEach(consumer);
     }
-
 
 }

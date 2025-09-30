@@ -6,11 +6,15 @@ public class XmlAssert {
 
     private static final int LIMIT = 1024 * 1024;
 
+    public static void xAssertSameParsedXml(String in, String expected) {
+        assertThat(XmlTool.normaliseLikeEntityPreprocessingThenSaxParsing(in)).isEqualTo(XmlTool.normaliseLikeEntityPreprocessingThenSaxParsing(expected));
+    }
+
     public static void xAssertThatIsSameXml(String actual, String expected) {
-        String aNorm = XmlFormatter.normalize(actual);
+        String aNorm = XmlFormatter.normalizeAttributeOrder(actual);
         String aWrapped = XmlFormatter.wrap(aNorm, 100);
 
-        String eNorm = XmlFormatter.normalize(expected);
+        String eNorm = XmlFormatter.normalizeAttributeOrder(expected);
         String eWrapped = XmlFormatter.wrap(eNorm, 100);
 
         // cannot compute diff on long content
