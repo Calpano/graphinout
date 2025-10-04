@@ -1,6 +1,7 @@
 package com.calpano.graphinout.foundation.json.value;
 
 import com.calpano.graphinout.foundation.json.JsonType;
+import com.calpano.graphinout.foundation.json.path.IJsonNavigationPath;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.Json2StringWriter;
 import com.calpano.graphinout.foundation.util.path.IListLike;
@@ -12,6 +13,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public interface IJsonValue {
+
+    default void forEachLeaf( BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive ) {
+        forEachLeaf(IJsonNavigationPath.EMPTY,path_primitive);
+    }
+    void forEachLeaf(IJsonNavigationPath prefix, BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive );
 
     static boolean isPrimitive(@Nullable IJsonValue value) {
         if (value == null)

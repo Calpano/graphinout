@@ -1,7 +1,7 @@
 package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.json.JsonType;
-import com.calpano.graphinout.foundation.json.path.IJsonPath;
+import com.calpano.graphinout.foundation.json.path.IJsonNavigationPath;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
@@ -95,7 +95,7 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
     }
 
     @Override
-    public void forEachLeaf(IJsonPath prefix, BiConsumer<IJsonPath, IJsonPrimitive> path_primitive) {
+    public void forEachLeaf(IJsonNavigationPath prefix, BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive) {
         if (value == null) return;
         value.forEachLeaf(prefix, path_primitive);
     }

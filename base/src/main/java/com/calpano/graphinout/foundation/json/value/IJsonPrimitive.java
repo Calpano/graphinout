@@ -1,9 +1,11 @@
 package com.calpano.graphinout.foundation.json.value;
 
+import com.calpano.graphinout.foundation.json.path.IJsonNavigationPath;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.BiConsumer;
 
 public interface IJsonPrimitive extends IJsonValue {
 
@@ -35,6 +37,10 @@ public interface IJsonPrimitive extends IJsonValue {
             }
             default -> throw new IllegalStateException("Unexpected value: " + jsonType());
         }
+    }
+
+    default void forEachLeaf(IJsonNavigationPath prefix, BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive) {
+        path_primitive.accept(prefix, this);
     }
 
     default boolean isArray() {return false;}

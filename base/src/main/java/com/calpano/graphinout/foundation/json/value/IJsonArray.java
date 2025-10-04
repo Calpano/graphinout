@@ -1,11 +1,14 @@
 package com.calpano.graphinout.foundation.json.value;
 
 import com.calpano.graphinout.foundation.json.JsonType;
+import com.calpano.graphinout.foundation.json.path.IJsonArrayNavigationStep;
+import com.calpano.graphinout.foundation.json.path.IJsonNavigationPath;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.ObjIntConsumer;
 
@@ -17,6 +20,20 @@ public interface IJsonArray extends IJsonContainer {
             get_(i).fire(jsonWriter);
         }
         jsonWriter.arrayEnd();
+    }
+
+    default void forEachLeaf(IJsonNavigationPath prefix, BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive) {
+        forEach((value,index) ->
+        {
+            IJsonNavigationPath path2 = prefix.withAppend(IJsonArrayNavigationStep.of(index));
+            if(value.isPrimitive()) {
+                // send out
+                path_primitive.accept(path2, value.asPrimitive());
+            } else {
+                // RECURSE
+                value.forEachLeaf(path2, path_primitive);
+            }
+        });
     }
 
     default void forEach(ObjIntConsumer<IJsonValue> member_index) {
