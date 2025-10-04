@@ -39,7 +39,7 @@ class GraphmlReaderXMLContentTest {
         try {
             XmlTool.parseAndWriteXml(content, xml2GraphmlWriter);
             List<ContentError> contentErrors = new ArrayList<>();
-            return new Result(xml2stringWriter.string(), contentErrors);
+            return new Result(xml2stringWriter.resultString(), contentErrors);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -82,7 +82,7 @@ class GraphmlReaderXMLContentTest {
         Path inputSource = Paths.get("../base/src/test/resources/xml/XML_Standard_Content_In_Data.xml");
         Result result = parseGraphmlToOutputSink(inputSource);
         String expected = IOUtils.toString(inputSource.toUri(), StandardCharsets.UTF_8);
-        XmlAssert.xAssertThatIsSameXml(result.actual, expected);
+        GraphmlAssert.xAssertThatIsSameGraphml(result.actual, expected,null);
         assertTrue(result.contentErrors.isEmpty());
     }
 
@@ -91,7 +91,7 @@ class GraphmlReaderXMLContentTest {
         Path inputSource = Paths.get("../base/src/test/resources/xml/XML_Standard_Content_In_default.xml");
         String expected = IOUtils.toString(inputSource.toUri(), StandardCharsets.UTF_8);
         Result result = parseGraphmlToOutputSink(inputSource);
-        XmlAssert.xAssertThatIsSameXml(result.actual, expected);
+        GraphmlAssert.xAssertThatIsSameGraphml(result.actual, expected,null);
         assertTrue(result.contentErrors.isEmpty());
     }
 
@@ -100,7 +100,7 @@ class GraphmlReaderXMLContentTest {
         Path inputSource = Paths.get("../base/src/test/resources/xml/XML_Standard_Content_In_Desc.xml");
         Result result = parseGraphmlToOutputSink(inputSource);
         String expected = IOUtils.toString(inputSource.toUri(), StandardCharsets.UTF_8);
-        XmlAssert.xAssertThatIsSameXml(result.actual, expected);
+        GraphmlAssert.xAssertThatIsSameGraphml(result.actual, expected,null);
         assertTrue(result.contentErrors.isEmpty());
     }
 

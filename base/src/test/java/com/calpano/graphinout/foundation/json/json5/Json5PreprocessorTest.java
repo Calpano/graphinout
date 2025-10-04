@@ -3,11 +3,13 @@ package com.calpano.graphinout.foundation.json.json5;
 import com.calpano.graphinout.foundation.json.JsonReader;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
+import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.calpano.graphinout.foundation.TestFileUtil.file;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,9 +35,10 @@ public class Json5PreprocessorTest {
 
     @DisplayName("Test JSON5 Preprocessor on file")
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#jsonFiles")
-    void testJson5Preprocessor(String displayPath, Path jsonFile) throws IOException {
-        String originalContent = Files.readString(jsonFile);
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#jsonResources")
+    void testJson5Preprocessor(String displayPath, Resource jsonResource) throws IOException {
+        File jsonFile = file(jsonResource);
+        String originalContent = Files.readString(jsonFile.toPath());
         List<String> originalUrls = findUrls(originalContent);
 
         String processedContent = Json5Preprocessor.toJson(originalContent);

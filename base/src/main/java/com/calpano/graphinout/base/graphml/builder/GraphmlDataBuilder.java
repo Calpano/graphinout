@@ -6,15 +6,15 @@ import com.calpano.graphinout.base.graphml.impl.GraphmlData;
 public class GraphmlDataBuilder extends GraphmlElementWithIdBuilder<GraphmlDataBuilder> {
 
     private String value;
-    private boolean containsRawXml;
+    private boolean isRawXml;
     private String key;
 
     public IGraphmlData build() {
-        return new GraphmlData(id, attributes, value, containsRawXml, key);
+        return new GraphmlData(id, attributes, value, isRawXml, key);
     }
 
-    public GraphmlDataBuilder containsRawXml(boolean containsRawXml) {
-        this.containsRawXml = containsRawXml;
+    public GraphmlDataBuilder rawXml(boolean isRawXml) {
+        this.isRawXml = isRawXml;
         return this;
     }
 

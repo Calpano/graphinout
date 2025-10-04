@@ -12,12 +12,19 @@ import java.util.Map;
 /**
  * If we XML encode on writing, we must XML decode on reading.
  */
-public class XmlWriter2XmlDocument implements XmlWriter {
+public class Xml2DocumentWriter implements XmlWriter {
 
     /** accumulate CDATA and normal sections */
     private final StringBuilder buf = new StringBuilder();
     PowerStackOnClasses<XmlNode> stack = PowerStackOnClasses.create();
     @Nullable XmlDocument xmlDocument;
+
+    /** read into doc */
+    public static XmlDocument parseToDoc(String xml) throws Exception {
+        Xml2DocumentWriter xmlWriter2XmlDocument = new Xml2DocumentWriter();
+        XmlTool.parseAndWriteXml(xml, xmlWriter2XmlDocument);
+        return xmlWriter2XmlDocument.resultDoc();
+    }
 
     public void characters(String characters, CharactersKind kind) {
         if (characters.isEmpty()) return;
@@ -67,11 +74,12 @@ public class XmlWriter2XmlDocument implements XmlWriter {
     public void elementStart(String uri, String localName, String qName, Map<String, String> attributes) {
         XmlNode parent = stack.peek();
         IXmlName xmlName = IXmlName.of(uri, localName, qName);
-        XmlElement child = stack.push(new XmlElement(xmlName, attributes));
         if (parent instanceof XmlDocument doc) {
+            XmlElement child = stack.push(new XmlElement(null, xmlName, attributes));
             doc.setRoot(child);
-        } else if (parent instanceof XmlElement element) {
-            element.addChild(child);
+        } else if (parent instanceof XmlElement parentElement) {
+            XmlElement child = stack.push(new XmlElement(parentElement, xmlName, attributes));
+            parentElement.addChild(child);
         } else {
             throw new IllegalStateException("Unexpected parent " + parent);
         }

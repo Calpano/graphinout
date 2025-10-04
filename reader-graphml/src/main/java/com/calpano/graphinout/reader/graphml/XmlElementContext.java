@@ -37,7 +37,7 @@ public class XmlElementContext {
     /**
      * @param xmlElementName aka tagName
      * @param xmlAttributes  all XML attributes
-     * @param isRawXml    is this any raw XML element from inside a data element? If false, this is a GraphML element
+     * @param isRawXml    is this element itself port of a raw XML string, e.g. from inside a data/default element? If false, this is a GraphML element
      */
     XmlElementContext(@Nullable XmlElementContext parent, IXmlName xmlElementName, Map<String, String> xmlAttributes, boolean isRawXml, GraphmlElementBuilder<?> builder) {
         this.parent = parent;

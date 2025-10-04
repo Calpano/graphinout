@@ -10,21 +10,21 @@ public class GraphmlAssert {
 
     public static boolean xAssertThatIsSameGraphml(String actual, String expected, @Nullable Runnable extendedDebugInfos) {
 
-        String aNorm = GraphmlFormatter.normalize(actual);
-        String aWrapped = XmlFormatter.wrap(aNorm, 100);
+        String actualNorm = new GraphmlNormalizer(actual).resultString();
+        String actualWrapped = XmlFormatter.wrap(actualNorm, 100);
 
-        String eNorm = GraphmlFormatter.normalize(expected);
-        String eWrapped = XmlFormatter.wrap(eNorm, 100);
+        String expectedNorm = new GraphmlNormalizer(expected).resultString();
+        String expectedWrapped = XmlFormatter.wrap(expectedNorm, 100);
 
-        if (extendedDebugInfos != null && !aWrapped.equals(eWrapped)) {
+        if (extendedDebugInfos != null && !actualWrapped.equals(expectedWrapped)) {
             extendedDebugInfos.run();
         }
 
         // prevent out of memory for guava-17 file (4,2 MB)
         if(actual.length() < 1024 * 1024) {
-            assertThat(aWrapped).isEqualTo(eWrapped);
+            assertThat(actualWrapped).isEqualTo(expectedWrapped);
         } else {
-            assertThat(aWrapped.equals(eWrapped)).isTrue();
+            assertThat(actualWrapped.equals(expectedWrapped)).isTrue();
         }
         //test failed before, if it failed
         return true;

@@ -20,14 +20,14 @@ public class Xml2StringWriter extends Xml2AppendableWriter {
         if (xmlDoc != null) {
             xmlDoc.fire(xmlWriter);
         }
-        return xmlWriter.string();
+        return xmlWriter.resultString();
     }
 
     public void reset() {
         buffer().setLength(0);
     }
 
-    public String string() {
+    public String resultString() {
         return buffer().toString();
     }
 

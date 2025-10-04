@@ -5,9 +5,11 @@ import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.validation.graphml.GraphmlValidator;
+import com.calpano.graphinout.foundation.TestFileUtil;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import com.calpano.graphinout.foundation.output.OutputSink;
+import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
@@ -62,7 +64,7 @@ class DotReaderTest2 extends AbstractReaderTest {
 
     @Test
     void testOneResource() throws IOException {
-        String path = "dot/synthetics/synthetic2.dot";
+        Resource path = TestFileUtil.resource( "dot/synthetics/synthetic2.dot");
         InMemoryOutputSink outputSink = OutputSink.createInMemory();
         ReaderTests.readResourceToSink(new DotReader(), path, outputSink);
         String s = new String(outputSink.getByteBuffer().toByteArray(), StandardCharsets.UTF_8);

@@ -17,28 +17,27 @@ import com.calpano.graphinout.foundation.json.stream.impl.StringBuilderJsonWrite
 import com.calpano.graphinout.foundation.xml.Xml2StringWriter;
 import com.calpano.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.calpano.graphinout.reader.graphml.cj.Graphml2CjDocument;
-import org.apache.commons.io.FileUtils;
+import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-
 import static com.calpano.graphinout.base.cj.CjFormatter.stripCjHeader;
+import static com.calpano.graphinout.foundation.TestFileUtil.inputSource;
 import static com.calpano.graphinout.foundation.json.impl.JsonFormatter.formatDebug;
 import static com.calpano.graphinout.foundation.json.impl.JsonFormatter.removeWhitespace;
 import static com.google.common.truth.Truth.assertThat;
 
 
+@SuppressWarnings("unused")
 public class Cj2GraphmlAndBackTest {
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjFilesCanonical")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test JSON-CJ-Graphml - all files together")
-    void test_json_cj_graphml_CanonicalCjFiles(String displayPath, Path path) throws Exception {
-        String json_in = FileUtils.readFileToString(path.toFile(), StandardCharsets.UTF_8);
-        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of(path.getFileName().toString(), json_in);
+    void test_json_cj_graphml_CanonicalCjFiles(String displayPath, Resource resource) throws Exception {
+        String json_in = resource.getContentAsString();
+        SingleInputSourceOfString inputSource = inputSource(resource);
         Cj2ElementsWriter cj2ElementsWriter = new Cj2ElementsWriter();
         JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(cj2ElementsWriter);
         JsonReaderImpl jsonReader = new JsonReaderImpl();
@@ -52,12 +51,12 @@ public class Cj2GraphmlAndBackTest {
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjFilesCanonical")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test JSON-CJ-Graphml-CJ-JSON - all files together")
-    void test_json_cj_graphml_cj_json_CanonicalCjFiles(String displayPath, Path path) throws Exception {
+    void test_json_cj_graphml_cj_json_CanonicalCjFiles(String displayPath, Resource resource) throws Exception {
         // JSON
-        String json_in = FileUtils.readFileToString(path.toFile(), StandardCharsets.UTF_8);
-        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of(path.getFileName().toString(), json_in);
+        String json_in = resource.getContentAsString();
+        SingleInputSourceOfString inputSource = inputSource(resource);
 
         // JSON -> CJ
         Cj2ElementsWriter cj2ElementsWriter = new Cj2ElementsWriter();
@@ -75,7 +74,7 @@ public class Cj2GraphmlAndBackTest {
         DelegatingGraphmlWriter graphmlWriter = new DelegatingGraphmlWriter(graphml2XmlWriter, graphml2cjDocument);
 
         CjDocument2Graphml.writeToGraphml(cjDoc, graphmlWriter);
-        String xml = xmlWriter.string();
+        String xml = xmlWriter.resultString();
         System.out.println(xml);
         System.out.flush();
         CjDocumentElement cjDoc2 = graphml2cjDocument.resultDoc();

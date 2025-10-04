@@ -133,6 +133,7 @@ public class CjDocument2Graphml {
             keys.add(GraphmlDataElement.SyntheticNode.toGraphmlKey());
         }
 
+
         MapSet<String, Object> usedTypes = MapSet.create();
         findAllDatas((CjDocumentElement) cjDoc) //
                 .map(ICjData::jsonValue).filter(Objects::nonNull) //

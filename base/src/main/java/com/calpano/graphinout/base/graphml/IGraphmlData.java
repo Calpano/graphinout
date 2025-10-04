@@ -18,7 +18,7 @@ public interface IGraphmlData extends IGraphmlElementWithId {
     }
 
     static IGraphmlData ofRawXml(String key, String value) {
-        return builder().key(key).value(value).containsRawXml(true).build();
+        return builder().key(key).value(value).rawXml(true).build();
     }
 
     default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {

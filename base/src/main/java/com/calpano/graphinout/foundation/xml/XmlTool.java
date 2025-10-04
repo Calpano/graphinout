@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -41,6 +42,11 @@ public class XmlTool {
     @Deprecated
     public static String ampEncode(String raw) {
         return raw.replace("&", "&amp;");
+    }
+
+    /** check if that is valid XML to begin with */
+    public static void assertCanParseAsXml(Path xmlFilePath) throws Exception {
+        XmlTool.parseAndWriteXml(xmlFilePath.toFile(), Xml2AppendableWriter.createNoop());
     }
 
     /**

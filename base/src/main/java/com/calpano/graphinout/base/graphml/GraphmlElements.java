@@ -28,6 +28,7 @@ public class GraphmlElements {
 
     public static final String DEFAULT = "default";
 
+    /** Elements with significant whitespace */
     public static Set<String> setOfContentElementNames() {
         return Set.of(DATA, DESC, DEFAULT);
     }

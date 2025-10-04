@@ -1,0 +1,15 @@
+A minimalist, flat vector logo for a software library named "Graph In Out".
+
+The logo should combine the idea of a graph (nodes and edges) with arrows representing input and output.
+
+Use a tech-inspired color palette of blue and green.
+The logo text should be two colors: Orange and Gray.
+Graph In Out = "G"(orange), "raph" (gray), "I" (orange), "n" (gray), "O" (orange), "ut" (gray).
+Note the capitalisation!
+
+The logo should be clean, modern, and suitable for a GitHub profile picture.
+
+
+---
+
+The nodes in the graph should be labelled "GraphML", "Connected JSON", "TGF", "CSV".

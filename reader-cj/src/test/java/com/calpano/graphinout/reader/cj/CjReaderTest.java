@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static com.calpano.graphinout.foundation.TestFileUtil.inputSource;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 //@Disabled
@@ -71,11 +72,8 @@ class CjReaderTest {
 
     @ParameterizedTest
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
-    void shouldWorkAsIntended(String displayName, Path filePath) throws IOException {
-        URL resourceUrl = ClassLoader.getSystemResource(filePath.toString());
-        assert resourceUrl != null : "Resource file should exist: " + filePath;
-        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-        SingleInputSource singleInputSource = SingleInputSource.of(filePath.toString(), content);
+    void shouldWorkAsIntended(String displayName, Resource resource) throws IOException {
+        SingleInputSource singleInputSource = inputSource(resource);
 
         underTest.read(singleInputSource, mockGioWriter);
 

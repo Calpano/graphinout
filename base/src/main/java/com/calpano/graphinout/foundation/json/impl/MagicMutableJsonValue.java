@@ -1,6 +1,7 @@
 package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.json.JsonType;
+import com.calpano.graphinout.foundation.json.path.IJsonPath;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
@@ -12,15 +13,10 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class MagicMutableJsonValue implements IMagicMutableJsonValue {
-
-    public IJsonPrimitive asPrimitive() throws ClassCastException {
-        if(value==null) return null;
-        return value.asPrimitive();
-    }
-
 
     private final IJsonFactory factory;
     /** null = empty, which is different from a JSON null */
@@ -31,11 +27,9 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
         this.value = value;
     }
 
-    @Override
     public void add(IJsonValue jsonValue) {
         addMerge(jsonValue);
     }
-
 
     public void addMerge(IJsonValue value) {
         if (isEmpty()) {
@@ -67,17 +61,20 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
     }
 
     @Override
-    public void set(IJsonValue value) throws IllegalStateException {
-        if(this.isEmpty()) {
-            this.value = value;
-        } else {
-            throw new IllegalStateException("Cannot set value on non-empty value");
-        }
+    public void addProperty(String propertyKey, Consumer<IMagicMutableJsonValue> subValueConsumer) {
+        MagicMutableJsonValue leaf = new MagicMutableJsonValue(factory, null);
+        addProperty(propertyKey, leaf);
+        subValueConsumer.accept(leaf);
     }
 
     @Override
     public void append(List<String> propertySteps, IJsonValue value) {
         appendMerge(propertySteps, value);
+    }
+
+    public IJsonPrimitive asPrimitive() throws ClassCastException {
+        if (value == null) return null;
+        return value.asPrimitive();
     }
 
     @Override
@@ -97,8 +94,13 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
         }
     }
 
-    @Nullable
     @Override
+    public void forEachLeaf(IJsonPath prefix, BiConsumer<IJsonPath, IJsonPrimitive> path_primitive) {
+        if (value == null) return;
+        value.forEachLeaf(prefix, path_primitive);
+    }
+
+    @Nullable
     public IJsonValue get(String key) {
         if (value == null) return null;
         if (value.jsonType().valueType() == JsonType.ValueType.Object) {
@@ -108,7 +110,6 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
     }
 
     @Nullable
-    @Override
     public IJsonValue get(int index) {
         if (value == null) throw new IllegalStateException();
         if (value.jsonType().valueType() == JsonType.ValueType.Array) {
@@ -148,7 +149,6 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
     }
 
 
-    @Override
     public Set<String> keys() {
         if (value == null) return Collections.emptySet();
         if (value.jsonType().valueType() == JsonType.ValueType.Object) {
@@ -158,6 +158,14 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
     }
 
     @Override
+    public void set(IJsonValue value) throws IllegalStateException {
+        if (this.isEmpty()) {
+            this.value = value;
+        } else {
+            throw new IllegalStateException("Cannot set value on non-empty value");
+        }
+    }
+
     public int size() {
         if (value == null) return 0;
         return switch (value.jsonType().valueType()) {
@@ -189,14 +197,6 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
         appendableObject.addProperty(propertyStep, leaf);
         return leaf;
     }
-
-    @Override
-    public void addProperty(String propertyKey, Consumer<IMagicMutableJsonValue> subValueConsumer) {
-        MagicMutableJsonValue leaf = new MagicMutableJsonValue(factory, null);
-        addProperty(propertyKey,leaf);
-        subValueConsumer.accept(leaf);
-    }
-
 
     private MagicMutableJsonValue navigateTo(String propertyKey) {
         if (this.isEmpty()) {

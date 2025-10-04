@@ -8,6 +8,7 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.TestFileProvider;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
+import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,8 +43,8 @@ class AdjListReaderTest {
     private List<ContentError> capturedErrors;
     private Consumer<ContentError> errorConsumer;
 
-    private static Stream<String> adjListResourcePaths() {
-        return TestFileProvider.getAllTestResourcePaths().filter(path -> path.endsWith(".adjlist"));
+    private static Stream<TestFileProvider.TestResource> adjListResourcePaths() {
+        return TestFileProvider.getAllTestResources().filter(res -> res.resource().getPath().endsWith(".adjlist"));
     }
 
     @AfterEach

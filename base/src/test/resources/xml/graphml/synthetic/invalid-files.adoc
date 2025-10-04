@@ -1,2 +1,4 @@
-All files starting with `invalid` are invalid.
+All files starting with `--INVALID.some.ext` are invalid.
 They are used in tests for specific error handling.
+
+See `TestFileUtils`.

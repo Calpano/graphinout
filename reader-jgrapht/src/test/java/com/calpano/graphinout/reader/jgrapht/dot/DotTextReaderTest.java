@@ -11,6 +11,7 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.TestFileProvider;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
+import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,8 +74,8 @@ class DotTextReaderTest {
     @Mock
     private Consumer<ContentError> mockErrorConsumer;
 
-    private static Stream<String> dotResourcePaths() {
-        return TestFileProvider.getAllTestResourcePaths().filter(path -> path.endsWith(".dot"));
+    private static Stream<TestFileProvider.TestResource> dotResources() {
+        return TestFileProvider.getAllTestResources().filter(res -> res.resource().getPath().endsWith(".dot"));
     }
 
     @AfterEach
@@ -89,7 +90,7 @@ class DotTextReaderTest {
     }
 
     @ParameterizedTest
-    @MethodSource("dotResourcePaths")
+    @MethodSource("dotResources")
     void shouldWorkAsIntended(String filePath) throws IOException {
         URL resourceUrl = ClassLoader.getSystemResource(filePath);
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);

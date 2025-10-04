@@ -11,7 +11,7 @@ import static com.google.common.truth.Truth.assertThat;
 class NamedEntitiesTest {
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#xmlFiles")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#xmlResources")
     @DisplayName("XML->XmlString (All XML files)")
     void test(String xml) {
         String actual = NamedEntities.htmlEntitiesTo(xml, entityName-> "&" + entityName + ";", entityNum-> "&#" + entityNum + ";");

@@ -18,12 +18,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.calpano.graphinout.foundation.TestFileUtil.resource;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -36,8 +36,7 @@ class GioEngineCoreTest {
     @BeforeAll
     static void beforeAll() {
         gioEngineCore = new GioEngineCore();
-        if (!reportResultDir.exists())
-            reportResultDir.mkdirs();
+        if (!reportResultDir.exists()) reportResultDir.mkdirs();
     }
 
     /**
@@ -48,7 +47,7 @@ class GioEngineCoreTest {
     @Disabled("needs to fix the generic JsonReader")
     void test() {
         // find all resources
-        TestFileProvider.getAllTestResourcePaths().forEach(this::testResource);
+        TestFileProvider.getAllTestResources().forEach(this::testTheResource);
 
 
 //        byte[] graphmlBytes1;
@@ -82,25 +81,7 @@ class GioEngineCoreTest {
 
     @Test
     void testWith1Resource() {
-        testResource("xml/graphml/synthetic/invalid-root.graphml");
-    }
-
-    private void testResource(String resourcePath) {
-        URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
-        if (gioEngineCore.canRead(resourcePath)) {
-            log.info("Reading " + resourceUrl + " in memory");
-            try {
-                String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-                SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
-                for (GioReader gioReader : gioEngineCore.readers()) {
-                    if (gioReader.fileFormat().matches(resourcePath)) {
-                        testResourceWithReader(gioReader, inputSource, resourcePath);
-                    }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        testTheResource(TestFileProvider.TestResource.testResource(resource("xml/graphml/synthetic/invalidgraphml-root.graphml")));
     }
 
     private void testResourceWithReader(GioReader gioReader, SingleInputSource inputSource, String resourcePath) throws IOException {
@@ -136,6 +117,23 @@ class GioEngineCoreTest {
             String ex = sw.getBuffer().toString();
             b.append(ex);
             FileUtils.writeStringToFile(resultFile, b.toString(), StandardCharsets.UTF_8);
+        }
+    }
+
+    private void testTheResource(TestFileProvider.TestResource tr) {
+        if (gioEngineCore.canRead(tr.resource().getPath())) {
+            log.info("Reading " + tr.resource().getURI() + " in memory");
+            try {
+                String content = IOUtils.toString(tr.resource().getURL(), StandardCharsets.UTF_8);
+                SingleInputSource inputSource = SingleInputSource.of(tr.resource().getURL().toString(), content);
+                for (GioReader gioReader : gioEngineCore.readers()) {
+                    if (gioReader.fileFormat().matches(tr.resource().getPath())) {
+                        testResourceWithReader(gioReader, inputSource, tr.resource().getPath());
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

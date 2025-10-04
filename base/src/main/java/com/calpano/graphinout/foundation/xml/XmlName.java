@@ -13,6 +13,21 @@ public class XmlName implements IXmlName {
     }
 
     @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof XmlName xmlName)) return false;
+
+        return uri.equals(xmlName.uri) && localName.equals(xmlName.localName) && qName.equals(xmlName.qName);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = uri.hashCode();
+        result = 31 * result + localName.hashCode();
+        result = 31 * result + qName.hashCode();
+        return result;
+    }
+
+    @Override
     public String localName() {
         return localName;
     }
@@ -20,6 +35,11 @@ public class XmlName implements IXmlName {
     @Override
     public String qName() {
         return qName;
+    }
+
+    @Override
+    public String toString() {
+        return "XmlName{" + "uri='" + uri + '\'' + ", local='" + localName + '\'' + ", q='" + qName + '\'' + '}';
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  * <p>
  * .API [ propertyKeys ]* (append|addProperty(p)) value
  */
-public interface IMagicMutableJsonValue extends IJsonValue, IJsonObjectAppendable, IJsonArrayAppendable {
+public interface IMagicMutableJsonValue extends IJsonValue {
 
     /**
      * Object add property. Convert the current-value at propertySteps into <code>{ "value" : current-value }</code>

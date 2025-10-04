@@ -1,6 +1,8 @@
 package com.calpano.graphinout.foundation.xml;
 
 import com.calpano.graphinout.foundation.TestFileProvider;
+import com.calpano.graphinout.foundation.TestFileUtil;
+import io.github.classgraph.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
@@ -39,38 +42,29 @@ public class XmlTest {
 
     interface MockHandler extends ContentHandler, LexicalHandler {}
 
-    private static final Logger log = getLogger(XmlTest.class);
-    private Path testResourcesPath;
-
-
-    @BeforeEach
-    void setUp() {
-        testResourcesPath = Paths.get(TestFileProvider.SRC_TEST_RESOURCES + "xml");
-    }
-
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#xmlFiles")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#xmlResources")
     @DisplayName("Test all XML files together")
-    void testAllXmlFiles(String displayPath, Path xmlFilePath) throws Exception {
-        testXmlFile(xmlFilePath);
+    void testAllXmlFiles(String displayPath, Resource xmlResource) throws Exception {
+        testXmlFile(xmlResource);
     }
 
     @Test
     @DisplayName("Test cdata in XML file")
     void testCDATA() throws Exception {
-        testXmlFile(testResourcesPath.resolve("cdata.xml"));
+        testXmlFile(TestFileUtil.resource("xml/cdata.xml"));
     }
 
     @Test
     @DisplayName("Test minimal XML file processing")
     void testMinimalXml() throws Exception {
-        testXmlFile(testResourcesPath.resolve("minimal.xml"));
+        testXmlFile(TestFileUtil.resource("xml/minimal.xml"));
     }
 
     @Test
     @DisplayName("Test Namespaces")
     void testNamespaces() throws Exception {
-        testXmlFile(testResourcesPath.resolve("namespace/XMLNamespaceHandlingTest1.xml"));
+        testXmlFile(TestFileUtil.resource("xml/graphml/synthetic/namespace/namespace1.graphml.xml"));
     }
 
     @Test
@@ -95,7 +89,7 @@ public class XmlTest {
     @Test
     @DisplayName("Test typical XML file processing")
     void testTypicalXml() throws Exception {
-        testXmlFile(testResourcesPath.resolve("typical.xml"));
+        testXmlFile(TestFileUtil.resource("xml/typical.xml"));
     }
 
     private void parseXmlString(String xml) throws Exception {
@@ -104,7 +98,12 @@ public class XmlTest {
     }
 
     /** Read XML, write via XmlWriter to string */
-    private void testXmlFile(Path xmlFilePath) throws Exception {
+    private void testXmlFile(Resource xmlResource) throws Exception {
+        assert xmlResource != null : "got null";
+        File xmlFile = TestFileUtil.file(xmlResource);
+        assertThat(xmlFile).isNotNull();
+
+        Path xmlFilePath = xmlFile.toPath();
         assertTrue(Files.exists(xmlFilePath), "XML test file should exist: " + xmlFilePath);
         String xmlIn = Files.readString(xmlFilePath);
         assertNotNull(xmlIn);
@@ -113,7 +112,7 @@ public class XmlTest {
         // Parse and write XML
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
         XmlTool.parseAndWriteXml(xmlFilePath.toFile(), xmlWriter);
-        String outString = xmlWriter.string();
+        String outString = xmlWriter.resultString();
 
         // Validate processed XML is not empty and is well-formed
         assertNotNull(outString);

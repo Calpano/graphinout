@@ -2,20 +2,10 @@ package com.calpano.graphinout.foundation.xml;
 
 import com.calpano.graphinout.foundation.text.StringFormatter;
 import com.calpano.graphinout.foundation.xml.element.XmlDocument;
-import com.calpano.graphinout.foundation.xml.element.XmlWriter2XmlDocument;
+import com.calpano.graphinout.foundation.xml.element.Xml2DocumentWriter;
 import org.slf4j.Logger;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
-import javax.annotation.Nullable;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.Locale;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,58 +38,16 @@ public class XmlFormatter {
     public static String normalize(String rawXml) {
         Xml2StringWriter w = new Xml2StringWriter(Xml2AppendableWriter.AttributeOrderPerElement.Lexicographic, true);
         try {
-            XmlTool.parseAndWriteXml(rawXml,w);
-            return w.string();
+            XmlTool.parseAndWriteXml(rawXml, w);
+            return w.resultString();
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Deprecated
-    public static String normalize_OLD(String rawXml) {
-        return normalize(rawXml, Set.of(), NormalizingXmlWriter::new);
-    }
-
-
-    /**
-     * Canonicalize. Element order is strict and kept. Attribute order is sorted alphabetically. Comments are stripped.
-     *
-     * @param contentElements whitespace is preserved in these elements. Use <code>null</code> to treat any XML element
-     *                        as a content element.
-     */
-    public static String normalize(String rawXml, @Nullable Set<String> contentElements, Function<XmlWriter, NormalizingXmlWriter<?>> normalizingXmlWriterFactory) {
-        try {
-            String xml = normalizeXmlDecl(rawXml);
-
-            Xml2StringWriter xmlWriter = new Xml2StringWriter();
-            NormalizingXmlWriter<?> normWriter = normalizingXmlWriterFactory.apply(xmlWriter);
-            normWriter = normWriter.withContentElements(contentElements);
-
-            Sax2XmlWriter sax2xmlWriter = new Sax2XmlWriter(normWriter, error -> log.error("Error in XML: {}", error));
-
-            SAXParser saxParser = XmlFactory.createSaxParser();
-            XMLReader reader = saxParser.getXMLReader();
-            reader.setContentHandler(sax2xmlWriter);
-            reader.setProperty(XmlTool.PROPERTIES_LEXICAL_HANDLER, sax2xmlWriter);
-            reader.setErrorHandler(sax2xmlWriter);
-
-            //xml = XmlTool.htmlEntitiesToDecimalEntities(xml);
-            InputSource inputSource = new InputSource(new StringReader(xml));
-            reader.parse(inputSource);
-            return xmlWriter.string();
-        } catch (SAXException e) {
-            log.warn("Failed to parse/normalize XML=----\n" + rawXml + "\n----", e);
-            return rawXml;
-        } catch (IOException e) {
-            throw new RuntimeException("IO in parse XML", e);
-        } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static String normalizeAttributeOrder(String xml) {
         // read into doc
-        XmlWriter2XmlDocument xmlWriter2XmlDocument = new XmlWriter2XmlDocument();
+        Xml2DocumentWriter xmlWriter2XmlDocument = new Xml2DocumentWriter();
         try {
             XmlTool.parseAndWriteXml(xml, xmlWriter2XmlDocument);
             XmlDocument xmlDoc = xmlWriter2XmlDocument.resultDoc();
@@ -108,7 +56,7 @@ public class XmlFormatter {
             if (xmlDoc != null) {
                 xmlDoc.fire(xml2string);
             }
-            return xml2string.string();
+            return xml2string.resultString();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

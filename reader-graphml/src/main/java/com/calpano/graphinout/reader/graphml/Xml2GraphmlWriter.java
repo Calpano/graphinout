@@ -87,7 +87,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
 
     public void characters(String characters, CharactersKind kind) {
         if (elementStack.isInterpretedAsGenericPCDATA()) {
-            characterBuffer.characters(characters, CharactersKind.PreserveWhitespace);
+            characterBuffer.characters(characters, kind);
         } else if (isContentElement()) {
             // Accumulate character data for elements that need it (like data, desc, default)
             characterBuffer.append(characters);
@@ -152,8 +152,8 @@ public class Xml2GraphmlWriter implements XmlWriter {
 
                     XmlElementContext parent = elementStack.peekNullable();
                     if (parent != null) {
-                        if (!parent.isRawXml && parent.xmlElementName.equals(DATA)) {
-                            parent.dataBuilder().containsRawXml(true);
+                        if (!parent.isRawXml && parent.xmlElementName.localName().equals(DATA)) {
+                            parent.dataBuilder().rawXml(true);
                         }
                     } else {
                         throw new IllegalStateException("No parent for element: " + localName);
@@ -228,6 +228,8 @@ public class Xml2GraphmlWriter implements XmlWriter {
 
         String dataValue = characterBuffer.getStringAndReset();
         builder.value(dataValue);
+        // FIXME only if we had elements in <data>
+        // builder.rawXml(true);
 
         IGraphmlData data = builder.build();
         graphmlWriter.data(data);
@@ -239,11 +241,10 @@ public class Xml2GraphmlWriter implements XmlWriter {
     private void endDefaultElement() {
         elementStack.pop(DEFAULT);
 
-        String defaultValue = characterBuffer.getStringAndReset();
-        IGraphmlDefault value = IGraphmlDefault.builder().value(defaultValue).build();
-        XmlElementContext parentContext = elementStack.peek_();
-        GraphmlKeyBuilder builder = parentContext.keyBuilder();
-        builder.defaultValue(value);
+        String defaultValueString = characterBuffer.getStringAndReset();
+        IGraphmlDefault graphmlDefault = IGraphmlDefault.builder().value(defaultValueString).build();
+        GraphmlKeyBuilder keyBuilder = elementStack.peek_().keyBuilder();
+        keyBuilder.defaultValue(graphmlDefault);
         elementStack.mode(XmlMode.Graphml);
     }
 
@@ -363,7 +364,10 @@ public class Xml2GraphmlWriter implements XmlWriter {
         ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
 
         // init from containing graph
-        boolean isDirected = IGraphmlGraph.EdgeDefault.isDirected(requireNonNull(elementStack.findParentGraphElement()).edgeDefault());
+        GraphmlGraphBuilder parentGraphElement = elementStack.findParentGraphElement();
+        assert parentGraphElement != null : "Found no active parent graph element";
+        IGraphmlGraph.EdgeDefault edgeDefault = requireNonNull(parentGraphElement).edgeDefault();
+        boolean isDirected = IGraphmlGraph.EdgeDefault.isDirected(edgeDefault);
 
         // maybe overwrite from edge attributes
         @Nullable String b = attributes.get(IGraphmlEdge.ATTRIBUTE_DIRECTED);

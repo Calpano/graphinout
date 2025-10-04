@@ -3,15 +3,25 @@ package com.calpano.graphinout.foundation.xml.element;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 public class XmlDocument extends XmlNode {
 
     XmlElement root;
 
+    @Override
+    public Stream<XmlNode> directChildren() {
+        return Stream.of(root);
+    }
+
     public void fire(XmlWriter writer) throws IOException {
         writer.documentStart();
         root.fire(writer);
         writer.documentEnd();
+    }
+
+    public XmlElement rootElement() {
+        return root;
     }
 
     public void setRoot(XmlElement rootElement) {

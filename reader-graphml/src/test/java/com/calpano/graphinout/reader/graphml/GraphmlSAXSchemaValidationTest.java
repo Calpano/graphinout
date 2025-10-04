@@ -67,7 +67,7 @@ public class GraphmlSAXSchemaValidationTest {
     }
 
     @ParameterizedTest
-    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResourcePaths")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResources")
     void readAllGraphmlFiles(String filePath) throws Exception {
 
         URL resourceUrl = ClassLoader.getSystemResource(filePath);

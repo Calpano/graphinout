@@ -6,8 +6,10 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.Location;
 import com.calpano.graphinout.base.writer.LoggingGioWriter;
+import com.calpano.graphinout.foundation.TestFileUtil;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
+import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -30,11 +32,11 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
 
     protected List<ContentError> expectedErrors(String resourceName) {
         return switch (resourceName) {
-            case "xml/graphml/invalid-greek2.graphml" ->
+            case "xml/graphml/greek2--INVALIDgraphml.graphml" ->
                     Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(33, 57)));
-            case "xml/graphml/invalid-haitimap2.graphml" ->
+            case "xml/graphml/haitimap2--INVALIDgraphml.graphml" ->
                     Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(25, 57)));
-            case "xml/graphml/graphml/synthetic/invalid-root.graphml" -> Arrays.asList( //
+            case "xml/graphml/graphml/synthetic/invalidgraphml-root.graphml" -> Arrays.asList( //
                     new ContentError(ContentError.ErrorLevel.Warn, "The Element <myroot> not acceptable tag for Graphml.", new Location(2, 9)), //
                     new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "    Hello\n" + "' [No open element to add characters to.]", new Location(4, 1)), //
                     new ContentError(ContentError.ErrorLevel.Warn, "The Element </myroot> not acceptable tag for Graphml.", new Location(4, 10)) //
@@ -70,9 +72,9 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
     @Disabled("intended for local use to debug a specific resource")
     void testWithOneResource() throws IOException {
         GioReader gioReader = new GraphmlReader();
-        String resourcePath = "xml/graphml/aws/AWS - Analytics.graphml";
-        List<ContentError> expectedErrors = expectedErrors(resourcePath);
-        testReadResourceToGraph(gioReader, resourcePath, expectedErrors);
+        Resource resource = TestFileUtil.resource( "xml/graphml/aws/AWS - Analytics.graphml");
+        List<ContentError> expectedErrors = expectedErrors(resource);
+        testReadResourceToGraph(gioReader, resource, expectedErrors);
     }
 
 }

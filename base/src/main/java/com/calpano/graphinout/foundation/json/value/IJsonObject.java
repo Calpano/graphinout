@@ -45,8 +45,6 @@ public interface IJsonObject extends IJsonContainer {
 
     default boolean isObject() {return true;}
 
-    default boolean isPrimitive() {return false;}
-
     default JsonType jsonType() {
         return JsonType.Object;
     }

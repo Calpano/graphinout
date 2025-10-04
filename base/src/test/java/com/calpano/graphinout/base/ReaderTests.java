@@ -17,6 +17,7 @@ import com.calpano.graphinout.foundation.output.OutputSink;
 import com.calpano.graphinout.foundation.xml.ValidatingXmlWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
+import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
@@ -57,17 +58,17 @@ public class ReaderTests {
         return gioWriter;
     }
 
-    public static void forEachReadableResource(GioReader gioReader, Consumer<String> resourcePathConsumer) {
-        TestFileProvider.getAllTestResourcePaths() //
-                .filter(resourcePath -> ReaderTests.hasReadableFileExtension(gioReader, resourcePath)) //
-                .forEach(resourcePathConsumer);
+    public static void forEachReadableResource(GioReader gioReader, Consumer<Resource> resourceConsumer) {
+        TestFileProvider.getAllTestResources() //
+                .filter(tr -> ReaderTests.hasReadableFileExtension(gioReader, tr.resource().getPath())) //
+                .forEach(tr->resourceConsumer.accept(tr.resource()));
     }
 
-    public static List<ContentError> readResourceToSink(GioReader gioReader, String resourcePath, OutputSink outputSink) throws IOException {
-        URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
+    public static List<ContentError> readResourceToSink(GioReader gioReader, Resource resource, OutputSink outputSink) throws IOException {
+        URL resourceUrl = ClassLoader.getSystemResource(resource.getPath());
         log.info("Reading " + resourceUrl + " as " + gioReader.fileFormat());
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
-        SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
+        SingleInputSource inputSource = SingleInputSource.of(resource.getPath(), content);
         List<ContentError> contentErrors = readTo(inputSource, gioReader, outputSink);
         return contentErrors;
     }
@@ -92,18 +93,18 @@ public class ReaderTests {
     }
 
     /**
-     * @param resourcePath
+     * @param resource
      * @throws IOException
      */
-    public static void testReadResourceToGraph(GioReader gioReader, String resourcePath, List<ContentError> expectedErrors) throws IOException {
+    public static void testReadResourceToGraph(GioReader gioReader, Resource resource, List<ContentError> expectedErrors) throws IOException {
         InMemoryOutputSink outputSink = new InMemoryOutputSink();
-        List<ContentError> contentErrors = readResourceToSink(gioReader, resourcePath, outputSink);
+        List<ContentError> contentErrors = readResourceToSink(gioReader, resource, outputSink);
 
         Assertions.assertEquals(expectedErrors.toString(), contentErrors.toString(), "expected=" + expectedErrors + " actual=" + contentErrors);
         Assertions.assertEquals(expectedErrors, contentErrors, "expected=" + expectedErrors + " actual=" + contentErrors);
     }
 
-    public static void testWithAllResource(GioReader gioReader, Function<String, List<ContentError>> expectedErrorsFun) {
+    public static void testWithAllResource(GioReader gioReader, Function<Resource, List<ContentError>> expectedErrorsFun) {
         forEachReadableResource(gioReader, resourcePath -> {
             try {
                 testReadResourceToGraph(gioReader, resourcePath, expectedErrorsFun.apply(resourcePath));

@@ -5,10 +5,12 @@ import com.calpano.graphinout.base.cj.element.ICjDocument;
 import com.calpano.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
 import com.calpano.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.calpano.graphinout.base.cj.stream.impl.Json2CjWriter;
+import com.calpano.graphinout.foundation.TestFileUtil;
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
+import io.github.classgraph.Resource;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,14 +33,14 @@ public class Cj2CjElementsTest {
     boolean addLogging = true;
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjFilesCanonical")
+    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test all Canonical CJ files together")
-    void test_Json2Cj2Elements2Cj2Json(String displayPath, Path xmlFilePath) throws Exception {
+    void test_Json2Cj2Elements2Cj2Json(String displayPath, Resource xmlResource) throws Exception {
         // == OUT Pipeline
         Cj2ElementsWriter cj2ElementsWriter = new Cj2ElementsWriter();
         // == IN Pipeline
-        String json_in = FileUtils.readFileToString(xmlFilePath.toFile(), StandardCharsets.UTF_8);
-        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of(xmlFilePath.getFileName().toString(), json_in);
+        SingleInputSourceOfString inputSource = TestFileUtil.inputSource(xmlResource);
+
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         /* receive JSON events -> send CJ events  */
         JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(cj2ElementsWriter);
@@ -50,6 +52,7 @@ public class Cj2CjElementsTest {
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(jsonWriter);
         doc.fire(cj2JsonWriter);
 
+        String json_in = xmlResource.getContentAsString();
         String json_out = jsonWriter.json();
         assertThat(formatDebug(stripCjHeader(removeWhitespace(json_out)))) //
                 .isEqualTo(formatDebug(stripCjHeader(removeWhitespace(json_in))));

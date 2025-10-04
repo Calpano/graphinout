@@ -3,6 +3,7 @@ package com.calpano.graphinout.base;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.Location;
+import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
@@ -16,8 +17,8 @@ public abstract class AbstractReaderTest {
 
     private static final Logger log = getLogger(AbstractReaderTest.class);
 
-    protected List<ContentError> expectedErrors(String resourceName) {
-        if (resourceName.endsWith("graph1_test.graphml"))
+    protected List<ContentError> expectedErrors(Resource resourceName) {
+        if (resourceName.getPath().endsWith("graph1_test.graphml"))
             return
                     Arrays.asList(
                             new ContentError(

@@ -45,8 +45,10 @@ import com.calpano.graphinout.base.graphml.IGraphmlPort;
 import com.calpano.graphinout.base.graphml.impl.GraphmlKey;
 import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
 import com.calpano.graphinout.foundation.json.value.IJsonTypedString;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
+import com.calpano.graphinout.foundation.json.value.java.JavaJsonFactory;
 import com.calpano.graphinout.foundation.util.PowerStackOnClasses;
 import com.calpano.graphinout.foundation.util.path.IMapLike;
 import com.calpano.graphinout.foundation.util.path.KPaths;
@@ -292,15 +294,19 @@ public class Graphml2CjDocument implements GraphmlWriter {
         String propName = key.attrName();
         assert propName != null : "Key '" + key + "' has no attrName?";
         String graphmlDataValue = graphmlData.value();
+        // TODO find best JSON type for graphmlDataValue, e.g. 'Number'
+        GraphmlDataType graphmlDataType = GraphmlDataType.fromString(key.attrType());
+        // need JSON factory to create primitive TODO maybe typedString xml?
+        IJsonPrimitive jsonValue = JavaJsonFactory.INSTANCE.createPrimitiveFromString(graphmlDataType.jsonType(), graphmlDataValue);
 
         cjHasData.addData(json -> //
                 json.addProperty(propName, j -> {
                     if (graphmlData.isRawXml()) {
                         j.addProperty(IJsonTypedString.TYPE,  IJsonTypedString.TYPE_XML);
-                        j.addProperty(IJsonTypedString.VALUE, graphmlDataValue);
+                        j.addProperty(IJsonTypedString.VALUE, jsonValue);
                     } else {
                         j.set(graphmlData.value());
-                        json.addProperty(propName, graphmlData.value());
+                        json.addProperty(propName, jsonValue);
                     }
                 }));
 

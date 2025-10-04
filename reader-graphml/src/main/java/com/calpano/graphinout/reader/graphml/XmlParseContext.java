@@ -42,17 +42,27 @@ public class XmlParseContext {
     public XmlElementContext peek_(String... expectedNames) {
         XmlElementContext context = elementStack.peek();
         assert context != null;
-        assert expectedNames.length == 0 || Set.of(expectedNames).contains(context.xmlElementName) : "Expected element '" + Set.of(expectedNames) + "' but got '" + context.xmlElementName + "'";
+        assert expectedNames.length == 0 || Set.of(expectedNames).contains(context.xmlElementName.localName()) : "Expected element '" + Set.of(expectedNames) + "' but got '" + context.xmlElementName + "'";
         return context;
     }
 
     public XmlElementContext pop(String expectedLocalName) {
         assert !elementStack.isEmpty() : "Element stack is empty at pop";
+        IXmlName expectedXmlName = IXmlName.of(expectedLocalName);
         XmlElementContext context = elementStack.pop();
-        assert context.xmlElementName.equals(expectedLocalName) : "Expected element '" + expectedLocalName + "' but got '" + context.xmlElementName + "'";
+        assert context.xmlElementName.localName().equals(expectedXmlName.localName()) : "Expected element '" + expectedXmlName + "' but got '" + context.xmlElementName + "'";
         return context;
     }
 
+    /**
+     *
+     * @param elementName
+     * @param attributes
+     * @param isRawXml is the element itself part of a rawXml string?
+     * @param builder
+     * @param xmlMode
+     * @return
+     */
     public XmlElementContext push(IXmlName elementName, Map<String, String> attributes, boolean isRawXml, GraphmlElementBuilder<?> builder, XmlMode xmlMode) {
         XmlElementContext context = new XmlElementContext(peekNullable(), elementName, attributes, isRawXml, builder);
         elementStack.push(context);
@@ -65,7 +75,7 @@ public class XmlParseContext {
         // dig in stack to find the parent Graph element
         for (int i = elementStack.size() - 1; i >= 0; i--) {
             XmlElementContext context = elementStack.get(i);
-            if (context.xmlElementName.equals(GRAPH)) {
+            if (context.xmlElementName.localName().equals(GRAPH)) {
                 return context.graphBuilder();
             }
         }

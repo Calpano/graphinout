@@ -17,12 +17,12 @@ import java.util.Set;
 public class Graphml {
 
     /** For Graphml 1.0 and 1.1, YWorks Grapml 1.1 */
-    public static String XMLNS_GRAPHML_1_x = "http://graphml.graphdrawing.org/xmlns";
-    public static String XMLNS_YWORKS_1_0 = "http://graphml.graphdrawing.org/xmlns/graphml";
+    public static final String XMLNS_GRAPHML_1_x = "http://graphml.graphdrawing.org/xmlns";
+    public static final String XMLNS_YWORKS_1_0 = "http://graphml.graphdrawing.org/xmlns/graphml";
     /** "xsi:schemaLocation" 1.0 */
-    public static String XSI_SCHEMA_LOCATION_1_0 = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
+    public static final String XSI_SCHEMA_LOCATION_1_0 = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
     /** "xsi:schemaLocation" 1.1 */
-    public static String XSI_SCHEMA_LOCATION_1_1 = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd";
+    public static final String XSI_SCHEMA_LOCATION_1_1 = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd";
     static Map<String, Set<String>> parent_child;
 
     static {
