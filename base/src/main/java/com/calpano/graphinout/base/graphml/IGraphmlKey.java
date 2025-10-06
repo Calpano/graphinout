@@ -3,6 +3,8 @@ package com.calpano.graphinout.base.graphml;
 import com.calpano.graphinout.base.gio.GioDataType;
 import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
+import com.calpano.graphinout.foundation.json.value.IJsonFactory;
+import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.calpano.graphinout.foundation.util.Nullables;
 import com.calpano.graphinout.foundation.xml.element.XmlElement;
 
@@ -126,5 +128,6 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
                 .value(value)//
                 .build();
     }
+
 
 }

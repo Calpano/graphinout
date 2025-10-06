@@ -32,34 +32,22 @@ public interface CjGraphmlMapping {
          * We attach the key-data into each CJ data object.
          * <p>
          * <p>
-         * TODO THIS IS NOT YET IMPLEMENTED
          * Given
-         * <code>
+         * <code><pre>
          *     &lt;key id="$id1" attr.name="$name1" attr.type="$type1" for="$for1" /&gt;
          *     &lt;key id="$id2" attr.name="$name2" attr.type="$type2" for="$for2" /&gt;
          *     ...
-         *     &lt;data key="$id1" value="$value1" /&gt;
-         *     &lt;data key="$id2" value="$value2" /&gt;
-         * </code>
-         *  we map to
-         * <code>
-         *     {
-         *         ...
-         *         "data": {
-         *             "$name1": "$value1",
-         *             "$name2": "$value2",
-         *             "graphml:key": {
-         *                  "$name1": { "id":"$id1", "type":"$type1", "for":"$for1",
-         *                              "xmlAttributes": { "foo":"bar" }
-         *                              }
-         *                  "$name2": { "id":"$id2", "type":"$type2", "for":"$for2" }
-         *             }
-         *         }
+         * </pre></code>
+         *  we add document level data:
+         * <code><pre>
+         *     "graphml:keys": "{
+         *        "$id1": { "id":"$id1", "type":"$type1", "for":"$for1", "xmlAttributes": { "foo":"bar" } }
+         *        "$id2": { "id":"$id2", "type":"$type2", "for":"$for2" }
          *     }
-         * </code>>
+         * </pre></code>
          *
          */
-        Key("graphml:key"),
+        Keys("graphml:keys"),
 
         /** A graphml {@code <data id+"...">}, which is irrelevant for processing. */
         DataId("graphml:id"),

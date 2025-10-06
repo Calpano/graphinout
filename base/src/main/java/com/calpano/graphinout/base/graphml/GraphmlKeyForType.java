@@ -23,6 +23,10 @@ public enum GraphmlKeyForType {
         throw new IllegalArgumentException("No enum constant '" + keyForType + "'.");
     }
 
+    public String graphmlName() {
+        return value;
+    }
+
     public GioKeyForType toGio() {
         return switch (this) {
             case Graphml -> GioKeyForType.Graphml;

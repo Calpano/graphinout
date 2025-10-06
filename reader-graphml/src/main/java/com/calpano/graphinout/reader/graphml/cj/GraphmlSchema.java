@@ -115,29 +115,12 @@ public class GraphmlSchema {
     }
 
     /** Serialize */
+    @Deprecated
     public String toJson() {
         JavaJsonObject schemaObject = new JavaJsonObject();
         keys.forEach((id, key) -> {
-            JavaJsonObject keyObject = new JavaJsonObject();
+            IJsonObject keyObject = Graphml2CjDocument.toJsonValue(key, schemaObject.factory());
             schemaObject.addProperty(id, keyObject);
-            String attrName = key.attrName();
-            if (attrName != null) keyObject.addProperty(IGraphmlKey.ATTRIBUTE_ATTR_NAME, attrName);
-            keyObject.addProperty(IGraphmlKey.ATTRIBUTE_ATTR_TYPE, key.attrType());
-            keyObject.addProperty(IGraphmlKey.ATTRIBUTE_FOR, key.forType().name());
-            IGraphmlDefault graphmlDefault = key.defaultValue();
-            if (graphmlDefault != null) {
-                keyObject.addProperty(GraphmlElements.DEFAULT, graphmlDefault.value());
-            }
-            IGraphmlDescription desc = key.desc();
-            if (desc != null) {
-                keyObject.addProperty(GraphmlElements.DESC, desc.value());
-            }
-            if (!key.customXmlAttributes().isEmpty()) {
-                JavaJsonObject attributesObject = new JavaJsonObject();
-                keyObject.addProperty("xmlAttributes", attributesObject);
-                key.customXmlAttributes().forEach(attributesObject::addProperty);
-            }
-
         });
         return schemaObject.toJsonString();
     }
