@@ -57,9 +57,8 @@ import com.calpano.graphinout.foundation.util.path.Result;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 import static com.calpano.graphinout.base.cj.CjDirection.IN;
 import static com.calpano.graphinout.base.cj.CjDirection.OUT;
@@ -67,6 +66,7 @@ import static com.calpano.graphinout.base.cj.CjDirection.UNDIR;
 import static com.calpano.graphinout.foundation.util.Nullables.ifPresentAccept;
 import static com.calpano.graphinout.foundation.util.Nullables.mapOrDefault;
 import static com.calpano.graphinout.foundation.util.Nullables.nonNullOrDefault;
+import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -74,7 +74,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
 
     private static final Logger log = getLogger(Graphml2CjDocument.class);
     /** doc-level */
-    private final Map<String, GraphmlKey> keyDefinitions = new HashMap<>();
+    private final GraphmlSchema graphmlSchema = new GraphmlSchema();
     private final PowerStackOnClasses<ICjElement> stack = PowerStackOnClasses.create();
     private CjDocumentElement cjDoc;
 
@@ -104,12 +104,12 @@ public class Graphml2CjDocument implements GraphmlWriter {
         String graphmlKey = graphmlData.key();
         assert graphmlKey != null;
         // process keyDefs to find mapped attName
-        assert !keyDefinitions.isEmpty() : "got data " + graphmlKey + " but no keyDef for it";
-        GraphmlKey key = keyDefinitions.get(graphmlKey);
+        assert !graphmlSchema.isEmpty() : "got data " + graphmlKey + " but no keyDef for it";
+        IGraphmlKey key = graphmlSchema.keyById(graphmlKey);
 
         if (key == null) {
-            log.warn("Found no <key id=...> for <data key='" + graphmlKey + "'>. Have these keys: " + keyDefinitions.keySet() + ". Assuming type string.");
-            key = new GraphmlKey(null, graphmlKey, IGraphmlDescription.builder().value("auto-created missing key").build(), graphmlKey, GraphmlDataType.typeString.graphmlName(), GraphmlKeyForType.All, null);
+            log.warn("Found no <key id=...> for <data key='" + graphmlKey + "'>. Have these keys: " + graphmlSchema.keys() + ". Assuming type string.");
+            key = new GraphmlKey(null, graphmlKey, IGraphmlDescription.of("auto-created missing key"), graphmlKey, GraphmlDataType.typeString.graphmlName(), GraphmlKeyForType.All, null);
         }
 
         String propName = key.attrName();
@@ -251,14 +251,32 @@ public class Graphml2CjDocument implements GraphmlWriter {
 
     @Override
     public void key(IGraphmlKey key) {
-        // just index?
-        keyDefinitions.put(key.id(), (GraphmlKey) key);
+        graphmlSchema.addKey(key);
         // IMPROVE could also put in doc.data somewhere
     }
 
     @Override
     public void nodeEnd() {
-        stack.pop(ICjNodeMutable.class);
+        ICjNodeMutable cjNode = stack.pop(ICjNodeMutable.class);
+
+        // TODO apply all <default> defined for 'node', which have not been set for this node yet
+        List<IGraphmlKey> defaultKeysFor = graphmlSchema.defaultKeysFor(GraphmlKeyForType.Node);
+        if (defaultKeysFor.isEmpty()) return;
+
+        cjNode.addData(magicJson -> {
+            for(IGraphmlKey key : defaultKeysFor) {
+                if(magicJson.isObject() && magicJson.asObject().hasProperty(key.attrName())) {
+                    // dont overwrite
+                    continue;
+                }
+                String defaultValue = requireNonNull(key.defaultValue()).value();
+                // use correct JSON type for graphml type
+                GraphmlDataType type = GraphmlDataType.fromString(key.attrType());
+                IJsonPrimitive jsonValue = magicJson.factory().createPrimitiveFromString(type.jsonType(), defaultValue);
+                magicJson.addProperty(key.attrName(), jsonValue);
+            }
+        });
+
     }
 
     @Override
@@ -290,7 +308,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
         return cjDoc;
     }
 
-    private void copyData(IGraphmlData graphmlData, GraphmlKey key, ICjHasDataMutable cjHasData) {
+    private void copyData(IGraphmlData graphmlData, IGraphmlKey key, ICjHasDataMutable cjHasData) {
         String propName = key.attrName();
         assert propName != null : "Key '" + key + "' has no attrName?";
         String graphmlDataValue = graphmlData.value();
@@ -302,7 +320,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
         cjHasData.addData(json -> //
                 json.addProperty(propName, j -> {
                     if (graphmlData.isRawXml()) {
-                        j.addProperty(IJsonTypedString.TYPE,  IJsonTypedString.TYPE_XML);
+                        j.addProperty(IJsonTypedString.TYPE, IJsonTypedString.TYPE_XML);
                         j.addProperty(IJsonTypedString.VALUE, jsonValue);
                     } else {
                         j.set(graphmlData.value());

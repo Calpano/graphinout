@@ -3,8 +3,10 @@ package com.calpano.graphinout.foundation.json.impl;
 import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.path.IJsonNavigationPath;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
+import com.calpano.graphinout.foundation.json.value.IJsonArray;
 import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
+import com.calpano.graphinout.foundation.json.value.IJsonObject;
 import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
@@ -56,8 +58,9 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
     }
 
     @Override
-    public void addProperty(List<String> propertySteps, IJsonValue value) {
+    public IJsonObjectAppendable addProperty(List<String> propertySteps, IJsonValue value) {
         appendMerge(propertySteps, value);
+        return this;
     }
 
     @Override

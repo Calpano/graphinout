@@ -11,6 +11,11 @@ public interface IGraphmlDefault extends IGraphmlElement {
         return new GraphmlDefaultBuilder();
     }
 
+    /** Use {@link #builder()} to also set custom attributes */
+    static IGraphmlDefault of(String value) {
+        return builder().value(value).build();
+    }
+
     default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
     }
 

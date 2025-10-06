@@ -1,6 +1,6 @@
 package com.calpano.graphinout.reader.graphml;
 
-import com.calpano.graphinout.base.graphml.xml.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
 import com.calpano.graphinout.foundation.TestFileUtil;
 import com.calpano.graphinout.foundation.xml.DelegatingXmlWriter;
 import com.calpano.graphinout.foundation.xml.Xml2AppendableWriter;

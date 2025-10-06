@@ -5,7 +5,7 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.DelegatingGraphmlWriter;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.gio.Gio2GraphmlWriter;
-import com.calpano.graphinout.base.graphml.xml.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.validation.graphml.ValidatingGraphMlWriter;
 import com.calpano.graphinout.base.writer.DelegatingGioWriter;

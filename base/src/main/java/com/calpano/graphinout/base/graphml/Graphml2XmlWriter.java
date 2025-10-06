@@ -1,19 +1,6 @@
-package com.calpano.graphinout.base.graphml.xml;
+package com.calpano.graphinout.base.graphml;
 
 
-import com.calpano.graphinout.base.graphml.Graphml;
-import com.calpano.graphinout.base.graphml.GraphmlElements;
-import com.calpano.graphinout.base.graphml.GraphmlWriter;
-import com.calpano.graphinout.base.graphml.IGraphmlData;
-import com.calpano.graphinout.base.graphml.IGraphmlDocument;
-import com.calpano.graphinout.base.graphml.IGraphmlEdge;
-import com.calpano.graphinout.base.graphml.IGraphmlEndpoint;
-import com.calpano.graphinout.base.graphml.IGraphmlGraph;
-import com.calpano.graphinout.base.graphml.IGraphmlHyperEdge;
-import com.calpano.graphinout.base.graphml.IGraphmlKey;
-import com.calpano.graphinout.base.graphml.IGraphmlLocator;
-import com.calpano.graphinout.base.graphml.IGraphmlNode;
-import com.calpano.graphinout.base.graphml.IGraphmlPort;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 import org.slf4j.Logger;
 

@@ -8,6 +8,7 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.foundation.input.InputSource;
+import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.reader.graphml.Graphml2GioWriter;
@@ -25,6 +26,19 @@ public class ConnectedJsonReader implements GioReader {
     public static final GioFileFormat FORMAT = new GioFileFormat("connected-json", "Connected JSON Format", //
             ".con.json", ".connected.json", ".cj.json");
     private @Nullable Consumer<ContentError> errorHandler;
+
+    public static ICjDocument readToDocument(String json) {
+        Cj2ElementsWriter cj2ElementsWriter = new Cj2ElementsWriter();
+        JsonWriter jsonWriter = Json2CjWriter.createWritingTo(cj2ElementsWriter);
+        try {
+            JsonReaderImpl jsonReader = new JsonReaderImpl();
+            SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", json);
+            jsonReader.read(inputSource, jsonWriter);
+            return cj2ElementsWriter.resultDoc();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse JSON content", e);
+        }
+    }
 
     @Override
     public void errorHandler(Consumer<ContentError> errorHandler) {

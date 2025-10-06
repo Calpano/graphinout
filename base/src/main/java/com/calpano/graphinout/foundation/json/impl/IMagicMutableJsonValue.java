@@ -1,13 +1,16 @@
 package com.calpano.graphinout.foundation.json.impl;
 
 import com.calpano.graphinout.foundation.json.JsonType;
+import com.calpano.graphinout.foundation.json.path.IJsonNavigationPath;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
+import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -17,7 +20,7 @@ import java.util.function.Consumer;
  * <p>
  * .API [ propertyKeys ]* (append|addProperty(p)) value
  */
-public interface IMagicMutableJsonValue extends IJsonValue {
+public interface IMagicMutableJsonValue extends IJsonValue, IJsonObjectAppendable, IJsonArrayAppendable {
 
     /**
      * Object add property. Convert the current-value at propertySteps into <code>{ "value" : current-value }</code>
@@ -26,7 +29,7 @@ public interface IMagicMutableJsonValue extends IJsonValue {
      *                      the new property key.
      * @param value         to set at propertySteps(last)
      */
-    void addProperty(List<String> propertySteps, IJsonValue value);
+    IJsonObjectAppendable addProperty(List<String> propertySteps, IJsonValue value);
 
 
     /**
@@ -41,7 +44,7 @@ public interface IMagicMutableJsonValue extends IJsonValue {
     /**
      * @return this, the object at which the property was added
      */
-    default IMagicMutableJsonValue addProperty(String propertyKey, String valueString) {
+    default IJsonObjectAppendable addProperty(String propertyKey, String valueString) {
         IJsonValue string = factory().createString(valueString);
         addProperty(propertyKey, string);
         return this;
@@ -71,6 +74,17 @@ public interface IMagicMutableJsonValue extends IJsonValue {
     default void fire(JsonWriter jsonWriter) {
         if (isEmpty()) return;
         jsonValue().fire(jsonWriter);
+    }
+
+    @Override
+    default void forEachLeaf(IJsonNavigationPath prefix, BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive) {
+        if (isObject()) {
+            asObject().forEachLeaf(prefix, path_primitive);
+        } else if (isArray()) {
+            asArray().forEachLeaf(prefix, path_primitive);
+        } else {
+            asPrimitive().forEachLeaf(prefix, path_primitive);
+        }
     }
 
     @Override

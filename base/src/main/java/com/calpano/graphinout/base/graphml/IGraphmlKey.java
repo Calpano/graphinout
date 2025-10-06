@@ -3,12 +3,17 @@ package com.calpano.graphinout.base.graphml;
 import com.calpano.graphinout.base.gio.GioDataType;
 import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
+import com.calpano.graphinout.foundation.util.Nullables;
+import com.calpano.graphinout.foundation.xml.element.XmlElement;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
+
+import static com.calpano.graphinout.foundation.util.Nullables.ifPresentAccept;
+import static com.calpano.graphinout.foundation.util.Nullables.mapOrDefault;
 
 /**
  * The DTD says: There are only 'for' and 'id' attributes.
@@ -27,10 +32,26 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
     String ATTRIBUTE_FOR = "for";
     String ATTRIBUTE_ATTR_NAME = "attr.name";
     String ATTRIBUTE_ATTR_TYPE = "attr.type";
+    String DEFAULT_FOR = "all";
 
 
     static GraphmlKeyBuilder builder() {
         return new GraphmlKeyBuilder();
+    }
+
+    static IGraphmlKey toGraphmlKey(XmlElement key) {
+        GraphmlKeyBuilder builder = builder();
+        builder.id(key.attribute(ATTRIBUTE_ID));
+
+        Nullables.ifPresentAccept(key.attribute(ATTRIBUTE_ATTR_NAME), builder::attrName);
+
+        builder.forType(mapOrDefault(key.attribute(ATTRIBUTE_FOR), GraphmlKeyForType::valueOf, GraphmlKeyForType.All));
+
+        builder.attrType(mapOrDefault(key.attribute(ATTRIBUTE_ATTR_TYPE), GraphmlDataType::valueOf, GraphmlDataType.typeString));
+
+        ifPresentAccept(key.directChildren().filter(node -> node instanceof XmlElement xmlElement && xmlElement.localName().equals(GraphmlElements.DEFAULT)).map(node -> (XmlElement) node).findFirst().orElse(null), XmlElement::contentAsXml, xml -> builder.defaultValue(IGraphmlDefault.of(xml)));
+
+        return builder.build();
     }
 
     /**
@@ -50,29 +71,45 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
     @Nullable
     IGraphmlDefault defaultValue();
 
+    default boolean definesDefaultValue() {
+        return defaultValue() != null;
+    }
+
     GraphmlKeyForType forType();
 
     /**
+     * The special Graphml XML attributes of this {@code <data>} element are 'id' (for matching in {@code <data>},
+     * 'for', 'attr.name', 'attr.type'.
      * @param name_value (name, Supplier(@Nullable value))
      */
     default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
         name_value.accept(ATTRIBUTE_ID, this::id);
         name_value.accept(ATTRIBUTE_FOR, () -> forType().value);
-        if (!Objects.equals(id(), attrName())) {
+        if (!_AUTO_COMPACT || !Objects.equals(id(), attrName())) {
             name_value.accept(ATTRIBUTE_ATTR_NAME, this::attrName);
         }
-        if (!GraphmlDataType.typeString.graphmlName.equals(attrType())) {
+        if (!_AUTO_COMPACT || !GraphmlDataType.typeString.graphmlName.equals(attrType())) {
             name_value.accept(ATTRIBUTE_ATTR_TYPE, this::attrType);
         }
     }
 
-    /** the id referenced in {@link IGraphmlData#key()} */
+     /** debugging is easier, if this is more verbose */
+     boolean _AUTO_COMPACT = false;
+
+    /**
+     * the id referenced in {@link IGraphmlData#key()}.
+     */
     @Override
     String id();
 
     default @Nonnull String id_() {
         return Objects.requireNonNull(id());
     }
+
+    /**
+     * @return true if this {@code <key>} applies to the given {@link CjGraphmlMapping.GraphmlDataElement}.
+     */
+    boolean is(CjGraphmlMapping.GraphmlDataElement graphmlDataElement);
 
     @Override
     default String tagName() {

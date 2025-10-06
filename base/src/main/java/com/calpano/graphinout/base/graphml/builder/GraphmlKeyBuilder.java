@@ -1,5 +1,6 @@
 package com.calpano.graphinout.base.graphml.builder;
 
+import com.calpano.graphinout.base.graphml.GraphmlDataType;
 import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
 import com.calpano.graphinout.base.graphml.IGraphmlDefault;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
@@ -23,8 +24,8 @@ public class GraphmlKeyBuilder extends GraphmlElementWithDescBuilder<GraphmlKeyB
         return this;
     }
 
-    public GraphmlKeyBuilder attrType(String attrType) {
-        this.attrType = attrType;
+    public GraphmlKeyBuilder attrType(GraphmlDataType attrType) {
+        this.attrType = attrType.graphmlName;
         return this;
     }
 

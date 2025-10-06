@@ -1,6 +1,7 @@
 package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.graphml.Graphml;
+import com.calpano.graphinout.base.graphml.GraphmlDataType;
 import com.calpano.graphinout.base.graphml.GraphmlDirection;
 import com.calpano.graphinout.base.graphml.GraphmlElements;
 import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
@@ -242,18 +243,18 @@ public class Xml2GraphmlWriter implements XmlWriter {
         elementStack.pop(DEFAULT);
 
         String defaultValueString = characterBuffer.getStringAndReset();
-        IGraphmlDefault graphmlDefault = IGraphmlDefault.builder().value(defaultValueString).build();
+        IGraphmlDefault graphmlDefault = IGraphmlDefault.of(defaultValueString);
         GraphmlKeyBuilder keyBuilder = elementStack.peek_().keyBuilder();
         keyBuilder.defaultValue(graphmlDefault);
         elementStack.mode(XmlMode.Graphml);
     }
 
     private void endDescElement() throws IOException {
-        elementStack.pop(DESC);
+        XmlElementContext descContext = elementStack.pop(DESC);
         // Set description for the parent element
         XmlElementContext parent = elementStack.peek_();
         String descValue = characterBuffer.getStringAndReset();
-        GraphmlDescription desc = IGraphmlDescription.builder().value(descValue).build();
+        GraphmlDescription desc = descContext.descBuilder().value(descValue).build();
         switch (parent.xmlElementName.localName()) {
             case GRAPHML -> parent.documentBuilder().desc(desc);
             case GRAPH -> parent.graphBuilder().desc(desc);
@@ -444,7 +445,7 @@ public class Xml2GraphmlWriter implements XmlWriter {
         ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
         ifAttributeNotNull(attributes, IGraphmlKey.ATTRIBUTE_FOR, value -> builder.forType(GraphmlKeyForType.keyForType(value)));
         ifAttributeNotNull(attributes, IGraphmlKey.ATTRIBUTE_ATTR_NAME, builder::attrName);
-        ifAttributeNotNull(attributes, IGraphmlKey.ATTRIBUTE_ATTR_TYPE, builder::attrType);
+        ifAttributeNotNull(attributes, IGraphmlKey.ATTRIBUTE_ATTR_TYPE, str -> builder.attrType(GraphmlDataType.fromGraphmlName(str)));
 
         elementStack.push(Graphml.xmlNameOf(KEY), attributes, false, builder, XmlMode.Graphml);
         // dont start element, maybe <default> comes

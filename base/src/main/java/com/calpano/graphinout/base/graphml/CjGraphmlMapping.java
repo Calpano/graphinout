@@ -4,6 +4,15 @@ import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
 import com.calpano.graphinout.foundation.json.JsonType;
+import com.calpano.graphinout.foundation.json.path.IJsonContainerNavigationStep;
+import com.calpano.graphinout.foundation.json.path.IJsonObjectNavigationStep;
+import com.calpano.graphinout.foundation.json.path.JsonTypeAnalysisTree;
+import com.calpano.graphinout.foundation.json.value.IJsonTypedString;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Mapping data between CJ and GraphML models.
@@ -18,10 +27,11 @@ public interface CjGraphmlMapping {
          */
         Description("graphml:description"),
 
-        /** Graphml splits data into {@code <key>} (id, attName, forType, attrType) and {@code <data>} (key-id, value).
+        /**
+         * Graphml splits data into {@code <key>} (id, attName, forType, attrType) and {@code <data>} (key-id, value).
          * We attach the key-data into each CJ data object.
          * <p>
-         *
+         * <p>
          * TODO THIS IS NOT YET IMPLEMENTED
          * Given
          * <code>
@@ -47,7 +57,8 @@ public interface CjGraphmlMapping {
          *         }
          *     }
          * </code>>
-         * */
+         *
+         */
         Key("graphml:key"),
 
         /** A graphml {@code <data id+"...">}, which is irrelevant for processing. */
@@ -122,15 +133,70 @@ public interface CjGraphmlMapping {
                     .id(attrName)//
                     .attrName(attrName)//
                     .forType(keyForType)//
-                    .attrType(attrType.graphmlName)//
-                    .desc(IGraphmlDescription.builder().value(desc).build())//
+                    .attrType(attrType)//
+                    .desc(IGraphmlDescription.of(desc))//
                     .build();
         }
+    }
+
+    static GraphmlDataType commonSuperTypeFor(Set<GraphmlDataType> gTypes) {
+        assert !gTypes.isEmpty();
+        if (gTypes.size() == 1) return gTypes.iterator().next();
+
+        // if we have > 1 type, and one is boolean, only string can unite them
+        if (gTypes.contains(GraphmlDataType.typeBoolean)) return GraphmlDataType.typeString;
+
+        // if we have > 1 type, and one is string, only string can unite them
+        if (gTypes.contains(GraphmlDataType.typeString)) return GraphmlDataType.typeString;
+
+        // we have only number types
+        if (gTypes.contains(GraphmlDataType.typeDouble)) return GraphmlDataType.typeDouble;
+        if (gTypes.contains(GraphmlDataType.typeFloat)) return GraphmlDataType.typeFloat;
+        if (gTypes.contains(GraphmlDataType.typeLong)) return GraphmlDataType.typeLong;
+        return GraphmlDataType.typeInt;
+    }
+
+    /**
+     * E.g. the data for all Nodes in a graph is described by aa single {@link JsonTypeAnalysisTree}. It will get
+     * represented in Graphml as multiple {@code <key>} elements.
+     *
+     * {@link IJsonTypedString} is {@link GraphmlDataType#typeString}.
+     * <p>
+     * (1) Convert Graphml data, which was represented as object properties with types bool, number, string, back to
+     * Graphml. Use n keys, one per property. (2) Represent arbitrary JSON data as Graphml keys. (2a) primitives? array?
+     * 1 key {@link GraphmlDataElement#CjJsonData} with any id.
+     */
+    static Map<String, GraphmlDataType> toGraphmlDataTypes(JsonTypeAnalysisTree tree) {
+
+        // TODO use CjGraphmlMapping.toGraphmlType(jsonType) ?
+
+        Map<String, GraphmlDataType> map = new HashMap<>();
+        for (IJsonContainerNavigationStep step : tree.rootSteps()) {
+            if (step instanceof IJsonObjectNavigationStep ostep) {
+                // convert all object properties to keys
+                String attName = ostep.propertyKey();
+                JsonTypeAnalysisTree.Node node = tree.get(ostep);
+                if (node.isMapOfPrimitives()) {
+                    // what is the common super-type for all these primitives?
+                    Set<GraphmlDataType> gTypes = node.valueCounts().keySet().stream().map(x -> //
+                            toGraphmlType(x.jsonType())).collect(Collectors.toSet());
+                    GraphmlDataType commonType = commonSuperTypeFor(gTypes);
+                    map.put(attName, commonType);
+                } else {
+                    // this is a nested json value or a typed string, use string
+                    map.put(attName, GraphmlDataType.typeString);
+                }
+            } else {
+                throw new UnsupportedOperationException("not yet implemented");
+            }
+        }
+        return map;
     }
 
     static GraphmlDataType toGraphmlType(JsonType jsonType) {
         return switch (jsonType) {
             case String -> GraphmlDataType.typeString;
+            // TODO we could map to more precise type if we knew the actual value distribution
             case Number -> GraphmlDataType.typeDouble;
             case Boolean -> GraphmlDataType.typeBoolean;
             case Null -> GraphmlDataType.typeString; // GraphML has no null type, map to string

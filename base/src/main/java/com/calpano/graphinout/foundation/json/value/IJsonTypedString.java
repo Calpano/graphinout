@@ -4,7 +4,6 @@ package com.calpano.graphinout.foundation.json.value;
 import com.calpano.graphinout.foundation.json.JsonType;
 
 import javax.annotation.Nullable;
-import java.util.Set;
 
 import static com.calpano.graphinout.foundation.util.Nullables.mapOrNull;
 
@@ -17,12 +16,15 @@ import static com.calpano.graphinout.foundation.util.Nullables.mapOrNull;
  * <p>
  * A typed string MAY have other properties besides the defined ones.
  */
-public interface IJsonTypedString extends IJsonObject {
+public interface IJsonTypedString {
 
     String TYPE = "type";
     String VALUE = "value";
     // common types
     String TYPE_XML = "xml";
+    String TYPE_TEXT = "text";
+    /** for JSON in JSON */
+    String TYPE_JSON = "json";
 
     static IJsonTypedString asJsonTypedString(IJsonValue jsonValue) {
         assert isTypedString(jsonValue);
@@ -51,36 +53,60 @@ public interface IJsonTypedString extends IJsonObject {
     static IJsonTypedString of(IJsonObject jsonObject) {
         assert isTypedString(jsonObject);
         return new IJsonTypedString() {
-            @Override
-            public Object base() {
-                return jsonObject.base();
+            public String type() {
+                return jsonObject.get_(TYPE).asString();
             }
 
-            @Override
-            public IJsonFactory factory() {
-                return jsonObject.factory();
-            }
-
-            @Nullable
-            @Override
-            public IJsonValue get(String key) {
-                return jsonObject.get(key);
-            }
-
-            @Override
-            public Set<String> keys() {
-                return jsonObject.keys();
+            public @Nullable String value() {
+                return mapOrNull(jsonObject.get(VALUE), IJsonValue::asString);
             }
         };
     }
 
-    default String type() {
-        return this.get_(TYPE).asString();
+    static IJsonTypedString of(IJsonValue jsonValue) {
+        switch (jsonValue.jsonType().valueType()) {
+            case Object -> {
+                if (isTypedString(jsonValue)) {
+                    return of(jsonValue.asObject());
+                } else {
+                    throw new IllegalArgumentException("JsonObject cannot be interpreted as TypedString.");
+                }
+            }
+            case Array -> throw new IllegalArgumentException("JsonArray cannot be interpreted as TypedString.");
+            case Primitive -> {
+                IJsonPrimitive primitive = jsonValue.asPrimitive();
+                switch (primitive.jsonType()) {
+                    case Boolean -> throw new IllegalArgumentException("Boolean cannot be interpreted as TypedString.");
+                    case Number -> throw new IllegalArgumentException("Number cannot be interpreted as TypedString.");
+                    case String -> {
+                        String value = primitive.asString();
+                        return of(TYPE_TEXT, value);
+                    }
+                }
+            }
+        }
+        throw new AssertionError();
     }
 
-    default @Nullable String value() {
-        return mapOrNull(this.get(VALUE), IJsonValue::asString);
+    static IJsonTypedString of(String type, String value) {
+        return new IJsonTypedString() {
+            @Override
+            public String type() {
+                return type;
+            }
+
+            @Override
+            public String value() {
+                return value;
+            }
+        };
+
     }
+
+    String type();
+
+    @Nullable
+    String value();
 
 
 }

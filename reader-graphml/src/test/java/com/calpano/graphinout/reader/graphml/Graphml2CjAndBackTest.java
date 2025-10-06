@@ -3,7 +3,7 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.cj.stream.util.LoggingCjWriter;
-import com.calpano.graphinout.base.graphml.xml.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
 import com.calpano.graphinout.foundation.TestFileUtil;
 import com.calpano.graphinout.foundation.xml.Xml2StringWriter;
 import com.calpano.graphinout.foundation.xml.XmlAssert;
@@ -12,7 +12,6 @@ import com.calpano.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.calpano.graphinout.reader.graphml.cj.Graphml2CjDocument;
 import com.calpano.graphinout.reader.graphml.cj.Graphml2CjWriter;
 import io.github.classgraph.Resource;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -22,7 +21,6 @@ import java.io.File;
 import java.nio.file.Path;
 
 import static com.calpano.graphinout.foundation.TestFileUtil.file;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.slf4j.LoggerFactory.getLogger;
 

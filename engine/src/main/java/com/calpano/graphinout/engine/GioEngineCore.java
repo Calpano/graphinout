@@ -4,7 +4,7 @@ import com.calpano.graphinout.base.GioService;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.graphml.gio.Gio2GraphmlWriter;
-import com.calpano.graphinout.base.graphml.xml.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.ContentErrors;
 import com.calpano.graphinout.base.reader.InMemoryErrorHandler;

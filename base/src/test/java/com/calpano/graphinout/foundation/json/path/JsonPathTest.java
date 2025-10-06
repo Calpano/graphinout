@@ -8,23 +8,21 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 
+import static com.google.common.truth.Truth.assertThat;
+
 class JsonPathTest {
 
 
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#jsonResources")
-    void test(String displayName, Resource resource) throws IOException {
+    void testJsonAnalysis(String displayName, Resource resource) throws IOException {
         String json = resource.getContentAsString();
         IJsonValue value = JsonReaderImpl.readToJsonValue(json);
-
         JsonTypeAnalysisTree tree = new JsonTypeAnalysisTree();
+        value.forEachLeaf(tree::index);
 
-        value.forEachLeaf((path, prim) -> {
-            System.out.println(path + " " + prim.toJsonString());
-            tree.index(path,prim);
-        });
-
-        System.out.println(tree);
+        assertThat(tree.rootSteps()).isNotEmpty();
     }
+
 
 }

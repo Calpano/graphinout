@@ -93,3 +93,68 @@ These attributes are stored in the corresponding {cj} element, where the `<data>
 In that element, the property `customKeyAttributes` is a JSON object with the attribute names as keys and the attribute values as values.
 The keys are prefixed with the namespace URI.
 
+== Graphml `<key>`
+
+The data model of `<key>` is
+
+[cols="2,1,3"]
+|===
+| XML | Type | Desc
+
+| attribute `id` | string | used by `<data key="...">`
+
+| attribute `attr.name` | string | the name of the attribute
+
+| attribute `attr.type` | enum | one of `string`, `int`, `long`, `float`, `double`, `boolean`
+
+| attribute `for` | enum | one of `graph`, `node`, `edge`, `hyperedge`, `port`, `endpoint` or `all`
+
+| child element `<default>` | XML | the default value of the attribute
+
+| custom attributes | string | ...
+|===
+
+which can be mapped to this JSON
+
+.JSON to represent `<key>` info from Graphml
+[source,json5]
+----
+{
+    // key @id
+    "someId1": {
+      // key @attr.name
+      "attr.name": "...",
+      // key @attr.type
+      "attr.type": "string",
+      // key <default>
+      "default": "...some XML..."
+    },
+    "someId2": {}
+}
+----
+
+which is document-level meta-data.
+
+.Embedding `<key>` info in {cj}
+[source,json5]
+----
+{
+  "connectedJson": {
+    "versionDate": "2025-07-14",
+    "versionNumber": "5.0.0"
+  },
+  "data": {
+    "graphml:keys": {
+        "someId1": {
+            "attr.name": "...",
+            "attr.type": "string",
+            "default": "...some XML..."
+        },
+        "someId2": {}
+    }
+  },
+  "graphs": [
+    // graph
+  ]
+}
+----

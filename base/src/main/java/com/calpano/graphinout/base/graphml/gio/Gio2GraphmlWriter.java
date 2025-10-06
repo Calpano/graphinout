@@ -12,6 +12,7 @@ import com.calpano.graphinout.base.gio.GioKey;
 import com.calpano.graphinout.base.gio.GioNode;
 import com.calpano.graphinout.base.gio.GioPort;
 import com.calpano.graphinout.base.gio.GioWriter;
+import com.calpano.graphinout.base.graphml.GraphmlDataType;
 import com.calpano.graphinout.base.graphml.GraphmlDirection;
 import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
@@ -109,9 +110,9 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
         GraphmlKeyBuilder builder = IGraphmlKey.builder()//
                 .id(gioKey.getId())//
                 .forType(GraphmlKeyForType.keyForType(gioKey.getForType().value));
-        gioKey.defaultValue().ifPresent(defaultValue -> builder.defaultValue(IGraphmlDefault.builder().value(defaultValue).build()));
+        gioKey.defaultValue().ifPresent(defaultValue -> builder.defaultValue(IGraphmlDefault.of(defaultValue)));
         gioKey.attributeName().ifPresent(builder::attrName);
-        gioKey.attributeType().ifPresent(attType -> builder.attrType(attType.graphmlName));
+        gioKey.attributeType().ifPresent(attType -> builder.attrType(GraphmlDataType.valueOf(attType.graphmlName)));
         customAttributes(gioKey, builder);
         desc(gioKey, builder);
         IGraphmlKey graphmlKey = builder.build();
@@ -191,7 +192,7 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
     }
 
     private void desc(GioElementWithDescription elementWithDescription, GraphmlElementWithDescBuilder<?> builder) {
-        elementWithDescription.description().ifPresent(desc -> builder.desc(IGraphmlDescription.builder().value(desc).build()));
+        elementWithDescription.description().ifPresent(desc -> builder.desc(IGraphmlDescription.of(desc)));
     }
 
     private IGraphmlEndpoint graphmlEndpoint(GioEndpoint endpoint) {

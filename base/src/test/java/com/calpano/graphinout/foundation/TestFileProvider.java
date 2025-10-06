@@ -57,7 +57,7 @@ public class TestFileProvider {
 
         /** is this resource marked with --EXPECTED ? */
         public boolean isExpected() {
-          return   TestFileUtil.isExpected(resource);
+            return TestFileUtil.isExpected(resource);
         }
 
         @Nullable
@@ -133,12 +133,9 @@ public class TestFileProvider {
      * classpath. Resulting paths have the syntax 'com/example/filename.ext'.
      */
     public static Stream<TestResource> getAllTestResources() {
-        return new ClassGraph()
-                .acceptPackages("json", "xml", "json5")
-                .scan()
-                .getAllResources().stream() //
-                .filter(res -> !res.getPath().endsWith(".class"))
-                .map(TestResource::testResource)
+        return new ClassGraph().acceptPackages("json", "xml", "json5").scan().getAllResources().stream() //
+                .filter(res -> !res.getPath().endsWith(".class")) //
+                .map(TestResource::testResource) //
                 .filter(tr -> !tr.isExpected());
     }
 
@@ -170,17 +167,28 @@ public class TestFileProvider {
         return resources("json", Set.of(".json"));
     }
 
+    public static TestResource resourceByPath(String path) {
+        return resources(path, Set.of()).findFirst().orElseThrow();
+    }
+
+    /**
+     * @param allowedExtensions if empty, allow all
+     */
     private static Stream<TestResource> resources(String resourceRootPath, Set<String> allowedExtensions) {
         Path testResourcesPath = Paths.get(resourceRootPath);
         int baseLen = testResourcesPath.toString().length() + 1;
         return getAllTestResources() //
                 .filter(tr -> tr.resource().getPath().startsWith(resourceRootPath))//
-                .filter(tr -> hasExtension(allowedExtensions.toArray(new String[0])).test(tr.resource().getPath())) //
-                .map(res ->
-                        TestResource.testResource(
-                                // pretty name
-                                res.resource.getPath().substring(baseLen).replace('\\', '/'), //
-                                res.resource));
+                .filter(tr -> allowedExtensions.isEmpty() || //
+                        hasExtension(allowedExtensions.toArray(new String[0])).test(tr.resource().getPath())) //
+                .map(res -> {
+                    // pretty name
+                    String name = res.resource.getPath();
+                    if(name.length() > baseLen) {
+                        name = name.substring(baseLen).replace('\\', '/');
+                    }
+                    return TestResource.testResource(name, res.resource);
+                });
     }
 
     /** includes all graphml files */

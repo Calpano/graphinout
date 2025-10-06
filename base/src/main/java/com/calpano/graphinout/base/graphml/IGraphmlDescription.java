@@ -10,15 +10,21 @@ import java.util.function.Supplier;
 
 public interface IGraphmlDescription extends IGraphmlElement {
 
+
     static GraphmlDescriptionBuilder builder() {
         return new GraphmlDescriptionBuilder();
     }
 
-    default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
+    /** Use {@link #builder()} to also set custom attributes */
+    static IGraphmlDescription of(String value) {
+        return builder().value(value).build();
     }
 
     default Set<String> graphmlAttributeNames() {
         return Set.of();
+    }
+
+    default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
     }
 
     @Override

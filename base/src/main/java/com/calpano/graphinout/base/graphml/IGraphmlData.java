@@ -21,6 +21,10 @@ public interface IGraphmlData extends IGraphmlElementWithId {
         return builder().key(key).value(value).rawXml(true).build();
     }
 
+    /**
+     * The special Graphml XML attributes of this {@code <data>} element are 'id' (irrelevant for semantics) and 'key' (for lookup in {@code <key>}.
+     * @param name_value (name, Supplier(@Nullable value))
+     */
     default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
         name_value.accept(ATTRIBUTE_ID, this::id);
         name_value.accept(ATTRIBUTE_KEY, this::key);

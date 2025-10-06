@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+@SuppressWarnings("unused")
 public interface IJsonValue {
 
     default void forEachLeaf( BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive ) {
@@ -22,15 +23,6 @@ public interface IJsonValue {
     static boolean isPrimitive(@Nullable IJsonValue value) {
         if (value == null)
             return true;
-        return value.isPrimitive();
-    }
-
-    /**
-     * A special typed
-     * @param value
-     * @return
-     */
-    static boolean isTypedString(IJsonValue value) {
         return value.isPrimitive();
     }
 
@@ -79,6 +71,7 @@ public interface IJsonValue {
         return (IJsonPrimitive) this;
     }
 
+    /** Does not convert boolean or number to string. Just type-casting here. */
     default String asString() {
         return asPrimitive().castTo(String.class);
     }
@@ -107,6 +100,7 @@ public interface IJsonValue {
         }
     }
 
+    @SuppressWarnings("unused")
     default boolean isAppendable() {
         return (this instanceof IJsonObjectAppendable || this instanceof IJsonArrayAppendable);
     }
@@ -118,6 +112,7 @@ public interface IJsonValue {
     }
 
     /** Mutable is stronger than Appendable */
+    @SuppressWarnings("unused")
     default boolean isMutable() {
         return (this instanceof IJsonObjectMutable || this instanceof IJsonArrayMutable);
     }

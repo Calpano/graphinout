@@ -14,7 +14,7 @@ public abstract class CjHasDataElement implements ICjHasDataMutable {
 
     @Override
     public void addData(Consumer<IMagicMutableJsonValue> consumer) {
-        addDataElement(de -> consumer.accept(de.jsonValueMutable()));
+        addDataElement(dataElement -> consumer.accept(dataElement.jsonValueMutable()));
     }
 
     @Override

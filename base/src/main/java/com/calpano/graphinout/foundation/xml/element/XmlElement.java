@@ -1,6 +1,8 @@
 package com.calpano.graphinout.foundation.xml.element;
 
+import com.calpano.graphinout.base.graphml.IGraphmlDefault;
 import com.calpano.graphinout.foundation.xml.IXmlName;
+import com.calpano.graphinout.foundation.xml.Xml2StringWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -94,6 +96,18 @@ public class XmlElement extends XmlNode {
         } else {
             attributes.put(key, newValue);
         }
+    }
+
+    public String contentAsXml() {
+        Xml2StringWriter w = new Xml2StringWriter();
+        for(XmlNode x : children) {
+            try {
+                x.fire(w);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return w.resultString();
     }
 
     @Override
