@@ -1,0 +1,27 @@
+{"graphs":
+[{"edges":
+[{"endpoints":
+[{"node":
+"canada"},{"node":
+"usa"}],"id":
+"trade_na"}],"graphs":
+[{"edges":
+[{"endpoints":
+[{"node":
+"france"},{"node":
+"germany"}],"id":
+"trade_eu"},{"endpoints":
+[{"node":
+"germany"},{"node":
+"usa"}],"id":
+"trade_transatlantic"}],"id":
+"europe","label":
+[{"value":
+"European Partition"}],"nodes":
+[{"id":
+"france"},{"id":
+"germany"}]}],"id":
+"world","nodes":
+[{"id":
+"canada"},{"id":
+"usa"}]}]}

@@ -25,6 +25,11 @@ public class Graphml {
     public static final String XSI_SCHEMA_LOCATION_1_1 = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd";
     static Map<String, Set<String>> parent_child;
 
+    /** http://www.yworks.com/xml/schema/graphml/1.1 */
+    public static final String XSI_SCHEMA_LOCATION_YWORKS_1_1 = "http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd";
+
+    public static final String XSI_SCHEMA_LOCATION_YWORKS_1_0= "http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.0/ygraphml.xsd";
+
     static {
         parent_child = new HashMap<>();
         parent_child.computeIfAbsent("graphml", k -> new HashSet<>()).add("graph");

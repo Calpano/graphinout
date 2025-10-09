@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+@Deprecated
 public class MagicMutableJsonValue implements IMagicMutableJsonValue {
 
     private final IJsonFactory factory;
@@ -201,6 +202,7 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
         return leaf;
     }
 
+    /** magic happens here */
     private MagicMutableJsonValue navigateTo(String propertyKey) {
         if (this.isEmpty()) {
             return magicToObjectWithProperty(propertyKey, o -> {});
@@ -213,8 +215,15 @@ public class MagicMutableJsonValue implements IMagicMutableJsonValue {
                             o.addProperty("value", prevValue));
                 }
                 case Object -> {
-                    MagicMutableJsonValue leaf = new MagicMutableJsonValue(factory, null);
-                    ((IJsonObjectAppendable) value).addProperty(propertyKey, leaf);
+                    // we have already an object
+                    IJsonObjectAppendable objectAppendable = (IJsonObjectAppendable) value;
+                    MagicMutableJsonValue leaf;
+                    if(objectAppendable.hasProperty(propertyKey)) {
+                        leaf = (MagicMutableJsonValue) objectAppendable.get(propertyKey);
+                    } else {
+                        leaf = new MagicMutableJsonValue(factory, null);
+                        objectAppendable.addProperty(propertyKey, leaf);
+                    }
                     return leaf;
                 }
                 case Array -> throw new IllegalStateException("Array cannot get property '" + propertyKey + "'");

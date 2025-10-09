@@ -2,6 +2,7 @@ package com.calpano.graphinout.foundation.json.value;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -20,6 +21,17 @@ public class JsonPaths {
         } else {
             throw new IllegalArgumentException("jsonPath must be List or Stream or String");
         }
+    }
+
+    @SafeVarargs
+    public static  boolean endsWith( List<Object> path, Predicate<Object>... stepPredicates) {
+        if (path.size() < stepPredicates.length) return false;
+        for (int i = 0; i < stepPredicates.length; i++) {
+            Object step = path.get(path.size() - stepPredicates.length + i);
+            Predicate<Object> test = stepPredicates[i];
+            if (!test.test(step)) return false;
+        }
+        return true;
     }
 
     /**

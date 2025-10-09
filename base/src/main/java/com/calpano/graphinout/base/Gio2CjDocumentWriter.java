@@ -31,8 +31,10 @@ import com.calpano.graphinout.foundation.util.PowerStackOnClasses;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
+import static com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty.CustomXmlAttributes;
+import static com.calpano.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf;
+import static com.calpano.graphinout.foundation.util.Nullables.ifPresentAccept;
 import static java.util.Optional.ofNullable;
 
 public class Gio2CjDocumentWriter extends Json2JavaJsonWriter implements GioWriter {
@@ -41,17 +43,16 @@ public class Gio2CjDocumentWriter extends Json2JavaJsonWriter implements GioWrit
     private ICjDocumentMutable document;
 
     private static void copyCustomAttributes(GioElement gio, ICjHasDataMutable cj) {
-        ofNullable(gio.getCustomAttributes()).ifPresent(customAttributes -> {
-            customAttributes.forEach((key, value) -> cj.addData(data -> //
-                    data.addProperty(List.of(
-                            CjDataProperty.CustomXmlAttributes.cjPropertyKey
-                            , key), value)));
-        });
+        ifPresentAccept(gio.getCustomAttributes(), customAttributes -> //
+                cj.dataMutable(dataMutable -> //
+                        customAttributes.forEach((key, value) -> //
+                                dataMutable.add(pathOf(CustomXmlAttributes.cjPropertyKey, key), value))));
     }
 
     private static void copyDesc(GioElementWithDescription gio, ICjHasDataMutable cj) {
-        ofNullable(gio.getDescription()).ifPresent(desc -> cj.addData(data -> //
-                data.addProperty(CjDataProperty.Description.cjPropertyKey, desc)));
+        ifPresentAccept(gio.getDescription(), desc -> //
+                cj.dataMutable(dataMutable -> //
+                        dataMutable.add(pathOf(CjDataProperty.Description.cjPropertyKey), desc)));
     }
 
     private static void copyId(GioElementWithId gio, ICjHasIdMutable cj) {
@@ -122,12 +123,13 @@ public class Gio2CjDocumentWriter extends Json2JavaJsonWriter implements GioWrit
             // TODO ports
             // TODO endpoints
 
-            gioEdge.getEndpoints().forEach(gEp -> {
-                cjEdge.addEndpoint(cjEp -> {
-                    cjEp.addData(data -> data.addProperty("id", gEp.getId()));
-                    ofNullable(gEp.getPort()).ifPresent(cjEp::port);
-                    cjEp.node(gEp.getNode());
-                    cjEp.direction(gEp.getType().toCjDirection());
+            gioEdge.getEndpoints().forEach(gioEndpoint -> {
+                cjEdge.addEndpoint(cjEndpoint -> {
+                    // GIO endpoint ID is a custom CJ data property
+                    cjEndpoint.dataMutable(m-> m.addProperty( "id", gioEndpoint.getId()));
+                    ofNullable(gioEndpoint.getPort()).ifPresent(cjEndpoint::port);
+                    cjEndpoint.node(gioEndpoint.getNode());
+                    cjEndpoint.direction(gioEndpoint.getType().toCjDirection());
                 });
             });
 

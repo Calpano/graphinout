@@ -4,7 +4,7 @@ import com.calpano.graphinout.base.cj.CjDirection;
 import com.calpano.graphinout.base.cj.CjException;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.ICjEdgeType;
-import com.calpano.graphinout.foundation.json.stream.IJsonTypedStringWriter;
+import com.calpano.graphinout.foundation.json.stream.IJsonXmlStringWriter;
 import com.calpano.graphinout.foundation.json.stream.JsonValueWriter;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 
@@ -60,7 +60,7 @@ import java.util.function.Consumer;
  *     <li>{@link ICjWriter#documentEnd() CJ document end}</li>
  * </ol>
  */
-public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonTypedStringWriter {
+public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWriter {
 
     /** Document base uri */
     void baseUri(String baseUri);

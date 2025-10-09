@@ -4,6 +4,7 @@ package com.calpano.graphinout.base.graphml;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
@@ -30,7 +31,7 @@ public class Graphml2XmlWriter implements GraphmlWriter {
         log.trace("writerData [{}]", data);
         xmlWriter.elementStart(Graphml.xmlNameOf(GraphmlElements.DATA), data.xmlPlusGraphmlAttributesNormalized());
 
-        String dataValue = data.value();
+        @Nullable String dataValue = data.value();
         if (dataValue != null) {
             if (data.isRawXml()) {
                 xmlWriter.raw(dataValue);

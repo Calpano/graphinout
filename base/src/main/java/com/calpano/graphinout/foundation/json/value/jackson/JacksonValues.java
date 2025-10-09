@@ -33,9 +33,9 @@ public class JacksonValues {
             return JacksonFactory.INSTANCE.createNull();
         }
         if (jsonNode.isArray()) {
-            return JacksonAppendableArray.of((ArrayNode) jsonNode);
+            return JacksonArrayMutable.of((ArrayNode) jsonNode);
         } else if (jsonNode.isObject()) {
-            return JacksonAppendableObject.of((ObjectNode) jsonNode);
+            return JacksonObjectMutable.of((ObjectNode) jsonNode);
         }
         assert jsonNode.isValueNode();
         return JacksonPrimitive.of((ValueNode) jsonNode);

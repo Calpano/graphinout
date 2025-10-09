@@ -28,7 +28,11 @@ public class JavaJsonObject implements IJsonObjectMutable {
 
     @Override
     public IJsonObjectAppendable addProperty(String key, IJsonValue jsonValue) {
-        map.put(key, jsonValue);
+        if (map.containsKey(key))
+            throw new IllegalStateException("Property '" + key + "' already present with value=" + map.get(key));
+
+        IJsonValue prev = map.put(key, jsonValue);
+        assert prev == null;
         return this;
     }
 

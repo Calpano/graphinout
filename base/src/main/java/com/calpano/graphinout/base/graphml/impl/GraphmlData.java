@@ -4,6 +4,7 @@ package com.calpano.graphinout.base.graphml.impl;
 import com.calpano.graphinout.base.graphml.IGraphmlData;
 import com.calpano.graphinout.base.graphml.IGraphmlElementWithId;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 
@@ -19,7 +20,7 @@ public class GraphmlData extends GraphmlElementWithId implements IGraphmlData {
     /**
      * the value for any data, which can be extended to complex models like SVG.
      */
-    private final String value;
+    private final @Nullable String value;
     /**
      * This is an attribute is mandatory.
      * </p>
@@ -27,7 +28,7 @@ public class GraphmlData extends GraphmlElementWithId implements IGraphmlData {
      */
     private final String key;
 
-    public GraphmlData(String id, Map<String, String> attributes, String value, boolean isRawXml, String key) {
+    public GraphmlData(String id, Map<String, String> attributes, @Nullable String value, boolean isRawXml, String key) {
         super(attributes, id);
         this.value = value;
         this.key = key;
@@ -69,7 +70,7 @@ public class GraphmlData extends GraphmlElementWithId implements IGraphmlData {
                 '}';
     }
 
-    public String value() {
+    public @Nullable String value() {
         return value;
     }
 

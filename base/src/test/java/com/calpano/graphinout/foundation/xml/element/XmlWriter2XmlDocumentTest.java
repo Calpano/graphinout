@@ -13,7 +13,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
-import java.nio.file.Path;
 
 import static com.calpano.graphinout.foundation.TestFileUtil.file;
 import static com.google.common.truth.Truth.assertThat;
@@ -53,7 +52,7 @@ class XmlWriter2XmlDocumentTest {
         TestFileUtil.verifyOrRecord(xmlResource, xml_out, xml_in, (actual, expected) -> {
             XmlAssert.xAssertThatIsSameXml(actual, expected);
             return true;
-        });
+        }, s -> s);
     }
 
     @ParameterizedTest

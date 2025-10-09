@@ -3,9 +3,11 @@ package com.calpano.graphinout.base.graphml.builder;
 import com.calpano.graphinout.base.graphml.IGraphmlData;
 import com.calpano.graphinout.base.graphml.impl.GraphmlData;
 
+import javax.annotation.Nullable;
+
 public class GraphmlDataBuilder extends GraphmlElementWithIdBuilder<GraphmlDataBuilder> {
 
-    private String value;
+    private @Nullable String value;
     private boolean isRawXml;
     private String key;
 
@@ -27,7 +29,7 @@ public class GraphmlDataBuilder extends GraphmlElementWithIdBuilder<GraphmlDataB
         return key;
     }
 
-    public GraphmlDataBuilder value(String value) {
+    public GraphmlDataBuilder value( @Nullable String value) {
         if (value != null && !value.isEmpty()) {
             this.value = value;
         }

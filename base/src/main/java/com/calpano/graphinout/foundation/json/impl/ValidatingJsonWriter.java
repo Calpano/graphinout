@@ -5,54 +5,104 @@ import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class ValidatingJsonWriter implements JsonWriter {
 
-    enum Container {Document, Array, Object, Property, String}
+    enum ContainerType {Document, Array, Object, Property, String}
+
+    interface Container {
+
+        ContainerType type();
+
+    }
+
+    static class ValBase implements Container {
+
+        final ContainerType type;
+
+        ValBase(ContainerType type) {this.type = type;}
+
+        @Override
+        public String toString() {
+            return "ValBase{" + type + '}';
+        }
+
+        @Override
+        public ContainerType type() {
+            return type;
+        }
+
+    }
+
+    static class ValObject implements Container {
+
+        Set<String> usedKeys = new HashSet<>();
+
+        @Override
+        public ContainerType type() {
+            return ContainerType.Object;
+        }
+
+        @Override
+        public String toString() {
+            return "Object{" +
+                    "keys=" + usedKeys.stream().map(s->'"'+s+'"').collect(Collectors.joining(", ")) +
+                    '}';
+        }
+
+    }
 
     private final Stack<Container> stack = new Stack<>();
+
+    static Container container(ContainerType type) {
+        return new ValBase(type);
+    }
 
     @Override
     public void arrayEnd() throws JsonException {
         Container top = stack.pop();
-        if (top != Container.Array) {
-            throw new IllegalStateException("Expected array start on stack, but found " + top);
+        if (top.type() != ContainerType.Array) {
+            throw new IllegalStateException("Validation: Expected array start on stack, but found " + top);
         }
     }
 
     @Override
     public void arrayStart() throws JsonException {
-        stack.push(Container.Array);
+        ensureValue();
+        stack.push(container(ContainerType.Array));
     }
 
     @Override
     public void documentEnd() {
         Container top = stack.pop();
-        if (top != Container.Document) {
-            throw new IllegalStateException("Expected document start om stack, but found " + top);
+        if (top.type() != ContainerType.Document) {
+            throw new IllegalStateException("Validation: Expected document start om stack, but found " + top);
         }
 
     }
 
     @Override
     public void documentStart() {
-        if (!stack.isEmpty())
-            throw new IllegalStateException("Cannot start a document again");
-        stack.push(Container.Document);
+        if (!stack.isEmpty()) throw new IllegalStateException("Validation: Cannot start a document again");
+        stack.push(container(ContainerType.Document));
     }
 
     @Override
     public void objectEnd() throws JsonException {
         Container top = stack.pop();
-        if (top != Container.Object) {
-            throw new IllegalStateException("Expected object start on stack, but found " + top);
+        if (top.type() != ContainerType.Object) {
+            throw new IllegalStateException("Validation: Expected object start on stack, but found " + top);
         }
     }
 
     @Override
     public void objectStart() throws JsonException {
-        stack.push(Container.Object);
+        ensureValue();
+        stack.push(new ValObject());
     }
 
     @Override
@@ -88,10 +138,17 @@ public class ValidatingJsonWriter implements JsonWriter {
     @Override
     public void onKey(String key) throws JsonException {
         Container top = stack.peek();
-        if (top != Container.Object) {
-            throw new IllegalStateException("Expected object on stack, but found " + top);
+        if (top.type() != ContainerType.Object) {
+            throw new IllegalStateException("Validation: Expected object on stack, but found " + top+ " stack="+stack);
         }
-        stack.push(Container.Property);
+        // verify key is not used yet
+        ValObject valObject = (ValObject) top;
+        if (valObject.usedKeys.contains(key)) {
+            throw new IllegalStateException("Validation: Key '" + key + "' already used");
+        }
+        valObject.usedKeys.add(key);
+
+        stack.push(container(ContainerType.Property));
     }
 
     @Override
@@ -106,19 +163,16 @@ public class ValidatingJsonWriter implements JsonWriter {
 
     @Override
     public void onString(String s) throws JsonException {
-        Container top = stack.peek();
-        if (top != Container.String) {
-            throw new IllegalStateException("Expected string start on stack, but found " + top);
-        }
+        ensureValue();
     }
 
     private void ensureValue() {
         // where is a value legal? in property, in array and as root in document
         Container top = stack.peek();
-        if (top != Container.Property && top != Container.Array && top != Container.Document) {
-            throw new IllegalStateException("Expected property, array or document on stack, but found " + top);
+        if (top.type() != ContainerType.Property && top.type() != ContainerType.Array && top.type() != ContainerType.Document) {
+            throw new IllegalStateException("Validation: Expected property, array or document on stack, but found " + top);
         }
-        if (top == Container.Property) {
+        if (top.type() == ContainerType.Property) {
             stack.pop(); // Pop the Property state after its value is written
         }
     }

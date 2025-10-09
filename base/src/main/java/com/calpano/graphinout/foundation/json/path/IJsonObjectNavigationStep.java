@@ -1,5 +1,7 @@
 package com.calpano.graphinout.foundation.json.path;
 
+import com.calpano.graphinout.foundation.json.JsonType;
+
 public interface IJsonObjectNavigationStep extends IJsonContainerNavigationStep {
 
     static IJsonObjectNavigationStep of(String propertyKey) {
@@ -14,7 +16,10 @@ public interface IJsonObjectNavigationStep extends IJsonContainerNavigationStep 
         };
     }
 
-    String propertyKey();
+    default JsonType.ContainerType containerType() {
+        return JsonType.ContainerType.Object;
+    }
 
+    String propertyKey();
 
 }

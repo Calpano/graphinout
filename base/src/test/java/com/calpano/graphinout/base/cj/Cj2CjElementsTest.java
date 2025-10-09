@@ -7,21 +7,16 @@ import com.calpano.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.calpano.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.calpano.graphinout.foundation.TestFileUtil;
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
+import com.calpano.graphinout.foundation.json.impl.JsonFormatter;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
 import io.github.classgraph.Resource;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-
-import static com.calpano.graphinout.base.cj.CjFormatter.stripCjHeader;
 import static com.calpano.graphinout.foundation.json.impl.JsonFormatter.formatDebug;
-import static com.calpano.graphinout.foundation.json.impl.JsonFormatter.removeWhitespace;
 import static com.google.common.truth.Truth.assertThat;
 
 
@@ -54,8 +49,8 @@ public class Cj2CjElementsTest {
 
         String json_in = xmlResource.getContentAsString();
         String json_out = jsonWriter.json();
-        assertThat(formatDebug(stripCjHeader(removeWhitespace(json_out)))) //
-                .isEqualTo(formatDebug(stripCjHeader(removeWhitespace(json_in))));
+        assertThat(formatDebug(CjNormalizer.canonicalize(JsonFormatter.removeWhitespace(json_out)))) //
+                .isEqualTo(formatDebug(CjNormalizer.canonicalize(JsonFormatter.removeWhitespace(json_in))));
     }
 
 

@@ -2,6 +2,7 @@ package com.calpano.graphinout.base.graphml;
 
 import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 
+import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -40,6 +41,6 @@ public interface IGraphmlData extends IGraphmlElementWithId {
         return GraphmlElements.DATA;
     }
 
-    String value();
+    @Nullable String value();
 
 }

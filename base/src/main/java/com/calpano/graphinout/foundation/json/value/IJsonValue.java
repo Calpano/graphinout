@@ -1,6 +1,7 @@
 package com.calpano.graphinout.foundation.json.value;
 
 import com.calpano.graphinout.foundation.json.JsonType;
+import com.calpano.graphinout.foundation.json.path.IJsonContainerNavigationStep;
 import com.calpano.graphinout.foundation.json.path.IJsonNavigationPath;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.Json2StringWriter;
@@ -14,11 +15,6 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public interface IJsonValue {
-
-    default void forEachLeaf( BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive ) {
-        forEachLeaf(IJsonNavigationPath.EMPTY,path_primitive);
-    }
-    void forEachLeaf(IJsonNavigationPath prefix, BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive );
 
     static boolean isPrimitive(@Nullable IJsonValue value) {
         if (value == null)
@@ -100,6 +96,32 @@ public interface IJsonValue {
         }
     }
 
+    default void forEachLeaf(BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive) {
+        forEachLeaf(IJsonNavigationPath.EMPTY, path_primitive);
+    }
+
+    void forEachLeaf(IJsonNavigationPath prefix, BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive);
+
+    default boolean has(List<IJsonContainerNavigationStep> path) {
+        if (path.isEmpty()) return true;
+
+        // resolve first step
+        IJsonContainerNavigationStep step = path.getFirst();
+        switch (step.containerType()) {
+            case Array:
+                if (isArray()) {
+                    @Nullable IJsonValue child = asArray().get(step.asArrayStep().index());
+                    return child != null && child.has(path.subList(1, path.size()));
+                }
+            case Object:
+                if (isObject()) {
+                    @Nullable IJsonValue child = asObject().get(step.asObjectStep().propertyKey());
+                    return child != null && child.has(path.subList(1, path.size()));
+                }
+        }
+        return false;
+    }
+
     @SuppressWarnings("unused")
     default boolean isAppendable() {
         return (this instanceof IJsonObjectAppendable || this instanceof IJsonArrayAppendable);
@@ -120,6 +142,10 @@ public interface IJsonValue {
     boolean isObject();
 
     boolean isPrimitive();
+
+    default boolean isString() {
+        return jsonType() == JsonType.String;
+    }
 
     JsonType jsonType();
 

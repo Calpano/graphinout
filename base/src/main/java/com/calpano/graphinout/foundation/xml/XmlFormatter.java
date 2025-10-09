@@ -1,6 +1,8 @@
 package com.calpano.graphinout.foundation.xml;
 
+import com.calpano.graphinout.foundation.text.ITextWriter;
 import com.calpano.graphinout.foundation.text.StringFormatter;
+import com.calpano.graphinout.foundation.text.TextReader;
 import com.calpano.graphinout.foundation.xml.element.XmlDocument;
 import com.calpano.graphinout.foundation.xml.element.Xml2DocumentWriter;
 import org.slf4j.Logger;
@@ -108,32 +110,26 @@ public class XmlFormatter {
      * @param lineLength automatically enforced
      */
     public static String wrap(String raw, int lineLength) {
-        String in = StringFormatter.normalizeLineBreaks(raw);
-        StringBuilder sb = new StringBuilder();
-        int i = 0;
-        StringBuilder line = new StringBuilder();
-        while (i < in.length()) {
-            int codePoint = in.codePointAt(i);
-            line.appendCodePoint(codePoint);
-            i += Character.charCount(codePoint);
+        StringBuilder result = new StringBuilder();
+        ITextWriter resultWriter = new ITextWriter.TextWriterOnStringBuilder(result);
 
-            if (codePoint == '\n') {
-                sb.append(line);
-                line.setLength(0);
-            } else if (codePoint == '>' || line.length() >= lineLength) {
-                // insert additional linebreaks for readability
-                sb.append(line);
-                // try to peek next codepoint: if already a newline, skip inserting
-                if (i == in.length() || in.codePointAt(i) == '\n') {
-                    // skip at end or if next char is a newline
-                } else {
-                    sb.append("\n");
+        TextReader.read(raw, rawLine->{
+            StringBuilder line = new StringBuilder();
+            TextReader.forEachCodepointWithIndexAndLookAhead(rawLine, (cp,index,cpNext)->{
+                line.appendCodePoint(cp);
+                if ( cp == '>' || line.length() >= lineLength || cpNext == -1) {
+                    // insert additional linebreaks for readability: finnish current line and start a new one
+                    resultWriter.line(line.toString().trim());
+                    line.setLength(0);
                 }
-                line.setLength(0);
+            });
+            // leftovers
+            if (!line.isEmpty()) {
+                resultWriter.line(line.toString().trim());
             }
-        }
-        sb.append(line);
-        return sb.toString();
+        });
+
+        return result.toString();
     }
 
 

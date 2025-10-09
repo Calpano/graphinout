@@ -4,12 +4,26 @@ import com.calpano.graphinout.base.gio.GioKeyForType;
 
 public enum GraphmlKeyForType {
 
-    Graphml("graphml"), All("all"), Graph("graph"), Node("node"), Edge("edge"), HyperEdge("hyperedge"), Port("port"), Endpoint("endpoint");
+    All("all"), //
+    Graphml("graphml"), //
+    Graph("graph"), //
+    Node("node"), //
+    Port("port"), //
+    Edge("edge"), //
+    HyperEdge("hyperedge"), //
+    Endpoint("endpoint");
 
     public final String value;
 
     GraphmlKeyForType(String value) {
         this.value = value;
+    }
+
+    public static GraphmlKeyForType fromGraphmlName(String graphmlName) {
+        for (GraphmlKeyForType k : values()) {
+            if (k.graphmlName().equals(graphmlName)) return k;
+        }
+        throw new IllegalArgumentException("No enum constant '" + graphmlName + "'.");
     }
 
     public static GraphmlKeyForType keyForType(String keyForType) throws IllegalArgumentException {

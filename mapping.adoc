@@ -158,3 +158,60 @@ which is document-level meta-data.
   ]
 }
 ----
+
+
+== Chains
+
+.We start with GraphMl
+[source,xml]
+----
+<graphml>
+
+    <!-- Attributes for nodes -->
+    <key id="ext_in" for="node" attr.name="is_ext"
+       attr.type="boolean"><default>true</default></key>
+    <key id="neuron_type" for="node" attr.name="model"
+       attr.type="string"><default>leaky</default></key>
+    <!-- ... and -->
+    <node id="N1">
+        <data key="neuron_type">leaky</data>
+        <!-- just implied; -->
+        <data key="ext_in">true</data>
+    </node>
+</graphml>
+----
+
+.Logically it's this
+|===
+| Entity | Attr.name | value | Attr.type | Key Id
+
+| N1 | model | leaky | string e| neuron_type
+| N1 | is_ext | true | boolean e| ext_in
+|===
+
+.Represented in {cj}
+[source,json]
+----
+{
+  "data": {
+    "graphml:keys": {
+      "ext_in": { "for": "node", "attr.name": "is_ext",
+        "attr.type": "boolean", "default": "true" },
+      "neuron_type": { "for": "node", "attr.name": "model",
+        "attr.type": "string", "default": "leaky" }
+    }
+  },
+  "graphs": [ {
+    "nodes": [
+      {
+        "id": "N1",
+        "data": {
+          "model": "leaky",
+          "is_ext": true
+        }
+      }
+    ]
+  } ]
+}
+----
+

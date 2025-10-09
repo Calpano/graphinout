@@ -1,11 +1,14 @@
 package com.calpano.graphinout.foundation.json.path;
 
+import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 
+import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class JsonTypeAnalysisTree {
 
@@ -19,8 +22,26 @@ public class JsonTypeAnalysisTree {
             return children;
         }
 
+        /**
+         * Which container type is required to represent the values? If object and array steps occur, an exception is
+         * thrown. null represents that NO container is required because all values are primitives.
+         */
+        public @Nullable JsonType containerJsonType() {
+            boolean containsObjectSteps = children.keySet().stream().anyMatch(s -> s instanceof IJsonArrayNavigationStep);
+            boolean containsArraySteps = children.keySet().stream().anyMatch(s -> s instanceof IJsonObjectNavigationStep);
+            if (containsObjectSteps && containsArraySteps)
+                throw new IllegalStateException("Cannot have both object and array steps in the same container.");
+            if (containsObjectSteps) return JsonType.Object;
+            if (containsArraySteps) return JsonType.Array;
+            return null;
+        }
+
         public int count() {
             return count;
+        }
+
+        public Stream<IJsonPrimitive> distinctJsonPrimitiveValues() {
+            return value_count.keySet().stream().distinct();
         }
 
         public boolean isMapOfPrimitives() {

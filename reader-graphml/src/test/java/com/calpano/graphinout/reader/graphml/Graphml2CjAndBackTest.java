@@ -124,7 +124,7 @@ public class Graphml2CjAndBackTest {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        });
+        }, s -> s);
     }
 
     @ParameterizedTest(name = "{index}: {0}")

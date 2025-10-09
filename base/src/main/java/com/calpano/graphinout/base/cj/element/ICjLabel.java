@@ -32,7 +32,7 @@ public interface ICjLabel extends ICjElement {
                 });
             });
         } catch (Exception e) {
-            _log.debug("Could not parse JSON from <<" + plainTextOrJson + ">>");
+            //_log.debug("Could not parse JSON from <<" + plainTextOrJson + ">>, so interpreting as plain text");
             cjLabelElement.addEntry(cjEntry -> {
                 cjEntry.value(plainTextOrJson);
             });

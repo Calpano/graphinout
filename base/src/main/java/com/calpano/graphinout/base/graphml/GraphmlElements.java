@@ -27,10 +27,10 @@ public class GraphmlElements {
     public static final String LOCATOR = "locator";
 
     public static final String DEFAULT = "default";
+    public static Set<String> SET_OF_HAS_DATA_ELEMENTS = Set.of(EDGE, GRAPH, NODE, PORT, ENDPOINT, HYPER_EDGE);
 
     /** Elements with significant whitespace */
-    public static Set<String> setOfContentElementNames() {
-        return Set.of(DATA, DESC, DEFAULT);
-    }
+    public static Set<String> SET_OF_CONTENT_ELEMENTS = Set.of(DATA, DESC, DEFAULT);
+
 
 }

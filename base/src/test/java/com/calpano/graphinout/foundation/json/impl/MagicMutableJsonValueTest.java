@@ -10,10 +10,23 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Deprecated
 class MagicMutableJsonValueTest {
+
+    @Test
+    void test() {
+        underTest = new MagicMutableJsonValue(factory, null);
+        underTest.addProperty(List.of("aaa","bbb"), factory.createString("ccc"));
+        underTest.addProperty(List.of("aaa","ddd"), factory.createString("eee"));
+        IJsonValue aaa = underTest.get("aaa");
+        assertThat(aaa).isNotNull();
+        assertThat(aaa.isObject());
+        assertThat(aaa.asObject().get_("bbb").toJsonString()).isEqualTo(factory.createString("ccc").toJsonString());
+    }
 
     IJsonFactory factory = JavaJsonFactory.INSTANCE;
     MagicMutableJsonValue underTest;

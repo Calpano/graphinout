@@ -6,17 +6,16 @@ import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
+import static com.calpano.graphinout.foundation.util.Nullables.mapOrNull;
+
 public interface ICjHasData extends ICjElement {
 
     @Nullable
     ICjData data();
 
+    /** @return the current data JSON contents or null */
     default @Nullable IJsonValue jsonValue() {
-        ICjData data = data();
-        if (data == null) {
-            return null;
-        }
-        return data.jsonValue();
+        return mapOrNull( data(), ICjData::jsonValue);
     }
 
     /**

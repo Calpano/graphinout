@@ -2,9 +2,11 @@ package com.calpano.graphinout.foundation.json.value.jackson;
 
 import com.calpano.graphinout.foundation.json.value.IJsonArray;
 import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
+import com.calpano.graphinout.foundation.json.value.IJsonArrayMutable;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonObject;
 import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
+import com.calpano.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -24,7 +26,12 @@ public class JacksonFactory implements IJsonFactory {
 
     @Override
     public IJsonArrayAppendable createArrayAppendable() {
-        return JacksonAppendableArray.of(nodeFactory.arrayNode());
+        return JacksonArrayMutable.of(nodeFactory.arrayNode());
+    }
+
+    @Override
+    public IJsonArrayMutable createArrayMutable() {
+        return JacksonArrayMutable.of(nodeFactory.arrayNode());
     }
 
     @Override
@@ -74,7 +81,12 @@ public class JacksonFactory implements IJsonFactory {
 
     @Override
     public IJsonObjectAppendable createObjectAppendable() {
-        return JacksonAppendableObject.of(nodeFactory.objectNode());
+        return JacksonObjectMutable.of(nodeFactory.objectNode());
+    }
+
+    @Override
+    public IJsonObjectMutable createObjectMutable() {
+        return JacksonObjectMutable.of(nodeFactory.objectNode());
     }
 
     @Override

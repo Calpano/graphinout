@@ -1,6 +1,5 @@
 package com.calpano.graphinout.foundation.xml.element;
 
-import com.calpano.graphinout.base.graphml.IGraphmlDefault;
 import com.calpano.graphinout.foundation.xml.IXmlName;
 import com.calpano.graphinout.foundation.xml.Xml2StringWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
@@ -53,8 +52,15 @@ public class XmlElement extends XmlNode {
         children.add(raw);
     }
 
-    public String attribute(String attName) {
+    /** get attribute */
+    public @Nullable String attribute(String attName) {
         return attributes.get(attName);
+    }
+
+    public @NonNull String attribute_(String attName) {
+        String value = attributes.get(attName);
+        assert value != null : "attribute " + attName + " not found";
+        return value;
     }
 
     /**
@@ -96,6 +102,11 @@ public class XmlElement extends XmlNode {
         } else {
             attributes.put(key, newValue);
         }
+    }
+
+    /** mutable list, only reorder */
+    public List<XmlNode> childrenList() {
+        return this.children;
     }
 
     public String contentAsXml() {

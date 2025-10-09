@@ -1,0 +1,29 @@
+{"baseUri":
+"https://schema.org/","graphs":
+[{"edges":
+[{"endpoints":
+[{"direction":
+"out","node":
+"person_einstein"},{"direction":
+"in","node":
+"place_ulm"}],"id":
+"e_birthPlace","typeUri":
+"birthPlace"},{"endpoints":
+[{"direction":
+"in","node":
+"concept_relativity"},{"direction":
+"out","node":
+"person_einstein"}],"id":
+"e_knowsAbout","typeUri":
+"knowsAbout"}],"id":
+"g_knowledge","nodes":
+[{"id":
+"concept_relativity","label":
+[{"value":
+"Theory of Relativity"}]},{"id":
+"person_einstein","label":
+[{"value":
+"Albert Einstein"}]},{"id":
+"place_ulm","label":
+[{"value":
+"Ulm"}]}]}]}

@@ -142,7 +142,7 @@ __(Node n0)__. `Data`:
 [source,json]
 ----
 {
-  "cj:xmlAttributes": {
+  "xml:attributes": {
     "xlink:href": "http://graphml.graphdrawing.org"
   }
 }

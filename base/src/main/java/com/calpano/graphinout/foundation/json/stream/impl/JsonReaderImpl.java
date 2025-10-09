@@ -78,7 +78,7 @@ public class JsonReaderImpl implements JsonReader {
             stream.documentStart();
             JsonToken token = parser.nextToken();
             while (token != null) {
-                parseJsonValue(parser, token, stream);
+                parseJsonToken(parser, token, stream);
                 token = parser.nextToken();
             }
         } catch (Throwable t) {
@@ -90,7 +90,7 @@ public class JsonReaderImpl implements JsonReader {
 
     }
 
-    private void parseJsonValue(JsonParser parser, JsonToken token, JsonWriter stream) throws IOException {
+    private void parseJsonToken(JsonParser parser, JsonToken token, JsonWriter stream) throws IOException {
         switch (token) {
             case FIELD_NAME:
                 stream.onKey(parser.currentName());

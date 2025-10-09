@@ -9,13 +9,6 @@ public class StringFormatter {
         return raw.replaceAll("\r\n", "\n").replace('\r', '\n');
     }
 
-    /**
-     * normalize windows line endings and linux line endings
-     */
-    public static String normalizeLineEndings(String in) {
-        return in.replace("\r\n", "\n").replace('\r', '\n');
-    }
-
     public static String toStringOrNull(Object o) {
         return o == null ? null : String.valueOf(o);
     }

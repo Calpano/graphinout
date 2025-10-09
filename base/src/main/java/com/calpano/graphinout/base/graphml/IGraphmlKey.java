@@ -3,8 +3,6 @@ package com.calpano.graphinout.base.graphml;
 import com.calpano.graphinout.base.gio.GioDataType;
 import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
-import com.calpano.graphinout.foundation.json.value.IJsonFactory;
-import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.calpano.graphinout.foundation.util.Nullables;
 import com.calpano.graphinout.foundation.xml.element.XmlElement;
 
@@ -35,7 +33,8 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
     String ATTRIBUTE_ATTR_NAME = "attr.name";
     String ATTRIBUTE_ATTR_TYPE = "attr.type";
     String DEFAULT_FOR = "all";
-
+    /** debugging is easier, if this is more verbose */
+    boolean _AUTO_COMPACT = false;
 
     static GraphmlKeyBuilder builder() {
         return new GraphmlKeyBuilder();
@@ -82,6 +81,7 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
     /**
      * The special Graphml XML attributes of this {@code <data>} element are 'id' (for matching in {@code <data>},
      * 'for', 'attr.name', 'attr.type'.
+     *
      * @param name_value (name, Supplier(@Nullable value))
      */
     default void graphmlAttributes(BiConsumer<String, Supplier<String>> name_value) {
@@ -94,9 +94,6 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
             name_value.accept(ATTRIBUTE_ATTR_TYPE, this::attrType);
         }
     }
-
-     /** debugging is easier, if this is more verbose */
-     boolean _AUTO_COMPACT = false;
 
     /**
      * the id referenced in {@link IGraphmlData#key()}.
@@ -122,12 +119,25 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
         return GioDataType.fromGraphmlName(attrType());
     }
 
-    default IGraphmlData toGraphmlData(String value) {
+    /**
+     * @param value null results in an empty self-closing {@code <data>}.
+     */
+    default IGraphmlData toGraphmlData( @Nullable String value) {
         return new GraphmlDataBuilder()//
                 .key(id())//
                 .value(value)//
                 .build();
     }
 
+    default IGraphmlKey withId(String keyId) {
+        GraphmlKeyBuilder builder = IGraphmlKey.builder();
+        builder.id(keyId);
+        ifPresentAccept(attrName(), builder::attrName);
+        builder.attrType(GraphmlDataType.fromGraphmlName(attrType()));
+        ifPresentAccept(forType(), builder::forType);
+        ifPresentAccept(defaultValue(), builder::defaultValue);
+        ifPresentAccept(desc(), builder::desc);
+        return builder.build();
+    }
 
 }

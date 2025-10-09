@@ -3,19 +3,25 @@ package com.calpano.graphinout.base.cj.element.impl;
 import com.calpano.graphinout.base.cj.CjType;
 import com.calpano.graphinout.base.cj.element.ICjDataMutable;
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
-import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
-import com.calpano.graphinout.foundation.json.impl.MagicMutableJsonValue;
+import com.calpano.graphinout.foundation.json.impl.JsonMaker;
+import com.calpano.graphinout.foundation.json.path.IJsonContainerNavigationStep;
+import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.calpano.graphinout.foundation.json.value.java.JavaJsonFactory;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class CjDataElement implements ICjDataMutable {
 
-    private final MagicMutableJsonValue magic = new MagicMutableJsonValue(JavaJsonFactory.INSTANCE, null);
+    private IJsonValue root = null;
+    /** IMPROVE configurable ? */
+    private static final IJsonFactory factory = JavaJsonFactory.INSTANCE;
 
-    CjDataElement(@Nullable CjHasDataElement parent) {
-        super();
+    @Override
+    public void add(List<IJsonContainerNavigationStep> path, IJsonValue jsonValue) {
+        assert jsonValue != null;
+        this.root = JsonMaker.append(factory(), this.root, path, jsonValue);
     }
 
     @Override
@@ -25,28 +31,24 @@ public class CjDataElement implements ICjDataMutable {
 
     @Override
     public void fire(ICjWriter cjWriter) {
-        if (!magic.isEmpty()) {
-            cjWriter.jsonDataStart();
-            magic.fire(cjWriter);
-            cjWriter.jsonDataEnd();
-        }
+        if (root == null)
+            return;
+
+        cjWriter.jsonDataStart();
+        root.fire(cjWriter);
+        cjWriter.jsonDataEnd();
     }
 
-    @Override
-    public void jsonNode(IJsonValue jsonValue) {
-        this.magic.addMerge(jsonValue);
-    }
 
     @Nullable
     @Override
     public IJsonValue jsonValue() {
-        return magic.jsonValue();
+        return root;
     }
 
-    @Nullable
     @Override
-    public IMagicMutableJsonValue jsonValueMutable() {
-        return magic;
+    public IJsonFactory factory() {
+        return factory;
     }
 
 }

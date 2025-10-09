@@ -64,4 +64,9 @@ public interface IJsonArray extends IJsonContainer {
         return JsonType.Array;
     }
 
+    default boolean hasIndex(int index) {
+        assert index >= 0;
+        return index < size();
+    }
+
 }

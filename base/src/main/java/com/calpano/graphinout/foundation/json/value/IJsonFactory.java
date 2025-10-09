@@ -17,6 +17,8 @@ public interface IJsonFactory {
 
     IJsonArrayAppendable createArrayAppendable();
 
+    IJsonArrayMutable createArrayMutable();
+
     /**
      * Create JSON Number
      */
@@ -98,6 +100,8 @@ public interface IJsonFactory {
 
     IJsonObjectAppendable createObjectAppendable();
 
+    IJsonObjectMutable createObjectMutable();
+
     /**
      * @param jsonType to create, if possible
      * @param value    might be null, empty, wrong type ...
@@ -129,6 +133,8 @@ public interface IJsonFactory {
                 return createString(valueTrimmed);
             case String:
                 return createString(valueTrimmed);
+            case XmlString:
+                return IJsonXmlString.of(this,value, IJsonXmlString.XmlSpace.auto);
             default:
                 throw new IllegalArgumentException("Unsupported type: " + jsonType);
         }
@@ -138,5 +144,23 @@ public interface IJsonFactory {
      * JSON String
      */
     IJsonPrimitive createString(String s);
+
+    default IJsonArrayMutable asArrayMutable(IJsonArray array) {
+        if(array instanceof IJsonArrayMutable arrayMutable) {
+            return arrayMutable;
+        }
+        IJsonArrayMutable arrayMutable = createArrayMutable();
+        array.forEach(arrayMutable::add);
+        return arrayMutable;
+    }
+
+    default IJsonObjectMutable asObjectMutable(IJsonObject object) {
+        if(object instanceof IJsonObjectMutable objectMutable) {
+            return objectMutable;
+        }
+        IJsonObjectMutable objectMutable = createObjectMutable();
+        object.forEach(objectMutable::addProperty);
+        return objectMutable;
+    }
 
 }

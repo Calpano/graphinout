@@ -20,6 +20,7 @@ import java.util.function.Consumer;
  * <p>
  * .API [ propertyKeys ]* (append|addProperty(p)) value
  */
+@Deprecated
 public interface IMagicMutableJsonValue extends IJsonValue, IJsonObjectAppendable, IJsonArrayAppendable {
 
     /**
@@ -122,6 +123,7 @@ public interface IMagicMutableJsonValue extends IJsonValue, IJsonObjectAppendabl
     void set(IJsonValue value) throws IllegalStateException;
 
     /** Set the value to the given String as a JSON primitive String value */
+    // FIXME looks wrong
     default void set(String valueString) throws IllegalStateException {
         IJsonValue string = factory().createString(valueString);
         set(string);

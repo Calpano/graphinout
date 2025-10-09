@@ -1,5 +1,7 @@
 package com.calpano.graphinout.foundation.json;
 
+import com.calpano.graphinout.foundation.json.value.IJsonXmlString;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Set;
@@ -26,13 +28,19 @@ public enum JsonType {
             Number.class, //
             BigInteger.class,  //
             BigDecimal.class //
-    ), Null, Boolean(Boolean.class, boolean.class), String(java.lang.String.class),
+    ), Null, Boolean(Boolean.class, boolean.class), String(String.class),
 
     /** not even null */
-    Undefined();
+    Undefined(),
+
+    XmlString(IJsonXmlString.class);
 
     public enum ValueType {
         Object, Array, Primitive
+    }
+
+    public enum ContainerType {
+        Object, Array
     }
 
     public final Set<Class<?>> javaClasses;
@@ -45,7 +53,7 @@ public enum JsonType {
         return switch (this) {
             case Object -> ValueType.Object;
             case Array -> ValueType.Array;
-            case Number, Null, Boolean, String -> ValueType.Primitive;
+            case Number, Null, Boolean, String, XmlString -> ValueType.Primitive;
             case Document, Container, Primitive, Undefined ->
                     throw new IllegalStateException("Abstract JSON type has no valueType");
             case ArrayIndex, Property, PropertyKey ->

@@ -16,6 +16,11 @@ class JsonPathTest {
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#jsonResources")
     void testJsonAnalysis(String displayName, Resource resource) throws IOException {
+        if(resource.getPath().endsWith("minimal.json")) {
+            // this file contains no data
+            return;
+        }
+
         String json = resource.getContentAsString();
         IJsonValue value = JsonReaderImpl.readToJsonValue(json);
         JsonTypeAnalysisTree tree = new JsonTypeAnalysisTree();

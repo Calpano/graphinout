@@ -1,6 +1,8 @@
 package com.calpano.graphinout.reader.graphml;
 
 
+import com.calpano.graphinout.base.cj.CjAssert;
+import com.calpano.graphinout.base.cj.element.CjDocuments;
 import com.calpano.graphinout.base.cj.element.ICjDocument;
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.cj.stream.ICjWriter;
@@ -10,6 +12,7 @@ import com.calpano.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.calpano.graphinout.base.graphml.DelegatingGraphmlWriter;
 import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
 import com.calpano.graphinout.base.validation.graphml.ValidatingGraphMlWriter;
+import com.calpano.graphinout.foundation.TestFileUtil;
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
@@ -21,20 +24,20 @@ import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
 
-import static com.calpano.graphinout.base.cj.CjFormatter.stripCjHeader;
 import static com.calpano.graphinout.foundation.TestFileUtil.inputSource;
-import static com.calpano.graphinout.foundation.json.impl.JsonFormatter.formatDebug;
-import static com.calpano.graphinout.foundation.json.impl.JsonFormatter.removeWhitespace;
-import static com.google.common.truth.Truth.assertThat;
+import static org.slf4j.LoggerFactory.getLogger;
 
 
 @SuppressWarnings("unused")
 public class Cj2GraphmlAndBackTest {
 
+    private static final Logger log = getLogger(Cj2GraphmlAndBackTest.class);
+
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
-    @DisplayName("Test JSON-CJ-Graphml - all files together")
+    @DisplayName("Run JSON->CJ->Graphml - all files together")
     void test_json_cj_graphml_CanonicalCjFiles(String displayPath, Resource resource) throws Exception {
         String json_in = resource.getContentAsString();
         SingleInputSourceOfString inputSource = inputSource(resource);
@@ -52,7 +55,7 @@ public class Cj2GraphmlAndBackTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
-    @DisplayName("Test JSON-CJ-Graphml-CJ-JSON - all files together")
+    @DisplayName("Test JSON<->CJ<->Graphml - all files together")
     void test_json_cj_graphml_cj_json_CanonicalCjFiles(String displayPath, Resource resource) throws Exception {
         // JSON
         String json_in = resource.getContentAsString();
@@ -84,8 +87,11 @@ public class Cj2GraphmlAndBackTest {
         ICjWriter cjWriter_out = new Cj2JsonWriter(jsonWriter_out);
         cjDoc2.fire(cjWriter_out);
         String json_out = jsonWriter_out.json();
-        assertThat(formatDebug(stripCjHeader(removeWhitespace(json_out)))) //
-                .isEqualTo(formatDebug(stripCjHeader(removeWhitespace(json_in))));
+
+        CjAssert.verifySameCjOrRecord(resource,json_out,json_in, () -> {
+            log.info("JSON-in:\n{}", json_in);
+            log.info("CJ.JSON:\n{}", CjDocuments.toJsonString(cjDoc));
+        });
     }
 
 }

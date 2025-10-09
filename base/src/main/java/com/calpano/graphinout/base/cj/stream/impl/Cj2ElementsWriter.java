@@ -28,6 +28,9 @@ import com.calpano.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.calpano.graphinout.foundation.util.PowerStackOnClasses;
 
+/**
+ * {@link ICjWriter} to {@link ICjDocument}
+ */
 public class Cj2ElementsWriter extends Json2JavaJsonWriter implements ICjWriter {
 
     private final PowerStackOnClasses<ICjElement> stack = PowerStackOnClasses.create();
@@ -125,17 +128,18 @@ public class Cj2ElementsWriter extends Json2JavaJsonWriter implements ICjWriter 
 
     @Override
     public void jsonDataEnd() {
+        IJsonValue json = super.jsonValue();
         // need to attach resulting json to element on stack
         ICjDataMutable dataElement = stack.pop(ICjDataMutable.class);
-        IJsonValue json = super.jsonValue();
-        dataElement.jsonNode(json);
+        dataElement.setJsonValue(json);
         super.reset();
     }
 
     @Override
     public void jsonDataStart() {
         // prepare buffering json data
-        stack.peek(ICjHasDataMutable.class).addDataElement(stack::push);
+        ICjHasDataMutable hasDataMutable = stack.peek(ICjHasDataMutable.class);
+        hasDataMutable.dataMutable(stack::push);
     }
 
     @Override

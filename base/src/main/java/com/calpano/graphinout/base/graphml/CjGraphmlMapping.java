@@ -3,21 +3,30 @@ package com.calpano.graphinout.base.graphml;
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
-import com.calpano.graphinout.foundation.json.JsonType;
-import com.calpano.graphinout.foundation.json.path.IJsonContainerNavigationStep;
 import com.calpano.graphinout.foundation.json.path.IJsonObjectNavigationStep;
 import com.calpano.graphinout.foundation.json.path.JsonTypeAnalysisTree;
-import com.calpano.graphinout.foundation.json.value.IJsonTypedString;
+import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
+import com.calpano.graphinout.foundation.json.value.IJsonXmlString;
+import com.calpano.graphinout.foundation.json.value.JsonTypes;
+import com.calpano.graphinout.foundation.util.ObjectRef;
+import com.calpano.graphinout.foundation.util.PowerStreams;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.calpano.graphinout.foundation.util.ObjectRef.objectRef;
 
 /**
  * Mapping data between CJ and GraphML models.
  */
 public interface CjGraphmlMapping {
+
+    /** To be used as a JSON object property key */
+    String XML_ATTRIBUTES = "graphml:xmlAttributes";
 
     /** Represent a property in the CJ "data" object */
     enum CjDataProperty {
@@ -38,10 +47,10 @@ public interface CjGraphmlMapping {
          *     &lt;key id="$id2" attr.name="$name2" attr.type="$type2" for="$for2" /&gt;
          *     ...
          * </pre></code>
-         *  we add document level data:
+         * we add document level data:
          * <code><pre>
          *     "graphml:keys": "{
-         *        "$id1": { "id":"$id1", "type":"$type1", "for":"$for1", "xmlAttributes": { "foo":"bar" } }
+         *        "$id1": { "id":"$id1", "type":"$type1", "for":"$for1", "xml:attributes": { "foo":"bar" } }
          *        "$id2": { "id":"$id2", "type":"$type2", "for":"$for2" }
          *     }
          * </pre></code>
@@ -56,7 +65,7 @@ public interface CjGraphmlMapping {
          * Graphml: XML custom attributes -> CJ: data.cj:attributes. GraphML allows custom XML properties on every XML
          * element. CJ stores them in a JSON object in data.cj:attributes. Type: object.
          */
-        CustomXmlAttributes("graphml:xmlAttributes"),
+        CustomXmlAttributes(XML_ATTRIBUTES),
 
         /** Graph-level default directedness of edges. Type: string. */
         EdgeDefault("graphml:edgeDefault"),
@@ -71,6 +80,15 @@ public interface CjGraphmlMapping {
         public final String cjPropertyKey;
 
         CjDataProperty(String cjPropertyKey) {this.cjPropertyKey = cjPropertyKey;}
+
+        public static boolean isCjPropertyKey(String keyId) {
+            for (CjDataProperty value : values()) {
+                if (value.cjPropertyKey.equals(keyId)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     /** Represent a data element attached to a GraphML element. Needs a corresponding key element at document level. */
@@ -81,21 +99,21 @@ public interface CjGraphmlMapping {
          * <p>
          * {@code <key id="baseUri" for="graphml" value="http://example.org/"/>}
          */
-        BaseUri("baseUri", GraphmlKeyForType.Graphml, GraphmlDataType.typeString, "Connected JSON allows custom JSON properties in all objects"),
+        BaseUri("cj_baseUri", GraphmlKeyForType.Graphml, GraphmlDataType.typeString, "Connected JSON allows custom JSON properties in all objects"),
 
         /** CJ edgeType as JSON (source, type) */
-        EdgeType("edgeType", GraphmlKeyForType.Edge, GraphmlDataType.typeString, "Connected JSON edgeType {'source'=..., 'type'=...}"),
+        EdgeType("cj_edgeType", GraphmlKeyForType.Edge, GraphmlDataType.typeString, "Connected JSON edgeType {'source'=..., 'type'=...}"),
 
         /**
          * Export a CJ Label as a JSON Array [{"value":"Hallo","language":"de"}]. At import time, a plain text string is
          * accepted as label.value.
          */
-        Label("label", GraphmlKeyForType.All, GraphmlDataType.typeString, "Connected JSON label"),
+        Label("cj_label", GraphmlKeyForType.All, GraphmlDataType.typeString, "Connected JSON label"),
 
-        CjJsonData("cj:jsonData", GraphmlKeyForType.All, GraphmlDataType.typeString, "Connected JSON allows a JSON 'data' property on all objects."),
+        CjJsonData("cj_jsonData", GraphmlKeyForType.All, GraphmlDataType.typeString, "Connected JSON allows a JSON 'data' property on all objects."),
 
         /** Required to represent CJ graph-graph nesting as Graphml graph-synthNode-graph */
-        SyntheticNode("cj:syntheticNode", GraphmlKeyForType.Node, GraphmlDataType.typeBoolean, "Marks a node which only exists to wrap a CJ graph-in-graph");
+        SyntheticNode("cj_syntheticNode", GraphmlKeyForType.Node, GraphmlDataType.typeBoolean, "Marks a node which only exists to wrap a CJ graph-in-graph");
 
         public final GraphmlKeyForType keyForType;
         public final String attrName;
@@ -127,6 +145,7 @@ public interface CjGraphmlMapping {
         }
     }
 
+
     static GraphmlDataType commonSuperTypeFor(Set<GraphmlDataType> gTypes) {
         assert !gTypes.isEmpty();
         if (gTypes.size() == 1) return gTypes.iterator().next();
@@ -144,52 +163,70 @@ public interface CjGraphmlMapping {
         return GraphmlDataType.typeInt;
     }
 
+    static GraphmlDataType commonTypeFor(Stream<IJsonPrimitive> jsonPrimitives) {
+        ObjectRef<GraphmlDataType> type = objectRef();
+
+        jsonPrimitives.forEach(p -> {
+            if (type.value == null) {
+                type.value = toGraphmlType(p);
+            } else {
+                GraphmlDataType currentType = toGraphmlType(p);
+                if (currentType != type.value) {
+                    type.value = commonSuperTypeFor(Set.of(type.value, currentType));
+                }
+            }
+        });
+
+        return type.value;
+    }
+
     /**
      * E.g. the data for all Nodes in a graph is described by aa single {@link JsonTypeAnalysisTree}. It will get
      * represented in Graphml as multiple {@code <key>} elements.
-     *
-     * {@link IJsonTypedString} is {@link GraphmlDataType#typeString}.
+     * <p>
+     * {@link IJsonXmlString} is {@link GraphmlDataType#typeString}.
      * <p>
      * (1) Convert Graphml data, which was represented as object properties with types bool, number, string, back to
      * Graphml. Use n keys, one per property. (2) Represent arbitrary JSON data as Graphml keys. (2a) primitives? array?
      * 1 key {@link GraphmlDataElement#CjJsonData} with any id.
      */
     static Map<String, GraphmlDataType> toGraphmlDataTypes(JsonTypeAnalysisTree tree) {
+        Map<String, GraphmlDataType> propKey_graphmlType = new HashMap<>();
 
-        // TODO use CjGraphmlMapping.toGraphmlType(jsonType) ?
-
-        Map<String, GraphmlDataType> map = new HashMap<>();
-        for (IJsonContainerNavigationStep step : tree.rootSteps()) {
-            if (step instanceof IJsonObjectNavigationStep ostep) {
-                // convert all object properties to keys
-                String attName = ostep.propertyKey();
-                JsonTypeAnalysisTree.Node node = tree.get(ostep);
-                if (node.isMapOfPrimitives()) {
-                    // what is the common super-type for all these primitives?
-                    Set<GraphmlDataType> gTypes = node.valueCounts().keySet().stream().map(x -> //
-                            toGraphmlType(x.jsonType())).collect(Collectors.toSet());
-                    GraphmlDataType commonType = commonSuperTypeFor(gTypes);
-                    map.put(attName, commonType);
-                } else {
-                    // this is a nested json value or a typed string, use string
-                    map.put(attName, GraphmlDataType.typeString);
-                }
+        // NOTE: Arrays are not used for type analysis
+        PowerStreams.filterMap(tree.rootSteps().stream(), IJsonObjectNavigationStep.class).forEach(step -> {
+            // convert all cj DATA object properties to Graphml <key>s
+            String attrName = step.propertyKey();
+            JsonTypeAnalysisTree.Node node = tree.get(step);
+            if (node.isMapOfPrimitives()) {
+                assert node.containerJsonType() == null;
+                // what is the common super-type for all these primitives?
+                Stream<IJsonPrimitive> jsonValues = node.distinctJsonPrimitiveValues();
+                GraphmlDataType commonType = commonTypeFor(jsonValues);
+                propKey_graphmlType.put(attrName, commonType);
             } else {
-                throw new UnsupportedOperationException("not yet implemented");
+                assert node.containerJsonType() != null;
+                // this is a nested json value or a typed string, use string
+                propKey_graphmlType.put(attrName, GraphmlDataType.typeString);
             }
-        }
-        return map;
+        });
+        return propKey_graphmlType;
     }
 
-    static GraphmlDataType toGraphmlType(JsonType jsonType) {
-        return switch (jsonType) {
-            case String -> GraphmlDataType.typeString;
-            // TODO we could map to more precise type if we knew the actual value distribution
-            case Number -> GraphmlDataType.typeDouble;
+    static GraphmlDataType toGraphmlType(IJsonPrimitive jsonValue) {
+        return switch (jsonValue.jsonType()) {
+            case String, XmlString -> GraphmlDataType.typeString;
+            case Number -> {
+                // we can map to more precise type. we know the actual value
+                Number n = jsonValue.asNumber();
+                Class<?> bestType = JsonTypes.strictestType(n);
+                yield GraphmlDataType.fromJavaType(bestType);
+            }
             case Boolean -> GraphmlDataType.typeBoolean;
             case Null -> GraphmlDataType.typeString; // GraphML has no null type, map to string
-            default -> throw new IllegalArgumentException("Cannot map JSON type '" + jsonType + "' to GraphML type.");
+            default -> throw new IllegalArgumentException("Cannot map JSON value '" + jsonValue + "' to GraphML type.");
         };
     }
+
 
 }

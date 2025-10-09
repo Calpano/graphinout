@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
-import java.nio.file.Path;
 
 import static com.calpano.graphinout.foundation.TestFileUtil.file;
 import static com.calpano.graphinout.foundation.xml.XmlTests.wrapInRoot;
@@ -57,7 +56,7 @@ class Xml2XmlStringWriterTest {
             TestFileUtil.verifyOrRecord(xmlResource, xml_out, xml_in, (actual, expected) -> {
                 XmlAssert.xAssertThatIsSameXml(actual, expected);
                 return true;
-            });
+            }, s -> s);
         } catch (Exception e) {
             if (TestFileUtil.isInvalid(xmlFile.toPath(), "xml")) {
                 // perfect, we failed on an invalid file

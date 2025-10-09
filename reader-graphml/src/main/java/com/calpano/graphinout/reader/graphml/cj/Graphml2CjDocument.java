@@ -23,15 +23,12 @@ import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.cj.element.impl.CjGraphElement;
 import com.calpano.graphinout.base.cj.element.impl.CjNodeElement;
 import com.calpano.graphinout.base.graphml.CjGraphmlMapping;
-import com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty;
 import com.calpano.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement;
 import com.calpano.graphinout.base.graphml.GraphmlDataType;
 import com.calpano.graphinout.base.graphml.GraphmlDirection;
-import com.calpano.graphinout.base.graphml.GraphmlElements;
 import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.IGraphmlData;
-import com.calpano.graphinout.base.graphml.IGraphmlDefault;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
 import com.calpano.graphinout.base.graphml.IGraphmlDocument;
 import com.calpano.graphinout.base.graphml.IGraphmlEdge;
@@ -45,16 +42,12 @@ import com.calpano.graphinout.base.graphml.IGraphmlKey;
 import com.calpano.graphinout.base.graphml.IGraphmlNode;
 import com.calpano.graphinout.base.graphml.IGraphmlPort;
 import com.calpano.graphinout.base.graphml.impl.GraphmlKey;
-import com.calpano.graphinout.foundation.json.impl.IMagicMutableJsonValue;
+import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
-import com.calpano.graphinout.foundation.json.value.IJsonObject;
-import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
+import com.calpano.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
-import com.calpano.graphinout.foundation.json.value.IJsonTypedString;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
-import com.calpano.graphinout.foundation.json.value.java.JavaJsonFactory;
-import com.calpano.graphinout.foundation.json.value.java.JavaJsonObject;
 import com.calpano.graphinout.foundation.util.PowerStackOnClasses;
 import com.calpano.graphinout.foundation.util.path.IMapLike;
 import com.calpano.graphinout.foundation.util.path.KPaths;
@@ -62,12 +55,19 @@ import com.calpano.graphinout.foundation.util.path.PathResolver;
 import com.calpano.graphinout.foundation.util.path.Result;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 import static com.calpano.graphinout.base.cj.CjDirection.IN;
 import static com.calpano.graphinout.base.cj.CjDirection.OUT;
 import static com.calpano.graphinout.base.cj.CjDirection.UNDIR;
+import static com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty.CustomXmlAttributes;
+import static com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty.DataId;
+import static com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty.Description;
+import static com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty.EdgeDefault;
+import static com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty.Keys;
+import static com.calpano.graphinout.base.graphml.CjGraphmlMapping.CjDataProperty.SyntheticNode;
+import static com.calpano.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf;
 import static com.calpano.graphinout.foundation.util.Nullables.ifPresentAccept;
 import static com.calpano.graphinout.foundation.util.Nullables.mapOrDefault;
 import static com.calpano.graphinout.foundation.util.Nullables.nonNullOrDefault;
@@ -84,40 +84,33 @@ public class Graphml2CjDocument implements GraphmlWriter {
     private CjDocumentElement cjDoc;
 
     private static void copyCustomAttributes(IGraphmlElement graphmlElement, ICjHasDataMutable cj) {
-        // GraphML graphmlDocument attributes (k=v), like XML namespaces, become /data/cj:attributes/k
-        // <graphml ATTS> ->  /data/cj:attributes/{attName}
-        graphmlElement.customXmlAttributes().forEach((xmlAttName, xmlAttValue) -> //
-                cj.addData(json -> //
-                        json.addProperty(List.of(CjDataProperty.CustomXmlAttributes.cjPropertyKey, xmlAttName), xmlAttValue)));
+        // GraphML graphmlDocument attributes (k=v), like XML namespaces, become /data/graphml:xmlAttributes/k
+        // <graphml ATTS> ->  /data/graphml:xmlAttributes/{attName}
+        Map<String, String> xmlAttributes = graphmlElement.customXmlAttributes();
+
+        cj.dataMutable(m -> //
+                xmlAttributes.forEach((xmlAttName, xmlAttValue) -> //
+                        m.add(pathOf(CustomXmlAttributes.cjPropertyKey, xmlAttName), xmlAttValue)));
     }
 
     /** desc goes to data: <graphml><desc> -> .data.description */
     private static void copyDesc(IGraphmlElementWithDesc graphmlElementWithDesc, ICjHasDataMutable cjWithData) {
-        @Nullable IGraphmlDescription desc = graphmlElementWithDesc.desc();
-        if (desc == null) return;
-        cjWithData.addData(mm -> mm.addProperty(CjDataProperty.Description.cjPropertyKey, desc.value()));
+        ifPresentAccept(graphmlElementWithDesc.desc(), desc -> //
+                cjWithData.dataMutable(m -> //
+                        m.add(pathOf(Description.cjPropertyKey), desc.value())));
     }
 
-    public static IJsonObject toJsonValue(IGraphmlKey key, IJsonFactory factory) {
-        IJsonObjectAppendable keyObject = factory.createObjectAppendable();
-        String attrName = key.attrName();
-        if (attrName != null) keyObject.addProperty(IGraphmlKey.ATTRIBUTE_ATTR_NAME, attrName);
-        keyObject.addProperty(IGraphmlKey.ATTRIBUTE_ATTR_TYPE, key.attrType());
-        keyObject.addProperty(IGraphmlKey.ATTRIBUTE_FOR, key.forType().graphmlName());
-        IGraphmlDefault graphmlDefault = key.defaultValue();
-        if (graphmlDefault != null) {
-            keyObject.addProperty(GraphmlElements.DEFAULT, graphmlDefault.value());
+    private static IJsonPrimitive toJsonPrimitive(
+            IJsonFactory factory,
+            GraphmlDataType graphmlDataType, IGraphmlData graphmlData) {
+
+        if (graphmlData.isRawXml()) {
+            // TODO add xmlSpace explicitly? we just use AUTO now.
+            return factory.createPrimitiveFromString(JsonType.XmlString, graphmlData.value());
+        } else {
+            return factory.createPrimitiveFromString(graphmlDataType.jsonType(), graphmlData.value());
         }
-        IGraphmlDescription desc = key.desc();
-        if (desc != null) {
-            keyObject.addProperty(GraphmlElements.DESC, desc.value());
-        }
-        if (!key.customXmlAttributes().isEmpty()) {
-            JavaJsonObject attributesObject = new JavaJsonObject();
-            keyObject.addProperty("xmlAttributes", attributesObject);
-            key.customXmlAttributes().forEach(attributesObject::addProperty);
-        }
-        return keyObject;
+
     }
 
     @Override
@@ -126,7 +119,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
 
         // the <data> element itself might have an id-attribute; we store it
         ifPresentAccept(graphmlData.id(), id -> //
-                cjHasData.addData(json -> json.addProperty(CjDataProperty.DataId.cjPropertyKey, id)));
+                cjHasData.dataMutable(m -> m.addProperty(DataId.cjPropertyKey, id)));
 
         String graphmlKey = graphmlData.key();
         assert graphmlKey != null;
@@ -160,7 +153,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
         } else if (key.is(GraphmlDataElement.CjJsonData)) {// map back to json
             //  parse JSON
             IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(graphmlDataValue);
-            cjHasData.addData(json -> json.set(jsonValue));
+            cjHasData.dataMutable(m -> m.setJsonValue(jsonValue));
         } else if (key.is(GraphmlDataElement.BaseUri)) {
             // map back to native CJ baseUri
             if (cjHasData instanceof ICjDocumentChunkMutable) {
@@ -173,7 +166,8 @@ public class Graphml2CjDocument implements GraphmlWriter {
             assert graphmlDataValue.equals("true");
             // add a marker in CJ node, so we can strip it out once the full document is constructed
             assert cjHasData instanceof ICjNodeMutable;
-            cjHasData.addData(json -> json.addProperty(CjGraphmlMapping.CjDataProperty.SyntheticNode.cjPropertyKey, json.factory().createBoolean(true)));
+            cjHasData.dataMutable(m -> //
+                    m.addProperty(SyntheticNode.cjPropertyKey, m.factory().createBoolean(true)));
         } else {// other, generic GraphML <data> tags
             copyData(graphmlData, key, cjHasData);
         }
@@ -210,7 +204,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
             boolean edgeDirected = nonNullOrDefault(graphmlEdge.directed(), //
                     // look up graphs EdgeDefault to compute edge direction
                     mapOrDefault(stack.peekSearch(ICjGraphChunkMutable.class).jsonValue(), j -> //
-                                    j.resolve(CjDataProperty.EdgeDefault.cjPropertyKey), //
+                                    j.resolve(EdgeDefault.cjPropertyKey), //
                             edgeDefault -> IGraphmlGraph.EdgeDefault.valueOf(edgeDefault.asString()) == IGraphmlGraph.EdgeDefault.directed, true));
 
             cjEdge.addEndpoint(cjEndpoint -> {
@@ -242,7 +236,8 @@ public class Graphml2CjDocument implements GraphmlWriter {
             IGraphmlGraph.EdgeDefault edgeDefault = graphmlGraph.edgeDefault();
             if (edgeDefault != IGraphmlGraph.EdgeDefault.DEFAULT_EDGE_DEFAULT) {
                 // add to "data"
-                cjGraph.addData(json -> json.addProperty(CjDataProperty.EdgeDefault.cjPropertyKey, edgeDefault.graphmlString()));
+                cjGraph.dataMutable(m -> //
+                        m.addProperty(EdgeDefault.cjPropertyKey, edgeDefault.graphmlString()));
             }
 
             if (graphmlGraph.locator() != null) {
@@ -279,31 +274,30 @@ public class Graphml2CjDocument implements GraphmlWriter {
     @Override
     public void key(IGraphmlKey key) {
         graphmlSchema.addKey(key);
-        // IMPROVE could also put in doc.data somewhere
     }
 
     @Override
     public void nodeEnd() {
         ICjNodeMutable cjNode = stack.pop(ICjNodeMutable.class);
 
-        // TODO apply all <default> defined for 'node', which have not been set for this node yet
+        // FIXME !!! same for other entities
+        // TODO apply all Graphml <default> defined for 'node', which have not been set for this node yet
         List<IGraphmlKey> defaultKeysFor = graphmlSchema.defaultKeysFor(GraphmlKeyForType.Node);
         if (defaultKeysFor.isEmpty()) return;
 
-        cjNode.addData(magicJson -> {
+        cjNode.dataMutable(m -> {
             for (IGraphmlKey key : defaultKeysFor) {
-                if (magicJson.isObject() && magicJson.asObject().hasProperty(key.attrName())) {
+                if (m.hasProperty(key.attrName())) {
                     // dont overwrite
                     continue;
                 }
                 String defaultValue = requireNonNull(key.defaultValue()).value();
                 // use correct JSON type for graphml type
                 GraphmlDataType type = GraphmlDataType.fromString(key.attrType());
-                IJsonPrimitive jsonValue = magicJson.factory().createPrimitiveFromString(type.jsonType(), defaultValue);
-                magicJson.addProperty(key.attrName(), jsonValue);
+                IJsonPrimitive jsonValue = m.factory().createPrimitiveFromString(type.jsonType(), defaultValue);
+                m.addProperty(key.attrName(), jsonValue);
             }
         });
-
     }
 
     @Override
@@ -335,26 +329,23 @@ public class Graphml2CjDocument implements GraphmlWriter {
         return cjDoc;
     }
 
+    /**
+     *
+     * @param graphmlData carries the data to add
+     * @param key         defines the 'schema' for this one property
+     * @param cjHasData   CJ element where to set
+     */
     private void copyData(IGraphmlData graphmlData, IGraphmlKey key, ICjHasDataMutable cjHasData) {
-        String propName = key.attrName();
-        assert propName != null : "Key '" + key + "' has no attrName?";
-        String graphmlDataValue = graphmlData.value();
+        // use Graphml <key attr.name> as CJ data JSON property key
+        String propertyKey = key.attrName();
+        assert propertyKey != null : "Key '" + key + "' has no attrName?";
         // TODO find best JSON type for graphmlDataValue, e.g. 'Number'
         GraphmlDataType graphmlDataType = GraphmlDataType.fromString(key.attrType());
-        // need JSON factory to create primitive TODO maybe typedString xml?
-        IJsonPrimitive jsonValue = JavaJsonFactory.INSTANCE.createPrimitiveFromString(graphmlDataType.jsonType(), graphmlDataValue);
 
-        cjHasData.addData(json -> //
-                json.addProperty(propName, j -> {
-                    if (graphmlData.isRawXml()) {
-                        j.addProperty(IJsonTypedString.TYPE, IJsonTypedString.TYPE_XML);
-                        j.addProperty(IJsonTypedString.VALUE, jsonValue);
-                    } else {
-                        j.set(graphmlData.value());
-                        json.addProperty(propName, jsonValue);
-                    }
-                }));
-
+        cjHasData.dataMutable(m -> {
+            IJsonPrimitive jsonValue = toJsonPrimitive(m.factory(), graphmlDataType, graphmlData);
+            m.addProperty(propertyKey, jsonValue);
+        });
     }
 
     private void copyId(IGraphmlElementWithId graphmlElementWithId, ICjHasIdMutable cjHasId) {
@@ -366,13 +357,19 @@ public class Graphml2CjDocument implements GraphmlWriter {
      */
     private void postProcess(CjDocumentElement cjDoc) {
         // == Add keys
-        cjDoc.addData(mutableJson -> {
-            mutableJson.addProperty(CjDataProperty.Keys.cjPropertyKey, keysObject -> {
-                graphmlSchema.forEachKey(key -> {
-                    IJsonValue keyAsJsonValue = toJsonValue(key, keysObject.factory());
-                    keysObject.addProperty(key.id_(), keyAsJsonValue);
-                });
-            });
+        cjDoc.dataMutable(m -> {
+            IJsonObjectMutable o = m.factory().createObjectMutable();
+
+            // before we serialize the GraphmlSchema, remove the CJ-builtin types, which map to native CJ constructs
+            graphmlSchema.removeKeyById(GraphmlDataElement.CjJsonData.toGraphmlKey().id());
+            graphmlSchema.removeKeyById(GraphmlDataElement.Label.toGraphmlKey().id());
+            graphmlSchema.removeKeyById(GraphmlDataElement.EdgeType.toGraphmlKey().id());
+            graphmlSchema.removeKeyById(GraphmlDataElement.BaseUri.toGraphmlKey().id());
+            graphmlSchema.removeKeyById(GraphmlDataElement.SyntheticNode.toGraphmlKey().id());
+            if(graphmlSchema.isEmpty())
+                return;
+            graphmlSchema.toJson(o);
+            m.addProperty(Keys.cjPropertyKey, o);
         });
 
         // == Remove synthetic nodes and put their graph as direct child of parent graph
@@ -388,12 +385,14 @@ public class Graphml2CjDocument implements GraphmlWriter {
 
         List<Result> graph_node_data = pathResolver.resolveAll(cjDoc, path);
         List<Result> data_with_syntheticNode = graph_node_data.stream().filter(o -> {
-            List<Result> list = pathResolver.resolve1(o.value(), CjDataProperty.SyntheticNode.cjPropertyKey);
+            List<Result> list = pathResolver.resolve1(o.value(), SyntheticNode.cjPropertyKey);
             if (list.isEmpty()) return false;
             assert list.size() == 1 : "Exactly one result for 'syntheticNode' in " + o.value() + ". Got " + list.size();
-            assert list.getFirst().value() instanceof IMagicMutableJsonValue;
-            IMagicMutableJsonValue mm = (IMagicMutableJsonValue) list.getFirst().value();
-            return mm.asPrimitive().asBoolean() == true;
+
+            IJsonValue jsonValue = (IJsonValue) list.getFirst().value();
+            assert jsonValue.jsonType().valueType() == JsonType.ValueType.Primitive;
+            IJsonPrimitive primitive = jsonValue.asPrimitive();
+            return primitive.asBoolean() == true;
         }).toList();
 
         for (Result data : data_with_syntheticNode) {

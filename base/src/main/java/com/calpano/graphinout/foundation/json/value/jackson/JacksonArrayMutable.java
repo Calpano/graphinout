@@ -1,18 +1,18 @@
 package com.calpano.graphinout.foundation.json.value.jackson;
 
-import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
+import com.calpano.graphinout.foundation.json.value.IJsonArrayMutable;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-public class JacksonAppendableArray implements IJsonArrayAppendable {
+public class JacksonArrayMutable implements IJsonArrayMutable {
 
     private final ArrayNode arrayNode;
 
-    public JacksonAppendableArray(ArrayNode arrayNode) {this.arrayNode = arrayNode;}
+    public JacksonArrayMutable(ArrayNode arrayNode) {this.arrayNode = arrayNode;}
 
-    public static IJsonArrayAppendable of(ArrayNode jsonNodes) {
-        return new JacksonAppendableArray(jsonNodes);
+    public static IJsonArrayMutable of(ArrayNode jsonNodes) {
+        return new JacksonArrayMutable(jsonNodes);
     }
 
     @Override
@@ -37,6 +37,16 @@ public class JacksonAppendableArray implements IJsonArrayAppendable {
     @Override
     public IJsonValue get(int index) {
         return JacksonValues.ofNullable(arrayNode.get(index));
+    }
+
+    @Override
+    public void remove(int index) throws ArrayIndexOutOfBoundsException {
+        arrayNode.remove(index);
+    }
+
+    @Override
+    public void set(int index, IJsonValue jsonValue) throws ArrayIndexOutOfBoundsException {
+        arrayNode.set(index, JacksonValues.jacksonValue(jsonValue));
     }
 
     @Override

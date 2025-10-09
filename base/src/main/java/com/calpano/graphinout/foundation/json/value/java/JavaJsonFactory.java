@@ -2,9 +2,11 @@ package com.calpano.graphinout.foundation.json.value.java;
 
 import com.calpano.graphinout.foundation.json.value.IJsonArray;
 import com.calpano.graphinout.foundation.json.value.IJsonArrayAppendable;
+import com.calpano.graphinout.foundation.json.value.IJsonArrayMutable;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonObject;
 import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
+import com.calpano.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
 
 import java.math.BigDecimal;
@@ -21,6 +23,11 @@ public class JavaJsonFactory implements IJsonFactory {
 
     @Override
     public IJsonArrayAppendable createArrayAppendable() {
+        return new JavaJsonArray();
+    }
+
+    @Override
+    public IJsonArrayMutable createArrayMutable() {
         return new JavaJsonArray();
     }
 
@@ -71,6 +78,11 @@ public class JavaJsonFactory implements IJsonFactory {
 
     @Override
     public IJsonObjectAppendable createObjectAppendable() {
+        return new JavaJsonObject();
+    }
+
+    @Override
+    public IJsonObjectMutable createObjectMutable() {
         return new JavaJsonObject();
     }
 

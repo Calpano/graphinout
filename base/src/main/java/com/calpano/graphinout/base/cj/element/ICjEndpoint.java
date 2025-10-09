@@ -13,7 +13,6 @@ public interface ICjEndpoint extends ICjHasData {
         return Stream.of(data()).filter(Objects::nonNull).map(x -> x);
     }
 
-    @Nullable
     CjDirection direction();
 
     default boolean isDirected() {

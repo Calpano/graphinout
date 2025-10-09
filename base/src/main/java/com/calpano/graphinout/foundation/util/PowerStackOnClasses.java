@@ -61,11 +61,12 @@ public class PowerStackOnClasses<S> {
         if (clazz.isInstance(top)) {
             return clazz.cast(top);
         }
-        throw new IllegalStateException("Expected " + clazz + " but was " + top);
+        throw new IllegalStateException("Expected " + clazz + " but top was " + top);
     }
 
     /** @return the added element. */
     public <T extends S> T push(T element) {
+        assert element != null;
         stack.push(element);
         return element;
     }
