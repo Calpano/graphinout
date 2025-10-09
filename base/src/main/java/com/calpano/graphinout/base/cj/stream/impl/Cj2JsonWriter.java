@@ -99,21 +99,22 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
         super.documentStart();
         // start the CJ root object
         super.objectStart();
-        //   "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
-        //  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
-        super.onKey(JsonConstants.DOLLAR_SCHEMA);
-        onString(CjConstants.CJ_SCHEMA_LOCATION);
-        super.onKey(JsonConstants.DOLLAR_ID);
-        onString(CjConstants.CJ_SCHEMA_ID);
 
-        // "connectedJson" : { ...
-        super.onKey(CjConstants.ROOT__CONNECTED_JSON);
-        super.objectStart();
-        super.onKey(CjConstants.CONNECTED_JSON__VERSION_NUMBER);
-        onString(CJ_VERSION_NUMBER);
-        super.onKey(CjConstants.CONNECTED_JSON__VERSION_DATE);
-        onString(CJ_VERSION_DATA);
-        super.objectEnd();
+//        //   "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
+//        //  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+//        super.onKey(JsonConstants.DOLLAR_SCHEMA);
+//        onString(CjConstants.CJ_SCHEMA_LOCATION);
+//        super.onKey(JsonConstants.DOLLAR_ID);
+//        onString(CjConstants.CJ_SCHEMA_ID);
+//
+//        // "connectedJson" : { ...
+//        super.onKey(CjConstants.ROOT__CONNECTED_JSON);
+//        super.objectStart();
+//        super.onKey(CjConstants.CONNECTED_JSON__VERSION_NUMBER);
+//        onString(CJ_VERSION_NUMBER);
+//        super.onKey(CjConstants.CONNECTED_JSON__VERSION_DATE);
+//        onString(CJ_VERSION_DATA);
+//        super.objectEnd();
     }
 
     public void edgeEnd() throws CjException {
