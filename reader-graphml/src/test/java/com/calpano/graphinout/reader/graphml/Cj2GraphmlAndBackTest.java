@@ -55,7 +55,7 @@ public class Cj2GraphmlAndBackTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
-    @DisplayName("Test JSON<->CJ<->Graphml - all files together")
+    @DisplayName("Test JSON<->CJ<->Graphml (all)")
     void test_json_cj_graphml_cj_json_CanonicalCjFiles(String displayPath, Resource resource) throws Exception {
         // JSON
         String json_in = resource.getContentAsString();

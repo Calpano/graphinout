@@ -53,7 +53,7 @@ public class Graphml2CjAndBackTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResources")
-    @DisplayName("XML->Graphml->Cj")
+    @DisplayName("Run XML->Graphml->Cj")
     void testAllXml_Graphml_Cj(String displayPath, Resource xmlResource) throws Exception {
         if (TestFileUtil.isInvalid(xmlResource, "graphml", "xml")) {
             return;
@@ -83,7 +83,7 @@ public class Graphml2CjAndBackTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResources")
-    @DisplayName("XML->Graphml->Cj->Graphml->XML (Test all GraphMl files)")
+    @DisplayName("Test XML<->Graphml<->Cj (all Graphml)")
     void testAllXml_Graphml_Cj_Graphml_Xml(String displayPath, Resource xmlResource) throws Exception {
         // == XML -> GraphML -> CJ doc
         // GraphML -> CJ
@@ -126,25 +126,5 @@ public class Graphml2CjAndBackTest {
             }
         }, s -> s);
     }
-
-    @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResources")
-    @DisplayName("XML->Graphml->XML (Test all GraphMl files)")
-    void testAllXml_Graphml_Xml(String displayPath, Resource xmlResource) throws Exception {
-        if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) return;
-
-        // == OUT Pipeline
-        Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xmlWriter);
-        Xml2GraphmlWriter xml2GraphmlWriter = new Xml2GraphmlWriter(graphml2XmlWriter);
-
-        XmlTool.parseAndWriteXml(file(xmlResource), xml2GraphmlWriter);
-
-        String xml_in = xmlResource.getContentAsString();
-        String xml_out = xmlWriter.resultString();
-
-        GraphmlAssert.xAssertThatIsSameGraphml(xml_out, xml_in, null);
-    }
-
 
 }

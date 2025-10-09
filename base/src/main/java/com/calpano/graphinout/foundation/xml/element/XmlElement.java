@@ -59,7 +59,7 @@ public class XmlElement extends XmlNode {
 
     public @NonNull String attribute_(String attName) {
         String value = attributes.get(attName);
-        assert value != null : "attribute " + attName + " not found";
+        assert value != null : "attribute '" + attName + "' not found in "+this;
         return value;
     }
 

@@ -15,6 +15,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
@@ -26,36 +28,38 @@ public class GraphmlTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResources")
-    @DisplayName("Test all GraphML: XML -> GraphML -> XML")
+    @DisplayName("Test XML<->Graphml (all)")
     void testAllGraphmlFiles(String displayPath, Resource xmlResource) throws Exception {
-
         if(TestFileUtil.isInvalid(xmlResource, "graphml","xml")) {
             log.debug("Skipping invalid Graphml file: {}", xmlResource.getURI());
             return;
         }
 
-        Path xmlFilePath = TestFileUtil.file(xmlResource).toPath();
+        // == pre-flight check
+        File xmlFile = TestFileUtil.file(xmlResource);
+        assert xmlFile != null;
+        Path xmlFilePath = xmlFile.toPath();
         XmlTool.assertCanParseAsXml(xmlFilePath);
 
+        // == actual test
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        System.out.println("== Input XML");
-        XmlWriter xmlWriter_out = new DelegatingXmlWriter( //
-                new Xml2AppendableWriter(System.out, //
-                        AttributeOrderPerElement.AsWritten), //
-                xmlWriter);
-
         /* receive GraphMl events -> send XML events */
-        Graphml2XmlWriter graphml2xml = new Graphml2XmlWriter(xmlWriter_out);
+        Graphml2XmlWriter graphml2xml = new Graphml2XmlWriter(xmlWriter);
         /* receive XML events -> send Graphml events  */
         Xml2GraphmlWriter xml2graphml = new Xml2GraphmlWriter(graphml2xml);
 
-        XmlTool.parseAndWriteXml(xmlFilePath.toFile(), xml2graphml);
+        XmlTool.parseAndWriteXml(xmlFile, xml2graphml);
+
+        String xml_in = xmlResource.getContentAsString();
         String xml_out = xmlWriter.resultString();
 
-        // read into string;
-        String xml_in = FileUtils.readFileToString(xmlFilePath.toFile(), StandardCharsets.UTF_8);
-
-        GraphmlAssert.xAssertThatIsSameGraphml(xml_out, xml_in, null);
+        GraphmlAssert.xAssertThatIsSameGraphml(xml_out, xml_in, ()->{
+            try {
+                log.info("== Input XML\n{}",xmlResource.getContentAsString());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 }
