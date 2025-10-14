@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<graphml xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd" xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<graphml xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"
+xmlns="http://graphml.graphdrawing.org/xmlns"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <key id="neuron_name" for="node" attr.name="name" attr.type="string">
         <desc><b>Hello</b>World</desc>
     </key>
 
-<graph edgedefault="undirected">
+    <graph edgedefault="undirected">
+    </graph>
 
-</graph></graphml>
+</graphml>
