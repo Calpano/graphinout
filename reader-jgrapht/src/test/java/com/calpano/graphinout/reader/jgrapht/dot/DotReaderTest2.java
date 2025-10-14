@@ -64,7 +64,7 @@ class DotReaderTest2 extends AbstractReaderTest {
 
     @Test
     void testOneResource() throws IOException {
-        Resource path = TestFileUtil.resource( "dot/synthetics/synthetic2.dot");
+        Resource path = TestFileUtil.resource("text/dot/synthetics/synthetic2.dot");
         InMemoryOutputSink outputSink = OutputSink.createInMemory();
         ReaderTests.readResourceToSink(new DotReader(), path, outputSink);
         String s = new String(outputSink.getByteBuffer().toByteArray(), StandardCharsets.UTF_8);

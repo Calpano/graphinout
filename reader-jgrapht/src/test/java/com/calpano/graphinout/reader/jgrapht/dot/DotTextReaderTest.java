@@ -44,10 +44,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 class DotTextReaderTest {
 
-    public static final String EXAMPLE_DOT_PATH = "/dot/example.dot";
-    public static final String SIMPLE_DOT = "/dot/synthetics/simple/simple.dot";
-    public static final String SIMPLE_2_DOT = "/dot/synthetics/simple/simple2.dot";
-    public static final String SIMPLE_3_DOT = "/dot/synthetics/simple/simple3.dot";
+    public static final String EXAMPLE_DOT_PATH = "/text/dot/example.dot";
+    public static final String SIMPLE_DOT = "/text/dot/synthetics/simple/simple.dot";
+    public static final String SIMPLE_2_DOT = "/text/dot/synthetics/simple/simple2.dot";
+    public static final String SIMPLE_3_DOT = "/text/dot/synthetics/simple/simple3.dot";
     public static final String LABEL = "label";
     public static final String NODE_A = "Node A";
     public static final String NODE_B = "Node B";
@@ -251,7 +251,7 @@ class DotTextReaderTest {
 
     @Test
     void testSimpleDotFile4() throws IOException {
-        testRead("/dot/synthetics/simple/simple4.dot");
+        testRead("/text/dot/synthetics/simple/simple4.dot");
 
         InOrder inOrder = Mockito.inOrder(mockGioWriter);
         inOrder.verify(mockGioWriter).startDocument(Mockito.any());
@@ -299,7 +299,7 @@ class DotTextReaderTest {
 
     @Test
     void testSimpleDotFile5() throws IOException {
-        testRead("/dot/synthetics/simple/simple5.dot");
+        testRead("/text/dot/synthetics/simple/simple5.dot");
 
         MockingDetails details = Mockito.mockingDetails(mockGioWriter);
         log.info(details.printInvocations());
@@ -332,7 +332,7 @@ class DotTextReaderTest {
 
     @Test
     void testSimpleDotFile6() throws IOException {
-        testRead("/dot/synthetics/simple/simple6.dot");
+        testRead("/text/dot/synthetics/simple/simple6.dot");
 
         InOrder inOrder = Mockito.inOrder(mockGioWriter);
         inOrder.verify(mockGioWriter).startDocument(Mockito.any());
@@ -356,7 +356,7 @@ class DotTextReaderTest {
     @Test
     @Disabled("not yet possible given the jgrapht API, see #112")
     void testSubgraph() throws IOException {
-        testRead("/dot/synthetics/simple/simple-subgraph.dot");
+        testRead("/text/dot/synthetics/simple/simple-subgraph.dot");
         InOrder inOrder = Mockito.inOrder(mockGioWriter);
         inOrder.verify(mockGioWriter).startDocument(Mockito.any());
         inOrder.verify(mockGioWriter).startGraph(GioGraph.builder().id("A").build());
@@ -382,7 +382,7 @@ class DotTextReaderTest {
 
     @Test
     void testUndirected() throws IOException {
-        testRead("/dot/synthetics/simple/simple-undirected.dot");
+        testRead("/text/dot/synthetics/simple/simple-undirected.dot");
     }
 
     private void testRead(String path) throws IOException {

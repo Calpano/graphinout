@@ -133,7 +133,9 @@ public class TestFileProvider {
      * classpath. Resulting paths have the syntax 'com/example/filename.ext'.
      */
     public static Stream<TestResource> getAllTestResources() {
-        return new ClassGraph().acceptPackages("json", "xml", "json5").scan().getAllResources().stream() //
+        return new ClassGraph()
+                .acceptPackages("json", "xml", "json5","text")
+                .scan().getAllResources().stream() //
                 .filter(res -> !res.getPath().endsWith(".class")) //
                 .map(TestResource::testResource) //
                 .filter(tr -> !tr.isExpected());

@@ -11,7 +11,7 @@ import java.util.List;
 class TgfReaderTest2 extends AbstractReaderTest {
 
     protected List<ContentError> expectedErrors(String resourceName) {
-        if (resourceName.endsWith("no-nodes.tgf")) {
+        if (resourceName.endsWith("text/tgf/AFs/no-nodes.tgf")) {
             return Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "No nodes found", null));
         }
         return Collections.emptyList();

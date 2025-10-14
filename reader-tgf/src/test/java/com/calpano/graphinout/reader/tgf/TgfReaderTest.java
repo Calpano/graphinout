@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -50,6 +51,12 @@ class TgfReaderTest {
 
     private static Stream<TestFileProvider.TestResource> tgfResources() {
         return TestFileProvider.getAllTestResources().filter(res -> res.resource().getPath().endsWith(".tgf"));
+    }
+
+    @Test
+    void testProvider() {
+        assertThat(TestFileProvider.getAllTestResources().toList()).isNotEmpty();
+        assertThat(tgfResources().toList()).isNotEmpty();
     }
 
     @AfterEach
