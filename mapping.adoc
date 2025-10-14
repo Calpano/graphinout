@@ -215,3 +215,325 @@ which is document-level meta-data.
 }
 ----
 
+== XML Chains
+
+.Input
+[source,xml]
+----
+<?xml version='1.0' encoding='utf-8'?>
+<node>
+    <data key="d1">M&amp;X</data>
+    <data key="d2">M&amp;quot;X</data>
+    <data key="d3">M&nbsp;</data>
+</node>
+----
+
+.Normalized XML Input
+[source,xml]
+----
+<?xml version='1.0' encoding='utf-8'?>
+<node>
+    <data key="d1">M&amp;X</data>
+    <data key="d2">M&amp;quot;X</data>
+    <data key="d3">M&#160;</data>
+    <data key="d4">M"X</data>
+</node>
+----
+
+.Graphml XML In-Memory
+[cols="^d,m",width=50%]
+|===
+| Key | Value (without spaces)
+
+| d1 | M & X
+| d2 | M & q u o t ; X
+| d3 | M [nbsp]
+| d4 | M " X
+|===
+
+CAUTION: on write, XML needs to be escaped.
+
+.XML Out
+[cols="^1d,5m",width=50%]
+|===
+| Key | Value (without spaces)
+
+| d1 | M & a m p ; X
+| d2 | M & a m p ; q u o t ; X
+| d3 | M & # 1 6 0 ;
+| d4 | M & q u o t ; X
+
+|===
+
+
+.Out - ERROR
+[source,xml]
+----
+<?xml version='1.0' encoding='utf-8'?>
+<node>
+    <data key="d1">M&amp;amp;X</data>
+    <data key="d2">M&amp;amp;quot;X</data>
+</node>
+----
+
+
+== Typing
+
+[source,xml]
+----
+<?xml version='1.0' encoding='utf-8'?>
+<data key="foo"><default>AAA</default><data>
+----
+
+AAA can be:
+- 13
+- true
+- Hello
+- This <em>large</em> world
+** had an XML element
+
+XML 2 Graphml Parser: decide string vs. rawXmlString
+
+TIP: Everything in default is an XmlNode, guess JSON type from there
+
+- M&quot;X
+
+XML -> Graphml: data-default is XmlNode
+
+Graphml -> CJ: XmlNode becomes string or xmlString(serialized to string, escaped text nodes)
+
+XmlNode -> IJsonXmlString
+'aaa' <bbb> 'ccc' </bbb> '"yes"&also'
+
+=>
+
+{
+    "xml": "aaa<bbb>ccc</bbb>&quot;yes&quot;&amp;also"
+}
+
+
+
+JSON -> CJ (string vs rawXmlString)
+
+
+== XML & JSON
+
+[source,xml]
+----
+<node>
+  <data key="d0">Hello<b>World</b></data>
+  <data key="d1">Foo</data>
+  <data key="d2">123</data>
+  <data key="d3"></data>
+  <data key="d4"> <![CDATA[42]]></data>
+</node>
+----
+
+.CJ Naive
+[source,json]
+----
+{ "node": {
+    "data": {
+        "d0": {"xml":"Hello<b>World</b>"},
+        "d1": {"xml":"Foo"},
+        "d2": {"xml":"123"},
+        "d3": {"xml":""},
+        "d4": {"xml":" <![CDATA[42]]>"}
+    }
+}
+----
+
+
+.XmlText API
+[plantuml]
+....
+hide empty members
+hide circle
+
+enum CharactersKind {
+    Default
+    PreserveWhitespace
+    IgnorableWhitespace
+    CDATA
+}
+
+interface Section {
+    String value
+}
+XmlText --> Section
+Section -- CharactersKind
+
+class XmlFragmentString {
+    String rawXml
+}
+enum XML.XmlSpace {
+    default
+    preserve
+}
+XmlFragmentString --> XML.XmlSpace
+
+class XmlDocumentFragment{
+}
+class XmlContent
+interface IXmlNode
+XmlContent *--> "0..n" IXmlNode
+XmlDocumentFragment *--> XmlContent
+XmlDocumentFragment *--> XML.XmlSpace
+IXmlNode <|-- XmlText
+IXmlNode <|-- XmlElement
+XmlElement *--> XmlContent
+XmlDocumentFragment .> XmlFragmentString : serialize
+....
+
+
+.Wrapper
+----
+<rootWrapper> Hello <b>World</b> &#160;&amp;quot;<rootWrapper>
+----
+
+
+
+TIP: Reduce XmlStrings if they look like simple strings
+
+
+
+
+
+
+[source,xml]
+----
+  <key id="d0" for="node" attr.type="boolean" attr.name="married" />
+
+  <data key="d0">Hello<b>World</b></data>
+  <data key="d1">Foo</data>
+  <data key="d2">123</data>
+  <data key="d3" />
+  <data key="d4"> <![CDATA[42]]></data>
+----
+
+TIP: If any CDATA occurs, represent as XmlString
+
+Desired Type:
+- boolean
+- string
+- float, double, int, long
+- custom 'yfiles.resource' -- is in <key> attribute `yfiles.type`
+
+
+.Desired Type: boolean
+
+try { String s = xmlText.toPlainString();
+    if can parse s as `true` or `false` -> JSON Boolean
+    else: JSON String or null for empty string
+}
+catch { -> XmlString }
+
+
+.Desired Type: Number
+try { String s = xmlText.toPlainString();
+    if can parse s as Java Number -> JSON Number
+else: JSON String or null for empty string
+}
+catch { -> XmlString }
+
+
+.Desired type: custom (`yfiles.resource`)
+-> XmlString  or null for empty string
+
+.Desired type: string
+try { String s = xmlText.toPlainString();
+-> JSON String or null for empty string
+}
+catch { -> XmlString }
+
+CAUTION: when converting XML DOM to rawXml, we must serialize the XML, i.e. turn elements to `<`, ...
+
+.@Nullable String XmlText.toPlainString()
+Loop over IXmlNode, and XmlText within them
+- respect whitespace settings
+- throw on CDATA Section
+- throw on XML Element children
+
+XML: `My nice &amp;quot;funny string`
+
+DOM: `My nice &quot;funny string`
+
+-> as XML: `My nice &amp;amp;funny&amp;quot; string`
+
+
+.CJ Smart
+[source,json]
+----
+{ "node": {
+    "data": {
+        "d0": {"xml":"Hello<b>World</b>"},
+        "d1": "Foo",
+        "d2": 123,
+        "d3": null,
+        "d4": {"xml":" <![CDATA[42]]>"}
+    }
+}
+----
+
+.The empty XML String
+`{"xml":""}`
+
+
+
+Given an XmlFragmentString (String rawXml + XmlSpace),
+can we simplify to a nicer JSON type instead of JsonXmlString,
+especially, if desiredGrapmlType is not string.
+
+We can simply try to parse as boolean or number.
+But string vs xmlString?
+xmlString will get written as rawXml,
+string will get written as XML-escaped.
+
+So: if xmlEscape(rawString) == rawString, we can simplify to string.
+
+
+
+
+== Round-Tripping
+
+=== Known Issues
+
+Graphml uses data like `<data key="d10">` with key ids that are not defined as `<key>` elements. Thew auto-created `<key>` elements uses ids like `edge-d10` instead of the original `d10`.
+Occurred in Graphml written by Yed 3.12.2.
+
+.Namespace & Schema Location
+The correct Graphml namespace URI, to be used in `xmlns` and the first part of `xsi:schemaLocation` is:
+`http://graphml.graphdrawing.org/xmlns`. Some alternative XSIs are automatically mapped to the standard Graphml URIs. But not all.
+E.g. `http://graphml.graphdrawing.org/xmlns/graphml/graphml-attributes-1.0rc.xsd` is not understood.
+
+.Custom XML Attributes and XML Space
+Graphml `<data> elements may be marked as `<data xml:space="preserved">`. This is an XML feature to define whitespace handling of the content. If the `<data>` elements contains no content -- and the whitespace-preserve info is useless -- it is not represented in {cj}.
+In fact, _all_ custom XML attributes on `<data>` elements are dropped, except `xml:space` if it has an effect.
+Best test file for this: `kubernetes-architecture.graphml`.
+
+We transform Graphml ` hello ` (spaces at begin or end) into `hello`.
+
+TIP: We could respect xml:space preserve, by storing a JSON string ` hello ` and later detec that `s.trim != s` and then write space-preserve back into XML.
+
+.Data Type Conversions
+Some numeric values are stated as `<data key=...>1.<data>`, which later gets translated to a JSON Number in CJ (`1`) and then back into `<data key=...>1</data>` in Graphml. Thus, the dot after the number is lost.
+Occurs in `four_neuron_cpg.graphml`.
+
+.Default Values Removed
+We remove redundant default values. Some Graphml files are changed by that (they state redundant defaults, see `four_neuron_cpg.graphml`).
+
+.Default Values Not Removed
+The normalizer and CJ-to-Graphml converter both ignore `<data>` content which is identical to the default value.
+This detection fails on some numeric due to _Data Type Conversions_ (see above).
+Occurs in `auto_oscillator.graphml`.
+
+.Edgedefault
+We remove a redundant `<graph edgedefault="directed">` attribute. The default in Graphml is directed.
+
+.Mixed Content
+Graphml allows mixed content in `<data>` elements.
+This is supported in {cj} by using the special XML String primitive in JSON. See spec.
+
+
+
+

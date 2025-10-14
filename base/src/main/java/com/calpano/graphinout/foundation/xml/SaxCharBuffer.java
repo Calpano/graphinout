@@ -2,8 +2,14 @@ package com.calpano.graphinout.foundation.xml;
 
 import com.calpano.graphinout.foundation.text.StringFormatter;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 
+/**
+ * Aggregates the multiple Java SAX API 'characters' calls into a single span of characters.
+ * Also handles CDATA vs. normal, 'xml:space' = 'default' vs. 'preserve'.
+ * Translates to {@link XmlCharacterWriter}.
+ */
 public class SaxCharBuffer {
 
     /** downstream */
@@ -11,7 +17,7 @@ public class SaxCharBuffer {
     /** buffer content of the same CharactersKind */
     private final StringBuilder buffer = new StringBuilder();
     /** Are we already within a characters section? In which one? */
-    private CharactersKind currentKind;
+    private @Nullable CharactersKind currentKind;
     /** have we sent a start call yet for all sections? */
     private boolean sentStart;
 

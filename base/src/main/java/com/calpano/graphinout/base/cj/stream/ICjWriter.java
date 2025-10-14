@@ -128,9 +128,10 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
     void id(String id);
 
     /**
+     * Convenience method to send JSON data.
      * "data"
      *
-     * @param jsonValue
+     * @param jsonValue to send
      */
     default void jsonData(Consumer<JsonValueWriter> jsonValue) {
         jsonDataStart();

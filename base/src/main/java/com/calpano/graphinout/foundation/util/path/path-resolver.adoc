@@ -9,7 +9,7 @@ The path resolver is designed to be extensible, allowing it to navigate any data
 
 * `PathResolver`: The main entry point for resolving paths.
 * `Step`: Represents a single segment of a path.
-* `Result`: Encapsulates the result of a path resolution.
+* `GraphmlResult`: Encapsulates the result of a path resolution.
 * `IMapLike` and `IListLike`: Interfaces that abstract over map-like and list-like data structures.
 * `ITypeAdapter` and `TypeAdapters`: A mechanism for converting custom types into `IMapLike` or `IListLike`.
 
@@ -75,7 +75,7 @@ If not a map, return nothing.
 
 == `Result`
 
-The `Result` class holds the outcome of a resolution. It contains:
+The `GraphmlResult` class holds the outcome of a resolution. It contains:
 
 * `path()`: The path taken to reach the result.
 * `values()`: A list of all objects traversed to reach the result, with the final value being the last element.
