@@ -82,8 +82,12 @@ public class JsonReaderImpl implements JsonReader {
                 token = parser.nextToken();
             }
         } catch (Throwable t) {
-            log.error("Failed", t);
-            throw t;
+            StringBuilder msg = new StringBuilder();
+            msg.append("Failed reading JSON.");
+            if(preprocessedContent.length() < 8 * 1024) {
+                msg.append("Failed on\n----\n").append(preprocessedContent).append("\n----");
+            }
+            throw new RuntimeException(msg.toString(), t);
         } finally {
             stream.documentEnd();
         }
