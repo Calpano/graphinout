@@ -17,6 +17,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class DotReader implements GioReader {
 
     private static final Logger log = getLogger(DotReader.class);
+    public static final String FORMAT_ID = "dot";
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "DOT Text Format", ".dot", ".gv");
     private Consumer<ContentError> errorHandler;
 
     @Override
@@ -26,7 +28,7 @@ public class DotReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("dot", "DOT Text Format", ".dot", ".gv");
+        return FORMAT;
     }
 
     @Override

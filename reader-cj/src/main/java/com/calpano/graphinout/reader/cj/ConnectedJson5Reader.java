@@ -24,7 +24,8 @@ import static com.calpano.graphinout.foundation.input.SingleInputSourceOfString.
  */
 public class ConnectedJson5Reader implements GioReader {
 
-    public static final GioFileFormat FORMAT = new GioFileFormat("connected-json5", "Connected JSON5 Format", //
+    public static final String FORMAT_ID = "connected-json5";
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Connected JSON5 Format", //
             ".con.json5", ".connected.json5");
     private static final Logger log = LoggerFactory.getLogger(Json5Reader.class);
     private final ConnectedJsonReader cjReader = new ConnectedJsonReader();

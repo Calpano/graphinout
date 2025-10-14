@@ -32,6 +32,8 @@ public class TgfReader implements GioReader {
     private static final String DELIMITER = " ";
     private static final String HASH = "#";
     private static final String LABEL = "label";
+    public static final String FORMAT_ID = "tgf";
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Trivial Graph Format", ".tgf");
     private @Nullable Consumer<ContentError> errorHandler;
 
     @Override
@@ -41,7 +43,7 @@ public class TgfReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("tgf", "Trivial Graph Format", ".tgf");
+        return FORMAT;
     }
 
     @Override

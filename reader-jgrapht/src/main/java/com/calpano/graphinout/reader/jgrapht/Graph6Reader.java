@@ -16,6 +16,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class Graph6Reader implements GioReader {
 
     private static final Logger log = getLogger(Graph6Reader.class);
+    public static final String FORMAT_ID = "graph6";
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "graph6 format", ".g6", ".graph6");
     private Consumer<ContentError> errorHandler;
 
     @Override
@@ -25,7 +27,7 @@ public class Graph6Reader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("graph6", "graph6 format", ".g6", ".graph6");
+        return FORMAT;
     }
 
     @Override

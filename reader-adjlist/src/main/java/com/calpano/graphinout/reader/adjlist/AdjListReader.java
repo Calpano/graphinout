@@ -31,6 +31,8 @@ public class AdjListReader implements GioReader {
     private static final String DELIMITER = " ";
     private static final String HASH = "#";
     private static final String LABEL = "label";
+    public static final String FORMAT_ID = "adjlist";
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Adjacency List Format", ".adjlist");
     private @Nullable Consumer<ContentError> errorHandler;
 
     @Override
@@ -40,7 +42,7 @@ public class AdjListReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("adjlist", "Adjacency List Format", ".adjlist");
+        return FORMAT;
     }
 
     @Override

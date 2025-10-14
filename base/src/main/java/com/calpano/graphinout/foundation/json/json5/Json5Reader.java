@@ -32,6 +32,8 @@ import java.util.function.Consumer;
 public class Json5Reader implements GioReader {
 
     private static final JsonFactory JSON_FACTORY = new JsonFactory();
+    public static final String FORMAT_ID = "json5";
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Connected JSON5 Format", ".json5");
 
     private @Nullable Consumer<ContentError> errorHandler;
 
@@ -42,7 +44,7 @@ public class Json5Reader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("json5", "Connected JSON5 Format", ".json5");
+        return FORMAT;
     }
 
     @Override

@@ -23,6 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class ExampleReader implements GioReader {
 
     private static final Logger log = getLogger(ExampleReader.class);
+    public static final GioFileFormat FORMAT = new GioFileFormat("example", "Example Graph Format", ".example");
     private Consumer<ContentError> errorHandler;
 
     @Override
@@ -32,7 +33,7 @@ public class ExampleReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("example", "Example Graph Format", ".example");
+        return FORMAT;
     }
 
     @Override

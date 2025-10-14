@@ -26,6 +26,8 @@ import java.util.function.Consumer;
 
 public class TripleTextReader implements GioReader {
 
+    public static final String FORMAT_ID = "tripletext";
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "TripleText Format", ".tt", "triple.txt", ".tripletext");
     private Consumer<ContentError> errorHandler;
 
     @Override
@@ -35,7 +37,7 @@ public class TripleTextReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("tripletext", "TripleText Format", ".tt", "triple.txt", ".tripletext");
+        return FORMAT;
     }
 
     @Override

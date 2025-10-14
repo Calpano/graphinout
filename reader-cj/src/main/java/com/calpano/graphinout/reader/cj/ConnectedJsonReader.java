@@ -23,7 +23,8 @@ import java.util.function.Consumer;
  */
 public class ConnectedJsonReader implements GioReader {
 
-    public static final GioFileFormat FORMAT = new GioFileFormat("connected-json", "Connected JSON Format", //
+    public static final String FORMAT_ID = "connected-json";
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Connected JSON Format", //
             ".con.json", ".connected.json", ".cj.json");
     private @Nullable Consumer<ContentError> errorHandler;
 
