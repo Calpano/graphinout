@@ -43,6 +43,7 @@ public class TestFileUtil {
     public static final String RECORD_MODE = "RECORD_MODE";
     public static final String TARGET_TEST_CLASSES = "target/test-classes";
     private static final Logger log = getLogger(TestFileUtil.class);
+    public static final String EMOJI_VIDEOCASSETTE = "\uD83D\uDCFC";
     static Pattern INVALID_MARKER = Pattern.compile("invalid([a-z]*).*");
 
     private static File asSrcMainResource(File targetTestClasses) {
@@ -242,6 +243,7 @@ public class TestFileUtil {
             case Off -> {
                 // if not in RECORD_MODE, read EXPECTED from tag file 'filePath--EXPECTED' and compare
                 if (expectedResource != null) {
+                    log.info(EMOJI_VIDEOCASSETTE + " Loaded expected output from " +expectedResource.getPath());
                     String expectedStringFromFile = resource.getContentAsString();
                     // maybe normalizer function changed slightly, so normalize again
                     String expectedNorm = normalizerFun.apply(expectedStringFromFile);
@@ -249,7 +251,7 @@ public class TestFileUtil {
                     boolean ok = actual_expected.test(actualNorm, expectedNorm);
                     if (!ok) fail();
                 } else {
-                    log.info("You can use env RECORD_MODE= { 'init' | 'on' } as { EXPECTED | ACTUAL } result.");
+                    log.info(EMOJI_VIDEOCASSETTE +" You can use env RECORD_MODE= { 'init' | 'on' } as { EXPECTED | ACTUAL } result.");
                     // check
                     String expectedNorm = normalizerFun.apply(expectedString);
                     String actualNorm = normalizerFun.apply(actualString);
@@ -264,7 +266,7 @@ public class TestFileUtil {
                     File f = TestFileUtil.expectedFile(resource);
                     String expectedNorm = normalizerFun.apply(expectedString);
                     FileUtils.writeStringToFile(f, expectedNorm, StandardCharsets.UTF_8);
-                    log.info("Wrote expected to {}", f.getAbsolutePath());
+                    log.info(EMOJI_VIDEOCASSETTE +" Wrote expected to {}", f.getAbsolutePath());
                 }
             }
             case RecordTheActual -> {
@@ -274,7 +276,7 @@ public class TestFileUtil {
                 File f = TestFileUtil.expectedFile(resource);
                 String actualNorm = normalizerFun.apply(actualString);
                 FileUtils.writeStringToFile(f, actualNorm, StandardCharsets.UTF_8);
-                log.info("Wrote actual {}", f.getAbsolutePath());
+                log.info(EMOJI_VIDEOCASSETTE +" Wrote actual {}", f.getAbsolutePath());
             }
         }
     }
