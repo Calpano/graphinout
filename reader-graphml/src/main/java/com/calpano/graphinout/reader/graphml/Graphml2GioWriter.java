@@ -140,16 +140,16 @@ public class Graphml2GioWriter implements GraphmlWriter {
     }
 
     @Override
-    public void key(IGraphmlKey graphml) throws IOException {
-        stack.push(graphml);
+    public void key(IGraphmlKey graphmlKey) throws IOException {
+     //   stack.push(graphmlKey);
         GioKey.GioKeyBuilder builder = GioKey.builder();
-        builder.customAttributes(graphml.customXmlAttributes());
-        ifPresentAccept(graphml.desc(), desc -> builder.description(desc.xmlValue()));
-        builder.id(graphml.id());
-        builder.forType(graphml.forType().toGio());
-        builder.attributeType(graphml.toGioDataType());
-        builder.attributeName(graphml.attrName());
-        ifPresentAccept(graphml.defaultValue(), defaultValue -> builder.defaultValue(defaultValue.xmlValue()));
+        builder.customAttributes(graphmlKey.customXmlAttributes());
+        ifPresentAccept(graphmlKey.desc(), desc -> builder.description(desc.xmlValue()));
+        builder.id(graphmlKey.id());
+        builder.forType(graphmlKey.forType().toGio());
+        builder.attributeType(graphmlKey.toGioDataType());
+        builder.attributeName(graphmlKey.attrName());
+        ifPresentAccept(graphmlKey.defaultValue(), defaultValue -> builder.defaultValue(defaultValue.xmlValue()));
         gioWriter.key(builder.build());
     }
 
