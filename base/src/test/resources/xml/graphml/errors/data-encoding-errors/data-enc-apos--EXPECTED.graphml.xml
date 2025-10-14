@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd">
+
+<key attr.name="cj_jsonData" attr.type="string" id="cj_jsonData"><desc>Connected JSON allows a JSON 'data' property on all objects.</desc></key>
+<key attr.name="cj_label" attr.type="string" id="cj_label"><desc>Connected JSON label</desc></key>
+<key attr.name="d0" attr.type="string" for="graphml" id="graphml-d0"/>
+<key attr.name="Description" attr.type="string" for="graph" id="d7"/>
+<key attr.name="d6" attr.type="string" for="node" id="d6" yfiles.type="nodegraphics"/>
+<key attr.name="cj_edgeType" attr.type="string" for="edge" id="cj_edgeType"><desc>Connected JSON edgeType {'source'=..., 'type'=...}</desc></key>
+<data key="graphml-d0">
+    <Resources/>
+  </data>
+<graph edgedefault="directed" id="G" parse.edgeids="free" parse.edges="0" parse.nodeids="free" parse.nodes="1" parse.order="nodesfirst">
+<data key="d7"></data>
+<node id="n0" yfiles.foldertype="group">
+<data key="d6">
+        <TableNode configuration="YED_TABLE_NODE">
+          <Geometry height="436.6552734375" width="776.02734375" x="-100.5" y="-5.52734375"/>
+          <Fill color="#ECF5FF" color2="#0042F440" transparent="false"/>
+          <BorderStyle color="#000000" type="line" width="1.0"/>
+          <NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="15" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="22.37646484375" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="303.23828125" x="236.39453125" y="4.0">FlexsimObject OnDraw Event Dispatching</NodeLabel>
+        </TableNode>
+      </data>
+<graph edgedefault="directed" id="n0:" parse.edgeids="free" parse.edges="0" parse.nodeids="free" parse.nodes="2" parse.order="nodesfirst">
+<node id="n0::n0">
+<data key="d6">
+            <GenericNode configuration="com.yworks.flowchart.process">
+              <Geometry height="92.0" width="135.75" x="129.75" y="66.0"/>
+              <Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+              <BorderStyle color="#000000" type="line" width="1.0"/>
+              <NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="62.8046875" modelName="custom" textColor="#000000" visible="true" width="110.6875" x="12.53125" y="14.59765625">Engine sees
+OnDraw event
+attribute on
+FlexsimObject class<LabelModel>
+                  <SmartNodeLabelModel distance="4.0"/>
+                </LabelModel>
+                <ModelParameter>
+                  <SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+                </ModelParameter>
+              </NodeLabel>
+            </GenericNode>
+          </data></node>
+<node id="n0::n1">
+<data key="d6">
+            <GenericNode configuration="com.yworks.flowchart.terminator">
+              <Geometry height="62.5" width="171.0" x="498.0" y="289.5625"/>
+              <Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+              <BorderStyle color="#000000" type="line" width="1.0"/>
+              <NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="48.103515625" modelName="custom" textColor="#000000" visible="true" width="152.0546875" x="9.47265625" y="7.1982421875">SubClass&apos; Overridden
+OnDraw() Method Executes
+SubClass&apos; Logic<LabelModel>
+                  <SmartNodeLabelModel distance="4.0"/>
+                </LabelModel>
+                <ModelParameter>
+                  <SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+                </ModelParameter>
+              </NodeLabel>
+            </GenericNode>
+          </data></node></graph></node></graph></graphml>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd">
+
+<key attr.name="cj_jsonData" attr.type="string" id="cj_jsonData"><desc>Connected JSON allows a JSON 'data' property on all objects.</desc></key>
+<key attr.name="cj_label" attr.type="string" id="cj_label"><desc>Connected JSON label</desc></key>
+<key attr.name="D" attr.type="float" for="node" id="D"><default>1.0</default></key>
+<key attr.name="bias" attr.type="float" for="node" id="bias"><default>-2.75</default></key>
+<key attr.name="color" attr.type="string" for="node" id="color"><default>red</default></key>
+<key attr.name="is_ext" attr.type="boolean" for="node" id="ext_in"><default>true</default></key>
+<key attr.name="model" attr.type="string" for="node" id="neuron_type"><default>leaky</default></key>
+<key attr.name="name" attr.type="string" for="node" id="neuron_name"><default>&quot;neuron&quot;</default></key>
+<key attr.name="tau" attr.type="double" for="node" id="node-tau"/>
+<key attr.name="x" attr.type="float" for="node" id="pos_x"><default>0.0</default></key>
+<key attr.name="x0" attr.type="float" for="node" id="x0"><default>0.0</default></key>
+<key attr.name="y" attr.type="float" for="node" id="pos_y"><default>0.0</default></key>
+<key attr.name="cj_edgeType" attr.type="string" for="edge" id="cj_edgeType"><desc>Connected JSON edgeType {'source'=..., 'type'=...}</desc></key>
+<key attr.name="weight" attr.type="double" for="edge" id="weight"/>
+<graph edgedefault="directed" id="CPG" parse.edgeids="free" parse.edges="8" parse.nodeids="free" parse.nodes="4" parse.order="nodesfirst">
+<node id="N1">
+<data key="bias">3.0</data>
+<data key="color">b</data>
+<data key="node-tau">0.02</data>
+<data key="pos_x">1.0</data>
+<data key="x0">5</data>
+<data key="pos_y">1.0</data></node>
+<node id="N2">
+<data key="bias">3.0</data>
+<data key="color">b</data>
+<data key="node-tau">0.02</data>
+<data key="pos_x">2.0</data>
+<data key="x0">2</data>
+<data key="pos_y">1.0</data></node>
+<node id="N3">
+<data key="bias">-3.0</data>
+<data key="color">y</data>
+<data key="node-tau">0.1</data>
+<data key="x0">5</data>
+<data key="pos_y">2.0</data></node>
+<node id="N4">
+<data key="bias">-3.0</data>
+<data key="color">y</data>
+<data key="node-tau">0.1</data>
+<data key="pos_x">3.0</data>
+<data key="x0">2</data>
+<data key="pos_y">2.0</data></node>
+<edge source="N1" target="N2">
+<data key="weight">-5</data></edge>
+<edge source="N1" target="N4">
+<data key="weight">-5</data></edge>
+<edge source="N1" target="N3">
+<data key="weight">5</data></edge>
+<edge source="N2" target="N1">
+<data key="weight">-5</data></edge>
+<edge source="N2" target="N3">
+<data key="weight">-5</data></edge>
+<edge source="N2" target="N4">
+<data key="weight">5</data></edge>
+<edge source="N3" target="N1">
+<data key="weight">-5</data></edge>
+<edge source="N4" target="N2">
+<data key="weight">-5</data></edge></graph></graphml>
