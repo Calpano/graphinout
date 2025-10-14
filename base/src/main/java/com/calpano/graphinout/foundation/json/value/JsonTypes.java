@@ -39,6 +39,42 @@ public class JsonTypes {
         return bd;
     }
 
+    private static Class<?> strictestIntegerType(BigInteger bi) {
+        if (bi.compareTo(BI_BYTE_MIN) >= 0 && bi.compareTo(BI_BYTE_MAX) <= 0) {
+            return Byte.class;
+        } else if (bi.compareTo(BI_SHORT_MIN) >= 0 && bi.compareTo(BI_SHORT_MAX) <= 0) {
+            return Short.class;
+        } else if (bi.compareTo(BI_INT_MIN) >= 0 && bi.compareTo(BI_INT_MAX) <= 0) {
+            return Integer.class;
+        } else if (bi.compareTo(BI_LONG_MIN) >= 0 && bi.compareTo(BI_LONG_MAX) <= 0) {
+            return Long.class;
+        } else {
+            return BigInteger.class;
+        }
+    }
+
+    public static Class<?> strictestType(String value) {
+        return strictestType(new BigDecimal(value));
+    }
+
+    private static Class<?> strictestType(BigDecimal bd) {
+        BigDecimal stripped = bd.stripTrailingZeros();
+        if (stripped.scale() <= 0) { // It's an integer
+            return strictestIntegerType(stripped.toBigInteger());
+        } else { // It's a decimal
+            if (bd.compareTo(BD_NEG_FLOAT_MAX) >= 0 && bd.compareTo(BD_FLOAT_MAX) <= 0) {
+                if (bd.doubleValue() == bd.floatValue()) {
+                    return Float.class;
+                }
+                return Double.class;
+            } else if (bd.compareTo(BD_NEG_DOUBLE_MAX) >= 0 && bd.compareTo(BD_DOUBLE_MAX) <= 0) {
+                return Double.class;
+            } else {
+                return BigDecimal.class;
+            }
+        }
+    }
+
     /**
      * What is the smallest/strictest type to fit the given number?
      *
@@ -64,39 +100,6 @@ public class JsonTypes {
             return strictestIntegerType(BigInteger.valueOf(n.longValue()));
         }
         return Number.class; // Fallback
-    }
-
-    public static Class<?> strictestType(String value) {
-        return strictestType(new BigDecimal(value));
-    }
-
-    private static Class<?> strictestType(BigDecimal bd) {
-        BigDecimal stripped = bd.stripTrailingZeros();
-        if (stripped.scale() <= 0) { // It's an integer
-            return strictestIntegerType(stripped.toBigInteger());
-        } else { // It's a decimal
-            if (bd.compareTo(BD_NEG_FLOAT_MAX) >= 0 && bd.compareTo(BD_FLOAT_MAX) <= 0) {
-                return Float.class;
-            } else if (bd.compareTo(BD_NEG_DOUBLE_MAX) >= 0 && bd.compareTo(BD_DOUBLE_MAX) <= 0) {
-                return Double.class;
-            } else {
-                return BigDecimal.class;
-            }
-        }
-    }
-
-    private static Class<?> strictestIntegerType(BigInteger bi) {
-        if (bi.compareTo(BI_BYTE_MIN) >= 0 && bi.compareTo(BI_BYTE_MAX) <= 0) {
-            return Byte.class;
-        } else if (bi.compareTo(BI_SHORT_MIN) >= 0 && bi.compareTo(BI_SHORT_MAX) <= 0) {
-            return Short.class;
-        } else if (bi.compareTo(BI_INT_MIN) >= 0 && bi.compareTo(BI_INT_MAX) <= 0) {
-            return Integer.class;
-        } else if (bi.compareTo(BI_LONG_MIN) >= 0 && bi.compareTo(BI_LONG_MAX) <= 0) {
-            return Long.class;
-        } else {
-            return BigInteger.class;
-        }
     }
 
 }

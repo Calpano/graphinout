@@ -10,6 +10,7 @@ class JsonTypesTest {
     void test() {
         assertThat(JsonTypes.strictestType(12.34f)).isEqualTo(Float.class);
         assertThat(JsonTypes.strictestType(12.34d)).isEqualTo(Double.class);
+        assertThat(JsonTypes.strictestType(12.345678901234567890123456789d)).isEqualTo(Double.class);
     }
 
 }
