@@ -1,0 +1,9 @@
+[souirce,xml]
+----
+<!-- Created by igraph -->
+<key id="name" for="graph" attr.name="name" attr.type="string"/>
+...
+<key id="name" for="node" attr.name="name" attr.type="string"/>
+----
+
+The XML id `name` is used twice, this violates the XML semantics of ID.
