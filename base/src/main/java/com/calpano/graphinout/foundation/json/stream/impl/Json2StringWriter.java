@@ -3,8 +3,10 @@ package com.calpano.graphinout.foundation.json.stream.impl;
 import com.calpano.graphinout.foundation.json.JsonException;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.Consumer;
 
 /**
  * Base class for collecting all JSON calls into a string.
@@ -13,6 +15,15 @@ import java.math.BigInteger;
 public class Json2StringWriter implements JsonWriter {
 
     private final StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter();
+    private final @Nullable Consumer<String> onDone;
+
+    public Json2StringWriter() {
+        this(null);
+    }
+
+    public Json2StringWriter(@Nullable Consumer<String> onDone) {
+        this.onDone = onDone;
+    }
 
     @Override
     public String toString() {
@@ -32,6 +43,9 @@ public class Json2StringWriter implements JsonWriter {
     @Override
     public void documentEnd() throws JsonException {
         // do nothing
+        if (onDone != null) {
+            onDone.accept(jsonWriter.json());
+        }
     }
 
     @Override

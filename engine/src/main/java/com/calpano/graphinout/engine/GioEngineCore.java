@@ -1,28 +1,45 @@
 package com.calpano.graphinout.engine;
 
+import com.calpano.graphinout.base.Gio2CjWriter;
 import com.calpano.graphinout.base.GioService;
+import com.calpano.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.calpano.graphinout.base.gio.GioReader;
 import com.calpano.graphinout.base.gio.GioWriter;
-import com.calpano.graphinout.base.graphml.gio.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.gio.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.ContentErrors;
+import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.base.reader.InMemoryErrorHandler;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
+import com.calpano.graphinout.foundation.json.json5.Json5Reader;
+import com.calpano.graphinout.foundation.json.stream.impl.Json2StringWriter;
 import com.calpano.graphinout.foundation.output.OutputSink;
+import com.calpano.graphinout.foundation.xml.XML;
 import com.calpano.graphinout.foundation.xml.Xml2AppendableWriter;
+import com.calpano.graphinout.foundation.xml.Xml2StringWriter;
 import com.calpano.graphinout.foundation.xml.XmlWriterImpl;
+import com.calpano.graphinout.reader.adjlist.AdjListReader;
+import com.calpano.graphinout.reader.cj.ConnectedJson5Reader;
+import com.calpano.graphinout.reader.cj.ConnectedJsonReader;
+import com.calpano.graphinout.reader.example.TripleTextReader;
+import com.calpano.graphinout.reader.graphml.GraphmlReader;
+import com.calpano.graphinout.reader.jgrapht.Graph6Reader;
+import com.calpano.graphinout.reader.jgrapht.dot.DotReader;
+import com.calpano.graphinout.reader.tgf.TgfReader;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -44,6 +61,59 @@ public class GioEngineCore {
             }
         }
         return false;
+    }
+
+    public GioWriter createGioWriter(String outputFileFormatId, OutputSink outputSink) {
+        switch (outputFileFormatId) {
+            case ConnectedJsonReader.FORMAT_ID:
+            case ConnectedJson5Reader.FORMAT_ID: {
+                Json2StringWriter jsonWriter2 = new Json2StringWriter(json -> {
+                    try {
+                        outputSink.outputStream().write(json.getBytes(StandardCharsets.UTF_8));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                Cj2JsonWriter cj2JsonWriter2 = new Cj2JsonWriter(jsonWriter2);
+                Gio2CjWriter gioWriter = new Gio2CjWriter(cj2JsonWriter2);
+                return gioWriter;
+            }
+            case GraphmlReader.FORMAT_ID: {
+                Xml2StringWriter xml2StringWriter = new Xml2StringWriter(XML.AttributeOrderPerElement.Lexicographic, true, xml -> {
+                    try {
+                        outputSink.outputStream().write(xml.getBytes(StandardCharsets.UTF_8));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xml2StringWriter);
+                Gio2GraphmlWriter gioWriter = new Gio2GraphmlWriter(graphml2XmlWriter);
+                return gioWriter;
+            }
+            case AdjListReader.FORMAT_ID:
+            case DotReader.FORMAT_ID:
+            case Graph6Reader.FORMAT_ID:
+            case Json5Reader.FORMAT_ID:
+            case TgfReader.FORMAT_ID:
+            case TripleTextReader.FORMAT_ID: {
+                throw new IllegalArgumentException("no output writer exists for this format '" + outputFileFormatId + "'");
+            }
+        }
+        throw new IllegalArgumentException("Unknown format id '" + outputFileFormatId + "'");
+    }
+
+    public Stream<GioFileFormat> fileFormats() {
+        return Stream.of( //
+                ConnectedJsonReader.FORMAT, //
+                ConnectedJson5Reader.FORMAT, //
+                GraphmlReader.FORMAT, //
+                AdjListReader.FORMAT, //
+                DotReader.FORMAT, //
+                Graph6Reader.FORMAT, //
+                Json5Reader.FORMAT, //
+                TgfReader.FORMAT, //
+                TripleTextReader.FORMAT //
+        );
     }
 
     // FIXME this is unfinished
