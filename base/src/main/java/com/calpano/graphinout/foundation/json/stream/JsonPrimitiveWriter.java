@@ -77,5 +77,4 @@ public interface JsonPrimitiveWriter extends IHasJsonValueWriter {
      */
     void onString(String s) throws JsonException;
 
-
 }
