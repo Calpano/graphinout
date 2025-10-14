@@ -55,7 +55,7 @@ public class CjTest {
         assertThat(edgeTree).isNotNull();
         Map<String, GraphmlDataType> edgeMap = CjGraphmlMapping.toGraphmlDataTypes(edgeTree);
         assertThat(edgeMap).containsEntry("carrier", GraphmlDataType.typeString);
-        assertThat(edgeMap).containsEntry("distance_km", GraphmlDataType.typeDouble);
+        assertThat(edgeMap).containsEntry("distance_km", GraphmlDataType.typeInt);
 
         JsonTypeAnalysisTree nodeTree = schema.map().get(CjType.Node);
         assertThat(nodeTree).isNotNull();
