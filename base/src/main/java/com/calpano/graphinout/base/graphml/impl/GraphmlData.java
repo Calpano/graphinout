@@ -3,6 +3,7 @@ package com.calpano.graphinout.base.graphml.impl;
 
 import com.calpano.graphinout.base.graphml.IGraphmlData;
 import com.calpano.graphinout.base.graphml.IGraphmlElementWithId;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -16,11 +17,10 @@ import java.util.Objects;
 
 public class GraphmlData extends GraphmlElementWithId implements IGraphmlData {
 
-    private final boolean isRawXml;
     /**
      * the value for any data, which can be extended to complex models like SVG.
      */
-    private final @Nullable String value;
+    private final @Nullable XmlFragmentString xmlValue;
     /**
      * This is an attribute is mandatory.
      * </p>
@@ -28,12 +28,16 @@ public class GraphmlData extends GraphmlElementWithId implements IGraphmlData {
      */
     private final String key;
 
-    public GraphmlData(String id, Map<String, String> attributes, @Nullable String value, boolean isRawXml, String key) {
+    /**
+     * @param attributes if xml:space is set, that must have been applied in the xmlValue
+     * @param xmlValue must have the correct xmlSpace as the effective XmlSpace as defined by surrounding graph and maybe this element
+     */
+    public GraphmlData(String id, Map<String, String> attributes, @Nullable XmlFragmentString xmlValue, String key) {
         super(attributes, id);
-        this.value = value;
+        this.xmlValue = xmlValue;
         this.key = key;
-        this.isRawXml = isRawXml;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -41,18 +45,14 @@ public class GraphmlData extends GraphmlElementWithId implements IGraphmlData {
         if (o == null || getClass() != o.getClass()) return false;
         IGraphmlData that = (IGraphmlData) o;
         return IGraphmlElementWithId.isEqual(this, that) //
-                && Objects.equals(value, that.value()) //
+                && Objects.equals(xmlValue, that.xmlValue()) //
                 && Objects.equals(key, that.key())//
-                && Objects.equals(isRawXml, that.isRawXml());
+                ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), value, key, isRawXml);
-    }
-
-    public boolean isRawXml() {
-        return isRawXml;
+        return Objects.hash(super.hashCode(), xmlValue, key);
     }
 
     public String key() {
@@ -61,17 +61,16 @@ public class GraphmlData extends GraphmlElementWithId implements IGraphmlData {
 
     @Override
     public String toString() {
-        return "GraphmlData{" //
-                + "value='" + value + '\'' + //
-                ", isRawXml=" + isRawXml + //
+        return "GraphmlData{" +//
+                "id='" + id() + '\'' + //
                 ", key='" + key + '\'' + //
-                ", id='" + id() + '\'' + //
                 ", custom=" + customXmlAttributes() + //
+                ", xmlValue='" + xmlValue + '\'' + //
                 '}';
     }
 
-    public @Nullable String value() {
-        return value;
+    public @Nullable XmlFragmentString xmlValue() {
+        return xmlValue;
     }
 
 }

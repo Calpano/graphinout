@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,7 @@ public class GioEdge extends GioElementWithDescription implements GioElementWith
     public static class GioEdgeBuilder {
 
         private @Nullable Map<String, String> customAttributes;
-        private @Nullable String description;
+        private @Nullable XmlFragmentString description;
         private String id;
         private List<GioEndpoint> endpoints = new ArrayList<>();
 
@@ -41,7 +43,7 @@ public class GioEdge extends GioElementWithDescription implements GioElementWith
             return this;
         }
 
-        public GioEdgeBuilder description(@Nullable String description) {
+        public GioEdgeBuilder description(@Nullable XmlFragmentString description) {
             this.description = description;
             return this;
         }
@@ -88,7 +90,7 @@ public class GioEdge extends GioElementWithDescription implements GioElementWith
         this.endpoints = endpoints;
     }
 
-    public GioEdge(@Nullable Map<String, String> customAttributes, @Nullable String description,
+    public GioEdge(@Nullable Map<String, String> customAttributes, @Nullable XmlFragmentString description,
                    String id, List<GioEndpoint> endpoints) {
         super(customAttributes, description);
         this.id = id;

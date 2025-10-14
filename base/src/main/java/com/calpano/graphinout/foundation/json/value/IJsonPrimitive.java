@@ -56,7 +56,7 @@ public interface IJsonPrimitive extends IJsonValue {
     default @Nullable String toJavaString() {
         return switch (jsonType()) {
             case String -> asString();
-            case XmlString -> castTo(IJsonXmlString.class).value();
+            case XmlString -> castTo(IJsonXmlString.class).rawXmlString();
             case Boolean -> asBoolean().toString();
             case Number -> asNumber().toString();
             case Null -> null;

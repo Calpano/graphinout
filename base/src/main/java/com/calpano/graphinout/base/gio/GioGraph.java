@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
+
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
@@ -17,7 +19,7 @@ public class GioGraph extends GioElementWithDescription  implements GioElementWi
     public static class GioGraphBuilder {
 
         private @Nullable Map<String, String> customAttributes;
-        private @Nullable String description;
+        private @Nullable XmlFragmentString description;
         private boolean edgedefaultDirected = false;
         private @Nullable String id;
 
@@ -30,7 +32,7 @@ public class GioGraph extends GioElementWithDescription  implements GioElementWi
             return this;
         }
 
-        public GioGraphBuilder description(@Nullable String description) {
+        public GioGraphBuilder description(@Nullable XmlFragmentString description) {
             this.description = description;
             return this;
         }
@@ -71,7 +73,7 @@ public class GioGraph extends GioElementWithDescription  implements GioElementWi
         this.id = id;
     }
 
-    public GioGraph(@Nullable Map<String, String> customAttributes, @Nullable String description,
+    public GioGraph(@Nullable Map<String, String> customAttributes, @Nullable XmlFragmentString description,
                     @Nullable String id, boolean edgedefaultDirected) {
         super(customAttributes, description);
         this.edgedefaultDirected = edgedefaultDirected;

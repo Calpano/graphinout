@@ -3,6 +3,8 @@ package com.calpano.graphinout.base.graphml.impl;
 import com.calpano.graphinout.base.graphml.Graphml;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
 import com.calpano.graphinout.foundation.xml.IXmlName;
+import com.calpano.graphinout.foundation.xml.XML;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import java.io.IOException;
@@ -18,11 +20,11 @@ import java.util.Objects;
  */
 public class GraphmlDescription extends GraphmlElement implements IGraphmlDescription {
 
-    private final String value;
+    private final XmlFragmentString xmlValue;
 
-    public GraphmlDescription(Map<String, String> attributes, String value) {
+    public GraphmlDescription(Map<String, String> attributes, XmlFragmentString xmlValue) {
         super(attributes);
-        this.value = value;
+        this.xmlValue = xmlValue;
     }
 
     @Override
@@ -30,30 +32,33 @@ public class GraphmlDescription extends GraphmlElement implements IGraphmlDescri
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GraphmlDescription that = (GraphmlDescription) o;
-        return Objects.equals(value, that.value);
+        return Objects.equals(xmlValue, that.xmlValue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(xmlValue);
     }
 
     @Override
     public String toString() {
-        return "GraphmlDescription{" + "value='" + value + '\'' + " custom=" + customXmlAttributes() + "}";
+        return "GraphmlDescription{" + "value='" + xmlValue + '\'' + " custom=" + customXmlAttributes() + "}";
     }
 
-    public String value() {
-        return value;
+    public XmlFragmentString xmlValue() {
+        return xmlValue;
     }
 
     @Override
     public void writeXml(XmlWriter xmlWriter) throws IOException {
-        if (value == null) return;
+        if (xmlValue == null) return;
         IXmlName xmlName = Graphml.xmlNameOf(tagName());
-        xmlWriter.elementStart(xmlName);
-        xmlWriter.raw(value);
-        // xmlWriter.characterDataWhichMayContainCdata(value);
+        if(xmlValue.xmlSpace() == XML.XmlSpace.preserve) {
+            xmlWriter.elementStart(xmlName, Map.of(XML.XML_SPACE, xmlValue.xmlSpace().xmlAttValue));
+        } else {
+            xmlWriter.elementStart(xmlName);
+        }
+        xmlWriter.raw(xmlValue.rawXml());
         xmlWriter.elementEnd(xmlName);
     }
 

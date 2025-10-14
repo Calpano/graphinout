@@ -13,6 +13,8 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
+import com.calpano.graphinout.reader.jgrapht.dot.DotReader;
 import org.jgrapht.alg.util.Pair;
 import org.jgrapht.nio.Attribute;
 import org.jgrapht.nio.AttributeType;
@@ -34,6 +36,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Used by {@link DotReader} and {@link Graph6Reader}
+ * @param <N>
+ */
 public class JGraphTReader<N> {
 
     enum Mode {CollectAttributeTypes, NodeParsing, GraphAndEdgeParsing}
@@ -171,7 +177,8 @@ public class JGraphTReader<N> {
                     writer.startNode(GioNode.builder().id(nodeId).build());
                     for (JgtAttribute nodeAtt : node.attributes.values()) {
                         String key = nodeAtts.get(nodeAtt.attributeName).getId();
-                        writer.data(GioData.builder().key(key).value(nodeAtt.attributeValue).build());
+                        GioData.GioDataBuilder gioDataBuilder = GioData.builder().key(key);
+                        writer.data(gioDataBuilder.xmlValue(XmlFragmentString.ofPlainText(nodeAtt.attributeValue)).build());
                     }
                     writer.endNode(null);
                 } catch (IOException ex) {
@@ -249,7 +256,8 @@ public class JGraphTReader<N> {
                     )).build());
                     for (JgtAttribute edgeAtt : edge.attributes.values()) {
                         String key = edgeAtts.get(edgeAtt.attributeName).getId();
-                        writer.data(GioData.builder().key(key).value(edgeAtt.attributeValue).build());
+                        GioData.GioDataBuilder gioDataBuilder = GioData.builder().key(key);
+                        writer.data(gioDataBuilder.xmlValue(XmlFragmentString.ofPlainText(edgeAtt.attributeValue)).build());
                     }
                     writer.endEdge();
                 } catch (IOException ex) {
@@ -284,7 +292,8 @@ public class JGraphTReader<N> {
                         continue;
                     }
                     try {
-                        writer.data(GioData.builder().key(key).value(graphAtt.attributeValue).build());
+                        GioData.GioDataBuilder gioDataBuilder = GioData.builder().key(key);
+                        writer.data(gioDataBuilder.xmlValue(XmlFragmentString.ofPlainText(graphAtt.attributeValue)).build());
                     } catch (IOException ex) {
                         if (ex.getCause() instanceof IOException ioex && (exception.get() == null)) {
                             exception.set(ioex);

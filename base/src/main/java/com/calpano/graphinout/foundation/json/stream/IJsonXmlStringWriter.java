@@ -11,11 +11,11 @@ public interface IJsonXmlStringWriter extends IHasJsonValueWriter {
         jsonValueWriter.objectStart();
 
         jsonValueWriter.onKey(IJsonXmlString.XML);
-        jsonValueWriter.onString(xmlString.value());
+        jsonValueWriter.onString(xmlString.rawXmlString());
 
         if (xmlString.xmlSpace() != IJsonXmlString.XML_SPACE_DEFAULT) {
             jsonValueWriter.onKey(IJsonXmlString.XML_SPACE);
-            jsonValueWriter.onString(xmlString.xmlSpace().xmlValue);
+            jsonValueWriter.onString(xmlString.xmlSpace().jsonStringValue);
         }
 
         jsonValueWriter.objectEnd();

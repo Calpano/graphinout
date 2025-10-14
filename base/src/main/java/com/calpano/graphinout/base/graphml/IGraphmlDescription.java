@@ -1,6 +1,7 @@
 package com.calpano.graphinout.base.graphml;
 
 import com.calpano.graphinout.base.graphml.builder.GraphmlDescriptionBuilder;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import java.io.IOException;
@@ -17,7 +18,11 @@ public interface IGraphmlDescription extends IGraphmlElement {
 
     /** Use {@link #builder()} to also set custom attributes */
     static IGraphmlDescription of(String value) {
-        return builder().value(value).build();
+        return of(XmlFragmentString.ofPlainText(value));
+    }
+
+    static IGraphmlDescription of(XmlFragmentString xmlValue) {
+        return builder().xmlValue(xmlValue).build();
     }
 
     default Set<String> graphmlAttributeNames() {
@@ -32,8 +37,8 @@ public interface IGraphmlDescription extends IGraphmlElement {
         return GraphmlElements.DESC;
     }
 
-    String value();
-
     void writeXml(XmlWriter xmlWriter) throws IOException;
+
+    XmlFragmentString xmlValue();
 
 }

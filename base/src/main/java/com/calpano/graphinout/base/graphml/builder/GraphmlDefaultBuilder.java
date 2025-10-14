@@ -1,18 +1,18 @@
 package com.calpano.graphinout.base.graphml.builder;
 
-import com.calpano.graphinout.base.graphml.IGraphmlDefault;
 import com.calpano.graphinout.base.graphml.impl.GraphmlDefault;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 
 public class GraphmlDefaultBuilder extends GraphmlElementBuilder<GraphmlDefaultBuilder> {
 
-    private String value;
+    private XmlFragmentString xmlValue;
 
-    public IGraphmlDefault build() {
-        return new GraphmlDefault(attributes, value);
+    public GraphmlDefault build() {
+        return new GraphmlDefault(attributes, xmlValue);
     }
 
-    public GraphmlDefaultBuilder value(String value) {
-        this.value = value;
+    public GraphmlDefaultBuilder value(XmlFragmentString xmlValue) {
+        this.xmlValue = xmlValue;
         return this;
     }
 

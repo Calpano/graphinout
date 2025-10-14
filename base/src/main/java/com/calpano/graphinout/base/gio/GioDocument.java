@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
+
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
@@ -12,7 +14,7 @@ public class GioDocument extends GioElementWithDescription {
     public static class GioDocumentBuilder {
 
         private @Nullable Map<String, String> customAttributes;
-        private @Nullable String description;
+        private @Nullable XmlFragmentString description;
 
         public GioDocument build() {
             return new GioDocument(customAttributes, description);
@@ -23,7 +25,7 @@ public class GioDocument extends GioElementWithDescription {
             return this;
         }
 
-        public GioDocumentBuilder description(@Nullable String description) {
+        public GioDocumentBuilder description(@Nullable XmlFragmentString description) {
             this.description = description;
             return this;
         }
@@ -34,11 +36,11 @@ public class GioDocument extends GioElementWithDescription {
         super();
     }
 
-    public GioDocument(@Nullable String description) {
+    public GioDocument(@Nullable XmlFragmentString description) {
         super(description);
     }
 
-    public GioDocument(@Nullable Map<String, String> customAttributes, @Nullable String description) {
+    public GioDocument(@Nullable Map<String, String> customAttributes, @Nullable XmlFragmentString description) {
         super(customAttributes, description);
     }
 

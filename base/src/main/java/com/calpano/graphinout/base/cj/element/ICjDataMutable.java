@@ -2,6 +2,7 @@ package com.calpano.graphinout.base.cj.element;
 
 import com.calpano.graphinout.foundation.json.path.IJsonContainerNavigationStep;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 
 import java.util.List;
 
@@ -17,6 +18,10 @@ public interface ICjDataMutable extends ICjData {
 
     default void add(List<IJsonContainerNavigationStep> path, String javaString) {
         add(path, factory().createString(javaString));
+    }
+
+    default void add(List<IJsonContainerNavigationStep> path, XmlFragmentString xmlFragmentString) {
+        add(path, factory().createXmlString(xmlFragmentString.rawXml(), xmlFragmentString.xmlSpace()));
     }
 
     default void addProperty(String propertyKey, String javaString) {

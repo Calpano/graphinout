@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
+
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
@@ -19,7 +21,7 @@ public class GioNode extends GioElementWithDescription implements GioElementWith
     public static class GioNodeBuilder {
 
         private @Nullable Map<String, String> customAttributes;
-        private @Nullable String description;
+        private @Nullable XmlFragmentString description;
         private String id;
 
         public GioNode build() {
@@ -31,7 +33,7 @@ public class GioNode extends GioElementWithDescription implements GioElementWith
             return this;
         }
 
-        public GioNodeBuilder description(@Nullable String description) {
+        public GioNodeBuilder description(@Nullable XmlFragmentString description) {
             this.description = description;
             return this;
         }
@@ -61,7 +63,7 @@ public class GioNode extends GioElementWithDescription implements GioElementWith
         this.id = id;
     }
 
-    public GioNode(@Nullable Map<String, String> customAttributes, @Nullable String description, String id) {
+    public GioNode(@Nullable Map<String, String> customAttributes, @Nullable XmlFragmentString description, String id) {
         super(customAttributes, description);
         this.id = id;
     }

@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
+
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
@@ -12,23 +14,23 @@ public abstract class GioElementWithDescription extends GioElement {
      * <p>
      * The name of this element in graph is <b>desc</b>
      */
-    protected @Nullable String description;
+    protected @Nullable XmlFragmentString description;
 
     public GioElementWithDescription() {
         super();
     }
 
-    public GioElementWithDescription(@Nullable String description) {
+    public GioElementWithDescription(@Nullable XmlFragmentString description) {
         super();
         this.description = description;
     }
 
-    public GioElementWithDescription(@Nullable Map<String, String> customAttributes, @Nullable String description) {
+    public GioElementWithDescription(@Nullable Map<String, String> customAttributes, @Nullable XmlFragmentString description) {
         super(customAttributes);
         this.description = description;
     }
 
-    public Optional<String> description() {
+    public Optional<XmlFragmentString> description() {
         return Optional.ofNullable(description);
     }
 
@@ -43,7 +45,7 @@ public abstract class GioElementWithDescription extends GioElement {
     }
 
 
-    public @Nullable String getDescription() {
+    public @Nullable XmlFragmentString getDescription() {
         return description;
     }
 
@@ -52,7 +54,7 @@ public abstract class GioElementWithDescription extends GioElement {
         return Objects.hash(super.hashCode(), description);
     }
 
-    public void setDescription(@Nullable String description) {
+    public void setDescription(@Nullable XmlFragmentString description) {
         this.description = description;
     }
 

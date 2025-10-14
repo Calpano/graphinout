@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
+
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,11 +23,11 @@ public class GioData extends GioElement {
     public static class GioDataBuilder {
 
         private @Nullable String id;
-        private String value;
+        private XmlFragmentString xmlValue;
         private String key;
 
         public GioData build() {
-            return new GioData(id, value, key);
+            return new GioData(id, xmlValue, key);
         }
 
         public GioDataBuilder id(@Nullable String id) {
@@ -38,8 +40,8 @@ public class GioData extends GioElement {
             return this;
         }
 
-        public GioDataBuilder value(String value) {
-            this.value = value;
+        public GioDataBuilder xmlValue(XmlFragmentString xmlValue) {
+            this.xmlValue = xmlValue;
             return this;
         }
 
@@ -54,7 +56,7 @@ public class GioData extends GioElement {
     /**
      * the value for any data, which can be extended to complex models like SVG.
      */
-    private String value;
+    private XmlFragmentString xmlValue;
     /**
      * Links this data instance to a definition given in a {@link GioKey} element
      * <p>
@@ -67,10 +69,10 @@ public class GioData extends GioElement {
         super();
     }
 
-    public GioData(@Nullable String id, String value, String key) {
+    public GioData(@Nullable String id, XmlFragmentString xmlValue, String key) {
         super();
         this.id = id;
-        this.value = value;
+        this.xmlValue = xmlValue;
         this.key = key;
     }
 
@@ -87,7 +89,7 @@ public class GioData extends GioElement {
         if (!super.equals(o)) return false;
         GioData gioData = (GioData) o;
         return Objects.equals(id, gioData.id) &&
-                Objects.equals(value, gioData.value) &&
+                Objects.equals(xmlValue, gioData.xmlValue) &&
                 Objects.equals(key, gioData.key);
     }
 
@@ -100,13 +102,13 @@ public class GioData extends GioElement {
         return key;
     }
 
-    public String getValue() {
-        return value;
+    public XmlFragmentString getValue() {
+        return xmlValue;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, value, key);
+        return Objects.hash(super.hashCode(), id, xmlValue, key);
     }
 
     public Optional<String> id() {
@@ -121,15 +123,15 @@ public class GioData extends GioElement {
         this.key = key;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setXmlValue(XmlFragmentString xmlValue) {
+        this.xmlValue = xmlValue;
     }
 
     @Override
     public String toString() {
         return "GioData{" +
                 "id='" + id + '\'' +
-                ", value='" + value + '\'' +
+                ", value='" + xmlValue + '\'' +
                 ", key='" + key + '\'' +
                 ", customAttributes=" + getCustomAttributes() +
                 '}';

@@ -2,6 +2,7 @@ package com.calpano.graphinout.base.graphml.impl;
 
 import com.calpano.graphinout.base.graphml.IGraphmlDefault;
 import com.calpano.graphinout.base.graphml.IGraphmlElement;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 
 import java.util.Map;
 import java.util.Objects;
@@ -20,11 +21,11 @@ public class GraphmlDefault extends GraphmlElement implements IGraphmlDefault {
     /**
      * the default value for the corresponding function.
      */
-    private final String value;
+    private final XmlFragmentString xmlValue;
 
-    public GraphmlDefault(Map<String, String> attributes, String value) {
+    public GraphmlDefault(Map<String, String> attributes, XmlFragmentString xmlValue) {
         super(attributes);
-        this.value = value;
+        this.xmlValue = xmlValue;
     }
 
     @Override
@@ -32,22 +33,22 @@ public class GraphmlDefault extends GraphmlElement implements IGraphmlDefault {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         IGraphmlDefault that = (IGraphmlDefault) o;
-        return IGraphmlElement.isEqual(this, that) && Objects.equals(value, that.value());
+        return IGraphmlElement.isEqual(this, that) && Objects.equals(xmlValue, that.xmlValue());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), value);
+        return Objects.hash(super.hashCode(), xmlValue);
     }
 
     @Override
     public String toString() {
-        return "GraphmlDefault{" + "value='" + value + '\'' + ", custom=" + customXmlAttributes() + '}';
+        return "GraphmlDefault{" + "value='" + xmlValue + '\'' + ", custom=" + customXmlAttributes() + '}';
     }
 
     @Override
-    public String value() {
-        return value;
+    public XmlFragmentString xmlValue() {
+        return xmlValue;
     }
 
 }

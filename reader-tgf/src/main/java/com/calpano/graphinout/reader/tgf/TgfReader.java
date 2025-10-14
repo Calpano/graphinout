@@ -12,6 +12,7 @@ import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +99,7 @@ public class TgfReader implements GioReader {
             ensureNodesExist(edgeParts, writer, nodesCreatedSet);
             GioEdge gioEdge = GioEdge.builder().endpoints(endpointList).build();
             if (edgeParts.length == 3) {
-                GioData.builder().value(edgeParts[2]).build();
+                GioData.builder().xmlValue(XmlFragmentString.ofPlainText(edgeParts[2])).build();
             }
             writer.startEdge(gioEdge);
             writer.endEdge();
@@ -140,7 +141,8 @@ public class TgfReader implements GioReader {
         if (!nodesCreatedSet.contains(nodeParts[0])) {
             nodesCreatedSet.add(nodeParts[0]);
             writer.startNode(GioNode.builder().id(nodeParts[0]).build());
-            writer.data(GioData.builder().key(LABEL).value(nodeParts[1]).build());
+            GioData.GioDataBuilder gioDataBuilder = GioData.builder().key(LABEL);
+            writer.data(gioDataBuilder.xmlValue(XmlFragmentString.ofPlainText(nodeParts[1])).build());
             writer.endNode(null);
         }
     }

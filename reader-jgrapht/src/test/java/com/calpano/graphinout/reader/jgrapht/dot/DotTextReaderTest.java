@@ -11,7 +11,7 @@ import com.calpano.graphinout.base.gio.GioWriter;
 import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.foundation.TestFileProvider;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
-import io.github.classgraph.Resource;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -272,17 +272,22 @@ class DotTextReaderTest {
         List<GioData> capturedData = dataCaptor.getAllValues();
         assertEquals(8, capturedData.size());
 
+        GioData.GioDataBuilder gioDataBuilder2 = GioData.builder().key(NODE_SHAPE);
+        GioData.GioDataBuilder gioDataBuilder3 = GioData.builder().key(NODE_LABEL);
+        GioData.GioDataBuilder gioDataBuilder4 = GioData.builder().key(NODE_COLOR);
         assertEquals(Set.of(capturedData.get(0), capturedData.get(1), capturedData.get(2)), //
                 Set.of(// inherited and overwritten default attribute
-                        GioData.builder().key(NODE_COLOR).value(COLOR_RED).build(),
-                        GioData.builder().key(NODE_LABEL).value(NODE_A).build(),
+                        gioDataBuilder4.xmlValue(XmlFragmentString.ofPlainText(COLOR_RED)).build(),
+                        gioDataBuilder3.xmlValue(XmlFragmentString.ofPlainText(NODE_A)).build(),
                         // inherited default attribute
-                        GioData.builder().key(NODE_SHAPE).value(CIRCLE).build()
+                        gioDataBuilder2.xmlValue(XmlFragmentString.ofPlainText(CIRCLE)).build()
                 ));
 
+        GioData.GioDataBuilder gioDataBuilder = GioData.builder().key(EDGE_LABEL);
+        GioData.GioDataBuilder gioDataBuilder1 = GioData.builder().key(EDGE_COLOR);
         assertEquals(Set.of(capturedData.get(6), capturedData.get(7)), //
-                Set.of(GioData.builder().key(EDGE_COLOR).value(COLOR_GREEN).build(),
-                        GioData.builder().key(EDGE_LABEL).value(EDGE_1).build()
+                Set.of(gioDataBuilder1.xmlValue(XmlFragmentString.ofPlainText(COLOR_GREEN)).build(),
+                        gioDataBuilder.xmlValue(XmlFragmentString.ofPlainText(EDGE_1)).build()
                 ));
 
         inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node(NODE_ID_A).build()).endpoint(GioEndpoint.builder().node(NODE_ID_B).build()).build());
@@ -334,7 +339,8 @@ class DotTextReaderTest {
         inOrder.verify(mockGioWriter).startGraph(Mockito.any());
 
         inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_A).build());
-        inOrder.verify(mockGioWriter).data(GioData.builder().key(NODE_LABEL).value("A").build());
+        GioData.GioDataBuilder gioDataBuilder = GioData.builder().key(NODE_LABEL);
+        inOrder.verify(mockGioWriter).data(gioDataBuilder.xmlValue(XmlFragmentString.ofPlainText("A")).build());
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
 
         inOrder.verify(mockGioWriter).startNode(GioNode.builder().id(NODE_ID_B).build());
@@ -363,7 +369,8 @@ class DotTextReaderTest {
         inOrder.verify(mockGioWriter).endNode(Mockito.any());
         // normal parsing
         inOrder.verify(mockGioWriter).startGraph(GioGraph.builder().id("B").build());
-        inOrder.verify(mockGioWriter).data(GioData.builder().key("graph-label").value("labelB").build());
+        GioData.GioDataBuilder gioDataBuilder = GioData.builder().key("graph-label");
+        inOrder.verify(mockGioWriter).data(gioDataBuilder.xmlValue(XmlFragmentString.ofPlainText("labelB")).build());
         inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node("C").build()).endpoint(GioEndpoint.builder().node("D").build()).build());
         inOrder.verify(mockGioWriter).endEdge();
         inOrder.verify(mockGioWriter).endGraph(null);

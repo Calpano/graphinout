@@ -65,7 +65,7 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
     public void data(GioData gioData) throws IOException {
         GraphmlDataBuilder builder = IGraphmlData.builder() //
                 .attributes(gioData.getCustomAttributes()) //
-                .key(gioData.getKey()).value(gioData.getValue());
+                .key(gioData.getKey()).xmlValue(gioData.getValue());
         gioData.id().ifPresent(builder::id);
         IGraphmlData graphmlData = builder.build();
         graphmlWriter.data(graphmlData);

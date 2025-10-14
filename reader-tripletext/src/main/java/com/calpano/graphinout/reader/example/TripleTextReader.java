@@ -16,6 +16,7 @@ import com.calpano.graphinout.base.reader.ContentError;
 import com.calpano.graphinout.base.reader.GioFileFormat;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.input.SingleInputSource;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -69,7 +70,8 @@ public class TripleTextReader implements GioReader {
         // write nodes
         for (TripleTextModel.Node node : tripleTextModel.nodes()) {
             writer.startNode(GioNode.builder().id(node.id).build());
-            if (node.label != null) writer.data(GioData.builder().id("label").value(node.label).build());
+            if (node.label != null)
+                writer.data(GioData.builder().id("label").xmlValue(XmlFragmentString.ofPlainText(node.label)).build());
             writer.endNode(null);
         }
 
@@ -84,7 +86,8 @@ public class TripleTextReader implements GioReader {
                 GioEndpoint sEndpoint = GioEndpoint.builder().node(sNode.id).type(GioEndpointDirection.Out).build();
                 GioEndpoint oEndpoint = GioEndpoint.builder().node(o).type(GioEndpointDirection.In).build();
                 writer.startEdge(GioEdge.builder().endpoints(Arrays.asList(sEndpoint, oEndpoint)).build());
-                writer.data(GioData.builder().key("label").value(p).build());
+                GioData.GioDataBuilder gioDataBuilder = GioData.builder().key("label");
+                writer.data(gioDataBuilder.xmlValue(XmlFragmentString.ofPlainText(p)).build());
                 // TODO meta
                 writer.endEdge();
             } catch (IOException e) {

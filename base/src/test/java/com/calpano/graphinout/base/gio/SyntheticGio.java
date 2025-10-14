@@ -3,6 +3,7 @@ package com.calpano.graphinout.base.gio;
 import com.calpano.graphinout.base.ReaderTests;
 import com.calpano.graphinout.foundation.output.InMemoryOutputSink;
 import com.calpano.graphinout.foundation.output.OutputSink;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
@@ -15,7 +16,7 @@ public class SyntheticGio {
     private static final Logger log = getLogger(SyntheticGio.class);
 
     public static void writeSmallDocument(GioWriter gioWriter) throws IOException {
-        gioWriter.startDocument(GioDocument.builder().description("the doc").build());
+        gioWriter.startDocument(GioDocument.builder().description(XmlFragmentString.ofPlainText("the doc")).build());
         gioWriter.startGraph(GioGraph.builder().edgedefaultDirected(true).build());
         gioWriter.startNode(GioNode.builder().id("node1").build());
         gioWriter.endNode(null);

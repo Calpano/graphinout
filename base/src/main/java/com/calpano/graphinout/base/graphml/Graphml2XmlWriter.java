@@ -1,10 +1,11 @@
 package com.calpano.graphinout.base.graphml;
 
 
+import com.calpano.graphinout.foundation.xml.XML;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
@@ -29,15 +30,16 @@ public class Graphml2XmlWriter implements GraphmlWriter {
     public void data(IGraphmlData data) throws IOException {
         xmlWriter.lineBreak();
         log.trace("writerData [{}]", data);
-        xmlWriter.elementStart(Graphml.xmlNameOf(GraphmlElements.DATA), data.xmlPlusGraphmlAttributesNormalized());
-
-        @Nullable String dataValue = data.value();
-        if (dataValue != null) {
-            if (data.isRawXml()) {
-                xmlWriter.raw(dataValue);
-            } else {
-                xmlWriter.characterDataWhichMayContainCdata(dataValue);
+        XmlFragmentString xmlValue = data.xmlValue();
+        Map<String, String> atts = data.xmlPlusGraphmlAttributesNormalized();
+        if (xmlValue != null) {
+            if (xmlValue.xmlSpace() == XML.XmlSpace.preserve) {
+                atts.putIfAbsent(XML.XML_SPACE, xmlValue.xmlSpace().xmlAttValue);
             }
+        }
+        xmlWriter.elementStart(Graphml.xmlNameOf(GraphmlElements.DATA), data.xmlPlusGraphmlAttributesNormalized());
+        if (xmlValue != null) {
+            xmlWriter.raw(xmlValue.rawXml());
         }
         xmlWriter.elementEnd(Graphml.xmlNameOf(GraphmlElements.DATA));
     }
@@ -135,9 +137,12 @@ public class Graphml2XmlWriter implements GraphmlWriter {
         });
         ifPresentAccept(graphmlKey.defaultValue(), defaultValue -> {
             try {
-                xmlWriter.elementStart(Graphml.xmlNameOf(GraphmlElements.DEFAULT), defaultValue.xmlPlusGraphmlAttributesNormalized());
-                // FIXME maybe not always correct
-                xmlWriter.raw(defaultValue.value());
+                Map<String, String> attsMap = defaultValue.xmlPlusGraphmlAttributesNormalized();
+                if (defaultValue.xmlValue().xmlSpace() == XML.XmlSpace.preserve) {
+                    attsMap.putIfAbsent(XML.XML_SPACE, defaultValue.xmlValue().xmlSpace().xmlAttValue);
+                }
+                xmlWriter.elementStart(Graphml.xmlNameOf(GraphmlElements.DEFAULT), attsMap);
+                xmlWriter.raw(defaultValue.xmlValue().rawXml());
                 xmlWriter.elementEnd(Graphml.xmlNameOf(GraphmlElements.DEFAULT));
             } catch (IOException e) {
                 throw new RuntimeException(e);

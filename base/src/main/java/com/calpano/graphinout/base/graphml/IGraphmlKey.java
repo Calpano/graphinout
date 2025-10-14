@@ -4,6 +4,10 @@ import com.calpano.graphinout.base.gio.GioDataType;
 import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
 import com.calpano.graphinout.foundation.util.Nullables;
+import com.calpano.graphinout.foundation.xml.XML;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
+import com.calpano.graphinout.foundation.xml.element.XmlContent;
+import com.calpano.graphinout.foundation.xml.element.XmlDocumentFragment;
 import com.calpano.graphinout.foundation.xml.element.XmlElement;
 
 import javax.annotation.Nonnull;
@@ -50,7 +54,15 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
 
         builder.attrType(mapOrDefault(key.attribute(ATTRIBUTE_ATTR_TYPE), GraphmlDataType::valueOf, GraphmlDataType.typeString));
 
-        ifPresentAccept(key.directChildren().filter(node -> node instanceof XmlElement xmlElement && xmlElement.localName().equals(GraphmlElements.DEFAULT)).map(node -> (XmlElement) node).findFirst().orElse(null), XmlElement::contentAsXml, xml -> builder.defaultValue(IGraphmlDefault.of(xml)));
+        // if we have a <default> use its content as defaultValue
+        ifPresentAccept(key.directChildren().filter(node -> node instanceof XmlElement xmlElement && xmlElement.localName().equals(GraphmlElements.DEFAULT)), node -> (XmlElement) node, defaultXmlElement -> {
+            XmlContent content = defaultXmlElement;
+            // TODO obtain current XmlSpace value from key-element instead
+            XML.XmlSpace xmlSpace = XML.XmlSpace.fromElement(defaultXmlElement);
+            XmlFragmentString xmlFragmentString = XmlDocumentFragment.of(content, xmlSpace).toXmlFragmentString();
+            IGraphmlDefault defaultValue = IGraphmlDefault.of(xmlFragmentString);
+            builder.defaultValue(defaultValue);
+        });
 
         return builder.build();
     }
@@ -68,6 +80,10 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
      * Our interpretation: Default is 'string'.
      */
     String attrType();
+
+    default GraphmlDataType attrTypeAsGraphmlDataType() {
+        return GraphmlDataType.fromGraphmlName(attrType());
+    }
 
     @Nullable
     IGraphmlDefault defaultValue();
@@ -120,12 +136,12 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
     }
 
     /**
-     * @param value null results in an empty self-closing {@code <data>}.
+     * @param xmlFragment null results in an empty self-closing {@code <data>}.
      */
-    default IGraphmlData toGraphmlData( @Nullable String value) {
+    default IGraphmlData toGraphmlData(@Nullable XmlFragmentString xmlFragment) {
         return new GraphmlDataBuilder()//
                 .key(id())//
-                .value(value)//
+                .xmlValue(xmlFragment)//
                 .build();
     }
 

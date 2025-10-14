@@ -7,6 +7,7 @@ import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.Json2StringWriter;
 import com.calpano.graphinout.foundation.util.path.IListLike;
 import com.calpano.graphinout.foundation.util.path.IMapLike;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -209,5 +210,13 @@ public interface IJsonValue {
         fire(w);
         return w.jsonString();
     }
+
+   default XmlFragmentString toXmlFragmentString() {
+        return switch (jsonType()) {
+            case XmlString -> ((IJsonXmlString)this).toXmlFragmentString();
+            case String -> XmlFragmentString.ofPlainText(asString());
+            default -> throw new IllegalStateException("Unexpected value: " + jsonType());
+        };
+   }
 
 }

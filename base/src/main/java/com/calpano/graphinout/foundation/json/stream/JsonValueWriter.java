@@ -2,6 +2,7 @@ package com.calpano.graphinout.foundation.json.stream;
 
 
 import com.calpano.graphinout.foundation.json.JsonException;
+import com.calpano.graphinout.foundation.json.value.IJsonXmlString;
 
 /**
  * SAJ: <em>S</em>AX-like <em>A</em>PI for <em>J</em>SON aka "Streaming API for JSON". Inspired from the XML SAX API.
@@ -23,5 +24,10 @@ public interface JsonValueWriter extends JsonArrayWriter, JsonObjectWriter, Json
     default JsonValueWriter jsonValueWriter() {
         return this;
     }
+
+    default void onXmlString(IJsonXmlString xmlString) {
+        IJsonXmlString.writeTo(xmlString, this);
+    }
+
 
 }

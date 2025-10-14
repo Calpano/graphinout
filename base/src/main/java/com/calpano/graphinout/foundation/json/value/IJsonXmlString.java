@@ -1,8 +1,13 @@
 package com.calpano.graphinout.foundation.json.value;
 
 
+import com.calpano.graphinout.foundation.json.JSON;
 import com.calpano.graphinout.foundation.json.JsonType;
+import com.calpano.graphinout.foundation.json.stream.JsonValueWriter;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
+import com.calpano.graphinout.foundation.json.value.java.JavaJsonFactory;
+import com.calpano.graphinout.foundation.xml.XML;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -20,116 +25,88 @@ import static com.calpano.graphinout.foundation.util.Nullables.mapOrDefault;
  */
 public interface IJsonXmlString extends IJsonPrimitive {
 
-    enum XmlSpace {
-        preserve("preserve"), ignore("ignore"), auto("default");
-
-        public final String xmlValue;
-
-        XmlSpace(String xmlValue) {
-            this.xmlValue = xmlValue;
-        }
-    }
-
-    XmlSpace XML_SPACE_DEFAULT = XmlSpace.auto;
-    /** Property for XML space handling, resembling 'xml:space' attribute. Values are {@link XmlSpace}. */
+    JSON.XmlSpace XML_SPACE_DEFAULT = JSON.XmlSpace.auto;
+    /** Property for XML space handling, resembling 'xml:space' attribute. Values are {@link JSON.XmlSpace}. */
     String XML_SPACE = "xmlSpace";
 
     /** Property to mark the JSON object as XML string and carry the actual value. XML escaping should NOT be applied. */
     String XML = "xml";
 
-    /**
-     * @param jsonValue must be an {@link IJsonObject}
-     * @return as {@link IJsonXmlString}
-     */
-    static IJsonXmlString asJsonXmlString(IJsonValue jsonValue) {
-        assert isJsonXmlString(jsonValue) : "is not a JSON XML string: '" + jsonValue.toJsonString() + "'";
-        return ofJsonObject(jsonValue.asObject());
-    }
 
-    /**
-     * @param jsonValue must be
-     *                  <code>{ "xml":"..." }</code>
-     */
-    static boolean isJsonXmlString(IJsonValue jsonValue) {
+    /** Check for JSON object with 'xml' string property like <code>{ "xml":"..." }</code> */
+    static boolean canParseAsJsonXmlString(IJsonValue jsonValue) {
         if (!jsonValue.isObject()) return false;
         IJsonObject o = jsonValue.asObject();
-        // check type
         IJsonValue propXml = o.get(XML);
         return (propXml != null && propXml.jsonType() == JsonType.String);
     }
 
-    static String jsonStringOrXmlStringToJavaString(IJsonValue jsonValue) {
-        return switch (jsonValue.jsonType()) {
-            case String -> jsonValue.asString();
-            case XmlString -> ((IJsonXmlString) jsonValue.base()).value();
-            default ->
-                    throw new IllegalArgumentException("Cannot convert JSON type '" + jsonValue.jsonType() + "' to Java String.");
-        };
-    }
-
-    static IJsonXmlString of(IJsonFactory factory, String value, XmlSpace xmlSpace) {
+    static IJsonXmlString of(IJsonFactory factory, @Nullable String value, JSON.XmlSpace xmlSpace) {
         assert factory != null;
         assert value != null;
         assert xmlSpace != null;
-        return new IJsonXmlString() {
+        return new JsonXmlString(factory, value, xmlSpace);
+    }
 
-            @Override
-            public Object base() {
-                return this;
-            }
-
-            @Override
-            public IJsonFactory factory() {
-                return factory;
-            }
-
-            @Override
-            public JsonType jsonType() {
-                return JsonType.XmlString;
-            }
-
-            @Override
-            public String toString() {
-                return "IJsonXmlString{xml='" + value() + "' xmlSpace='" + xmlSpace() + "'}";
-            }
-
-            @Override
-            public String value() {
-                return value;
-            }
-
-            @Override
-            public XmlSpace xmlSpace() {
-                return xmlSpace;
-            }
-        };
-
+    static IJsonXmlString of(JavaJsonFactory factory, XmlFragmentString xmlFragmentString) {
+        assert factory != null;
+        assert xmlFragmentString != null;
+        return of(factory, xmlFragmentString.rawXml(), xmlFragmentString.xmlSpace().toJson_XmlSpace());
     }
 
     static IJsonXmlString ofJsonObject(IJsonObject jsonObject) {
-        if (!isJsonXmlString(jsonObject)) {
+        if (!canParseAsJsonXmlString(jsonObject)) {
             throw new IllegalArgumentException("JsonObject is not a valid IJsonXmlString. Missing 'xml' property. " + jsonObject.toJsonString());
         }
         String value = Objects.requireNonNull(jsonObject.get(XML)).asString();
-        XmlSpace xmlSpace = mapOrDefault(jsonObject.get(XML_SPACE), IJsonValue::asString, XmlSpace::valueOf, XML_SPACE_DEFAULT);
+        JSON.XmlSpace xmlSpace = mapOrDefault(jsonObject.get(XML_SPACE), IJsonValue::asString, JSON.XmlSpace::valueOf, XML_SPACE_DEFAULT);
         return IJsonXmlString.of(jsonObject.factory(), value, xmlSpace);
+    }
+
+    static IJsonXmlString ofJsonValue(IJsonValue jsonValue) {
+        return switch (jsonValue.jsonType()) {
+            case XmlString -> (IJsonXmlString) jsonValue;
+            case String -> IJsonXmlString.ofPlainString(jsonValue.factory(), jsonValue.asString());
+            case Boolean, Number -> IJsonXmlString.ofPlainString(jsonValue.factory(), jsonValue.toJsonString());
+            default ->
+                    throw new IllegalArgumentException("Cannot convert JSON type '" + jsonValue.jsonType() + "' to IJsonXmlString String.");
+        };
+    }
+
+    static IJsonXmlString ofPlainString(IJsonFactory factory, String plainTextString) {
+        return of(factory, plainTextString, XML_SPACE_DEFAULT);
+    }
+
+    static void writeTo(IJsonXmlString xmlString, JsonValueWriter jsonValueWriter) {
+        jsonValueWriter.objectStart();
+        jsonValueWriter.onKey(IJsonXmlString.XML);
+        jsonValueWriter.onString(xmlString.rawXmlString());
+        if (xmlString.xmlSpace() != JSON.XmlSpace.auto) {
+            jsonValueWriter.onKey(IJsonXmlString.XML_SPACE);
+            jsonValueWriter.onString(xmlString.xmlSpace().jsonStringValue);
+        }
+        jsonValueWriter.objectEnd();
     }
 
     @Override
     default void fire(JsonWriter jsonWriter) {
-        jsonWriter.objectStart();
-        jsonWriter.onKey(IJsonXmlString.XML);
-        jsonWriter.onString(value());
-        if (xmlSpace() != XML_SPACE_DEFAULT) {
-            jsonWriter.onKey(IJsonXmlString.XML_SPACE);
-            jsonWriter.onString(xmlSpace().xmlValue);
-        }
-        jsonWriter.objectEnd();
+        writeTo(this, jsonWriter);
     }
 
-    @Nullable
-    String value();
+    @Override
+    default JsonType jsonType() {
+        return JsonType.XmlString;
+    }
 
-    XmlSpace xmlSpace();
+    /** raw XML document fragment string. Usually has no XML declaration and may or may not have a root element. */
+    String rawXmlString();
+
+    default XmlFragmentString toXmlFragmentString() {
+        XML.XmlSpace xmlSpace = xmlSpace().toXml_XmlSpace();
+        String rawXml = rawXmlString();
+        return XmlFragmentString.of(rawXml, xmlSpace);
+    }
+
+    JSON.XmlSpace xmlSpace();
 
 }

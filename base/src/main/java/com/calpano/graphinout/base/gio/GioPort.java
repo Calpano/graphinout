@@ -1,6 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
 import com.calpano.graphinout.base.graphml.IGraphmlPort;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class GioPort extends GioElementWithDescription {
     public static class GioPortBuilder {
 
         private @Nullable Map<String, String> customAttributes;
-        private @Nullable String description;
+        private @Nullable XmlFragmentString description;
         private String name;
 
         public GioPort build() {
@@ -39,7 +40,7 @@ public class GioPort extends GioElementWithDescription {
             return this;
         }
 
-        public GioPortBuilder description(@Nullable String description) {
+        public GioPortBuilder description(@Nullable XmlFragmentString description) {
             this.description = description;
             return this;
         }
@@ -64,7 +65,7 @@ public class GioPort extends GioElementWithDescription {
         this.name = Objects.requireNonNull(name, "name cannot be null");
     }
 
-    public GioPort(@Nullable Map<String, String> customAttributes, @Nullable String description, String name) {
+    public GioPort(@Nullable Map<String, String> customAttributes, @Nullable XmlFragmentString description, String name) {
         super(customAttributes, description);
         this.name = Objects.requireNonNull(name, "name cannot be null");
     }

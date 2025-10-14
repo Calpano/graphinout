@@ -1,5 +1,7 @@
 package com.calpano.graphinout.base.gio;
 
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
+
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
@@ -27,11 +29,11 @@ public class GioKey extends GioElementWithDescription {
     public static class GioKeyBuilder {
 
         private @Nullable Map<String, String> customAttributes;
-        private @Nullable String description;
+        private @Nullable XmlFragmentString description;
         private @Nullable String attributeName;
         private String id;
         private GioKeyForType forType;
-        private @Nullable String defaultValue;
+        private @Nullable XmlFragmentString defaultValue;
         private @Nullable GioDataType attributeType;
 
         public GioKeyBuilder attributeName(@Nullable String attributeName) {
@@ -53,12 +55,12 @@ public class GioKey extends GioElementWithDescription {
             return this;
         }
 
-        public GioKeyBuilder defaultValue(@Nullable String defaultValue) {
+        public GioKeyBuilder defaultValue(@Nullable XmlFragmentString defaultValue) {
             this.defaultValue = defaultValue;
             return this;
         }
 
-        public GioKeyBuilder description(@Nullable String description) {
+        public GioKeyBuilder description(@Nullable XmlFragmentString description) {
             this.description = description;
             return this;
         }
@@ -91,7 +93,7 @@ public class GioKey extends GioElementWithDescription {
      * In XML, this is #PCDATA, so it may contain any mix of text and tags. Theoretically, this data could also be
      * large. But in practice, this is at most used to store icons, maybe up to a few megabytes.
      */
-    private @Nullable String defaultValue;
+    private @Nullable XmlFragmentString defaultValue;
     /**
      * GraphML Type data / attribute extension
      */
@@ -103,7 +105,7 @@ public class GioKey extends GioElementWithDescription {
     }
 
     public GioKey(@Nullable String attributeName, String id, GioKeyForType forType,
-                  @Nullable String defaultValue, @Nullable GioDataType attributeType) {
+                  @Nullable XmlFragmentString defaultValue, @Nullable GioDataType attributeType) {
         super();
         this.attributeName = attributeName;
         this.id = Objects.requireNonNull(id, "id cannot be null");
@@ -112,9 +114,9 @@ public class GioKey extends GioElementWithDescription {
         this.attributeType = attributeType;
     }
 
-    public GioKey(@Nullable Map<String, String> customAttributes, @Nullable String description,
+    public GioKey(@Nullable Map<String, String> customAttributes, @Nullable XmlFragmentString description,
                   @Nullable String attributeName, String id, GioKeyForType forType,
-                  @Nullable String defaultValue, @Nullable GioDataType attributeType) {
+                  @Nullable XmlFragmentString defaultValue, @Nullable GioDataType attributeType) {
         super(customAttributes, description);
         this.attributeName = attributeName;
         this.id = Objects.requireNonNull(id, "id cannot be null");
@@ -140,7 +142,7 @@ public class GioKey extends GioElementWithDescription {
         return Optional.ofNullable(attributeType).orElse(GioDataType.typeString);
     }
 
-    public Optional<String> defaultValue() {
+    public Optional<XmlFragmentString> defaultValue() {
         return Optional.ofNullable(defaultValue);
     }
 
@@ -167,7 +169,7 @@ public class GioKey extends GioElementWithDescription {
         return attributeType;
     }
 
-    public @Nullable String getDefaultValue() {
+    public @Nullable XmlFragmentString getDefaultValue() {
         return defaultValue;
     }
 
@@ -192,7 +194,7 @@ public class GioKey extends GioElementWithDescription {
         this.attributeType = attributeType;
     }
 
-    public void setDefaultValue(@Nullable String defaultValue) {
+    public void setDefaultValue(@Nullable XmlFragmentString defaultValue) {
         this.defaultValue = defaultValue;
     }
 
