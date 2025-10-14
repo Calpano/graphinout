@@ -1,30 +1,16 @@
 package com.calpano.graphinout.foundation.xml;
 
+import com.calpano.graphinout.foundation.util.ThrowingConsumer;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Simple XmlWriter implementation that writes to a StringWriter
  */
 public class DelegatingXmlWriter implements XmlWriter {
-
-    @FunctionalInterface
-    interface XmlWriterConsumer extends Consumer<XmlWriter> {
-
-        default void accept(XmlWriter writer) {
-            try {
-                acceptThrowable(writer);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        void acceptThrowable(XmlWriter writer) throws IOException;
-
-    }
 
     protected final List<XmlWriter> writers = new ArrayList<>();
 
@@ -74,7 +60,7 @@ public class DelegatingXmlWriter implements XmlWriter {
         forEachWriter(w -> w.raw(rawXml));
     }
 
-    private void forEachWriter(XmlWriterConsumer consumer) {
+    private void forEachWriter(ThrowingConsumer<XmlWriter, Exception> consumer) {
         writers.forEach(consumer);
     }
 

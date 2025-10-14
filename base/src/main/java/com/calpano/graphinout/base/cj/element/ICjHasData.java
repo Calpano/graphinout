@@ -13,6 +13,13 @@ public interface ICjHasData extends ICjElement {
     @Nullable
     ICjData data();
 
+    default void data(Consumer<ICjData> consumer) {
+        ICjData data = data();
+        if (data != null) {
+            consumer.accept(data);
+        }
+    }
+
     /** @return the current data JSON contents or null */
     default @Nullable IJsonValue jsonValue() {
         return mapOrNull( data(), ICjData::jsonValue);

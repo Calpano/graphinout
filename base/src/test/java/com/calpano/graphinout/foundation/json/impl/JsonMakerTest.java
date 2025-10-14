@@ -18,6 +18,13 @@ class JsonMakerTest {
 
     IJsonFactory factory = JavaJsonFactory.INSTANCE;
 
+    @Test
+    void testCreateMulti() {
+        IJsonValue value = JsonMaker.create(factory, pathOf("foo", "bar", "baz"), factory.createInteger(123));
+        assertThat(value.toJsonString()).isEqualTo("""
+                {"foo":{"bar":{"baz":123}}}""");
+    }
+
     /**
      * Root: null, Adding: {"x":1}, Expect: {"x":1}
      */

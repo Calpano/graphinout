@@ -2,6 +2,8 @@ package com.calpano.graphinout.reader.graphml;
 
 import com.calpano.graphinout.base.gio.GioData;
 import com.calpano.graphinout.base.graphml.GraphmlElements;
+import com.calpano.graphinout.foundation.xml.XML;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 
 public class GioDataEntity extends AbstractGraphmlEntity<GioData> implements GraphmlEntity<GioData> {
 
@@ -13,12 +15,16 @@ public class GioDataEntity extends AbstractGraphmlEntity<GioData> implements Gra
 
     @Override
     public void addCharacters(String characters) {
-        StringBuilder builder;
-        if (gioData.getValue() != null)
-            gioData.setValue(gioData.getValue() + characters);
-        else
-            gioData.setValue(characters);
-
+        if (gioData.getValue() != null) {
+            // 'append'
+            String xmlValue = gioData.getValue().rawXml();
+            xmlValue += characters;
+            XmlFragmentString xmlFrag = XmlFragmentString.of(xmlValue, gioData.getValue().xmlSpace());
+            gioData.setXmlValue(xmlFrag);
+        } else {
+            XmlFragmentString xmlFrag = XmlFragmentString.of(characters, XML.XmlSpace.default_);
+            gioData.setXmlValue(xmlFrag);
+        }
     }
 
     @Override

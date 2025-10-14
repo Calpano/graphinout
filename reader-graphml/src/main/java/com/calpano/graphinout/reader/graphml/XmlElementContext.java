@@ -37,7 +37,8 @@ public class XmlElementContext {
     /**
      * @param xmlElementName aka tagName
      * @param xmlAttributes  all XML attributes
-     * @param isRawXml    is this element itself port of a raw XML string, e.g. from inside a data/default element? If false, this is a GraphML element
+     * @param isRawXml       is this element itself port of a raw XML string, e.g. from inside a data/default element?
+     *                       If false, this is a GraphML element
      */
     XmlElementContext(@Nullable XmlElementContext parent, IXmlName xmlElementName, Map<String, String> xmlAttributes, boolean isRawXml, GraphmlElementBuilder<?> builder) {
         this.parent = parent;
@@ -120,8 +121,7 @@ public class XmlElementContext {
     }
 
     public void maybeWriteStartTo(GraphmlWriter graphmlWriter) throws IOException {
-        if (isStarted())
-            return;
+        if (isStarted()) return;
         if (parent != null) {
             parent.maybeWriteStartTo(graphmlWriter);
         }
@@ -149,6 +149,11 @@ public class XmlElementContext {
         GraphmlPortBuilder builder = builder();
         assert builder != null;
         return builder;
+    }
+
+    @Override
+    public String toString() {
+        return "XmlElementContext{" + "'" + xmlElementName + "'}";
     }
 
     public void writeEndTo(GraphmlWriter graphmlWriter) throws IOException {

@@ -3,16 +3,21 @@ package com.calpano.graphinout.base.graphml;
 import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
+import com.calpano.graphinout.base.graphml.impl.GraphmlData;
+import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.path.IJsonObjectNavigationStep;
 import com.calpano.graphinout.foundation.json.path.JsonTypeAnalysisTree;
+import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
+import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.calpano.graphinout.foundation.json.value.IJsonXmlString;
 import com.calpano.graphinout.foundation.json.value.JsonTypes;
 import com.calpano.graphinout.foundation.util.ObjectRef;
 import com.calpano.graphinout.foundation.util.PowerStreams;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
+import com.calpano.graphinout.foundation.xml.XmlTool;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -24,9 +29,6 @@ import static com.calpano.graphinout.foundation.util.ObjectRef.objectRef;
  * Mapping data between CJ and GraphML models.
  */
 public interface CjGraphmlMapping {
-
-    /** To be used as a JSON object property key */
-    String XML_ATTRIBUTES = "graphml:xmlAttributes";
 
     /** Represent a property in the CJ "data" object */
     enum CjDataProperty {
@@ -127,10 +129,14 @@ public interface CjGraphmlMapping {
             this.desc = desc;
         }
 
-        public IGraphmlData toGraphmlData(String valueString) {
+        public IGraphmlData toGraphmlData(String plainStringValue) {
+            return toGraphmlData(XmlFragmentString.ofPlainText(plainStringValue));
+        }
+
+        public GraphmlData toGraphmlData(XmlFragmentString xmlFragmentString) {
             return new GraphmlDataBuilder()//
                     .key(attrName)//
-                    .value(valueString)//
+                    .xmlValue(xmlFragmentString)//
                     .build();
         }
 
@@ -145,6 +151,8 @@ public interface CjGraphmlMapping {
         }
     }
 
+    /** To be used as a JSON object property key */
+    String XML_ATTRIBUTES = "graphml:xmlAttributes";
 
     static GraphmlDataType commonSuperTypeFor(Set<GraphmlDataType> gTypes) {
         assert !gTypes.isEmpty();
@@ -228,5 +236,73 @@ public interface CjGraphmlMapping {
         };
     }
 
+
+    /**
+     * What is the best JSON type to represent the data coming from Graphml?
+     *
+     * @param factory to create JSON values
+     * @param declaredGraphmlDataType to inform the conversion
+     * @param xmlFragmentString       what we get from a Graphml {@code <data>} or {@code <key><default>} or
+     *                                {@code <desc>} element. The 'rawXml' in it is a valid XML fragment, as it could be
+     *                                stored on disk. Hence content is in escaped form. If we see a '<' sign, that is
+     *                                certainly starting an element. And '&' is followed by an entity name or decimal
+     *                                entity and a semicolon.
+     * @return a JSON boolean, JSON number, JSON string, or {@link IJsonXmlString}
+     */
+    static IJsonPrimitive toJsonPrimitive(IJsonFactory factory, GraphmlDataType declaredGraphmlDataType, @Nullable XmlFragmentString xmlFragmentString) {
+        if (xmlFragmentString == null) return factory.createNull();
+
+        String rawXml = xmlFragmentString.rawXml();
+        if (rawXml.equals(XmlTool.xmlEncode(rawXml))) {
+            // we can use a plain string (and be sure, the rawXml did not contain CDATA or "<"
+            // this is also a precondition for boolean, number, string
+            String plainString = rawXml;
+            switch (declaredGraphmlDataType) {
+                case typeBoolean -> {
+                    return factory.createBooleanFromString(plainString);
+                }
+                case typeInt, typeDouble, typeLong, typeFloat -> {
+                    return factory.createNumberFromString(plainString);
+                }
+                case typeString -> {
+                    // XML escaping was not required
+                    return factory.createString(plainString);
+                }
+                default ->
+                        throw new IllegalArgumentException("Cannot map XML value '" + xmlFragmentString + "' to JSON type.");
+            }
+        } else {
+            // the value is truly an XML value
+            return xmlFragmentString.toJsonXmlString(factory);
+        }
+    }
+
+    static XmlFragmentString toXmlFragment(GraphmlDataType desiredGraphmlDataType, IJsonValue jsonValue) {
+        if (jsonValue.jsonType() == JsonType.XmlString) {
+            // no questions asked, this is simple
+            IJsonXmlString jsonXmlString = (IJsonXmlString) jsonValue;
+            return jsonXmlString.toXmlFragmentString();
+        }
+        // more conventional types
+        if (jsonValue.isContainer()) {
+            return XmlFragmentString.ofPlainText(jsonValue.toJsonString());
+        }
+        assert jsonValue.isPrimitive();
+        IJsonPrimitive jsonPrimitive = (IJsonPrimitive) jsonValue;
+
+        return switch (desiredGraphmlDataType) {
+            case typeBoolean -> {
+                String s = jsonPrimitive.jsonType() == JsonType.Boolean ? jsonPrimitive.asBoolean().toString() : jsonPrimitive.toJsonString();
+                yield XmlFragmentString.ofPlainText(s);
+            }
+            case typeInt, typeLong, typeFloat, typeDouble -> {
+                String s = jsonPrimitive.jsonType() == JsonType.Number ? jsonPrimitive.asNumber().toString() : jsonPrimitive.toJsonString();
+                yield XmlFragmentString.ofPlainText(s);
+            }
+            case typeString -> XmlFragmentString.ofPlainText(
+                    //dont add quotes here
+                    jsonPrimitive.asString());
+        };
+    }
 
 }

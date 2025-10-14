@@ -9,10 +9,6 @@ import java.util.Map;
  */
 public interface XmlWriter extends XmlCharacterWriter {
 
-    String XML_VERSION_1_0_ENCODING_UTF_8 = """
-            <?xml version="1.0" encoding="UTF-8"?>""";
-
-
     void documentEnd() throws IOException;
 
     void documentStart() throws IOException;

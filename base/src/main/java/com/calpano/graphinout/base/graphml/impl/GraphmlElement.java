@@ -17,6 +17,12 @@ public abstract class GraphmlElement implements IGraphmlElement {
         this.xmlAttributes = xmlAttributes;
     }
 
+    public void addXmlAttributes(Map<String, String> attMap) {
+        if(attMap.isEmpty())
+            return;
+        this.xmlAttributes.putAll(attMap);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

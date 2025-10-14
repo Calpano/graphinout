@@ -3,7 +3,6 @@ package com.calpano.graphinout.foundation.xml;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -11,11 +10,11 @@ import static org.slf4j.LoggerFactory.getLogger;
  * For organising the code all char stuff is here.
  * <p>
  * Character data is modelled as a non-nestable sequence of different kinds of sections. Each section has a
- * {@link CharactersKind}. Due to the streaming nature of XML, several sections might be of the same kind. The overall protocol
- * is, given the following data:
+ * {@link CharactersKind}. Due to the streaming nature of XML, several sections might be of the same kind. The overall
+ * protocol is, given the following data:
  * <p>
- * {@code <someTag>AAAAA BBBBB</someTag>} where AAAA and BBBB denote different {@link CharactersKind} of characters, e.g. AAAA is
- * normal and BBBB is CDATA.
+ * {@code <someTag>AAAAA BBBBB</someTag>} where AAAA and BBBB denote different {@link CharactersKind} of characters,
+ * e.g. AAAA is normal and BBBB is CDATA.
  *
  * <li>start characters: {@link #charactersStart()}</li>
  * <li>actual characters of {@link CharactersKind} A: {@link #characters(String, CharactersKind)}</li>
@@ -24,19 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public interface XmlCharacterWriter {
 
-    String CDATA_START = "<![CDATA[";
-    String CDATA_END = "]]>";
     Logger _log = getLogger(XmlCharacterWriter.class);
-    /**
-     * Space ({@code  }) - Unicode character #x20
-     * <p>
-     * Tab (\t) - Unicode character #x09
-     * <p>
-     * Carriage Return (\r) - Unicode character #x0D
-     * <p>
-     * Line Feed (\n) - Unicode character #x0A
-     */
-    Set<Integer> WHITE_SPACE_CHARACTERS = Set.of(0x20, 0x09, 0x0D, 0x0A);
 
     /**
      * Automatically split incoming string into non-CDATA and CDATA sections and call sub-methods.
@@ -48,21 +35,21 @@ public interface XmlCharacterWriter {
         int current = 0;
         //_log.info("parsing {}", s);
         int startCdata;
-        while ((startCdata = s.indexOf(CDATA_START, current)) != -1) {
+        while ((startCdata = s.indexOf(XML.CDATA_START, current)) != -1) {
             if (startCdata > current) {
                 String nonCdata = s.substring(current, startCdata);
                 characters(nonCdata, CharactersKind.Default);
             }
-            int endCdata = s.indexOf(CDATA_END, startCdata + CDATA_START.length());
+            int endCdata = s.indexOf(XML.CDATA_END, startCdata + XML.CDATA_START.length());
             if (endCdata == -1) {
                 // Malformed CDATA, just write the rest as raw
                 _log.warn("CDATA section starting at {} is not terminated.", startCdata);
                 raw(s.substring(startCdata));
                 return;
             }
-            String cdata = s.substring(startCdata + CDATA_START.length(), endCdata);
+            String cdata = s.substring(startCdata + XML.CDATA_START.length(), endCdata);
             characters(cdata, CharactersKind.CDATA);
-            current = endCdata + CDATA_END.length();
+            current = endCdata + XML.CDATA_END.length();
         }
         // Write any remaining non-CDATA content
         if (current < s.length()) {
@@ -80,22 +67,25 @@ public interface XmlCharacterWriter {
     void charactersEnd() throws IOException;
 
     /**
-     * Marks the beginning of character data. Followed by 1-n {@link #characters(String, CharactersKind)} calls, and finally a
-     * {@link #charactersEnd()}.
+     * Marks the beginning of character data. Followed by 1-n {@link #characters(String, CharactersKind)} calls, and
+     * finally a {@link #charactersEnd()}.
      */
     void charactersStart() throws IOException;
 
     /**
-     * Write a \n to the output. Line breaks can also occur within {@link #characters(String, CharactersKind)}, but those are
-     * usually not signalled via this method. These line breaks are used fore pretty-printing and can selectively be
-     * ignored by some implementations.
+     * Write a \n to the output. Line breaks can also occur within {@link #characters(String, CharactersKind)}, but
+     * those are usually not signalled via this method. These line breaks are used fore pretty-printing and can
+     * selectively be ignored by some implementations.
      */
     void lineBreak() throws IOException;
 
     /**
-     * Write a string that is excluded from XML encoding.
+     * Write a string that is excluded from XML encoding. This method is never called when parsing XML from text. It is
+     * intended to be called from code which emits XML. The rawXml is written character for character as given here. No
+     * escaping/encoding of any kind is applied (except the UTF-8 character-to-byte encoding).
      *
-     * @param rawXml may contain line breaks, processing instructions and any other syntax constructs.
+     * @param rawXml may contain line breaks, processing instructions and any other syntax constructs. MUST be a valid
+     *               XML fragment to get valid XML.
      */
     void raw(String rawXml) throws IOException;
 

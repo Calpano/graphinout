@@ -21,6 +21,25 @@ public class JsonTypes {
 
 
     /**
+     * Parse a string to the smallest possible {@link Number} type.
+     *
+     * @param valueTrimmed the string to parse
+     * @return a {@link Number}
+     */
+    public static Number parseNumber(String valueTrimmed) {
+        BigDecimal bd = new BigDecimal(valueTrimmed);
+        Class<?> type = strictestType(bd);
+        if (type == Byte.class) return bd.byteValue();
+        if (type == Short.class) return bd.shortValue();
+        if (type == Integer.class) return bd.intValue();
+        if (type == Long.class) return bd.longValue();
+        if (type == BigInteger.class) return bd.toBigInteger();
+        if (type == Float.class) return bd.floatValue();
+        if (type == Double.class) return bd.doubleValue();
+        return bd;
+    }
+
+    /**
      * What is the smallest/strictest type to fit the given number?
      *
      * @param n to fit
@@ -47,20 +66,17 @@ public class JsonTypes {
         return Number.class; // Fallback
     }
 
+    public static Class<?> strictestType(String value) {
+        return strictestType(new BigDecimal(value));
+    }
+
     private static Class<?> strictestType(BigDecimal bd) {
         BigDecimal stripped = bd.stripTrailingZeros();
         if (stripped.scale() <= 0) { // It's an integer
             return strictestIntegerType(stripped.toBigInteger());
         } else { // It's a decimal
             if (bd.compareTo(BD_NEG_FLOAT_MAX) >= 0 && bd.compareTo(BD_FLOAT_MAX) <= 0) {
-                // from the range, it fits in float.
-                // do the significant bits fit all in float?
-                if (bd.floatValue() == bd.doubleValue()) {
-                    return Float.class;
-                } else {
-                    // safe
-                    return Double.class;
-                }
+                return Float.class;
             } else if (bd.compareTo(BD_NEG_DOUBLE_MAX) >= 0 && bd.compareTo(BD_DOUBLE_MAX) <= 0) {
                 return Double.class;
             } else {

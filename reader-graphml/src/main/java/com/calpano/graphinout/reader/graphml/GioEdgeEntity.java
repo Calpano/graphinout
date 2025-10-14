@@ -4,6 +4,7 @@ import com.calpano.graphinout.base.gio.GioEdge;
 import com.calpano.graphinout.base.gio.GioElementWithDescription;
 import com.calpano.graphinout.base.gio.GioEndpoint;
 import com.calpano.graphinout.base.graphml.GraphmlElements;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ public class GioEdgeEntity extends AbstractGraphmlEntity<List<GioEndpoint>> impl
 
     public final List<GioEndpoint> endpoints = new ArrayList<>();
     public @Nullable String id;
-    public @Nullable String desc;
+    public @Nullable XmlFragmentString desc;
 
     public GioEdgeEntity() {
     }

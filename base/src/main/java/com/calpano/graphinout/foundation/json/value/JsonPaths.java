@@ -11,6 +11,10 @@ import java.util.stream.Stream;
  */
 public class JsonPaths {
 
+    public static List<Object> ofList(Object ... jsonPathSteps) {
+        return Arrays.asList(jsonPathSteps);
+    }
+
     public static List<Object> of(Object jsonPath) {
         if (jsonPath instanceof List) {
             return (List<Object>) jsonPath;

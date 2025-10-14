@@ -1,7 +1,17 @@
 package com.calpano.graphinout.foundation.util;
 
-public interface ThrowingConsumer<T, E extends Throwable> {
+import java.util.function.Consumer;
 
-    void accept(T object) throws E;
+public interface ThrowingConsumer<T, E extends Throwable> extends Consumer<T> {
+
+    default void accept(T object) {
+        try {
+            acceptThrowing(object);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    void acceptThrowing(T object) throws E;
 
 }

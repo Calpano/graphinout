@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 
 /**
@@ -30,20 +31,21 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     private final Map<String, String> namespaces = new HashMap<>();
     private Locator locator;
     private boolean isFirstElement = true;
-    private final  SaxCharBuffer charBuffer;
+    private final  SaxCharBuffer saxCharBuffer;
 
     public Sax2XmlWriter(XmlWriter xmlWriter, @Nullable Consumer<ContentError> errorConsumer) {
         assert xmlWriter != null;
         this.xmlWriter = xmlWriter;
         this.errorConsumer = errorConsumer;
-        this.charBuffer = new SaxCharBuffer(xmlWriter);
+        this.saxCharBuffer = new SaxCharBuffer(xmlWriter);
     }
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         String s = new String(ch, start, length);
         try {
-            charBuffer.characters(s);
+            // no escaping happening here
+            saxCharBuffer.characters(s);
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -52,7 +54,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void comment(char[] ch, int start, int length) throws SAXException {
         try {
-            charBuffer.charactersEnd();
+            saxCharBuffer.charactersEnd();
             // no comments: we drop them.
         } catch (IOException e) {
             throw new SAXException(e);
@@ -62,7 +64,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void endCDATA() throws SAXException {
         try {
-            charBuffer.kindEnd();
+            saxCharBuffer.kindEnd();
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -74,7 +76,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void endDocument() throws SAXException {
         try {
-            charBuffer.charactersEnd();
+            saxCharBuffer.charactersEnd();
             xmlWriter.documentEnd();
         } catch (IOException e) {
             throw new SAXException(e);
@@ -84,7 +86,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         try {
-            charBuffer.charactersEnd();
+            saxCharBuffer.charactersEnd();
             xmlWriter.elementEnd(uri, localName, qName);
         } catch (Exception e) {
             throw buildError(e);
@@ -103,8 +105,8 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     public void ignorableWhitespace(char[] chars, int start, int length)
             throws SAXException {
         try {
-            charBuffer.kindStart(CharactersKind.IgnorableWhitespace);
-            charBuffer.characters(new String(chars, start, length));
+            saxCharBuffer.kindStart(CharactersKind.IgnorableWhitespace);
+            saxCharBuffer.characters(new String(chars, start, length));
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -118,7 +120,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     @Override
     public void startCDATA() throws SAXException {
         try {
-            charBuffer.kindStart(CharactersKind.CDATA);
+            saxCharBuffer.kindStart(CharactersKind.CDATA);
         } catch (IOException e) {
             throw new SAXException(e);
         }
@@ -142,8 +144,9 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
         try {
             // if this element starts, the previous one ended
             // as in 'this <em>very cool</em> planet'
-            charBuffer.charactersEnd();
-            Map<String, String> attMap = new HashMap<>();
+            saxCharBuffer.charactersEnd();
+            // SAX parsers have no attribute order defined, so we auto-sort lexicographically
+            Map<String, String> attMap = new TreeMap<>();
             for (int i = 0; i < attributes.getLength(); i++) {
                 String attributesQName = attributes.getQName(i);
                 String attributesValue = attributes.getValue(i);

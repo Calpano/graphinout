@@ -6,8 +6,8 @@ import org.mockito.Mockito;
 
 import java.util.Collections;
 
-import static com.calpano.graphinout.foundation.xml.XmlCharacterWriter.CDATA_END;
-import static com.calpano.graphinout.foundation.xml.XmlCharacterWriter.CDATA_START;
+import static com.calpano.graphinout.foundation.xml.XML.CDATA_END;
+import static com.calpano.graphinout.foundation.xml.XML.CDATA_START;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;

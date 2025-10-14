@@ -44,7 +44,6 @@ import com.calpano.graphinout.base.graphml.IGraphmlPort;
 import com.calpano.graphinout.base.graphml.impl.GraphmlKey;
 import com.calpano.graphinout.foundation.json.JsonType;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
-import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.calpano.graphinout.foundation.json.value.IJsonPrimitive;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
@@ -53,6 +52,8 @@ import com.calpano.graphinout.foundation.util.path.IMapLike;
 import com.calpano.graphinout.foundation.util.path.KPaths;
 import com.calpano.graphinout.foundation.util.path.PathResolver;
 import com.calpano.graphinout.foundation.util.path.Result;
+import com.calpano.graphinout.foundation.xml.XML;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -97,21 +98,9 @@ public class Graphml2CjDocument implements GraphmlWriter {
     private static void copyDesc(IGraphmlElementWithDesc graphmlElementWithDesc, ICjHasDataMutable cjWithData) {
         ifPresentAccept(graphmlElementWithDesc.desc(), desc -> //
                 cjWithData.dataMutable(m -> //
-                        m.add(pathOf(Description.cjPropertyKey), desc.value())));
+                        m.add(pathOf(Description.cjPropertyKey), desc.xmlValue())));
     }
 
-    private static IJsonPrimitive toJsonPrimitive(
-            IJsonFactory factory,
-            GraphmlDataType graphmlDataType, IGraphmlData graphmlData) {
-
-        if (graphmlData.isRawXml()) {
-            // TODO add xmlSpace explicitly? we just use AUTO now.
-            return factory.createPrimitiveFromString(JsonType.XmlString, graphmlData.value());
-        } else {
-            return factory.createPrimitiveFromString(graphmlDataType.jsonType(), graphmlData.value());
-        }
-
-    }
 
     @Override
     public void data(IGraphmlData graphmlData) {
@@ -128,13 +117,14 @@ public class Graphml2CjDocument implements GraphmlWriter {
         IGraphmlKey key = graphmlSchema.keyById(graphmlKey);
 
         if (key == null) {
-            log.warn("Found no <key id=...> for <data key='" + graphmlKey + "'>. Have these keys: " + graphmlSchema.keys() + ". Assuming type string.");
+            log.warn("Found no <key id=...> for <data key='" + graphmlKey + "'>. Have these keys: " + graphmlSchema.keys().toList() + ". Assuming type string.");
             key = new GraphmlKey(null, graphmlKey, IGraphmlDescription.of("auto-created missing key"), graphmlKey, GraphmlDataType.typeString.graphmlName(), GraphmlKeyForType.All, null);
         }
 
         String propName = key.attrName();
         assert propName != null : "Key '" + graphmlKey + "' has no attrName?";
-        String graphmlDataValue = graphmlData.value();
+        XmlFragmentString xmlValue = graphmlData.xmlValue();
+        String graphmlDataValue = xmlValue.rawXml();
 
         // interpret GraphMl <data> and map (back to) CJ
         if (key.is(GraphmlDataElement.Label)) {
@@ -281,20 +271,21 @@ public class Graphml2CjDocument implements GraphmlWriter {
         ICjNodeMutable cjNode = stack.pop(ICjNodeMutable.class);
 
         // FIXME !!! same for other entities
-        // TODO apply all Graphml <default> defined for 'node', which have not been set for this node yet
+
+        // apply all Graphml <default> defined for 'node', ONLY which have not been set for this node yet
         List<IGraphmlKey> defaultKeysFor = graphmlSchema.defaultKeysFor(GraphmlKeyForType.Node);
         if (defaultKeysFor.isEmpty()) return;
-
         cjNode.dataMutable(m -> {
             for (IGraphmlKey key : defaultKeysFor) {
                 if (m.hasProperty(key.attrName())) {
                     // dont overwrite
                     continue;
                 }
-                String defaultValue = requireNonNull(key.defaultValue()).value();
+                XmlFragmentString defaultValue = requireNonNull(key.defaultValue()).xmlValue();
                 // use correct JSON type for graphml type
                 GraphmlDataType type = GraphmlDataType.fromString(key.attrType());
-                IJsonPrimitive jsonValue = m.factory().createPrimitiveFromString(type.jsonType(), defaultValue);
+                JsonType desiredType = type.jsonType();
+                IJsonPrimitive jsonValue = m.factory().createPrimitiveFromString(desiredType, defaultValue.rawXml(), defaultValue.xmlSpace() == XML.XmlSpace.preserve);
                 m.addProperty(key.attrName(), jsonValue);
             }
         });
@@ -339,12 +330,12 @@ public class Graphml2CjDocument implements GraphmlWriter {
         // use Graphml <key attr.name> as CJ data JSON property key
         String propertyKey = key.attrName();
         assert propertyKey != null : "Key '" + key + "' has no attrName?";
-        // TODO find best JSON type for graphmlDataValue, e.g. 'Number'
-        GraphmlDataType graphmlDataType = GraphmlDataType.fromString(key.attrType());
+        GraphmlDataType declaredGraphmlDataType = GraphmlDataType.fromString(key.attrType());
+        assert graphmlData != null;
 
         cjHasData.dataMutable(m -> {
-            IJsonPrimitive jsonValue = toJsonPrimitive(m.factory(), graphmlDataType, graphmlData);
-            m.addProperty(propertyKey, jsonValue);
+            IJsonPrimitive jsonPrimitive = CjGraphmlMapping.toJsonPrimitive(m.factory(), declaredGraphmlDataType, graphmlData.xmlValue());
+            m.addProperty(propertyKey, jsonPrimitive);
         });
     }
 
@@ -366,8 +357,7 @@ public class Graphml2CjDocument implements GraphmlWriter {
             graphmlSchema.removeKeyById(GraphmlDataElement.EdgeType.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.BaseUri.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.SyntheticNode.toGraphmlKey().id());
-            if(graphmlSchema.isEmpty())
-                return;
+            if (graphmlSchema.isEmpty()) return;
             graphmlSchema.toJson(o);
             m.addProperty(Keys.cjPropertyKey, o);
         });

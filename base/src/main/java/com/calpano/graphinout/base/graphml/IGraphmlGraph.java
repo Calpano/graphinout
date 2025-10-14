@@ -28,6 +28,10 @@ public interface IGraphmlGraph extends IGraphmlElementWithDescAndId {
             return edgeDefaultOrNull == null || edgeDefaultOrNull == EdgeDefault.directed;
         }
 
+        public static boolean isDirected(@Nullable String edgeDefaultStringOrNull) {
+            return edgeDefaultStringOrNull == null || edgeDefaultStringOrNull.equalsIgnoreCase(EdgeDefault.directed.graphmlString());
+        }
+
         public String graphmlString() {
             return name();
         }

@@ -1,5 +1,7 @@
 package com.calpano.graphinout.foundation.json.value;
 
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
+
 import java.util.function.Consumer;
 
 /** Mutable */
@@ -10,6 +12,10 @@ public interface IJsonObjectAppendable extends IJsonObject {
      */
     default IJsonObjectAppendable addProperty(String key, String value) {
        return addProperty(key, factory().createString(value));
+    }
+
+    default IJsonObjectAppendable addProperty(String key, XmlFragmentString xmlFragmentString) {
+       return addProperty(key, factory().createXmlString(xmlFragmentString.rawXml(), xmlFragmentString.xmlSpace()));
     }
 
     /**

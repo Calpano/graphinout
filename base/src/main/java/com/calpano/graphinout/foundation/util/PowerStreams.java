@@ -25,7 +25,7 @@ public class PowerStreams {
     public static <T, E extends Exception> void forEach(Stream<T> stream, ThrowingConsumer<T, E> throwingConsumer) {
         stream.forEach(t -> {
             try {
-                throwingConsumer.accept(t);
+                throwingConsumer.acceptThrowing(t);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

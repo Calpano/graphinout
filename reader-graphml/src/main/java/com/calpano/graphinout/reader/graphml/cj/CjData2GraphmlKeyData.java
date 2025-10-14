@@ -51,8 +51,11 @@ public class CjData2GraphmlKeyData {
             GraphmlSchema graphmlSchemaFromCjData = toGraphmlSchema(cjSchema);
             graphmlSchemaFromCjData.keys().forEach(key -> {
 
-                // if loadedSchema contains same 'for' and 'attr.name', verify the type
+                // if loadedSchema contains same 'for' (TODO or 'all') and 'attr.name', verify the type
                 IGraphmlKey existingKey = graphmlSchema.findKeyByForAndAttrName(key.forType(), key.attrName());
+//                if(existingKey==null) {
+//                    existingKey = graphmlSchema.findKeyByForAndAttrName(GraphmlKeyForType.All, key.attrName());
+//                }
                 if (existingKey != null) {
                     GraphmlDataType existingType = GraphmlDataType.fromString(existingKey.attrType());
                     GraphmlDataType keyType = GraphmlDataType.fromString(key.attrType());
@@ -98,7 +101,7 @@ public class CjData2GraphmlKeyData {
         IJsonObject o = value.asObject();
         // are all properties primitive values?
         return o.properties().filter(e -> !e.getKey().startsWith("graphml:")).map(Map.Entry::getValue) //
-                .allMatch(v -> IJsonValue.isPrimitive(v) || IJsonXmlString.isJsonXmlString(v));
+                .allMatch(v -> IJsonValue.isPrimitive(v));
     }
 
     public static GraphmlSchema toGraphmlSchema(CjDataSchema cjSchema) {

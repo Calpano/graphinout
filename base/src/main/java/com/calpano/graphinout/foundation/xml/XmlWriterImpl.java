@@ -21,7 +21,7 @@ public class XmlWriterImpl extends Xml2AppendableWriter implements AutoCloseable
     protected transient Writer writer;
 
     public XmlWriterImpl(OutputSink outputSink, OutputStream out, Writer writer) throws IOException {
-        super(writer, AttributeOrderPerElement.Lexicographic);
+        super(writer, XML.AttributeOrderPerElement.Lexicographic, true);
         this.outputSink = outputSink;
         this.out = out;
         this.writer = writer;

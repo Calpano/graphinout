@@ -25,9 +25,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.slf4j.LoggerFactory.getLogger;
 
 
-/**
- *
- */
+@DisplayName("Graphml<->CJ")
 public class Graphml2CjAndBackTest {
 
     private static final Logger log = getLogger(Graphml2CjAndBackTest.class);
@@ -85,6 +83,11 @@ public class Graphml2CjAndBackTest {
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResources")
     @DisplayName("Test XML<->Graphml<->Cj (all Graphml)")
     void testAllXml_Graphml_Cj_Graphml_Xml(String displayPath, Resource xmlResource) throws Exception {
+        if (TestFileUtil.isInvalid(xmlResource, "xml","graphml")) {
+            log.info("Skipping invalid resource {}", xmlResource.getURI());
+            return;
+        }
+
         // == XML -> GraphML -> CJ doc
         // GraphML -> CJ
         Graphml2CjDocument graphml2cjStream = new Graphml2CjDocument();

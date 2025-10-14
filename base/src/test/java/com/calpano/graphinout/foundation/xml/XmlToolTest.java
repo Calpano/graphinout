@@ -16,7 +16,7 @@ public class XmlToolTest {
     public void testNormalizeAttributeSorting() {
         System.out.println("[DEBUG_LOG] Testing attribute sorting");
         String input = "<root z=\"3\" a=\"1\" b=\"2\"><child>content</child></root>";
-        String result = XmlFormatter.normalize(input);
+        String result = XmlNormalizer.normalize(input);
         System.out.println("[DEBUG_LOG] Input:  " + input);
         System.out.println("[DEBUG_LOG] Output: " + result);
 
@@ -28,7 +28,7 @@ public class XmlToolTest {
     public void testNormalizeCDATA() {
         System.out.println("[DEBUG_LOG] Testing CDATA handling");
         String input = "<root><![CDATA[Some CDATA content]]></root>";
-        String result = XmlFormatter.normalize(input);
+        String result = XmlNormalizer.normalize(input);
         System.out.println("[DEBUG_LOG] Input:  " + input);
         System.out.println("[DEBUG_LOG] Output: " + result);
 
@@ -40,7 +40,7 @@ public class XmlToolTest {
     public void testNormalizeCommentStripping() {
         System.out.println("[DEBUG_LOG] Testing comment stripping");
         String input = "<root><!-- This is a comment --><child>content</child><!-- Another comment --></root>";
-        String result = XmlFormatter.normalize(input);
+        String result = XmlNormalizer.normalize(input);
         System.out.println("[DEBUG_LOG] Input:  " + input);
         System.out.println("[DEBUG_LOG] Output: " + result);
 
@@ -54,7 +54,7 @@ public class XmlToolTest {
     public void testNormalizeComplexXml() {
         System.out.println("[DEBUG_LOG] Testing complex XML normalization");
         String input = "<root z=\"last\" a=\"first\" m=\"middle\"><!-- comment --><child2 b=\"2\" a=\"1\">text</child2><child1>more text</child1><!-- final comment --></root>";
-        String result = XmlFormatter.normalize(input);
+        String result = XmlNormalizer.normalize(input);
         System.out.println("[DEBUG_LOG] Input:  " + input);
         System.out.println("[DEBUG_LOG] Output: " + result);
 
@@ -70,7 +70,7 @@ public class XmlToolTest {
     public void testNormalizeElementOrder() {
         System.out.println("[DEBUG_LOG] Testing element order preservation");
         String input = "<root><child2>second</child2><child1>first</child1></root>";
-        String result = XmlFormatter.normalize(input);
+        String result = XmlNormalizer.normalize(input);
         System.out.println("[DEBUG_LOG] Input:  " + input);
         System.out.println("[DEBUG_LOG] Output: " + result);
 
@@ -88,10 +88,8 @@ public class XmlToolTest {
                 </root>""";
         String expect = """
                 <?xml version="1.0" encoding="UTF-8"?>
-                <root a="1" b="2" z="3">
-                  <child>content</child>
-                </root>""";
-        String result = XmlFormatter.normalize(input);
+                <root a="1" b="2" z="3"><child>content</child></root>""";
+        String result = XmlNormalizer.normalize(input);
         assertThat(result).isEqualTo(expect);
     }
 

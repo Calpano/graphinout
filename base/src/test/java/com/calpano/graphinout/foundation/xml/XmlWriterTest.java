@@ -36,7 +36,7 @@ class XmlWriterTest {
         xmlWriter.elementEnd(IXmlName.of("test"));
         xmlWriter.documentEnd();
         String s = xmlWriter.resultString();
-        assertThat(s).isEqualTo(XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n" + "<test>test</test>");
+        assertThat(s).isEqualTo(XML.XML_VERSION_1_0_ENCODING_UTF_8 + "\n" + "<test>test</test>");
     }
 
     @Test
@@ -52,7 +52,7 @@ class XmlWriterTest {
         xmlWriter.documentEnd();
 
         String out = xmlWriter.resultString();
-        assertThat(out).isEqualTo(XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n" + xml);
+        assertThat(out).isEqualTo(XML.XML_VERSION_1_0_ENCODING_UTF_8 + "\n" + xml);
     }
 
     @Test

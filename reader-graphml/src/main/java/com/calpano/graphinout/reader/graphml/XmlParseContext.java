@@ -16,12 +16,14 @@ public class XmlParseContext {
 
     /** we use a LinkedList so we can peek deeper */
     private final LinkedList<XmlElementContext> elementStack = new LinkedList<>();
+    @Deprecated
     private XmlMode mode = XmlMode.Graphml;
 
     public boolean isEmpty() {
         return elementStack.isEmpty();
     }
 
+    @Deprecated
     public boolean isInterpretedAsGraphml() {
         return mode != XmlMode.GENERIC_PC_DATA;
     }

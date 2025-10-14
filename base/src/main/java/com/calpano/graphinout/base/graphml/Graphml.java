@@ -16,6 +16,9 @@ import java.util.Set;
  */
 public class Graphml {
 
+    /** TODO unclear role of this spec */
+    public static final String XSI_SCHEMA_ATTRIBUTES_10_RC = "http://graphml.graphdrawing.org/xmlns/graphml/graphml-attributes-1.0rc.xsd";
+
     /** For Graphml 1.0 and 1.1, YWorks Grapml 1.1 */
     public static final String XMLNS_GRAPHML_1_x = "http://graphml.graphdrawing.org/xmlns";
     public static final String XMLNS_YWORKS_1_0 = "http://graphml.graphdrawing.org/xmlns/graphml";
@@ -27,8 +30,7 @@ public class Graphml {
 
     /** http://www.yworks.com/xml/schema/graphml/1.1 */
     public static final String XSI_SCHEMA_LOCATION_YWORKS_1_1 = "http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd";
-
-    public static final String XSI_SCHEMA_LOCATION_YWORKS_1_0= "http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.0/ygraphml.xsd";
+    public static final String XSI_SCHEMA_LOCATION_YWORKS_1_0= "http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.0/ygraphml.xsd";public static final String XSI_SCHEMA_LOCATION_YWORKS_1_0b= "http://graphml.graphdrawing.org/xmlns/graphml http://www.yworks.com/xml/schema/graphml/1.0/ygraphml.xsd";
 
     static {
         parent_child = new HashMap<>();

@@ -1,15 +1,12 @@
 package com.calpano.graphinout.foundation.xml;
 
-import com.calpano.graphinout.foundation.TestFileProvider;
 import com.calpano.graphinout.foundation.TestFileUtil;
 import io.github.classgraph.Resource;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
-import org.slf4j.Logger;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -25,7 +22,6 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -118,8 +114,8 @@ public class XmlTest {
         assertNotNull(outString);
         assertFalse(outString.trim().isEmpty());
         assertDoesNotThrow(() -> parseXmlString(outString), "Processed XML should be valid for " + xmlFilePath);
-        String inNorm = XmlFormatter.normalize(xmlIn);
-        String outNorm = XmlFormatter.normalize(outString);
+        String inNorm = XmlNormalizer.normalize(xmlIn);
+        String outNorm = XmlNormalizer.normalize(outString);
         String inSimple = XmlFormatter.simplifyForDebug(inNorm);
         String outSimple = XmlFormatter.simplifyForDebug(outNorm);
         assertThat(outNorm).isEqualTo(inNorm);

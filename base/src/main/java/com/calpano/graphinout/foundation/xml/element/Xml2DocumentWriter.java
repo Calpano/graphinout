@@ -3,6 +3,7 @@ package com.calpano.graphinout.foundation.xml.element;
 import com.calpano.graphinout.foundation.util.PowerStackOnClasses;
 import com.calpano.graphinout.foundation.xml.CharactersKind;
 import com.calpano.graphinout.foundation.xml.IXmlName;
+import com.calpano.graphinout.foundation.xml.Sax2XmlWriter;
 import com.calpano.graphinout.foundation.xml.XmlTool;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
@@ -10,14 +11,13 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
- * If we XML encode on writing, we must XML decode on reading.
+ * This class assumes that an XML parser (like Java SAX2) parsed XML and sends events via {@link Sax2XmlWriter} or an equivalent mechanism to this {@link XmlWriter} implementation.
+ * IN particular, XML decoding of the character inputs has already happened.
  */
 public class Xml2DocumentWriter implements XmlWriter {
 
-    /** accumulate CDATA and normal sections */
-    private final StringBuilder buf = new StringBuilder();
-    PowerStackOnClasses<XmlNode> stack = PowerStackOnClasses.create();
-    @Nullable XmlDocument xmlDocument;
+    PowerStackOnClasses<IXmlNode> stack = PowerStackOnClasses.create();
+    @Nullable XmlDocument resultDoc;
 
     /** read into doc */
     public static XmlDocument parseToDoc(String xml) throws Exception {
@@ -26,23 +26,21 @@ public class Xml2DocumentWriter implements XmlWriter {
         return xmlWriter2XmlDocument.resultDoc();
     }
 
+    /**
+     * @param xmlFragment has no xmlDeclaration
+     */
+    public static XmlContent parseToXmlContent(String xmlFragment) throws Exception {
+        XmlDocument doc = parseToDoc(
+                "<wrapperRoot>" + xmlFragment + "</wrapperRoot>");
+        XmlElement wrapperRoot = doc.rootElement();
+        XmlContent content = wrapperRoot;
+        return content;
+    }
+
     public void characters(String characters, CharactersKind kind) {
         if (characters.isEmpty()) return;
-
-        String s = characters;
-        switch (kind) {
-            case Default, PreserveWhitespace -> {
-                s = XmlTool.xmlDecode(s);
-            }
-            case IgnorableWhitespace -> {
-                assert s.trim().isEmpty();
-            }
-            case CDATA -> {
-                // dont touch it
-            }
-        }
-
-        stack.peek(XmlText.class).addSection(s, kind);
+        assert kind != CharactersKind.IgnorableWhitespace || characters.trim().isEmpty();
+        stack.peek(XmlText.class).addSection(characters, kind);
     }
 
     public void charactersEnd() {
@@ -57,7 +55,7 @@ public class Xml2DocumentWriter implements XmlWriter {
 
     @Override
     public void documentEnd() {
-        this.xmlDocument = stack.pop(XmlDocument.class);
+        this.resultDoc = stack.pop(XmlDocument.class);
     }
 
     @Override
@@ -72,7 +70,7 @@ public class Xml2DocumentWriter implements XmlWriter {
 
     @Override
     public void elementStart(String uri, String localName, String qName, Map<String, String> attributes) {
-        XmlNode parent = stack.peek();
+        IXmlNode parent = stack.peek();
         IXmlName xmlName = IXmlName.of(uri, localName, qName);
         if (parent instanceof XmlDocument doc) {
             XmlElement child = stack.push(new XmlElement(null, xmlName, attributes));
@@ -81,7 +79,7 @@ public class Xml2DocumentWriter implements XmlWriter {
             XmlElement child = stack.push(new XmlElement(parentElement, xmlName, attributes));
             parentElement.addChild(child);
         } else {
-            throw new IllegalStateException("Unexpected parent " + parent);
+            throw new IllegalStateException("Unexpected parent '" + parent+"'");
         }
     }
 
@@ -89,14 +87,24 @@ public class Xml2DocumentWriter implements XmlWriter {
     public void lineBreak() {
     }
 
+    /**
+     * When the {@link Xml2DocumentWriter} gets sent a raw XML snippet, that snippet is stored in the DOM unparsed.
+     * @param rawXml may contain line breaks, processing instructions and any other syntax constructs. MUST be a valid
+     *               XML fragment to get valid XML.
+     */
     @Override
     public void raw(String rawXml) {
         stack.peek(XmlElement.class).addChild(new XmlRaw(rawXml));
     }
 
+    public void reset() {
+        this.resultDoc = null;
+        this.stack.reset();
+    }
+
     @Nullable
     public XmlDocument resultDoc() {
-        return xmlDocument;
+        return resultDoc;
     }
 
 

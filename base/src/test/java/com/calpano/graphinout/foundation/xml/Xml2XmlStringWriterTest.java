@@ -2,7 +2,6 @@ package com.calpano.graphinout.foundation.xml;
 
 import com.calpano.graphinout.foundation.TestFileUtil;
 import com.calpano.graphinout.foundation.util.TextTests;
-import com.calpano.graphinout.foundation.xml.Xml2AppendableWriter.AttributeOrderPerElement;
 import io.github.classgraph.Resource;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -70,7 +69,7 @@ class Xml2XmlStringWriterTest {
     @ParameterizedTest
     @ValueSource(strings = {"aaa", "äää", "a\nb", "&amp;", "&quot;", "&apos;", "&lt;", "&gt;", "\"", "'"})
     void testParseXmlVsSimulateParse(String contentIn) throws Exception {
-        Xml2StringWriter xml2string = new Xml2StringWriter(AttributeOrderPerElement.AsWritten, false);
+        Xml2StringWriter xml2string = new Xml2StringWriter(XML.AttributeOrderPerElement.AsWritten, false, null);
 
         String xmlIn = wrapInRoot(contentIn);
         // actual SAX parsing
@@ -98,9 +97,9 @@ class Xml2XmlStringWriterTest {
         String expectedXml = wrapInRoot(expectedContent);
 
 
-        Xml2StringWriter xml2string = new Xml2StringWriter(AttributeOrderPerElement.AsWritten,
+        Xml2StringWriter xml2string = new Xml2StringWriter(XML.AttributeOrderPerElement.AsWritten,
                 // use no output encoding
-                false);
+                false, null);
         XmlTool.parseAndWriteXml(inXml, xml2string);
         String outActualXml = xml2string.resultString();
         TextTests.xAssertEqual(outActualXml, expectedXml);

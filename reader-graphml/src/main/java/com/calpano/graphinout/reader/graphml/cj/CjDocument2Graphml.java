@@ -19,6 +19,7 @@ import com.calpano.graphinout.base.graphml.GraphmlKeyForType;
 import com.calpano.graphinout.base.graphml.GraphmlParseInfo;
 import com.calpano.graphinout.base.graphml.GraphmlWriter;
 import com.calpano.graphinout.base.graphml.IGraphmlData;
+import com.calpano.graphinout.base.graphml.IGraphmlDefault;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
 import com.calpano.graphinout.base.graphml.IGraphmlDocument;
 import com.calpano.graphinout.base.graphml.IGraphmlEdge;
@@ -28,6 +29,7 @@ import com.calpano.graphinout.base.graphml.IGraphmlHyperEdge;
 import com.calpano.graphinout.base.graphml.IGraphmlKey;
 import com.calpano.graphinout.base.graphml.IGraphmlNode;
 import com.calpano.graphinout.base.graphml.IGraphmlPort;
+import com.calpano.graphinout.base.graphml.builder.GraphmlDataBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlDocumentBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlEdgeBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlElementBuilder;
@@ -37,16 +39,19 @@ import com.calpano.graphinout.base.graphml.builder.GraphmlGraphBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlHyperEdgeBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlNodeBuilder;
 import com.calpano.graphinout.base.graphml.builder.GraphmlPortBuilder;
+import com.calpano.graphinout.base.graphml.impl.GraphmlData;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
-import com.calpano.graphinout.foundation.json.value.IJsonXmlString;
 import com.calpano.graphinout.foundation.json.value.java.JavaJsonObject;
 import com.calpano.graphinout.foundation.util.Nullables;
+import com.calpano.graphinout.foundation.xml.XML;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.calpano.graphinout.foundation.util.Nullables.ifPresentAccept;
@@ -95,8 +100,8 @@ public class CjDocument2Graphml {
             // represent as JSON
             value = cjLabel.toJsonString();
         }
-
-        this.graphmlWriter.data(GraphmlDataElement.Label.toGraphmlData(value));
+        XmlFragmentString xmlFragmentString = XmlFragmentString.ofPlainText(value);
+        this.graphmlWriter.data(GraphmlDataElement.Label.toGraphmlData(xmlFragmentString));
     }
 
     /** Write given document to GraphML */
@@ -108,7 +113,6 @@ public class CjDocument2Graphml {
         writeData_CustomAttributes(cjDoc, graphmlBuilder);
 
         this.graphmlSchema = CjData2GraphmlKeyData.buildGraphmlSchema(cjDoc);
-
         // <!ELEMENT graphml  (desc?,key*,(data|graph)*)>
         graphmlWriter.documentStart(graphmlBuilder.build());
         forEach(graphmlSchema.keys(), graphmlWriter::key);
@@ -285,20 +289,19 @@ public class CjDocument2Graphml {
         };
     }
 
-    private IGraphmlData toGraphmlData(IGraphmlKey key, IJsonValue jsonValue) {
-        if (IJsonXmlString.isJsonXmlString(jsonValue)) {
-            // special
-            IJsonXmlString typedString = IJsonXmlString.asJsonXmlString(jsonValue);
-            String xml = typedString.value();
-            return IGraphmlData.ofRawXml(key.id(), xml);
-        } else if (jsonValue.isPrimitive()) {
-            // convert JSON value to suitable Graphml string
-            String s= jsonValue.asPrimitive().toJavaString();
-            return key.toGraphmlData(s);
-        } else {
-            return key.toGraphmlData(jsonValue.toJsonString());
-        }
+    /**
+     * @param key       for key id and preferred graphml type
+     * @param jsonValue to use as data
+     * @return GraphML data
+     */
+    private GraphmlData toGraphmlData(IGraphmlKey key, IJsonValue jsonValue) {
+        XmlFragmentString xmlFragmentString = CjGraphmlMapping.toXmlFragment(key.attrTypeAsGraphmlDataType(), jsonValue);
+        GraphmlDataBuilder builder = IGraphmlData.builder();
+        builder.xmlValue(xmlFragmentString);
+        builder.key(key.id_());
+        return builder.build();
     }
+
 
     private void writeData_CustomAttributes(ICjHasData cjHasData, GraphmlElementBuilder<?> graphmlElement) {
         cjHasData.onDataValue(json -> //
@@ -311,7 +314,7 @@ public class CjDocument2Graphml {
         assert cjHasData != null;
         cjHasData.onDataValue(json -> //
                 json.resolve(CjGraphmlMapping.CjDataProperty.Description.cjPropertyKey, desc -> //
-                        gHasDesc.desc(IGraphmlDescription.of(desc.asString()))));
+                        gHasDesc.desc(IGraphmlDescription.of(desc.toXmlFragmentString()))));
     }
 
     /** Write CJ .data to GraphMl {@code <data>} */
@@ -329,6 +332,7 @@ public class CjDocument2Graphml {
 
         // copy to new, mutable object
         JavaJsonObject mutableObject = JavaJsonObject.copyOf(value.asObject());
+
         mutableObject.removePropertyIf(key -> key.startsWith("graphml:"));
 
         // decide how to express this data in GraphML
@@ -338,7 +342,19 @@ public class CjDocument2Graphml {
             {
                 IGraphmlKey graphmlKey = graphmlSchema.findKeyByForAndAttrName(graphmlKeyForType(cjHasData.cjType()), propertyKey);
                 assert graphmlKey != null : "no key found for " + propertyKey + " in " + graphmlSchema;
-                IGraphmlData graphmlData = toGraphmlData(graphmlKey, val);
+                GraphmlData graphmlData = toGraphmlData(graphmlKey, val);
+
+                //  avoid writing data which is identical to default value defined in KEY
+                IGraphmlDefault defaultValue = graphmlKey.defaultValue();
+                XmlFragmentString xmlFragmentString = graphmlData.xmlValue();
+                if (defaultValue != null && defaultValue.xmlValue().equals(xmlFragmentString)) {
+                    return;
+                }
+
+                if (xmlFragmentString != null && xmlFragmentString.xmlSpace() == XML.XmlSpace.preserve) {
+                    graphmlData.addXmlAttributes(Map.of(XML.XML_SPACE, XML.XML_SPACE__PRESERVE));
+                }
+
                 try {
                     graphmlWriter.data(graphmlData);
                 } catch (IOException e) {

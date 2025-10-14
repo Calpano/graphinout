@@ -1,6 +1,7 @@
 package com.calpano.graphinout.foundation.xml.element;
 
 import com.calpano.graphinout.foundation.xml.CharactersKind;
+import com.calpano.graphinout.foundation.xml.XML;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import java.io.IOException;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class XmlText extends XmlNode {
+public class XmlText implements IXmlNode {
 
     public static class Section {
 
@@ -24,8 +25,19 @@ public class XmlText extends XmlNode {
             return charactersKind;
         }
 
-        public boolean isEmpty() {
-            return text.isEmpty();
+        public boolean isEmpty(XML.XmlSpace xmlSpace) {
+            return switch (charactersKind) {
+                case Default ->
+                    switch (xmlSpace) {
+                        case preserve -> text.isEmpty();
+                        // remove whitespace if we may
+                        case default_ -> XML.isWhitespace(text);
+                    };
+                case CDATA, PreserveWhitespace ->
+                     text.isEmpty();
+                case IgnorableWhitespace ->
+                    XML.isWhitespace(text);
+            };
         }
 
         public void removeIgnorableWhitespace() {
@@ -52,13 +64,20 @@ public class XmlText extends XmlNode {
     public XmlText() {
     }
 
+    public static IXmlNode of(String text, CharactersKind charactersKind) {
+        XmlText xmlText = new XmlText();
+        xmlText.addSection(text, charactersKind);
+        return xmlText;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
     public XmlText addSection(String text, CharactersKind charactersKind) {
         sections.add(new Section(text, charactersKind));
         return this;
     }
 
     @Override
-    public Stream<XmlNode> directChildren() {
+    public Stream<IXmlNode> directChildren() {
         return Stream.empty();
     }
 
@@ -71,13 +90,13 @@ public class XmlText extends XmlNode {
         writer.charactersEnd();
     }
 
-    public boolean isEmpty() {
-        return sections.isEmpty();
+    public boolean hasEmptyContent(XML.XmlSpace xmlSpace) {
+        return sections.stream().allMatch(section -> section.isEmpty(xmlSpace));
     }
 
     public void removeIgnorableWhitespace() {
         sections.forEach(Section::removeIgnorableWhitespace);
-        sections.removeIf(Section::isEmpty);
+        sections.removeIf(section -> section.isEmpty(XML.XmlSpace.default_));
     }
 
     public List<Section> sections() {

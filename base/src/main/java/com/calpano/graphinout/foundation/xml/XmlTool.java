@@ -62,6 +62,9 @@ public class XmlTool {
         // TODO document
         reader.setProperty(PROPERTIES_LEXICAL_HANDLER, contentHandlerAndLexicalHandler);
         reader.setContentHandler(contentHandlerAndLexicalHandler);
+        // set namespace-aware
+        reader.setFeature("http://xml.org/sax/features/namespaces", true);
+
         return reader;
     }
 

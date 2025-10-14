@@ -8,33 +8,25 @@ import java.util.Map;
 
 import static java.util.Map.Entry.comparingByKey;
 
+
 /**
- * Simple XmlWriter implementation that writes to a StringWriter
+ * Simple XmlWriter implementation that writes to a StringWriter.
+ * <p>
+ * TODOuse XmlSpace to maybe normalize
  */
-public class Xml2AppendableWriter implements XmlWriter {
+public class Xml2AppendableWriter extends XmlCharacter2AppendableWriter implements XmlWriter {
 
-    public enum AttributeOrderPerElement {
-        /** which is random, when coming from a SAX parser */
-        AsWritten, Lexicographic
-    }
-
-    protected final Appendable appendable;
-    private final boolean xmlEncodeOnWrite;
-    private final AttributeOrderPerElement attributeOrder;
+    private final XML.AttributeOrderPerElement attributeOrder;
     private @Nullable String openedTagName = null;
 
-    public Xml2AppendableWriter(Appendable appendable, AttributeOrderPerElement attributeOrderPerElement) {
-        this(appendable, attributeOrderPerElement, true);
-    }
-
-
     /**
-     * @param xmlEncodeOnWrite default should be true; false helps debugging
+     * @param appendable               where to emit the XML to
+     * @param attributeOrderPerElement use {@link XML.AttributeOrderPerElement#AsWritten} as a default
+     * @param xmlEncodeOnWrite         default should be true; false helps debugging
      */
-    public Xml2AppendableWriter(Appendable appendable, AttributeOrderPerElement attributeOrderPerElement, boolean xmlEncodeOnWrite) {
-        this.appendable = appendable;
+    public Xml2AppendableWriter(Appendable appendable, XML.AttributeOrderPerElement attributeOrderPerElement, boolean xmlEncodeOnWrite) {
+        super(appendable, xmlEncodeOnWrite);
         this.attributeOrder = attributeOrderPerElement;
-        this.xmlEncodeOnWrite = xmlEncodeOnWrite;
     }
 
     public static Xml2AppendableWriter createNoop() {
@@ -53,31 +45,25 @@ public class Xml2AppendableWriter implements XmlWriter {
             public Appendable append(char c) {
                 return this;
             }
-        }, AttributeOrderPerElement.Lexicographic);
+        }, XML.AttributeOrderPerElement.Lexicographic, true);
     }
 
+    @Override
     public void characters(String characters, CharactersKind kind) throws IOException {
         maybeWriteOpeningTagClosingAngleBracket();
-        if (kind == CharactersKind.CDATA) {
-            // Don't encode CDATA content - write it raw
-            raw(CDATA_START);
-            appendable.append(characters);
-            raw(CDATA_END);
-        } else {
-            // Only encode regular character data
-            String toAppend = characters;
-            if (xmlEncodeOnWrite) {
-                toAppend = XmlTool.xmlEncode(characters);
-            }
-            appendable.append(toAppend);
-        }
+        super.characters(characters, kind);
     }
 
+    @Override
     public void charactersEnd() {
+        // no need write opening tag closing angle bracket
+        super.charactersEnd();
     }
 
+    @Override
     public void charactersStart() throws IOException {
         maybeWriteOpeningTagClosingAngleBracket();
+        super.charactersStart();
     }
 
     @Override
@@ -88,7 +74,7 @@ public class Xml2AppendableWriter implements XmlWriter {
 
     @Override
     public void documentStart() throws IOException {
-        appendable.append(XML_VERSION_1_0_ENCODING_UTF_8 + "\n");
+        appendable.append(XML.XML_VERSION_1_0_ENCODING_UTF_8 + "\n");
     }
 
     @Override
@@ -112,7 +98,7 @@ public class Xml2AppendableWriter implements XmlWriter {
         appendable.append("<");
         appendable.append(localName);
         List<Map.Entry<String, String>> attList = attributes.entrySet().stream().toList();
-        if (attributeOrder == AttributeOrderPerElement.Lexicographic) {
+        if (attributeOrder == XML.AttributeOrderPerElement.Lexicographic) {
             attList = new ArrayList<>(attList);
             attList.sort(comparingByKey());
         }
@@ -131,13 +117,13 @@ public class Xml2AppendableWriter implements XmlWriter {
     @Override
     public void lineBreak() throws IOException {
         maybeWriteOpeningTagClosingAngleBracket();
-        appendable.append("\n");
+        super.lineBreak();
     }
 
     @Override
     public void raw(String rawXml) throws IOException {
         maybeWriteOpeningTagClosingAngleBracket();
-        appendable.append(rawXml);
+        super.raw(rawXml);
     }
 
     private void markStartedElementWithNoContentYetAs(String name) {

@@ -39,7 +39,7 @@ public class XmlName implements IXmlName {
 
     @Override
     public String toString() {
-        return "XmlName{" + "uri='" + uri + '\'' + ", local='" + localName + '\'' + ", q='" + qName + '\'' + '}';
+        return "XmlName{" + "local='" + localName + '\'' + ", uri='" + uri + '\'' + ", q='" + qName + '\'' + '}';
     }
 
     @Override

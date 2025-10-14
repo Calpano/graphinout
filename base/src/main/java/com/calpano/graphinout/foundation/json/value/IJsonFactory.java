@@ -1,6 +1,8 @@
 package com.calpano.graphinout.foundation.json.value;
 
+import com.calpano.graphinout.foundation.json.JSON;
 import com.calpano.graphinout.foundation.json.JsonType;
+import com.calpano.graphinout.foundation.xml.XML;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -12,6 +14,24 @@ import static org.slf4j.LoggerFactory.getLogger;
 public interface IJsonFactory {
 
     Logger _log = getLogger(IJsonFactory.class);
+
+    default IJsonArrayMutable asArrayMutable(IJsonArray array) {
+        if (array instanceof IJsonArrayMutable arrayMutable) {
+            return arrayMutable;
+        }
+        IJsonArrayMutable arrayMutable = createArrayMutable();
+        array.forEach(arrayMutable::add);
+        return arrayMutable;
+    }
+
+    default IJsonObjectMutable asObjectMutable(IJsonObject object) {
+        if (object instanceof IJsonObjectMutable objectMutable) {
+            return objectMutable;
+        }
+        IJsonObjectMutable objectMutable = createObjectMutable();
+        object.forEach(objectMutable::addProperty);
+        return objectMutable;
+    }
 
     IJsonArray createArray();
 
@@ -38,6 +58,24 @@ public interface IJsonFactory {
      * JSON Boolean
      */
     IJsonPrimitive createBoolean(boolean b);
+
+    /**
+     * @param string Is auto-trimmed for parsing as Boolean but kept intact for String creation.
+     * @return JSON Boolean or -- as fall-back -- JSON String
+     */
+    default IJsonPrimitive createBooleanFromString(String string) {
+        if (string.trim().equalsIgnoreCase("true")) {
+            return createBoolean(true);
+        } else if (string.trim().equalsIgnoreCase("false")) {
+            return createBoolean(false);
+        }
+        // debatable
+        if (string.isBlank()) return createBoolean(false);
+
+        //unparseable boolean
+        // _log.warn("Could not parse as boolean: '{}'", valueTrimmedMaybe);
+        return createString(string);
+    }
 
     /**
      * JSON Number with decimals, which may be larger than Java {@link Float#MAX_VALUE}
@@ -96,6 +134,20 @@ public interface IJsonFactory {
         throw new IllegalArgumentException("Unsupported type: " + value.getClass().getName());
     }
 
+    /**
+     * @param string to parse. Is auto-trimmed for parsing as Number but kept intact for String creation.
+     * @return JSON Number or -- as fall-back -- JSON String
+     */
+    default IJsonPrimitive createNumberFromString(String string) {
+        try {
+            BigDecimal bd = new BigDecimal(string.trim());
+            return createNumber(bd);
+        } catch (Exception e) {
+            _log.warn("Could not parse as number: '{}'", string);
+        }
+        return createString(string);
+    }
+
     IJsonObject createObject();
 
     IJsonObjectAppendable createObjectAppendable();
@@ -103,41 +155,22 @@ public interface IJsonFactory {
     IJsonObjectMutable createObjectMutable();
 
     /**
-     * @param jsonType to create, if possible
-     * @param value    might be null, empty, wrong type ...
+     * @param desiredJsonType to create, if possible
+     * @param value           might be null, empty, wrong type ...
      * @return the requested jsonType or string, if value cannot be parsed to given jsonType
      */
-    default IJsonPrimitive createPrimitiveFromString(JsonType jsonType, String value) {
-        assert jsonType.valueType() == JsonType.ValueType.Primitive;
+    default IJsonPrimitive createPrimitiveFromString(JsonType desiredJsonType, String value, boolean preserveSpace) {
+        assert desiredJsonType.valueType() == JsonType.ValueType.Primitive;
         if (value == null) return createNull();
-        String valueTrimmed = value.trim();
-        switch (jsonType) {
-            case Boolean:
-                if (valueTrimmed.equalsIgnoreCase("true")) {
-                    return createBoolean(true);
-                } else if (valueTrimmed.equalsIgnoreCase("false")) {
-                    return createBoolean(false);
-                }
-                if (valueTrimmed.isBlank()) return createBoolean(false);
-
-                //unparseable boolean
-                _log.warn("Could not parse as boolean: '{}'", valueTrimmed);
-                return createString(valueTrimmed);
-            case Number:
-                try {
-                    BigDecimal bd = new BigDecimal(valueTrimmed);
-                    return createNumber(bd);
-                } catch (Exception e) {
-                    _log.warn("Could not parse as number: '{}'", valueTrimmed);
-                }
-                return createString(valueTrimmed);
-            case String:
-                return createString(valueTrimmed);
-            case XmlString:
-                return IJsonXmlString.of(this,value, IJsonXmlString.XmlSpace.auto);
-            default:
-                throw new IllegalArgumentException("Unsupported type: " + jsonType);
-        }
+        String valueTrimmedMaybe = preserveSpace ? value : value.trim();
+        return switch (desiredJsonType) {
+            case Boolean -> createBooleanFromString(valueTrimmedMaybe);
+            case Number -> createNumberFromString(valueTrimmedMaybe);
+            case String -> createString(valueTrimmedMaybe);
+            case XmlString ->
+                    IJsonXmlString.of(this, value, preserveSpace ? JSON.XmlSpace.preserve : JSON.XmlSpace.auto);
+            default -> throw new IllegalArgumentException("Unsupported type: " + desiredJsonType);
+        };
     }
 
     /**
@@ -145,22 +178,9 @@ public interface IJsonFactory {
      */
     IJsonPrimitive createString(String s);
 
-    default IJsonArrayMutable asArrayMutable(IJsonArray array) {
-        if(array instanceof IJsonArrayMutable arrayMutable) {
-            return arrayMutable;
-        }
-        IJsonArrayMutable arrayMutable = createArrayMutable();
-        array.forEach(arrayMutable::add);
-        return arrayMutable;
+    default IJsonXmlString createXmlString(String rawXml, XML.XmlSpace xmlSpace) {
+        return IJsonXmlString.of(this, rawXml, xmlSpace.toJson_XmlSpace());
     }
 
-    default IJsonObjectMutable asObjectMutable(IJsonObject object) {
-        if(object instanceof IJsonObjectMutable objectMutable) {
-            return objectMutable;
-        }
-        IJsonObjectMutable objectMutable = createObjectMutable();
-        object.forEach(objectMutable::addProperty);
-        return objectMutable;
-    }
 
 }

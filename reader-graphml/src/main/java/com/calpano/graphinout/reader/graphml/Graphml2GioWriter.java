@@ -42,7 +42,7 @@ public class Graphml2GioWriter implements GraphmlWriter {
     public void data(IGraphmlData graphml) throws IOException {
         GioData.GioDataBuilder gioBuilder = GioData.builder();
         gioBuilder.key(graphml.key());
-        gioBuilder.value(graphml.value());
+        gioBuilder.xmlValue(graphml.xmlValue());
         gioWriter.data(gioBuilder.build());
     }
 
@@ -57,7 +57,7 @@ public class Graphml2GioWriter implements GraphmlWriter {
         stack.push(graphml);
         GioDocument.GioDocumentBuilder gioBuilder = GioDocument.builder();
         gioBuilder.customAttributes(graphml.customXmlAttributes());
-        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.value()));
+        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.xmlValue()));
         gioWriter.startDocument(gioBuilder.build());
     }
 
@@ -80,7 +80,7 @@ public class Graphml2GioWriter implements GraphmlWriter {
         GioEdge.GioEdgeBuilder gioBuilder = GioEdge.builder();
         ifPresentAccept(graphml.id(), gioBuilder::id);
         gioBuilder.customAttributes(graphml.customXmlAttributes());
-        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.value()));
+        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.xmlValue()));
 
         GioEndpoint.GioEndpointBuilder sourceBuilder = GioEndpoint.builder();
         sourceBuilder.node(graphml.source());
@@ -109,7 +109,7 @@ public class Graphml2GioWriter implements GraphmlWriter {
         GioGraph.GioGraphBuilder gioBuilder = GioGraph.builder();
         ifPresentAccept(graphml.id(), gioBuilder::id);
         gioBuilder.customAttributes(graphml.customXmlAttributes());
-        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.value()));
+        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.xmlValue()));
         gioBuilder.edgedefaultDirected(graphml.edgeDefault() == IGraphmlGraph.EdgeDefault.directed);
         gioWriter.startGraph(gioBuilder.build());
     }
@@ -126,7 +126,7 @@ public class Graphml2GioWriter implements GraphmlWriter {
         GioEdge.GioEdgeBuilder gioBuilder = GioEdge.builder();
         ifPresentAccept(graphml.id(), gioBuilder::id);
         gioBuilder.customAttributes(graphml.customXmlAttributes());
-        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.value()));
+        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.xmlValue()));
 
         for (IGraphmlEndpoint graphmlEp : graphml.endpoints()) {
             GioEndpoint.GioEndpointBuilder gioEpBuilder = GioEndpoint.builder();
@@ -144,12 +144,12 @@ public class Graphml2GioWriter implements GraphmlWriter {
         stack.push(graphml);
         GioKey.GioKeyBuilder builder = GioKey.builder();
         builder.customAttributes(graphml.customXmlAttributes());
-        ifPresentAccept(graphml.desc(), desc -> builder.description(desc.value()));
+        ifPresentAccept(graphml.desc(), desc -> builder.description(desc.xmlValue()));
         builder.id(graphml.id());
         builder.forType(graphml.forType().toGio());
         builder.attributeType(graphml.toGioDataType());
         builder.attributeName(graphml.attrName());
-        ifPresentAccept(graphml.defaultValue(), defaultValue -> builder.defaultValue(defaultValue.value()));
+        ifPresentAccept(graphml.defaultValue(), defaultValue -> builder.defaultValue(defaultValue.xmlValue()));
         gioWriter.key(builder.build());
     }
 
@@ -165,7 +165,7 @@ public class Graphml2GioWriter implements GraphmlWriter {
         GioNode.GioNodeBuilder gioBuilder = GioNode.builder();
         ifPresentAccept(graphml.id(), gioBuilder::id);
         gioBuilder.customAttributes(graphml.customXmlAttributes());
-        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.value()));
+        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.xmlValue()));
         gioWriter.startNode(gioBuilder.build());
     }
 
@@ -181,7 +181,7 @@ public class Graphml2GioWriter implements GraphmlWriter {
         GioPort.GioPortBuilder gioBuilder = GioPort.builder();
         ifPresentAccept(graphml.name(), gioBuilder::name);
         gioBuilder.customAttributes(graphml.customXmlAttributes());
-        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.value()));
+        ifPresentAccept(graphml.desc(), desc -> gioBuilder.description(desc.xmlValue()));
         gioWriter.startPort(gioBuilder.build());
     }
 

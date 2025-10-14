@@ -1,10 +1,10 @@
 package com.calpano.graphinout.foundation.xml.element;
 
 import com.calpano.graphinout.foundation.TestFileUtil;
+import com.calpano.graphinout.foundation.xml.XML;
 import com.calpano.graphinout.foundation.xml.Xml2StringWriter;
 import com.calpano.graphinout.foundation.xml.XmlAssert;
 import com.calpano.graphinout.foundation.xml.XmlTool;
-import com.calpano.graphinout.foundation.xml.XmlWriter;
 import io.github.classgraph.Resource;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -65,7 +65,7 @@ class XmlWriter2XmlDocumentTest {
         XmlDocument xmlDoc = xml2doc.resultDoc();
         // normal XML encoding happens here
         String xml_out = Xml2StringWriter.toXmlString(xmlDoc);
-        assertThat(xml_out).isEqualTo(XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n" + xml);
+        assertThat(xml_out).isEqualTo(XML.XML_VERSION_1_0_ENCODING_UTF_8 + "\n" + xml);
     }
 
 

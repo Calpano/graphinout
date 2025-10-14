@@ -1,10 +1,7 @@
 package com.calpano.graphinout.foundation.xml;
 
 import com.calpano.graphinout.foundation.text.ITextWriter;
-import com.calpano.graphinout.foundation.text.StringFormatter;
 import com.calpano.graphinout.foundation.text.TextReader;
-import com.calpano.graphinout.foundation.xml.element.XmlDocument;
-import com.calpano.graphinout.foundation.xml.element.Xml2DocumentWriter;
 import org.slf4j.Logger;
 
 import java.util.Locale;
@@ -34,36 +31,9 @@ public class XmlFormatter {
 
 
     /**
-     * Canonicalize. Element order is strict and kept. Attribute order is sorted alphabetically. Comments are stripped.
-     * Does not preserve whitespace.
+     * String-based processing, no XML parsing
+     * @return {#code `<?xml version="...+ encoding="...UPPERCASED...">`}
      */
-    public static String normalize(String rawXml) {
-        Xml2StringWriter w = new Xml2StringWriter(Xml2AppendableWriter.AttributeOrderPerElement.Lexicographic, true);
-        try {
-            XmlTool.parseAndWriteXml(rawXml, w);
-            return w.resultString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static String normalizeAttributeOrder(String xml) {
-        // read into doc
-        Xml2DocumentWriter xmlWriter2XmlDocument = new Xml2DocumentWriter();
-        try {
-            XmlTool.parseAndWriteXml(xml, xmlWriter2XmlDocument);
-            XmlDocument xmlDoc = xmlWriter2XmlDocument.resultDoc();
-            // write to string with sorted atts
-            Xml2StringWriter xml2string = new Xml2StringWriter(Xml2AppendableWriter.AttributeOrderPerElement.Lexicographic, true);
-            if (xmlDoc != null) {
-                xmlDoc.fire(xml2string);
-            }
-            return xml2string.resultString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static String normalizeXmlDecl(String xml) {
         Matcher m = XML_DECL_PATTERN.matcher(xml);
         if (m.find()) {
@@ -86,6 +56,9 @@ public class XmlFormatter {
         }
     }
 
+    /**
+     * String-based processing, no XML parsing
+     */
     public static String simplifyForDebug(String in) {
         StringBuilder sb = new StringBuilder();
         int i = 0;
@@ -105,6 +78,7 @@ public class XmlFormatter {
 
     /**
      * Wrap after each '>' symbol AND long lines.
+     * String-based processing, no XML parsing
      *
      * @param raw        input
      * @param lineLength automatically enforced
@@ -113,11 +87,11 @@ public class XmlFormatter {
         StringBuilder result = new StringBuilder();
         ITextWriter resultWriter = new ITextWriter.TextWriterOnStringBuilder(result);
 
-        TextReader.read(raw, rawLine->{
+        TextReader.read(raw, rawLine -> {
             StringBuilder line = new StringBuilder();
-            TextReader.forEachCodepointWithIndexAndLookAhead(rawLine, (cp,index,cpNext)->{
+            TextReader.forEachCodepointWithIndexAndLookAhead(rawLine, (cp, index, cpNext) -> {
                 line.appendCodePoint(cp);
-                if ( cp == '>' || line.length() >= lineLength || cpNext == -1) {
+                if (cp == '>' || line.length() >= lineLength || cpNext == -1) {
                     // insert additional linebreaks for readability: finnish current line and start a new one
                     resultWriter.line(line.toString().trim());
                     line.setLength(0);

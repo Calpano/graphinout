@@ -8,12 +8,14 @@ import com.calpano.graphinout.base.graphml.IGraphmlDefault;
 import com.calpano.graphinout.base.graphml.IGraphmlDescription;
 import com.calpano.graphinout.base.graphml.IGraphmlKey;
 import com.calpano.graphinout.base.graphml.builder.GraphmlKeyBuilder;
+import com.calpano.graphinout.foundation.JsonXml;
 import com.calpano.graphinout.foundation.json.value.IJsonFactory;
 import com.calpano.graphinout.foundation.json.value.IJsonObject;
 import com.calpano.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.calpano.graphinout.foundation.json.value.IJsonValue;
 import com.calpano.graphinout.foundation.json.value.IJsonXmlString;
 import com.calpano.graphinout.foundation.json.value.java.JavaJsonObject;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 import com.calpano.graphinout.foundation.xml.element.XmlDocument;
 import com.calpano.graphinout.foundation.xml.element.XmlElement;
 
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static com.calpano.graphinout.foundation.util.Nullables.ifPresentAccept;
@@ -49,25 +52,27 @@ public class GraphmlSchema {
                     ifPresentAccept(keyObject.get(IGraphmlKey.ATTRIBUTE_ATTR_TYPE), IJsonValue::asString, GraphmlDataType::fromString, builder::attrType);
                     ifPresentAccept(keyObject.get(IGraphmlKey.ATTRIBUTE_FOR), IJsonValue::asString, GraphmlKeyForType::fromGraphmlName, builder::forType);
 
-                    ifPresentAccept(keyObject.get(GraphmlElements.DEFAULT),
-                            // could be a typed JSON string with XML content
-                            IJsonXmlString::jsonStringOrXmlStringToJavaString, IGraphmlDefault::of, builder::defaultValue);
+                    ifPresentAccept(keyObject.get(GraphmlElements.DEFAULT), jsonValue -> {
+                        IJsonXmlString xmlValue = IJsonXmlString.ofJsonValue(jsonValue);
+                        XmlFragmentString xmlFragmentString = JsonXml.toXmlFragmentString(xmlValue);
+                        return IGraphmlDefault.of(xmlFragmentString);
+                    }, builder::defaultValue);
 
                     ifPresentAccept(keyObject.get(GraphmlElements.DESC),
                             // could be a typed JSON string with XML content
-                            IJsonXmlString::asJsonXmlString, IJsonXmlString::value, IGraphmlDescription::of, builder::desc);
+                            IJsonXmlString::ofJsonValue, IJsonXmlString::rawXmlString, IGraphmlDescription::of, builder::desc);
 
-                    ifPresentAccept(keyObject.get(CjGraphmlMapping.XML_ATTRIBUTES), xmlAtts->{
+                    ifPresentAccept(keyObject.get(CjGraphmlMapping.XML_ATTRIBUTES), xmlAtts -> {
                         if (!xmlAtts.isObject()) {
                             return;
                         }
                         // atts to Map
-                        Map<String,String> attsMap = new HashMap<>();
-                        xmlAtts.asObject().forEach((propKey,jsonValue)->{
+                        Map<String, String> attsMap = new HashMap<>();
+                        xmlAtts.asObject().forEach((propKey, jsonValue) -> {
                             if (jsonValue.isString()) {
-                                attsMap.put(propKey,jsonValue.asString());
+                                attsMap.put(propKey, jsonValue.asString());
                             } else {
-                                throw new IllegalArgumentException("Could not read XML attribute from "+value.toJsonString());
+                                throw new IllegalArgumentException("Could not read XML attribute from " + value.toJsonString());
                             }
                         });
                         builder.attributes(attsMap);
@@ -115,8 +120,8 @@ public class GraphmlSchema {
         ifPresentAccept(key.attrName(), attrName -> o.addProperty(IGraphmlKey.ATTRIBUTE_ATTR_NAME, attrName));
         o.addProperty(IGraphmlKey.ATTRIBUTE_ATTR_TYPE, key.attrType());
         o.addProperty(IGraphmlKey.ATTRIBUTE_FOR, key.forType().graphmlName());
-        ifPresentAccept(key.defaultValue(), defaultValue -> o.addProperty(GraphmlElements.DEFAULT, defaultValue.value()));
-        ifPresentAccept(key.desc(), desc -> o.addProperty(GraphmlElements.DESC, desc.value()));
+        ifPresentAccept(key.defaultValue(), defaultValue -> o.addProperty(GraphmlElements.DEFAULT, defaultValue.xmlValue()));
+        ifPresentAccept(key.desc(), desc -> o.addProperty(GraphmlElements.DESC, desc.xmlValue()));
 
         if (!key.customXmlAttributes().isEmpty()) {
             JavaJsonObject attributesObject = new JavaJsonObject();
@@ -142,14 +147,15 @@ public class GraphmlSchema {
     }
 
     public List<IGraphmlKey> defaultKeysFor(GraphmlKeyForType keyForType) {
-        return keys.values().stream().filter(key -> key.forType() == keyForType) //
+        return keys.values().stream() //
+                .filter(key -> key.forType() == keyForType || key.forType() == GraphmlKeyForType.All) //
                 .filter(IGraphmlKey::definesDefaultValue)//
                 .toList();
     }
 
     public IGraphmlKey findKeyByForAndAttrName(GraphmlKeyForType graphmlKeyForType, String attrName) {
         return keys.values().stream() //
-                .filter(key -> key.forType() == graphmlKeyForType) //
+                .filter(key -> key.forType() == graphmlKeyForType || key.forType() == GraphmlKeyForType.All) //
                 .filter(key -> key.attrName().equals(attrName))//
                 .findFirst().orElse(null);
     }

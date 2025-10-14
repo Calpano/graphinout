@@ -12,7 +12,6 @@ import com.calpano.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.calpano.graphinout.base.graphml.DelegatingGraphmlWriter;
 import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
 import com.calpano.graphinout.base.validation.graphml.ValidatingGraphMlWriter;
-import com.calpano.graphinout.foundation.TestFileUtil;
 import com.calpano.graphinout.foundation.input.SingleInputSourceOfString;
 import com.calpano.graphinout.foundation.json.stream.JsonWriter;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
@@ -30,7 +29,7 @@ import static com.calpano.graphinout.foundation.TestFileUtil.inputSource;
 import static org.slf4j.LoggerFactory.getLogger;
 
 
-@SuppressWarnings("unused")
+@DisplayName("CJ<->Graphml")
 public class Cj2GraphmlAndBackTest {
 
     private static final Logger log = getLogger(Cj2GraphmlAndBackTest.class);

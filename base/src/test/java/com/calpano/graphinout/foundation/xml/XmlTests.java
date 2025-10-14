@@ -14,7 +14,7 @@ public class XmlTests {
     public static final String NE_13_CR = "&#13;";
 
     public static String wrapInRoot(String s) {
-        return XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8 + "\n<root>" + s + "</root>";
+        return XML.XML_VERSION_1_0_ENCODING_UTF_8 + "\n<root>" + s + "</root>";
     }
 
     /**

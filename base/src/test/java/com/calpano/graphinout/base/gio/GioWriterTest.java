@@ -1,7 +1,8 @@
 package com.calpano.graphinout.base.gio;
 
-import com.calpano.graphinout.base.graphml.gio.Gio2GraphmlWriter;
 import com.calpano.graphinout.base.graphml.Graphml2XmlWriter;
+import com.calpano.graphinout.base.graphml.gio.Gio2GraphmlWriter;
+import com.calpano.graphinout.foundation.xml.XmlFragmentString;
 import com.calpano.graphinout.foundation.xml.XmlWriterSpy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -20,8 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Deprecated
 class GioWriterTest {
 
-    @Spy
-    XmlWriterSpy xmlWriterSpy;
+    @Spy XmlWriterSpy xmlWriterSpy;
     private GioWriter gioWriter;
 
     @BeforeEach
@@ -48,8 +48,7 @@ class GioWriterTest {
         gioWriter.startEdge(GioEdge.builder()//
                 .endpoint(GioEndpoint.builder().node("node1").type(GioEndpointDirection.Undirected).build()) //
                 .endpoint(GioEndpoint.builder().node("node2").type(GioEndpointDirection.Undirected).build()) //
-                .build()
-        );
+                .build());
         gioWriter.endEdge();
         assertEquals("::startElement->edge->{source=node1, target=node2, directed=false}::endElement->edge", xmlWriterSpy.getOut().toString());
     }
@@ -96,10 +95,7 @@ class GioWriterTest {
         GioEdge edge = GioEdge.builder().id("edge1").endpoints(gioEndpoints).build();
         edge.customAttribute("foo", "bar");
         gioWriter.startEdge(edge);
-        assertEquals("::startElement->hyperedge->{id=edge1, foo=bar}::startElement" +
-                "->endpoint->{id=GioEndpoint1, node=node1, port=port1, type=in}::endElement" +
-                "->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=out}::endElement" +
-                "->endpoint::startElement->endpoint->{id=GioEndpoint3, node=node3, port=port3, type=out}::endElement->endpoint", xmlWriterSpy.getOut().toString());
+        assertEquals("::startElement->hyperedge->{id=edge1, foo=bar}::startElement" + "->endpoint->{id=GioEndpoint1, node=node1, port=port1, type=in}::endElement" + "->endpoint::startElement->endpoint->{id=GioEndpoint2, node=node2, port=port2, type=out}::endElement" + "->endpoint::startElement->endpoint->{id=GioEndpoint3, node=node3, port=port3, type=out}::endElement->endpoint", xmlWriterSpy.getOut().toString());
     }
 
     @Test
@@ -110,10 +106,10 @@ class GioWriterTest {
 
     @Test
     void startNode() throws IOException {
-        gioWriter.startNode(GioNode.builder().description("GraphmlDescription").id("node ").build());
+        gioWriter.startNode(GioNode.builder().description(XmlFragmentString.ofPlainText("GraphmlDescription")).id("node ").build());
         gioWriter.startPort(GioPort.builder().name("port").build());
         gioWriter.endPort();
-        gioWriter.data(GioData.builder().key("data").id("id").value("value").build());
+        gioWriter.data(GioData.builder().key("data").id("id").xmlValue(XmlFragmentString.ofPlainText("value")).build());
         assertEquals("::startElement->node->{id=node }::startElement->desc->{}::characterData->GraphmlDescription::endElement->desc::startElement->port->{name=port}::endElement->port::startElement->data->{id=id, key=data}::characterData->value::endElement->data", xmlWriterSpy.getOut().toString());
     }
 

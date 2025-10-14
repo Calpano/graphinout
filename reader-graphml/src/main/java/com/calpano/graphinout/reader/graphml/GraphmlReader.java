@@ -67,6 +67,9 @@ public class GraphmlReader implements GioReader {
 
     }
 
+    public static final String FORMAT_ID = "graphml";
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "GraphML", ".graphml", ".graphml.xml");
+
     //TODO This can load from config file - use only GraphML 1.1
     /** lists of schema contents */
     private Map<String, String> externalSchemaMap = new HashMap<>();
@@ -90,7 +93,7 @@ public class GraphmlReader implements GioReader {
 
     @Override
     public GioFileFormat fileFormat() {
-        return new GioFileFormat("graphml", "GraphML", ".graphml", ".graphml.xml");
+        return FORMAT;
     }
 
     public @Nullable String getSchema(String localSchemaResourceName) {

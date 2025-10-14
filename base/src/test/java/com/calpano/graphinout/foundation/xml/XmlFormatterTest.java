@@ -9,7 +9,7 @@ class XmlFormatterTest {
     @Test
     void test() {
         String a = "<?xml version='1.0' encoding='utf-8'?>";
-        assertThat(XmlFormatter.normalizeXmlDecl(a)).isEqualTo(XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8);
+        assertThat(XmlFormatter.normalizeXmlDecl(a)).isEqualTo(XML.XML_VERSION_1_0_ENCODING_UTF_8);
     }
 
     @Test
@@ -43,7 +43,7 @@ class XmlFormatterTest {
 
     @Test
     void testRegex() {
-        assertThat(XmlFormatter.XML_DECL_PATTERN.matcher(XmlWriter.XML_VERSION_1_0_ENCODING_UTF_8).find()).isTrue();
+        assertThat(XmlFormatter.XML_DECL_PATTERN.matcher(XML.XML_VERSION_1_0_ENCODING_UTF_8).find()).isTrue();
     }
 
     @Test

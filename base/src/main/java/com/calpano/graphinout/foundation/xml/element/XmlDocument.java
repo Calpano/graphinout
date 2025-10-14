@@ -1,16 +1,17 @@
 package com.calpano.graphinout.foundation.xml.element;
 
+import com.calpano.graphinout.foundation.xml.XML;
 import com.calpano.graphinout.foundation.xml.XmlWriter;
 
 import java.io.IOException;
 import java.util.stream.Stream;
 
-public class XmlDocument extends XmlNode {
+public class XmlDocument implements IXmlNode {
 
-    XmlElement root;
+    private XmlElement root;
 
     @Override
-    public Stream<XmlNode> directChildren() {
+    public Stream<IXmlNode> directChildren() {
         return Stream.of(root);
     }
 
@@ -18,6 +19,11 @@ public class XmlDocument extends XmlNode {
         writer.documentStart();
         root.fire(writer);
         writer.documentEnd();
+    }
+
+    @Override
+    public boolean hasEmptyContent(XML.XmlSpace xmlSpace) {
+        return false;
     }
 
     public XmlElement rootElement() {

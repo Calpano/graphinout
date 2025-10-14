@@ -71,4 +71,8 @@ public class PowerStackOnClasses<S> {
         return element;
     }
 
+    public void reset() {
+        this.stack.clear();
+    }
+
 }

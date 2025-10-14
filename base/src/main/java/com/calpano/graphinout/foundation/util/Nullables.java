@@ -73,7 +73,7 @@ public class Nullables {
      */
     public static <T,E extends Throwable> void ifPresentAcceptThrowing(@Nullable T value, ThrowingConsumer<@NonNull T,E> consumer) throws E{
         if (value != null) {
-            consumer.accept(value);
+            consumer.acceptThrowing(value);
         }
     }
 

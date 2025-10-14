@@ -2,18 +2,19 @@ package com.calpano.graphinout.base.cj;
 
 import com.calpano.graphinout.foundation.json.impl.JsonFormatter;
 import io.github.classgraph.Resource;
-import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 
 import static com.calpano.graphinout.foundation.TestFileUtil.verifyOrRecord;
 import static com.google.common.truth.Truth.assertThat;
-import static org.slf4j.LoggerFactory.getLogger;
 
 public class CjAssert {
 
-    private static final Logger log = getLogger(CjAssert.class);
+    public static String normalize(String json) {
+        String canonical = CjNormalizer.canonicalize(json);
+        return JsonFormatter.formatDebug(canonical);
+    }
 
     public static void verifySameCjOrRecord(Resource resource, String json_out, String json_in, @Nullable Runnable extendedDebugInfos) throws IOException {
         // we normalize the formatting before, so that --EXPECTED files on disk look nicer
@@ -22,11 +23,6 @@ public class CjAssert {
         String actualWrapped = JsonFormatter.formatDebug(json_out);
         verifyOrRecord(resource, actualWrapped, expectedWrapped, (actual, expected) -> //
                 CjAssert.xAssertThatIsSameCj(actual, expected, extendedDebugInfos), CjAssert::normalize);
-    }
-
-    public static String normalize( String json) {
-        String canonical = CjNormalizer.canonicalize(json);
-        return JsonFormatter.formatDebug(canonical);
     }
 
     public static boolean xAssertThatIsSameCj(String actualJson, String expectedJson, @Nullable Runnable extendedDebugInfos) {
