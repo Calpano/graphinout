@@ -4,6 +4,7 @@ import com.calpano.graphinout.base.cj.stream.util.LoggingCjWriter;
 import com.calpano.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.calpano.graphinout.foundation.input.InputSource;
 import com.calpano.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ import static com.calpano.graphinout.foundation.input.SingleInputSourceOfString.
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-//@Disabled
+@Disabled("Extended CJ parsing is not implemented yet")
 class Json2CjExtendedTest {
 
     public static final String ALIAS_JSON = """

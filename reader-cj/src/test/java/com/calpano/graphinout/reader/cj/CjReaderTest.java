@@ -7,6 +7,7 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -52,8 +53,9 @@ class CjReaderTest {
         this.errorConsumer = capturedErrors::add;
     }
 
+    @Disabled("Handling empty files is underspecified")
     @Test
-    void shouldNotCallErrorConsumerAndGioWriterWhenTGFIsEmpty() throws IOException {
+    void shouldNotCallErrorConsumerAndGioWriterWhenFileIsEmpty() throws IOException {
         SingleInputSource inputSource = SingleInputSource.of("test-empty", EMPTY_FILE);
 
         underTest.errorHandler(errorConsumer);

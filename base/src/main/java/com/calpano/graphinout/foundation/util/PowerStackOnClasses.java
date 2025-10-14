@@ -61,7 +61,7 @@ public class PowerStackOnClasses<S> {
         if (clazz.isInstance(top)) {
             return clazz.cast(top);
         }
-        throw new IllegalStateException("Expected " + clazz + " but top was " + top);
+        throw new IllegalStateException("Expected " + clazz + " but top was " + top+". Most likely a top-element was not properly popped/closed.");
     }
 
     /** @return the added element. */

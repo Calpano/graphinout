@@ -63,7 +63,7 @@ public class CjTest {
         assertThat(nodeMap).containsEntry("foo", GraphmlDataType.typeString);
         assertThat(nodeMap).containsEntry("sub", GraphmlDataType.typeString);
         // using typeInt would be better, but we have generic JSON Number in between
-        assertThat(nodeMap).containsEntry("population", GraphmlDataType.typeDouble);
+        assertThat(nodeMap).containsEntry("population", GraphmlDataType.typeInt);
 
 //        schema.map().forEach((type, tree) -> {
 //            Map<String, GraphmlDataType> map = CjGraphmlMapping.toGraphmlDataTypes(tree);

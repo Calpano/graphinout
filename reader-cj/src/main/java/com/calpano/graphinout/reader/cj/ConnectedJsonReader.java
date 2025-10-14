@@ -1,6 +1,7 @@
 package com.calpano.graphinout.reader.cj;
 
 import com.calpano.graphinout.base.cj.element.ICjDocument;
+import com.calpano.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.calpano.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
 import com.calpano.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.calpano.graphinout.base.gio.GioReader;
@@ -63,6 +64,9 @@ public class ConnectedJsonReader implements GioReader {
             JsonReaderImpl jsonReader = new JsonReaderImpl();
             jsonReader.read(inputSource, jsonWriter_in);
             ICjDocument cjDoc = cj2ElementsWriter.resultDoc();
+            if(cjDoc==null) {
+                cjDoc = new CjDocumentElement();
+            }
             // CJ doc -> GraphML -> GIO
             Graphml2GioWriter graphml2GioWriter = new Graphml2GioWriter(writer);
             CjDocument2Graphml cjDocument2Graphml = new CjDocument2Graphml(graphml2GioWriter);
