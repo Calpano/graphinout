@@ -535,5 +535,15 @@ Graphml allows mixed content in `<data>` elements.
 This is supported in {cj} by using the special XML String primitive in JSON. See spec.
 
 
+== XML -> Graphml -> Cj -> G -> X
 
+auto_oscillator.graphml:: Adding redundant default values (but mix `1.` vs `1`)
+four_neuron_cpg.graphml:: Change key type from `float` to `double`, id from `tau` to `node-tau`.
+les-miserables.graphml:: Change key type from `float` to `double`. Key ids from `x` to `node-x`.
+errors/data-encoding-errors/data-enc-apos.graphml.xml:: Auto-create a missing `<key>`
+errors/svgnode-errors/data-with-whitespace.graphml.xml:: Drop a `<data xml:space="preserve">` attribute
+nested-graph-structures/nested_graph_pure_structure.graphml.xml:: Change Graphml `xsi:schemaLocation`
+yworks/yed-3.12.2/graph1_test.graphml:: Key ids, some auto-created
+yworks/yed-3.12.2/guava-17.graphml:: **too large to compare**
+yworks/yfiles-html-3.0.0.3/with-svg-SIMPLER2.graphml.xml:: Auto-fix weird XSI location
 
