@@ -244,7 +244,7 @@ public class TestFileUtil {
                 // if not in RECORD_MODE, read EXPECTED from tag file 'filePath--EXPECTED' and compare
                 if (expectedResource != null) {
                     log.info(EMOJI_VIDEOCASSETTE + " Loaded expected output from " +expectedResource.getPath());
-                    String expectedStringFromFile = resource.getContentAsString();
+                    String expectedStringFromFile = expectedResource.getContentAsString();
                     // maybe normalizer function changed slightly, so normalize again
                     String expectedNorm = normalizerFun.apply(expectedStringFromFile);
                     String actualNorm = normalizerFun.apply(actualString);
