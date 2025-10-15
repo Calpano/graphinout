@@ -190,9 +190,9 @@ class DotTextReaderTest {
         List<GioData> capturedData = dataCaptor.getAllValues();
         assertEquals(2, capturedData.size());
         assertEquals(NODE_LABEL, capturedData.get(0).getKey());
-        assertEquals(NODE_A, capturedData.get(0).getValue());
+        assertEquals(NODE_A, capturedData.get(0).getValue().rawXml());
         assertEquals(NODE_LABEL, capturedData.get(1).getKey());
-        assertEquals(NODE_B, capturedData.get(1).getValue());
+        assertEquals(NODE_B, capturedData.get(1).getValue().rawXml());
 
         inOrder.verify(mockGioWriter).startEdge(GioEdge.builder().id(null).endpoint(GioEndpoint.builder().node(NODE_ID_A).build()).endpoint(GioEndpoint.builder().node(NODE_ID_B).build()).build());
         inOrder.verify(mockGioWriter).endEdge();
