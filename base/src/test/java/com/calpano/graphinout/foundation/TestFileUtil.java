@@ -54,12 +54,12 @@ public class TestFileUtil {
     /**
      * @throws IllegalArgumentException if resource came from a JAR
      */
-    private static File expectedFile(Resource resource) throws IllegalArgumentException {
+    private static File expectedFile(Resource resource, String testId) throws IllegalArgumentException {
         URI resourceUri = resource.getURI();
         if (resourceUri.toString().startsWith("jar")) {
             throw new IllegalArgumentException("Cannot map from JAR " + resourceUri);
         }
-        String taggedResourceUri = tagResourcePath(resourceUri.toString(), EXPECTED);
+        String taggedResourceUri = tagResourcePath(resourceUri.toString(), expectedTag(testId));
 
         // auto-fix: if we loaded the file from some <foo>/target/test-classes/<bar>
         // there should be the original resource in <foo>/src/test/resources/<bar>
@@ -213,16 +213,17 @@ public class TestFileUtil {
 
     /**
      * @param resourcePath in syntax 'foo/bar/baz.buz/dingo.graphml.xml'
-     * @param tag          to add, e.g. 'MYTAG'
+     * @param tag          to add, e.g. 'MYTAG'. Case-sensitive! Tags without a hyphen '-' in the name are UPPERCASED.
      * @return 'foo/bar/baz.buz/dingo--MYTAG.graphml.xml'
      */
     static String tagResourcePath(String resourcePath, String tag) {
-        String tagUpper = tag.toUpperCase(Locale.ROOT);
+        String tagNormalized = tag.contains("-") ? tag :
+                tag.toUpperCase(Locale.ROOT);
         String name = findStrip(resourcePath, p -> p.lastIndexOf('/'), String::substring);
         String pathWithoutName = findStrip(resourcePath, p -> p.lastIndexOf('/'), (s, i) -> s.substring(0, i));
         String nameWithoutExt = findStrip(name, n -> n.indexOf('.'), (s, i) -> s.substring(0, i));
         String extensionIncludingDot = findStrip(name, n -> n.indexOf('.'), String::substring);
-        return pathWithoutName + nameWithoutExt + "--" + tagUpper + extensionIncludingDot;
+        return pathWithoutName + nameWithoutExt + "--" + tagNormalized + extensionIncludingDot;
     }
 
     private static String tags(Resource resource) {
@@ -269,7 +270,7 @@ public class TestFileUtil {
                 // File can be put in git.
                 // Test passes.
                 if (expectedString != null) {
-                    File f = TestFileUtil.expectedFile(resource);
+                    File f = TestFileUtil.expectedFile(resource, testId);
                     String expectedNorm = normalizerFun.apply(expectedString);
                     FileUtils.writeStringToFile(f, expectedNorm, StandardCharsets.UTF_8);
                     log.info(EMOJI_VIDEOCASSETTE +" Wrote expected to {}", f.getAbsolutePath());
@@ -279,7 +280,7 @@ public class TestFileUtil {
                 // if RECORD_MODE, write EXPECTED to filePath.expected.
                 // File can be put in git.
                 // Test passes.
-                File f = TestFileUtil.expectedFile(resource);
+                File f = TestFileUtil.expectedFile(resource, testId);
                 String actualNorm = normalizerFun.apply(actualString);
                 FileUtils.writeStringToFile(f, actualNorm, StandardCharsets.UTF_8);
                 log.info(EMOJI_VIDEOCASSETTE +" Wrote actual {}", f.getAbsolutePath());
