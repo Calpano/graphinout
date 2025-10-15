@@ -35,6 +35,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_ACTOR: ${{ github.actor }}
+          MAVEN_CENTRAL_USER: ${{ secrets.MAVEN_CENTRAL_USER }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
         with:
           override: true
           githubServer: false
@@ -43,6 +45,10 @@ jobs:
                 "id": "github-graphinout",
                 "username": "${{ env.GITHUB_ACTOR }}",
                 "password": "${{ env.GITHUB_TOKEN }}"
+            },{
+                "id": "central",
+                "username": "${{ env.MAVEN_CENTRAL_USER }}",
+                "password": "${{ env.MAVEN_CENTRAL_TOKEN }}"
             }]
 
       # --- This single step replaces the previous four ---
