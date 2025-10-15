@@ -1,9 +1,9 @@
 package com.graphinout.foundation.json.value.jackson;
 
+import com.fasterxml.jackson.databind.node.ValueNode;
 import com.graphinout.foundation.json.JsonType;
 import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonPrimitive;
-import com.fasterxml.jackson.databind.node.ValueNode;
 
 public class JacksonPrimitive implements IJsonPrimitive {
 

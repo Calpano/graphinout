@@ -1,7 +1,7 @@
 package com.graphinout.foundation.json.value.jackson;
 
-import com.graphinout.foundation.json.stream.JsonWriter;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.graphinout.foundation.json.stream.JsonWriter;
 
 public class Jackson2JsonWriter {
 

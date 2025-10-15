@@ -1,9 +1,9 @@
 package com.graphinout.foundation.json.value.jackson;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.graphinout.foundation.json.value.IJsonValue;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;

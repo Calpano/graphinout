@@ -1,6 +1,5 @@
 package com.graphinout.reader.cj;
 
-import com.graphinout.foundation.json.json5.Json5Reader;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.reader.ContentError;
@@ -9,6 +8,7 @@ import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
 import com.graphinout.foundation.json.json5.Json5Preprocessor;
+import com.graphinout.foundation.json.json5.Json5Reader;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

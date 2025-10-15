@@ -6,8 +6,8 @@ import io.github.classgraph.Resource;
 import javax.annotation.Nullable;
 import java.io.IOException;
 
-import static com.graphinout.foundation.TestFileUtil.verifyOrRecord;
 import static com.google.common.truth.Truth.assertThat;
+import static com.graphinout.foundation.TestFileUtil.verifyOrRecord;
 
 public class CjAssert {
 

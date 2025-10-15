@@ -1,5 +1,6 @@
 package com.graphinout.base.writer;
 
+import com.google.common.collect.Sets;
 import com.graphinout.base.gio.GioData;
 import com.graphinout.base.gio.GioDocument;
 import com.graphinout.base.gio.GioEdge;
@@ -10,7 +11,6 @@ import com.graphinout.base.gio.GioNode;
 import com.graphinout.base.gio.GioPort;
 import com.graphinout.base.gio.GioWriter;
 import com.graphinout.foundation.json.impl.ValidatingJsonWriter;
-import com.google.common.collect.Sets;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

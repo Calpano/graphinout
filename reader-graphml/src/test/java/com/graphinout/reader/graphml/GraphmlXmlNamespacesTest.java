@@ -1,8 +1,8 @@
 package com.graphinout.reader.graphml;
 
 import com.graphinout.base.gio.GioWriter;
-import com.graphinout.base.graphml.gio.Gio2GraphmlWriter;
 import com.graphinout.base.graphml.Graphml2XmlWriter;
+import com.graphinout.base.graphml.gio.Gio2GraphmlWriter;
 import com.graphinout.base.reader.ContentError;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.TestFileUtil;
@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.graphinout.foundation.TestFileUtil.inputSource;
 import static com.google.common.truth.Truth.assertThat;
+import static com.graphinout.foundation.TestFileUtil.inputSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GraphmlXmlNamespacesTest {

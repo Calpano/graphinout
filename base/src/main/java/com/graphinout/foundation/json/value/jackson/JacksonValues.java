@@ -1,10 +1,10 @@
 package com.graphinout.foundation.json.value.jackson;
 
-import com.graphinout.foundation.json.value.IJsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import com.graphinout.foundation.json.value.IJsonValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.annotation.Nullable;

@@ -1,5 +1,6 @@
 package com.graphinout.foundation.xml;
 
+import com.google.common.xml.XmlEscapers;
 import com.graphinout.foundation.util.ObjectRef;
 import com.graphinout.foundation.xml.element.IXmlContent;
 import com.graphinout.foundation.xml.element.IXmlNode;
@@ -7,7 +8,6 @@ import com.graphinout.foundation.xml.element.XmlDocument;
 import com.graphinout.foundation.xml.element.XmlElement;
 import com.graphinout.foundation.xml.element.XmlRaw;
 import com.graphinout.foundation.xml.element.XmlText;
-import com.google.common.xml.XmlEscapers;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;

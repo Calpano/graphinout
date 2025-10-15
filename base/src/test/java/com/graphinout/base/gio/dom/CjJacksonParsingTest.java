@@ -1,14 +1,14 @@
 package com.graphinout.base.gio.dom;
 
+import com.fasterxml.jackson.core.StreamReadFeature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.graphinout.base.cj.helper.jackson.CjJacksonDocument;
 import com.graphinout.base.cj.helper.jackson.CjJacksonEdge;
 import com.graphinout.base.cj.helper.jackson.CjJacksonEndpoint;
 import com.graphinout.base.cj.helper.jackson.CjJacksonGraph;
 import com.graphinout.base.cj.helper.jackson.CjJacksonNode;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

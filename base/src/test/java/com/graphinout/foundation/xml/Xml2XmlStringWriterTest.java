@@ -8,8 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.graphinout.foundation.xml.XmlTests.wrapInRoot;
 import static com.google.common.truth.Truth.assertThat;
+import static com.graphinout.foundation.xml.XmlTests.wrapInRoot;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**

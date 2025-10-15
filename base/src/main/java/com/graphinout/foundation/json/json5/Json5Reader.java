@@ -1,5 +1,8 @@
 package com.graphinout.foundation.json.json5;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.graphinout.base.gio.GioDocument;
 import com.graphinout.base.gio.GioEdge;
 import com.graphinout.base.gio.GioEndpoint;
@@ -11,9 +14,6 @@ import com.graphinout.base.reader.ContentError;
 import com.graphinout.base.reader.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;

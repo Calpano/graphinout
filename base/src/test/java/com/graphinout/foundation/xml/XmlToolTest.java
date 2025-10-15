@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.graphinout.foundation.util.Texts.CR_13_R;
 import static com.graphinout.foundation.util.Texts.LF_10_N;
-import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

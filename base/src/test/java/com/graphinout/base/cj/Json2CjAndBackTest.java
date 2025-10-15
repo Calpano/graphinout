@@ -15,10 +15,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.graphinout.foundation.TestFileUtil.inputSource;
 import static com.graphinout.foundation.json.impl.JsonFormatter.formatDebug;
 import static com.graphinout.foundation.json.impl.JsonFormatter.removeWhitespace;
-import static com.google.common.truth.Truth.assertThat;
 
 public class Json2CjAndBackTest {
 

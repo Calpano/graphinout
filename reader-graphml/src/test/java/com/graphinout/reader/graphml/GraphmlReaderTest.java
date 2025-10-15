@@ -1,8 +1,8 @@
 package com.graphinout.reader.graphml;
 
 import com.graphinout.base.gio.GioWriter;
-import com.graphinout.base.graphml.gio.Gio2GraphmlWriter;
 import com.graphinout.base.graphml.Graphml2XmlWriter;
+import com.graphinout.base.graphml.gio.Gio2GraphmlWriter;
 import com.graphinout.base.reader.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.xml.Xml2AppendableWriter;

@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.graphinout.base.graphml.CjGraphmlMapping.toGraphmlType;
 import static com.graphinout.base.graphml.GraphmlDataType.typeBoolean;
 import static com.graphinout.base.graphml.GraphmlDataType.typeDouble;
 import static com.graphinout.base.graphml.GraphmlDataType.typeFloat;
 import static com.graphinout.base.graphml.GraphmlDataType.typeInt;
 import static com.graphinout.foundation.json.value.java.JavaJsonFactory.INSTANCE;
-import static com.google.common.truth.Truth.assertThat;
 
 class CjGraphmlMappingTest {
 

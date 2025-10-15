@@ -1,12 +1,12 @@
 package com.graphinout.foundation.json.stream.impl;
 
-import com.graphinout.foundation.json.JsonException;
-import com.graphinout.foundation.json.stream.JsonValueWriter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import com.graphinout.foundation.json.JsonException;
+import com.graphinout.foundation.json.stream.JsonValueWriter;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;

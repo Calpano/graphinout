@@ -1,7 +1,7 @@
 package com.graphinout.base.cj.helper.jackson;
 
-import com.graphinout.base.cj.CjDirection;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.graphinout.base.cj.CjDirection;
 
 public class CjJacksonEndpoint extends CjJacksonExtensibleElement {
 

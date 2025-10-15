@@ -1,10 +1,10 @@
 package com.graphinout.foundation.json.json5;
 
-import com.graphinout.foundation.input.SingleInputSourceOfString;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.graphinout.foundation.input.SingleInputSourceOfString;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 

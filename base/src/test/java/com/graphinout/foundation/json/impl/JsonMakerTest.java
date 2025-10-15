@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.List;
 
-import static com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf;
 import static com.google.common.truth.Truth.assertThat;
+import static com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

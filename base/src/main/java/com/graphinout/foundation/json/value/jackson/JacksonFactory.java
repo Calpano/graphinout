@@ -1,5 +1,6 @@
 package com.graphinout.foundation.json.value.jackson;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.graphinout.foundation.json.value.IJsonArray;
 import com.graphinout.foundation.json.value.IJsonArrayAppendable;
 import com.graphinout.foundation.json.value.IJsonArrayMutable;
@@ -8,7 +9,6 @@ import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.graphinout.foundation.json.value.IJsonPrimitive;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

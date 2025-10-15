@@ -1,9 +1,9 @@
 package com.graphinout.foundation.json.value.jackson;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.graphinout.foundation.json.value.IJsonArrayMutable;
 import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonValue;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public class JacksonArrayMutable implements IJsonArrayMutable {
 

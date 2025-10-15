@@ -1,5 +1,9 @@
 package com.graphinout.foundation.json.stream.impl;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.StreamReadFeature;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
@@ -7,10 +11,6 @@ import com.graphinout.foundation.json.JsonReader;
 import com.graphinout.foundation.json.json5.Json5Preprocessor;
 import com.graphinout.foundation.json.stream.JsonWriter;
 import com.graphinout.foundation.json.value.IJsonValue;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.StreamReadFeature;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
