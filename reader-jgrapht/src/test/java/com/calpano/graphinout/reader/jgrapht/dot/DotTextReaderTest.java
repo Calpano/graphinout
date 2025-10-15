@@ -242,11 +242,11 @@ class DotTextReaderTest {
         List<GioData> capturedData = dataCaptor.getAllValues();
         assertEquals(3, capturedData.size());
         assertEquals(EDGE_LABEL, capturedData.get(0).getKey());
-        assertEquals(EDGE_1, capturedData.get(0).getValue());
+        assertEquals(EDGE_1, capturedData.get(0).getValue().rawXml());
         assertEquals(EDGE_LABEL, capturedData.get(1).getKey());
-        assertEquals(EDGE_2, capturedData.get(1).getValue());
+        assertEquals(EDGE_2, capturedData.get(1).getValue().rawXml());
         assertEquals(EDGE_LABEL, capturedData.get(2).getKey());
-        assertEquals(EDGE_3, capturedData.get(2).getValue());
+        assertEquals(EDGE_3, capturedData.get(2).getValue().rawXml());
     }
 
     @Test

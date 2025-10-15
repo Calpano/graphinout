@@ -112,7 +112,7 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
                 .forType(GraphmlKeyForType.keyForType(gioKey.getForType().value));
         gioKey.defaultValue().ifPresent(defaultValue -> builder.defaultValue(IGraphmlDefault.of(defaultValue)));
         gioKey.attributeName().ifPresent(builder::attrName);
-        gioKey.attributeType().ifPresent(attType -> builder.attrType(GraphmlDataType.valueOf(attType.graphmlName)));
+        gioKey.attributeType().ifPresent(attType -> builder.attrType(GraphmlDataType.fromGraphmlName(attType.graphmlName)));
         customAttributes(gioKey, builder);
         desc(gioKey, builder);
         IGraphmlKey graphmlKey = builder.build();
