@@ -12,6 +12,7 @@ import com.calpano.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.calpano.graphinout.reader.graphml.cj.Graphml2CjDocument;
 import com.calpano.graphinout.reader.graphml.cj.Graphml2CjWriter;
 import io.github.classgraph.Resource;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -28,6 +29,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @DisplayName("Graphml<->CJ")
 public class Graphml2CjAndBackTest {
 
+    static final String TEST_ID = "Gml2Cj2Gml";
     private static final Logger log = getLogger(Graphml2CjAndBackTest.class);
 
     /**
@@ -40,7 +42,6 @@ public class Graphml2CjAndBackTest {
         // == OUT Pipeline
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
         File xmlFile = file(xmlResource);
-        Path xmlFilePath = xmlFile.toPath();
 
         XmlTool.parseAndWriteXml(xmlFile, xmlWriter);
         String xml_in = xmlResource.getContentAsString();
@@ -52,15 +53,16 @@ public class Graphml2CjAndBackTest {
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResources")
     @DisplayName("Run XML->Graphml->Cj")
+    @Disabled("Run manually to log intermediate CJ output")
     void testAllXml_Graphml_Cj(String displayPath, Resource xmlResource) throws Exception {
         if (TestFileUtil.isInvalid(xmlResource, "graphml", "xml")) {
             return;
         }
         File xmlFile = file(xmlResource);
+        assert xmlFile != null : "xmlFile is null for "+xmlResource.getURI();
         Path xmlFilePath = xmlFile.toPath();
 
         // == OUT Pipeline
-        Xml2StringWriter xmlWriter = new Xml2StringWriter();
         Graphml2CjWriter graphml2cjWriter = new Graphml2CjWriter(new LoggingCjWriter(false));
         Xml2GraphmlWriter xml2GraphmlWriter = new Xml2GraphmlWriter(graphml2cjWriter);
 
@@ -71,6 +73,7 @@ public class Graphml2CjAndBackTest {
                 fail("Expected an exception on an invalid file");
             }
         } catch (Exception e) {
+            //noinspection StatementWithEmptyBody
             if (TestFileUtil.isInvalid(xmlFilePath, "xml", "graphml")) {
                 // perfect, we failed on an invalid file
             } else {
@@ -83,7 +86,8 @@ public class Graphml2CjAndBackTest {
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResources")
     @DisplayName("Test XML<->Graphml<->Cj (all Graphml)")
     void testAllXml_Graphml_Cj_Graphml_Xml(String displayPath, Resource xmlResource) throws Exception {
-        if (TestFileUtil.isInvalid(xmlResource, "xml","graphml")) {
+        log.info("TEST-"+TEST_ID+ " on "+xmlResource.getURI());
+        if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) {
             log.info("Skipping invalid resource {}", xmlResource.getURI());
             return;
         }
@@ -95,7 +99,9 @@ public class Graphml2CjAndBackTest {
         // == IN
         String xml_in = xmlResource.getContentAsString();
         try {
-            XmlTool.parseAndWriteXml(file(xmlResource), xml2GraphmlWriter);
+            File xmlFile = file(xmlResource);
+            assert xmlFile != null : "xmlFile is null for "+xmlResource.getURI();
+            XmlTool.parseAndWriteXml(xmlFile, xml2GraphmlWriter);
             if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) {
                 fail("Expected an exception on an invalid file");
             }
@@ -119,8 +125,7 @@ public class Graphml2CjAndBackTest {
 
         String xml_out = xmlWriter.resultString();
 
-        TestFileUtil.verifyOrRecord(xmlResource, TEST_ID, xml_out, xml_in, (actual, expected) ->
-        {
+        TestFileUtil.verifyOrRecord(xmlResource, TEST_ID, xml_out, xml_in, (actual, expected) -> {
             try {
                 return GraphmlAssert.xAssertThatIsSameGraphml(actual, expected, () -> //
                         log.info("CJ.JSON:\n{}", cjDoc.toCjJsonString()));
@@ -129,7 +134,5 @@ public class Graphml2CjAndBackTest {
             }
         }, s -> s);
     }
-
-    static final String TEST_ID = "Gml2Cj2Gml";
 
 }
