@@ -33,6 +33,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class Cj2GraphmlAndBackTest {
 
     private static final Logger log = getLogger(Cj2GraphmlAndBackTest.class);
+    private static final String TEST_ID = "Cj2Gml2Cj";
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
@@ -87,7 +88,7 @@ public class Cj2GraphmlAndBackTest {
         cjDoc2.fire(cjWriter_out);
         String json_out = jsonWriter_out.json();
 
-        CjAssert.verifySameCjOrRecord(resource,json_out,json_in, () -> {
+        CjAssert.verifySameCjOrRecord(resource, TEST_ID, json_out,json_in, () -> {
             log.info("JSON-in:\n{}", json_in);
             log.info("CJ.JSON:\n{}", CjDocuments.toJsonString(cjDoc));
         });

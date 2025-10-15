@@ -31,7 +31,7 @@ class Xml2XmlStringWriterTest {
 
     }
 
-    ;
+    private static final String TEST_ID = "Xml2String";
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#xmlResources")
@@ -52,7 +52,7 @@ class Xml2XmlStringWriterTest {
             // so we must adapt out expectations, too
             //xml_in = XmlTool.htmlEntitiesToDecimalEntities(xml_in);
 
-            TestFileUtil.verifyOrRecord(xmlResource, xml_out, xml_in, (actual, expected) -> {
+            TestFileUtil.verifyOrRecord(xmlResource, TEST_ID, xml_out, xml_in, (actual, expected) -> {
                 XmlAssert.xAssertThatIsSameXml(actual, expected);
                 return true;
             }, s -> s);

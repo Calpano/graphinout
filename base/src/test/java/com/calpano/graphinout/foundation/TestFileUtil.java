@@ -78,8 +78,12 @@ public class TestFileUtil {
         }
     }
 
-    public static @Nullable Resource expectedResource(Resource resource) {
-        return tagResource(resource, EXPECTED);
+    public static @Nullable Resource expectedResource(Resource resource, String testId) {
+        return tagResource(resource, expectedTag(testId));
+    }
+
+    private static String expectedTag(String testId) {
+        return EXPECTED + "-" + testId;
     }
 
     /**
@@ -114,7 +118,8 @@ public class TestFileUtil {
     }
 
     public static boolean isExpected(Resource resource) {
-        return tags(resource).equals(EXPECTED);
+        String tags = tags(resource);
+        return tags.startsWith(EXPECTED+"-");
     }
 
     /**
@@ -230,15 +235,16 @@ public class TestFileUtil {
 
     /**
      * @param resource        which was initially loaded in the test
+     * @param testId
      * @param actualString    what some process created as a result
      * @param expectedString  what we expect to see
      * @param actual_expected Called in test mode, but not in record mode. Is comparing actual with expected to decide
      *                        if test passes.
      * @param normalizerFun   normalizes string before writing to disk as EXPECTED or before comparing
      */
-    public static void verifyOrRecord(Resource resource, String actualString, @Nullable String expectedString, BiPredicate<String, String> actual_expected, Function<String, String> normalizerFun) throws IOException {
+    public static void verifyOrRecord(Resource resource, String testId, String actualString, @Nullable String expectedString, BiPredicate<String, String> actual_expected, Function<String, String> normalizerFun) throws IOException {
 
-        @Nullable Resource expectedResource = TestFileUtil.expectedResource(resource);
+        @Nullable Resource expectedResource = TestFileUtil.expectedResource(resource, testId);
         switch (TestFileUtil.recordMode()) {
             case Off -> {
                 // if not in RECORD_MODE, read EXPECTED from tag file 'filePath--EXPECTED' and compare

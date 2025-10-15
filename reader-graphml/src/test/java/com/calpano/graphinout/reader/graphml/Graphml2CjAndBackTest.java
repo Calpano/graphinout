@@ -119,7 +119,7 @@ public class Graphml2CjAndBackTest {
 
         String xml_out = xmlWriter.resultString();
 
-        TestFileUtil.verifyOrRecord(xmlResource, xml_out, xml_in, (actual, expected) ->
+        TestFileUtil.verifyOrRecord(xmlResource, TEST_ID, xml_out, xml_in, (actual, expected) ->
         {
             try {
                 return GraphmlAssert.xAssertThatIsSameGraphml(actual, expected, () -> //
@@ -129,5 +129,7 @@ public class Graphml2CjAndBackTest {
             }
         }, s -> s);
     }
+
+    static final String TEST_ID = "Gml2Cj2Gml";
 
 }

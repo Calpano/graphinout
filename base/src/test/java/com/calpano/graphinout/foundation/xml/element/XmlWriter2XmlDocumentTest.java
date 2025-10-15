@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class XmlWriter2XmlDocumentTest {
 
+    static final String TEST_ID = "Xml2Doc";
+
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#xmlResources")
     @DisplayName("XML->XmlDoc->Xml (All XML files)")
@@ -49,7 +51,7 @@ class XmlWriter2XmlDocumentTest {
         // so we must adapt out expectations, too
         //xml_in = XmlTool.htmlEntitiesToDecimalEntities(xml_in);
 
-        TestFileUtil.verifyOrRecord(xmlResource, xml_out, xml_in, (actual, expected) -> {
+        TestFileUtil.verifyOrRecord(xmlResource, TEST_ID, xml_out, xml_in, (actual, expected) -> {
             XmlAssert.xAssertThatIsSameXml(actual, expected);
             return true;
         }, s -> s);

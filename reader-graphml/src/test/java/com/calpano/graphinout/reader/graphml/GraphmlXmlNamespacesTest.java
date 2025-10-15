@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GraphmlXmlNamespacesTest {
 
+    public static final String TEST_ID = "GraphmlNS";
+
     private static Stream<TestFileProvider.TestResource> namespaceResources() {
         return TestFileProvider.graphmlResources().filter(tr -> tr.resource().getPath().contains("synthetic/namespace"));
     }
@@ -76,7 +78,7 @@ class GraphmlXmlNamespacesTest {
     @ParameterizedTest
     @MethodSource("namespaceResources")
     void xmlNamespaceTest(String displayPath, Resource resource) throws IOException {
-        @Nullable Resource expectedResource = TestFileUtil.expectedResource(resource);
+        @Nullable Resource expectedResource = TestFileUtil.expectedResource(resource, TEST_ID);
         assertThat(expectedResource).isNotNull();
 
         String actual = parse_uri_string_graphml_gio_xml_string(resource);

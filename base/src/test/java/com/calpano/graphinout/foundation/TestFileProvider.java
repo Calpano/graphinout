@@ -134,7 +134,7 @@ public class TestFileProvider {
      */
     public static Stream<TestResource> getAllTestResources() {
         return new ClassGraph()
-                .acceptPackages("json", "xml", "json5","text")
+                .acceptPackages("json", "xml", "json5", "text")
                 .scan().getAllResources().stream() //
                 .filter(res -> !res.getPath().endsWith(".class")) //
                 .map(TestResource::testResource) //
@@ -186,7 +186,7 @@ public class TestFileProvider {
                 .map(res -> {
                     // pretty name
                     String name = res.resource.getPath();
-                    if(name.length() > baseLen) {
+                    if (name.length() > baseLen) {
                         name = name.substring(baseLen).replace('\\', '/');
                     }
                     return TestResource.testResource(name, res.resource);
