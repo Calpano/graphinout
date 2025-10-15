@@ -26,13 +26,14 @@ class XmlWriter2XmlDocumentTest {
         Xml2DocumentWriter xml2doc = new Xml2DocumentWriter();
         // == IN
         String xml_in = xmlResource.getContentAsString();
+        boolean invalidXml = TestFileUtil.isInvalid(xmlResource, "xml");
         try {
             XmlTool.parseAndWriteXml(xmlResource, xml2doc);
-            if (TestFileUtil.isInvalid(xmlResource, "xml")) {
-                fail("Expected an exception on an invalid file");
+            if (invalidXml) {
+                fail("Expected an exception on invalid file "+xmlResource.getURI());
             }
         } catch (Exception e) {
-            if (TestFileUtil.isInvalid(xmlResource, "xml")) {
+            if (invalidXml) {
                 // perfect, we failed on an invalid file
                 return;
             } else {

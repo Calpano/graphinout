@@ -153,7 +153,7 @@ public class TestFileUtil {
     public static boolean isInvalid(Resource resource, String... markers) {
         String tags = tags(resource);
         for (String marker : markers) {
-            if (tags.toLowerCase().contains(marker.toLowerCase())) {
+            if (tags.toLowerCase().contains("INVALID"+marker.toLowerCase())) {
                 return true;
             }
         }
