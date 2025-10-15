@@ -8,13 +8,30 @@
 [plantuml,basic-idea,svg]
 ....
 hide empty members
-class Input
-class Output
+hide circle
+' left to right direction
+
+class Input {
+    InputStream
+    Reader
+    String
+}
+class FileFormat {
+    id
+    extensions
+}
+class IntermediateModel as "Intermediate\nModel"
+class Output {
+    String
+}
 interface Reader
-Input -> Reader : one reader\n can read\n one file format
-Reader -> GioModel: interprets it\nas Gio model
-GioModel -> GraphML: maps to GraphML
-GraphML -> Output: writes out
+Input -> Reader
+Reader *-- FileFormat: one reader\n can read\n one file format
+Reader -> IntermediateModel: interprets it\nas intermediate model
+IntermediateModel -> Writer
+Writer <|-- GraphML
+Writer <|-- ConnectedJson
+Writer -> Output
 ....
 
 == Projects and Packages
@@ -83,12 +100,8 @@ Engine --> ReaderB
 Engine --> ReaderC
 }
 
-class CmdLineApp
-class RestApiApp
-class AnotherApp
-CmdLineApp --> Engine
-RestApiApp --> Engine
-AnotherApp --> Engine
+class App
+App --> Engine
 ....
 
 .Packages
