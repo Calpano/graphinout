@@ -1,5 +1,6 @@
 package com.calpano.graphinout.foundation.xml;
 
+import io.github.classgraph.Resource;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.xml.sax.ContentHandler;
@@ -44,18 +45,19 @@ public class XmlTool {
         return raw.replace("&", "&amp;");
     }
 
-    /** check if that is valid XML to begin with */
+    /**
+     * check if that is valid XML to begin with. CAUTION: File-based reading can fail in a CI/CD pipeline. Better use
+     * {@link #assertCanParseAsXml(Resource)}
+     */
     public static void assertCanParseAsXml(Path xmlFilePath) throws Exception {
         XmlTool.parseAndWriteXml(xmlFilePath.toFile(), Xml2AppendableWriter.createNoop());
     }
 
-    /**
-     * @param contentHandlerAndLexicalHandler
-     * @param <T>
-     * @return
-     * @throws SAXException
-     * @throws ParserConfigurationException
-     */
+    /** check if that is valid XML to begin with */
+    public static void assertCanParseAsXml(Resource xmlResource) throws Exception {
+        XmlTool.parseAndWriteXml(xmlResource, Xml2AppendableWriter.createNoop());
+    }
+
     public static <T extends ContentHandler & LexicalHandler> XMLReader createXmlReaderOn(T contentHandlerAndLexicalHandler) throws SAXException, ParserConfigurationException {
         SAXParser saxParser = XmlFactory.createSaxParser();
         XMLReader reader = saxParser.getXMLReader();
@@ -154,11 +156,20 @@ public class XmlTool {
     }
 
     public static void parseAndWriteXml(File xmlFile, XmlWriter xmlWriter) throws Exception {
-        // preprocessing HTML named entities
         String xmlString = FileUtils.readFileToString(xmlFile, StandardCharsets.UTF_8);
+        parseAndWriteXml(xmlFile.getAbsolutePath(), xmlString, xmlWriter);
+    }
+
+    public static void parseAndWriteXml(Resource xmlResource, XmlWriter xmlWriter) throws Exception {
+        String xmlString = xmlResource.getContentAsString();
+        parseAndWriteXml(xmlResource.getURI().toString(), xmlString, xmlWriter);
+    }
+
+    public static void parseAndWriteXml(String inputName, String xmlString, XmlWriter xmlWriter) throws Exception {
+        // preprocessing HTML named entities
         String xmlStringPreprocessed = NamedEntities.htmlEntitiesToAmpEncoded(xmlString);
         StringReader sr = new StringReader(xmlStringPreprocessed);
-        InputSource inputSource = new InputSource(xmlFile.getAbsolutePath());
+        InputSource inputSource = new InputSource("INPUT." + inputName);
         inputSource.setCharacterStream(sr);
 
         parseAndWrite(inputSource, xmlWriter);
@@ -180,7 +191,7 @@ public class XmlTool {
     private static String resolveNumericalEntities(String s) {
         Pattern p = Pattern.compile("&#(\\d+);");
         Matcher m = p.matcher(s);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         while (m.find()) {
             int charCode = Integer.parseInt(m.group(1));
             m.appendReplacement(sb, Character.toString((char) charCode));
@@ -252,7 +263,7 @@ public class XmlTool {
 //        result.append(ampEncode(remain));
 
         String result = characterData;
-        String res = result.toString() //
+        String res = result //
                 // we must encode '&' round-tripping crap like '&amp;nbsp;'
                 .replace("&", "&amp;") //
 

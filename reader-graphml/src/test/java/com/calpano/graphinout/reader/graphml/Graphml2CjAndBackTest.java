@@ -18,10 +18,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
-import java.io.File;
-import java.nio.file.Path;
-
-import static com.calpano.graphinout.foundation.TestFileUtil.file;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -41,9 +37,8 @@ public class Graphml2CjAndBackTest {
     void testAllXml(String displayPath, Resource xmlResource) throws Exception {
         // == OUT Pipeline
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        File xmlFile = file(xmlResource);
 
-        XmlTool.parseAndWriteXml(xmlFile, xmlWriter);
+        XmlTool.parseAndWriteXml(xmlResource, xmlWriter);
         String xml_in = xmlResource.getContentAsString();
         String xml_out = xmlWriter.resultString();
 
@@ -58,23 +53,19 @@ public class Graphml2CjAndBackTest {
         if (TestFileUtil.isInvalid(xmlResource, "graphml", "xml")) {
             return;
         }
-        File xmlFile = file(xmlResource);
-        assert xmlFile != null : "xmlFile is null for "+xmlResource.getURI();
-        Path xmlFilePath = xmlFile.toPath();
-
         // == OUT Pipeline
         Graphml2CjWriter graphml2cjWriter = new Graphml2CjWriter(new LoggingCjWriter(false));
         Xml2GraphmlWriter xml2GraphmlWriter = new Xml2GraphmlWriter(graphml2cjWriter);
 
         // == IN
         try {
-            XmlTool.parseAndWriteXml(xmlFile, xml2GraphmlWriter);
-            if (TestFileUtil.isInvalid(xmlFilePath, "xml", "graphml")) {
+            XmlTool.parseAndWriteXml(xmlResource, xml2GraphmlWriter);
+            if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) {
                 fail("Expected an exception on an invalid file");
             }
         } catch (Exception e) {
             //noinspection StatementWithEmptyBody
-            if (TestFileUtil.isInvalid(xmlFilePath, "xml", "graphml")) {
+            if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) {
                 // perfect, we failed on an invalid file
             } else {
                 throw e;
@@ -86,7 +77,7 @@ public class Graphml2CjAndBackTest {
     @MethodSource("com.calpano.graphinout.foundation.TestFileProvider#graphmlResources")
     @DisplayName("Test XML<->Graphml<->Cj (all Graphml)")
     void testAllXml_Graphml_Cj_Graphml_Xml(String displayPath, Resource xmlResource) throws Exception {
-        log.info("TEST-"+TEST_ID+ " on "+xmlResource.getURI());
+        log.info("TEST-" + TEST_ID + " on " + xmlResource.getURI());
         if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) {
             log.info("Skipping invalid resource {}", xmlResource.getURI());
             return;
@@ -99,9 +90,7 @@ public class Graphml2CjAndBackTest {
         // == IN
         String xml_in = xmlResource.getContentAsString();
         try {
-            File xmlFile = file(xmlResource);
-            assert xmlFile != null : "xmlFile is null for "+xmlResource.getURI();
-            XmlTool.parseAndWriteXml(xmlFile, xml2GraphmlWriter);
+            XmlTool.parseAndWriteXml(xmlResource, xml2GraphmlWriter);
             if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) {
                 fail("Expected an exception on an invalid file");
             }

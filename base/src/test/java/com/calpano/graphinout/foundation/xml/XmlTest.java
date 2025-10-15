@@ -95,25 +95,21 @@ public class XmlTest {
 
     /** Read XML, write via XmlWriter to string */
     private void testXmlFile(Resource xmlResource) throws Exception {
-        assert xmlResource != null : "got null";
-        File xmlFile = TestFileUtil.file(xmlResource);
-        assertThat(xmlFile).isNotNull();
+        assertThat(xmlResource).isNotNull();
 
-        Path xmlFilePath = xmlFile.toPath();
-        assertTrue(Files.exists(xmlFilePath), "XML test file should exist: " + xmlFilePath);
-        String xmlIn = Files.readString(xmlFilePath);
+        String xmlIn = xmlResource.getContentAsString();
         assertNotNull(xmlIn);
         assertFalse(xmlIn.trim().isEmpty());
 
         // Parse and write XML
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        XmlTool.parseAndWriteXml(xmlFilePath.toFile(), xmlWriter);
+        XmlTool.parseAndWriteXml(xmlResource, xmlWriter);
         String outString = xmlWriter.resultString();
 
         // Validate processed XML is not empty and is well-formed
         assertNotNull(outString);
         assertFalse(outString.trim().isEmpty());
-        assertDoesNotThrow(() -> parseXmlString(outString), "Processed XML should be valid for " + xmlFilePath);
+        assertDoesNotThrow(() -> parseXmlString(outString), "Processed XML should be valid for " + xmlResource.getURI());
         String inNorm = XmlNormalizer.normalize(xmlIn);
         String outNorm = XmlNormalizer.normalize(outString);
         String inSimple = XmlFormatter.simplifyForDebug(inNorm);

@@ -30,10 +30,7 @@ public class GraphmlTest {
         }
 
         // == pre-flight check
-        File xmlFile = TestFileUtil.file(xmlResource);
-        assert xmlFile != null;
-        Path xmlFilePath = xmlFile.toPath();
-        XmlTool.assertCanParseAsXml(xmlFilePath);
+        XmlTool.assertCanParseAsXml(xmlResource);
 
         // == actual test
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
@@ -42,7 +39,7 @@ public class GraphmlTest {
         /* receive XML events -> send Graphml events  */
         Xml2GraphmlWriter xml2graphml = new Xml2GraphmlWriter(graphml2xml);
 
-        XmlTool.parseAndWriteXml(xmlFile, xml2graphml);
+        XmlTool.parseAndWriteXml(xmlResource, xml2graphml);
 
         String xml_in = xmlResource.getContentAsString();
         String xml_out = xmlWriter.resultString();

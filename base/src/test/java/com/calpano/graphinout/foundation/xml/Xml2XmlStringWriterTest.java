@@ -40,11 +40,10 @@ class Xml2XmlStringWriterTest {
         // == XML -> XmlDocument -> ZML
         Xml2StringWriter xml2string = new Xml2StringWriter();
         // == IN
-        File xmlFile = file(xmlResource);
-        String xml_in = FileUtils.readFileToString(xmlFile, UTF_8);
+        String xml_in = xmlResource.getContentAsString();
         try {
-            XmlTool.parseAndWriteXml(xmlFile, xml2string);
-            if (TestFileUtil.isInvalid(xmlFile.toPath(), "xml")) {
+            XmlTool.parseAndWriteXml(xmlResource, xml2string);
+            if (TestFileUtil.isInvalid(xmlResource, "xml")) {
                 fail("Expected an exception on an invalid file");
             }
             String xml_out = xml2string.resultString();
@@ -57,7 +56,7 @@ class Xml2XmlStringWriterTest {
                 return true;
             }, s -> s);
         } catch (Exception e) {
-            if (TestFileUtil.isInvalid(xmlFile.toPath(), "xml")) {
+            if (TestFileUtil.isInvalid(xmlResource, "xml")) {
                 // perfect, we failed on an invalid file
                 return;
             } else {
