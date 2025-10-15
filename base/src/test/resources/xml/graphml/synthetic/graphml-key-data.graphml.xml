@@ -63,7 +63,8 @@
             <data key="id--key-graph-string">value--key-graph-string</data>
             <data key="id--key-node-string">value--key-node-string</data>
             <data key="id--key-all-string">value--key-all-string</data>
-            <!-- the following assignments result in NO VALUE set, because these keys are not defined for nodes -->
+            <!-- These keys are not defined for nodes. Undefined behaviour. -->
+            <!-- the following assignments may result in NO VALUE set -->
             <data key="id--key-edge-string">value--key-edge-string</data>
             <data key="id--key-graphml-string">value--key-graphml-string</data>
             <data key="id--key-endpoint-string">value--key-endpoint-string</data>
