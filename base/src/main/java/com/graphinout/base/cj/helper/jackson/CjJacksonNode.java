@@ -1,0 +1,40 @@
+package com.graphinout.base.cj.helper.jackson;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class CjJacksonNode extends CjJacksonExtensibleElement {
+
+    @JsonProperty("id")
+    private Object id;
+
+    @JsonProperty("label")
+    private Object label;
+
+    @JsonProperty("ports")
+    private Object ports;
+
+    public Object getId() {
+        return id;
+    }
+
+    public Object getLabel() {
+        return label;
+    }
+
+    public Object getPorts() {
+        return ports;
+    }
+
+    public void setId(Object id) {
+        this.id = id;
+    }
+
+    public void setLabel(Object label) {
+        this.label = label;
+    }
+
+    public void setPorts(Object ports) {
+        this.ports = ports;
+    }
+
+}

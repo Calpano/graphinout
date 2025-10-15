@@ -106,7 +106,7 @@ App --> Engine
 
 .Packages
 ----
-com.calpano.graphinout
+com.graphinout
     .base
         .gio // our graph API
         .graphml // GraphML spec as classes for in/out
@@ -134,7 +134,7 @@ base.gio::: Unified model for all kinds of graphs, inspired by GraphML model, cl
 
 - GioWriter: Knows how to map to GraphML model and calls `GraphmlWriter`
 
-.Package `com.calpano.graphinout.base`
+.Package `com.graphinout.base`
 [plantuml,project-base,svg]
 ----
 hide empty members

@@ -3,7 +3,7 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.calpano.graphinout</groupId>
+        <groupId>com.graphinout</groupId>
         <artifactId>graphinout</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -15,7 +15,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.calpano.graphinout</groupId>
+            <groupId>com.graphinout</groupId>
             <artifactId>base</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -23,7 +23,7 @@
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
         <dependency>
-            <groupId>com.calpano.graphinout</groupId>
+            <groupId>com.graphinout</groupId>
             <artifactId>base</artifactId>
             <version>1.0-SNAPSHOT</version>
             <classifier>tests</classifier>

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.calpano.graphinout</groupId>
+        <groupId>com.graphinout</groupId>
         <artifactId>graphinout</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -16,13 +16,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.calpano.graphinout</groupId>
+            <groupId>com.graphinout</groupId>
             <artifactId>base</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <!-- until we replace GIO by CJ -->
         <dependency>
-            <groupId>com.calpano.graphinout</groupId>
+            <groupId>com.graphinout</groupId>
             <artifactId>reader-graphml</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -32,7 +32,7 @@
         </dependency>
         <!-- test -->
         <dependency>
-            <groupId>com.calpano.graphinout</groupId>
+            <groupId>com.graphinout</groupId>
             <artifactId>base</artifactId>
             <version>1.0-SNAPSHOT</version>
             <classifier>tests</classifier>

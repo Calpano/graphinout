@@ -6,7 +6,7 @@
 
     <parent>
         <artifactId>graphinout</artifactId>
-        <groupId>com.calpano.graphinout</groupId>
+        <groupId>com.graphinout</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
