@@ -22,6 +22,13 @@
         <module>engine</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Calpano/graphinout.git</connection>
+        <developerConnection>scm:git:git@github.com:Calpano/graphinout.git</developerConnection>
+        <url>https://github.com/Calpano/graphinout</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
