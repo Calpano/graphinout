@@ -112,15 +112,25 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                  <groupId>org.sonatype.central</groupId>
+                  <artifactId>central-publishing-maven-plugin</artifactId>
+                  <version>0.9.0</version>
+                  <extensions>true</extensions>
+                  <configuration>
+                    <publishingServerId>central</publishingServerId>
+                  </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
     <distributionManagement>
-        <repository>
-            <id>github-graphinout</id>
-            <name>GitHub Graphinout Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/Calpano/graphinout</url>
-        </repository>
+<!--        <repository>-->
+<!--            <id>github-graphinout</id>-->
+<!--            <name>GitHub Graphinout Maven Packages</name>-->
+<!--            <url>https://maven.pkg.github.com/Calpano/graphinout</url>-->
+<!--        </repository>-->
     </distributionManagement>
 
 </project>
