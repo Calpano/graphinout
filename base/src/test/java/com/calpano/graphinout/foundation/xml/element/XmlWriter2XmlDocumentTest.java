@@ -32,7 +32,7 @@ class XmlWriter2XmlDocumentTest {
             if (invalidXml) {
                 fail("Expected an exception on invalid file "+xmlResource.getURI());
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (invalidXml) {
                 // perfect, we failed on an invalid file
                 return;

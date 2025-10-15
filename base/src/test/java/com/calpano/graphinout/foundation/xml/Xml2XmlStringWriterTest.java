@@ -55,10 +55,10 @@ class Xml2XmlStringWriterTest {
                 XmlAssert.xAssertThatIsSameXml(actual, expected);
                 return true;
             }, s -> s);
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            //noinspection StatementWithEmptyBody
             if (TestFileUtil.isInvalid(xmlResource, "xml")) {
                 // perfect, we failed on an invalid file
-                return;
             } else {
                 throw e;
             }

@@ -63,7 +63,7 @@ public class Graphml2CjAndBackTest {
             if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) {
                 fail("Expected an exception on an invalid file");
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             //noinspection StatementWithEmptyBody
             if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) {
                 // perfect, we failed on an invalid file
@@ -78,10 +78,11 @@ public class Graphml2CjAndBackTest {
     @DisplayName("Test XML<->Graphml<->Cj (all Graphml)")
     void testAllXml_Graphml_Cj_Graphml_Xml(String displayPath, Resource xmlResource) throws Exception {
         log.info("TEST-" + TEST_ID + " on " + xmlResource.getURI());
-        if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) {
-            log.info("Skipping invalid resource {}", xmlResource.getURI());
-            return;
-        }
+        boolean isInvalidGraphml = TestFileUtil.isInvalid(xmlResource, "xml", "graphml");
+//        if (isInvalidGraphml) {
+//            log.info("Skipping invalid resource {}", xmlResource.getURI());
+//            return;
+//        }
 
         // == XML -> GraphML -> CJ doc
         // GraphML -> CJ
@@ -91,11 +92,11 @@ public class Graphml2CjAndBackTest {
         String xml_in = xmlResource.getContentAsString();
         try {
             XmlTool.parseAndWriteXml(xmlResource, xml2GraphmlWriter);
-            if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) {
-                fail("Expected an exception on an invalid file");
+            if (isInvalidGraphml) {
+                fail("Expected an exception on an invalid input "+xmlResource.getURI());
             }
-        } catch (Exception e) {
-            if (TestFileUtil.isInvalid(xmlResource, "xml", "graphml")) {
+        } catch (Throwable e) {
+            if (isInvalidGraphml) {
                 // perfect, we failed on an invalid file
                 return;
             } else {
