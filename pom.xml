@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.graphinout</groupId>
     <artifactId>graphinout</artifactId>
     <name>graphinout</name>
     <packaging>pom</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
 
     <description>Graphinout reads many common graph file formats and converts them to Connected JSON or GraphML.</description>
     <url>https://graphinout.com</url>
@@ -50,7 +48,7 @@
         <connection>scm:git:https://github.com/Calpano/graphinout.git</connection>
         <developerConnection>scm:git:git@github.com:Calpano/graphinout.git</developerConnection>
         <url>https://github.com/Calpano/graphinout</url>
-        <tag>HEAD</tag>
+        <tag>graphinout-0.1</tag>
     </scm>
 
     <properties>
@@ -73,12 +71,12 @@
     <dependencyManagement>
         <dependencies>
             <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>${logback-classic-version}</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
                 <classifier>tests</classifier>
                 <type>test-jar</type>
                 <scope>test</scope>
-                <version>0.1-SNAPSHOT</version>
+                <version>0.1</version>
             </dependency>
             <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-core-version}</version></dependency>
             <dependency><groupId>com.fasterxml.jackson.datatype</groupId><artifactId>jackson-datatype-jsr310</artifactId><version>${jackson-databind-version}</version></dependency>
