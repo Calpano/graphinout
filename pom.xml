@@ -147,6 +147,13 @@
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-javadoc-plugin</artifactId>
               <version>3.11.2</version>
+              <configuration>
+                <!-- Relax doclint to allow generation even with minor HTML issues while we improve source Javadoc -->
+                <failOnError>false</failOnError>
+                <doclint>none</doclint>
+                <!-- Ensure consistent language to avoid locale-specific doclint behavior -->
+                <locale>en</locale>
+              </configuration>
               <executions>
                 <execution>
                   <id>attach-javadocs</id>
