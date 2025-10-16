@@ -6,7 +6,7 @@
     <artifactId>graphinout</artifactId>
     <name>graphinout</name>
     <packaging>pom</packaging>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
 
     <description>Graphinout reads many common graph file formats and converts them to Connected JSON or GraphML.</description>
     <url>https://graphinout.com</url>
@@ -71,12 +71,12 @@
     <dependencyManagement>
         <dependencies>
             <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>${logback-classic-version}</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.1-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
                 <classifier>tests</classifier>
                 <type>test-jar</type>
                 <scope>test</scope>
-                <version>0.2-SNAPSHOT</version>
+                <version>0.1.1-SNAPSHOT</version>
             </dependency>
             <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-core-version}</version></dependency>
             <dependency><groupId>com.fasterxml.jackson.datatype</groupId><artifactId>jackson-datatype-jsr310</artifactId><version>${jackson-databind-version}</version></dependency>
