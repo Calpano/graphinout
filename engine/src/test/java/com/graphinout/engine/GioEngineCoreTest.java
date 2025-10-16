@@ -21,8 +21,11 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.graphinout.foundation.TestFileUtil.resource;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -71,6 +74,24 @@ class GioEngineCoreTest {
 //        String graphml1 = new String(graphmlBytes1, StandardCharsets.UTF_8);
 //        String graphml2 = new String(graphmlBytes2, StandardCharsets.UTF_8);
 //        Assertions.assertEquals(graphml1, graphml2);
+    }
+
+    @Test
+    void testFindInputFormat() {
+        String fileName = "got-graph.graphml";
+
+        Set<GioReader> candidates = new HashSet<>();
+        List<GioReader> readers = gioEngineCore.readers();
+        assertThat(readers).isNotEmpty();
+        assertThat(readers.size() > 1).isTrue();
+
+        for (GioReader reader : readers) {
+            if (reader.fileFormat().matches(fileName)) {
+                candidates.add(reader);
+            }
+        }
+        assertThat(candidates).isNotEmpty();
+        assertThat(candidates).hasSize(1);
     }
 
     @Test
