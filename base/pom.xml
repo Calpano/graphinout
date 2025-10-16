@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>base</artifactId>
+    <name>base</name>
 
     <dependencies>
         <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId></dependency>
