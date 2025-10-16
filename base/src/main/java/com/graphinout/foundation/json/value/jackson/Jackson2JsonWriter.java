@@ -37,7 +37,8 @@ public class Jackson2JsonWriter {
             }
             case OBJECT -> {
                 jsonWriter.objectStart();
-                jsonNode.properties().forEach(e -> {
+                // newer API: .properties().forEach(
+                jsonNode.fields().forEachRemaining(e -> {
                     jsonWriter.onKey(e.getKey());
                     write(e.getValue(), jsonWriter);
                 });
