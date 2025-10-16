@@ -65,7 +65,9 @@
         <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
         <!-- must use same version as spring, otherwise 'java.lang.NoClassDefFoundError: com/fasterxml/jackson/core/exc/StreamConstraintsException' -->
-        <fasterxml-jackson.version>2.14.1</fasterxml-jackson.version>
+        <!-- 2.14.1  has a CVE, 2.19.2 is recent but not spring compatible -->
+        <jackson-core-version>2.14.1</jackson-core-version>
+        <jackson-databind-version>2.14.1</jackson-databind-version>
     </properties>
 
     <dependencyManagement>
@@ -78,8 +80,8 @@
                 <scope>test</scope>
                 <version>0.1-SNAPSHOT</version>
             </dependency>
-            <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${fasterxml-jackson.version}</version></dependency>
-            <dependency><groupId>com.fasterxml.jackson.datatype</groupId><artifactId>jackson-datatype-jsr310</artifactId><version>${fasterxml-jackson.version}</version></dependency>
+            <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-core-version}</version></dependency>
+            <dependency><groupId>com.fasterxml.jackson.datatype</groupId><artifactId>jackson-datatype-jsr310</artifactId><version>${jackson-databind-version}</version></dependency>
             <dependency><groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId><version>3.0.2</version></dependency>
             <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><version>1.4.4</version></dependency>
             <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.17.0</version></dependency>
@@ -178,11 +180,11 @@
     </build>
 
     <distributionManagement>
-<!--        <repository>-->
-<!--            <id>github-graphinout</id>-->
-<!--            <name>GitHub Graphinout Maven Packages</name>-->
-<!--            <url>https://maven.pkg.github.com/Calpano/graphinout</url>-->
-<!--        </repository>-->
+        <snapshotRepository>
+            <id>github-graphinout</id>
+            <name>GitHub Graphinout Maven Packages</name>
+            <url>https://maven.pkg.github.com/Calpano/graphinout</url>
+        </snapshotRepository>
     </distributionManagement>
 
 </project>
