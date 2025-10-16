@@ -10,6 +10,30 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
+    <description>Graphinout reads many common graph file formats and converts them to Connected JSON or GraphML.</description>
+    <url>https://graphinout.com</url>
+    <licenses>
+        <license>
+            <name>BSD 3-Clause License</name>
+            <url>https://opensource.org/license/bsd-3-clause</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer><id>lilla</id><name>Lilla Diamantisz</name><roles><role>developer</role></roles></developer>
+        <developer>
+            <id>max</id>
+            <name>Max Völkel</name>
+            <organization>ITMV</organization>
+            <organizationUrl>https://maxvoelkel.de</organizationUrl>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer><id>rasoul</id><name>Rasoul Babaei</name><roles><role>developer</role></roles></developer>
+    </developers>
+
     <modules>
         <module>base</module>
         <module>reader-cj</module>
