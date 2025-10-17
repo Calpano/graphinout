@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd">
+
+<key attr.name="cj_jsonData" attr.type="string" id="cj_jsonData"><desc>Connected JSON allows a JSON 'data' property on all objects.</desc></key>
+<key attr.name="cj_label" attr.type="string" id="cj_label"><desc>Connected JSON label</desc></key>
+<key attr.name="d0" attr.type="string" for="graphml" id="d0" yfiles.type="resources"/>
+<key attr.name="d7" attr.type="string" for="graph" id="graph-d7"/>
+<key attr.name="d5" attr.type="string" for="node" id="node-d5"/>
+<key attr.name="d6" attr.type="string" for="node" id="node-d6"/>
+<key attr.name="d1" attr.type="string" for="port" id="d1" yfiles.type="portgraphics"/>
+<key attr.name="d2" attr.type="string" for="port" id="d2" yfiles.type="portgeometry"/>
+<key attr.name="cj_edgeType" attr.type="string" for="edge" id="cj_edgeType"><desc>Connected JSON edgeType {'source'=..., 'type'=...}</desc></key>
+<key attr.name="d10" attr.type="string" for="edge" id="edge-d10"/>
+<key attr.name="d9" attr.type="string" for="edge" id="edge-d9"/>
+<graph edgedefault="directed" id="G" parse.edgeids="free" parse.edges="2" parse.nodeids="free" parse.nodes="2" parse.order="nodesfirst">
+<data key="graph-d7"></data>
+<node id="n0">
+<data key="node-d5"></data>
+<data key="node-d6">
+        <ShapeNode>
+          <Geometry height="10.0" width="10.0" x="515.1918443648668" y="149.65505642226702"/>
+          <Fill color="#FF00FF" transparent="false"/>
+          <BorderStyle color="#000000" type="line" width="1.0"/>
+          <NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="custom" textColor="#000000" visible="false" width="11.587890625" x="-0.7939453125" y="-4.06640625">1<LabelModel>
+              <SmartNodeLabelModel distance="4.0"/>
+            </LabelModel>
+            <ModelParameter>
+              <SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </ModelParameter>
+          </NodeLabel>
+          <Shape type="ellipse"/>
+        </ShapeNode>
+      </data></node>
+<node id="n1">
+<data key="node-d5"></data>
+<data key="node-d6">
+        <ShapeNode>
+          <Geometry height="10.0" width="10.0" x="52.896829576714424" y="282.6926857087842"/>
+          <Fill color="#FF00FF" transparent="false"/>
+          <BorderStyle color="#000000" type="line" width="1.0"/>
+          <NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="custom" textColor="#000000" visible="false" width="11.587890625" x="-0.7939453125" y="-4.06640625">2<LabelModel>
+              <SmartNodeLabelModel distance="4.0"/>
+            </LabelModel>
+            <ModelParameter>
+              <SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </ModelParameter>
+          </NodeLabel>
+          <Shape type="ellipse"/>
+        </ShapeNode>
+      </data></node>
+<edge id="e0" source="n1" target="n0">
+<data key="edge-d10">
+        <PolyLineEdge>
+          <Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <LineStyle color="#000000" type="line" width="1.0"/>
+          <Arrows source="none" target="none"/>
+          <BendStyle smoothed="false"/>
+        </PolyLineEdge>
+      </data>
+<data key="edge-d9"></data></edge>
+<edge id="e1" source="n0" target="n4">
+<data key="edge-d10">
+        <PolyLineEdge>
+          <Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <LineStyle color="#000000" type="line" width="1.0"/>
+          <Arrows source="none" target="none"/>
+          <BendStyle smoothed="false"/>
+        </PolyLineEdge>
+      </data>
+<data key="edge-d9"></data></edge></graph></graphml>

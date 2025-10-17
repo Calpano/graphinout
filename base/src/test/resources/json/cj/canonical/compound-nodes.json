@@ -1,0 +1,35 @@
+{
+  "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
+  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+
+  "graphs": [
+    {
+      "id": "g_compound",
+      "nodes": [
+        {
+          "id": "n_server_rack",
+          "label": [ { "value": "Server Rack A" } ],
+          "graphs": [
+            {
+              "id": "rack_internals",
+              "nodes": [
+                { "id": "web_server", "label": [ { "value": "Web Server" } ] },
+                { "id": "db_server", "label": [ { "value": "Database" } ] }
+              ],
+              "edges": [
+                {
+                  "id": "e_internal_conn",
+                  "endpoints": [ { "node": "web_server" }, { "node": "db_server" } ]
+                }
+              ]
+            }
+          ]
+        },
+        { "id": "n_firewall" }
+      ],
+      "edges": [
+        { "id": "e_external_conn", "endpoints": [ { "node": "n_firewall" }, { "node": "web_server" } ] }
+      ]
+    }
+  ]
+}

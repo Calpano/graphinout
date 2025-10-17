@@ -1,0 +1,82 @@
+= Mutable JSON Value
+
+.State: value is empty
+- Operation: Add primitive A -> value = `A`
+- Operation: Start object -> value = `{}`
+- Operation: Start array -> value = `[]`
+- Operation: Add property `aaa=B`-> value = `{ "aaa"=B }`
+
+.State: value = `A`
+- Operation: Add primitive B -> value = `[ A, B ]`
+- Operation: Start object -> value = `[ A, {} ]`
+- Operation: Start array -> value = `[ A ]`
+- Operation: Add property `aaa=B`-> value = `{ "value"=A, "aaa"=B }`
+
+.State: value = `[ ... ]`
+- Operation: Add primitive A -> value = `[ ..., A ]`
+- Operation: Start object -> value = `[ ..., {} ]`
+- Operation: Start array -> value = `[ ... ]`
+- Operation: Add property `aaa=B`-> value = `{ "value"=[ ... ], "aaa"=B }`
+- Operation: Add property `aaa=B`-> value = `[ ...,  {"aaa"=B } ]`  <- FAV
+
+
+.State: value = `{ ... }`
+- Operation: Add primitive A ->
+** value = `{ ..., "value"=A }`
+** "value" was already a property. value = `{ ..., "value"=[..., A] }`
+- Operation: Add object -> value = `{ ... }`
+- Operation: Add array -> value = `{ ..., "value"=[] }`
+
+
+
+---- ---------------------
+---- ------------------
+
+== Simplification Rules, Recursive
+.One Synthetic Property Object
+- `{ "value" = 5 }` -> `5`
+- `{ "value" = [3,5] }` -> `[3,5]`
+- `{ "value" = X }` -> `X`
+
+.One Element Array <- nice
+- `[ 5 ]` -> `5`
+- `[]` -> null
+- `[{ ... }]` -> `{...}`
+- `[ X ]` -> `X`
+
+.Array with only Objects -> fails too late
+- `[{ ... }, {...}]` -> `{...}` (merge into one object)
+
+
+== Path-Based Access
+
+`a/b=5` -> `{ "a": { "b": 5 } }`
+
+`a/!append=5` -> `{ "a": [ 5 ] }`
+
+data = `{ "a": { "b": 5 } }`
+`a/b/!append=7` ->
+
+data = `{ "a": [ 5 ] }`
+`a/c=d` -> `{ "a": { "value"=[5], "c": "d" } }`
+`a/c=d` -> `{ "a": [5, {"c": "d"}] }`
+`a/c=d` -> ERROR
+
+.Rules
+object cannot append
+array cannot get property
+primitive can append -> becomes array
+primitive can get property -> becomes object
+
+.API
+[ propertyKeys ]* (append|addProperty(p)) value
+
+
+
+
+
+
+
+
+
+

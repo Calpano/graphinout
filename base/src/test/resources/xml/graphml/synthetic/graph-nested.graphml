@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<graphml>
+    <graph edgedefault="directed" id="">
+        <node id="node2-with-graph">
+            <graph edgedefault="directed">
+                <node id="node-nested"/>
+            </graph>
+        </node>
+    </graph>
+</graphml>

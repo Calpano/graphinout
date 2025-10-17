@@ -1,0 +1,15 @@
+# spec:
+# source target1 target2 target3 ... targetN
+aaa bbb ccc
+ddd aaa
+# these are comments
+# -------------
+# we expect these nodes:
+# aaa
+# bbb
+# ccc
+# ddd
+# we expect these edges:
+# aaa -> bbb
+# aaa -> ccc
+# ddd -> aaa

@@ -1,0 +1,549 @@
+= Data Model Mapping
+:toc:
+:cj: Connected JSON
+
+Mapping XML, JSON, GraphML, Connected JSON.
+
+.GraphML
+- key-data
+- custom attributes
+- custom XML tags as `<data>` values -- need to transport XML namespace
+
+.Connected JSON
+- custom JSON in each object
+
+.Variants
+XML -> GraphML -> Gio -> GraphML -> XML
+
+XML -> GraphML -> Gio -> CJ -> JSON
+
+JSON -> CJ -> Gio -> GraphML -> XML
+
+JSON -> CJ -> Gio -> CJ -> JSON
+
+== Graphml Custom Attributes in ANY element
+
+.GraphML
+----
+<graphml
+  xmlns:my="http://example.org/my"
+>
+    <node my:foo="bar"> ... </node>
+----
+
+.CJ
+----
+{
+    "namespaces": {
+        "my": "http://example.org/my"
+    },
+...
+    "node": {
+        "customAttributes": {
+            "my:foo": "bar"
+        }
+    }
+
+}
+----
+
+== Graphml Custom Attributes in `<key>` element
+
+----
+<key id="d12" for="node" attr.name="PortViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/PortViewState" />
+----
+
+- `d12` is considered synthetic
+- `for="node"` can be computed
+- `attr.name="PortViewState"` the name must be kept -> JSON property key
+
+.CJ
+----
+{
+    "namespaces": {
+        "my": "http://example.org/my"
+    },
+...
+    "node": {
+        "PortViewState": ...
+        "customKeyAttributes": {
+               "y:attr.uri"="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/PortViewState"
+        }
+    }
+
+}
+----
+
+namespaces::
+A JSON object with namespace prefixes as keys.
+The values are the namespace URIs.
+
+customAttributes::
+A JSON object with custom attributes as keys.
+The values are the attribute values.
+The keys are prefixed with the namespace URI, e.g., `my:foo`.
+
+customKeyAttributes::
+This represents the special case of the special case:
+Custom XML attributes on an element, which itself is not represented in {cj}.
+We have a GraphML `<key>` element with custom attributes.
+A key has a `for` attribute with a value of `graph`, `node`, `edge`, `hyperedge`, `port`, `endpoint` or `all`.
+
+These attributes are stored in the corresponding {cj} element, where the `<data>` tag is used.
+In that element, the property `customKeyAttributes` is a JSON object with the attribute names as keys and the attribute values as values.
+The keys are prefixed with the namespace URI.
+
+== Graphml `<key>`
+
+The data model of `<key>` is
+
+[cols="2,1,3"]
+|===
+| XML | Type | Desc
+
+| attribute `id` | string | used by `<data key="...">`
+
+| attribute `attr.name` | string | the name of the attribute
+
+| attribute `attr.type` | enum | one of `string`, `int`, `long`, `float`, `double`, `boolean`
+
+| attribute `for` | enum | one of `graph`, `node`, `edge`, `hyperedge`, `port`, `endpoint` or `all`
+
+| child element `<default>` | XML | the default value of the attribute
+
+| custom attributes | string | ...
+|===
+
+which can be mapped to this JSON
+
+.JSON to represent `<key>` info from Graphml
+[source,json5]
+----
+{
+    // key @id
+    "someId1": {
+      // key @attr.name
+      "attr.name": "...",
+      // key @attr.type
+      "attr.type": "string",
+      // key <default>
+      "default": "...some XML..."
+    },
+    "someId2": {}
+}
+----
+
+which is document-level meta-data.
+
+.Embedding `<key>` info in {cj}
+[source,json5]
+----
+{
+  "connectedJson": {
+    "versionDate": "2025-07-14",
+    "versionNumber": "5.0.0"
+  },
+  "data": {
+    "graphml:keys": {
+        "someId1": {
+            "attr.name": "...",
+            "attr.type": "string",
+            "default": "...some XML..."
+        },
+        "someId2": {}
+    }
+  },
+  "graphs": [
+    // graph
+  ]
+}
+----
+
+
+== Chains
+
+.We start with GraphMl
+[source,xml]
+----
+<graphml>
+
+    <!-- Attributes for nodes -->
+    <key id="ext_in" for="node" attr.name="is_ext"
+       attr.type="boolean"><default>true</default></key>
+    <key id="neuron_type" for="node" attr.name="model"
+       attr.type="string"><default>leaky</default></key>
+    <!-- ... and -->
+    <node id="N1">
+        <data key="neuron_type">leaky</data>
+        <!-- just implied; -->
+        <data key="ext_in">true</data>
+    </node>
+</graphml>
+----
+
+.Logically it's this
+|===
+| Entity | Attr.name | value | Attr.type | Key Id
+
+| N1 | model | leaky | string e| neuron_type
+| N1 | is_ext | true | boolean e| ext_in
+|===
+
+.Represented in {cj}
+[source,json]
+----
+{
+  "data": {
+    "graphml:keys": {
+      "ext_in": { "for": "node", "attr.name": "is_ext",
+        "attr.type": "boolean", "default": "true" },
+      "neuron_type": { "for": "node", "attr.name": "model",
+        "attr.type": "string", "default": "leaky" }
+    }
+  },
+  "graphs": [ {
+    "nodes": [
+      {
+        "id": "N1",
+        "data": {
+          "model": "leaky",
+          "is_ext": true
+        }
+      }
+    ]
+  } ]
+}
+----
+
+== XML Chains
+
+.Input
+[source,xml]
+----
+<?xml version='1.0' encoding='utf-8'?>
+<node>
+    <data key="d1">M&amp;X</data>
+    <data key="d2">M&amp;quot;X</data>
+    <data key="d3">M&nbsp;</data>
+</node>
+----
+
+.Normalized XML Input
+[source,xml]
+----
+<?xml version='1.0' encoding='utf-8'?>
+<node>
+    <data key="d1">M&amp;X</data>
+    <data key="d2">M&amp;quot;X</data>
+    <data key="d3">M&#160;</data>
+    <data key="d4">M"X</data>
+</node>
+----
+
+.Graphml XML In-Memory
+[cols="^d,m",width=50%]
+|===
+| Key | Value (without spaces)
+
+| d1 | M & X
+| d2 | M & q u o t ; X
+| d3 | M [nbsp]
+| d4 | M " X
+|===
+
+CAUTION: on write, XML needs to be escaped.
+
+.XML Out
+[cols="^1d,5m",width=50%]
+|===
+| Key | Value (without spaces)
+
+| d1 | M & a m p ; X
+| d2 | M & a m p ; q u o t ; X
+| d3 | M & # 1 6 0 ;
+| d4 | M & q u o t ; X
+
+|===
+
+
+.Out - ERROR
+[source,xml]
+----
+<?xml version='1.0' encoding='utf-8'?>
+<node>
+    <data key="d1">M&amp;amp;X</data>
+    <data key="d2">M&amp;amp;quot;X</data>
+</node>
+----
+
+
+== Typing
+
+[source,xml]
+----
+<?xml version='1.0' encoding='utf-8'?>
+<data key="foo"><default>AAA</default><data>
+----
+
+AAA can be:
+- 13
+- true
+- Hello
+- This <em>large</em> world
+** had an XML element
+
+XML 2 Graphml Parser: decide string vs. rawXmlString
+
+TIP: Everything in default is an XmlNode, guess JSON type from there
+
+- M&quot;X
+
+XML -> Graphml: data-default is XmlNode
+
+Graphml -> CJ: XmlNode becomes string or xmlString(serialized to string, escaped text nodes)
+
+XmlNode -> IJsonXmlString
+'aaa' <bbb> 'ccc' </bbb> '"yes"&also'
+
+=>
+
+{
+    "xml": "aaa<bbb>ccc</bbb>&quot;yes&quot;&amp;also"
+}
+
+
+
+JSON -> CJ (string vs rawXmlString)
+
+
+== XML & JSON
+
+[source,xml]
+----
+<node>
+  <data key="d0">Hello<b>World</b></data>
+  <data key="d1">Foo</data>
+  <data key="d2">123</data>
+  <data key="d3"></data>
+  <data key="d4"> <![CDATA[42]]></data>
+</node>
+----
+
+.CJ Naive
+[source,json]
+----
+{ "node": {
+    "data": {
+        "d0": {"xml":"Hello<b>World</b>"},
+        "d1": {"xml":"Foo"},
+        "d2": {"xml":"123"},
+        "d3": {"xml":""},
+        "d4": {"xml":" <![CDATA[42]]>"}
+    }
+}
+----
+
+
+.XmlText API
+[plantuml]
+....
+hide empty members
+hide circle
+
+enum CharactersKind {
+    Default
+    PreserveWhitespace
+    IgnorableWhitespace
+    CDATA
+}
+
+interface Section {
+    String value
+}
+XmlText --> Section
+Section -- CharactersKind
+
+class XmlFragmentString {
+    String rawXml
+}
+enum XML.XmlSpace {
+    default
+    preserve
+}
+XmlFragmentString --> XML.XmlSpace
+
+class XmlDocumentFragment{
+}
+class XmlContent
+interface IXmlNode
+XmlContent *--> "0..n" IXmlNode
+XmlDocumentFragment *--> XmlContent
+XmlDocumentFragment *--> XML.XmlSpace
+IXmlNode <|-- XmlText
+IXmlNode <|-- XmlElement
+XmlElement *--> XmlContent
+XmlDocumentFragment .> XmlFragmentString : serialize
+....
+
+
+.Wrapper
+----
+<rootWrapper> Hello <b>World</b> &#160;&amp;quot;<rootWrapper>
+----
+
+
+
+TIP: Reduce XmlStrings if they look like simple strings
+
+
+
+
+
+
+[source,xml]
+----
+  <key id="d0" for="node" attr.type="boolean" attr.name="married" />
+
+  <data key="d0">Hello<b>World</b></data>
+  <data key="d1">Foo</data>
+  <data key="d2">123</data>
+  <data key="d3" />
+  <data key="d4"> <![CDATA[42]]></data>
+----
+
+TIP: If any CDATA occurs, represent as XmlString
+
+Desired Type:
+- boolean
+- string
+- float, double, int, long
+- custom 'yfiles.resource' -- is in <key> attribute `yfiles.type`
+
+
+.Desired Type: boolean
+
+try { String s = xmlText.toPlainString();
+    if can parse s as `true` or `false` -> JSON Boolean
+    else: JSON String or null for empty string
+}
+catch { -> XmlString }
+
+
+.Desired Type: Number
+try { String s = xmlText.toPlainString();
+    if can parse s as Java Number -> JSON Number
+else: JSON String or null for empty string
+}
+catch { -> XmlString }
+
+
+.Desired type: custom (`yfiles.resource`)
+-> XmlString  or null for empty string
+
+.Desired type: string
+try { String s = xmlText.toPlainString();
+-> JSON String or null for empty string
+}
+catch { -> XmlString }
+
+CAUTION: when converting XML DOM to rawXml, we must serialize the XML, i.e. turn elements to `<`, ...
+
+.@Nullable String XmlText.toPlainString()
+Loop over IXmlNode, and XmlText within them
+- respect whitespace settings
+- throw on CDATA Section
+- throw on XML Element children
+
+XML: `My nice &amp;quot;funny string`
+
+DOM: `My nice &quot;funny string`
+
+-> as XML: `My nice &amp;amp;funny&amp;quot; string`
+
+
+.CJ Smart
+[source,json]
+----
+{ "node": {
+    "data": {
+        "d0": {"xml":"Hello<b>World</b>"},
+        "d1": "Foo",
+        "d2": 123,
+        "d3": null,
+        "d4": {"xml":" <![CDATA[42]]>"}
+    }
+}
+----
+
+.The empty XML String
+`{"xml":""}`
+
+
+
+Given an XmlFragmentString (String rawXml + XmlSpace),
+can we simplify to a nicer JSON type instead of JsonXmlString,
+especially, if desiredGrapmlType is not string.
+
+We can simply try to parse as boolean or number.
+But string vs xmlString?
+xmlString will get written as rawXml,
+string will get written as XML-escaped.
+
+So: if xmlEscape(rawString) == rawString, we can simplify to string.
+
+
+
+
+== Round-Tripping
+
+=== Known Issues
+
+Graphml uses data like `<data key="d10">` with key ids that are not defined as `<key>` elements. Thew auto-created `<key>` elements uses ids like `edge-d10` instead of the original `d10`.
+Occurred in Graphml written by Yed 3.12.2.
+
+.Namespace & Schema Location
+The correct Graphml namespace URI, to be used in `xmlns` and the first part of `xsi:schemaLocation` is:
+`http://graphml.graphdrawing.org/xmlns`. Some alternative XSIs are automatically mapped to the standard Graphml URIs. But not all.
+E.g. `http://graphml.graphdrawing.org/xmlns/graphml/graphml-attributes-1.0rc.xsd` is not understood.
+
+.Custom XML Attributes and XML Space
+Graphml `<data> elements may be marked as `<data xml:space="preserved">`. This is an XML feature to define whitespace handling of the content. If the `<data>` elements contains no content -- and the whitespace-preserve info is useless -- it is not represented in {cj}.
+In fact, _all_ custom XML attributes on `<data>` elements are dropped, except `xml:space` if it has an effect.
+Best test file for this: `kubernetes-architecture.graphml`.
+
+We transform Graphml ` hello ` (spaces at begin or end) into `hello`.
+
+TIP: We could respect xml:space preserve, by storing a JSON string ` hello ` and later detec that `s.trim != s` and then write space-preserve back into XML.
+
+.Data Type Conversions
+Some numeric values are stated as `<data key=...>1.<data>`, which later gets translated to a JSON Number in CJ (`1`) and then back into `<data key=...>1</data>` in Graphml. Thus, the dot after the number is lost.
+Occurs in `four_neuron_cpg.graphml`.
+
+.Default Values Removed
+We remove redundant default values. Some Graphml files are changed by that (they state redundant defaults, see `four_neuron_cpg.graphml`).
+
+.Default Values Not Removed
+The normalizer and CJ-to-Graphml converter both ignore `<data>` content which is identical to the default value.
+This detection fails on some numeric due to _Data Type Conversions_ (see above).
+Occurs in `auto_oscillator.graphml`.
+
+.Edgedefault
+We remove a redundant `<graph edgedefault="directed">` attribute. The default in Graphml is directed.
+
+.Mixed Content
+Graphml allows mixed content in `<data>` elements.
+This is supported in {cj} by using the special XML String primitive in JSON. See spec.
+
+
+== XML -> Graphml -> Cj -> G -> X
+
+auto_oscillator.graphml:: Adding redundant default values (but mix `1.` vs `1`)
+four_neuron_cpg.graphml:: Change key type from `float` to `double`, id from `tau` to `node-tau`.
+les-miserables.graphml:: Change key type from `float` to `double`. Key ids from `x` to `node-x`.
+errors/data-encoding-errors/data-enc-apos.graphml.xml:: Auto-create a missing `<key>`
+errors/svgnode-errors/data-with-whitespace.graphml.xml:: Drop a `<data xml:space="preserve">` attribute
+nested-graph-structures/nested_graph_pure_structure.graphml.xml:: Change Graphml `xsi:schemaLocation`
+yworks/yed-3.12.2/graph1_test.graphml:: Key ids, some auto-created
+yworks/yed-3.12.2/guava-17.graphml:: **too large to compare**
+yworks/yfiles-html-3.0.0.3/with-svg-SIMPLER2.graphml.xml:: Auto-fix weird XSI location
+

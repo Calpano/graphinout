@@ -1,0 +1,26 @@
+{"graphs":
+[{"edges":
+[{"endpoints":
+[{"node":
+"city_berlin"},{"node":
+"city_paris"}],"id":
+"e_train","label":
+[{"language":
+"fr","value":
+"Ligne de train"},{"language":
+"en","value":
+"Train line"}]}],"id":
+"g_multi_lang","nodes":
+[{"id":
+"city_berlin","label":
+[{"language":
+"en","value":
+"Berlin"},{"language":
+"de","value":
+"Bär-lin"}]},{"id":
+"city_paris","label":
+[{"language":
+"en","value":
+"Paris"},{"language":
+"fr","value":
+"Paris"}]}]}]}

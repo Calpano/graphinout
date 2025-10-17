@@ -1,0 +1,22 @@
+This is an interesting bug.
+
+The file `with-svg--INVALIDxml.graphml.xml` causes errors when parsing.
+Even the much simpler `with-svg-SIMPLER--INVALIDxml.graphml.xml` fails to be parsed.
+Surprisingly, the even simpler `with-svg-SIMPLER2.graphml.xml` works correctly.
+
+.Contents of `with-svg-SIMPLER--INVALIDxml.graphml.xml`
+[source,xml]
+----
+include::with-svg-SIMPLER--INVALIDxml.graphml.xml[]
+----
+
+.Contents of `with-svg-SIMPLER2.graphml.xml`
+[source,xml]
+----
+include::with-svg-SIMPLER2.graphml.xml[]
+----
+
+So it seems the excessive number of namespace declarations triggers a bug in the Java XML SAX parser.
+
+Most of theses namespace are not used anyway and not other tool besides the yFiles for HTML 3.0.0.3 was found writing that many namespaces.
+So we just marked the file as invalid XML for now.

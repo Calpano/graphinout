@@ -1,95 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.calpano.graphinout</groupId>
+    <groupId>com.graphinout</groupId>
     <artifactId>graphinout</artifactId>
     <name>graphinout</name>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.2-SNAPSHOT</version>
+
+    <description>Graphinout reads many common graph file formats and converts them to Connected JSON or GraphML.</description>
+    <url>https://graphinout.com</url>
+    <licenses>
+        <license>
+            <name>BSD 3-Clause License</name>
+            <url>https://opensource.org/license/bsd-3-clause</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer><id>lilla</id><name>Lilla Diamantisz</name><roles><role>developer</role></roles></developer>
+        <developer>
+            <id>max</id>
+            <name>Max Völkel</name>
+            <organization>ITMV</organization>
+            <organizationUrl>https://maxvoelkel.de</organizationUrl>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer><id>rasoul</id><name>Rasoul Babaei</name><roles><role>developer</role></roles></developer>
+    </developers>
 
     <modules>
         <module>base</module>
+        <module>reader-cj</module>
         <module>reader-graphml</module>
         <module>reader-tgf</module>
-        <module>reader-dot</module>
         <module>reader-example</module>
+        <module>reader-tripletext</module>
         <module>reader-jgrapht</module>
+        <module>reader-adjlist</module>
         <module>engine</module>
-        <module>app-cmdline</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Calpano/graphinout.git</connection>
+        <developerConnection>scm:git:git@github.com:Calpano/graphinout.git</developerConnection>
+        <url>https://github.com/Calpano/graphinout</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j-version>1.7.36</slf4j-version>
-        <logback-classic-version>1.2.13</logback-classic-version>
+        <slf4j-version>2.0.17</slf4j-version>
+        <logback-classic-version>1.5.19</logback-classic-version>
         <junit-jupiter.version>5.9.0</junit-jupiter.version>
-        <mockito-all-version>1.10.19</mockito-all-version>
-        <mockito-core-version>5.1.1</mockito-core-version>
+        <mockito-core-version>5.6.0</mockito-core-version>
         <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
-        <lombok-version>1.18.24</lombok-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
+        <!-- must use same version as spring, otherwise 'java.lang.NoClassDefFoundError: com/fasterxml/jackson/core/exc/StreamConstraintsException' -->
+        <!-- 2.14.1  has a CVE, 2.19.2 is recent but not spring compatible -->
+        <jackson-core-version>2.14.1</jackson-core-version>
+        <jackson-databind-version>2.14.1</jackson-databind-version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.calpano.graphinout</groupId>
-                <artifactId>base</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback-classic-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.11.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok-version}</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter</artifactId>
-                <version>${junit-jupiter.version}</version>
+            <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>${logback-classic-version}</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.2-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
+                <classifier>tests</classifier>
+                <type>test-jar</type>
                 <scope>test</scope>
+                <version>0.1.2-SNAPSHOT</version>
             </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>${mockito-all-version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito-core-version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-junit-jupiter</artifactId>
-                <version>${mockito-junit-jupiter-version}</version>
-                <scope>test</scope>
-            </dependency>
+            <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-core-version}</version></dependency>
+            <dependency><groupId>com.fasterxml.jackson.datatype</groupId><artifactId>jackson-datatype-jsr310</artifactId><version>${jackson-databind-version}</version></dependency>
+            <dependency><groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId><version>3.0.2</version></dependency>
+            <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><version>1.4.4</version></dependency>
+            <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.17.0</version></dependency>
+            <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><version>4.8.157</version></dependency>
+            <dependency><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>4.7.3</version></dependency>
+            <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>${junit-jupiter.version}</version><scope>test</scope></dependency>
+            <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><version>${mockito-core-version}</version><scope>test</scope></dependency>
+            <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><version>${mockito-junit-jupiter-version}</version><scope>test</scope></dependency>
+            <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>${slf4j-version}</version></dependency>
         </dependencies>
     </dependencyManagement>
     <build>
@@ -97,17 +96,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.14.0</version>
                 <configuration>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok-version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -126,7 +118,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -139,7 +131,7 @@
                 <!-- create "-sources.jar" at verify-phase just before install-phase -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -151,27 +143,74 @@
                 </executions>
             </plugin>
 
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>3.11.2</version>
+              <configuration>
+                <!-- Relax doclint to allow generation even with minor HTML issues while we improve source Javadoc -->
+                <failOnError>false</failOnError>
+                <doclint>none</doclint>
+                <!-- Ensure consistent language to avoid locale-specific doclint behavior -->
+                <locale>en</locale>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>attach-javadocs</id>
+                  <goals>
+                    <goal>jar</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+
+            <plugin>
+                  <groupId>org.sonatype.central</groupId>
+                  <artifactId>central-publishing-maven-plugin</artifactId>
+                  <version>0.9.0</version>
+                  <extensions>true</extensions>
+                  <configuration>
+                    <publishingServerId>central</publishingServerId>
+                  </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>github-graphinout</id>
+            <name>GitHub Graphinout Maven Packages</name>
+            <url>https://maven.pkg.github.com/Calpano/graphinout</url>
+        </snapshotRepository>
+    </distributionManagement>
 
-    <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305 -->
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.classgraph</groupId>
-            <artifactId>classgraph</artifactId>
-            <version>4.8.154</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+<profiles>
+    <profile>
+      <id>sign-for-sonar</id>
+      <activation>
+        <property><name>performRelease</name><value>true</value></property>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.8</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+</profiles>
+
 </project>

@@ -1,0 +1,16 @@
+{
+  "graphs": [
+    { "nodes": [
+        { "id": "node1", "label": [ { "value": "First Node" } ] },
+        { "id": "node2", "label": [ { "value": "Second Node" } ] }
+      ],
+      "edges": [
+        { "endpoints": [
+            { "direction": "in", "node": "node1" },
+            { "direction": "out", "node": "node2" }
+          ]
+        }
+      ]
+    }
+  ]
+}

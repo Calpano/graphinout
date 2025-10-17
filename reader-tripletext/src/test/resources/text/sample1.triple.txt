@@ -1,0 +1,6 @@
+Hello!
+Welcome to the World of TripleText.
+TripleText --has type-- Embedded Syntax
+Embedded Syntax --is subtype of-- Syntax
+TripleText --created in-- 2019
+And on goes the normal text.

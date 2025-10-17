@@ -1,0 +1,45 @@
+{
+  "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
+  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+
+  "graphs": [
+    {
+      "id": "g_ports",
+      "label": [ { "value": "Circuit Diagram with Ports" } ],
+      "nodes": [
+        {
+          "id": "and_gate",
+          "label": [ { "value": "AND Gate" } ],
+          "ports": [
+            { "id": "in1" },
+            { "id": "in2" },
+            { "id": "out" }
+          ]
+        },
+        {
+          "id": "ic1",
+          "label": [ { "value": "Microcontroller" } ],
+          "ports": [
+            {
+              "id": "gpio",
+              "label": [ { "value": "GPIO Bank" } ],
+              "ports": [
+                { "id": "pin1" },
+                { "id": "pin2" }
+              ]
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "e_logic",
+          "endpoints": [
+            { "node": "and_gate", "port": "out" },
+            { "node": "ic1", "port": "pin1" }
+          ]
+        }
+      ]
+    }
+  ]
+}

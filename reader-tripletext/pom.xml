@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.graphinout</groupId>
+        <artifactId>graphinout</artifactId>
+        <version>0.1.2-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>reader-tripletext</artifactId>
+    <name>reader-tripletext</name>
+    <description>TripleText Reader</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.graphinout</groupId>
+            <artifactId>base</artifactId>
+            <version>0.1.2-SNAPSHOT</version>
+        </dependency>
+        <!-- test -->
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
+        <dependency>
+            <groupId>com.graphinout</groupId>
+            <artifactId>base</artifactId>
+            <version>0.1.2-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency><dependency><groupId>org.jetbrains</groupId><artifactId>annotations</artifactId><version>24.0.1</version><scope>compile</scope></dependency>
+    </dependencies>
+
+</project>

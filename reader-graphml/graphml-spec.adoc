@@ -1,0 +1,71 @@
+= The Graphml Specification
+
+== Specifications
+
+.Sources
+- http://graphml.graphdrawing.org/specification.html[]
+
+.Papers
+- __U. Brandes, M. Eiglsperger, I. Herman, M. Himsolt, and M.S. Marshall__:
+**GraphML Progress Report: Structural Layer Proposal.**
+Proc. 9th Intl.
+Symp.
+Graph Drawing (GD '01), LNCS 2265, pp. 501-512.
+© Springer-Verlag, 2002.
+
+== Parts
+
+.Graphml can be decomposed into the following parts:
+core 'structural layer':: the GraphML language core
+
+extension 'base-type attributes':: allows to add base-type attributes
+
+extension 'parsing information':: allows to add parsing information
+
+== Analysis
+
+=== GraphML XML Element Nesting
+
+.Nesting
+[plantuml]
+....
+hide empty members
+hide circles
+class graphml
+
+graphml --> desc
+graphml --> key
+graphml ..> graph
+graphml ..> data
+
+graph --> desc
+graph ..> data
+graph ..> node
+graph ..> edge
+graph ..> hyperedge
+graph --> locator
+
+node --> desc
+node ..> data
+node ..> port
+node ..> graph
+node --> locator
+
+port --> desc
+port ..> data
+port ..> port
+
+edge --> desc
+edge ..> data
+edge ..> graph
+
+hyperedge --> desc
+hyperedge ..> data
+hyperedge --> endpoint
+hyperedge ..> graph
+
+endpoint --> desc
+
+key --> desc
+key --> default
+....

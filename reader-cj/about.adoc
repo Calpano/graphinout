@@ -1,0 +1,6 @@
+= Connected JSON
+
+https://calpano.github.io/connected-json/spec.html
+
+Connected JSON is a JSON-based format for representing graph data structures.
+It provides a standardized way to encode nodes, edges, and their properties in a JSON format that is both human-readable and machine-processable.

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd">
+
+<key attr.name="cj_jsonData" attr.type="string" id="cj_jsonData"><desc>Connected JSON allows a JSON 'data' property on all objects.</desc></key>
+<key attr.name="cj_label" attr.type="string" id="cj_label"><desc>Connected JSON label</desc></key>
+<key attr.name="type" attr.type="string" for="graph" id="neuron_class"><default>oscillator</default></key>
+<key attr.name="R" attr.type="double" for="node" id="R"><default>1.</default></key>
+<key attr.name="a" attr.type="double" for="node" id="a"><default>1.</default></key>
+<key attr.name="amp0" attr.type="double" for="node" id="amp0"><default>0.</default></key>
+<key attr.name="f" attr.type="double" for="node" id="f"><default>0.25</default></key>
+<key attr.name="is_ext" attr.type="boolean" for="node" id="ext_in"><default>false</default></key>
+<key attr.name="model" attr.type="string" for="node" id="model"><default>oscillator</default></key>
+<key attr.name="name" attr.type="string" for="node" id="neuron_name"><default>&quot;neuron&quot;</default></key>
+<key attr.name="phase0" attr.type="double" for="node" id="phase0"><default>0.</default></key>
+<key attr.name="type" attr.type="string" for="node" id="neuron_type"><default>oscillator</default></key>
+<key attr.name="x" attr.type="float" for="node" id="pos_x"><default>0.0</default></key>
+<key attr.name="y" attr.type="float" for="node" id="pos_y"><default>0.0</default></key>
+<key attr.name="cj_edgeType" attr.type="string" for="edge" id="cj_edgeType"><desc>Connected JSON edgeType {'source'=..., 'type'=...}</desc></key>
+<key attr.name="phi" attr.type="double" for="edge" id="phi"/>
+<key attr.name="weight" attr.type="double" for="edge" id="weight"/>
+<graph edgedefault="directed" id="CPG" parse.edgeids="free" parse.edges="2" parse.nodeids="free" parse.nodes="2" parse.order="nodesfirst">
+<node id="N1">
+<data key="R">1</data>
+<data key="a">1</data>
+<data key="amp0">0</data>
+<data key="phase0">0</data></node>
+<node id="N2">
+<data key="R">1</data>
+<data key="a">1</data>
+<data key="amp0">0</data>
+<data key="phase0">0</data></node>
+<edge source="N1" target="N2">
+<data key="phi">1.5</data>
+<data key="weight">1</data></edge>
+<edge source="N2" target="N1">
+<data key="phi">1.5</data>
+<data key="weight">1.5</data></edge></graph></graphml>

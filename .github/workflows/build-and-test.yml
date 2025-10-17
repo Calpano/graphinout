@@ -2,42 +2,78 @@ name: Build and Test
 
 on:
   push:
+  workflow_dispatch:
+
+# list of OSes and what they contain https://github.com/actions/virtual-environments
 
 jobs:
-  build-and-test:
-    # list of OSes and what they contain https://github.com/actions/virtual-environments
+  # This steps uses the maven cache better
+  The-Build:
     runs-on: ubuntu-latest
+    # Grant permissions for GITHUB_TOKEN to upload packages
+    permissions:
+      contents: read
+      packages: write
+    env:
+      MAVEN_OPTS: "-Xmx6144m"
     steps:
       - name: ↙️ Check out repository code from git
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          repository: Calpano/graphinout
           path: graphinout
 
-      - name: ☕ Setup Java JDK
-        uses: actions/setup-java@v3
+      - name: ☕ Setup Java JDK and Authenticate with GitHub Packages
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21' # v21 required for Mockito, newer fails
           cache: 'maven'
+          server-id: github-graphinout # This ID must match the <id> in your pom.xml's <distributionManagement>
 
-      - name: ⬇️ Install root project
-        working-directory: graphinout
-        run: mvn clean -U -N install
-
-      - name: 🔨️ Build & ⬇ install base
-        working-directory: graphinout/base
-        run: mvn clean -U install
-
-      - name: 🔨️ Build & ⬇ install readers
-        working-directory: graphinout
-        run: mvn clean -U -pl !base,!engine,!app-cmdline install
+      - name: "⚙️ Configure settings.xml for Maven"
+        uses: s4u/maven-settings-action@v3.0.0
         env:
-          MAVEN_OPTS: "-Xmx6144m"
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          MAVEN_CENTRAL_USER: ${{ secrets.MAVEN_CENTRAL_USER }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+        with:
+          override: true
+          githubServer: false
+          servers: |
+            [{
+                "id": "github-graphinout",
+                "username": "${{ env.GITHUB_ACTOR }}",
+                "password": "${{ env.GITHUB_TOKEN }}"
+            },{
+                "id": "central",
+                "username": "${{ env.MAVEN_CENTRAL_USER }}",
+                "password": "${{ env.MAVEN_CENTRAL_TOKEN }}"
+            }]
 
-      - name: 🔨️ Build & ⬇ install engine & app-cmdline
+      # --- This single step replaces the previous four ---
+      - name: 🔨 Build, Test, and Package all modules
         working-directory: graphinout
-        run: mvn clean -U -pl engine,app-cmdline install
-        env:
-          MAVEN_OPTS: "-Xmx6144m"
+        run: mvn clean install --batch-mode
 
+      #      - name: ⬇️ Install root project
+      #        working-directory: graphinout
+      #        run: mvn clean -N install
+      #
+      #      - name: 🔨️ Build & ⬇ install base
+      #        working-directory: graphinout/base
+      #        run: mvn clean install
+      #
+      #      - name: 🔨️ Build & ⬇ install readers
+      #        working-directory: graphinout
+      #        run: mvn clean -pl !base,!engine install
+      #
+      #      - name: 🔨️ Build & ⬇ install engine
+      #        working-directory: graphinout
+      #        run: mvn clean -pl engine install
+
+      - name: ↗️ Deploy to Github Package Registry
+        # TODO enable when deploy works
+        # if: github.ref == 'refs/heads/main'
+        working-directory: graphinout
+        run: mvn deploy --batch-mode -DskipTests

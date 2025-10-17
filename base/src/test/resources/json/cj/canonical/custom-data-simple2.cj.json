@@ -1,0 +1,14 @@
+{
+  "connectedJson": {
+    "versionDate": "2025-07-14", "versionNumber": "5.0.0"
+  },
+  "data": {
+    "foo": [
+      true, "bar", "baz", 2
+    ],
+    "population": 8982000,
+    "sub": {
+      "a": 3
+    }
+  }
+}

@@ -1,0 +1,29 @@
+<configuration debug="false">
+    <!-- debug="true" helps to debug logback -->
+    <!-- scan="true" is fun to reload changes every minute -->
+    <!-- packagingData="true" - shows where classes were loaded from -->
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <!-- Pattern Tipp: Preprend the '.'-sign to indicate the config worked and this line is stored in a log file -->
+            <!-- Default:       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern> -->
+            <pattern>%-5p: %m   at %C:%L%n</pattern>
+            <!-- Sometimes altered by code format: "%-5p: %m   at %C.(%F:%L)%n" -->
+        </encoder>
+    </appender>
+
+    <logger name="org.mortbay.thread" level="ERROR"/>
+    <!-- Set level to DEBUG or even TRACE -->
+    <logger name="com.graphinout.reader.graphml.GraphmlSAXHandler" level="INFO" />
+    <logger name="com.graphinout.base.validation.graphml.ValidatingGraphMlWriter" level="INFO" />
+
+    <!-- if higher than warn every other package (like Apache httpClient), logs too much -->
+    <root level="debug">
+        <appender-ref ref="Console" />
+    </root>
+
+    <!-- compress log files on JVM exit etc -->
+    <shutdownHook/>
+</configuration>

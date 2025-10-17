@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+    <key attr.name="lon" attr.type="double" for="node" id="d2"/>
+    <key attr.name="lat" attr.type="double" for="node" id="d1"/>
+    <key attr.name="country" attr.type="string" for="node" id="d0"/>
+    <graph edgedefault="undirected">
+        <node id="ABQ_Albuquerque">
+            <data key="d0">USA</data>
+            <data key="d1">35.040222222222226</data>
+            <data key="d2">-106.60919444444444</data>
+        </node>
+        <node id="AGU_Aguascalientes">
+            <data key="d0">M&amp;Eacute;XICO#MEXICO</data>
+            <data key="d1">21.704722222222223</data>
+            <data key="d2">-102.3175</data>
+        </node>
+        <node id="WSU_Wasu">
+            <data key="d0">PAPUA_NEW_GUINEA</data>
+            <data key="d1">-6.0</data>
+            <data key="d2">147.25</data>
+        </node>
+        <edge source="AGU_Aguascalientes" target="WSU_Wasu"/>
+    </graph>
+</graphml>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd">
+
+<key attr.name="cj_jsonData" attr.type="string" id="cj_jsonData"><desc>Connected JSON allows a JSON 'data' property on all objects.</desc></key>
+<key attr.name="cj_label" attr.type="string" id="cj_label"><desc>Connected JSON label</desc></key>
+<key attr.name="Expanded" attr.type="boolean" for="node" id="d1" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded"><default>true</default></key>
+<key attr.name="zOrder" attr.type="int" for="node" id="d0" y:attr.uri="http://www.yworks.com/xml/yfiles-z-order/1.0/zOrder"/>
+<key attr.name="cj_edgeType" attr.type="string" for="edge" id="cj_edgeType"><desc>Connected JSON edgeType {'source'=..., 'type'=...}</desc></key></graphml>

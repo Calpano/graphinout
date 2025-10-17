@@ -1,0 +1,49 @@
+= Streams in GraphInOut
+:toc:
+
+.Streams
+[plantuml]
+....
+hide empty members
+'hide circle
+
+class JsonReader
+interface JsonWriter {
+    void arrayStart();
+    void arrayEnd();
+    void objectStart();
+    void objectEnd();
+    void number(Number number);
+    void string(String string);
+    void boolean(boolean bool);
+    void nullValue();
+}
+
+interface XmlWriter {
+     void characterData(String characterData)
+    void endDocument()
+    void endElement(String name)
+    void startDocument()
+    void startElement(String name, Map<String, String> attributes)
+    void lineBreak()
+}
+
+interface GioWriter {
+    void startDocument(GioDocument document)
+    void endDocument()
+    void key(GioKey gioKey)
+    void data(GioData data)
+    void startGraph(GioGraph gioGraph)
+    void endGraph(@Nullable URL locator)
+    void startNode(GioNode node)
+    void endNode(@Nullable URL locator)
+    void startEdge(GioEdge edge)
+    void endEdge()
+    void startPort(GioPort port)
+    void endPort()
+}
+JsonWriter --> GioWriter
+XmlWriter --> GioWriter
+
+JsonReader --> JsonWriter
+....

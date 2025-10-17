@@ -37,6 +37,7 @@ Writing other formats could be a nice _future_ extension.
 This would turn {gio} into the 'https://pandoc.org/[pandoc] of graph file formats'.
 
 === Input Formats
+
 A great 2015 paper on graph file formats: https://arxiv.org/pdf/1503.02781.pdf[]
 including links to graph data repositories -- time frames indicate when the format was/is used
 
@@ -83,7 +84,6 @@ Common file types:
 * Web Ontology Language (XML-based, `.owl.xml`)
 * BioPAX (OWL-based) BioPAX (Biological PAthways eXchange) Format http://www.biopax.org/[spec]
 
-
 == Usage
 
 Command line::
@@ -120,6 +120,7 @@ There are many, many graph concepts, which are not required to understand or eve
 - hyper-graphs: edges with more than 2 endpoints
 
 == Ecosystem
+
 * Domain Software engineering (2002) https://userpages.uni-koblenz.de/~ist/GXL/tools/tools.html[]
 
 === Graph Toolkits
@@ -127,7 +128,6 @@ There are many, many graph concepts, which are not required to understand or eve
 * https://networkx.org/[NetworkX] <- GEXF, GML, GraphML, LEDA, Pajek
 * https://en.wikipedia.org/wiki/Boost_(C%2B%2B_libraries)[BOOST] C++ library <--> GraphML
 * https://graph-tool.skewed.de/[graph-tool] <-> GraphML, GML
-
 
 === Graph Databases
 

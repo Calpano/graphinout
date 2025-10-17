@@ -1,0 +1,36 @@
+
+= Dependencies
+
+.Dependencies
+[plantuml]
+----
+@startuml
+left to right direction
+package "graphinout" {
+  [engine]
+  [base]
+  [reader-cj]
+  [reader-graphml]
+  [reader-tgf]
+  [reader-example]
+  [reader-tripletext]
+  [reader-jgrapht]
+  [reader-adjlist]
+}
+
+[engine] --> [base]
+[engine] --> [reader-graphml]
+[engine] --> [reader-jgrapht]
+[engine] --> [reader-tgf]
+[engine] --> [reader-tripletext]
+[reader-adjlist] --> [base]
+[reader-cj] --> [base]
+[reader-cj] --> [reader-graphml] : Cj-Graphml, Graphml-Gio
+[reader-example] --> [base]
+[reader-graphml] --> [base]
+[reader-jgrapht] --> [base]
+[reader-tgf] --> [base]
+[reader-tripletext] --> [base]
+
+@enduml
+----

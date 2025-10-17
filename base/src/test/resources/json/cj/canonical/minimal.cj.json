@@ -1,0 +1,8 @@
+{
+  "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
+  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+  "connectedJson": {
+    "versionDate": "2025-07-14",
+    "versionNumber": "5.0.0"
+  }
+}

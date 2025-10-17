@@ -1,0 +1,33 @@
+= Polyglot Graphinout
+
+.Convert Anything to Everything
+[plantuml]
+....
+hide empty members
+hide circle
+' left to right direction
+
+class GioEngine {
+    can emit GraphML, CJ, ...
+}
+interface GioReader
+
+GioEngine --> GioReader : loads via\nclasspath\nreflection
+
+GioReader <|-- ReaderA
+GioReader <|-- ReaderB
+
+interface InputSource
+interface ContentErrors
+interface GioWriter
+interface JsonElementWriter
+JsonElementWriter <|-- GioWriter
+
+InputSource .> GioReader : read
+GioReader .> GioWriter : writes
+GioReader ..> ContentErrors
+
+GioWriter <|-- GraphmlWriter
+GioWriter <|-- ConnectedJsonWriter
+
+....

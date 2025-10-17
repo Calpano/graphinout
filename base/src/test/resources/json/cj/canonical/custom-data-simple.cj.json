@@ -1,0 +1,37 @@
+{
+  "connectedJson": {
+    "versionDate": "2025-07-14",
+    "versionNumber": "5.0.0"
+  },
+  "graphs": [
+    {
+      "nodes": [
+        {
+          "id": "london",
+          "data": {
+            "foo": ["bar","baz", 2 ],
+            "population": 8982000,
+            "sub": { "a":  3}
+          }
+        },
+        {
+          "id": "tokyo",
+          "data": { "population": 123456 }
+        }
+      ],
+      "edges": [
+        {
+          "id": "flight",
+          "endpoints": [
+            { "node": "london" },
+            { "node": "tokyo" }
+          ],
+          "data": {
+            "carrier": "Multiple",
+            "distance_km": 9590
+          }
+        }
+      ]
+    }
+  ]
+}

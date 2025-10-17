@@ -1,0 +1,81 @@
+package com.graphinout.reader.cj;
+
+import com.graphinout.base.gio.GioWriter;
+import com.graphinout.base.reader.ContentError;
+import com.graphinout.foundation.input.SingleInputSource;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.Resource;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
+import static com.graphinout.foundation.TestFileUtil.inputSource;
+import static org.mockito.Mockito.verifyNoInteractions;
+
+//@Disabled
+class CjReaderTest {
+
+    public static final String EMPTY_FILE = "";
+    private AutoCloseable closeable;
+    private ConnectedJsonReader underTest;
+    @Mock private GioWriter mockGioWriter;
+    private List<ContentError> capturedErrors;
+    private Consumer<ContentError> errorConsumer;
+
+    private static Stream<String> getResourceFilePaths() {
+        return new ClassGraph().scan().getAllResources().stream()
+                .map(Resource::getPath).
+                filter(ConnectedJsonReader.FORMAT::matches)
+                .filter(path -> !path.contains("/extended/"));
+    }
+
+    @AfterEach
+    public void releaseMocks() throws Exception {
+        closeable.close();
+    }
+
+    @BeforeEach
+    void setUp() {
+        closeable = MockitoAnnotations.openMocks(this);
+        this.underTest = new ConnectedJsonReader();
+        this.capturedErrors = new ArrayList<>();
+        this.errorConsumer = capturedErrors::add;
+    }
+
+    @Disabled("Handling empty files is underspecified")
+    @Test
+    void shouldNotCallErrorConsumerAndGioWriterWhenFileIsEmpty() throws IOException {
+        SingleInputSource inputSource = SingleInputSource.of("test-empty", EMPTY_FILE);
+
+        underTest.errorHandler(errorConsumer);
+        underTest.read(inputSource, mockGioWriter);
+
+        verifyNoInteractions(mockGioWriter);
+        // Verify no errors were captured
+        assert capturedErrors.isEmpty();
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("com.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
+    void shouldWorkAsIntended(String displayName, Resource resource) throws IOException {
+        SingleInputSource singleInputSource = inputSource(resource);
+
+        underTest.read(singleInputSource, mockGioWriter);
+
+        // Verify no errors were captured
+        assert capturedErrors.isEmpty();
+    }
+
+}

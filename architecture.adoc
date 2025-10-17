@@ -3,20 +3,39 @@
 
 
 == Basic Idea
+
 .Basic Reader Idea
 [plantuml,basic-idea,svg]
 ....
 hide empty members
-class Input
-class Output
+hide circle
+' left to right direction
+
+class Input {
+    InputStream
+    Reader
+    String
+}
+class FileFormat {
+    id
+    extensions
+}
+class IntermediateModel as "Intermediate\nModel"
+class Output {
+    String
+}
 interface Reader
-Input -> Reader : one reader\n can read\n one file format
-Reader -> GioModel: interprets it\nas Gio model
-GioModel -> GraphML: maps to GraphML
-GraphML -> Output: writes out
+Input -> Reader
+Reader *-- FileFormat: one reader\n can read\n one file format
+Reader -> IntermediateModel: interprets it\nas intermediate model
+IntermediateModel -> Writer
+Writer <|-- GraphML
+Writer <|-- ConnectedJson
+Writer -> Output
 ....
 
 == Projects and Packages
+
 base:: Basic IO helpers, streaming Graph API (`Gio...`), API for Readers.
 Converts an incoming Graph API stream (`GioWriter`) to a GraphML/XML stream (`GraphmlWriter`).
 
@@ -81,17 +100,13 @@ Engine --> ReaderB
 Engine --> ReaderC
 }
 
-class CmdLineApp
-class RestApiApp
-class AnotherApp
-CmdLineApp --> Engine
-RestApiApp --> Engine
-AnotherApp --> Engine
+class App
+App --> Engine
 ....
 
 .Packages
 ----
-com.calpano.graphinout
+com.graphinout
     .base
         .gio // our graph API
         .graphml // GraphML spec as classes for in/out
@@ -119,7 +134,7 @@ base.gio::: Unified model for all kinds of graphs, inspired by GraphML model, cl
 
 - GioWriter: Knows how to map to GraphML model and calls `GraphmlWriter`
 
-.Package `com.calpano.graphinout.base`
+.Package `com.graphinout.base`
 [plantuml,project-base,svg]
 ----
 hide empty members
@@ -156,7 +171,7 @@ GraphmlWriter ....> GraphmlHyperEdge
 * **ContentError**: Similar to a log message
 * **Resolver**: Resolves external entities and references, e.g. XML entity references or GraphML locators.
 
-[plantuml, base,svg]
+[plantuml,base,svg]
 ....
 hide empty members
 interface InputSource {
@@ -202,7 +217,6 @@ class XmlWriter {
 }
 XmlWriter --> OutputSink
 ....
-
 
 == Reader
 
@@ -286,6 +300,7 @@ interface Reader {
 ----
 
 === Reader Example
+
 .TGF Reader Example
 [source,java]
 ----
@@ -319,40 +334,26 @@ class TgfConfig {
 ----
 
 == TODO
+
 We also need Service Lookup
 
 == INBOX
 
-FileFormat
-extension ".tgf"
+FileFormat extension ".tgf"
 
-FileFormat "DOT"
-id
-label
-extension ".dot", ".gv"
+FileFormat "DOT" id label extension ".dot", ".gv"
 
 TgfReader
 
-
-"reader-FOOO" Maven project
-multiple GioReader
+"reader-FOOO" Maven project multiple GioReader
 
 Reader 1:1 FileFormat
 
-Engine
-service lookup -> SOMETHINGS
-SOMETHING -> Reader -> ext
+Engine service lookup -> SOMETHINGS SOMETHING -> Reader -> ext
 
+one jar: "reader-six" graph6 sparse6 digraph6 xxx
 
-one jar: "reader-six"
-graph6
-sparse6
-digraph6
-xxx
-
-
-GioService
-used in service lookup
+GioService used in service lookup
 
 one GioService will contain multiple GioReader
 

@@ -1,0 +1,167 @@
+= Path Resolver
+:toc:
+
+This document describes the path-resolver library, which allows navigating hierarchical data structures using a simple path language.
+
+== Core Concepts
+
+The path resolver is designed to be extensible, allowing it to navigate any data structure as long as appropriate adapters are registered. The core components are:
+
+* `PathResolver`: The main entry point for resolving paths.
+* `Step`: Represents a single segment of a path.
+* `GraphmlResult`: Encapsulates the result of a path resolution.
+* `IMapLike` and `IListLike`: Interfaces that abstract over map-like and list-like data structures.
+* `ITypeAdapter` and `TypeAdapters`: A mechanism for converting custom types into `IMapLike` or `IListLike`.
+
+== `PathResolver`
+
+The `PathResolver` class is the primary entry point for path resolution. It is instantiated using `PathResolver.create()`.
+
+[source,java]
+----
+PathResolver pathResolver = PathResolver.create();
+----
+
+The `PathResolver` comes with pre-configured adapters for `java.util.Map`, `java.util.List`, `IJsonObject`, and `IJsonArray`. You can register custom adapters for your own data types.
+
+=== Resolving Paths
+
+The main methods for resolving paths are:
+
+* `resolveAll(Object root, List<String> path)`: Resolves a complete path against a root object.
+* `resolve1(Object root, String step)`: Resolves a single step.
+* `resolveAny(Object root)`: Returns all possible results from a root object.
+
+== Path Syntax
+
+A path is a list of strings, where each string is a "step". The syntax for a step depends on the type of the object being navigated.
+
+* **Map Property:** To access a property of a map-like object, use the property name as the step.
+[source,java]
+----
+// Given a map {"foo": "bar"}
+List<Result> results = pathResolver.resolve1(map, "foo");
+// results will contain one result with the value "bar"
+----
+
+* **List Index:** To access an element of a list-like object, use the index enclosed in square brackets, e.g., `[1]`.
+[source,java]
+----
+// Given a list ["a", "b", "c"]
+List<Result> results = pathResolver.resolve1(list, "[1]");
+// results will contain one result with the value "b"
+----
+
+* **Wildcards:**
+    ** `[*]` or `[$]` for lists: Access all elements of a list.
+    ** `*` or `$` for maps: Access all values of a map.
+    ** `..`: The "any child" operator, which recursively resolves all children of the current object.
+
+== `Step`
+
+The `Step` class parses a single path segment and determines the action to take based on its syntax (e.g., map access, list access, wildcard). It has a `kind()` method that returns a `Step.Kind` enum, which can be one of:
+
+[cols="2h,^1m,8"]
+|===
+| Name | Syntax | Description
+
+| Any | .. | All child-nodes in the collection, recursively. Includes root.
+| List 1 | [7] | Get the element at index 7 from array-like. If not an array, return nothing.
+| List All | [*] | Get all elements from array-like. If not an array, return nothing.
+| Map 1 | foo | Get the value associated with key `foo` from map-like. If not a map, return nothing.
+| Map All | * | All child-nodes in the map. Does not include the map itself.
+If not a map, return nothing.
+|===
+
+== `Result`
+
+The `GraphmlResult` class holds the outcome of a resolution. It contains:
+
+* `path()`: The path taken to reach the result.
+* `values()`: A list of all objects traversed to reach the result, with the final value being the last element.
+* `value()`: The final value of the resolution.
+
+== Adapters
+
+To make the `PathResolver` work with your own data structures, you need to provide adapters that convert your objects into `IMapLike` or `IListLike`.
+
+=== `IMapLike` and `IListLike`
+
+* `IMapLike`: An interface for objects that behave like a `Map<String, Object>`. It has `keys()` and `get(String key)` methods.
+* `IListLike`: An interface for objects that behave like a `List<Object>`. It has `size()` and `get(int index)` methods.
+
+Static helper methods are provided to easily create instances for common cases, like wrapping a `java.util.Map` or `java.util.List`.
+
+=== `ITypeAdapter` and `TypeAdapters`
+
+* `ITypeAdapter`: A functional interface that converts an object of type `T` to an adapted type `A`.
+* `TypeAdapters`: A registry for `ITypeAdapter`s. The `PathResolver` uses a `TypeAdapters` instance to find the correct adapter for a given object.
+
+You can register your own adapters on the `PathResolver`:
+
+[source,java]
+----
+class MyCustomType {
+    // ...
+}
+
+pathResolver.registerMap(MyCustomType.class, myCustomType -> {
+    // return an IMapLike view of myCustomType
+    return IMapLike.ofProperty("someProperty", "someValue");
+});
+----
+
+The `TypeAdapters` class will automatically look for adapters for super-classes and interfaces if no direct adapter is found for a given class.
+
+== `KPaths`
+
+A simple utility class with a static method `of(String pathString)` that splits a `/`-delimited string into a `List<String>` representing a path.
+
+[source,java]
+----
+List<String> path = KPaths.of("a/b/c");
+// returns ["a", "b", "c"]
+----
+
+
+
+
+== Architecture
+.Architecture
+[plantuml]
+....
+hide empty members
+hide circle
+
+class Result
+Result *-- "n" String : steps
+Result *-- "n" Object : values
+
+class PathResolver
+PathResolver *-- TypeAdapters : registers\nIMapLike,\nIListLike
+
+Step ..> PathResolver : steps
+
+PathResolver .. IMapLike : uses
+PathResolver .. IListLike : uses
+
+class TypeAdapters
+TypeAdapters *-- MapMap
+interface IMapLike {
+    List<String> keys()
+    Object get(String key)
+}
+interface IListLike {
+    int size()
+    Object get(int index)
+}
+interface ITypeAdapter
+TypeAdapters *-- ITypeAdapter
+
+class resultList as "List<Result>"
+resultList *-- Result
+
+PathResolver ..> resultList
+....
+
+== Usage

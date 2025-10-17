@@ -1,0 +1,35 @@
+{
+  "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
+  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+  "nodes": [
+    { "id": "node1", "label": "First Node" },
+    { "id": "node2", "label": "Second Node", "ports": [ "port1", { "id": "port2" } ] }
+  ],
+  "edges": [
+    { "source": "node1", "target": "node2" },
+    {
+      "data": { "foo": "bar" },
+      "endpoints": [
+        { "direction": "out", "node": "node1" },
+        { "direction": "in", "node": "node2", "port": "port1" }
+      ]
+    }
+  ],
+  "graphs": [
+    {
+      "id": "subgraph1",
+      "nodes": [
+        { "id": "sub1", "label": [ { "value": "Sub Node" } ] }
+      ],
+      "edges": [
+        {
+          "data": { "foo": "bar" },
+          "endpoints": [
+            { "direction": "in", "node": "sub1" },
+            { "direction": "out", "node": "node2" }
+          ]
+        }
+      ]
+    }
+  ]
+}
