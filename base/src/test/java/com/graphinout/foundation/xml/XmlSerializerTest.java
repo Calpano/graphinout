@@ -27,19 +27,13 @@ class XmlSerializerTest {
         assertThat(doc).isNotNull();
 
         // the actual test
-
-        // FIXME
-        Xml2StringWriter w = new Xml2StringWriter();
-        doc.fire(w);
-        String xml2 = w.resultString();
-
-        Object xml1 = XmlSerializer.toXmlString(doc, XML.XmlSpace.default_);
-        assertThat(xml1).isNotNull();
+        Object xml = XmlSerializer.toXmlString(doc, XML.XmlSpace.default_);
+        assertThat(xml).isNotNull();
 
         String s = "";
-        if (xml1 instanceof String xmlString1)
+        if (xml instanceof String xmlString1)
             s = xmlString1;
-        else if (xml1 instanceof XmlFragmentString xmlFragmentString) {
+        else if (xml instanceof XmlFragmentString xmlFragmentString) {
             s = xmlFragmentString.rawXml();
         } else {
             Assertions.fail();
