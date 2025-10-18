@@ -62,22 +62,22 @@ class GraphmlReaderContentErrorTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.foundation.TestFileProvider#graphmlResources")
-    void readAllGraphmlFiles(String displayName, Resource gmlResource) throws Exception {
-        if (TestFileUtil.isInvalid(gmlResource, "graphml", "xml")) {
+    void readAllGraphmlFiles(String displayName, Resource graphmlResource) throws Exception {
+        if (TestFileUtil.isInvalid(graphmlResource, "graphml", "xml")) {
             return;
         }
 
-        if (gmlResource.getPath().endsWith("schema-1--INVALIDgraphml.graphml"))
-            // FIXME #115
+        // see #115
+        if (graphmlResource.getPath().endsWith("schema-1--INVALIDgraphml.graphml"))
             return;
 
-        log.info("Start to parse file [{}]", gmlResource.getPath());
+        log.info("Start to parse file [{}]", graphmlResource.getPath());
 
-        if (invalidFiles.stream().anyMatch(s -> gmlResource.getPath().endsWith(s))) {
+        if (invalidFiles.stream().anyMatch(s -> graphmlResource.getPath().endsWith(s))) {
             log.info("This file is known as invalid.");
             return;
         }
-        try (SingleInputSource singleInputSource = inputSource(gmlResource)) {
+        try (SingleInputSource singleInputSource = inputSource(graphmlResource)) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
             graphmlReader.errorHandler(contentErrors::add);

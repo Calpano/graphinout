@@ -19,6 +19,9 @@ import com.graphinout.foundation.util.PowerStackEnum;
 public class CjStream2CjWriter implements ICjStream {
 
     /**
+     * The 'None' marker in the following protocol is a marker that the element was started but none of the expected
+     * child types arrived ye.
+     * <p>
      * Document: None, InGraphs
      * <p>
      * Graph: None, InNodes, InEdges, InGraphs
@@ -36,8 +39,6 @@ public class CjStream2CjWriter implements ICjStream {
     private final PowerStackEnum<Protocol> protocolStack = PowerStackEnum.create();
 
     public CjStream2CjWriter(ICjWriter cjWriter) {this.cjWriter = cjWriter;}
-
-    // FIXME need a stack which records per doc/graph where we are: empty, inNodes, inEdges, inGraphs
 
     @Override
     public ICjDocumentChunkMutable createDocumentChunk() {

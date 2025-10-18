@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 import static com.graphinout.foundation.TestFileUtil.inputSource;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-//@Disabled
 class CjReaderTest {
 
     public static final String EMPTY_FILE = "";

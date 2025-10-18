@@ -30,6 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
+/**
+ * This feature was started but could not get it to work.
+ *
+ */
 @Disabled("see #115")
 public class GraphmlSAXSchemaValidationTest {
 

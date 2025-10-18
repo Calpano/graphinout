@@ -185,8 +185,6 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
 
     @Override
     public void labelEnd() {
-        // FIXME is this right?
-        //super.arrayEnd();
         pop(CjType.ArrayOfLabelEntries);
     }
 
@@ -204,9 +202,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
 
     @Override
     public void labelStart() {
-        // FIXME is this right?
         push(CjType.ArrayOfLabelEntries);
-        //    super.arrayStart();
     }
 
     @Override
