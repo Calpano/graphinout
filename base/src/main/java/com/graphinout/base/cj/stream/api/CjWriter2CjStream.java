@@ -26,25 +26,31 @@ import com.graphinout.foundation.util.PowerStackOnClasses;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.IdentityHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class CjWriter2CjStream implements ICjWriter {
 
-    final ICjStream cjStream;
+    // Start-state markers live on the same stack right above their corresponding chunk
+    private static class StartState {
 
+        boolean started;
+
+    }
+
+    private static class StartGraph extends StartState {}
+
+    private static class StartNode extends StartState {}
+
+    private static class StartEdge extends StartState {}
+
+    private static class StartDocument extends StartState {}
+
+    final ICjStream cjStream;
     // Buffer for JSON data values between jsonDataStart/jsonDataEnd
     private final Json2JavaJsonWriter jsonBuffer = new Json2JavaJsonWriter();
     // Unified type-aware stack for ALL elements (document parts, graphs, nodes, edges, endpoints, ports, label, data)
     private final PowerStackOnClasses<Object> stack = PowerStackOnClasses.create();
-    // Track whether a given chunk (graph/node/edge) has had its start event sent
-    private final Map<Object, Boolean> started = new IdentityHashMap<>();
     private boolean inJsonData = false;
-    // Document state
-    private ICjDocumentChunkMutable documentChunk;
-    private boolean documentStartSent = false;
-    private ICjDocumentMetaMutable documentMeta; // when connectedJsonStart/end
 
     public CjWriter2CjStream(ICjStream cjStream) {this.cjStream = cjStream;}
 
@@ -60,36 +66,43 @@ public class CjWriter2CjStream implements ICjWriter {
 
     @Override
     public void baseUri(String baseUri) {
-        if (documentChunk != null) {
-            documentChunk.baseUri(baseUri);
-        }
+        stack.peekSearch(ICjDocumentChunkMutable.class).baseUri(baseUri);
     }
 
     @Override
     public void connectedJsonEnd() {
-        documentMeta = null;
+        stack.pop(ICjDocumentMetaMutable.class);
     }
 
     @Override
     public void connectedJsonStart() {
-        if (documentChunk != null) {
-            documentChunk.connectedJson(dm -> documentMeta = dm);
+        ICjDocumentChunkMutable dc;
+        try {
+            dc = stack.peekSearch(ICjDocumentChunkMutable.class);
+        } catch (IllegalStateException e) {
+            dc = null;
+        }
+        if (dc != null) {
+            dc.connectedJson(stack::push);
         }
     }
 
     @Override
     public void connectedJson__canonical(boolean b) {
-        if (documentMeta != null) documentMeta.canonical(b);
+        ICjDocumentMetaMutable dm = stack.peek(ICjDocumentMetaMutable.class);
+        if (dm != null) dm.canonical(b);
     }
 
     @Override
     public void connectedJson__versionDate(String s) {
-        if (documentMeta != null) documentMeta.versionDate(s);
+        ICjDocumentMetaMutable dm = stack.peek(ICjDocumentMetaMutable.class);
+        if (dm != null) dm.versionDate(s);
     }
 
     @Override
     public void connectedJson__versionNumber(String s) {
-        if (documentMeta != null) documentMeta.versionNumber(s);
+        ICjDocumentMetaMutable dm = stack.peek(ICjDocumentMetaMutable.class);
+        if (dm != null) dm.versionNumber(s);
     }
 
     @Override
@@ -102,23 +115,27 @@ public class CjWriter2CjStream implements ICjWriter {
 
     @Override
     public void documentEnd() throws JsonException {
-        if (!documentStartSent) {
-            // If nothing triggered document start yet, send now
+        // If nothing triggered document start yet, send now
+        StartDocument sd;
+        try {
+            sd = stack.peekSearch(StartDocument.class);
+        } catch (IllegalStateException e) {
+            sd = null;
+        }
+        if (sd != null && !sd.started) {
             ensureDocumentStartSent();
         }
         cjStream.documentEnd();
-        documentChunk = null;
-        documentMeta = null;
-        documentStartSent = false; // reset for potential reuse; though normally single doc
-        started.clear();
+        // reset for potential reuse; clears StartDocument marker too
         stack.reset();
     }
 
     @Override
     public void documentStart() throws JsonException {
-        documentChunk = cjStream.createDocumentChunk();
-        documentStartSent = false;
-        documentMeta = null;
+        ICjDocumentChunkMutable dc = cjStream.createDocumentChunk();
+        // Push the document chunk, then StartDocument marker to coordinate deferred emission
+        stack.push(dc);
+        stack.push(new StartDocument());
     }
 
     @Override
@@ -126,6 +143,8 @@ public class CjWriter2CjStream implements ICjWriter {
         // ensure edge start was sent (for empty edge with only endpoints maybe)
         ensureCurrentEdgeStartSent();
         cjStream.edgeEnd();
+        // pop start marker then the edge chunk
+        stack.pop(StartEdge.class);
         stack.pop(ICjEdgeChunkMutable.class);
     }
 
@@ -134,6 +153,7 @@ public class CjWriter2CjStream implements ICjWriter {
         ensureCurrentGraphStartSent();
         ICjEdgeChunkMutable edge = cjStream.createEdgeChunk();
         stack.push(edge);
+        stack.push(new StartEdge());
     }
 
     @Override
@@ -168,6 +188,7 @@ public class CjWriter2CjStream implements ICjWriter {
         // ensure graph start was sent (for empty graph)
         ensureCurrentGraphStartSent();
         cjStream.graphEnd();
+        stack.pop(StartGraph.class);
         stack.pop(ICjGraphChunkMutable.class);
     }
 
@@ -179,6 +200,7 @@ public class CjWriter2CjStream implements ICjWriter {
         // defer actual graph start emission until we see first child or end to allow id/label/data before start
         ICjGraphChunkMutable graph = cjStream.createGraphChunk();
         stack.push(graph);
+        stack.push(new StartGraph());
     }
 
     @Override
@@ -255,6 +277,7 @@ public class CjWriter2CjStream implements ICjWriter {
     public void nodeEnd() {
         ensureCurrentNodeStartSent();
         cjStream.nodeEnd();
+        stack.pop(StartNode.class);
         stack.pop(ICjNodeChunkMutable.class);
     }
 
@@ -275,6 +298,7 @@ public class CjWriter2CjStream implements ICjWriter {
         ensureCurrentGraphStartSent();
         ICjNodeChunkMutable node = cjStream.createNodeChunk();
         stack.push(node);
+        stack.push(new StartNode());
     }
 
     @Override
@@ -389,20 +413,7 @@ public class CjWriter2CjStream implements ICjWriter {
     }
 
     private ICjHasDataMutable currentHasData() {
-        try {
-            return stack.peekSearch(ICjEdgeChunkMutable.class);
-        } catch (IllegalStateException ignore) {
-        }
-        try {
-            return stack.peekSearch(ICjNodeChunkMutable.class);
-        } catch (IllegalStateException ignore) {
-        }
-        try {
-            return stack.peekSearch(ICjGraphChunkMutable.class);
-        } catch (IllegalStateException ignore) {
-        }
-        if (documentChunk != null) return documentChunk;
-        return null;
+        return stack.peekSearch(ICjHasDataMutable.class);
     }
 
     private ICjHasIdMutable currentHasId() {
@@ -452,42 +463,75 @@ public class CjWriter2CjStream implements ICjWriter {
 
     private void ensureCurrentEdgeStartSent() {
         ICjEdgeChunkMutable e = currentEdge();
-        if (e != null && !isStarted(e)) {
-            ensureCurrentGraphStartSent();
-            cjStream.edgeStart(e);
-            markStarted(e);
+        if (e != null) {
+            StartEdge se;
+            try {
+                se = stack.peekSearch(StartEdge.class);
+            } catch (IllegalStateException ignore) {
+                return;
+            }
+            if (!se.started) {
+                ensureCurrentGraphStartSent();
+                cjStream.edgeStart(e);
+                se.started = true;
+            }
         }
     }
 
     private void ensureCurrentGraphStartSent() {
         ICjGraphChunkMutable g = currentGraph();
-        if (g != null && !isStarted(g)) {
-            ensureDocumentStartSent();
-            cjStream.graphStart(g);
-            markStarted(g);
+        if (g != null) {
+            StartGraph sg;
+            try {
+                sg = stack.peekSearch(StartGraph.class);
+            } catch (IllegalStateException ignore) {
+                return;
+            }
+            if (!sg.started) {
+                ensureDocumentStartSent();
+                cjStream.graphStart(g);
+                sg.started = true;
+            }
         }
     }
 
     private void ensureCurrentNodeStartSent() {
         ICjNodeChunkMutable n = currentNode();
-        if (n != null && !isStarted(n)) {
-            ensureCurrentGraphStartSent();
-            cjStream.nodeStart(n);
-            markStarted(n);
+        if (n != null) {
+            StartNode sn;
+            try {
+                sn = stack.peekSearch(StartNode.class);
+            } catch (IllegalStateException ignore) {
+                return;
+            }
+            if (!sn.started) {
+                ensureCurrentGraphStartSent();
+                cjStream.nodeStart(n);
+                sn.started = true;
+            }
         }
     }
 
     private void ensureDocumentStartSent() {
-        if (!documentStartSent) {
-            Objects.requireNonNull(documentChunk, "documentStart() must be called before graphs");
-            cjStream.documentStart(documentChunk);
-            documentStartSent = true;
+        StartDocument sd;
+        try {
+            sd = stack.peekSearch(StartDocument.class);
+        } catch (IllegalStateException e) {
+            return;
+        }
+        if (!sd.started) {
+            ICjDocumentChunkMutable dc;
+            try {
+                dc = stack.peekSearch(ICjDocumentChunkMutable.class);
+            } catch (IllegalStateException e) {
+                dc = null;
+            }
+            Objects.requireNonNull(dc, "documentStart() must be called before graphs");
+            cjStream.documentStart(dc);
+            sd.started = true;
         }
     }
 
-    private boolean isStarted(Object o) {return started.getOrDefault(o, false);}
-
-    private void markStarted(Object o) {started.put(o, true);}
 
     private ICjPortMutable safePeekPort() {
         try {
