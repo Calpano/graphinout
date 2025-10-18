@@ -1,28 +1,7 @@
 = Third-Party Licenses
 :toc:
 
-This document lists third-party libraries used in Graphinout, based on the Maven POM files of all modules. It includes both runtime and test-time dependencies. Please verify upstream projects for the most current license details.
-
-== SLF4J API
-- Project: https://www.slf4j.org/
-- Coordinates: org.slf4j:slf4j-api
-- License: MIT License
-- License URL: https://www.slf4j.org/license.html
-
-== Logback Classic
-- Project: https://logback.qos.ch/
-- Coordinates: ch.qos.logback:logback-classic
-- License: Eclipse Public License 1.0 and GNU Lesser General Public License 2.1 (dual license)
-- License URL: https://github.com/qos-ch/logback/blob/master/LICENSE.txt
-
-== Jackson
-- Projects:
-https://github.com/FasterXML/jackson-databind,
-https://github.com/FasterXML/jackson-core,
-https://github.com/FasterXML/jackson-modules-java8
-- Coordinates: com.fasterxml.jackson.core, com.fasterxml.jackson.datatype
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
+GraphInOut was made possible using the following third-party open-source libraries.
 
 == Apache Commons IO
 - Project: https://commons.apache.org/proper/commons-io/
@@ -36,41 +15,32 @@ https://github.com/FasterXML/jackson-modules-java8
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
 
-== Guava
-- Project: https://github.com/google/guava
-- Coordinates: com.google.guava:guava:33.2.0-jre
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
-
-== JSR 305 Annotations
-- Project: https://github.com/findbugsproject/findbugs
-- Coordinates: com.google.code.findbugs:jsr305:3.0.2
-- License: BSD 3-Clause License
-- License URL: https://opensource.org/license/bsd-3-clause
-
-== SpotBugs Annotations
-- Project: https://spotbugs.github.io/
-- Coordinates: com.github.spotbugs:spotbugs-annotations:4.7.3
-- License: GNU Lesser General Public License 2.1
-- License URL: https://github.com/spotbugs/spotbugs/blob/master/LICENSE.md
-
 == ClassGraph
 - Project: https://github.com/classgraph/classgraph
 - Coordinates: io.github.classgraph:classgraph:4.8.157
 - License: MIT License
 - License URL: https://github.com/classgraph/classgraph/blob/master/LICENSE
 
-== JSON Schema Validator (NetworkNT)
-- Project: https://github.com/networknt/json-schema-validator[]
-- Coordinates: com.networknt:json-schema-validator:1.5.9
+== Google Truth
+- Project: https://github.com/google/truth
+- Coordinates: com.google.truth:truth
+- License: Apache License 2.0
+- License URL: https://github.com/google/truth/blob/master/LICENSE
+
+== Guava
+- Project: https://github.com/google/guava
+- Coordinates: com.google.guava:guava:33.2.0-jre
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
 
-== Joni (JRuby Regex Engine)
-- Project: https://github.com/jruby/joni
-- Coordinates: org.jruby.joni
-- License: MIT License
-- License URL: https://opensource.org/license/mit
+== Jackson
+- Projects:
+https://github.com/FasterXML/jackson-databind,
+https://github.com/FasterXML/jackson-core,
+https://github.com/FasterXML/jackson-modules-java8
+- Coordinates: com.fasterxml.jackson.core, com.fasterxml.jackson.datatype
+- License: Apache License 2.0
+- License URL: https://www.apache.org/licenses/LICENSE-2.0
 
 == JGraphT
 - Project: https://github.com/jgrapht/jgrapht
@@ -84,11 +54,35 @@ https://github.com/FasterXML/jackson-modules-java8
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
 
+== JSON Schema Validator (NetworkNT)
+- Project: https://github.com/networknt/json-schema-validator[]
+- Coordinates: com.networknt:json-schema-validator:1.5.9
+- License: Apache License 2.0
+- License URL: https://www.apache.org/licenses/LICENSE-2.0
+
+== Joni (JRuby Regex Engine)
+- Project: https://github.com/jruby/joni
+- Coordinates: org.jruby.joni
+- License: MIT License
+- License URL: https://opensource.org/license/mit
+
+== JSR 305 Annotations
+- Project: https://github.com/findbugsproject/findbugs
+- Coordinates: com.google.code.findbugs:jsr305:3.0.2
+- License: BSD 3-Clause License
+- License URL: https://opensource.org/license/bsd-3-clause
+
 == JUnit
 - Project: https://junit.org/junit5/
 - Coordinates: org.junit.jupiter
 - License: Eclipse Public License 2.0
 - License URL: https://www.eclipse.org/legal/epl-2.0/
+
+== Logback Classic
+- Project: https://logback.qos.ch/
+- Coordinates: ch.qos.logback:logback-classic
+- License: Eclipse Public License 1.0 and GNU Lesser General Public License 2.1 (dual license)
+- License URL: https://github.com/qos-ch/logback/blob/master/LICENSE.txt
 
 == Mockito
 - Project: https://site.mockito.org/
@@ -96,10 +90,16 @@ https://github.com/FasterXML/jackson-modules-java8
 - License: MIT License
 - License URL: https://github.com/mockito/mockito/blob/main/LICENSE
 
-== Google Truth
-- Project: https://github.com/google/truth
-- Coordinates: com.google.truth:truth
-- License: Apache License 2.0
-- License URL: https://github.com/google/truth/blob/master/LICENSE
+== SLF4J API
+- Project: https://www.slf4j.org/
+- Coordinates: org.slf4j:slf4j-api
+- License: MIT License
+- License URL: https://www.slf4j.org/license.html
+
+== SpotBugs Annotations
+- Project: https://spotbugs.github.io/
+- Coordinates: com.github.spotbugs:spotbugs-annotations:4.7.3
+- License: GNU Lesser General Public License 2.1
+- License URL: https://github.com/spotbugs/spotbugs/blob/master/LICENSE.md
 
 
