@@ -3,6 +3,9 @@ package com.graphinout.base.cj.element;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * Represents an edge between endpoints in the CJ model, optionally containing nested subgraphs.
+ */
 public interface ICjEdge extends ICjEdgeChunk, ICjHasGraphs {
 
     @Override

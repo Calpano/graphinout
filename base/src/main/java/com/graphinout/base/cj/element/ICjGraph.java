@@ -3,6 +3,10 @@ package com.graphinout.base.cj.element;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * Represents a graph in the CJ model composed of nodes, edges, and optional subgraphs.
+ * Provides traversal and counts to support streaming and transformations.
+ */
 public interface ICjGraph extends ICjGraphChunk, ICjHasGraphs {
 
     /** Edge count in this graph, excluding subgraphs */

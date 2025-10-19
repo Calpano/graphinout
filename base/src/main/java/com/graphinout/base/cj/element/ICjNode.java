@@ -3,6 +3,9 @@ package com.graphinout.base.cj.element;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * Represents a node in the CJ model, which may have ports and embedded subgraphs, plus associated data/labels.
+ */
 public interface ICjNode extends ICjNodeChunk, ICjHasGraphs {
 
     @Override

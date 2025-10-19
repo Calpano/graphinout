@@ -1,5 +1,9 @@
 package com.graphinout.reader.graphml;
 
+/**
+ * Abstraction for a buffered GraphML parsing entity that collects content and emits its typed model E.
+ * Implementations represent parts of a GraphML document and coordinate how SAX-like events build up entities.
+ */
 public interface GraphmlEntity<E> {
 
     default void addCharacters(String characters) {

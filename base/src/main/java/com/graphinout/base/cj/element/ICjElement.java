@@ -5,6 +5,10 @@ import com.graphinout.base.cj.stream.ICjWriter;
 
 import java.util.stream.Stream;
 
+/**
+ * Base interface for all CJ model elements (document, graph, node, edge, port, labels, etc.).
+ * It defines common operations and traversal across the CJ tree while streaming or transforming graphs.
+ */
 public interface ICjElement {
 
     default ICjDocumentMutable asDocument() {

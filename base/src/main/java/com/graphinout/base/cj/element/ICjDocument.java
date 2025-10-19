@@ -3,6 +3,9 @@ package com.graphinout.base.cj.element;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * Root of a CJ graph representation assembled from GIO events. It aggregates graphs and document-level metadata.
+ */
 public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk {
 
     @Override

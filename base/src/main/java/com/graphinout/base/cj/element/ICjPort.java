@@ -4,6 +4,9 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * Represents a port of a node or port in the CJ model, carrying an id and optional data and nested ports.
+ */
 public interface ICjPort extends ICjHasId, ICjHasData {
 
     @Nullable

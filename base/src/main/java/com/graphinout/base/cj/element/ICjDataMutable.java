@@ -6,6 +6,9 @@ import com.graphinout.foundation.xml.XmlFragmentString;
 
 import java.util.List;
 
+/**
+ * Mutable extension of {@link ICjData} that supports incrementally building the JSON value tree for CJ data.
+ */
 public interface ICjDataMutable extends ICjData {
 
     /**
