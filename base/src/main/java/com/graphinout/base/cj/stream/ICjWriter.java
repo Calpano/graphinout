@@ -198,15 +198,6 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
      */
     void portStart();
 
-    /** TODO doc */
-    default void rawXmlCharacters(String rawXml) {}
-
-    /** TODO doc */
-    default void rawXmlEnd() {}
-
-    /** TODO doc */
-    default void rawXmlStart() {}
-
     void value(String value);
 
    default <T> void list(List<T> list, CjType cjArrayType, BiConsumer<T, ICjWriter> element_writer) {

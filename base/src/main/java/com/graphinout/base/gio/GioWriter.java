@@ -61,9 +61,6 @@ public interface GioWriter extends JsonValueWriter {
      */
     default void listStart(CjType cjType) {}
 
-    /** can be called multiple times per data string */
-    default void rawDataCharacters(String data) {}
-
     /** Receive a {@link Locator}, that can be used to retrieve line:col information about the current parse location () */
     default void setLocator(Locator locator) {}
 

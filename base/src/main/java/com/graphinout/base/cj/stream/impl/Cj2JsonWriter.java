@@ -280,21 +280,6 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
         super.objectStart();
     }
 
-    /** can be called multiple times per data string */
-    public void rawDataCharacters(String data) {
-        // FIXME this concept does not exist in CJ, only in Gio (for now)
-    }
-
-    /** start a JSON-value like raw data object */
-    public void rawDataEnd() {
-        // FIXME this concept does not exist in CJ, only in Gio (for now)
-    }
-
-    /** end a JSON-value like raw data object */
-    public void rawDataStart() {
-        // FIXME this concept does not exist in CJ, only in Gio (for now)
-    }
-
     @Override
     public void value(String value) {
         super.onKey(CjConstants.VALUE);
