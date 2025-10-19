@@ -52,7 +52,7 @@ public class GraphmlHyperEdgeBuilder extends GraphmlElementWithDescAndIdBuilder<
             assert ep0.type() != ep1.type() : "dir must be different";
             IGraphmlEndpoint source = endpoints.stream().filter(e -> e.type() == GraphmlDirection.In).findFirst().orElseThrow();
             IGraphmlEndpoint target = endpoints.stream().filter(e -> e.type() == GraphmlDirection.Out).findFirst().orElseThrow();
-            // FIXME set only if different from the default in the graph
+            // IMPROVE set only if different from the default in the graph
             builder.directed(source.type() != GraphmlDirection.Undirected);
             builder.sourceId(source.node());
             builder.sourcePortId(source.port());
@@ -60,7 +60,7 @@ public class GraphmlHyperEdgeBuilder extends GraphmlElementWithDescAndIdBuilder<
             builder.targetPortId(target.port());
         } else {
             // undirected edge
-            // FIXME set only if different from the default in the graph
+            // IMPROVE set only if different from the default in the graph
             builder.directed(false);
             builder.sourceId(ep0.node());
             builder.sourcePortId(ep0.port());

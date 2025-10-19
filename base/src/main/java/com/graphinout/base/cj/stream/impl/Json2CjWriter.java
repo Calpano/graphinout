@@ -338,7 +338,6 @@ public class Json2CjWriter implements JsonWriter {
             parseStack.popJsonPropertyMaybe();
             maybeEndData();
         } else {
-            // FIXME handle strings, if we expect them
             if (parseStack.expectedCjTypes.size() == 1) {
                 // we know how to interpret it
                 CjType expect = parseStack.expectedCjTypes.iterator().next();

@@ -140,7 +140,6 @@ public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWrit
     @Override
     public void startDocument(GioDocument document) throws IOException {
         ensureAllowedStart(CurrentElement.GRAPHML);
-        validateDocument(document);
     }
 
     @Override
@@ -197,9 +196,6 @@ public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWrit
         if (log.isDebugEnabled()) log.debug("STARTED '{}' => Stack: {}", childElement.name(), stackToString());
     }
 
-    /**
-     * @param hyperEdge
-     */
     private void investigatingTheExistenceOfTheNode(GioEdge hyperEdge) throws IllegalStateException {
         List<GioEndpoint> endpoints = hyperEdge.getEndpoints();
         for (GioEndpoint endpoint : endpoints) {
@@ -232,15 +228,6 @@ public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWrit
         if (key == null || key.isEmpty()) {
             throw new IllegalStateException("Data key cannot be null or empty.");
         }
-    }
-
-    private void validateDocument(GioDocument document) {
-        // FIXME
-        //        if (document.getKeys() != null) {
-        //            for (GioKey gioKey : document.getKeys()) {
-        //                validateKey(gioKey);
-        //            }
-        //        }
     }
 
     private void validateEdge(GioEdge hyperEdge) throws IllegalStateException {

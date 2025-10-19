@@ -90,13 +90,13 @@ public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter 
 
     @Override
     public void endGraph(@Nullable URL url) throws IOException {
-        // FIXME remove URL param and move to startGraph using locator(url)
+        // FIXME Gio API: remove URL param and move to startGraph using locator(url)
         graphmlWriter.graphEnd();
     }
 
     @Override
     public void endNode(@Nullable URL url) throws IOException {
-        // FIXME remove URL param and move to startNode using locator(url)
+        // FIXME Gio API: remove URL param and move to startNode using locator(url)
         graphmlWriter.nodeEnd();
     }
 
