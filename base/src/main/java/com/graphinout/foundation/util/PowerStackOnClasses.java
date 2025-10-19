@@ -32,6 +32,16 @@ public class PowerStackOnClasses<S> {
     }
 
     /**
+     * Like {@link #peek(Class)} but returns null instead of throwing when the top element
+     * is absent or not of the requested type.
+     */
+    public <T extends S> T peekOrNull(Class<T> clazz) {
+        if (stack.isEmpty()) return null;
+        S top = stack.peek();
+        return clazz.isInstance(top) ? clazz.cast(top) : null;
+    }
+
+    /**
      * Peeks from the top all elements of the stack and returns first of the given clazz.
      *
      * @throws IllegalStateException if the stack is empty or if no element of the given clazz is found.
@@ -46,6 +56,20 @@ public class PowerStackOnClasses<S> {
             }
         }
         throw new IllegalStateException("No element of type " + clazz + " found.");
+    }
+
+    /**
+     * Like {@link #peekSearch(Class)} but returns null instead of throwing when the stack
+     * is empty or no element of the requested type exists.
+     */
+    public <T extends S> T peekSearchOrNull(Class<T> clazz) {
+        if (stack.isEmpty()) return null;
+        for (S element : stack) {
+            if (clazz.isInstance(element)) {
+                return clazz.cast(element);
+            }
+        }
+        return null;
     }
 
     /**

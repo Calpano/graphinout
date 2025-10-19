@@ -362,10 +362,7 @@ public class CjWriter2CjStream implements ICjWriter {
         // Add a port to current port (nested) or node
         ICjHasPortsMutable hasPorts = safePeekPort();
         if (hasPorts == null) {
-            try {
-                hasPorts = stack.peekSearch(ICjHasPortsMutable.class);
-            } catch (IllegalStateException ignore) {
-            }
+            hasPorts = stack.peekSearchOrNull(ICjHasPortsMutable.class);
         }
         if (hasPorts != null) {
             hasPorts.addPort(stack::push);
@@ -378,72 +375,40 @@ public class CjWriter2CjStream implements ICjWriter {
     }
 
     private ICjEdgeChunkMutable currentEdge() {
-        try {
-            return stack.peekSearch(ICjEdgeChunkMutable.class);
-        } catch (IllegalStateException ignore) {
-            return null;
-        }
+        return stack.peekSearchOrNull(ICjEdgeChunkMutable.class);
     }
 
     private ICjGraphChunkMutable currentGraph() {
-        try {
-            return stack.peekSearch(ICjGraphChunkMutable.class);
-        } catch (IllegalStateException ignore) {
-            return null;
-        }
+        return stack.peekSearchOrNull(ICjGraphChunkMutable.class);
     }
 
     private ICjHasDataMutable currentHasData() {
-        try {
-            return stack.peekSearch(ICjHasDataMutable.class);
-        } catch (IllegalStateException ignore) {
-            return null;
-        }
+        return stack.peekSearchOrNull(ICjHasDataMutable.class);
     }
 
     private ICjHasIdMutable currentHasId() {
         ICjPortMutable port = safePeekPort();
         if (port != null) return port;
-        try {
-            return stack.peekSearch(ICjEdgeChunkMutable.class);
-        } catch (IllegalStateException ignore) {
-        }
-        try {
-            return stack.peekSearch(ICjNodeChunkMutable.class);
-        } catch (IllegalStateException ignore) {
-        }
-        try {
-            return stack.peekSearch(ICjGraphChunkMutable.class);
-        } catch (IllegalStateException ignore) {
-        }
-        return null;
+        ICjHasIdMutable hasId = stack.peekSearchOrNull(ICjEdgeChunkMutable.class);
+        if (hasId != null) return hasId;
+        hasId = stack.peekSearchOrNull(ICjNodeChunkMutable.class);
+        if (hasId != null) return hasId;
+        return stack.peekSearchOrNull(ICjGraphChunkMutable.class);
     }
 
     private ICjHasLabelMutable currentHasLabel() {
         // Prefer most nested element: port > edge > node > graph
         ICjPortMutable port = safePeekPort();
         if (port instanceof ICjHasLabelMutable lh) return lh;
-        try {
-            return stack.peekSearch(ICjEdgeChunkMutable.class);
-        } catch (IllegalStateException ignore) {
-        }
-        try {
-            return stack.peekSearch(ICjNodeChunkMutable.class);
-        } catch (IllegalStateException ignore) {
-        }
-        try {
-            return stack.peekSearch(ICjGraphChunkMutable.class);
-        } catch (IllegalStateException ignore) {
-        }
-        return null;
+        ICjHasLabelMutable has = stack.peekSearchOrNull(ICjEdgeChunkMutable.class);
+        if (has != null) return has;
+        has = stack.peekSearchOrNull(ICjNodeChunkMutable.class);
+        if (has != null) return has;
+        return stack.peekSearchOrNull(ICjGraphChunkMutable.class);
     }
 
     private ICjNodeChunkMutable currentNode() {
-        try {
-            return stack.peekSearch(ICjNodeChunkMutable.class);
-        } catch (IllegalStateException e) {
-            return null;
-        }
+        return stack.peekSearchOrNull(ICjNodeChunkMutable.class);
     }
 
     private void ensureCurrentEdgeStartSent() {
@@ -498,11 +463,7 @@ public class CjWriter2CjStream implements ICjWriter {
 
 
     private ICjPortMutable safePeekPort() {
-        try {
-            return stack.peek(ICjPortMutable.class);
-        } catch (IllegalStateException e) {
-            return null;
-        }
+        return stack.peekOrNull(ICjPortMutable.class);
     }
 
 }
