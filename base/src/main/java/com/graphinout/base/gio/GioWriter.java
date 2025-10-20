@@ -1,6 +1,5 @@
 package com.graphinout.base.gio;
 
-import com.graphinout.base.cj.CjType;
 import com.graphinout.base.reader.Locator;
 import com.graphinout.foundation.json.stream.JsonValueWriter;
 import com.graphinout.foundation.json.stream.JsonWriter;
@@ -22,7 +21,6 @@ public interface GioWriter extends JsonValueWriter {
 
     void baseUri(String baseUri) throws IOException;
 
-    @Deprecated
     void data(GioData data) throws IOException;
 
     void endDocument() throws IOException;
@@ -40,26 +38,7 @@ public interface GioWriter extends JsonValueWriter {
     /** start a JSON-value like raw data object */
     default void endRawData() {}
 
-    @Deprecated
     void key(GioKey gioKey) throws IOException;
-
-    /**
-     * TODO implement
-     * <p>
-     * Signals a collection of the given type ends.
-     *
-     * @param cjType of collection
-     */
-    default void listEnd(CjType cjType) {}
-
-    /**
-     * TODO implement
-     * <p>
-     * Signals a collection of the given type starts.
-     *
-     * @param cjType of collection
-     */
-    default void listStart(CjType cjType) {}
 
     /** Receive a {@link Locator}, that can be used to retrieve line:col information about the current parse location () */
     default void setLocator(Locator locator) {}
@@ -79,9 +58,5 @@ public interface GioWriter extends JsonValueWriter {
     void startNode(GioNode node) throws IOException;
 
     void startPort(GioPort port) throws IOException;
-
-    /** end a JSON-value like raw data object */
-    default void startRawData() {}
-
 
 }
