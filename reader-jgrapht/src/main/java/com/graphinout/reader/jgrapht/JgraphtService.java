@@ -16,7 +16,7 @@ public class JgraphtService implements GioService {
 
     @Override
     public List<GioReader> readers() {
-        return Arrays.asList(new Graph6Reader(), new Sparse6Reader(), new DotReader());
+        return Arrays.asList(new Graph6Reader(), new Sparse6Reader(), new Digraph6Reader(), new DotReader());
     }
 
 }
