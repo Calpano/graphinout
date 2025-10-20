@@ -2,15 +2,6 @@
 
 `GioWriter` and its helper interfaces define the API for emitting graphs.
 
-NOTE: We are currently migrating from GraphML-centric view to CJ-view.
-
-What will have to change?
-There are restrictions/removals and extensions.
-
-== Data
-- remove GioData?
-- remove GioKey?
-- remove custom attributes
-
-
+== Migration
+GioWriter is replaced by ICjStream
 
