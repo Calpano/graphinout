@@ -7,8 +7,14 @@ import com.graphinout.base.cj.element.CjDocuments;
 import com.graphinout.base.cj.element.ICjData;
 import com.graphinout.base.cj.element.ICjDocument;
 import com.graphinout.base.cj.element.ICjHasData;
+import com.graphinout.base.cj.element.impl.CjDocumentElement;
+import com.graphinout.base.cj.stream.Gio2CjStream;
+import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
+import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
 import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.graphinout.base.cj.stream.impl.Json2CjWriter;
+import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.graphml.CjGraphmlMapping;
 import com.graphinout.base.graphml.GraphmlDataType;
 import com.graphinout.foundation.TestFileProvider;
@@ -17,6 +23,8 @@ import com.graphinout.foundation.json.path.JsonTypeAnalysisTree;
 import com.graphinout.foundation.json.stream.JsonWriter;
 import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
 import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.graphinout.reader.graphml.Graphml2GioWriter;
+import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import io.github.classgraph.Resource;
 import jdk.jfr.Description;
 import org.junit.jupiter.api.Test;
@@ -33,6 +41,7 @@ public class CjTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
+    @Description("JSON->CjDoc->Analysis")
     void testCjAnalysis(String displayName, Resource resource) throws IOException {
         String json = resource.getContentAsString();
         ICjDocument doc = ConnectedJsonReader.readToDocument(json);
@@ -51,6 +60,7 @@ public class CjTest {
     }
 
     @Test
+    @Description("1 file")
     void testDataSimple() throws IOException {
         TestFileProvider.TestResource tr = TestFileProvider.resourceByPath("json/cj/canonical/custom-data-simple.cj.json");
         String json = tr.resource().getContentAsString();
@@ -79,6 +89,7 @@ public class CjTest {
 //            map.forEach( (k,v) -> System.out.println("  "+k+" -> "+v));
 //        });
     }
+
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
