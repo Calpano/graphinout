@@ -36,7 +36,6 @@ public class Json2CjAndBackTest {
         /* receive CJ events -> send JSON events  */
         ICjWriter cjWriter_out = new Cj2JsonWriter(delegatingJsonWriter);
 
-
         /* receive JSON events -> send CJ events  */
         JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(cjWriter_out);
         jsonReader.read(inputSource, jsonWriter_in);

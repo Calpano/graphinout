@@ -11,6 +11,10 @@ public class PowerStackOnClasses<S> {
         return new PowerStackOnClasses<>();
     }
 
+    public boolean isEmpty() {
+        return stack.isEmpty();
+    }
+
     public S peek() {
         return stack.peek();
     }
@@ -32,8 +36,8 @@ public class PowerStackOnClasses<S> {
     }
 
     /**
-     * Like {@link #peek(Class)} but returns null instead of throwing when the top element
-     * is absent or not of the requested type.
+     * Like {@link #peek(Class)} but returns null instead of throwing when the top element is absent or not of the
+     * requested type.
      */
     public <T extends S> T peekOrNull(Class<T> clazz) {
         if (stack.isEmpty()) return null;
@@ -59,8 +63,8 @@ public class PowerStackOnClasses<S> {
     }
 
     /**
-     * Like {@link #peekSearch(Class)} but returns null instead of throwing when the stack
-     * is empty or no element of the requested type exists.
+     * Like {@link #peekSearch(Class)} but returns null instead of throwing when the stack is empty or no element of the
+     * requested type exists.
      */
     public <T extends S> T peekSearchOrNull(Class<T> clazz) {
         if (stack.isEmpty()) return null;
@@ -85,7 +89,7 @@ public class PowerStackOnClasses<S> {
         if (clazz.isInstance(top)) {
             return clazz.cast(top);
         }
-        throw new IllegalStateException("Expected " + clazz + " but top was " + top+". Most likely a top-element was not properly popped/closed.");
+        throw new IllegalStateException("Expected " + clazz + " but top was " + top + ". Most likely a top-element was not properly popped/closed.");
     }
 
     /** @return the added element. */

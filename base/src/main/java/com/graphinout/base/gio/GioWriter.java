@@ -29,14 +29,9 @@ public interface GioWriter extends JsonValueWriter {
 
     void endGraph(@Nullable URL locator) throws IOException;
 
-    default void endJsonData() {}
-
     void endNode(@Nullable URL locator) throws IOException;
 
     void endPort() throws IOException;
-
-    /** start a JSON-value like raw data object */
-    default void endRawData() {}
 
     void key(GioKey gioKey) throws IOException;
 
@@ -48,8 +43,6 @@ public interface GioWriter extends JsonValueWriter {
     void startEdge(GioEdge edge) throws IOException;
 
     void startGraph(GioGraph gioGraph) throws IOException;
-
-    default void startJsonData() {}
 
     /**
      * May contain #startGraph -- DTD is a bit unclear here whether 1 or multiple graphs are allowed. 1 seems more

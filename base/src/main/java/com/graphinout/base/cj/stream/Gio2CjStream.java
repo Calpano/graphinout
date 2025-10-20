@@ -25,12 +25,14 @@ import com.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
 import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
 import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.util.PowerStackOnClasses;
 import com.graphinout.foundation.xml.XmlFragmentString;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,21 +50,22 @@ public class Gio2CjStream implements GioWriter {
     private static class GraphCtx {
 
         ICjGraphChunkMutable chunk;
-        java.util.ArrayList<ICjNodeChunkMutable> bufferedNodes = new java.util.ArrayList<>();
-        java.util.ArrayList<ICjEdgeChunkMutable> bufferedEdges = new java.util.ArrayList<>();
-        java.util.ArrayList<GraphCtx> bufferedSubgraphs = new java.util.ArrayList<>();
+        ArrayList<ICjNodeChunkMutable> bufferedNodes = new ArrayList<>();
+        ArrayList<ICjEdgeChunkMutable> bufferedEdges = new ArrayList<>();
+        ArrayList<GraphCtx> bufferedSubgraphs = new ArrayList<>();
 
         GraphCtx(ICjGraphChunkMutable c) {this.chunk = c;}
+
     }
 
     private final Map<String, GioKey> keysById = new HashMap<>();
     private final ICjStream cjStream;
-    private final java.util.ArrayDeque<GraphCtx> graphStack = new java.util.ArrayDeque<>();
+    private final PowerStackOnClasses<GraphCtx> graphStack = PowerStackOnClasses.create();
+    private final PowerStackOnClasses<ICjPortMutable> portStack = PowerStackOnClasses.create();
     // Pending chunks to accumulate data before sending to stream
     private ICjDocumentChunkMutable pendingDocument;
     private ICjNodeChunkMutable pendingNode;
     private ICjEdgeChunkMutable pendingEdge;
-    private final java.util.ArrayDeque<ICjPortMutable> portStack = new java.util.ArrayDeque<>();
     private OpenCtx lastStarted = OpenCtx.None;
 
     public Gio2CjStream(ICjStream cjStream) {this.cjStream = cjStream;}
@@ -225,8 +228,8 @@ public class Gio2CjStream implements GioWriter {
     public void endEdge() {
         // Buffer node if one is pending; nodes must precede edges
         if (pendingNode != null) {
-            if (!graphStack.isEmpty()) {
-                graphStack.peek().bufferedNodes.add(pendingNode);
+            if (graphStack.peekOrNull(GraphCtx.class) != null) {
+                graphStack.peek(GraphCtx.class).bufferedNodes.add(pendingNode);
             } else {
                 ensureDocumentStartedIfNeeded();
                 // Fallback: emit a minimal node outside of any graph (should not happen in GraphML)
@@ -236,8 +239,8 @@ public class Gio2CjStream implements GioWriter {
             pendingNode = null;
         }
         if (pendingEdge != null) {
-            if (!graphStack.isEmpty()) {
-                graphStack.peek().bufferedEdges.add(pendingEdge);
+            if (graphStack.peekOrNull(GraphCtx.class) != null) {
+                graphStack.peek(GraphCtx.class).bufferedEdges.add(pendingEdge);
             } else {
                 // No graph context? start document and emit directly as fallback
                 ensureDocumentStartedIfNeeded();
@@ -251,11 +254,11 @@ public class Gio2CjStream implements GioWriter {
 
     @Override
     public void endGraph(@Nullable URL locator) {
-        if (!graphStack.isEmpty()) {
-            GraphCtx ctx = graphStack.pop();
-            if (!graphStack.isEmpty()) {
+        if (graphStack.peekOrNull(GraphCtx.class) != null) {
+            GraphCtx ctx = graphStack.pop(GraphCtx.class);
+            if (graphStack.peekOrNull(GraphCtx.class) != null) {
                 // buffer this finished subgraph under its parent
-                graphStack.peek().bufferedSubgraphs.add(ctx);
+                graphStack.peek(GraphCtx.class).bufferedSubgraphs.add(ctx);
             } else {
                 // top-level graph: emit now in canonical order
                 ensureDocumentStartedIfNeeded();
@@ -267,8 +270,8 @@ public class Gio2CjStream implements GioWriter {
     @Override
     public void endNode(@Nullable URL locator) {
         if (pendingNode != null) {
-            if (!graphStack.isEmpty()) {
-                graphStack.peek().bufferedNodes.add(pendingNode);
+            if (graphStack.peekOrNull(GraphCtx.class) != null) {
+                graphStack.peek(GraphCtx.class).bufferedNodes.add(pendingNode);
             } else {
                 ensureDocumentStartedIfNeeded();
                 // Fallback: emit a minimal node outside of any graph (should not happen in GraphML)
@@ -282,7 +285,7 @@ public class Gio2CjStream implements GioWriter {
     @Override
     public void endPort() {
         // pop current port after we've consumed data/label
-        if (!portStack.isEmpty()) portStack.pop();
+        if (portStack.peek() != null) portStack.pop(ICjPortMutable.class);
     }
 
     @Override
@@ -404,7 +407,7 @@ public class Gio2CjStream implements GioWriter {
                 if (pendingNode != null) return pendingNode;
             }
             case Graph -> {
-                if (!graphStack.isEmpty()) return graphStack.peek().chunk;
+                if (graphStack.peekOrNull(GraphCtx.class) != null) return graphStack.peek(GraphCtx.class).chunk;
             }
             case Document -> {
                 if (pendingDocument != null) return pendingDocument;
@@ -417,7 +420,7 @@ public class Gio2CjStream implements GioWriter {
         if (pendingNode != null) return pendingNode;
         ICjPortMutable cp = currentPort();
         if (cp != null) return cp;
-        if (!graphStack.isEmpty()) return graphStack.peek().chunk;
+        if (graphStack.peekOrNull(GraphCtx.class) != null) return graphStack.peek(GraphCtx.class).chunk;
         if (pendingDocument != null) return pendingDocument;
         return null;
     }
@@ -436,7 +439,8 @@ public class Gio2CjStream implements GioWriter {
                 if (pendingNode != null) return pendingNode;
             }
             case Graph -> {
-                if (!graphStack.isEmpty()) return (ICjHasLabelMutable) graphStack.peek().chunk;
+                if (graphStack.peekOrNull(GraphCtx.class) != null)
+                    return (ICjHasLabelMutable) graphStack.peek(GraphCtx.class).chunk;
             }
             case Document, None -> {
             }
@@ -446,7 +450,8 @@ public class Gio2CjStream implements GioWriter {
         ICjPortMutable cp = currentPort();
         if (cp instanceof ICjHasLabelMutable) return (ICjHasLabelMutable) cp;
         if (pendingNode != null) return pendingNode;
-        if (!graphStack.isEmpty()) return (ICjHasLabelMutable) graphStack.peek().chunk;
+        if (graphStack.peekOrNull(GraphCtx.class) != null)
+            return (ICjHasLabelMutable) graphStack.peek(GraphCtx.class).chunk;
         return null;
     }
 
