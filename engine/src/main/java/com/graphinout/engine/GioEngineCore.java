@@ -1,7 +1,11 @@
 package com.graphinout.engine;
 
+import com.graphinout.base.CjStream2GioWriter;
 import com.graphinout.base.Gio2CjWriter;
 import com.graphinout.base.GioService;
+import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
+import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
 import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.gio.GioWriter;
@@ -25,6 +29,7 @@ import com.graphinout.reader.cj.ConnectedJson5Reader;
 import com.graphinout.reader.cj.ConnectedJsonReader;
 import com.graphinout.reader.example.TripleTextReader;
 import com.graphinout.reader.graphml.GraphmlReader;
+import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.jgrapht.Graph6Reader;
 import com.graphinout.reader.jgrapht.dot.DotReader;
 import com.graphinout.reader.tgf.TgfReader;
@@ -63,6 +68,7 @@ public class GioEngineCore {
         return false;
     }
 
+    @Deprecated
     public GioWriter createGioWriter(String outputFileFormatId, OutputSink outputSink) {
         switch (outputFileFormatId) {
             case ConnectedJsonReader.FORMAT_ID:
@@ -89,6 +95,54 @@ public class GioEngineCore {
                 Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xml2StringWriter);
                 Gio2GraphmlWriter gioWriter = new Gio2GraphmlWriter(graphml2XmlWriter);
                 return gioWriter;
+            }
+            case AdjListReader.FORMAT_ID:
+            case DotReader.FORMAT_ID:
+            case Graph6Reader.FORMAT_ID:
+            case Json5Reader.FORMAT_ID:
+            case TgfReader.FORMAT_ID:
+            case TripleTextReader.FORMAT_ID: {
+                throw new IllegalArgumentException("no output writer exists for this format '" + outputFileFormatId + "'");
+            }
+        }
+        throw new IllegalArgumentException("Unknown format id '" + outputFileFormatId + "'");
+    }
+    @SuppressWarnings("UnnecessaryLocalVariable")
+    public ICjStream createCjOutputStream(String outputFileFormatId, OutputSink outputSink) {
+        switch (outputFileFormatId) {
+            case ConnectedJsonReader.FORMAT_ID:
+            case ConnectedJson5Reader.FORMAT_ID: {
+                Json2StringWriter jsonWriter2 = new Json2StringWriter(json -> {
+                    try {
+                        outputSink.outputStream().write(json.getBytes(StandardCharsets.UTF_8));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                Cj2JsonWriter cj2JsonWriter2 = new Cj2JsonWriter(jsonWriter2);
+                CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2JsonWriter2);
+                return cjStream2CjWriter;
+            }
+            case GraphmlReader.FORMAT_ID: {
+                Xml2StringWriter xml2StringWriter = new Xml2StringWriter(XML.AttributeOrderPerElement.Lexicographic, true, xml -> {
+                    try {
+                        outputSink.outputStream().write(xml.getBytes(StandardCharsets.UTF_8));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xml2StringWriter);
+
+                // cjStream to cjDocument
+                Cj2ElementsWriter cj2ElementsWriter = new Cj2ElementsWriter( (cjDoc)->{
+                    try {
+                        CjDocument2Graphml.writeToGraphml(cjDoc, graphml2XmlWriter);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2ElementsWriter);
+                return cjStream2CjWriter;
             }
             case AdjListReader.FORMAT_ID:
             case DotReader.FORMAT_ID:

@@ -28,13 +28,27 @@ import com.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
 import com.graphinout.foundation.json.value.IJsonValue;
 import com.graphinout.foundation.util.PowerStackOnClasses;
 
+import javax.annotation.Nullable;
+import java.util.function.Consumer;
+
+import static com.graphinout.foundation.util.Nullables.ifConsumerPresentAccept;
+
 /**
  * {@link ICjWriter} to {@link ICjDocument}
  */
 public class Cj2ElementsWriter extends Json2JavaJsonWriter implements ICjWriter {
 
     private final PowerStackOnClasses<ICjElement> stack = PowerStackOnClasses.create();
+    private final @Nullable Consumer<ICjDocument> onDone;
     private ICjDocument resultDoc;
+
+    public Cj2ElementsWriter(@Nullable Consumer<ICjDocument> onDone) {
+        this.onDone = onDone;
+    }
+
+    public Cj2ElementsWriter() {
+        this(null);
+    }
 
     @Override
     public void baseUri(String baseUri) {
@@ -74,6 +88,7 @@ public class Cj2ElementsWriter extends Json2JavaJsonWriter implements ICjWriter 
     @Override
     public void documentEnd() throws JsonException {
         stack.pop(ICjDocumentMutable.class);
+        ifConsumerPresentAccept(onDone, resultDoc);
     }
 
     @Override
