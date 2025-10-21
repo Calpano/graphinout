@@ -16,18 +16,18 @@ import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-class Graph6ReaderTest extends AbstractReaderTest {
+class Digraph6ReaderTest extends AbstractReaderTest {
 
-    private static final Logger log = getLogger(Graph6ReaderTest.class);
+    private static final Logger log = getLogger(Digraph6ReaderTest.class);
 
     @Override
     protected List<GioReader> readersToTest() {
-        return List.of(new Graph6Reader());
+        return Arrays.asList(new Digraph6Reader());
     }
 
     @Test
     void test() {
-        GioReader gioReader = new Graph6Reader();
+        GioReader gioReader = new Digraph6Reader();
         // stream incoming test resource as XML to the logger
         ReaderTests.forEachReadableResource(gioReader, resourcePath -> {
             InMemoryOutputSink outputSink = OutputSink.createInMemory();

@@ -99,7 +99,14 @@ public class CjStream2CjWriter implements ICjStream {
                 protocolStack.push(Protocol.InEdges);
             }
             case InEdges -> { /* good */ }
-            case InGraphs -> throw new IllegalStateException("Cannot get edge when in graphs.");
+            case InGraphs -> {
+                // gracefully end graphs list to allow edges after graphs
+                protocolStack.pop(Protocol.InGraphs);
+                cjWriter.listEnd(CjType.ArrayOfGraphs);
+                // start edges list
+                cjWriter.listStart(CjType.ArrayOfEdges);
+                protocolStack.push(Protocol.InEdges);
+            }
             default -> throw new IllegalStateException("Unexpected protocol: " + peek);
         }
         edge.fireStartChunk(cjWriter);

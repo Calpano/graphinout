@@ -33,6 +33,7 @@ public class CjTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
+    @Description("JSON->CjDoc->Analysis")
     void testCjAnalysis(String displayName, Resource resource) throws IOException {
         String json = resource.getContentAsString();
         ICjDocument doc = ConnectedJsonReader.readToDocument(json);
@@ -51,6 +52,7 @@ public class CjTest {
     }
 
     @Test
+    @Description("1 file")
     void testDataSimple() throws IOException {
         TestFileProvider.TestResource tr = TestFileProvider.resourceByPath("json/cj/canonical/custom-data-simple.cj.json");
         String json = tr.resource().getContentAsString();
@@ -79,6 +81,7 @@ public class CjTest {
 //            map.forEach( (k,v) -> System.out.println("  "+k+" -> "+v));
 //        });
     }
+
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.foundation.TestFileProvider#cjResourcesCanonical")

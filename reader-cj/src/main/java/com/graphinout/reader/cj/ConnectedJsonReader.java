@@ -1,5 +1,7 @@
 package com.graphinout.reader.cj;
 
+import com.graphinout.base.CjDocument2CjStream;
+import com.graphinout.base.CjStream2GioWriter;
 import com.graphinout.base.cj.element.ICjDocument;
 import com.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
@@ -12,8 +14,6 @@ import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
 import com.graphinout.foundation.json.stream.JsonWriter;
 import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
-import com.graphinout.reader.graphml.Graphml2GioWriter;
-import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -64,13 +64,12 @@ public class ConnectedJsonReader implements GioReader {
             JsonReaderImpl jsonReader = new JsonReaderImpl();
             jsonReader.read(inputSource, jsonWriter_in);
             ICjDocument cjDoc = cj2ElementsWriter.resultDoc();
-            if(cjDoc==null) {
+            if (cjDoc == null) {
                 cjDoc = new CjDocumentElement();
             }
-            // CJ doc -> GraphML -> GIO
-            Graphml2GioWriter graphml2GioWriter = new Graphml2GioWriter(writer);
-            CjDocument2Graphml cjDocument2Graphml = new CjDocument2Graphml(graphml2GioWriter);
-            cjDocument2Graphml.writeDocumentToGraphml(cjDoc);
+            // CJ doc -> GIO
+            CjStream2GioWriter cjStream2GioWriter = new CjStream2GioWriter(writer);
+            CjDocument2CjStream.toCjStream(cjDoc, cjStream2GioWriter);
         } catch (Exception e) {
             if (errorHandler != null) {
                 errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "Failed to parse JSON content: " + e.getMessage(), null));
