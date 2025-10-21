@@ -34,6 +34,11 @@ public interface ICjStream {
     /** Start a CJ edge which may contain subgraphs */
     void edgeStart(ICjEdgeChunk edge);
 
+    default void edge(ICjEdgeChunk edgeChunk) {
+        edgeStart(edgeChunk);
+        edgeEnd();
+    }
+
     void graphEnd();
 
     /** Start a CJ graph which may contain nodes, edges, subgraphs */
