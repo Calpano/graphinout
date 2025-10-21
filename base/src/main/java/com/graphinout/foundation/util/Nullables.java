@@ -66,17 +66,6 @@ public class Nullables {
         }
     }
 
-    /**
-     * If the given value is not null, call the given consumer with it.
-     *
-     * @param <T> The type of the value
-     */
-    public static <T,E extends Throwable> void ifPresentAcceptThrowing(@Nullable T value, ThrowingConsumer<@NonNull T,E> consumer) throws E{
-        if (value != null) {
-            consumer.acceptThrowing(value);
-        }
-    }
-
     public static <T, R> void ifPresentAccept(@Nullable T value, Function<T, R> mapFun, Consumer<R> consumer) {
         if (value == null) return;
         R r = mapFun.apply(value);
@@ -104,6 +93,17 @@ public class Nullables {
         if (r == null) return;
         S s = mapFun3.apply(r);
         consumer.accept(s);
+    }
+
+    /**
+     * If the given value is not null, call the given consumer with it.
+     *
+     * @param <T> The type of the value
+     */
+    public static <T, E extends Throwable> void ifPresentAcceptThrowing(@Nullable T value, ThrowingConsumer<@NonNull T, E> consumer) throws E {
+        if (value != null) {
+            consumer.acceptThrowing(value);
+        }
     }
 
     /**
@@ -186,9 +186,14 @@ public class Nullables {
         return predicateOrNull != null && predicateOrNull.test(t);
     }
 
+    public static <T, R> @NonNull R nonNullOrDefault(@Nullable T nullable, Function<T, R> mapFun, R defaultValue) {
+        return nullable != null ? mapFun.apply(nullable) : defaultValue;
+    }
+
     public static <T> @NonNull T nonNullOrDefault(@Nullable T nullable, T defaultValue) {
         return nullable != null ? nullable : defaultValue;
     }
+
 
     public static <T> @NonNull T nonNullOrDefault(@Nullable T nullable, Supplier<T> defaultValueSupplier) {
         return nullable != null ? nullable : defaultValueSupplier.get();

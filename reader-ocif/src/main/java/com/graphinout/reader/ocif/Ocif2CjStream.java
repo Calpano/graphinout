@@ -1,31 +1,37 @@
 package com.graphinout.reader.ocif;
 
+import com.graphinout.base.cj.CjFactory;
 import com.graphinout.base.cj.element.ICjDocumentChunk;
-import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
-import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.element.ICjGraphChunk;
-import com.graphinout.base.cj.element.ICjGraphChunkMutable;
 import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.base.cj.element.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
-import com.graphinout.foundation.util.Nullables;
+import com.graphinout.foundation.json.value.IJsonArray;
+import com.graphinout.foundation.json.value.IJsonArrayMutable;
+import com.graphinout.foundation.json.value.IJsonFactory;
+import com.graphinout.foundation.json.value.IJsonObject;
+import com.graphinout.foundation.json.value.IJsonObjectMutable;
+import com.graphinout.foundation.json.value.IJsonPrimitive;
+import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-public class Ocif2CjStream implements ICjStream {
+import static com.graphinout.foundation.util.Nullables.ifConsumerPresentAccept;
+import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
+
+public class Ocif2CjStream extends CjFactory implements ICjStream {
 
     private final Json2StringWriter json2StringWriter = new Json2StringWriter();
     private final @Nullable Consumer<String> onDone;
-    private @Nullable String rawOcifJson;
 
     // Building state for CJ→OCIF
-    private com.graphinout.foundation.json.value.IJsonFactory factory;
-    private com.graphinout.foundation.json.value.IJsonObjectMutable root;
-    private com.graphinout.foundation.json.value.IJsonArrayMutable nodesArr;
-    private com.graphinout.foundation.json.value.IJsonArrayMutable relationsArr;
+    private IJsonFactory factory;
+    private IJsonObjectMutable root;
+    private IJsonArrayMutable nodesArr;
+    private IJsonArrayMutable relationsArr;
     private boolean hasRelationsProperty;
 
     public Ocif2CjStream() {
@@ -36,85 +42,39 @@ public class Ocif2CjStream implements ICjStream {
         this.onDone = onDone;
     }
 
-    /**
-     * Minimal pass-through support: when set, {@link #resultOcifJsonString()} will return this value unchanged.
-     */
-    public void setRawOcifJson(String rawOcifJson) {
-        this.rawOcifJson = rawOcifJson;
-    }
-
-    @Override
-    public ICjDocumentChunkMutable createDocumentChunk() {
-        // Use concrete CJ elements so OcifReader can fill them
-        return new com.graphinout.base.cj.element.impl.CjDocumentElement();
-    }
-
-    @Override
-    public ICjEdgeChunkMutable createEdgeChunk() {
-        return new com.graphinout.base.cj.element.impl.CjEdgeElement();
-    }
-
-    @Override
-    public ICjGraphChunkMutable createGraphChunk() {
-        return new com.graphinout.base.cj.element.impl.CjGraphElement();
-    }
-
-    @Override
-    public ICjNodeChunkMutable createNodeChunk() {
-        return new com.graphinout.base.cj.element.impl.CjNodeElement();
-    }
-
     @Override
     public void documentEnd() {
-        // If raw passthrough set, prefer it
-        if (rawOcifJson == null) {
-            if (root != null) {
-                // Ensure empty relations array is present if it existed in input
-                if (this.hasRelationsProperty && (this.relationsArr == null) && !root.hasProperty("relations")) {
-                    root.setProperty("relations", factory.createArrayMutable());
-                }
-                root.fire(json2StringWriter);
-            }
+        // If input explicitly had a relations property but no edges were emitted, preserve empty array
+        if (hasRelationsProperty && relationsArr == null && root != null) {
+            root.setProperty("relations", factory.createArrayMutable());
         }
-        Nullables.ifConsumerPresentAccept(onDone, resultOcifJsonString());
-    }
-
-    public String resultOcifJsonString() {
-        // Prefer the raw OCIF JSON if provided (round-trip preservation).
-        if (rawOcifJson != null) return rawOcifJson;
-        return json2StringWriter.jsonString();
+        ifConsumerPresentAccept(onDone, resultOcifJsonString());
     }
 
     @Override
     public void documentStart(ICjDocumentChunk document) {
         // Initialize factory from document data factory to stay consistent
-        this.factory = document.data().factory();
+        var docDataHolder = document.data();
+        this.factory = (docDataHolder != null) ? docDataHolder.factory() : JavaJsonFactory.INSTANCE;
         this.root = factory.createObjectMutable();
         // Restore document-level OCIF info from data.ocif.* if present
-        com.graphinout.foundation.json.value.IJsonValue docData = document.data().jsonValue();
+        IJsonValue docData = docDataHolder == null ? null : docDataHolder.jsonValue();
         if (docData != null && docData.isObject()) {
-            com.graphinout.foundation.json.value.IJsonObject od = docData.asObject();
+            IJsonObject od = docData.asObject();
             if (od.hasProperty("ocif")) {
-                com.graphinout.foundation.json.value.IJsonObject oco = od.get("ocif").asObject();
-                if (oco.hasProperty("schemaUri")) {
-                    root.setProperty("ocif", oco.get("schemaUri"));
-                }
-                if (oco.hasProperty("resources")) {
-                    com.graphinout.foundation.json.value.IJsonValue resVal = oco.get("resources");
-                    root.setProperty("resources", deepCloneRecreateStrings(resVal));
-                }
-                if (oco.hasProperty("schemas")) {
-                    root.setProperty("schemas", oco.get("schemas"));
-                }
-                if (oco.hasProperty("extra")) {
-                    com.graphinout.foundation.json.value.IJsonObject extras = oco.get("extra").asObject();
-                    extras.keys().forEach(k -> root.setProperty(k, extras.get(k)));
-                }
-                // read flags
-                if (oco.hasProperty("flags")) {
-                    com.graphinout.foundation.json.value.IJsonObject flags = oco.get("flags").asObject();
-                    if (flags.hasProperty("hasRelationsProperty") && flags.get("hasRelationsProperty").asBoolean()) {
-                        this.hasRelationsProperty = true;
+                IJsonValue ocifVal = od.get("ocif");
+                if (ocifVal != null && ocifVal.isObject()) {
+                    IJsonObject oco = ocifVal.asObject();
+                    ifPresentAccept(oco.get("schemaUri"), v -> root.setProperty("ocif", v));
+                    ifPresentAccept(oco.get("resources"), v -> root.setProperty("resources", deepCloneRecreateStrings(v)));
+                    ifPresentAccept(oco.get("schemas"), v -> root.setProperty("schemas", v));
+                    ifPresentAccept(oco.get("extra"), v -> (IJsonObject) v.asObject(), extras -> extras.keys().forEach(k -> root.setProperty(k, extras.get(k))));
+                    // read flags
+                    if (oco.hasProperty("flags")) {
+                        IJsonObject flags = oco.get("flags").asObject();
+                        if (flags.hasProperty("hasRelationsProperty") && flags.get("hasRelationsProperty").asBoolean()) {
+                            this.hasRelationsProperty = true;
+                        }
                     }
                 }
             }
@@ -130,14 +90,18 @@ public class Ocif2CjStream implements ICjStream {
     public void edgeStart(ICjEdgeChunk edge) {
         ensureRelations();
         // Prefer full OCIF relation stored under edge.data.ocif.relation
-        com.graphinout.foundation.json.value.IJsonValue v = edge.data() == null ? null : edge.data().jsonValue();
+        var edgeDataHolder = edge.data();
+        IJsonValue v = edgeDataHolder == null ? null : edgeDataHolder.jsonValue();
         if (v != null && v.isObject()) {
-            com.graphinout.foundation.json.value.IJsonObject eo = v.asObject();
+            IJsonObject eo = v.asObject();
             if (eo.hasProperty("ocif")) {
-                com.graphinout.foundation.json.value.IJsonObject ocif = eo.get("ocif").asObject();
-                if (ocif.hasProperty("relation")) {
-                    relationsArr.add(ocif.get("relation"));
-                    return;
+                IJsonValue ocifVal = eo.get("ocif");
+                if (ocifVal != null && ocifVal.isObject()) {
+                    IJsonObject ocif = ocifVal.asObject();
+                    if (ocif.hasProperty("relation")) {
+                        relationsArr.add(ocif.get("relation"));
+                        return;
+                    }
                 }
             }
         }
@@ -166,31 +130,81 @@ public class Ocif2CjStream implements ICjStream {
     @Override
     public void nodeStart(ICjNodeChunk node) {
         ensureNodes();
-        com.graphinout.foundation.json.value.IJsonObjectMutable no = factory.createObjectMutable();
-        if (node.id() != null) {
-            no.setProperty("id", factory.createString(node.id()));
+        IJsonObjectMutable no = factory.createObjectMutable();
+        String nodeId = node.id();
+        if (nodeId != null) {
+            no.setProperty("id", factory.createString(nodeId));
         }
         // Restore OCIF node fields from data.ocif.node.*
-        com.graphinout.foundation.json.value.IJsonValue dv = node.data() == null ? null : node.data().jsonValue();
+        var nodeDataHolder = node.data();
+        IJsonValue dv = nodeDataHolder == null ? null : nodeDataHolder.jsonValue();
         if (dv != null && dv.isObject()) {
-            com.graphinout.foundation.json.value.IJsonObject od = dv.asObject();
+            IJsonObject od = dv.asObject();
             if (od.hasProperty("ocif")) {
-                com.graphinout.foundation.json.value.IJsonObject ocif = od.get("ocif").asObject();
-                if (ocif.hasProperty("node")) {
-                    com.graphinout.foundation.json.value.IJsonObject n = ocif.get("node").asObject();
-                    if (n.hasProperty("position")) no.setProperty("position", n.get("position"));
-                    if (n.hasProperty("size")) no.setProperty("size", n.get("size"));
-                    if (n.hasProperty("resource")) no.setProperty("resource", n.get("resource"));
-                    if (n.hasProperty("type")) no.setProperty("type", n.get("type"));
-                    if (n.hasProperty("data")) no.setProperty("data", n.get("data"));
-                    if (n.hasProperty("extra")) {
-                        com.graphinout.foundation.json.value.IJsonObject extras = n.get("extra").asObject();
-                        extras.keys().forEach(k -> no.setProperty(k, extras.get(k)));
+                IJsonValue ocifVal = od.get("ocif");
+                if (ocifVal != null && ocifVal.isObject()) {
+                    IJsonObject ocif = ocifVal.asObject();
+                    if (ocif.hasProperty("node")) {
+                        IJsonValue nodeVal = ocif.get("node");
+                        if (nodeVal != null && nodeVal.isObject()) {
+                            IJsonObject n = nodeVal.asObject();
+                            if (n.hasProperty("position")) no.setProperty("position", n.get("position"));
+                            if (n.hasProperty("size")) no.setProperty("size", n.get("size"));
+                            if (n.hasProperty("resource")) no.setProperty("resource", n.get("resource"));
+                            if (n.hasProperty("type")) no.setProperty("type", n.get("type"));
+                            if (n.hasProperty("data")) no.setProperty("data", n.get("data"));
+                            if (n.hasProperty("extra")) {
+                                IJsonObject extras = n.get("extra").asObject();
+                                extras.keys().forEach(k -> no.setProperty(k, extras.get(k)));
+                            }
+                        }
                     }
                 }
             }
         }
         nodesArr.add(no);
+    }
+
+    public String resultOcifJsonString() {
+        // serialize current root into a fresh writer to avoid accumulation across calls
+        Json2StringWriter w = new Json2StringWriter();
+        if (root != null) {
+            root.fire(w);
+        }
+        return w.jsonString();
+    }
+
+    // Deep-clone a JSON value while recreating all string primitives to guarantee proper escaping on serialization
+    private IJsonValue deepCloneRecreateStrings(IJsonValue v) {
+        if (v == null) return factory.createNull();
+        if (v.isPrimitive()) {
+            IJsonPrimitive p = v.asPrimitive();
+            Object base = p.base();
+            if (base instanceof String s) {
+                return factory.createString(s);
+            } else if (base instanceof Number n) {
+                return factory.createNumber(n);
+            } else if (base instanceof Boolean b) {
+                return factory.createBoolean(b);
+            } else {
+                // fallback to toString
+                return factory.createString(String.valueOf(base));
+            }
+        } else if (v.isArray()) {
+            IJsonArray a = v.asArray();
+            IJsonArrayMutable out = factory.createArrayMutable();
+            for (int i = 0; i < a.size(); i++) {
+                out.add(deepCloneRecreateStrings(a.get_(i)));
+            }
+            return out;
+        } else { // object
+            IJsonObject o = v.asObject();
+            IJsonObjectMutable out = factory.createObjectMutable();
+            for (String k : o.keys()) {
+                out.setProperty(k, deepCloneRecreateStrings(o.get_(k)));
+            }
+            return out;
+        }
     }
 
     private void ensureNodes() {
@@ -207,36 +221,4 @@ public class Ocif2CjStream implements ICjStream {
         }
     }
 
-    // Deep-clone a JSON value while recreating all string primitives to guarantee proper escaping on serialization
-    private com.graphinout.foundation.json.value.IJsonValue deepCloneRecreateStrings(com.graphinout.foundation.json.value.IJsonValue v) {
-        if (v == null) return factory.createNull();
-        if (v.isPrimitive()) {
-            com.graphinout.foundation.json.value.IJsonPrimitive p = v.asPrimitive();
-            Object base = p.base();
-            if (base instanceof String s) {
-                return factory.createString(s);
-            } else if (base instanceof Number n) {
-                return factory.createNumber(n);
-            } else if (base instanceof Boolean b) {
-                return factory.createBoolean(b);
-            } else {
-                // fallback to toString
-                return factory.createString(String.valueOf(base));
-            }
-        } else if (v.isArray()) {
-            com.graphinout.foundation.json.value.IJsonArray a = v.asArray();
-            com.graphinout.foundation.json.value.IJsonArrayMutable out = factory.createArrayMutable();
-            for (int i = 0; i < a.size(); i++) {
-                out.add(deepCloneRecreateStrings(a.get_(i)));
-            }
-            return out;
-        } else { // object
-            com.graphinout.foundation.json.value.IJsonObject o = v.asObject();
-            com.graphinout.foundation.json.value.IJsonObjectMutable out = factory.createObjectMutable();
-            for (String k : o.keys()) {
-                out.setProperty(k, deepCloneRecreateStrings(o.get_(k)));
-            }
-            return out;
-        }
-    }
 }

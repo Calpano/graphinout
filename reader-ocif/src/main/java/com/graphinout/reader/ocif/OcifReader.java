@@ -1,23 +1,36 @@
 package com.graphinout.reader.ocif;
 
 import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
+import com.graphinout.base.cj.element.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.reader.ContentError;
 import com.graphinout.base.reader.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
-import org.slf4j.Logger;
+import com.graphinout.foundation.json.path.IJsonContainerNavigationStep;
+import com.graphinout.foundation.json.value.IJsonArray;
+import com.graphinout.foundation.json.value.IJsonObject;
+import com.graphinout.foundation.json.value.IJsonObjectMutable;
+import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.json.value.java.JavaJsonValues;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import static com.graphinout.foundation.json.path.IJsonContainerNavigationStep.of;
+import static com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf;
+import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.util.Nullables.nonNullOrDefault;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 
 public class OcifReader implements GioReader {
 
     public static final GioFileFormat FORMAT = new GioFileFormat("ocif", "OCIF Open Canvas Interchange Format (OCIF v0.6)", ".ocif", ".ocif.json");
-    private static final Logger log = getLogger(OcifReader.class);
     private Consumer<ContentError> errorHandler;
 
     @Override
@@ -40,60 +53,37 @@ public class OcifReader implements GioReader {
 
         String json;
         try (sis) {
-            json = org.apache.commons.io.IOUtils.toString(sis.inputStream(), java.nio.charset.StandardCharsets.UTF_8);
+            json = IOUtils.toString(sis.inputStream(), UTF_8);
         }
 
         // Parse OCIF JSON and emit CJ stream events
-        com.graphinout.foundation.json.value.IJsonValue root;
-        try {
-            root = com.graphinout.foundation.json.value.java.JavaJsonValues.ofJsonString(json);
-        } catch (RuntimeException ex) {
-            // On parse error, fall back to passthrough if possible to avoid NPEs during tests
-            if (cjStream instanceof Ocif2CjStream ocif2Cj) {
-                ocif2Cj.setRawOcifJson(json);
-                return;
-            } else throw ex;
-        }
-        if (root == null || !root.isObject()) {
-            if (cjStream instanceof Ocif2CjStream ocif2Cj) {
-                ocif2Cj.setRawOcifJson(json);
-                return;
-            }
-        }
-        com.graphinout.foundation.json.value.IJsonObject o = root.asObject();
-
-        ICjDocumentChunkMutable doc = cjStream.createDocumentChunk();
-        if (doc == null) {
-            // cannot create chunks; end gracefully
+        IJsonValue root = JavaJsonValues.ofJsonString(json);
+        IJsonObject o = root == null ? null : root.asObject();
+        if (o == null) {
             cjStream.documentEnd();
             return;
         }
 
+        ICjDocumentChunkMutable doc = cjStream.createDocumentChunk();
         // Attach OCIF document-level data under data.ocif.* to keep roundtrip lossless (e.g., resources, schemas, ocif uri)
         doc.dataMutable(dm -> {
             // keep OCIF schema uri if present
-            if (o.hasProperty("ocif")) {
-                dm.add(com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf("ocif","schemaUri"), o.get("ocif"));
-            }
-            if (o.hasProperty("resources")) {
-                dm.add(com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf("ocif","resources"), o.get("resources"));
-            }
-            if (o.hasProperty("schemas")) {
-                dm.add(com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf("ocif","schemas"), o.get("schemas"));
-            }
+            ifPresentAccept(o.get("ocif"), v -> dm.add(pathOf("ocif", "schemaUri"), v));
+            ifPresentAccept(o.get("resources"), v -> dm.add(pathOf("ocif", "resources"), v));
+            ifPresentAccept(o.get("schemas"), v -> dm.add(pathOf("ocif", "schemas"), v));
             // Record if input explicitly had a relations property (even if empty)
             if (o.hasProperty("relations")) {
-                dm.add(com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf("ocif","flags","hasRelationsProperty"), dm.factory().createBoolean(true));
+                dm.add(pathOf("ocif", "flags", "hasRelationsProperty"), dm.factory().createBoolean(true));
             }
             // any other root-level extras not mapped go to ocif.extra
-            com.graphinout.foundation.json.value.IJsonObjectMutable extra = dm.factory().createObjectMutable();
+            IJsonObjectMutable extra = dm.factory().createObjectMutable();
             for (String key : o.keys()) {
-                if (!java.util.Set.of("nodes", "relations", "resources", "schemas", "ocif").contains(key)) {
+                if (!Set.of("nodes", "relations", "resources", "schemas", "ocif").contains(key)) {
                     extra.setProperty(key, o.get(key));
                 }
             }
             if (!extra.isEmpty()) {
-                dm.add(com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf("ocif","extra"), extra);
+                dm.add(pathOf("ocif", "extra"), extra);
             }
         });
 
@@ -104,30 +94,30 @@ public class OcifReader implements GioReader {
         cjStream.graphStart(graph);
 
         // Nodes
-        if (o.hasProperty("nodes") && root.asObject().get("nodes").isArray()) {
-            com.graphinout.foundation.json.value.IJsonArray nodes = root.asObject().get("nodes").asArray();
+        IJsonValue nodesVal = o.get("nodes");
+        if (nodesVal != null && nodesVal.isArray()) {
+            IJsonArray nodes = nodesVal.asArray();
             for (int i = 0; i < nodes.size(); i++) {
-                com.graphinout.foundation.json.value.IJsonObject nodeObj = nodes.get(i).asObject();
-                com.graphinout.base.cj.element.ICjNodeChunkMutable node = cjStream.createNodeChunk();
-                if (nodeObj.hasProperty("id")) {
-                    node.id(nodeObj.get("id").asString());
-                }
+                IJsonObject nodeObj = nodes.get_(i).asObject();
+                ICjNodeChunkMutable node = cjStream.createNodeChunk();
+                ifPresentAccept(nodeObj.get("id"), IJsonValue::asString, node::id);
+
                 // map known OCIF node fields under data.ocif.node.* to keep structure
                 node.dataMutable(dm -> {
-                    if (nodeObj.hasProperty("position")) dm.add(com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf("ocif","node","position"), nodeObj.get("position"));
-                    if (nodeObj.hasProperty("size")) dm.add(com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf("ocif","node","size"), nodeObj.get("size"));
-                    if (nodeObj.hasProperty("resource")) dm.add(com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf("ocif","node","resource"), nodeObj.get("resource"));
-                    if (nodeObj.hasProperty("type")) dm.add(com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf("ocif","node","type"), nodeObj.get("type"));
-                    if (nodeObj.hasProperty("data")) dm.add(com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf("ocif","node","data"), nodeObj.get("data"));
+                    ifPresentAccept(nodeObj.get("position"), v -> dm.add(pathOf("ocif", "node", "position"), v));
+                    ifPresentAccept(nodeObj.get("size"), v -> dm.add(pathOf("ocif", "node", "size"), v));
+                    ifPresentAccept(nodeObj.get("resource"), v -> dm.add(pathOf("ocif", "node", "resource"), v));
+                    ifPresentAccept(nodeObj.get("type"), v -> dm.add(pathOf("ocif", "node", "type"), v));
+                    ifPresentAccept(nodeObj.get("data"), v -> dm.add(pathOf("ocif", "node", "data"), v));
                     // preserve any unknown fields
-                    com.graphinout.foundation.json.value.IJsonObjectMutable extras = dm.factory().createObjectMutable();
+                    IJsonObjectMutable extras = dm.factory().createObjectMutable();
                     for (String nk : nodeObj.keys()) {
-                        if (!java.util.Set.of("id", "position", "size", "resource", "type", "data").contains(nk)) {
+                        if (!Set.of("id", "position", "size", "resource", "type", "data").contains(nk)) {
                             extras.setProperty(nk, nodeObj.get(nk));
                         }
                     }
                     if (!extras.isEmpty()) {
-                        dm.add(com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf("ocif","node","extra"), extras);
+                        dm.add(pathOf("ocif", "node", "extra"), extras);
                     }
                 });
                 cjStream.nodeStart(node);
@@ -136,51 +126,50 @@ public class OcifReader implements GioReader {
         }
 
         // Relations -> edges
-        if (o.hasProperty("relations") && root.asObject().get("relations").isArray()) {
-            com.graphinout.foundation.json.value.IJsonArray rels = root.asObject().get("relations").asArray();
+        IJsonValue relsVal = o.get("relations");
+        if (relsVal != null && relsVal.isArray()) {
+            IJsonArray rels = relsVal.asArray();
             for (int i = 0; i < rels.size(); i++) {
-                com.graphinout.foundation.json.value.IJsonObject rel = rels.get(i).asObject();
+                IJsonObject rel = rels.get_(i).asObject();
                 com.graphinout.base.cj.element.ICjEdgeChunkMutable edge = cjStream.createEdgeChunk();
                 // endpoints depend on relation type
-                String type = rel.hasProperty("type") ? rel.get("type").asString() : "@ocif/rel/edge";
+
+                String type = nonNullOrDefault(rel.get("type"), IJsonValue::asString, "@ocif/rel/edge");
                 switch (type) {
                     case "@ocif/rel/parent-child" -> {
-                        String parent = rel.get("parent").asString();
-                        String child = rel.get("child").asString();
+                        String parent = requireNonNull(rel.get("parent")).asString();
+                        String child = requireNonNull(rel.get("child")).asString();
                         edge.addEndpoint(ep -> ep.node(parent));
                         edge.addEndpoint(ep -> ep.node(child));
                     }
                     case "@ocif/rel/edge" -> {
                         // endpoints array with from/to
                         if (rel.hasProperty("from") && rel.hasProperty("to")) {
-                            edge.addEndpoint(ep -> ep.node(rel.get("from").asString()));
-                            edge.addEndpoint(ep -> ep.node(rel.get("to").asString()));
+                            edge.addEndpoint(ep -> ep.node(rel.get_("from").asString()));
+                            edge.addEndpoint(ep -> ep.node(rel.get_("to").asString()));
                         }
                     }
                     case "@ocif/rel/hyperedge" -> {
-                        if (rel.hasProperty("endpoints") && rel.get("endpoints").isArray()) {
-                            com.graphinout.foundation.json.value.IJsonArray eps = rel.get("endpoints").asArray();
+                        IJsonValue epsVal = rel.get("endpoints");
+                        if (epsVal != null && epsVal.isArray()) {
+                            IJsonArray eps = epsVal.asArray();
                             for (int j = 0; j < eps.size(); j++) {
-                                com.graphinout.foundation.json.value.IJsonObject eo = eps.get(j).asObject();
+                                IJsonObject eo = eps.get_(j).asObject();
                                 edge.addEndpoint(ep -> {
-                                    if (eo.hasProperty("node")) ep.node(eo.get("node").asString());
-                                    if (eo.hasProperty("port")) ep.port(eo.get("port").asString());
+                                    ifPresentAccept(eo.get("node"), IJsonValue::asString, ep::node);
+                                    ifPresentAccept(eo.get("port"), IJsonValue::asString, ep::port);
                                 });
                             }
                         }
                     }
-                    default -> {
-                        // try generic 'a' and 'b' endpoints if present
-                        if (rel.hasProperty("a")) edge.addEndpoint(ep -> ep.node(rel.get("a").asString()));
-                        if (rel.hasProperty("b")) edge.addEndpoint(ep -> ep.node(rel.get("b").asString()));
-                    }
+                    default -> log.warn("Unknown relation type '{}'", type);
                 }
                 // carry relation fields into edge.data.ocif.relation
                 edge.dataMutable(dm -> {
-                    com.graphinout.foundation.json.path.IJsonContainerNavigationStep ocif = com.graphinout.foundation.json.path.IJsonContainerNavigationStep.of("ocif");
-                    com.graphinout.foundation.json.path.IJsonContainerNavigationStep relStep = com.graphinout.foundation.json.path.IJsonContainerNavigationStep.of("relation");
+                    IJsonContainerNavigationStep ocif = of("ocif");
+                    IJsonContainerNavigationStep relStep = of("relation");
                     for (String rk : rel.keys()) {
-                        dm.add(java.util.List.of(ocif, relStep, com.graphinout.foundation.json.path.IJsonContainerNavigationStep.of(rk)), rel.get(rk));
+                        dm.add(List.of(ocif, relStep, of(rk)), rel.get(rk));
                     }
                 });
                 cjStream.edgeStart(edge);
