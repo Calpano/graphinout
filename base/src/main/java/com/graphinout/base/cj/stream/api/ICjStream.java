@@ -29,6 +29,11 @@ public interface ICjStream {
     /** Next expect: 0...n graphs */
     void documentStart(ICjDocumentChunk document);
 
+    default void document(ICjDocumentChunk document) {
+        documentStart(document);
+        documentEnd();
+    }
+
     void edgeEnd();
 
     /** Start a CJ edge which may contain subgraphs */
@@ -44,9 +49,19 @@ public interface ICjStream {
     /** Start a CJ graph which may contain nodes, edges, subgraphs */
     void graphStart(ICjGraphChunk graph);
 
+    default void graph(ICjGraphChunk graph) {
+        graphStart(graph);
+        graphEnd();
+    }
+
     void nodeEnd();
 
     /** Start a CJ node which may contain subgraphs */
     void nodeStart(ICjNodeChunk node);
+
+    default void node(ICjNodeChunk node) {
+        nodeStart(node);
+        nodeEnd();
+    }
 
 }
