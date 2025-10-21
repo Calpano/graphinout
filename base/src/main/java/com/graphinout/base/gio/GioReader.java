@@ -1,5 +1,6 @@
 package com.graphinout.base.gio;
 
+import com.graphinout.base.CjStream2GioWriter;
 import com.graphinout.base.Gio2CjStream;
 import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.base.graphml.gio.Gio2GraphmlWriter;
@@ -60,8 +61,12 @@ public interface GioReader {
      * Map all incoming graph structures to the internal GIO model.
      */
     @Deprecated
-    void read(InputSource inputSource, GioWriter writer) throws IOException;
+    default void read(InputSource inputSource, GioWriter writer) throws IOException {
+        CjStream2GioWriter cjStream2GioWriter = new CjStream2GioWriter(writer);
+        read(inputSource, cjStream2GioWriter);
+    }
 
+    // TODO remove this default impl
     default void read(InputSource inputSource, ICjStream cjStream) throws IOException {
         Gio2CjStream gio2CjStream = new Gio2CjStream(cjStream);
         read(inputSource, gio2CjStream);
