@@ -1,4 +1,4 @@
-package com.graphinout.base.cj.stream;
+package com.graphinout.base;
 
 import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
