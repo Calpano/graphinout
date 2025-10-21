@@ -1,5 +1,6 @@
 package com.graphinout.foundation.json.stream.impl;
 
+import com.graphinout.foundation.json.JSON;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.JsonWriter;
 
@@ -121,16 +122,13 @@ public abstract class AppendableJsonWriter implements JsonWriter {
         append("null");
     }
 
-    // IMPROVE is this a simplistic/wrong approach to escaping?
     @Override
     public void onString(String s) throws JsonException {
         maybeDelimiter();
         append("\"");
         // JSON-escape quote symbols
-        append(s //
-                .replace("\\", "\\\\") //
-                .replace("\"", "\\\"") //
-        );
+        String jsonEscaped = JSON.jsonEscape(s);
+        append(jsonEscaped);
         append("\"");
     }
 
