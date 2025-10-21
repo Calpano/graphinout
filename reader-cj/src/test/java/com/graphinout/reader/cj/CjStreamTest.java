@@ -1,9 +1,11 @@
 package com.graphinout.reader.cj;
 
+import com.graphinout.base.CjDocument2CjStream;
+import com.graphinout.base.CjStream2GioWriter;
+import com.graphinout.base.Gio2CjStream;
 import com.graphinout.base.cj.CjAssert;
 import com.graphinout.base.cj.element.ICjDocument;
 import com.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.graphinout.base.cj.stream.Gio2CjStream;
 import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
@@ -14,8 +16,6 @@ import com.graphinout.foundation.input.SingleInputSourceOfString;
 import com.graphinout.foundation.json.stream.JsonWriter;
 import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
 import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
-import com.graphinout.reader.graphml.Graphml2GioWriter;
-import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import io.github.classgraph.Resource;
 import jdk.jfr.Description;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,8 +27,8 @@ public class CjStreamTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
-    @Description("Test JSON->CJ->Graphml->Gio->CjStream->CJ->JSON (all)")
-    void test_Json_Cj_Graphml_Gio_CjStream_Cj_Json(String displayName, Resource resource) throws IOException {
+    @Description("Test JSON->CJ->Gio->CJ->JSON (all)")
+    void test_Json_Cj_Gio(String displayName, Resource resource) throws IOException {
         String json = resource.getContentAsString();
         SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", json);
 
@@ -42,14 +42,13 @@ public class CjStreamTest {
             cjDoc = new CjDocumentElement();
         }
 
-        // CJ doc -> GraphML -> GIO
+        // CJ doc -> GIO
         Json2StringWriter json2StringWriter = new Json2StringWriter();
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
         ICjStream cjStream = new CjStream2CjWriter(cj2JsonWriter);
         GioWriter gioWriter = new Gio2CjStream(cjStream);
-        Graphml2GioWriter graphml2GioWriter = new Graphml2GioWriter(gioWriter);
-        CjDocument2Graphml cjDocument2Graphml = new CjDocument2Graphml(graphml2GioWriter);
-        cjDocument2Graphml.writeDocumentToGraphml(cjDoc);
+        CjStream2GioWriter cjStream2GioWriter = new CjStream2GioWriter(gioWriter);
+        CjDocument2CjStream.toCjStream(cjDoc, cjStream2GioWriter);
 
         CjAssert.xAssertThatIsSameCj(json2StringWriter.jsonString(), json, null);
     }
