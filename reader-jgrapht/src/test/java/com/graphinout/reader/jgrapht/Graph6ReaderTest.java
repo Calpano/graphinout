@@ -22,7 +22,7 @@ class Graph6ReaderTest extends AbstractReaderTest {
 
     @Override
     protected List<GioReader> readersToTest() {
-        return Arrays.asList(new Graph6Reader());
+        return List.of(new Graph6Reader());
     }
 
     @Test
