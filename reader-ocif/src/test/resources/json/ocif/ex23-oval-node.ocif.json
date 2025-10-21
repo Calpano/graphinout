@@ -1,0 +1,36 @@
+{
+  "ocif": "https://spec.canvasprotocol.org/v0.6",
+  "nodes": [
+    {
+      "id": "oval-node",
+      "position": [100, 100],
+      "size": [200, 150],
+      "resource": "oval-text",
+      "data": [
+        {
+          "type": "@ocif/node/oval",
+          "strokeWidth": 3,
+          "strokeColor": "#ff6b6b",
+          "fillColor": "#ffebee"
+        },
+        {
+          "type": "@ocif/node/textstyle",
+          "fontSizePx": 18,
+          "color": "#ff4d4f",
+          "align": "center"
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "oval-text",
+      "representations": [
+        {
+          "mimeType": "text/plain",
+          "content": "Oval Node Example"
+        }
+      ]
+    }
+  ]
+}

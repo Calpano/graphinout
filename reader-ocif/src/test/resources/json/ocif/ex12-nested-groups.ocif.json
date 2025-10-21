@@ -1,0 +1,13 @@
+{
+  "nodes": [
+    {"id": "G1", "label": "Group 1", "size": [200, 150]},
+    {"id": "G2", "label": "Group 2", "size": [150, 100]},
+    {"id": "x"}, {"id": "y"}, {"id": "z"}
+  ],
+  "relations": [
+    {"type": "@ocif/rel/parent-child", "parent": "G1", "child": "G2", "inherit": true},
+    {"type": "@ocif/rel/parent-child", "parent": "G2", "child": "x"},
+    {"type": "@ocif/rel/parent-child", "parent": "G2", "child": "y"},
+    {"type": "@ocif/rel/parent-child", "parent": "G1", "child": "z"}
+  ]
+}

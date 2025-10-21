@@ -1,0 +1,33 @@
+{
+  "nodes": [
+    {
+      "id": "A",
+      "position": [100, 100]
+    },
+    {
+      "id": "B",
+      "position": [300, 200],
+      "size": [20, 20],
+      "resource": "r1"
+    }
+  ],
+  "relations": [
+    {
+      "type": "@ocif/rel/parent-child",
+      "parent": "B",
+      "child": "A",
+      "inherit": true
+    }
+  ],
+  "resources": [
+    {
+      "id": "r1",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "Hello, World!"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "ocif": "https://spec.canvasprotocol.org/v0.6",
+  "nodes": [
+    {
+      "id": "image-node",
+      "position": [50, 50],
+      "size": [300, 200],
+      "resource": "logo-resource",
+      "data": [
+        {
+          "type": "@ocif/node/rect",
+          "strokeWidth": 2,
+          "strokeColor": "#0066cc",
+          "fillColor": "#e6f2ff"
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "logo-resource",
+      "representations": [
+        {
+          "mimeType": "image/png",
+          "location": "https://example.com/logo.png"
+        },
+        {
+          "mimeType": "image/svg+xml",
+          "content": "<svg width='300' height='200'><rect x='10' y='10' width='280' height='180' fill='#ffffff' stroke='#cccccc'/></svg>"
+        }
+      ]
+    }
+  ]
+}

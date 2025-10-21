@@ -1,0 +1,9 @@
+{
+  "nodes": [
+    {"id": "n1", "label": "Node One", "style": {"fill": "#ffeecc", "stroke": "#cc9900", "strokeWidth": 2}},
+    {"id": "n2", "label": {"text": "Second", "align": "center"}, "style": {"fill": "rgb(200,220,255)", "font": {"family": "Arial", "size": 12}}}
+  ],
+  "relations": [
+    {"type": "@ocif/rel/link", "source": "n1", "target": "n2", "directed": false, "label": "undirected"}
+  ]
+}

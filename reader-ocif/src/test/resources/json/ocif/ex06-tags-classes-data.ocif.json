@@ -1,0 +1,9 @@
+{
+  "nodes": [
+    {"id": "n1", "tags": ["important", "blue"], "classes": ["type-A"], "data": {"score": 0.95, "count": 3}},
+    {"id": "n2", "tags": ["temp"], "classes": ["type-B", "flag"], "data": {"active": true}}
+  ],
+  "relations": [
+    {"type": "@ocif/rel/link", "source": "n1", "target": "n2", "data": {"weight": 5}}
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "nodes": [
+    {"id": "parent", "position": [200, 200], "size": [120, 80]},
+    {"id": "child1", "position": [220, 230]},
+    {"id": "child2", "position": [260, 260]}
+  ],
+  "relations": [
+    {"type": "@ocif/rel/parent-child", "parent": "parent", "child": "child1", "inherit": true},
+    {"type": "@ocif/rel/parent-child", "parent": "parent", "child": "child2", "inherit": false}
+  ]
+}

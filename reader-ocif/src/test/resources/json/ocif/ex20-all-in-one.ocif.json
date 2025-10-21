@@ -1,0 +1,33 @@
+{
+  "metadata": {"title": "All-in-One", "version": "0.6-demo"},
+  "view": {"center": [200, 120], "zoom": 1.2},
+  "layout": {"type": "force", "iterations": 50},
+  "nodes": [
+    {"id": "G", "label": "Group", "size": [240, 160], "style": {"fill": "#f9f9f9", "stroke": "#aaa"}},
+    {"id": "A", "label": "Alpha", "position": [40, 40], "size": [60, 40], "shape": "rectangle", "rotation": 5, "tags": ["important"], "classes": ["type-A"], "resource": "r-md"},
+    {"id": "B", "label": {"text": "Beta", "align": "center"}, "position": [140, 80], "size": [50, 50], "shape": "ellipse", "style": {"fill": "#dff", "font": {"size": 11}}, "ports": [{"id": "B.in", "position": [0, 25]}, {"id": "B.out", "position": [50, 25]}]},
+    {"id": "C", "position": [160, 10], "size": [40, 40], "shape": "triangle", "zIndex": 5, "locked": false, "visible": true, "data": {"score": 0.7}},
+    {"id": "D", "position": [10, 120], "size": [40, 30], "style": {"fill": "#fee"}}
+  ],
+  "relations": [
+    {"type": "@ocif/rel/parent-child", "parent": "G", "child": "A", "inherit": true},
+    {"type": "@ocif/rel/parent-child", "parent": "G", "child": "B"},
+    {"type": "@ocif/rel/parent-child", "parent": "G", "child": "C"},
+    {"type": "@ocif/rel/link", "source": "A", "target": "B", "directed": true, "label": "A→B", "data": {"weight": 2}},
+    {"type": "@ocif/rel/link", "source": "B", "sourcePort": "B.out", "target": "C", "directed": true},
+    {"type": "@ocif/rel/hyperedge", "members": ["A", "B", "D"], "label": "grouping"}
+  ],
+  "annotations": [
+    {"type": "note", "target": "A", "text": "Entry point"},
+    {"type": "highlight", "target": "C", "style": {"stroke": "#f00"}}
+  ],
+  "constraints": [
+    {"type": "align-top", "nodes": ["A", "B", "C"]}
+  ],
+  "resources": [
+    {"id": "r-md", "representations": [
+      {"mime-type": "text/markdown", "content": "## A\nAlpha node details", "priority": 5},
+      {"mime-type": "text/plain", "content": "Alpha", "priority": 0}
+    ]}
+  ]
+}

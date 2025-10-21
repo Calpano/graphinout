@@ -1,0 +1,21 @@
+{
+  "nodes": [
+    {"id": "n1", "resource": "r-text"},
+    {"id": "n2", "resource": "r-uri"}
+  ],
+  "resources": [
+    {
+      "id": "r-text",
+      "representations": [
+        {"mime-type": "text/plain", "content": "This is inline text."},
+        {"mime-type": "application/json", "content": {"a": 1, "b": 2}}
+      ]
+    },
+    {
+      "id": "r-uri",
+      "representations": [
+        {"mime-type": "image/png", "uri": "https://example.org/sample.png"}
+      ]
+    }
+  ]
+}

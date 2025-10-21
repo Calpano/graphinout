@@ -1,0 +1,13 @@
+{
+  "metadata": {
+    "title": "Sample Graph",
+    "description": "Demonstrates metadata at document level.",
+    "authors": ["OCIF Bot", "Tester"],
+    "created": "2025-10-21T11:21:00Z",
+    "license": "CC-BY-4.0",
+    "tags": ["demo", "metadata"]
+  },
+  "nodes": [
+    {"id": "a"}, {"id": "b"}
+  ]
+}

@@ -25,6 +25,9 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
     </dependencies>
 
 </project>

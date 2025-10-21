@@ -1,0 +1,10 @@
+{
+  "nodes": [
+    {"id": "n1"}, {"id": "n2"}, {"id": "n3"}, {"id": "n4"}
+  ],
+  "layout": {"type": "grid", "gap": [20, 30], "origin": [0, 0], "columns": 2},
+  "relations": [
+    {"type": "@ocif/rel/link", "source": "n1", "target": "n2"},
+    {"type": "@ocif/rel/link", "source": "n3", "target": "n4"}
+  ]
+}

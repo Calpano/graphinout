@@ -1,0 +1,13 @@
+{
+  "nodes": [
+    {"id": "img", "resource": "imgRes"}
+  ],
+  "resources": [
+    {
+      "id": "imgRes",
+      "representations": [
+        {"mime-type": "image/png", "contentBase64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII="}
+      ]
+    }
+  ]
+}
