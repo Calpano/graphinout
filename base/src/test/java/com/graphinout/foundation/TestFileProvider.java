@@ -176,7 +176,7 @@ public class TestFileProvider {
     /**
      * @param allowedExtensions if empty, allow all
      */
-    private static Stream<TestResource> resources(String resourceRootPath, Set<String> allowedExtensions) {
+    public static Stream<TestResource> resources(String resourceRootPath, Set<String> allowedExtensions) {
         Path testResourcesPath = Paths.get(resourceRootPath);
         int baseLen = testResourcesPath.toString().length() + 1;
         return getAllTestResources() //
