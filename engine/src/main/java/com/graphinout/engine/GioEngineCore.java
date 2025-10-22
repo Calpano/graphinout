@@ -1,6 +1,5 @@
 package com.graphinout.engine;
 
-import com.graphinout.base.CjStream2GioWriter;
 import com.graphinout.base.Gio2CjWriter;
 import com.graphinout.base.GioService;
 import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
@@ -27,7 +26,7 @@ import com.graphinout.foundation.xml.XmlWriterImpl;
 import com.graphinout.reader.adjlist.AdjListReader;
 import com.graphinout.reader.cj.ConnectedJson5Reader;
 import com.graphinout.reader.cj.ConnectedJsonReader;
-import com.graphinout.reader.example.TripleTextReader;
+import com.graphinout.reader.tripletext.TripleTextReader;
 import com.graphinout.reader.graphml.GraphmlReader;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.jgrapht.Graph6Reader;
