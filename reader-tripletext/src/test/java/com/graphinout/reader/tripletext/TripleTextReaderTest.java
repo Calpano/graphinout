@@ -1,4 +1,4 @@
-package com.graphinout.reader.example;
+package com.graphinout.reader.tripletext;
 
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.gio.GioReader;

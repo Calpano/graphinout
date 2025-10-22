@@ -1,4 +1,4 @@
-package com.graphinout.reader.example;
+package com.graphinout.reader.tripletext;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;

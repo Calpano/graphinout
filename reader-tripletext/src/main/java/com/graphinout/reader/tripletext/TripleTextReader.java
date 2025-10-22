@@ -1,4 +1,4 @@
-package com.graphinout.reader.example;
+package com.graphinout.reader.tripletext;
 
 import com.graphinout.base.gio.GioData;
 import com.graphinout.base.gio.GioDataType;
@@ -62,8 +62,11 @@ public class TripleTextReader implements GioReader {
         // and write the graph to our GioWriter
         writer.startDocument(GioDocument.builder().build());
 
-        // declare keys
-        writer.key(GioKey.builder().id("label").forType(GioKeyForType.Node).attributeName("label").attributeType(GioDataType.typeString).build());
+        // declare keys (use GraphML mapping key for CJ label)
+        writer.key(GioKey.builder().id(com.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement.Label.attrName)
+                .forType(GioKeyForType.All)
+                .attributeName(com.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement.Label.attrName)
+                .attributeType(GioDataType.typeString).build());
 
         writer.startGraph(GioGraph.builder().build());
 
@@ -71,7 +74,9 @@ public class TripleTextReader implements GioReader {
         for (TripleTextModel.Node node : tripleTextModel.nodes()) {
             writer.startNode(GioNode.builder().id(node.id).build());
             if (node.label != null)
-                writer.data(GioData.builder().id("label").xmlValue(XmlFragmentString.ofPlainText(node.label)).build());
+                writer.data(GioData.builder()
+                        .key(com.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement.Label.attrName)
+                        .xmlValue(XmlFragmentString.ofPlainText(node.label)).build());
             writer.endNode(null);
         }
 
@@ -86,7 +91,8 @@ public class TripleTextReader implements GioReader {
                 GioEndpoint sEndpoint = GioEndpoint.builder().node(sNode.id).type(GioEndpointDirection.Out).build();
                 GioEndpoint oEndpoint = GioEndpoint.builder().node(o).type(GioEndpointDirection.In).build();
                 writer.startEdge(GioEdge.builder().endpoints(Arrays.asList(sEndpoint, oEndpoint)).build());
-                GioData.GioDataBuilder gioDataBuilder = GioData.builder().key("label");
+                GioData.GioDataBuilder gioDataBuilder = GioData.builder()
+                        .key(com.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement.Label.attrName);
                 writer.data(gioDataBuilder.xmlValue(XmlFragmentString.ofPlainText(p)).build());
                 // TODO meta
                 writer.endEdge();

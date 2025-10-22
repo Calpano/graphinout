@@ -1,4 +1,4 @@
-package com.graphinout.reader.example;
+package com.graphinout.reader.tripletext;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.graphinout.reader.example;
+package com.graphinout.reader.tripletext;
 
 import org.jetbrains.annotations.Nullable;
 
