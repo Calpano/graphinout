@@ -5,6 +5,7 @@ import com.graphinout.base.cj.element.ICjDocumentChunk;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
 import com.graphinout.base.cj.element.ICjGraphChunk;
 import com.graphinout.base.cj.element.ICjNodeChunk;
+import com.graphinout.base.cj.element.ICjData;
 import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
 import com.graphinout.foundation.json.value.IJsonArray;
@@ -24,7 +25,6 @@ import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
 
 public class Ocif2CjStream extends CjFactory implements ICjStream {
 
-    private final Json2StringWriter json2StringWriter = new Json2StringWriter();
     private final @Nullable Consumer<String> onDone;
 
     // Building state for CJ→OCIF
@@ -54,7 +54,7 @@ public class Ocif2CjStream extends CjFactory implements ICjStream {
     @Override
     public void documentStart(ICjDocumentChunk document) {
         // Initialize factory from document data factory to stay consistent
-        var docDataHolder = document.data();
+        ICjData docDataHolder = document.data();
         this.factory = (docDataHolder != null) ? docDataHolder.factory() : JavaJsonFactory.INSTANCE;
         this.root = factory.createObjectMutable();
         // Restore document-level OCIF info from data.ocif.* if present
@@ -90,7 +90,7 @@ public class Ocif2CjStream extends CjFactory implements ICjStream {
     public void edgeStart(ICjEdgeChunk edge) {
         ensureRelations();
         // Prefer full OCIF relation stored under edge.data.ocif.relation
-        var edgeDataHolder = edge.data();
+        ICjData edgeDataHolder = edge.data();
         IJsonValue v = edgeDataHolder == null ? null : edgeDataHolder.jsonValue();
         if (v != null && v.isObject()) {
             IJsonObject eo = v.asObject();
@@ -136,7 +136,7 @@ public class Ocif2CjStream extends CjFactory implements ICjStream {
             no.setProperty("id", factory.createString(nodeId));
         }
         // Restore OCIF node fields from data.ocif.node.*
-        var nodeDataHolder = node.data();
+        ICjData nodeDataHolder = node.data();
         IJsonValue dv = nodeDataHolder == null ? null : nodeDataHolder.jsonValue();
         if (dv != null && dv.isObject()) {
             IJsonObject od = dv.asObject();

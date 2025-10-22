@@ -120,9 +120,12 @@ public class GraphmlReader implements GioReader {
 
     @Override
     public void read(InputSource inputSource, GioWriter writer) throws IOException {
+        if (inputSource.isMulti()) {
+            throw new IllegalArgumentException("MultiInputSource is not supported by GraphmlReader");
+        }
+        SAXParser saxParser;
+        GraphmlSAXHandler saxHandler;
         try {
-            SAXParser saxParser;
-            GraphmlSAXHandler saxHandler;
             try {
                 saxParser = XmlFactory.createSaxParser();
                 saxHandler = new GraphmlSAXHandler(writer, this.errorHandler);
@@ -169,12 +172,19 @@ public class GraphmlReader implements GioReader {
                 // systemId: graphml-structure.xsd.xml
 
                 log.info("Requesting resource: type=" + type + ", namespaceURI=" + namespaceURI + ", publicId=" + publicId + ", systemId=" + systemId + ", baseURI=" + baseURI);
-                // FIXME Max ...
                 String content = externalSchemaMap.get(systemId);
+                if (content == null) {
+                    log.warn("Schema resource not found for systemId: {}", systemId);
+                    return null;
+                }
                 return new SchemaInfo(content, null, null, systemId);
             }
         });
-        Source source = new StreamSource(new StringReader(externalSchemaMap.get("graphml.xsd.xml")));
+        String graphmlSchema = externalSchemaMap.get("graphml.xsd.xml");
+        if (graphmlSchema == null) {
+            throw new IllegalStateException("Required schema 'graphml.xsd.xml' not loaded");
+        }
+        Source source = new StreamSource(new StringReader(graphmlSchema));
         factory.setSchema(schemaFactory.newSchema(source));
 
         SAXParser parser = factory.newSAXParser();

@@ -45,6 +45,7 @@ class GraphmlSAXHandler extends DefaultHandler {
     private static final Logger log = LoggerFactory.getLogger(GraphmlSAXHandler.class);
     private static final String GRAPHML_STANDARD_NAME_SPACE = "http://graphml.graphdrawing.org/xmlns";
     private final GioWriter gioWriter;
+    @Nullable
     private final Consumer<ContentError> errorConsumer;
     /**
      * This stack represents all currently open GioWriter-entites, collecting more data before they are ready to be sent
@@ -52,10 +53,11 @@ class GraphmlSAXHandler extends DefaultHandler {
      */
     private final Deque<GraphmlEntity<?>> openEntities = new LinkedList<>();
     private boolean structuralAssertionsEnabled = true;
+    @Nullable
     private Locator locator;
     private Map<String, String> namespaces = new HashMap<>();
 
-    public GraphmlSAXHandler(GioWriter gioWriter, Consumer<ContentError> errorConsumer) {
+    public GraphmlSAXHandler(GioWriter gioWriter, @Nullable Consumer<ContentError> errorConsumer) {
         this.gioWriter = gioWriter;
         this.errorConsumer = errorConsumer;
     }
@@ -266,8 +268,10 @@ class GraphmlSAXHandler extends DefaultHandler {
     }
 
     private void createWarningLog(String message) {
-        this.errorConsumer.accept(new ContentError(ContentError.ErrorLevel.Warn, message, locator == null ? null : new Location(locator.getLineNumber(), locator.getColumnNumber())));
-
+        if (this.errorConsumer != null) {
+            this.errorConsumer.accept(new ContentError(ContentError.ErrorLevel.Warn, message,
+                    locator == null ? null : new Location(locator.getLineNumber(), locator.getColumnNumber())));
+        }
     }
 
     private void endDataElement() throws IOException {

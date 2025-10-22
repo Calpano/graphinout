@@ -30,8 +30,11 @@ import static java.util.Objects.requireNonNull;
 
 public class OcifReader implements GioReader {
 
-    public static final GioFileFormat FORMAT = new GioFileFormat("ocif", "OCIF Open Canvas Interchange Format (OCIF v0.6)", ".ocif", ".ocif.json");
-    private Consumer<ContentError> errorHandler;
+    public static final String FORMAT_ID = "ocif";
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "OCIF Open Canvas Interchange Format (OCIF v0.6)", ".ocif", ".ocif.json");
+    private static final Logger log = LoggerFactory.getLogger(OcifReader.class);
+
+    private @Nullable Consumer<ContentError> errorHandler;
 
     @Override
     public void errorHandler(Consumer<ContentError> errorHandler) {
@@ -48,7 +51,9 @@ public class OcifReader implements GioReader {
         if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
-        assert inputSource instanceof SingleInputSource;
+        if (!(inputSource instanceof SingleInputSource)) {
+            throw new IllegalArgumentException("Expected SingleInputSource");
+        }
         SingleInputSource sis = (SingleInputSource) inputSource;
 
         String json;
@@ -60,8 +65,10 @@ public class OcifReader implements GioReader {
         IJsonValue root = JavaJsonValues.ofJsonString(json);
         IJsonObject o = root == null ? null : root.asObject();
         if (o == null) {
-            cjStream.documentEnd();
-            return;
+            if (errorHandler != null) {
+                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "Invalid OCIF: root must be a JSON object", null));
+            }
+            throw new IOException("Invalid OCIF: Root element must be a JSON object");
         }
 
         ICjDocumentChunkMutable doc = cjStream.createDocumentChunk();
@@ -77,8 +84,9 @@ public class OcifReader implements GioReader {
             }
             // any other root-level extras not mapped go to ocif.extra
             IJsonObjectMutable extra = dm.factory().createObjectMutable();
+            Set<String> knownRootKeys = new HashSet<>(Arrays.asList("nodes", "relations", "resources", "schemas", "ocif"));
             for (String key : o.keys()) {
-                if (!Set.of("nodes", "relations", "resources", "schemas", "ocif").contains(key)) {
+                if (!knownRootKeys.contains(key)) {
                     extra.setProperty(key, o.get(key));
                 }
             }
@@ -111,8 +119,9 @@ public class OcifReader implements GioReader {
                     ifPresentAccept(nodeObj.get("data"), v -> dm.add(pathOf("ocif", "node", "data"), v));
                     // preserve any unknown fields
                     IJsonObjectMutable extras = dm.factory().createObjectMutable();
+                    Set<String> knownNodeKeys = new HashSet<>(Arrays.asList("id", "position", "size", "resource", "type", "data"));
                     for (String nk : nodeObj.keys()) {
-                        if (!Set.of("id", "position", "size", "resource", "type", "data").contains(nk)) {
+                        if (!knownNodeKeys.contains(nk)) {
                             extras.setProperty(nk, nodeObj.get(nk));
                         }
                     }

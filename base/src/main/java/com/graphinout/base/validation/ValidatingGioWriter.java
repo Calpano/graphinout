@@ -58,7 +58,7 @@ public class ValidatingGioWriter extends ValidatingJsonWriter implements GioWrit
         }
     }
 
-    private static final Logger log = getLogger(com.graphinout.base.writer.ValidatingGioWriter.class);
+    private static final Logger log = getLogger(ValidatingGioWriter.class);
     /**
      * remember elements we saw already; nesting order in stack
      */
