@@ -1,5 +1,7 @@
 package com.graphinout.reader.adjlist;
 
+import com.graphinout.base.CjStream2GioWriter;
+import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.base.gio.GioDocument;
 import com.graphinout.base.gio.GioEdge;
 import com.graphinout.base.gio.GioEndpoint;
@@ -46,7 +48,7 @@ public class AdjListReader implements GioReader {
     }
 
     @Override
-    public void read(InputSource inputSource, GioWriter writer) throws IOException {
+    public void read(InputSource inputSource, ICjStream cjStream) throws IOException {
         if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
@@ -58,7 +60,64 @@ public class AdjListReader implements GioReader {
             return;
         }
         try (Scanner scanner = new Scanner(content)) {
-            processFileContent(scanner, writer);
+            processFileContent(scanner, cjStream);
+        }
+    }
+
+
+    private void processFileContent(final Scanner scanner, final ICjStream cjStream) throws IOException {
+        // Start document and a single graph to hold nodes and edges
+        var doc = cjStream.createDocumentChunk();
+        cjStream.documentStart(doc);
+        var graph = cjStream.createGraphChunk();
+        cjStream.graphStart(graph);
+
+        Set<String> nodesCreatedSet = new HashSet<>();
+
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            processLine(line, cjStream, nodesCreatedSet);
+        }
+
+        cjStream.graphEnd();
+        cjStream.documentEnd();
+    }
+
+    private void processLine(final String inputLine, final ICjStream cjStream, final Set<String> nodesCreatedSet) throws IOException {
+        // trim comment
+        String line = inputLine;
+        int commentIndex = line.indexOf(HASH);
+        if (commentIndex != -1) {
+            line = line.substring(0, commentIndex);
+        }
+        line = line.trim();
+        if (line.isEmpty()) {
+            return;
+        }
+
+        String[] parts = line.split(DELIMITER);
+        String sourceId = null;
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            // create nodes for all parts that have not yet been created
+            if (nodesCreatedSet.add(part)) {
+                var node = cjStream.createNodeChunk();
+                node.id(part);
+                cjStream.nodeStart(node);
+                cjStream.nodeEnd();
+            }
+            if (i == 0) {
+                sourceId = part;
+            } else {
+                String targetId = parts[i];
+                var edge = cjStream.createEdgeChunk();
+                // endpoints: source -> target
+                final String src = sourceId;
+                edge.addEndpoint(ep -> ep.node(src));
+                edge.addEndpoint(ep -> ep.node(targetId));
+                cjStream.edgeStart(edge);
+                cjStream.edgeEnd();
+            }
         }
     }
 
@@ -117,4 +176,3 @@ public class AdjListReader implements GioReader {
     }
 
 }
-
