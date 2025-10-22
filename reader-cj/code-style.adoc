@@ -1,0 +1,159 @@
+= reader-cj Code Style and Patterns Guide
+:toc:
+:toclevels: 3
+:revdate: 2025-10-22
+
+This document codifies the code style and design patterns used in the `reader-cj` module. It should help new contributors write code that is consistent with the existing implementation and make well-aligned design decisions.
+
+Never auto-fix intermediate errors. If stuff goes wrong, throw an exception.
+
+== Scope and Principles
+
+- Keep implementations small and focused. Each reader has a single responsibility (e.g., Connected JSON vs. Connected JSON5).
+- Prefer composition over inheritance for behavior changes (e.g., JSON5 reader wraps the JSON reader and preprocesses input).
+- Fail fast on invalid inputs, report content errors to callers when possible, and throw `IOException` from `read` operations.
+- Avoid premature optimization; prefer clear pipelines with explicit stages.
+
+== Language and Libraries
+
+- Java 8+.
+- Nullability annotations from `javax.annotation.Nullable` where applicable.
+- Logging via SLF4J (`org.slf4j.Logger` / `LoggerFactory`).
+- Project foundations: `com.graphinout.base`, `com.graphinout.foundation` packages.
+
+== Naming Conventions
+
+- Service ID: Keep short, module-scoped (e.g., `reader-cj`).
+
+== File and Class Structure
+
+Within a class, use the following order:
+
+1. Static fields and constants (e.g., `FORMAT_ID`, `FORMAT`, `log`).
+2. Instance fields.
+3. Constructors (if any).
+4. Public API methods (overrides first), then package-private, then private helpers.
+5. Nested types (rare in this module).
+
+Example from `ConnectedJsonReader`:
+
+- Constants `FORMAT_ID`, `FORMAT`.
+- Nullable field `errorHandler`.
+- Static convenience method `readToDocument`.
+- Interface overrides: `errorHandler`, `fileFormat`, `read`.
+
+== Imports
+
+- Use explicit imports; avoid wildcard imports.
+- Static imports are acceptable for factory methods to improve readability (e.g., `SingleInputSourceOfString.inputSource`).
+
+== Formatting
+
+- Indentation: 4 spaces; no tabs.
+- Braces on the same line as declarations (K&R style): `public void read(...) {`.
+- One space between control keywords and parentheses: `if (cond) {`.
+- Line length: aim for ≤ 120 characters where practical.
+- Blank lines to separate logical sections (constants, fields, methods).
+
+== Nullability and Optionality
+
+- Annotate fields and parameters that may be null with `@Nullable` (e.g., `private @Nullable Consumer<ContentError> errorHandler;`).
+- Prefer non-null returns; where null can occur, consider returning neutral objects (e.g., create empty `CjDocumentElement`) or throw an exception.
+
+- Use `Nullables` utility class to work with nullable stuff.
+
+== Error Handling
+
+- `GioReader.read(...)` must declare `throws IOException` and translate internal exceptions to `IOException`.
+- Provide context in messages: `"Failed to parse JSON content"` plus exception message if available.
+- If an `errorHandler` is provided, call it with a `ContentError` before throwing:
+  - Level: `ContentError.ErrorLevel.Error` for fatal parse failures.
+  - Message: concise, actionable.
+- Validate invariants early and fail fast (e.g., reject multi-source input with `IllegalArgumentException`).
+
+== Logging
+
+- Use SLF4J with a private static final logger per class:
+  - `private static final Logger log = LoggerFactory.getLogger(CurrentClass.class);`
+- Log only when it provides value beyond propagated exceptions (e.g., trace preprocessing steps in JSON5 reader when debugging).
+- Avoid logging-and-throwing at the same level for the same condition to prevent duplicate noise; prefer reporting via `errorHandler` and throwing.
+
+== IO and Streaming Pipeline
+
+The typical read pipeline is explicit and stage-based:
+
+- ConnectedJsonReader:
+  1. JSON -> CJ elements via `JsonReaderImpl` + `Json2CjWriter` writing into `Cj2ElementsWriter`.
+  2. CJ document -> GIO via `CjDocument2CjStream.toCjStream(...)` writing into `CjStream2GioWriter`.
+- ConnectedJson5Reader:
+  1. Buffer input (single source), read text as UTF-8.
+  2. Preprocess JSON5 to standard JSON (`Json5Preprocessor.toJson`).
+  3. Wrap the preprocessed JSON string in a `SingleInputSourceOfString` and delegate to `ConnectedJsonReader`.
+
+Guidelines:
+
+- Keep each stage small and composable; prefer adapter-like writers for bridging between models.
+- When creating temporary inputs, prefer dedicated types like `SingleInputSourceOfString` over ad-hoc streams.
+
+== Micro-Patterns
+
+- Constant Objects: `FORMAT_ID` and `FORMAT` describe the reader’s supported file types.
+- Adapter: `CjStream2GioWriter` adapts CJ stream events to the GIO writer API.
+- Null Object / Defaulting: When `Cj2ElementsWriter.resultDoc()` could be null, create an empty `CjDocumentElement` instead of returning null.
+- Exception Translation: Wrap lower-level exceptions into `IOException` in `read(...)`.
+- Static Factory Methods: e.g., `Json2CjWriter.createWritingTo(...)` and `SingleInputSourceOfString.inputSource(...)`.
+- Guard Clauses: Early returns for empty content; explicit `IllegalArgumentException` for unsupported multi-source input.
+- Composition Over Inheritance: `ConnectedJson5Reader` delegates to `ConnectedJsonReader`.
+
+== Macro-Patterns
+
+- Pipeline Architecture: JSON/JSON5 -> CJ Elements -> CJ Document -> CJ Stream -> GIO Writer. Each stage is a separate component with a clear contract.
+- Facade/Service Provider: `ConnectedJsonService` exposes the readers as a simple list and is discoverable via the project’s service mechanism (`GioService`).
+- Format Specialization by Delegation: Specialized readers (e.g., JSON5) preprocess input then delegate to the standard JSON reader.
+
+== API Contracts and Behavior
+
+- `fileFormat()` must return a stable `GioFileFormat` containing a unique ID and supported extensions.
+- `errorHandler(Consumer<ContentError>)` sets a callback; if set, it must be invoked before throwing for parse-time errors.
+- `read(InputSource, GioWriter)`:
+  - Must reject `MultiInputSource` instances (this module only supports single-source reading).
+  - Must be deterministic and not modify global state.
+
+== Immutability and Thread-Safety
+
+- Prefer `final` for fields that are not reassigned (e.g., `private final ConnectedJsonReader cjReader`).
+- Reader instances are not thread-safe due to state like `errorHandler`; do not share across threads without external synchronization.
+
+== Testing and Examples
+
+- Add round-trip or parsing tests under `reader-cj/src/test/java/...` to verify pipelines and error signaling.
+- Use `SingleInputSourceOfString.of(name, json)` for small, in-memory test inputs.
+
+== Extensibility Guidelines
+
+When adding a new reader or extending functionality:
+
+1. Create a new `GioReader` implementation in `com.graphinout.reader.cj`.
+2. Define `FORMAT_ID` and `FORMAT` with appropriate extensions.
+3. Follow the error handling and pipeline guidelines above.
+4. Register the reader in `ConnectedJsonService.readers()`.
+5. Add tests for both success and failure paths.
+
+== Do and Don’t Checklist
+
+Do:
+
+- Keep readers small and composable.
+- Translate exceptions to `IOException` in `read`.
+- Use explicit imports; annotate nullable references.
+- Delegate specialized behavior (e.g., preprocessing) rather than subclassing.
+
+Don’t:
+
+- Swallow exceptions without reporting via `errorHandler` and/or throwing.
+- Share reader instances across threads.
+
+== References
+
+- Connected JSON Format: https://calpano.github.io/connected-json/spec.html
+- See `ConnectedJsonReader`, `ConnectedJson5Reader`, `ConnectedJsonService` for canonical examples in this module.
