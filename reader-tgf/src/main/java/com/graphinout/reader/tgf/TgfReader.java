@@ -4,6 +4,7 @@ import com.graphinout.base.gio.GioData;
 import com.graphinout.base.gio.GioDocument;
 import com.graphinout.base.gio.GioEdge;
 import com.graphinout.base.gio.GioEndpoint;
+import com.graphinout.base.gio.GioEndpointDirection;
 import com.graphinout.base.gio.GioGraph;
 import com.graphinout.base.gio.GioNode;
 import com.graphinout.base.gio.GioReader;
@@ -30,9 +31,8 @@ import java.util.function.Consumer;
 public class TgfReader implements GioReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TgfReader.class);
-    private static final String DELIMITER = " ";
-    private static final String HASH = "#";
-    private static final String LABEL = "label";
+    private static final String DELIMITER_REGEX = "\\s+";
+    private static final String SECTION_MARKER = "#";
     public static final String FORMAT_ID = "tgf";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Trivial Graph Format", ".tgf");
     private @Nullable Consumer<ContentError> errorHandler;
@@ -57,6 +57,9 @@ public class TgfReader implements GioReader {
         String content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
 
         if (content.isEmpty()) {
+            // Emit empty document (no graphs) for empty TGF content to allow exact empty roundtrip
+            writer.startDocument(GioDocument.builder().build());
+            writer.endDocument();
             return;
         }
         try (Scanner scanner = new Scanner(content)) {
@@ -67,10 +70,12 @@ public class TgfReader implements GioReader {
     private void ensureNodesExist(final String[] edgeParts, final GioWriter writer, final Set<String> nodesCreatedSet) throws IOException {
         for (String nodeId : Arrays.asList(edgeParts[0], edgeParts[1])) {
             if (!nodesCreatedSet.contains(nodeId)) {
-                LOGGER.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + ". Required nodes have been created.");
-                writer.startNode(GioNode.builder().id(nodeId).build());
-                writer.endNode(null);
-                nodesCreatedSet.add(nodeId);
+                // Do NOT auto-create nodes; just warn. Preserve original TGF semantics where edges may reference
+                // nodes not present in the node section.
+                LOGGER.warn("No specified nodes found in the file for edge: " + Arrays.toString(edgeParts) + ". Not creating nodes.");
+                if (errorHandler != null) {
+                    errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "No nodes found for edge endpoint: " + nodeId, null));
+                }
             }
         }
     }
@@ -87,23 +92,24 @@ public class TgfReader implements GioReader {
         }
     }
 
-    private void processEdge(final String line, final GioWriter writer, final Set<String> nodesCreatedSet) throws IOException {
-        LOGGER.info("--- edges:");
-        String[] edgeParts = line.split(DELIMITER, 3);
-        GioEndpoint sourceEndpoint = GioEndpoint.builder().node(edgeParts[0]).build();
-        GioEndpoint targetEndpoint = GioEndpoint.builder().node(edgeParts[1]).build();
+    private void processEdge(final String rawLine, final GioWriter writer, final Set<String> nodesCreatedSet) throws IOException {
+        String line = rawLine.trim();
+        if (line.isEmpty()) return;
+        String[] edgeParts = line.split(DELIMITER_REGEX, 3);
+        if (edgeParts.length < 2) return; // invalid edge line
+        // ensure nodes exist
+        ensureNodesExist(edgeParts, writer, nodesCreatedSet);
 
+        GioEndpoint sourceEndpoint = GioEndpoint.builder().node(edgeParts[0]).type(GioEndpointDirection.Out).build();
+        GioEndpoint targetEndpoint = GioEndpoint.builder().node(edgeParts[1]).type(GioEndpointDirection.In).build();
         List<GioEndpoint> endpointList = Arrays.asList(sourceEndpoint, targetEndpoint);
 
-        if (edgeParts.length == 2 || edgeParts.length == 3) {
-            ensureNodesExist(edgeParts, writer, nodesCreatedSet);
-            GioEdge gioEdge = GioEdge.builder().endpoints(endpointList).build();
-            if (edgeParts.length == 3) {
-                GioData.builder().xmlValue(XmlFragmentString.ofPlainText(edgeParts[2])).build();
-            }
-            writer.startEdge(gioEdge);
-            writer.endEdge();
+        GioEdge.GioEdgeBuilder edgeBuilder = GioEdge.builder().endpoints(endpointList);
+        if (edgeParts.length == 3 && !edgeParts[2].isBlank()) {
+            edgeBuilder.description(XmlFragmentString.ofPlainText(edgeParts[2]));
         }
+        writer.startEdge(edgeBuilder.build());
+        writer.endEdge();
     }
 
     private void processFileContent(final Scanner scanner, final GioWriter writer) throws IOException {
@@ -117,7 +123,11 @@ public class TgfReader implements GioReader {
 
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            if (line.contains(HASH)) {
+            String trimmed = line.trim();
+            if (trimmed.isEmpty()) {
+                continue; // skip empty lines
+            }
+            if (trimmed.equals(SECTION_MARKER)) {
                 edges = true;
                 continue;
             }
@@ -135,14 +145,19 @@ public class TgfReader implements GioReader {
         handleWarnings(edges, nodes);
     }
 
-    private void processNode(final String line, final GioWriter writer, final Set<String> nodesCreatedSet) throws IOException {
-        LOGGER.info("--- nodes:");
-        String[] nodeParts = line.split(DELIMITER);
-        if (!nodesCreatedSet.contains(nodeParts[0])) {
-            nodesCreatedSet.add(nodeParts[0]);
-            writer.startNode(GioNode.builder().id(nodeParts[0]).build());
-            GioData.GioDataBuilder gioDataBuilder = GioData.builder().key(LABEL);
-            writer.data(gioDataBuilder.xmlValue(XmlFragmentString.ofPlainText(nodeParts[1])).build());
+    private void processNode(final String rawLine, final GioWriter writer, final Set<String> nodesCreatedSet) throws IOException {
+        String line = rawLine.trim();
+        if (line.isEmpty()) return;
+        String[] nodeParts = line.split(DELIMITER_REGEX, 2);
+        if (nodeParts.length == 0 || nodeParts[0].isBlank()) return;
+        String nodeId = nodeParts[0];
+        if (!nodesCreatedSet.contains(nodeId)) {
+            nodesCreatedSet.add(nodeId);
+            GioNode.GioNodeBuilder nodeBuilder = GioNode.builder().id(nodeId);
+            if (nodeParts.length == 2 && !nodeParts[1].isBlank()) {
+                nodeBuilder.description(XmlFragmentString.ofPlainText(nodeParts[1]));
+            }
+            writer.startNode(nodeBuilder.build());
             writer.endNode(null);
         }
     }
