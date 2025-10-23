@@ -138,11 +138,6 @@ public class CjStream2GioWriter extends CjFactory implements ICjStream {
     }
 
     @Override
-    public IJsonFactory jsonFactory() {
-        return JavaJsonFactory.INSTANCE;
-    }
-
-    @Override
     public void nodeEnd() {
         try {
             gioWriter.endNode(null);

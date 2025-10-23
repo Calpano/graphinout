@@ -9,6 +9,8 @@ import com.graphinout.base.cj.element.impl.CjEdgeElement;
 import com.graphinout.base.cj.element.impl.CjGraphElement;
 import com.graphinout.base.cj.element.impl.CjNodeElement;
 import com.graphinout.base.cj.stream.api.ICjFactory;
+import com.graphinout.foundation.json.value.IJsonFactory;
+import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 
 public class CjFactory implements ICjFactory {
 
@@ -26,6 +28,11 @@ public class CjFactory implements ICjFactory {
 
     public ICjNodeChunkMutable createNodeChunk() {
         return new CjNodeElement();
+    }
+
+    @Override
+    public IJsonFactory jsonFactory() {
+        return JavaJsonFactory.INSTANCE;
     }
 
 }

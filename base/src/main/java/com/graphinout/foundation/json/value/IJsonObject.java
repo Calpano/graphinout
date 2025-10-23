@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public interface IJsonObject extends IJsonContainer {
@@ -47,6 +49,28 @@ public interface IJsonObject extends IJsonContainer {
 
     @Nullable
     IJsonValue get(String key);
+
+    default void getMaybe(String propertyKey, Consumer<IJsonValue> valueConsumer) {
+        IJsonValue value = get(propertyKey);
+        if (value != null) {
+            valueConsumer.accept(value);
+        }
+    }
+
+    /**
+     * @param propertyKey        to get
+     * @param mapFun             return null to signal conversion failed silently
+     * @param typedValueConsumer never gets nulls
+     * @param <T>                type
+     */
+    default <T> void getMaybeAs(String propertyKey, Function<IJsonValue, T> mapFun, Consumer<T> typedValueConsumer) {
+        getMaybe(propertyKey, jsonValue -> {
+            T value = mapFun.apply(jsonValue);
+            if (value != null) {
+                typedValueConsumer.accept(value);
+            }
+        });
+    }
 
     @Nonnull
     default IJsonValue get_(String key) {

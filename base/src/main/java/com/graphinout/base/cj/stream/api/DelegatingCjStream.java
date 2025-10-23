@@ -65,11 +65,6 @@ public class DelegatingCjStream extends CjFactory implements ICjStream {
     }
 
     @Override
-    public IJsonFactory jsonFactory() {
-        return streams.getFirst().jsonFactory();
-    }
-
-    @Override
     public void nodeEnd() {
         for (ICjStream stream : streams) {
             stream.nodeEnd();

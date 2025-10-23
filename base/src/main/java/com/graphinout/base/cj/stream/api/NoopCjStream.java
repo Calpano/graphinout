@@ -47,11 +47,6 @@ public class NoopCjStream extends CjFactory implements ICjStream {
     }
 
     @Override
-    public IJsonFactory jsonFactory() {
-        return JavaJsonFactory.INSTANCE;
-    }
-
-    @Override
     public void nodeEnd() {
         // no-op
     }

@@ -13,6 +13,9 @@ public interface ICjHasData extends ICjElement {
     @Nullable
     ICjData data();
 
+    /**
+     * @param consumer receives only if non-null
+     */
     default void data(Consumer<ICjData> consumer) {
         ICjData data = data();
         if (data != null) {
@@ -20,9 +23,17 @@ public interface ICjHasData extends ICjElement {
         }
     }
 
+    default void fireDataMaybe(ICjWriter cjWriter) {
+        onDataValue(jsonValue -> {
+            cjWriter.jsonDataStart();
+            jsonValue.fire(cjWriter);
+            cjWriter.jsonDataEnd();
+        });
+    }
+
     /** @return the current data JSON contents or null */
     default @Nullable IJsonValue jsonValue() {
-        return mapOrNull( data(), ICjData::jsonValue);
+        return mapOrNull(data(), ICjData::jsonValue);
     }
 
     /**
@@ -37,15 +48,6 @@ public interface ICjHasData extends ICjElement {
             }
         }
     }
-
-    default void fireDataMaybe(ICjWriter cjWriter) {
-        onDataValue(jsonValue->{
-            cjWriter.jsonDataStart();
-            jsonValue.fire(cjWriter);
-            cjWriter.jsonDataEnd();
-        });
-    }
-
 
 
 }

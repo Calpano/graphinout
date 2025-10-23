@@ -125,11 +125,6 @@ public class CjStream2CjWriter extends CjFactory implements ICjStream {
     }
 
     @Override
-    public IJsonFactory jsonFactory() {
-        return JavaJsonFactory.INSTANCE;
-    }
-
-    @Override
     public void nodeEnd() {
         cjWriter.nodeEnd();
     }

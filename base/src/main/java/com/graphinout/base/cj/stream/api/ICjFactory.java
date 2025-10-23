@@ -4,6 +4,7 @@ import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.element.ICjGraphChunkMutable;
 import com.graphinout.base.cj.element.ICjNodeChunkMutable;
+import com.graphinout.foundation.json.value.IJsonFactory;
 
 public interface ICjFactory {
 
@@ -21,5 +22,6 @@ public interface ICjFactory {
         return nodeChunk;
     }
 
+    IJsonFactory jsonFactory();
 
 }

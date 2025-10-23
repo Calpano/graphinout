@@ -65,6 +65,10 @@ public interface IJsonValue {
         return (IJsonObject) this;
     }
 
+    default @Nullable IJsonObject asObjectOrNull() {
+        return isObject() ? asObject() : null;
+    }
+
     default IJsonPrimitive asPrimitive() throws ClassCastException {
         return (IJsonPrimitive) this;
     }
@@ -228,7 +232,7 @@ public interface IJsonValue {
                         }
                         if (count == 2 && obj.hasProperty(IJsonXmlString.XML_SPACE)) {
                             IJsonValue xmlSpaceStr = obj.get_(IJsonXmlString.XML_SPACE);
-                            if(xmlSpaceStr.isString()) {
+                            if (xmlSpaceStr.isString()) {
                                 JSON.XmlSpace xmlSpace = JSON.XmlSpace.parseJson(xmlSpaceStr.asString());
                                 yield XmlFragmentString.of(xml.asString(), xmlSpace.toXml_XmlSpace());
                             }
