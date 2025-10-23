@@ -158,11 +158,6 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
     }
 
     @Override
-    public void labelEnd() {
-        onCj(CjEvent.LabelEnd, null);
-    }
-
-    @Override
     public void labelEntryEnd() {
         onCj(CjEvent.LabelEntryEnd, null);
     }
@@ -173,11 +168,6 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
     }
 
     @Override
-    public void labelStart() {
-        onCj(CjEvent.LabelStart, null);
-    }
-
-    @Override
     public void language(String lang) {
         onCj(CjEvent.Language, lang);
     }
@@ -185,7 +175,6 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
     @Override
     public void listEnd(CjType cjType) {
         onCj(CjEvent.valueOf(cjType.name() + "End"), null);
-
     }
 
     @Override

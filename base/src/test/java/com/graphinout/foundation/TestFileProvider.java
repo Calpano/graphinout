@@ -129,7 +129,7 @@ public class TestFileProvider {
     }
 
     /**
-     * Use the classpath resource mechanism to list ALL resources within packages 'xml','jsom','json5' on the current
+     * Use the classpath resource mechanism to list ALL resources within packages 'xml','json','json5' on the current
      * classpath. Resulting paths have the syntax 'com/example/filename.ext'.
      */
     public static Stream<TestResource> getAllTestResources() {

@@ -1,45 +1,20 @@
 package com.graphinout.base.cj.stream.api;
 
+import com.graphinout.base.cj.CjFactory;
 import com.graphinout.base.cj.element.ICjDocumentChunk;
-import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
-import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.element.ICjGraphChunk;
-import com.graphinout.base.cj.element.ICjGraphChunkMutable;
 import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.base.cj.element.ICjNodeChunkMutable;
-import com.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.graphinout.base.cj.element.impl.CjEdgeElement;
-import com.graphinout.base.cj.element.impl.CjGraphElement;
-import com.graphinout.base.cj.element.impl.CjNodeElement;
+import com.graphinout.foundation.json.value.IJsonFactory;
+import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 
 /**
  * A no-op implementation of ICjStream.
  * <p>
- * All event methods do nothing. Factory methods return simple mutable element instances
- * so callers can populate chunks as usual even if the stream ignores them.
+ * All event methods do nothing. Factory methods return simple mutable element instances so callers can populate chunks
+ * as usual even if the stream ignores them.
  */
-public class NoopCjStream implements ICjStream {
-
-    @Override
-    public ICjDocumentChunkMutable createDocumentChunk() {
-        return new CjDocumentElement();
-    }
-
-    @Override
-    public ICjEdgeChunkMutable createEdgeChunk() {
-        return new CjEdgeElement();
-    }
-
-    @Override
-    public ICjGraphChunkMutable createGraphChunk() {
-        return new CjGraphElement();
-    }
-
-    @Override
-    public ICjNodeChunkMutable createNodeChunk() {
-        return new CjNodeElement();
-    }
+public class NoopCjStream extends CjFactory implements ICjStream {
 
     @Override
     public void documentEnd() {
@@ -72,6 +47,11 @@ public class NoopCjStream implements ICjStream {
     }
 
     @Override
+    public IJsonFactory jsonFactory() {
+        return JavaJsonFactory.INSTANCE;
+    }
+
+    @Override
     public void nodeEnd() {
         // no-op
     }
@@ -80,4 +60,5 @@ public class NoopCjStream implements ICjStream {
     public void nodeStart(ICjNodeChunk node) {
         // no-op
     }
+
 }

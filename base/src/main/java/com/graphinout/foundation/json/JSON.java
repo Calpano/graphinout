@@ -13,6 +13,16 @@ public class JSON {
             this.jsonStringValue = jsonStringValue;
         }
 
+        public static XmlSpace parseJson(String jsonStringValue) {
+            return switch (jsonStringValue) {
+                case "preserve" -> XmlSpace.preserve;
+                case "ignore" -> XmlSpace.ignore;
+                case "default","" -> XmlSpace.auto;
+                case null -> XmlSpace.auto;
+                default -> throw new IllegalArgumentException();
+            };
+        }
+
         public XML.XmlSpace toXml_XmlSpace() {
             return switch (this) {
                 case preserve -> XML.XmlSpace.preserve;

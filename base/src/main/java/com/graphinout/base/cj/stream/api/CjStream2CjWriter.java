@@ -1,22 +1,17 @@
 package com.graphinout.base.cj.stream.api;
 
+import com.graphinout.base.cj.CjFactory;
 import com.graphinout.base.cj.CjType;
 import com.graphinout.base.cj.element.ICjDocumentChunk;
-import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
-import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.element.ICjGraphChunk;
-import com.graphinout.base.cj.element.ICjGraphChunkMutable;
 import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.base.cj.element.ICjNodeChunkMutable;
-import com.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.graphinout.base.cj.element.impl.CjEdgeElement;
-import com.graphinout.base.cj.element.impl.CjGraphElement;
-import com.graphinout.base.cj.element.impl.CjNodeElement;
 import com.graphinout.base.cj.stream.ICjWriter;
+import com.graphinout.foundation.json.value.IJsonFactory;
+import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 import com.graphinout.foundation.util.PowerStackEnum;
 
-public class CjStream2CjWriter implements ICjStream {
+public class CjStream2CjWriter extends CjFactory implements ICjStream {
 
     /**
      * The 'None' marker in the following protocol is a marker that the element was started but none of the expected
@@ -39,26 +34,6 @@ public class CjStream2CjWriter implements ICjStream {
     private final PowerStackEnum<Protocol> protocolStack = PowerStackEnum.create();
 
     public CjStream2CjWriter(ICjWriter cjWriter) {this.cjWriter = cjWriter;}
-
-    @Override
-    public ICjDocumentChunkMutable createDocumentChunk() {
-        return new CjDocumentElement();
-    }
-
-    @Override
-    public ICjEdgeChunkMutable createEdgeChunk() {
-        return new CjEdgeElement();
-    }
-
-    @Override
-    public ICjGraphChunkMutable createGraphChunk() {
-        return new CjGraphElement();
-    }
-
-    @Override
-    public ICjNodeChunkMutable createNodeChunk() {
-        return new CjNodeElement();
-    }
 
     @Override
     public void documentEnd() {
@@ -147,6 +122,11 @@ public class CjStream2CjWriter implements ICjStream {
         protocolStack.push(Protocol.None);
 
         graph.fireStartChunk(cjWriter);
+    }
+
+    @Override
+    public IJsonFactory jsonFactory() {
+        return JavaJsonFactory.INSTANCE;
     }
 
     @Override

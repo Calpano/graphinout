@@ -60,16 +60,10 @@ public class NoopCjWriter extends NoopJsonWriter implements ICjWriter {
     public void jsonDataStart() {}
 
     @Override
-    public void labelEnd() {}
-
-    @Override
     public void labelEntryEnd() {}
 
     @Override
     public void labelEntryStart() {}
-
-    @Override
-    public void labelStart() {}
 
     @Override
     public void language(String language) {}

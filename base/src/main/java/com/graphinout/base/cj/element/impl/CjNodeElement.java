@@ -9,6 +9,7 @@ import com.graphinout.base.cj.element.ICjPortMutable;
 import com.graphinout.base.cj.stream.ICjWriter;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -37,6 +38,22 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
     }
 
     @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof CjNodeElement that)) return false;
+
+        return ports.equals(that.ports) && graphs.equals(that.graphs) && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public String toString() {
+        return "CjNodeElement{" +
+                "ports=" + ports +
+                ", graphs=" + graphs +
+                ", id='" + id + '\'' +
+                '}';
+    }
+
+    @Override
     public void fire(ICjWriter cjWriter) {
         fireStartChunk(cjWriter);
 
@@ -48,6 +65,14 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
     @Override
     public Stream<ICjGraph> graphs() {
         return graphs.stream().map(x -> (ICjGraph) x);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = ports.hashCode();
+        result = 31 * result + graphs.hashCode();
+        result = 31 * result + Objects.hashCode(id);
+        return result;
     }
 
     @Override

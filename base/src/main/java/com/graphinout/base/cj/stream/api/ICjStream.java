@@ -1,37 +1,31 @@
 package com.graphinout.base.cj.stream.api;
 
 import com.graphinout.base.cj.element.ICjDocumentChunk;
-import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
-import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.element.ICjGraphChunk;
-import com.graphinout.base.cj.element.ICjGraphChunkMutable;
 import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.base.cj.element.ICjNodeChunkMutable;
+import com.graphinout.foundation.json.value.IJsonFactory;
 
 /**
  * A coarse-granular streaming CJ API. Assumptions: data is small.
  * <p>
  * This is the API that should replace GioWriter.
  */
-public interface ICjStream {
+public interface ICjStream extends ICjFactory {
 
-    ICjDocumentChunkMutable createDocumentChunk();
-
-    ICjEdgeChunkMutable createEdgeChunk();
-
-    ICjGraphChunkMutable createGraphChunk();
-
-    ICjNodeChunkMutable createNodeChunk();
+    default void document(ICjDocumentChunk document) {
+        documentStart(document);
+        documentEnd();
+    }
 
     void documentEnd();
 
     /** Next expect: 0...n graphs */
     void documentStart(ICjDocumentChunk document);
 
-    default void document(ICjDocumentChunk document) {
-        documentStart(document);
-        documentEnd();
+    default void edge(ICjEdgeChunk edgeChunk) {
+        edgeStart(edgeChunk);
+        edgeEnd();
     }
 
     void edgeEnd();
@@ -39,9 +33,9 @@ public interface ICjStream {
     /** Start a CJ edge which may contain subgraphs */
     void edgeStart(ICjEdgeChunk edge);
 
-    default void edge(ICjEdgeChunk edgeChunk) {
-        edgeStart(edgeChunk);
-        edgeEnd();
+    default void graph(ICjGraphChunk graph) {
+        graphStart(graph);
+        graphEnd();
     }
 
     void graphEnd();
@@ -49,19 +43,16 @@ public interface ICjStream {
     /** Start a CJ graph which may contain nodes, edges, subgraphs */
     void graphStart(ICjGraphChunk graph);
 
-    default void graph(ICjGraphChunk graph) {
-        graphStart(graph);
-        graphEnd();
+    IJsonFactory jsonFactory();
+
+    default void node(ICjNodeChunk node) {
+        nodeStart(node);
+        nodeEnd();
     }
 
     void nodeEnd();
 
     /** Start a CJ node which may contain subgraphs */
     void nodeStart(ICjNodeChunk node);
-
-    default void node(ICjNodeChunk node) {
-        nodeStart(node);
-        nodeEnd();
-    }
 
 }

@@ -83,7 +83,7 @@ Example from `ConnectedJsonReader`:
 The typical read pipeline is explicit and stage-based:
 
 - ConnectedJsonReader:
-  1. JSON -> CJ elements via `JsonReaderImpl` + `Json2CjWriter` writing into `Cj2ElementsWriter`.
+  1. JSON -> CJ elements via `JsonReaderImpl` + `Json2CjWriter` writing into `CjStream2CjDocumentWriter`.
   2. CJ document -> GIO via `CjDocument2CjStream.toCjStream(...)` writing into `CjStream2GioWriter`.
 - ConnectedJson5Reader:
   1. Buffer input (single source), read text as UTF-8.

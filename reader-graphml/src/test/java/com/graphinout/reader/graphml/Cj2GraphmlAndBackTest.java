@@ -9,7 +9,7 @@ import com.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.graphinout.base.cj.stream.ICjWriter;
 import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
+import com.graphinout.base.cj.stream.impl.CjStream2CjDocumentWriter;
 import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.graphinout.base.gio.GioWriter;
@@ -49,7 +49,7 @@ public class Cj2GraphmlAndBackTest {
     void test_json_cj_graphml_CanonicalCjFiles(String displayPath, Resource resource) throws Exception {
         String json_in = resource.getContentAsString();
         SingleInputSourceOfString inputSource = inputSource(resource);
-        Cj2ElementsWriter cj2ElementsWriter = new Cj2ElementsWriter();
+        CjStream2CjDocumentWriter cj2ElementsWriter = new CjStream2CjDocumentWriter();
         JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(cj2ElementsWriter);
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         jsonReader.read(inputSource, jsonWriter_in);
@@ -70,7 +70,7 @@ public class Cj2GraphmlAndBackTest {
         SingleInputSourceOfString inputSource = inputSource(resource);
 
         // JSON -> CJ
-        Cj2ElementsWriter cj2ElementsWriter = new Cj2ElementsWriter();
+        CjStream2CjDocumentWriter cj2ElementsWriter = new CjStream2CjDocumentWriter();
         JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(cj2ElementsWriter);
         JsonReaderImpl.read_(inputSource, jsonWriter_in);
         ICjDocument cjDoc = cj2ElementsWriter.resultDoc();
@@ -110,7 +110,7 @@ public class Cj2GraphmlAndBackTest {
         SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", json);
 
         // JSON -> CJ doc
-        Cj2ElementsWriter cj2ElementsWriter = new Cj2ElementsWriter();
+        CjStream2CjDocumentWriter cj2ElementsWriter = new CjStream2CjDocumentWriter();
         JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(cj2ElementsWriter);
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         jsonReader.read(inputSource, jsonWriter_in);

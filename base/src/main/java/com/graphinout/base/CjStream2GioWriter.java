@@ -1,21 +1,15 @@
 package com.graphinout.base;
 
+import com.graphinout.base.cj.CjFactory;
 import com.graphinout.base.cj.ICjEdgeType;
 import com.graphinout.base.cj.element.ICjData;
 import com.graphinout.base.cj.element.ICjDocumentChunk;
-import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
-import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.element.ICjEndpoint;
 import com.graphinout.base.cj.element.ICjGraphChunk;
-import com.graphinout.base.cj.element.ICjGraphChunkMutable;
 import com.graphinout.base.cj.element.ICjLabel;
 import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.base.cj.element.ICjNodeChunkMutable;
-import com.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.graphinout.base.cj.element.impl.CjEdgeElement;
-import com.graphinout.base.cj.element.impl.CjGraphElement;
-import com.graphinout.base.cj.element.impl.CjNodeElement;
+import com.graphinout.base.cj.element.ICjPort;
 import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.base.gio.GioData;
 import com.graphinout.base.gio.GioDocument;
@@ -27,38 +21,33 @@ import com.graphinout.base.gio.GioNode;
 import com.graphinout.base.gio.GioPort;
 import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.graphml.CjGraphmlMapping;
+import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 import com.graphinout.foundation.json.value.java.JavaJsonObject;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.base.cj.element.ICjPort;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 
-public class CjStream2GioWriter implements ICjStream {
+public class CjStream2GioWriter extends CjFactory implements ICjStream {
 
     private final GioWriter gioWriter;
 
     public CjStream2GioWriter(GioWriter gioWriter) {this.gioWriter = gioWriter;}
 
-    @Override
-    public ICjDocumentChunkMutable createDocumentChunk() {
-        return new CjDocumentElement();
-    }
-
-    @Override
-    public ICjEdgeChunkMutable createEdgeChunk() {
-        return new CjEdgeElement();
-    }
-
-    @Override
-    public ICjGraphChunkMutable createGraphChunk() {
-        return new CjGraphElement();
-    }
-
-    @Override
-    public ICjNodeChunkMutable createNodeChunk() {
-        return new CjNodeElement();
+    private static GioEndpoint toGioEndpoint(ICjEndpoint ep) {
+        GioEndpointDirection dir = switch (ep.direction()) {
+            case IN -> GioEndpointDirection.In;
+            case OUT -> GioEndpointDirection.Out;
+            case UNDIR -> GioEndpointDirection.Undirected;
+        };
+        return GioEndpoint.builder()
+                .id(null)
+                .node(ep.node())
+                .port(ep.port())
+                .type(dir)
+                .build();
     }
 
     @Override
@@ -149,6 +138,11 @@ public class CjStream2GioWriter implements ICjStream {
     }
 
     @Override
+    public IJsonFactory jsonFactory() {
+        return JavaJsonFactory.INSTANCE;
+    }
+
+    @Override
     public void nodeEnd() {
         try {
             gioWriter.endNode(null);
@@ -181,38 +175,6 @@ public class CjStream2GioWriter implements ICjStream {
         }
     }
 
-    private void emitLabelIfPresent(com.graphinout.base.cj.element.ICjHasLabel cjHasLabel) throws IOException {
-        ICjLabel label = cjHasLabel.label();
-        if (label == null) return;
-        String value;
-        if (label.entries().count() == 1 && label.entries().toList().getFirst().language() == null) {
-            value = label.entries().toList().getFirst().value();
-        } else {
-            value = label.toJsonString();
-        }
-        GioData d = GioData.builder()
-                .key(CjGraphmlMapping.GraphmlDataElement.Label.attrName)
-                .xmlValue(XmlFragmentString.ofPlainText(value))
-                .build();
-        gioWriter.data(d);
-    }
-
-    private void emitLabelIfPresent(ICjPort port) throws IOException {
-        ICjLabel label = port.label();
-        if (label == null) return;
-        String value;
-        if (label.entries().count() == 1 && label.entries().toList().getFirst().language() == null) {
-            value = label.entries().toList().getFirst().value();
-        } else {
-            value = label.toJsonString();
-        }
-        GioData d = GioData.builder()
-                .key(CjGraphmlMapping.GraphmlDataElement.Label.attrName)
-                .xmlValue(XmlFragmentString.ofPlainText(value))
-                .build();
-        gioWriter.data(d);
-    }
-
     private void emitCjDataIfPresent(com.graphinout.base.cj.element.ICjHasData cjHasData) throws IOException {
         ICjData data = cjHasData.data();
         if (data == null) return;
@@ -238,6 +200,38 @@ public class CjStream2GioWriter implements ICjStream {
         }
     }
 
+    private void emitLabelIfPresent(ICjPort port) throws IOException {
+        ICjLabel label = port.label();
+        if (label == null) return;
+        String value;
+        if (label.entries().count() == 1 && label.entries().toList().getFirst().language() == null) {
+            value = label.entries().toList().getFirst().value();
+        } else {
+            value = label.toJsonString();
+        }
+        GioData d = GioData.builder()
+                .key(CjGraphmlMapping.GraphmlDataElement.Label.attrName)
+                .xmlValue(XmlFragmentString.ofPlainText(value))
+                .build();
+        gioWriter.data(d);
+    }
+
+    private void emitLabelIfPresent(com.graphinout.base.cj.element.ICjHasLabel cjHasLabel) throws IOException {
+        ICjLabel label = cjHasLabel.label();
+        if (label == null) return;
+        String value;
+        if (label.entries().count() == 1 && label.entries().toList().getFirst().language() == null) {
+            value = label.entries().toList().getFirst().value();
+        } else {
+            value = label.toJsonString();
+        }
+        GioData d = GioData.builder()
+                .key(CjGraphmlMapping.GraphmlDataElement.Label.attrName)
+                .xmlValue(XmlFragmentString.ofPlainText(value))
+                .build();
+        gioWriter.data(d);
+    }
+
     private void emitPortRecursively(ICjPort port) throws IOException {
         String name = port.id() != null ? port.id() : "";
         GioPort gp = GioPort.builder().name(name).build();
@@ -256,17 +250,4 @@ public class CjStream2GioWriter implements ICjStream {
         gioWriter.endPort();
     }
 
-    private static GioEndpoint toGioEndpoint(ICjEndpoint ep) {
-        GioEndpointDirection dir = switch (ep.direction()) {
-            case IN -> GioEndpointDirection.In;
-            case OUT -> GioEndpointDirection.Out;
-            case UNDIR -> GioEndpointDirection.Undirected;
-        };
-        return GioEndpoint.builder()
-                .id(null)
-                .node(ep.node())
-                .port(ep.port())
-                .type(dir)
-                .build();
-    }
 }

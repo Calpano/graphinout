@@ -214,11 +214,6 @@ public class CjWriter2CjStream implements ICjWriter {
     }
 
     @Override
-    public void labelEnd() {
-        stack.pop(ICjLabelMutable.class);
-    }
-
-    @Override
     public void labelEntryEnd() {
         stack.pop(ICjLabelEntryMutable.class);
     }
@@ -232,14 +227,6 @@ public class CjWriter2CjStream implements ICjWriter {
     }
 
     @Override
-    public void labelStart() {
-        ICjHasLabelMutable hasLabel = currentHasLabel();
-        if (hasLabel != null) {
-            hasLabel.setLabel(stack::push);
-        }
-    }
-
-    @Override
     public void language(String language) {
         ICjLabelEntryMutable entry = stack.peek(ICjLabelEntryMutable.class);
         if (entry != null) entry.language(language);
@@ -247,12 +234,19 @@ public class CjWriter2CjStream implements ICjWriter {
 
     @Override
     public void listEnd(CjType cjType) {
-        // No-op: list boundaries are handled by CjStream2CjWriter based on start events
+        if(cjType==CjType.ArrayOfLabelEntries) {
+            stack.pop(ICjLabelMutable.class);
+        }
     }
 
     @Override
     public void listStart(CjType cjType) {
-        // No-op: list boundaries are handled by CjStream2CjWriter based on start events
+        if(cjType==CjType.ArrayOfLabelEntries) {
+            ICjHasLabelMutable hasLabel = currentHasLabel();
+            if (hasLabel != null) {
+                hasLabel.setLabel(stack::push);
+            }
+        }
     }
 
     @Override

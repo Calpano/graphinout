@@ -10,6 +10,7 @@ import com.graphinout.foundation.xml.XmlFactory;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import io.github.classgraph.ResourceList;
+import org.slf4j.Logger;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.ErrorHandler;
@@ -29,6 +30,8 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class GraphmlReader implements GioReader {
 
@@ -71,6 +74,7 @@ public class GraphmlReader implements GioReader {
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "GraphML", ".graphml", ".graphml.xml");
 
     //TODO This can load from config file - use only GraphML 1.1
+    private static final Logger log = getLogger(GraphmlReader.class);
     /** lists of schema contents */
     private Map<String, String> externalSchemaMap = new HashMap<>();
     private Consumer<ContentError> errorHandler;

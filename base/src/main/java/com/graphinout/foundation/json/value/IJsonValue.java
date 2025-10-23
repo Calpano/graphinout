@@ -1,5 +1,6 @@
 package com.graphinout.foundation.json.value;
 
+import com.graphinout.foundation.json.JSON;
 import com.graphinout.foundation.json.JsonType;
 import com.graphinout.foundation.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.json.path.IJsonNavigationPath;
@@ -211,12 +212,34 @@ public interface IJsonValue {
         return w.jsonString();
     }
 
-   default XmlFragmentString toXmlFragmentString() {
+    default XmlFragmentString toXmlFragmentString() {
         return switch (jsonType()) {
-            case XmlString -> ((IJsonXmlString)this).toXmlFragmentString();
+            case XmlString -> ((IJsonXmlString) this).toXmlFragmentString();
             case String -> XmlFragmentString.ofPlainText(asString());
-            default -> throw new IllegalStateException("Unexpected value: " + jsonType());
+            case Object -> {
+                IJsonObject obj = asObject();
+                if (obj.hasProperty(IJsonXmlString.XML)) {
+                    IJsonValue xml = obj.get_(IJsonXmlString.XML);
+                    if (xml.isString()) {
+                        // we can map if no wrong properties
+                        long count = obj.properties().count();
+                        if (count == 1) {
+                            yield XmlFragmentString.of(xml.asString(), JSON.XmlSpace.auto.toXml_XmlSpace());
+                        }
+                        if (count == 2 && obj.hasProperty(IJsonXmlString.XML_SPACE)) {
+                            IJsonValue xmlSpaceStr = obj.get_(IJsonXmlString.XML_SPACE);
+                            if(xmlSpaceStr.isString()) {
+                                JSON.XmlSpace xmlSpace = JSON.XmlSpace.parseJson(xmlSpaceStr.asString());
+                                yield XmlFragmentString.of(xml.asString(), xmlSpace.toXml_XmlSpace());
+                            }
+                        }
+                    }
+                }
+                throw new IllegalArgumentException("Could not parse JSON object as XmlString");
+            }
+            default ->
+                    throw new IllegalStateException("Unexpected value to convert to XmlFragmentString: " + jsonType() + " JSON=" + this.toJsonString());
         };
-   }
+    }
 
 }

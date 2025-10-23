@@ -120,9 +120,6 @@ public class Json2CjWriter implements JsonWriter {
             maybeEndData();
         } else {
             CjType cjType = parseStack.peekCjType();
-            if (cjType == CjType.ArrayOfLabelEntries) {
-                cjWriter.labelEnd();
-            }
             cjWriter.listEnd(cjType);
         }
         parseStack.containerEnd();
@@ -140,9 +137,6 @@ public class Json2CjWriter implements JsonWriter {
             }
             CjType cjType = CjType.findExactlyOne(expected, JsonType.Array);
             parseStack.push(cjType);
-            if (cjType == CjType.ArrayOfLabelEntries) {
-                cjWriter.labelStart();
-            }
             cjWriter.listStart(cjType);
         }
     }

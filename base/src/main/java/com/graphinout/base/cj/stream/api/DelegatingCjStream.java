@@ -1,13 +1,11 @@
 package com.graphinout.base.cj.stream.api;
 
+import com.graphinout.base.cj.CjFactory;
 import com.graphinout.base.cj.element.ICjDocumentChunk;
-import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
-import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.element.ICjGraphChunk;
-import com.graphinout.base.cj.element.ICjGraphChunkMutable;
 import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.base.cj.element.ICjNodeChunkMutable;
+import com.graphinout.foundation.json.value.IJsonFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,33 +14,12 @@ import java.util.List;
  * Delegates one input stream to n output streams. The first one needs working factory methods like
  * {@link ICjStream#createDocumentChunk()}
  */
-public class DelegatingCjStream implements ICjStream {
+public class DelegatingCjStream extends CjFactory implements ICjStream {
 
     private final List<ICjStream> streams;
 
     public DelegatingCjStream(ICjStream... streams) {
         this.streams = Arrays.asList(streams);
-    }
-
-    @Override
-    public ICjDocumentChunkMutable createDocumentChunk() {
-        // create via first stream and return; others will receive the passed chunk in documentStart
-        return streams.getFirst().createDocumentChunk();
-    }
-
-    @Override
-    public ICjEdgeChunkMutable createEdgeChunk() {
-        return streams.getFirst().createEdgeChunk();
-    }
-
-    @Override
-    public ICjGraphChunkMutable createGraphChunk() {
-        return streams.getFirst().createGraphChunk();
-    }
-
-    @Override
-    public ICjNodeChunkMutable createNodeChunk() {
-        return streams.getFirst().createNodeChunk();
     }
 
     @Override
@@ -85,6 +62,11 @@ public class DelegatingCjStream implements ICjStream {
         for (ICjStream stream : streams) {
             stream.graphStart(graph);
         }
+    }
+
+    @Override
+    public IJsonFactory jsonFactory() {
+        return streams.getFirst().jsonFactory();
     }
 
     @Override

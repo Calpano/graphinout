@@ -4,7 +4,7 @@ import com.graphinout.base.Gio2CjWriter;
 import com.graphinout.base.GioService;
 import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
+import com.graphinout.base.cj.stream.impl.CjStream2CjDocumentWriter;
 import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.gio.GioWriter;
@@ -133,7 +133,7 @@ public class GioEngineCore {
                 Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xml2StringWriter);
 
                 // cjStream to cjDocument
-                Cj2ElementsWriter cj2ElementsWriter = new Cj2ElementsWriter( (cjDoc)->{
+                CjStream2CjDocumentWriter cj2ElementsWriter = new CjStream2CjDocumentWriter( (cjDoc)->{
                     try {
                         CjDocument2Graphml.writeToGraphml(cjDoc, graphml2XmlWriter);
                     } catch (IOException e) {

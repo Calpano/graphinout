@@ -22,6 +22,7 @@ import com.graphinout.base.cj.element.ICjLabelMutable;
 import com.graphinout.base.cj.element.ICjNodeMutable;
 import com.graphinout.base.cj.element.ICjPortMutable;
 import com.graphinout.base.cj.element.impl.CjDocumentElement;
+import com.graphinout.base.cj.element.impl.CjLabelElement;
 import com.graphinout.base.cj.stream.ICjWriter;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
@@ -36,17 +37,17 @@ import static com.graphinout.foundation.util.Nullables.ifConsumerPresentAccept;
 /**
  * {@link ICjWriter} to {@link ICjDocument}
  */
-public class Cj2ElementsWriter extends Json2JavaJsonWriter implements ICjWriter {
+public class CjStream2CjDocumentWriter extends Json2JavaJsonWriter implements ICjWriter {
 
     private final PowerStackOnClasses<ICjElement> stack = PowerStackOnClasses.create();
     private final @Nullable Consumer<ICjDocument> onDone;
     private ICjDocument resultDoc;
 
-    public Cj2ElementsWriter(@Nullable Consumer<ICjDocument> onDone) {
+    public CjStream2CjDocumentWriter(@Nullable Consumer<ICjDocument> onDone) {
         this.onDone = onDone;
     }
 
-    public Cj2ElementsWriter() {
+    public CjStream2CjDocumentWriter() {
         this(null);
     }
 
@@ -158,24 +159,22 @@ public class Cj2ElementsWriter extends Json2JavaJsonWriter implements ICjWriter 
     }
 
     @Override
-    public void labelEnd() {
-        stack.pop(ICjLabelMutable.class);
-    }
-
-    @Override
     public void labelEntryEnd() {
         stack.pop(ICjLabelEntryMutable.class);
     }
 
     @Override
     public void labelEntryStart() {
-        stack.peek(ICjLabelMutable.class).addEntry(stack::push);
+        ICjHasLabelMutable hasLabelMutable = stack.peek(ICjHasLabelMutable.class);
+        hasLabelMutable.labelMutable().addEntry(stack::push);
     }
 
     @Override
-    public void labelStart() {
-        stack.peek(ICjHasLabelMutable.class).setLabel(stack::push);
+    public void nodeStart() {
+        stack.peek(ICjGraphMutable.class).addNode(stack::push);
     }
+
+
 
     @Override
     public void language(String language) {
@@ -184,7 +183,6 @@ public class Cj2ElementsWriter extends Json2JavaJsonWriter implements ICjWriter 
 
     @Override
     public void listEnd(CjType cjType) {
-
     }
 
     @Override
@@ -199,11 +197,6 @@ public class Cj2ElementsWriter extends Json2JavaJsonWriter implements ICjWriter 
     @Override
     public void nodeId(String nodeId) {
         stack.peek(ICjEndpointMutable.class).node(nodeId);
-    }
-
-    @Override
-    public void nodeStart() {
-        stack.peek(ICjGraphMutable.class).addNode(stack::push);
     }
 
     @Override

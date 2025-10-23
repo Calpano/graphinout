@@ -89,7 +89,12 @@ public class JsonReaderImpl implements JsonReader {
             }
             throw new RuntimeException(msg.toString(), t);
         } finally {
-            stream.documentEnd();
+            try {
+                stream.documentEnd();
+            } catch (Throwable t) {
+                log.warn("Failed",t);
+                // ignore to be able to see inner exception
+            }
         }
 
     }

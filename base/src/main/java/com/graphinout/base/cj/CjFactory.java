@@ -8,8 +8,9 @@ import com.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.graphinout.base.cj.element.impl.CjEdgeElement;
 import com.graphinout.base.cj.element.impl.CjGraphElement;
 import com.graphinout.base.cj.element.impl.CjNodeElement;
+import com.graphinout.base.cj.stream.api.ICjFactory;
 
-public class CjFactory {
+public class CjFactory implements ICjFactory {
 
     public ICjDocumentChunkMutable createDocumentChunk() {
         return new CjDocumentElement();
