@@ -1,11 +1,11 @@
 package com.graphinout.reader.ocif;
 
 import com.graphinout.base.cj.CjFactory;
+import com.graphinout.base.cj.element.ICjData;
 import com.graphinout.base.cj.element.ICjDocumentChunk;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
 import com.graphinout.base.cj.element.ICjGraphChunk;
 import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.base.cj.element.ICjData;
 import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
 import com.graphinout.foundation.json.value.IJsonArray;
@@ -37,6 +37,7 @@ public class Ocif2CjStream extends CjFactory implements ICjStream {
     public Ocif2CjStream() {
         this(null);
     }
+
 
     public Ocif2CjStream(@Nullable Consumer<String> onDone) {
         this.onDone = onDone;
@@ -120,6 +121,11 @@ public class Ocif2CjStream extends CjFactory implements ICjStream {
         root.setProperty("nodes", nodesArr);
         // Do NOT create relations here; only when first relation arrives to preserve omission of empty arrays
         this.relationsArr = null;
+    }
+
+    @Override
+    public IJsonFactory jsonFactory() {
+        return factory;
     }
 
     @Override

@@ -29,11 +29,6 @@ public class TripleTextModel {
     }
 
     public void indexTriple(String s, String p, String o) {
-        if (p.equals("label")) {
-            Node node = indexNode(s);
-            node.label = o;
-            return;
-        }
         index.index(indexNode(s), p, indexNode(o).id);
     }
 

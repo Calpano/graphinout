@@ -12,7 +12,7 @@ public class TripleText {
             + "(?<s>.*?)"  //
             + SPACE
             // --predicate--
-            + "--" + SPACE + "(?<p>.*?)" + SPACE + "--" + SPACE  //
+            + "--" + SPACE + "(?<p>.*?)" + SPACE + "-[-|>]" + SPACE  //
             // object
             + "(?<o>"
             // negative lookahead

@@ -1,15 +1,15 @@
 package com.graphinout.reader.tgf;
 
-import com.graphinout.base.CjStream2GioWriter;
-import com.graphinout.base.gio.GioData;
-import com.graphinout.base.gio.GioDocument;
-import com.graphinout.base.gio.GioEdge;
-import com.graphinout.base.gio.GioGraph;
-import com.graphinout.base.gio.GioNode;
-import com.graphinout.base.gio.GioWriter;
+import com.graphinout.base.cj.CjFactory;
+import com.graphinout.base.cj.element.ICjDocumentChunk;
+import com.graphinout.base.cj.element.ICjEdgeChunk;
+import com.graphinout.base.cj.element.ICjGraphChunk;
+import com.graphinout.base.cj.element.ICjNodeChunk;
+import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.base.reader.ContentError;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -37,20 +38,29 @@ import static org.mockito.Mockito.when;
 class TgfReaderTest {
 
     public static final String EMPTY_FILE = "";
-    public static final String NODES_ONLY = "1 First node\n2 Second node";
-    public static final String EDGES_ONLY = "#\n1 2 Edge between first and second\n2 3 Edge between second and third\"";
-    public static final String THREE_NODES_TWO_EDGES_WITH_LABEL = "1 First node\n2 Second node\n3 Third node\n#\n1 2 Label\n2 3";
+    public static final String NODES_ONLY = """
+            1 First node
+            2 Second node""";
+    public static final String EDGES_ONLY = """
+            #
+            1 2 Edge between first and second
+            2 3 Edge between second and third\"""";
+    public static final String THREE_NODES_TWO_EDGES_WITH_LABEL = """
+            1 First node
+            2 Second node
+            3 Third node
+            #
+            1 2 Label
+            2 3""";
     private AutoCloseable closeable;
     private TgfReader underTest;
-    @Mock
-    private GioWriter mockGioWriter;
-    @Mock
-    private SingleInputSource mockInputSrc;
-    @Mock
-    private Consumer<ContentError> mockErrorConsumer;
+    @Mock private ICjStream mockCjStream;
+    @Mock private SingleInputSource mockInputSrc;
+    @Mock private Consumer<ContentError> mockErrorConsumer;
 
     private static Stream<TestFileProvider.TestResource> tgfResources() {
-        return TestFileProvider.getAllTestResources().filter(res -> res.resource().getPath().endsWith(".tgf"));
+        return TestFileProvider.getAllTestResources()
+                .filter(res -> res.resource().getPath().endsWith(".tgf"));
     }
 
     @AfterEach
@@ -62,6 +72,14 @@ class TgfReaderTest {
     void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
         this.underTest = new TgfReader();
+
+        // The reader requests chunk instances and a JSON factory from the stream; stub the mock accordingly
+        CjFactory factory = new CjFactory();
+        when(mockCjStream.createDocumentChunk()).thenAnswer(inv -> factory.createDocumentChunk());
+        when(mockCjStream.createGraphChunk()).thenAnswer(inv -> factory.createGraphChunk());
+        when(mockCjStream.createNodeChunk()).thenAnswer(inv -> factory.createNodeChunk());
+        when(mockCjStream.createEdgeChunk()).thenAnswer(inv -> factory.createEdgeChunk());
+        when(mockCjStream.jsonFactory()).thenReturn(JavaJsonFactory.INSTANCE);
     }
 
     @Test
@@ -70,21 +88,16 @@ class TgfReaderTest {
         when(mockInputSrc.inputStream()).thenReturn(inputStream);
 
         underTest.errorHandler(mockErrorConsumer);
-        underTest.read(mockInputSrc, new CjStream2GioWriter(mockGioWriter));
+        underTest.read(mockInputSrc, mockCjStream);
 
         // Verify interactions counts with adapter semantics
-        Mockito.verify(mockGioWriter, times(1)).startDocument(any(GioDocument.class));
-        Mockito.verify(mockGioWriter, times(1)).startGraph(any(GioGraph.class));
-        Mockito.verify(mockGioWriter, times(3)).startNode(any(GioNode.class));
-        Mockito.verify(mockGioWriter, times(6)).endNode(Mockito.any());
-        Mockito.verify(mockGioWriter, times(2)).startEdge(any(GioEdge.class));
-        // 2 edge labels
-        Mockito.verify(mockGioWriter, times(2)).data(any(GioData.class));
-        Mockito.verify(mockGioWriter, times(4)).endEdge();
-        Mockito.verify(mockGioWriter, times(1)).endGraph(Mockito.any());
-        Mockito.verify(mockGioWriter, times(1)).endDocument();
+        verify(mockCjStream, times(1)).documentStart(any(ICjDocumentChunk.class));
+        verify(mockCjStream, times(1)).graphStart(any(ICjGraphChunk.class));
+        verify(mockCjStream, times(3)).node(any(ICjNodeChunk.class));
+        verify(mockCjStream, times(2)).edge(any(ICjEdgeChunk.class));
+        verify(mockCjStream, times(1)).graphEnd();
+        verify(mockCjStream, times(1)).documentEnd();
 
-        verifyNoMoreInteractions(mockGioWriter);
     }
 
     @Test
@@ -92,12 +105,12 @@ class TgfReaderTest {
         when(mockInputSrc.inputStream()).thenReturn(new ByteArrayInputStream(EMPTY_FILE.getBytes()));
 
         underTest.errorHandler(mockErrorConsumer);
-        underTest.read(mockInputSrc, new CjStream2GioWriter(mockGioWriter));
+        underTest.read(mockInputSrc, mockCjStream);
 
-        // Only endDocument should be called via adapter on empty input
-        InOrder inOrder = Mockito.inOrder(mockGioWriter);
-        inOrder.verify(mockGioWriter).endDocument();
-        verifyNoMoreInteractions(mockGioWriter);
+        InOrder inOrder = Mockito.inOrder(mockCjStream);
+        inOrder.verify(mockCjStream).createDocumentChunk();
+        inOrder.verify(mockCjStream).document(any(ICjDocumentChunk.class));
+        verifyNoMoreInteractions(mockCjStream);
         verifyNoInteractions(mockErrorConsumer);
     }
 
@@ -107,13 +120,13 @@ class TgfReaderTest {
         when(mockInputSrc.inputStream()).thenReturn(inputStream);
 
         underTest.errorHandler(mockErrorConsumer);
-        underTest.read(mockInputSrc, new CjStream2GioWriter(mockGioWriter));
+        underTest.read(mockInputSrc, mockCjStream);
 
         // Verify counts, order not enforced due to adapter semantics
-        Mockito.verify(mockGioWriter, times(1)).startDocument(any(GioDocument.class));
-        Mockito.verify(mockGioWriter, times(1)).startGraph(any(GioGraph.class));
-        Mockito.verify(mockGioWriter, times(2)).startNode(any(GioNode.class));
-        Mockito.verify(mockGioWriter, times(4)).endNode(Mockito.any());
+        verify(mockCjStream, times(1)).documentStart(any(ICjDocumentChunk.class));
+        verify(mockCjStream, times(1)).graphStart(any(ICjGraphChunk.class));
+        verify(mockCjStream, times(2)).nodeStart(any(ICjNodeChunk.class));
+        verify(mockCjStream, times(2)).nodeEnd();
 
         verifyNoInteractions(mockErrorConsumer);
     }
@@ -124,31 +137,33 @@ class TgfReaderTest {
         String content = textResource.getContentAsString();
         SingleInputSource singleInputSource = SingleInputSource.of(displayPath, content);
 
-        underTest.read(singleInputSource, new CjStream2GioWriter(mockGioWriter));
+        underTest.read(singleInputSource, mockCjStream);
 
         verifyNoInteractions(mockErrorConsumer);
     }
 
     @Test
-    void shouldWorkAsIntendedAndCallGioWriter() throws IOException {
+    void shouldWorkAsIntendedAndCallCjStream() throws IOException {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(THREE_NODES_TWO_EDGES_WITH_LABEL.getBytes(StandardCharsets.UTF_8));
         when(mockInputSrc.inputStream()).thenReturn(byteArrayInputStream);
 
         underTest.errorHandler(TgfReaderTest.this.mockErrorConsumer);
-        underTest.read(mockInputSrc, new CjStream2GioWriter(mockGioWriter));
+        underTest.read(mockInputSrc, mockCjStream);
 
-        // Verify counts with adapter semantics
-        Mockito.verify(mockGioWriter, times(1)).startDocument(any(GioDocument.class));
-        Mockito.verify(mockGioWriter, times(1)).startGraph(any(GioGraph.class));
-        Mockito.verify(mockGioWriter, times(3)).startNode(any(GioNode.class));
-        Mockito.verify(mockGioWriter, times(4)).data(any(GioData.class));
-        Mockito.verify(mockGioWriter, times(6)).endNode(Mockito.any());
-        Mockito.verify(mockGioWriter, times(2)).startEdge(any(GioEdge.class));
-        Mockito.verify(mockGioWriter, times(4)).endEdge();
-        Mockito.verify(mockGioWriter, times(1)).endGraph(Mockito.any());
-        Mockito.verify(mockGioWriter, times(1)).endDocument();
+        verify(mockCjStream).createDocumentChunk();
+        verify(mockCjStream).documentStart(any(ICjDocumentChunk.class));
+        verify(mockCjStream).createGraphChunk();
+        verify(mockCjStream).graphStart(any(ICjGraphChunk.class));
+        verify(mockCjStream, times(3)).createNodeChunk();
+        verify(mockCjStream, times(4)).jsonFactory();
+        verify(mockCjStream, times(3)).nodeStart(any(ICjNodeChunk.class));
+        verify(mockCjStream, times(3)).nodeEnd();
+        verify(mockCjStream, times(2)).createEdgeChunk();
+        verify(mockCjStream, times(2)).edge(any(ICjEdgeChunk.class));
+        verify(mockCjStream).graphEnd();
+        verify(mockCjStream).documentEnd();
 
-        verifyNoMoreInteractions(mockGioWriter);
+        verifyNoMoreInteractions(mockCjStream);
     }
 
     @Test

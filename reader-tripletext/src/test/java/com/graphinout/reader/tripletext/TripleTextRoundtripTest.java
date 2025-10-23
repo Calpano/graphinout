@@ -1,9 +1,8 @@
 package com.graphinout.reader.tripletext;
 
-import com.graphinout.base.Gio2CjDocumentWriter;
 import com.graphinout.base.Gio2CjStream;
 import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.cj.stream.impl.Cj2ElementsWriter;
+import com.graphinout.base.cj.stream.impl.CjStream2CjDocumentWriter;
 import com.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
 import com.graphinout.foundation.TestFileProvider;
@@ -54,25 +53,18 @@ public class TripleTextRoundtripTest {
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("tripleTextResources")
     void shouldRoundtripTripleText(String displayPath, Resource textResource) throws IOException {
-        String original = textResource.getContentAsString();
-        SingleInputSource input = SingleInputSource.of(displayPath, original);
+        String content1 = textResource.getContentAsString();
+        SingleInputSource input = SingleInputSource.of(displayPath, content1);
 
-        TripleTextReader reader = new TripleTextReader();
-        Cj2ElementsWriter elementsWriter = new Cj2ElementsWriter();
-        CjStream2CjWriter streamToWriter = new CjStream2CjWriter(elementsWriter);
-        Gio2CjStream gio2Cj = new Gio2CjStream(streamToWriter);
-        reader.read(input, gio2Cj);
-        ICjDocument cjDoc = elementsWriter.resultDoc();
+        ICjDocument cjDoc = TripleTextReader.parseToCjDocument(input);
         Assertions.assertNotNull(cjDoc);
 
         // Serialize back to TripleText
         TripleTextOutput out = new TripleTextOutput(cjDoc);
-        String roundtrip = out.toTripleText();
+        String content2 = out.toTripleText();
 
-        String nOrig = normalizeTripleText(original);
-        String nRound = normalizeTripleText(roundtrip);
-        System.out.println("[DEBUG_LOG] TT roundtrip original normalized:\n" + nOrig);
-        System.out.println("[DEBUG_LOG] TT roundtrip produced normalized:\n" + nRound);
+        String nOrig = normalizeTripleText(content1);
+        String nRound = normalizeTripleText(content2);
         Assertions.assertEquals(nOrig, nRound);
     }
 
@@ -84,7 +76,7 @@ public class TripleTextRoundtripTest {
         SingleInputSource cjInput = SingleInputSource.of(displayPath, cjJson);
 
         // Parse CJ JSON into CjDocument
-        Cj2ElementsWriter cj2elements = new Cj2ElementsWriter();
+        CjStream2CjDocumentWriter cj2elements = new CjStream2CjDocumentWriter();
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         Json2CjWriter json2Cj = new Json2CjWriter(cj2elements);
         jsonReader.read(cjInput, json2Cj);
@@ -98,7 +90,7 @@ public class TripleTextRoundtripTest {
         // TripleText -> CJ
         SingleInputSource ttInput = SingleInputSource.of(displayPath + ".tt", tripleText);
         TripleTextReader reader = new TripleTextReader();
-        Cj2ElementsWriter elementsWriter2 = new Cj2ElementsWriter();
+        CjStream2CjDocumentWriter elementsWriter2 = new CjStream2CjDocumentWriter();
         CjStream2CjWriter streamToWriter2 = new CjStream2CjWriter(elementsWriter2);
         Gio2CjStream gio2Cj2 = new Gio2CjStream(streamToWriter2);
         reader.read(ttInput, gio2Cj2);

@@ -1,14 +1,22 @@
 package com.graphinout.reader.tgf;
 
-import com.graphinout.base.cj.element.*;
 import com.graphinout.base.cj.CjDirection;
+import com.graphinout.base.cj.element.ICjDocument;
+import com.graphinout.base.cj.element.ICjEndpoint;
+import com.graphinout.base.cj.element.ICjGraph;
+import com.graphinout.base.cj.element.ICjHasData;
+import com.graphinout.base.cj.element.ICjLabelEntry;
 import com.graphinout.base.graphml.CjGraphmlMapping;
 import com.graphinout.foundation.json.value.IJsonValue;
+import org.slf4j.Logger;
 
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class TgfOutput {
 
+    private static final Logger log = getLogger(TgfOutput.class);
     private final ICjDocument cjDoc;
 
     public TgfOutput(ICjDocument cjDoc) {
@@ -53,18 +61,22 @@ public class TgfOutput {
             b.append('#').append('\n');
             // Edges section
             g.edges().forEach(e -> {
-                // Prefer OUT endpoint first, then IN (CJ sorts endpoints; using directions preserves TGF order)
-                ICjEndpoint outEp = e.endpoints().filter(ep -> ep.direction() == CjDirection.OUT).findFirst().orElse(null);
+                // edge from subject to object is: subject=IN, object=OUT
                 ICjEndpoint inEp = e.endpoints().filter(ep -> ep.direction() == CjDirection.IN).findFirst().orElse(null);
+                ICjEndpoint outEp = e.endpoints().filter(ep -> ep.direction() == CjDirection.OUT).findFirst().orElse(null);
                 String n1 = null, n2 = null;
                 if (outEp != null && inEp != null) {
-                    n1 = outEp.node();
-                    n2 = inEp.node();
+                    // directed edge
+                    n1 = inEp.node();
+                    n2 = outEp.node();
                 } else {
+                    // undirected edge or hyper-edge
                     List<ICjEndpoint> eps = e.endpoints().toList();
-                    if (eps.size() >= 2) {
+                    if (eps.size() == 2) {
                         n1 = eps.get(0).node();
                         n2 = eps.get(1).node();
+                    } else {
+                        log.warn("Cannot represent hyper-edge in TGF");
                     }
                 }
                 if (n1 != null && n2 != null) {

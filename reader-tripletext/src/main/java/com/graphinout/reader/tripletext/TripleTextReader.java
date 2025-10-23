@@ -1,35 +1,41 @@
 package com.graphinout.reader.tripletext;
 
-import com.graphinout.base.gio.GioData;
-import com.graphinout.base.gio.GioDataType;
-import com.graphinout.base.gio.GioDocument;
-import com.graphinout.base.gio.GioEdge;
-import com.graphinout.base.gio.GioEndpoint;
-import com.graphinout.base.gio.GioEndpointDirection;
-import com.graphinout.base.gio.GioGraph;
-import com.graphinout.base.gio.GioKey;
-import com.graphinout.base.gio.GioKeyForType;
-import com.graphinout.base.gio.GioNode;
+import com.graphinout.base.cj.CjDirection;
+import com.graphinout.base.cj.CjEdgeTypeSource;
+import com.graphinout.base.cj.ICjEdgeType;
+import com.graphinout.base.cj.element.ICjDocument;
+import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
+import com.graphinout.base.cj.element.ICjNodeChunkMutable;
+import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
+import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.cj.stream.impl.CjStream2CjDocumentWriter;
 import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.reader.ContentError;
 import com.graphinout.base.reader.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.xml.XmlFragmentString;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.function.Consumer;
+
+import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
 
 public class TripleTextReader implements GioReader {
 
     public static final String FORMAT_ID = "tripletext";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "TripleText Format", ".tt", "triple.txt", ".tripletext");
     private Consumer<ContentError> errorHandler;
+
+    public static ICjDocument parseToCjDocument(SingleInputSource input) throws IOException {
+        TripleTextReader reader = new TripleTextReader();
+        CjStream2CjDocumentWriter elementsWriter = new CjStream2CjDocumentWriter();
+        CjStream2CjWriter streamToWriter = new CjStream2CjWriter(elementsWriter);
+        reader.read(input, streamToWriter);
+        return elementsWriter.resultDoc();
+    }
 
     @Override
     public void errorHandler(Consumer<ContentError> errorHandler) {
@@ -42,7 +48,7 @@ public class TripleTextReader implements GioReader {
     }
 
     @Override
-    public void read(InputSource inputSource, GioWriter writer) throws IOException {
+    public void read(InputSource inputSource, ICjStream writer) throws IOException {
         if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
@@ -54,30 +60,27 @@ public class TripleTextReader implements GioReader {
             while ((line = reader.readLine()) != null) {
                 TripleText.parseLine(line, (s, p, o, m) -> {
                     tripleTextModel.indexTriple(s, p, o);
-                    tripleTextModel.indexNode(o);
                 });
             }
         }
 
-        // and write the graph to our GioWriter
-        writer.startDocument(GioDocument.builder().build());
-
-        // declare keys (use GraphML mapping key for CJ label)
-        writer.key(GioKey.builder().id(com.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement.Label.attrName)
-                .forType(GioKeyForType.All)
-                .attributeName(com.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement.Label.attrName)
-                .attributeType(GioDataType.typeString).build());
-
-        writer.startGraph(GioGraph.builder().build());
+        writer.documentStart(writer.createDocumentChunk());
+        writer.graphStart(writer.createGraphChunk());
 
         // write nodes
         for (TripleTextModel.Node node : tripleTextModel.nodes()) {
-            writer.startNode(GioNode.builder().id(node.id).build());
-            if (node.label != null)
-                writer.data(GioData.builder()
-                        .key(com.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement.Label.attrName)
-                        .xmlValue(XmlFragmentString.ofPlainText(node.label)).build());
-            writer.endNode(null);
+            ICjNodeChunkMutable nodeChunk = writer.createNodeChunk();
+            nodeChunk.id(node.id);
+
+            // TODO make simpkler to do this
+            ifPresentAccept( node.label, label->      {
+                nodeChunk.setLabel(l-> l.addEntry(entry -> {
+                    entry.value(label);
+                    // we dont know the language
+                }));
+            });
+
+            writer.node(nodeChunk);
         }
 
         // write edges
@@ -87,22 +90,30 @@ public class TripleTextReader implements GioReader {
             assert p != null;
             assert !p.isBlank();
             assert o != null;
-            try {
-                GioEndpoint sEndpoint = GioEndpoint.builder().node(sNode.id).type(GioEndpointDirection.Out).build();
-                GioEndpoint oEndpoint = GioEndpoint.builder().node(o).type(GioEndpointDirection.In).build();
-                writer.startEdge(GioEdge.builder().endpoints(Arrays.asList(sEndpoint, oEndpoint)).build());
-                GioData.GioDataBuilder gioDataBuilder = GioData.builder()
-                        .key(com.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement.Label.attrName);
-                writer.data(gioDataBuilder.xmlValue(XmlFragmentString.ofPlainText(p)).build());
-                // TODO meta
-                writer.endEdge();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+
+            ICjEdgeChunkMutable edgeChunk = writer.createEdgeChunk();
+
+            edgeChunk.addEndpoint(ep -> {
+                ep.node(sNode.id);
+                ep.direction(CjDirection.IN);
+            });
+            edgeChunk.addEndpoint(ep -> {
+                ep.node(o);
+                ep.direction(CjDirection.OUT);
+            });
+            edgeChunk.edgeType(ICjEdgeType.of(CjEdgeTypeSource.String, p));
+
+            // TripleText edge meta
+            if (meta != null && !meta.isBlank()) {
+                edgeChunk.dataMutable(data -> {
+                    data.addProperty("tt:meta", writer.jsonFactory().createString(meta));
+                });
             }
+            writer.edge(edgeChunk);
         });
 
-        writer.endGraph(null);
-        writer.endDocument();
+        writer.graphEnd();
+        writer.documentEnd();
     }
 
 }
