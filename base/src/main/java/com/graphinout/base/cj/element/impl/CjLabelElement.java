@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * A CJ document
+ * A CJ element, representing an ArrayOfLabelEntries.
  */
 public class CjLabelElement extends CjArrayElement implements ICjLabelMutable {
 
@@ -21,9 +21,11 @@ public class CjLabelElement extends CjArrayElement implements ICjLabelMutable {
     }
 
     @Override
-    public void addEntry(Consumer<ICjLabelEntryMutable> labelEntry) {
+    public void addEntry(Consumer<ICjLabelEntryMutable> labelEntryConsumer) {
+        // this method is also used within the CjStream2ElementsWriter to hold temporary state
+        // so the labelEntry might still be empty
         CjLabelEntryElement entry = new CjLabelEntryElement();
-        labelEntry.accept(entry);
+        labelEntryConsumer.accept(entry);
         add(entry);
     }
 
@@ -37,7 +39,6 @@ public class CjLabelElement extends CjArrayElement implements ICjLabelMutable {
         // IMPROVE handle generics better
         List<CjLabelEntryElement> list = new ArrayList<>();
         entries().forEach(e -> list.add((CjLabelEntryElement) e));
-
         cjWriter.list(list, CjType.ArrayOfLabelEntries, CjLabelEntryElement::fire);
     }
 

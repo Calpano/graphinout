@@ -7,5 +7,6 @@ public interface ICjHasLabelMutable extends ICjHasLabel {
     /** at most one per element */
     void setLabel(Consumer<ICjLabelMutable> label);
 
+    ICjLabelMutable labelMutable();
 
 }

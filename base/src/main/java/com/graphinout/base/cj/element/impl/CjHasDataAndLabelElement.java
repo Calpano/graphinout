@@ -18,11 +18,16 @@ public abstract class CjHasDataAndLabelElement extends CjHasDataElement implemen
     }
 
     @Override
-    public void setLabel(Consumer<ICjLabelMutable> label) {
+    public ICjLabelMutable labelMutable() {
         if (this.labelElement == null) {
             this.labelElement = new CjLabelElement();
         }
-        label.accept(labelElement);
+        return labelElement;
+    }
+
+    @Override
+    public void setLabel(Consumer<ICjLabelMutable> label) {
+        label.accept(labelMutable());
     }
 
 
