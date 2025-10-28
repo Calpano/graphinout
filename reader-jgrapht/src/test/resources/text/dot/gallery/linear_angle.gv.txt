@@ -1,0 +1,99 @@
+digraph G {
+fontname="Helvetica,Arial,sans-serif"
+node [fontname="Helvetica,Arial,sans-serif"]
+edge [fontname="Helvetica,Arial,sans-serif"]
+a0 [shape=none label=<
+ <TABLE border="0" cellspacing="10" cellpadding="10">
+<TR><TD bgcolor="yellow" gradientangle="315">00</TD>
+<TD bgcolor="yellow:green" gradientangle="315">01</TD>
+<TD bgcolor="green" gradientangle="315">02</TD>
+<TD bgcolor="green:blue" gradientangle="315">03</TD>
+<TD bgcolor="blue" gradientangle="315">04</TD>
+<TD bgcolor="blue:purple" gradientangle="315">05</TD>
+<TD bgcolor="purple" gradientangle="315">06</TD>
+<TD bgcolor="purple:violet" gradientangle="315">07</TD>
+<TD bgcolor="violet" gradientangle="315">08</TD></TR>
+  
+<TR><TD bgcolor="yellow:gold"  gradientangle="315">10</TD>
+<TD bgcolor="yellow:green"  gradientangle="315">11</TD>
+<TD bgcolor="yellow:green"  gradientangle="315">12</TD>
+<TD bgcolor="yellow:blue"  gradientangle="315">13</TD>
+<TD bgcolor="yellow:blue"  gradientangle="315">14</TD>
+<TD bgcolor="yellow:purple"  gradientangle="315">15</TD>
+<TD bgcolor="yellow:purple"  gradientangle="315">16</TD>
+<TD bgcolor="yellow:violet"  gradientangle="315">17</TD>
+<TD bgcolor="yellow:violet"  gradientangle="315">18</TD></TR>
+  
+<TR><TD bgcolor="gold"  gradientangle="315">20</TD>
+<TD bgcolor="gold:green"  gradientangle="315">21</TD>
+<TD bgcolor="gold:green"  gradientangle="315">22</TD>
+<TD bgcolor="gold:blue"  gradientangle="315">23</TD>
+<TD bgcolor="gold:blue"  gradientangle="315">24</TD>
+<TD bgcolor="gold:purple"  gradientangle="315">25</TD>
+<TD bgcolor="gold:purple"  gradientangle="315">26</TD>
+<TD bgcolor="gold:violet"  gradientangle="315">27</TD>
+<TD bgcolor="gold:violet"  gradientangle="315">28</TD></TR>
+  
+<TR><TD bgcolor="gold:orange"  gradientangle="315">30</TD>
+<TD bgcolor="orange:green"  gradientangle="315">31</TD>
+<TD bgcolor="orange:green"  gradientangle="315">32</TD>
+<TD bgcolor="orange:blue"  gradientangle="315">33</TD>
+<TD bgcolor="orange:blue"  gradientangle="315">34</TD>
+<TD bgcolor="orange:purple"  gradientangle="315">35</TD>
+<TD bgcolor="orange:purple"  gradientangle="315">36</TD>
+<TD bgcolor="orange:violet"  gradientangle="315">37</TD>
+<TD bgcolor="orange:violet"  gradientangle="315">38</TD></TR>
+  
+<TR><TD bgcolor="orange"  gradientangle="315">40</TD>
+<TD bgcolor="orange:green"  gradientangle="315">41</TD>
+<TD bgcolor="orange:green"  gradientangle="315">42</TD>
+<TD bgcolor="orange:blue"  gradientangle="315">43</TD>
+<TD bgcolor="orange:blue"  gradientangle="315">44</TD>
+<TD bgcolor="orange:purple"  gradientangle="315">45</TD>
+<TD bgcolor="orange:purple"  gradientangle="315">46</TD>
+<TD bgcolor="orange:violet"  gradientangle="315">47</TD>
+<TD bgcolor="orange:violet"  gradientangle="315">48</TD></TR>
+  
+<TR><TD bgcolor="orange:red"  gradientangle="315">50</TD>
+<TD bgcolor="red:green"  gradientangle="315">51</TD>
+<TD bgcolor="red:green"  gradientangle="315">52</TD>
+<TD bgcolor="red:blue"  gradientangle="315">53</TD>
+<TD bgcolor="red:blue"  gradientangle="315">54</TD>
+<TD bgcolor="red:purple"  gradientangle="315">55</TD>
+<TD bgcolor="red:purple"  gradientangle="315">56</TD>
+<TD bgcolor="red:violet"  gradientangle="315">57</TD>
+<TD bgcolor="red:violet"  gradientangle="315">58</TD></TR>
+  
+<TR><TD bgcolor="red"  gradientangle="315">60</TD>
+<TD bgcolor="red:green"  gradientangle="315">61</TD>
+<TD bgcolor="red:green"  gradientangle="315">62</TD>
+<TD bgcolor="red:blue"  gradientangle="315">63</TD>
+<TD bgcolor="red:blue"  gradientangle="315">64</TD>
+<TD bgcolor="red:purple"  gradientangle="315">65</TD>
+<TD bgcolor="red:purple"  gradientangle="315">66</TD>
+<TD bgcolor="red:violet"  gradientangle="315">67</TD>
+<TD bgcolor="red:violet"  gradientangle="315">68</TD></TR>
+  
+<TR><TD bgcolor="red:brown"  gradientangle="315">70</TD>
+<TD bgcolor="brown:green"  gradientangle="315">71</TD>
+<TD bgcolor="brown:green"  gradientangle="315">72</TD>
+<TD bgcolor="brown:blue"  gradientangle="315">73</TD>
+<TD bgcolor="brown:blue"  gradientangle="315">74</TD>
+<TD bgcolor="brown:purple"  gradientangle="315">75</TD>
+<TD bgcolor="brown:purple"  gradientangle="315">76</TD>
+<TD bgcolor="brown:violet"  gradientangle="315">77</TD>
+<TD bgcolor="brown:violet"  gradientangle="315">78</TD></TR>
+  
+<TR><TD bgcolor="brown"  gradientangle="315">80</TD>
+<TD bgcolor="brown:green"  gradientangle="315">81</TD>
+<TD bgcolor="brown:green"  gradientangle="315">82</TD>
+<TD bgcolor="brown:blue"  gradientangle="315">83</TD>
+<TD bgcolor="brown:blue"  gradientangle="315">84</TD>
+<TD bgcolor="brown:purple"  gradientangle="315">85</TD>
+<TD bgcolor="brown:purple"  gradientangle="315">86</TD>
+<TD bgcolor="brown:violet"  gradientangle="315">87</TD>
+<TD bgcolor="brown:violet"  gradientangle="315">88</TD></TR>
+  
+</TABLE>>];
+
+}

@@ -1,0 +1,16 @@
+digraph {
+  node [fontname=sans];
+  dot;
+   dot -> dot_tpsA; dot -> dot_tps2A; dot -> dot_tpsB; dot -> dot_tps2B;
+  dot_tpsA[shape=rect, label="dot -Tps"]; dot_tps2A[shape=rect, label="dot -Tps2"]; dot_tpsB[shape=rect, label="dot -Tps"]; dot_tps2B[shape=rect, label="dot -Tps2"];
+   dot_tpsA -> psA; dot_tps2A -> psB; dot_tpsB -> psC; dot_tps2B -> psD;
+  psA[label=".ps"]; dviA[label=".dvi"]; psB[label=".ps"]; psC[label=".ps"]; psD[label=".ps"];
+   psA -> dvipsA; dviA -> dvipsA; dviA -> dvipsB; psB -> dvipsB; psC -> ps2pdfA; psD -> ps2pdfB;
+  dvipsA[shape=rect, label="dvips"]; dvipsB[shape=rect, label="dvips"]; ps2pdfA[shape=rect, label="ps2pdf"]; ps2pdfB[shape=rect, label="ps2pdf"];
+   dvipsA -> psE; dvipsB -> psF; ps2pdfA -> pdfA; ps2pdfB -> pdfB;
+  psE[label=".ps"]; psF[label=".ps"]; pdfA[label=".pdf"]; tex[label=".tex"]; pdfB[label=".pdf"];
+   psE -> ps2pdfC; psF -> ps2pdfD; pdfA -> pdflatexA; tex -> pdflatexA; tex -> pdflatexB; pdfB -> pdflatexB;
+  ps2pdfC[shape=rect, label="ps2pdf"]; ps2pdfD[shape=rect, label="ps2pdf"]; pdflatexA[shape=rect, label="pdflatex"]; pdflatexB[shape=rect, label="pdflatex"];
+   ps2pdfC -> pdfC; ps2pdfD -> pdfD; pdflatexA -> pdfE; pdflatexB -> pdfF;
+  pdfC[label=".pdf"]; pdfD[style=filled, fillcolor=lightgrey, label=".pdf"]; pdfE[style=filled, fillcolor=lightgrey, label=".pdf"]; pdfF[label=".pdf"];
+}
