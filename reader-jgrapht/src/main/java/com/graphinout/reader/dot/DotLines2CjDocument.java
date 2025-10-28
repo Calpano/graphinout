@@ -7,6 +7,7 @@ import com.graphinout.base.cj.element.ICjHasDataMutable;
 import com.graphinout.base.cj.element.ICjHasLabelMutable;
 import com.graphinout.base.cj.element.ICjNodeMutable;
 import com.graphinout.base.cj.element.impl.CjDocumentElement;
+import com.graphinout.base.reader.Location;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.text.ITextWriter;
 
@@ -43,6 +44,8 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
 
     private static final class Parser {
 
+        public static final String DIGRAPH = "digraph";
+        public static final String GRAPH = "graph";
         private final String s;
         private int pos = 0;
 
@@ -103,9 +106,9 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             skipWs();
             String kind = readKeyword();
             boolean directed = switch (kind) {
-                case "digraph" -> true;
-                case "graph" -> false;
-                default -> throw new IllegalStateException("Expected graph/digraph, got " + kind);
+                case DIGRAPH -> true;
+                case GRAPH -> false;
+                default -> throw new IllegalStateException("Expected " + GRAPH+" or "+DIGRAPH+", got " + kind);
             };
             String id = tryReadIdOrString();
             return new TopLevel(directed, id);
@@ -311,8 +314,14 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         }
 
     }
+
     /** "graph" or "digraph" */
     private static final String DOT_TYPE_KEY = "dot.type";
+    public static final String SUBGRAPH = "subgraph";
+    public static final char CURLY_BRACE_CLOSE = '}';
+    public static final char CURLY_BRACE_OPEN = '{';
+    public static final String NODE = "node";
+    public static final String EDGE = "edge";
     private final StringBuilder buf = new StringBuilder();
     private final List<Integer> lineStarts = new ArrayList<>(); // 0-based start index of each input line in buf
     private final CjDocumentElement cjDocument;
@@ -400,8 +409,8 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         buf.append(line);
     }
 
-    private com.graphinout.base.reader.Location mapPosToLocation(int pos) {
-        if (lineStarts.isEmpty()) return com.graphinout.base.reader.Location.UNAVAILABLE;
+    private Location mapPosToLocation(int pos) {
+        if (lineStarts.isEmpty()) return Location.UNAVAILABLE;
         int lineIdx = 0;
         for (int i = 0; i < lineStarts.size(); i++) {
             int start = lineStarts.get(i);
@@ -410,7 +419,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         int start = lineStarts.get(lineIdx);
         int col = (pos - start) + 1; // 1-based
         int lineNo = lineIdx + 1; // 1-based
-        return new com.graphinout.base.reader.Location(lineNo, col);
+        return new Location(lineNo, col);
     }
 
     public CjDocumentElement resultDocument() {
@@ -426,16 +435,16 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 if (tl.id != null) g.id(tl.id);
                 g.dataMutable(d -> d.addProperty(DOT_TYPE_KEY, tl.directed ? "digraph" : "graph"));
                 // parse graph body
-                p.expect('{');
+                p.expect(CURLY_BRACE_OPEN);
                 parseStatements(p, g, tl.directed);
                 p.skipWs();
-                p.expect('}');
+                p.expect(CURLY_BRACE_CLOSE);
             });
             return cjDocument;
         } catch (RuntimeException ex) {
             // Emit a content error with precise location
             int pos = currentParser != null ? currentParser.position() : dot.length();
-            com.graphinout.base.reader.Location loc = mapPosToLocation(pos);
+            Location loc = mapPosToLocation(pos);
             String msg = ex.getMessage() == null ? (ex.getClass().getSimpleName()) : ex.getMessage();
             throw sendContentError_Error("DOT parse error at " + loc + ": " + msg, ex);
         }
@@ -445,34 +454,34 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         Map<String, ICjNodeMutable> nodesById = new LinkedHashMap<>();
         while (true) {
             p.skipWs();
-            if (p.eof() || p.peek() == '}') break;
+            if (p.eof() || p.peek() == CURLY_BRACE_CLOSE) break;
             // Handle subgraph or anonymous block
-            if (p.lookaheadKeyword("subgraph")) {
-                p.consumeKeyword("subgraph");
+            if (p.lookaheadKeyword(SUBGRAPH)) {
+                p.consumeKeyword(SUBGRAPH);
                 String subId = p.tryReadIdOrString();
                 ICjGraphMutable sub = createSubgraph(g, subId);
                 p.skipWs();
-                if (p.peek() == '{') {
-                    p.expect('{');
+                if (p.peek() == CURLY_BRACE_OPEN) {
+                    p.expect(CURLY_BRACE_OPEN);
                     parseStatements(p, sub, directed);
                     p.skipWs();
-                    p.expect('}');
+                    p.expect(CURLY_BRACE_CLOSE);
                 }
                 p.consumeOptionalSemicolon();
                 continue;
             }
-            if (p.peek() == '{') {
+            if (p.peek() == CURLY_BRACE_OPEN) {
                 // anonymous subgraph; parse but ignore contained standalone ids
                 ICjGraphMutable sub = createSubgraph(g, null);
-                p.expect('{');
+                p.expect(CURLY_BRACE_OPEN);
                 parseStatements(p, sub, directed);
                 p.skipWs();
-                p.expect('}');
+                p.expect(CURLY_BRACE_CLOSE);
                 p.consumeOptionalSemicolon();
                 continue;
             }
             // Defaults like node [...] / edge [...] / graph [...] -> for graph, apply to current graph; others ignored
-            if (p.lookaheadKeyword("graph")) {
+            if (p.lookaheadKeyword(Parser.GRAPH)) {
                 p.readKeyword();
                 p.skipWs();
                 if (p.peek() == '[') {
@@ -481,7 +490,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 }
                 p.consumeOptionalSemicolon();
                 continue;
-            } else if (p.lookaheadKeyword("node") || p.lookaheadKeyword("edge")) {
+            } else if (p.lookaheadKeyword(NODE) || p.lookaheadKeyword(EDGE)) {
                 p.readKeyword();
                 p.skipWs();
                 if (p.peek() == '[') {
@@ -593,13 +602,13 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
     /** Read either a single nodeRef or a group { a, b, c } returning a list of NodeRefs. */
     private List<NodeRef> readNodeRefOrGroup(Parser p) {
         p.skipWs();
-        if (!p.eof() && p.peek() == '{') {
+        if (!p.eof() && p.peek() == CURLY_BRACE_OPEN) {
             // group
-            p.expect('{');
+            p.expect(CURLY_BRACE_OPEN);
             List<NodeRef> list = new ArrayList<>();
             while (true) {
                 p.skipWs();
-                if (!p.eof() && p.peek() == '}') { p.expect('}'); break; }
+                if (!p.eof() && p.peek() == CURLY_BRACE_CLOSE) { p.expect(CURLY_BRACE_CLOSE); break; }
                 // allow empty segments to be skipped
                 NodeRef nr = readNodeRef(p);
                 list.add(nr);
