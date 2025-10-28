@@ -1,6 +1,5 @@
 package com.graphinout.base.graphml;
 
-import com.graphinout.base.gio.GioKeyForType;
 
 public enum GraphmlKeyForType {
 
@@ -39,19 +38,6 @@ public enum GraphmlKeyForType {
 
     public String graphmlName() {
         return value;
-    }
-
-    public GioKeyForType toGio() {
-        return switch (this) {
-            case Graphml -> GioKeyForType.Graphml;
-            case All -> GioKeyForType.All;
-            case Graph -> GioKeyForType.Graph;
-            case Node -> GioKeyForType.Node;
-            case Edge -> GioKeyForType.Edge;
-            case HyperEdge -> GioKeyForType.HyperEdge;
-            case Port -> GioKeyForType.Port;
-            case Endpoint -> GioKeyForType.Endpoint;
-        };
     }
 
 }

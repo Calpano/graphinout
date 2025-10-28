@@ -1,6 +1,5 @@
 package com.graphinout.base.graphml;
 
-import com.graphinout.base.gio.GioDataType;
 import com.graphinout.base.graphml.builder.GraphmlDataBuilder;
 import com.graphinout.base.graphml.builder.GraphmlKeyBuilder;
 import com.graphinout.foundation.util.Nullables;
@@ -131,9 +130,6 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
         return GraphmlElements.KEY;
     }
 
-    default GioDataType toGioDataType() {
-        return GioDataType.fromGraphmlName(attrType());
-    }
 
     /**
      * @param xmlFragment null results in an empty self-closing {@code <data>}.

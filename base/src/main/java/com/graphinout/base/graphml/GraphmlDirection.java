@@ -1,8 +1,6 @@
 package com.graphinout.base.graphml;
 
 import com.graphinout.base.cj.CjDirection;
-import com.graphinout.base.gio.Direction;
-import com.graphinout.base.gio.GioEndpointDirection;
 
 /**
  * @author rbaba
@@ -29,14 +27,6 @@ public enum GraphmlDirection {
         };
     }
 
-    public static GraphmlDirection of(Direction dir) {
-        return switch (dir) {
-            case In -> In;
-            case Out -> Out;
-            case Undirected -> Undirected;
-        };
-    }
-
     public static GraphmlDirection ofCj(CjDirection direction) {
         return switch (direction) {
             case IN -> In;
@@ -47,14 +37,6 @@ public enum GraphmlDirection {
 
     public boolean isDirected() {
         return isDirected;
-    }
-
-    public GioEndpointDirection toGio() {
-        return switch (this) {
-            case In -> GioEndpointDirection.In;
-            case Out -> GioEndpointDirection.Out;
-            case Undirected -> GioEndpointDirection.Undirected;
-        };
     }
 
     public String xmlValue() {

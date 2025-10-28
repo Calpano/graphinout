@@ -6,7 +6,6 @@ import com.graphinout.base.cj.stream.api.CjWriter2CjStream;
 import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.stream.impl.Json2CjWriter;
-import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.reader.GioFileFormat;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.InputSource;
@@ -19,7 +18,7 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 /**
- * Reads .cj files (connected JSON) into a {@link GioWriter}.
+ * Reads .cj files (connected JSON) into a {@link ICjStream}.
  */
 public class ConnectedJsonReader implements GioReader {
 
