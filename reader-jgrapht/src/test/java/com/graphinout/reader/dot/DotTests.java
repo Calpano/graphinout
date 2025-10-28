@@ -11,7 +11,8 @@ public class DotTests {
 
     /** includes all graphml files */
     public static Stream<TestFileProvider.TestResource> dotResources() {
-        return resources("text/dot", Set.of(".dot", ".gv"));
+        return resources("text/dot", Set.of(".dot", ".gv", ".gv.txt", ".dot.txt"));
     }
 
 }
+

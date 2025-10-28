@@ -3,6 +3,7 @@ package com.graphinout.reader.dot;
 import com.graphinout.base.cj.CjAssert;
 import com.graphinout.base.cj.element.CjDocuments;
 import com.graphinout.base.cj.element.ICjDocument;
+import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
 import com.graphinout.foundation.text.TextReader;
@@ -27,6 +28,11 @@ class DotCjTest {
     @MethodSource("com.graphinout.reader.dot.DotTests#dotResources")
     @Description("Test DOT->CjDoc->DOT (all)")
     void test_Dot_Cj_Dot(String displayName, Resource resource) throws IOException {
+        if(TestFileUtil.isInvalid(resource, "dot")) {
+            log.info("Skipping invalid resource "+resource.getURI());
+            return;
+        }
+
         String dotText1 = resource.getContentAsString();
 
         // DOT -> CJ
@@ -42,7 +48,7 @@ class DotCjTest {
         CjDocument2Dot.toDotSyntax(cjDoc1, textWriterOnStringBuilder);
         String dotText2 = textWriterOnStringBuilder.toString();
 
-        DotAssert.xAssertThatIsSameDot(dotText2, dotText1, null);
+        DotAssert.xAssertThatIsSameDotStrong(dotText2, dotText1, null);
 
         log.info("CJ: " + CjDocuments.toJsonString(cjDoc1));
 
