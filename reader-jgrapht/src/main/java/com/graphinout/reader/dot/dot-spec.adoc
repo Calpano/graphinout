@@ -5,6 +5,8 @@ https://graphviz.org/doc/info/lang.html
 == Tools
 https://www.devtoolsdaily.com/graphviz
 
+https://github.com/dbt4u/awesome-graphviz
+
 == Mapping from DOT to CJ
 
 |===
