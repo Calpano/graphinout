@@ -3,7 +3,6 @@ package com.graphinout.reader.graphml;
 
 import com.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.graphinout.base.cj.stream.util.LoggingCjWriter;
-import com.graphinout.base.graphml.Graphml2XmlWriter;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.xml.Xml2StringWriter;
 import com.graphinout.foundation.xml.XmlAssert;

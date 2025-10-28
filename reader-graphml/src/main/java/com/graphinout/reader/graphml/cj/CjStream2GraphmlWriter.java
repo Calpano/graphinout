@@ -12,7 +12,7 @@ import com.graphinout.base.cj.element.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
-import com.graphinout.base.graphml.GraphmlWriter;
+import com.graphinout.reader.graphml.GraphmlWriter;
 import com.graphinout.base.reader.Locator;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.json.value.IJsonFactory;

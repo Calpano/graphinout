@@ -1,12 +1,12 @@
 package com.graphinout.reader.tgf;
 
+import com.graphinout.base.cj.CjDataProperty;
 import com.graphinout.base.cj.CjDirection;
 import com.graphinout.base.cj.element.ICjDocument;
 import com.graphinout.base.cj.element.ICjEndpoint;
 import com.graphinout.base.cj.element.ICjGraph;
 import com.graphinout.base.cj.element.ICjHasData;
 import com.graphinout.base.cj.element.ICjLabelEntry;
-import com.graphinout.base.graphml.CjGraphmlMapping;
 import com.graphinout.foundation.json.value.IJsonValue;
 import org.slf4j.Logger;
 
@@ -32,7 +32,7 @@ public class TgfOutput {
         // fallback to CJ data description
         IJsonValue json = hasData.jsonValue();
         if (json != null) {
-            IJsonValue desc = json.resolve(CjGraphmlMapping.CjDataProperty.Description.cjPropertyKey);
+            IJsonValue desc = json.resolve(CjDataProperty.Description.cjPropertyKey);
             if (desc != null) {
                 String s = desc.toXmlFragmentString().rawXml();
                 if (s != null && !s.isEmpty()) return s;

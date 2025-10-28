@@ -1,6 +1,5 @@
 package com.graphinout.base.cj;
 
-import com.graphinout.base.graphml.CjGraphmlMapping;
 import com.graphinout.foundation.json.JsonConstants;
 import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
 import com.graphinout.foundation.json.value.IJsonArrayMutable;
@@ -57,11 +56,11 @@ public class CjNormalizer {
             if (o.hasProperty(JsonConstants.DOLLAR_SCHEMA)) {
                 o.removeProperty(JsonConstants.DOLLAR_SCHEMA);
             }
-            ifPresentAccept(o.get(CjGraphmlMapping.CjDataProperty.CustomXmlAttributes.cjPropertyKey), value -> (IJsonObjectMutable) value.asObject().asMutable(), customXmlAttributes -> {
+            ifPresentAccept(o.get(CjDataProperty.CustomXmlAttributes.cjPropertyKey), value -> (IJsonObjectMutable) value.asObject().asMutable(), customXmlAttributes -> {
                 customXmlAttributes.keys().stream().filter(k -> k.startsWith("parse.")).toList() //
                         .forEach(customXmlAttributes::removeProperty);
                 if (customXmlAttributes.isEmpty()) {
-                    o.removeProperty(CjGraphmlMapping.CjDataProperty.CustomXmlAttributes.cjPropertyKey);
+                    o.removeProperty(CjDataProperty.CustomXmlAttributes.cjPropertyKey);
                 }
             });
         }

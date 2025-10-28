@@ -1,13 +1,14 @@
 package com.graphinout.reader.graphml.cj;
 
-import com.graphinout.base.graphml.CjGraphmlMapping;
-import com.graphinout.base.graphml.GraphmlDataType;
-import com.graphinout.base.graphml.GraphmlElements;
-import com.graphinout.base.graphml.GraphmlKeyForType;
-import com.graphinout.base.graphml.IGraphmlDefault;
-import com.graphinout.base.graphml.IGraphmlDescription;
-import com.graphinout.base.graphml.IGraphmlKey;
-import com.graphinout.base.graphml.builder.GraphmlKeyBuilder;
+import com.graphinout.base.cj.CjDataProperty;
+import com.graphinout.base.cj.CjMappedProperties;
+import com.graphinout.reader.graphml.elements.GraphmlDataType;
+import com.graphinout.reader.graphml.elements.GraphmlElements;
+import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
+import com.graphinout.reader.graphml.elements.IGraphmlDefault;
+import com.graphinout.reader.graphml.elements.IGraphmlDescription;
+import com.graphinout.reader.graphml.elements.IGraphmlKey;
+import com.graphinout.reader.graphml.elements.builder.GraphmlKeyBuilder;
 import com.graphinout.foundation.JsonXml;
 import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonObject;
@@ -61,7 +62,7 @@ public class GraphmlSchema {
                             // could be a typed JSON string with XML content
                             IJsonXmlString::ofJsonValue, IJsonXmlString::rawXmlString, IGraphmlDescription::of, builder::desc);
 
-                    ifPresentAccept(keyObject.get(CjGraphmlMapping.XML_ATTRIBUTES), xmlAtts -> {
+                    ifPresentAccept(keyObject.get(CjMappedProperties.XML_ATTRIBUTES), xmlAtts -> {
                         if (!xmlAtts.isObject()) {
                             return;
                         }
@@ -124,7 +125,7 @@ public class GraphmlSchema {
 
         if (!key.customXmlAttributes().isEmpty()) {
             JavaJsonObject attributesObject = new JavaJsonObject();
-            o.addProperty(CjGraphmlMapping.XML_ATTRIBUTES, attributesObject);
+            o.addProperty(CjMappedProperties.XML_ATTRIBUTES, attributesObject);
             key.customXmlAttributes().forEach(attributesObject::addProperty);
         }
         return o;
@@ -186,7 +187,7 @@ public class GraphmlSchema {
     public void toJson(IJsonObjectAppendable keysObject) {
         keys().forEach(key -> {
             // filter out CJ-builtins
-            if (CjGraphmlMapping.CjDataProperty.isCjPropertyKey(key.id())) {
+            if (CjDataProperty.isCjPropertyKey(key.id())) {
                 return;
             }
             IJsonValue keyAsJsonValue = toJsonValue(key, keysObject.factory());

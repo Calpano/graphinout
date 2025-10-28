@@ -1,7 +1,7 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.graphml.builder.GraphmlElementBuilder;
-import com.graphinout.base.graphml.builder.GraphmlGraphBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlElementBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlGraphBuilder;
 import com.graphinout.foundation.xml.IXmlName;
 
 import javax.annotation.Nullable;
@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import static com.graphinout.base.graphml.GraphmlElements.GRAPH;
+import static com.graphinout.reader.graphml.elements.GraphmlElements.GRAPH;
 
 /** Used for parsing XML as GraphML */
 public class XmlParseContext {

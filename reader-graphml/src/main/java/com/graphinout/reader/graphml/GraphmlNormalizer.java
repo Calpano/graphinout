@@ -1,9 +1,8 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement;
-import com.graphinout.base.graphml.Graphml;
-import com.graphinout.base.graphml.GraphmlElements;
-import com.graphinout.base.graphml.IGraphmlGraph;
+import com.graphinout.reader.graphml.cj.CjGraphmlMapping.GraphmlDataElement;
+import com.graphinout.reader.graphml.elements.GraphmlElements;
+import com.graphinout.reader.graphml.elements.IGraphmlGraph;
 import com.graphinout.foundation.xml.CharactersKind;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;
@@ -20,16 +19,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import static com.graphinout.base.graphml.GraphmlElements.DATA;
-import static com.graphinout.base.graphml.GraphmlElements.DEFAULT;
-import static com.graphinout.base.graphml.GraphmlElements.DESC;
-import static com.graphinout.base.graphml.GraphmlElements.EDGE;
-import static com.graphinout.base.graphml.GraphmlElements.GRAPH;
-import static com.graphinout.base.graphml.GraphmlElements.GRAPHML;
-import static com.graphinout.base.graphml.GraphmlElements.HYPER_EDGE;
-import static com.graphinout.base.graphml.GraphmlElements.KEY;
-import static com.graphinout.base.graphml.GraphmlElements.LOCATOR;
-import static com.graphinout.base.graphml.GraphmlElements.NODE;
+import static com.graphinout.reader.graphml.elements.GraphmlElements.DATA;
+import static com.graphinout.reader.graphml.elements.GraphmlElements.DEFAULT;
+import static com.graphinout.reader.graphml.elements.GraphmlElements.DESC;
+import static com.graphinout.reader.graphml.elements.GraphmlElements.EDGE;
+import static com.graphinout.reader.graphml.elements.GraphmlElements.GRAPH;
+import static com.graphinout.reader.graphml.elements.GraphmlElements.GRAPHML;
+import static com.graphinout.reader.graphml.elements.GraphmlElements.HYPER_EDGE;
+import static com.graphinout.reader.graphml.elements.GraphmlElements.KEY;
+import static com.graphinout.reader.graphml.elements.GraphmlElements.LOCATOR;
+import static com.graphinout.reader.graphml.elements.GraphmlElements.NODE;
 
 /**
  * {@link XmlWriter}that normalizes XML by sorting attributes and stripping comments

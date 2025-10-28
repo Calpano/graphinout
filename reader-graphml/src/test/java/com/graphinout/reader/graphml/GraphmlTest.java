@@ -1,6 +1,5 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.graphml.Graphml2XmlWriter;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.xml.Xml2StringWriter;
 import com.graphinout.foundation.xml.XmlTool;

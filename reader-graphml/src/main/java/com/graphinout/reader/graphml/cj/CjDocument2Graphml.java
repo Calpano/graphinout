@@ -1,5 +1,6 @@
 package com.graphinout.reader.graphml.cj;
 
+import com.graphinout.base.cj.CjDataProperty;
 import com.graphinout.base.cj.CjType;
 import com.graphinout.base.cj.ICjEdgeType;
 import com.graphinout.base.cj.element.ICjData;
@@ -12,34 +13,33 @@ import com.graphinout.base.cj.element.ICjLabel;
 import com.graphinout.base.cj.element.ICjNode;
 import com.graphinout.base.cj.element.ICjPort;
 import com.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.graphinout.base.graphml.CjGraphmlMapping;
-import com.graphinout.base.graphml.CjGraphmlMapping.GraphmlDataElement;
-import com.graphinout.base.graphml.GraphmlDirection;
-import com.graphinout.base.graphml.GraphmlKeyForType;
-import com.graphinout.base.graphml.GraphmlParseInfo;
-import com.graphinout.base.graphml.GraphmlWriter;
-import com.graphinout.base.graphml.IGraphmlData;
-import com.graphinout.base.graphml.IGraphmlDefault;
-import com.graphinout.base.graphml.IGraphmlDescription;
-import com.graphinout.base.graphml.IGraphmlDocument;
-import com.graphinout.base.graphml.IGraphmlEdge;
-import com.graphinout.base.graphml.IGraphmlEndpoint;
-import com.graphinout.base.graphml.IGraphmlGraph;
-import com.graphinout.base.graphml.IGraphmlHyperEdge;
-import com.graphinout.base.graphml.IGraphmlKey;
-import com.graphinout.base.graphml.IGraphmlNode;
-import com.graphinout.base.graphml.IGraphmlPort;
-import com.graphinout.base.graphml.builder.GraphmlDataBuilder;
-import com.graphinout.base.graphml.builder.GraphmlDocumentBuilder;
-import com.graphinout.base.graphml.builder.GraphmlEdgeBuilder;
-import com.graphinout.base.graphml.builder.GraphmlElementBuilder;
-import com.graphinout.base.graphml.builder.GraphmlElementWithDescBuilder;
-import com.graphinout.base.graphml.builder.GraphmlEndpointBuilder;
-import com.graphinout.base.graphml.builder.GraphmlGraphBuilder;
-import com.graphinout.base.graphml.builder.GraphmlHyperEdgeBuilder;
-import com.graphinout.base.graphml.builder.GraphmlNodeBuilder;
-import com.graphinout.base.graphml.builder.GraphmlPortBuilder;
-import com.graphinout.base.graphml.impl.GraphmlData;
+import com.graphinout.reader.graphml.cj.CjGraphmlMapping.GraphmlDataElement;
+import com.graphinout.reader.graphml.elements.GraphmlDirection;
+import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
+import com.graphinout.reader.graphml.elements.GraphmlParseInfo;
+import com.graphinout.reader.graphml.GraphmlWriter;
+import com.graphinout.reader.graphml.elements.IGraphmlData;
+import com.graphinout.reader.graphml.elements.IGraphmlDefault;
+import com.graphinout.reader.graphml.elements.IGraphmlDescription;
+import com.graphinout.reader.graphml.elements.IGraphmlDocument;
+import com.graphinout.reader.graphml.elements.IGraphmlEdge;
+import com.graphinout.reader.graphml.elements.IGraphmlEndpoint;
+import com.graphinout.reader.graphml.elements.IGraphmlGraph;
+import com.graphinout.reader.graphml.elements.IGraphmlHyperEdge;
+import com.graphinout.reader.graphml.elements.IGraphmlKey;
+import com.graphinout.reader.graphml.elements.IGraphmlNode;
+import com.graphinout.reader.graphml.elements.IGraphmlPort;
+import com.graphinout.reader.graphml.elements.builder.GraphmlDataBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlDocumentBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlEdgeBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlElementBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlElementWithDescBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlEndpointBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlGraphBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlHyperEdgeBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlNodeBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlPortBuilder;
+import com.graphinout.reader.graphml.elements.impl.GraphmlData;
 import com.graphinout.foundation.json.value.IJsonValue;
 import com.graphinout.foundation.json.value.java.JavaJsonObject;
 import com.graphinout.foundation.util.Nullables;
@@ -76,7 +76,7 @@ public class CjDocument2Graphml {
         return CjData2GraphmlKeyData.findAllDatas((CjDocumentElement) cjDoc) //
                 .map(ICjData::jsonValue).filter(Objects::nonNull) //
                 .filter(IJsonValue::isObject).map(IJsonValue::asObject) //
-                .anyMatch(o -> o.hasProperty(CjGraphmlMapping.CjDataProperty.SyntheticNode.cjPropertyKey));
+                .anyMatch(o -> o.hasProperty(CjDataProperty.SyntheticNode.cjPropertyKey));
     }
 
     public static void writeToGraphml(ICjDocument cjDoc, GraphmlWriter graphmlWriter) throws IOException {
@@ -321,7 +321,7 @@ public class CjDocument2Graphml {
 
     private void writeData_CustomAttributes(ICjHasData cjHasData, GraphmlElementBuilder<?> graphmlElement) {
         cjHasData.onDataValue(json -> //
-                json.resolve(CjGraphmlMapping.CjDataProperty.CustomXmlAttributes.cjPropertyKey, xmlAttributes -> //
+                json.resolve(CjDataProperty.CustomXmlAttributes.cjPropertyKey, xmlAttributes -> //
                         xmlAttributes.onProperties((k, v) -> graphmlElement.attribute(k, v.asString()))));
     }
 
@@ -329,7 +329,7 @@ public class CjDocument2Graphml {
     private void writeData_Description(ICjHasData cjHasData, GraphmlElementWithDescBuilder<?> gHasDesc) {
         assert cjHasData != null;
         cjHasData.onDataValue(json -> //
-                json.resolve(CjGraphmlMapping.CjDataProperty.Description.cjPropertyKey, desc -> //
+                json.resolve(CjDataProperty.Description.cjPropertyKey, desc -> //
                         gHasDesc.desc(IGraphmlDescription.of(desc.toXmlFragmentString()))));
     }
 

@@ -1,21 +1,20 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.graphml.GraphmlElements;
-import com.graphinout.base.graphml.GraphmlWriter;
-import com.graphinout.base.graphml.IGraphmlElement;
-import com.graphinout.base.graphml.builder.GraphmlDataBuilder;
-import com.graphinout.base.graphml.builder.GraphmlDefaultBuilder;
-import com.graphinout.base.graphml.builder.GraphmlDescriptionBuilder;
-import com.graphinout.base.graphml.builder.GraphmlDocumentBuilder;
-import com.graphinout.base.graphml.builder.GraphmlElementBuilder;
-import com.graphinout.base.graphml.builder.GraphmlEndpointBuilder;
-import com.graphinout.base.graphml.builder.GraphmlGraphBuilder;
-import com.graphinout.base.graphml.builder.GraphmlHyperEdgeBuilder;
-import com.graphinout.base.graphml.builder.GraphmlKeyBuilder;
-import com.graphinout.base.graphml.builder.GraphmlLocatorBuilder;
-import com.graphinout.base.graphml.builder.GraphmlNodeBuilder;
-import com.graphinout.base.graphml.builder.GraphmlPortBuilder;
-import com.graphinout.base.graphml.builder.ILocatorBuilder;
+import com.graphinout.reader.graphml.elements.GraphmlElements;
+import com.graphinout.reader.graphml.elements.IGraphmlElement;
+import com.graphinout.reader.graphml.elements.builder.GraphmlDataBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlDefaultBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlDescriptionBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlDocumentBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlElementBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlEndpointBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlGraphBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlHyperEdgeBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlKeyBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlLocatorBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlNodeBuilder;
+import com.graphinout.reader.graphml.elements.builder.GraphmlPortBuilder;
+import com.graphinout.reader.graphml.elements.builder.ILocatorBuilder;
 import com.graphinout.foundation.xml.IXmlName;
 
 import javax.annotation.Nullable;

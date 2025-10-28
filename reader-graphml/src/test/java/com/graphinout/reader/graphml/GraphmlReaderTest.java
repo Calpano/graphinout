@@ -2,10 +2,7 @@ package com.graphinout.reader.graphml;
 
 import com.graphinout.base.cj.stream.api.DelegatingCjStream;
 import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.graphml.DelegatingGraphmlWriter;
-import com.graphinout.base.graphml.Graphml2XmlWriter;
-import com.graphinout.base.graphml.GraphmlWriter;
-import com.graphinout.base.validation.graphml.ValidatingGraphMlWriter;
+import com.graphinout.reader.graphml.validation.ValidatingGraphMlWriter;
 import com.graphinout.base.writer.ValidatingCjStream;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.ContentError;

@@ -17,7 +17,7 @@
     <logger name="org.mortbay.thread" level="ERROR"/>
     <!-- Set level to DEBUG or even TRACE -->
     <logger name="com.graphinout.reader.graphml.GraphmlSAXHandler" level="INFO" />
-    <logger name="com.graphinout.base.validation.graphml.ValidatingGraphMlWriter" level="INFO" />
+    <logger name="com.graphinout.reader.graphml.validation.graphml.graphml.ValidatingGraphMlWriter" level="INFO" />
 
     <!-- if higher than warn every other package (like Apache httpClient), logs too much -->
     <root level="debug">

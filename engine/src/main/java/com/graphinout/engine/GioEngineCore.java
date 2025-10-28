@@ -6,7 +6,7 @@ import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
 import com.graphinout.base.GioReader;
-import com.graphinout.base.graphml.Graphml2XmlWriter;
+import com.graphinout.reader.graphml.Graphml2XmlWriter;
 import com.graphinout.base.reader.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.json.json5.Json5Reader;

@@ -1,5 +1,6 @@
 package com.graphinout.reader.graphml.cj;
 
+import com.graphinout.base.cj.CjDataProperty;
 import com.graphinout.base.cj.element.CjDataSchema;
 import com.graphinout.base.cj.element.CjDocuments;
 import com.graphinout.base.cj.element.ICjData;
@@ -8,11 +9,10 @@ import com.graphinout.base.cj.element.ICjEdge;
 import com.graphinout.base.cj.element.ICjHasData;
 import com.graphinout.base.cj.element.ICjHasLabel;
 import com.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.graphinout.base.graphml.CjGraphmlMapping;
-import com.graphinout.base.graphml.GraphmlDataType;
-import com.graphinout.base.graphml.GraphmlKeyForType;
-import com.graphinout.base.graphml.IGraphmlKey;
-import com.graphinout.base.graphml.builder.GraphmlKeyBuilder;
+import com.graphinout.reader.graphml.elements.GraphmlDataType;
+import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
+import com.graphinout.reader.graphml.elements.IGraphmlKey;
+import com.graphinout.reader.graphml.elements.builder.GraphmlKeyBuilder;
 import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonValue;
 import com.graphinout.foundation.util.PowerStreams;
@@ -41,7 +41,7 @@ public class CjData2GraphmlKeyData {
         {
             ifPresentAccept(cjDoc.data(), ICjData::jsonValue, jsonValue -> {
                 if (jsonValue.isObject()) {
-                    IJsonValue keysObject = jsonValue.asObject().get(CjGraphmlMapping.CjDataProperty.Keys.cjPropertyKey);
+                    IJsonValue keysObject = jsonValue.asObject().get(CjDataProperty.Keys.cjPropertyKey);
                     if (keysObject == null || !keysObject.isObject()) return;
                     GraphmlSchema loadedSchema = GraphmlSchema.fromJson(keysObject);
                     loadedSchema.keys().forEach(graphmlSchema::addKey);

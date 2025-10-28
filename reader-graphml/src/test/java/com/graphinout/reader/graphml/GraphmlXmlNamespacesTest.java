@@ -1,8 +1,6 @@
 package com.graphinout.reader.graphml;
 
 import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.graphml.Graphml2XmlWriter;
-import com.graphinout.base.graphml.GraphmlWriter;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.ContentError;

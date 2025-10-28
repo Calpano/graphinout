@@ -3,7 +3,7 @@ package com.graphinout.reader.jgrapht;
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.ReaderTests;
 import com.graphinout.base.GioReader;
-import com.graphinout.base.validation.graphml.GraphmlValidator;
+import com.graphinout.base.validation.CjValidator;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.output.InMemoryOutputSink;
 import com.graphinout.foundation.output.OutputSink;
@@ -33,7 +33,7 @@ class Digraph6ReaderTest extends AbstractReaderTest {
             try {
                 ReaderTests.readResourceToSink(gioReader, resourcePath, outputSink);
                 String s = outputSink.getBufferAsUtf8String();
-                GraphmlValidator.isValidGraphml(SingleInputSource.of("parsed", s));
+                CjValidator.isValidCjCanonical( SingleInputSource.of("parsed", s));
                 log.info("Read:\n" + s);
             } catch (IOException e) {
                 throw new RuntimeException(e);

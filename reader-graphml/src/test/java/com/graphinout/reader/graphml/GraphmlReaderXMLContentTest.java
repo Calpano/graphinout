@@ -1,7 +1,5 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.graphml.Graphml2XmlWriter;
-import com.graphinout.base.graphml.GraphmlWriter;
 import com.graphinout.foundation.xml.Xml2StringWriter;
 import com.graphinout.foundation.xml.XmlTool;
 import org.apache.commons.io.IOUtils;
@@ -45,7 +43,7 @@ class GraphmlReaderXMLContentTest {
     @Test
     @Disabled("See issue #84")
     void html_Content_Tag_test() throws IOException {
-        Path inputSource = Paths.get("../base/src/test/resources/graphin/graphml/xml/HTML_Content_In_Data.xml");
+        Path inputSource = Paths.get("../base/src/test/resources/xml/graphml/HTML_Content_In_Data.xml");
         String result = parseGraphmlToString(inputSource);
         String expected = """
             <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">

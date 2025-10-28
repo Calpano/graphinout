@@ -1,6 +1,6 @@
 package com.graphinout.base.cj.element;
 
-import com.graphinout.base.graphml.CjGraphmlMapping;
+import com.graphinout.base.cj.CjDataProperty;
 import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonXmlString;
 
@@ -18,7 +18,7 @@ public interface ICjHasDataMutable extends ICjHasData {
     default void descriptionPlainText(IJsonFactory jsonFactory, String descriptionText) {
         dataMutable(data -> {
             IJsonXmlString value = IJsonXmlString.ofPlainString(jsonFactory, descriptionText);
-            data.addProperty(CjGraphmlMapping.CjDataProperty.Description.cjPropertyKey, value);
+            data.addProperty(CjDataProperty.Description.cjPropertyKey, value);
         });
     }
 
