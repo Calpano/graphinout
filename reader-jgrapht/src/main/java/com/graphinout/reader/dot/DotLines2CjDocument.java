@@ -1,33 +1,366 @@
 package com.graphinout.reader.dot;
 
+import com.graphinout.base.BaseOutput;
 import com.graphinout.base.cj.CjDirection;
-import com.graphinout.base.cj.element.*;
+import com.graphinout.base.cj.element.ICjGraphMutable;
+import com.graphinout.base.cj.element.ICjHasDataMutable;
+import com.graphinout.base.cj.element.ICjHasLabelMutable;
+import com.graphinout.base.cj.element.ICjNodeMutable;
 import com.graphinout.base.cj.element.impl.CjDocumentElement;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.text.ITextWriter;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
- * DOT → CJ parser.
- * Implements a practical subset of the DOT grammar sufficient for the bundled tests:
- * - [strict]? (di)graph [id]? '{' stmt_list '}'
- * - stmt: node stmt, edge chain, subgraph (named/anonymous), assignment (id '=' id), attr lists [k=v,...]
- * - default attribute statements (node[..], edge[..], graph[..]) and rank groups are parsed leniently but ignored
- * - comments (//, /* * /, #) are stripped
- *
+ * DOT → CJ parser. Implements a practical subset of the DOT grammar sufficient for the bundled tests:
+ * <li>[strict]? (di)graph [id]? '{' stmt_list '}'</li>
+ * <li>stmt: node stmt, edge chain, subgraph (named/anonymous), assignment (id '=' id), attr lists [k=v,...]</li>
+ * <li>default attribute statements (node[..], edge[..], graph[..]) and rank groups are parsed leniently TODO but
+ * ignored</li>
+ * <li>TODO comments (//, /* * /, #) are stripped</li>
+ * <p>
  * Mapping used:
- * - graph/subgraph → ICjGraph (nested)
- * - node → ICjNode
- * - edge chain → ICjEdge with ordered endpoints (direction left unspecified)
- * - attr_list → CjData on the corresponding element; label → ICjLabel (not duplicated in data)
- * - port → endpoint.port (compass point, if present, is ignored)
+ * <li>graph/subgraph → ICjGraph (nested)</li>
+ * <li>node → ICjNode</li>
+ * <li>edge chain → ICjEdge with ordered endpoints (TODO direction left unspecified)</li>
+ * <li>attr_list → CjData on the corresponding element; label → ICjLabel (not duplicated in data)</li>
+ * <li>port → endpoint.port (TODO compass point, if present, is ignored)</li>
  */
-public class DotLines2CjDocument implements ITextWriter {
+public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
 
-    private static final String DOT_TYPE_KEY = "dot.type"; // "graph" or "digraph"
+    private record TopLevel(boolean directed, @Nullable String id) {}
 
+    private record NodeRef(String nodeId, @Nullable String port) {}
+
+    private record Attr(String key, String value) {}
+
+    private static final class Parser {
+
+        private final String s;
+        private int pos = 0;
+
+        Parser(String s) {this.s = s;}
+
+        boolean consumeIf(char ch) {
+            skipWs();
+            if (!eof() && s.charAt(pos) == ch) {
+                pos++;
+                return true;
+            }
+            return false;
+        }
+
+        void consumeKeyword(String kw) {
+            String got = readKeyword();
+            if (!kw.equals(got)) throw
+                    new IllegalStateException("Expected keyword '" + kw + "' but got '" + got + "'");
+        }
+
+        void consumeOptionalSemicolon() {
+            skipWs();
+            if (!eof() && (s.charAt(pos) == ';' || s.charAt(pos) == ',')) pos++;
+        }
+
+        boolean eof() {return pos >= s.length();}
+
+        void expect(char ch) {
+            skipWs();
+            if (eof() || s.charAt(pos) != ch) throw new IllegalStateException("Expected '" + ch + "' at pos " + pos);
+            pos++;
+        }
+
+        boolean lookaheadEdgeOp() {
+            skipWs();
+            return match("->") || match("--");
+        }
+
+        boolean lookaheadKeyword(String kw) {
+            skipWs();
+            int save = pos;
+            String id = tryReadId();
+            boolean ok = kw.equals(id);
+            pos = save;
+            return ok;
+        }
+
+        boolean match(String t) {
+            return s.startsWith(t, pos);
+        }
+
+        TopLevel parseTopLevelHeader() {
+            skipWs();
+            // optional 'strict' ignored
+            if (lookaheadKeyword("strict")) readKeyword();
+            skipWs();
+            String kind = readKeyword();
+            boolean directed = switch (kind) {
+                case "digraph" -> true;
+                case "graph" -> false;
+                default -> throw new IllegalStateException("Expected graph/digraph, got " + kind);
+            };
+            String id = tryReadIdOrString();
+            return new TopLevel(directed, id);
+        }
+
+        char peek() {return s.charAt(pos);}
+
+        String readAngleString() {
+            skipWs();
+            if (s.charAt(pos) != '<') throw new IllegalStateException("Expected '<' at pos " + pos);
+            int depth = 0;
+            StringBuilder out = new StringBuilder();
+            while (!eof()) {
+                char c = s.charAt(pos++);
+                out.append(c);
+                if (c == '<') depth++;
+                else if (c == '>') {
+                    depth--;
+                    if (depth == 0) break;
+                }
+            }
+            return out.toString();
+        }
+
+        List<Attr> readAttrList(@Nullable List<Attr> reuse) {
+            skipWs();
+            if (peek() != '[') return Collections.emptyList();
+            expect('[');
+            List<Attr> list = reuse != null ? reuse : new ArrayList<>();
+            while (true) {
+                skipWs();
+                if (!eof() && s.charAt(pos) == ']') {
+                    pos++;
+                    break;
+                }
+                String key = readIdOrString();
+                skipWs();
+                if (consumeIf('=')) {
+                    String val = readIdOrString();
+                    list.add(new Attr(key, val));
+                } else {
+                    // attributes without value -> store as key=true
+                    list.add(new Attr(key, "true"));
+                }
+                skipWs();
+                if (consumeIf(',')) continue;
+            }
+            return list;
+        }
+
+        String readEdgeOp() {
+            skipWs();
+            if (match("->")) {
+                pos += 2;
+                return "->";
+            }
+            if (match("--")) {
+                pos += 2;
+                return "--";
+            }
+            throw new IllegalStateException("Expected edge operator at pos " + pos);
+        }
+
+        String readId() {
+            skipWs();
+            if (eof()) throw new IllegalStateException("Unexpected EOF reading id");
+            int start = pos;
+            char c = s.charAt(pos);
+            if (Character.isLetter(c) || c == '_') {
+                pos++;
+                while (!eof()) {
+                    char d = s.charAt(pos);
+                    if (Character.isLetterOrDigit(d) || d == '_') pos++;
+                    else break;
+                }
+                return s.substring(start, pos);
+            }
+            // number (integer or simple float like 1.5)
+            if (Character.isDigit(c)) {
+                pos++;
+                while (!eof() && Character.isDigit(s.charAt(pos))) pos++;
+                // optional decimal part
+                if (!eof() && s.charAt(pos) == '.') {
+                    int save = pos;
+                    pos++;
+                    if (!eof() && Character.isDigit(s.charAt(pos))) {
+                        while (!eof() && Character.isDigit(s.charAt(pos))) pos++;
+                    } else {
+                        // lone dot, revert
+                        pos = save;
+                    }
+                }
+                return s.substring(start, pos);
+            }
+            throw new IllegalStateException("Invalid id start at pos " + pos);
+        }
+
+        String readIdOrString() {
+            skipWs();
+            if (!eof()) {
+                char c = s.charAt(pos);
+                if (c == '"') {
+                    return readQuotedString();
+                } else if (c == '<') {
+                    return readAngleString();
+                }
+            }
+            return readId();
+        }
+
+        String readKeyword() {
+            String id = readId();
+            return id;
+        }
+
+        String readQuotedString() {
+            skipWs();
+            if (s.charAt(pos) != '"') throw new IllegalStateException("Expected '\\\"' at pos " + pos);
+            pos++;
+            StringBuilder out = new StringBuilder();
+            while (!eof()) {
+                char c = s.charAt(pos++);
+                if (c == '"') break;
+                if (c == '\\' && !eof()) {
+                    char n = s.charAt(pos++);
+                    out.append(n);
+                } else {
+                    out.append(c);
+                }
+            }
+            return out.toString();
+        }
+
+        void skipWs() {
+            while (!eof()) {
+                char c = s.charAt(pos);
+                if (Character.isWhitespace(c)) {
+                    pos++;
+                    continue;
+                }
+                break;
+            }
+        }
+
+        @Nullable
+        String tryReadId() {
+            int save = pos;
+            try {
+                String id = readId();
+                return id;
+            } catch (Exception e) {
+                pos = save;
+                return null;
+            }
+        }
+
+        @Nullable
+        String tryReadIdOrString() {
+            skipWs();
+            if (eof()) return null;
+            char c0 = s.charAt(pos);
+            if (c0 == '"') return readQuotedString();
+            if (c0 == '<') return readAngleString();
+            int save = pos;
+            try {
+                return readId();
+            } catch (Exception e) {
+                pos = save;
+                return null;
+            }
+        }
+
+    }
+    /** "graph" or "digraph" */
+    private static final String DOT_TYPE_KEY = "dot.type";
     private final StringBuilder buf = new StringBuilder();
+    private final CjDocumentElement cjDocument;
+    private boolean firstLine = true;
+
+    public DotLines2CjDocument(@Nullable Consumer<ContentError> contentErrorHandler) {
+        super.setContentErrorHandler(contentErrorHandler);
+        this.cjDocument = new CjDocumentElement();
+    }
+
+    private static void applyAttrsToHasDataAndLabel(List<Attr> attrs, ICjHasDataMutable hasData) {
+        // if element supports label, set from 'label' attribute
+        ICjHasLabelMutable labelTarget = (hasData instanceof ICjHasLabelMutable) ? (ICjHasLabelMutable) hasData : null;
+        boolean isGraph = hasData instanceof ICjGraphMutable;
+        for (Attr a : attrs) {
+            if ("label".equalsIgnoreCase(a.key)) {
+                if (isGraph) {
+                    // For graphs, keep label as data attribute so emitter prints graph [label=...]
+                    hasData.dataMutable(d -> d.addProperty(a.key, a.value));
+                } else if (labelTarget != null) {
+                    String val = a.value;
+                    labelTarget.setLabel(l -> l.addEntry(le -> le.value(val)));
+                } else {
+                    hasData.dataMutable(d -> d.addProperty(a.key, a.value));
+                }
+            } else {
+                hasData.dataMutable(d -> d.addProperty(a.key, a.value));
+            }
+        }
+    }
+
+    private static ICjNodeMutable createNode(ICjGraphMutable g, String id) {
+        final ICjNodeMutable[] ref = new ICjNodeMutable[1];
+        g.addNode(n -> {
+            n.id(id);
+            ref[0] = n;
+        });
+        return ref[0];
+    }
+
+    private static ICjGraphMutable createSubgraph(ICjGraphMutable parent, @Nullable String id) {
+        final ICjGraphMutable[] ref = new ICjGraphMutable[1];
+        parent.addGraph(gg -> {
+            if (id != null) gg.id(id);
+            ref[0] = gg;
+        });
+        return ref[0];
+    }
+
+    private static String stripComments(String s) {
+        StringBuilder out = new StringBuilder();
+        int i = 0;
+        int n = s.length();
+        while (i < n) {
+            char c = s.charAt(i);
+            if (c == '/' && i + 1 < n && s.charAt(i + 1) == '/') {
+                // // comment
+                i += 2;
+                while (i < n && s.charAt(i) != '\n') i++;
+            } else if (c == '/' && i + 1 < n && s.charAt(i + 1) == '*') {
+                // /* */ comment
+                i += 2;
+                while (i + 1 < n && !(s.charAt(i) == '*' && s.charAt(i + 1) == '/')) i++;
+                i = Math.min(n, i + 2);
+            } else if (c == '#') {
+                // # comment to end of line
+                while (i < n && s.charAt(i) != '\n') i++;
+            } else {
+                out.append(c);
+                i++;
+            }
+        }
+        return out.toString();
+    }
+
+    @Override
+    public void line(String line) {
+        if (!firstLine) {
+            buf.append('\n');
+        }
+        firstLine = false;
+        buf.append(line);
+    }
 
     public CjDocumentElement resultDocument() {
         String dot = buf.toString();
@@ -154,43 +487,6 @@ public class DotLines2CjDocument implements ITextWriter {
         }
     }
 
-    private static void applyAttrsToHasDataAndLabel(List<Attr> attrs, ICjHasDataMutable hasData) {
-        // if element supports label, set from 'label' attribute
-        ICjHasLabelMutable labelTarget = (hasData instanceof ICjHasLabelMutable) ? (ICjHasLabelMutable) hasData : null;
-        boolean isGraph = hasData instanceof ICjGraphMutable;
-        for (Attr a : attrs) {
-            if ("label".equalsIgnoreCase(a.key)) {
-                if (isGraph) {
-                    // For graphs, keep label as data attribute so emitter prints graph [label=...]
-                    hasData.dataMutable(d -> d.addProperty(a.key, a.value));
-                } else if (labelTarget != null) {
-                    String val = a.value;
-                    labelTarget.setLabel(l -> l.addEntry(le -> le.value(val)));
-                } else {
-                    hasData.dataMutable(d -> d.addProperty(a.key, a.value));
-                }
-            } else {
-                hasData.dataMutable(d -> d.addProperty(a.key, a.value));
-            }
-        }
-    }
-
-    private static ICjNodeMutable createNode(ICjGraphMutable g, String id) {
-        final ICjNodeMutable[] ref = new ICjNodeMutable[1];
-        g.addNode(n -> { n.id(id); ref[0] = n; });
-        return ref[0];
-    }
-
-    private static ICjGraphMutable createSubgraph(ICjGraphMutable parent, @Nullable String id) {
-        final ICjGraphMutable[] ref = new ICjGraphMutable[1];
-        parent.addGraph(gg -> { if (id != null) gg.id(id); ref[0] = gg; });
-        return ref[0];
-    }
-
-    private record TopLevel(boolean directed, @Nullable String id) {}
-    private record NodeRef(String nodeId, @Nullable String port) {}
-    private record Attr(String key, String value) {}
-
     private NodeRef readNodeRef(Parser p) {
         String id = p.readIdOrString();
         String port = null;
@@ -204,238 +500,6 @@ public class DotLines2CjDocument implements ITextWriter {
             }
         }
         return new NodeRef(id, port);
-    }
-
-    private static String stripComments(String s) {
-        StringBuilder out = new StringBuilder();
-        int i = 0; int n = s.length();
-        while (i < n) {
-            char c = s.charAt(i);
-            if (c == '/' && i + 1 < n && s.charAt(i + 1) == '/') {
-                // // comment
-                i += 2;
-                while (i < n && s.charAt(i) != '\n') i++;
-            } else if (c == '/' && i + 1 < n && s.charAt(i + 1) == '*') {
-                // /* */ comment
-                i += 2;
-                while (i + 1 < n && !(s.charAt(i) == '*' && s.charAt(i + 1) == '/')) i++;
-                i = Math.min(n, i + 2);
-            } else if (c == '#') {
-                // # comment to end of line
-                while (i < n && s.charAt(i) != '\n') i++;
-            } else {
-                out.append(c);
-                i++;
-            }
-        }
-        return out.toString();
-    }
-
-    private static final class Parser {
-        private final String s;
-        private int pos = 0;
-        Parser(String s) { this.s = s; }
-        boolean eof() { return pos >= s.length(); }
-        char peek() { return s.charAt(pos); }
-        void skipWs() {
-            while (!eof()) {
-                char c = s.charAt(pos);
-                if (Character.isWhitespace(c)) { pos++; continue; }
-                break;
-            }
-        }
-        void expect(char ch) {
-            skipWs();
-            if (eof() || s.charAt(pos) != ch) throw new IllegalStateException("Expected '" + ch + "' at pos " + pos);
-            pos++;
-        }
-        boolean consumeIf(char ch) {
-            skipWs();
-            if (!eof() && s.charAt(pos) == ch) { pos++; return true; }
-            return false;
-        }
-        void consumeOptionalSemicolon() {
-            skipWs();
-            if (!eof() && (s.charAt(pos) == ';' || s.charAt(pos) == ',')) pos++;
-        }
-        boolean lookaheadKeyword(String kw) {
-            skipWs();
-            int save = pos;
-            String id = tryReadId();
-            boolean ok = kw.equals(id);
-            pos = save;
-            return ok;
-        }
-        void consumeKeyword(String kw) {
-            String got = readKeyword();
-            if (!kw.equals(got)) throw new IllegalStateException("Expected keyword '" + kw + "' but got '" + got + "'");
-        }
-        String readKeyword() {
-            String id = readId();
-            return id;
-        }
-        String readEdgeOp() {
-            skipWs();
-            if (match("->")) { pos += 2; return "->"; }
-            if (match("--")) { pos += 2; return "--"; }
-            throw new IllegalStateException("Expected edge operator at pos " + pos);
-        }
-        boolean lookaheadEdgeOp() {
-            skipWs();
-            return match("->") || match("--");
-        }
-        boolean match(String t) {
-            return s.startsWith(t, pos);
-        }
-        TopLevel parseTopLevelHeader() {
-            skipWs();
-            // optional 'strict' ignored
-            if (lookaheadKeyword("strict")) readKeyword();
-            skipWs();
-            String kind = readKeyword();
-            boolean directed = switch (kind) {
-                case "digraph" -> true; case "graph" -> false; default -> throw new IllegalStateException("Expected graph/digraph, got " + kind);
-            };
-            String id = tryReadIdOrString();
-            return new TopLevel(directed, id);
-        }
-        List<Attr> readAttrList(@Nullable List<Attr> reuse) {
-            skipWs();
-            if (peek() != '[') return Collections.emptyList();
-            expect('[');
-            List<Attr> list = reuse != null ? reuse : new ArrayList<>();
-            while (true) {
-                skipWs();
-                if (!eof() && s.charAt(pos) == ']') { pos++; break; }
-                String key = readIdOrString();
-                skipWs();
-                if (consumeIf('=')) {
-                    String val = readIdOrString();
-                    list.add(new Attr(key, val));
-                } else {
-                    // attributes without value -> store as key=true
-                    list.add(new Attr(key, "true"));
-                }
-                skipWs();
-                if (consumeIf(',')) continue;
-            }
-            return list;
-        }
-        String readId() {
-            skipWs();
-            if (eof()) throw new IllegalStateException("Unexpected EOF reading id");
-            int start = pos;
-            char c = s.charAt(pos);
-            if (Character.isLetter(c) || c == '_' ) {
-                pos++;
-                while (!eof()) {
-                    char d = s.charAt(pos);
-                    if (Character.isLetterOrDigit(d) || d == '_') pos++; else break;
-                }
-                return s.substring(start, pos);
-            }
-            // number (integer or simple float like 1.5)
-            if (Character.isDigit(c)) {
-                pos++;
-                while (!eof() && Character.isDigit(s.charAt(pos))) pos++;
-                // optional decimal part
-                if (!eof() && s.charAt(pos) == '.') {
-                    int save = pos;
-                    pos++;
-                    if (!eof() && Character.isDigit(s.charAt(pos))) {
-                        while (!eof() && Character.isDigit(s.charAt(pos))) pos++;
-                    } else {
-                        // lone dot, revert
-                        pos = save;
-                    }
-                }
-                return s.substring(start, pos);
-            }
-            throw new IllegalStateException("Invalid id start at pos " + pos);
-        }
-        @Nullable String tryReadId() {
-            int save = pos;
-            try {
-                String id = readId();
-                return id;
-            } catch (Exception e) {
-                pos = save; return null;
-            }
-        }
-        String readIdOrString() {
-            skipWs();
-            if (!eof()) {
-                char c = s.charAt(pos);
-                if (c == '"') {
-                    return readQuotedString();
-                } else if (c == '<') {
-                    return readAngleString();
-                }
-            }
-            return readId();
-        }
-        @Nullable String tryReadIdOrString() {
-            skipWs();
-            if (eof()) return null;
-            char c0 = s.charAt(pos);
-            if (c0 == '"') return readQuotedString();
-            if (c0 == '<') return readAngleString();
-            int save = pos;
-            try {
-                return readId();
-            } catch (Exception e) {
-                pos = save; return null;
-            }
-        }
-        String readQuotedString() {
-            skipWs();
-            if (s.charAt(pos) != '"') throw new IllegalStateException("Expected '\\\"' at pos " + pos);
-            pos++;
-            StringBuilder out = new StringBuilder();
-            while (!eof()) {
-                char c = s.charAt(pos++);
-                if (c == '"') break;
-                if (c == '\\' && !eof()) {
-                    char n = s.charAt(pos++);
-                    out.append(n);
-                } else {
-                    out.append(c);
-                }
-            }
-            return out.toString();
-        }
-        String readAngleString() {
-            skipWs();
-            if (s.charAt(pos) != '<') throw new IllegalStateException("Expected '<' at pos " + pos);
-            int depth = 0;
-            StringBuilder out = new StringBuilder();
-            while (!eof()) {
-                char c = s.charAt(pos++);
-                out.append(c);
-                if (c == '<') depth++;
-                else if (c == '>') {
-                    depth--;
-                    if (depth == 0) break;
-                }
-            }
-            return out.toString();
-        }
-    }
-
-    private final CjDocumentElement cjDocument;
-    private boolean firstLine = true;
-
-    public DotLines2CjDocument() {
-        this.cjDocument = new CjDocumentElement();
-    }
-
-    @Override
-    public void line(String line) {
-        if (!firstLine) {
-            buf.append('\n');
-        }
-        firstLine = false;
-        buf.append(line);
     }
 
 }

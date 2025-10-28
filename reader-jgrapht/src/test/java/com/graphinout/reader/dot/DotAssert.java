@@ -18,7 +18,7 @@ public class DotAssert {
      */
     public static String normalizeDot(String dot) {
         // Parse DOT → CJ
-        DotLines2CjDocument parser = new DotLines2CjDocument();
+        DotLines2CjDocument parser = new DotLines2CjDocument(null);
         TextReader.read(dot, parser);
         ICjDocument cj = parser.resultDocument();
         // Emit CJ → DOT (structured)

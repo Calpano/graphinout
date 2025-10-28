@@ -3,6 +3,7 @@ package com.graphinout.reader.dot;
 import com.graphinout.base.cj.CjAssert;
 import com.graphinout.base.cj.element.CjDocuments;
 import com.graphinout.base.cj.element.ICjDocument;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
 import com.graphinout.foundation.text.TextReader;
 import com.graphinout.foundation.text.TextWriterOnStringBuilder;
@@ -13,6 +14,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -28,8 +31,9 @@ class DotCjTest {
 
         // DOT -> CJ
         ICjDocument cjDoc1;
+        List<ContentError> contentErrors1 = new ArrayList<>();
         {
-            DotLines2CjDocument dotLines2CjDocument = new DotLines2CjDocument();
+            DotLines2CjDocument dotLines2CjDocument = new DotLines2CjDocument(contentErrors1::add);
             TextReader.read(dotText1, dotLines2CjDocument);
             cjDoc1 = dotLines2CjDocument.resultDocument();
         }
@@ -53,8 +57,9 @@ class DotCjTest {
 
         // DOT -> CJ
         ICjDocument cjDoc1;
+        List<ContentError> contentErrors1 = new ArrayList<>();
         {
-            DotLines2CjDocument dotLines2CjDocument = new DotLines2CjDocument();
+            DotLines2CjDocument dotLines2CjDocument = new DotLines2CjDocument(contentErrors1::add);
             TextReader.read(dotText1, dotLines2CjDocument);
             cjDoc1 = dotLines2CjDocument.resultDocument();
         }
@@ -63,8 +68,9 @@ class DotCjTest {
         CjDocument2Dot.toDotSyntax(cjDoc1, textWriterOnStringBuilder);
         String dotText2 = textWriterOnStringBuilder.toString();
         ICjDocument cjDoc2;
+        List<ContentError> contentErrors2 = new ArrayList<>();
         {
-            DotLines2CjDocument dotLines2CjDocument = new DotLines2CjDocument();
+            DotLines2CjDocument dotLines2CjDocument = new DotLines2CjDocument(contentErrors2::add);
             TextReader.read(dotText2, dotLines2CjDocument);
             cjDoc2 = dotLines2CjDocument.resultDocument();
         }
