@@ -1,0 +1,22 @@
+= DOT Syntax
+
+https://graphviz.org/doc/info/lang.html
+
+== Tools
+https://www.devtoolsdaily.com/graphviz
+
+== Mapping from DOT to CJ
+
+|===
+| DOT | CJ
+
+| graph | ICjGraph
+| node | ICjNode
+| edge | ICjEdge
+| attr_list | CjData of corresponding graph/node/edge
+| port | ICjPort
+| compass_pt | ICjPort.name
+| subgraph | ICjGraph (nested)
+|===
+
+== Example
