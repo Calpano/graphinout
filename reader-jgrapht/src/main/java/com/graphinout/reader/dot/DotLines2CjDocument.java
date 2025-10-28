@@ -48,6 +48,8 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
 
         Parser(String s) {this.s = s;}
 
+        int position() { return pos; }
+
         boolean consumeIf(char ch) {
             skipWs();
             if (!eof() && s.charAt(pos) == ch) {
@@ -148,8 +150,13 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                     // attributes without value -> store as key=true
                     list.add(new Attr(key, "true"));
                 }
-                skipWs();
-                if (consumeIf(',')) continue;
+                // separators: comma or semicolon, optionally mixed and with whitespace/newlines
+                while (true) {
+                    skipWs();
+                    if (consumeIf(',')) continue;
+                    if (consumeIf(';')) continue;
+                    break;
+                }
             }
             return list;
         }
@@ -172,6 +179,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             if (eof()) throw new IllegalStateException("Unexpected EOF reading id");
             int start = pos;
             char c = s.charAt(pos);
+            // alphanumeric id starting with letter or underscore
             if (Character.isLetter(c) || c == '_') {
                 pos++;
                 while (!eof()) {
@@ -181,20 +189,30 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 }
                 return s.substring(start, pos);
             }
-            // number (integer or simple float like 1.5)
-            if (Character.isDigit(c)) {
+            // optional sign for numeric ids
+            boolean hadSign = false;
+            if ((c == '+' || c == '-')) {
+                hadSign = true;
                 pos++;
-                while (!eof() && Character.isDigit(s.charAt(pos))) pos++;
-                // optional decimal part
-                if (!eof() && s.charAt(pos) == '.') {
-                    int save = pos;
+                if (eof()) throw new IllegalStateException("Unexpected EOF after sign reading number");
+                c = s.charAt(pos);
+            }
+            // number (integer or float like 1.5, .5, 1.)
+            if (Character.isDigit(c) || c == '.') {
+                boolean sawDigit = false;
+                if (Character.isDigit(c)) {
+                    sawDigit = true;
                     pos++;
-                    if (!eof() && Character.isDigit(s.charAt(pos))) {
-                        while (!eof() && Character.isDigit(s.charAt(pos))) pos++;
-                    } else {
-                        // lone dot, revert
-                        pos = save;
-                    }
+                    while (!eof() && Character.isDigit(s.charAt(pos))) pos++;
+                }
+                // optional decimal point
+                if (!eof() && s.charAt(pos) == '.') {
+                    pos++;
+                    while (!eof() && Character.isDigit(s.charAt(pos))) { pos++; sawDigit = true; }
+                }
+                if (!sawDigit) {
+                    // we had "." but no digits around -> not a valid number
+                    throw new IllegalStateException("Invalid number starting at pos " + start);
                 }
                 return s.substring(start, pos);
             }
@@ -240,8 +258,24 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         void skipWs() {
             while (!eof()) {
                 char c = s.charAt(pos);
-                if (Character.isWhitespace(c)) {
-                    pos++;
+                // whitespace
+                if (Character.isWhitespace(c)) { pos++; continue; }
+                // line comment //...
+                if (c == '/' && pos + 1 < s.length() && s.charAt(pos + 1) == '/') {
+                    pos += 2;
+                    while (!eof() && s.charAt(pos) != '\n') pos++;
+                    continue;
+                }
+                // block comment /* ... */
+                if (c == '/' && pos + 1 < s.length() && s.charAt(pos + 1) == '*') {
+                    pos += 2;
+                    while (pos + 1 < s.length() && !(s.charAt(pos) == '*' && s.charAt(pos + 1) == '/')) pos++;
+                    if (pos + 1 < s.length()) pos += 2; // consume */
+                    continue;
+                }
+                // hash comment to EOL
+                if (c == '#') {
+                    while (!eof() && s.charAt(pos) != '\n') pos++;
                     continue;
                 }
                 break;
@@ -280,8 +314,10 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
     /** "graph" or "digraph" */
     private static final String DOT_TYPE_KEY = "dot.type";
     private final StringBuilder buf = new StringBuilder();
+    private final List<Integer> lineStarts = new ArrayList<>(); // 0-based start index of each input line in buf
     private final CjDocumentElement cjDocument;
     private boolean firstLine = true;
+    private Parser currentParser = null;
 
     public DotLines2CjDocument(@Nullable Consumer<ContentError> contentErrorHandler) {
         super.setContentErrorHandler(contentErrorHandler);
@@ -358,25 +394,51 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         if (!firstLine) {
             buf.append('\n');
         }
+        // record start offset for this incoming line
+        lineStarts.add(buf.length());
         firstLine = false;
         buf.append(line);
     }
 
+    private com.graphinout.base.reader.Location mapPosToLocation(int pos) {
+        if (lineStarts.isEmpty()) return com.graphinout.base.reader.Location.UNAVAILABLE;
+        int lineIdx = 0;
+        for (int i = 0; i < lineStarts.size(); i++) {
+            int start = lineStarts.get(i);
+            if (start <= pos) lineIdx = i; else break;
+        }
+        int start = lineStarts.get(lineIdx);
+        int col = (pos - start) + 1; // 1-based
+        int lineNo = lineIdx + 1; // 1-based
+        return new com.graphinout.base.reader.Location(lineNo, col);
+    }
+
     public CjDocumentElement resultDocument() {
         String dot = buf.toString();
-        Parser p = new Parser(stripComments(dot));
-        TopLevel tl = p.parseTopLevelHeader();
-        // Build document with a single top-level graph
-        cjDocument.addGraph((ICjGraphMutable g) -> {
-            if (tl.id != null) g.id(tl.id);
-            g.dataMutable(d -> d.addProperty(DOT_TYPE_KEY, tl.directed ? "digraph" : "graph"));
-            // parse graph body
-            p.expect('{');
-            parseStatements(p, g, tl.directed);
-            p.skipWs();
-            p.expect('}');
-        });
-        return cjDocument;
+        Parser p = new Parser(dot);
+        this.currentParser = p;
+        // install dynamic locator tied to current parser position
+        super.setLocator(() -> mapPosToLocation(currentParser != null ? currentParser.position() : dot.length()));
+        try {
+            TopLevel tl = p.parseTopLevelHeader();
+            // Build document with a single top-level graph
+            cjDocument.addGraph((ICjGraphMutable g) -> {
+                if (tl.id != null) g.id(tl.id);
+                g.dataMutable(d -> d.addProperty(DOT_TYPE_KEY, tl.directed ? "digraph" : "graph"));
+                // parse graph body
+                p.expect('{');
+                parseStatements(p, g, tl.directed);
+                p.skipWs();
+                p.expect('}');
+            });
+            return cjDocument;
+        } catch (RuntimeException ex) {
+            // Emit a content error with precise location
+            int pos = currentParser != null ? currentParser.position() : dot.length();
+            com.graphinout.base.reader.Location loc = mapPosToLocation(pos);
+            String msg = ex.getMessage() == null ? (ex.getClass().getSimpleName()) : ex.getMessage();
+            throw sendContentError_Error("DOT parse error at " + loc + ": " + msg, ex);
+        }
     }
 
     private void parseStatements(Parser p, ICjGraphMutable g, boolean directed) {
@@ -448,38 +510,64 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             NodeRef first = readNodeRef(p);
             p.skipWs();
             if (p.lookaheadEdgeOp()) {
-                // Edge chain
-                List<NodeRef> chain = new ArrayList<>();
-                chain.add(first);
-                String op = p.readEdgeOp(); // ignore value, we know graph directedness
+                // Edge statement: parse as a sequence of segments, each segment may be a single nodeRef or a {group}
+                List<List<NodeRef>> segments = new ArrayList<>();
+                segments.add(List.of(first));
+                String op = p.readEdgeOp(); // '--' or '->' (we rely on top-level directed flag)
                 while (true) {
-                    NodeRef next = readNodeRef(p);
-                    chain.add(next);
+                    List<NodeRef> nextSeg = readNodeRefOrGroup(p);
+                    segments.add(nextSeg);
                     p.skipWs();
-                    if (p.lookaheadEdgeOp()) {
-                        p.readEdgeOp();
+                    if (p.lookaheadEdgeOp()) { p.readEdgeOp(); continue; }
+                    break;
+                }
+                // zero or more attr lists following
+                List<Attr> attrs = new ArrayList<>();
+                while (true) {
+                    p.skipWs();
+                    if (!p.eof() && p.peek() == '[') {
+                        attrs.addAll(p.readAttrList(null));
                         continue;
                     }
                     break;
                 }
-                // optional attr list
-                List<Attr> attrs = p.peek() == '[' ? p.readAttrList(null) : Collections.emptyList();
-                // build one CJ edge with endpoints in order
-                g.addEdge(e -> {
-                    for (NodeRef nr : chain) {
-                        e.addEndpoint(ep -> {
-                            ep.node(nr.nodeId);
-                            if (nr.port != null) ep.port(nr.port);
-                            // leave direction as UNDIR; digraph is indicated at graph level
-                            ep.direction(CjDirection.UNDIR);
-                        });
+                // Emit edges for each adjacent pair of segments (DOT semantics)
+                for (int i = 0; i + 1 < segments.size(); i++) {
+                    List<NodeRef> left = segments.get(i);
+                    List<NodeRef> right = segments.get(i + 1);
+                    for (NodeRef a : left) {
+                        for (NodeRef b : right) {
+                            // ensure nodes exist
+                            nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
+                            nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
+                            g.addEdge(e -> {
+                                e.addEndpoint(ep -> {
+                                    ep.node(a.nodeId);
+                                    if (a.port != null) ep.port(a.port);
+                                    ep.direction(CjDirection.UNDIR);
+                                });
+                                e.addEndpoint(ep -> {
+                                    ep.node(b.nodeId);
+                                    if (b.port != null) ep.port(b.port);
+                                    ep.direction(CjDirection.UNDIR);
+                                });
+                                applyAttrsToHasDataAndLabel(attrs, e);
+                            });
+                        }
                     }
-                    applyAttrsToHasDataAndLabel(attrs, e);
-                });
+                }
                 p.consumeOptionalSemicolon();
             } else {
-                // Node statement with optional attr list
-                List<Attr> attrs = p.peek() == '[' ? p.readAttrList(null) : Collections.emptyList();
+                // Node statement with optional multiple attr lists
+                List<Attr> attrs = new ArrayList<>();
+                while (true) {
+                    p.skipWs();
+                    if (!p.eof() && p.peek() == '[') {
+                        attrs.addAll(p.readAttrList(null));
+                        continue;
+                    }
+                    break;
+                }
                 ICjNodeMutable node = nodesById.computeIfAbsent(first.nodeId, id -> createNode(g, id));
                 applyAttrsToHasDataAndLabel(attrs, node);
                 p.consumeOptionalSemicolon();
@@ -500,6 +588,32 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             }
         }
         return new NodeRef(id, port);
+    }
+
+    /** Read either a single nodeRef or a group { a, b, c } returning a list of NodeRefs. */
+    private List<NodeRef> readNodeRefOrGroup(Parser p) {
+        p.skipWs();
+        if (!p.eof() && p.peek() == '{') {
+            // group
+            p.expect('{');
+            List<NodeRef> list = new ArrayList<>();
+            while (true) {
+                p.skipWs();
+                if (!p.eof() && p.peek() == '}') { p.expect('}'); break; }
+                // allow empty segments to be skipped
+                NodeRef nr = readNodeRef(p);
+                list.add(nr);
+                // optional separators: comma or semicolon; also allow plain whitespace between ids
+                while (true) {
+                    p.skipWs();
+                    if (p.consumeIf(',')) continue;
+                    if (p.consumeIf(';')) continue;
+                    break;
+                }
+            }
+            return list;
+        }
+        return List.of(readNodeRef(p));
     }
 
 }
