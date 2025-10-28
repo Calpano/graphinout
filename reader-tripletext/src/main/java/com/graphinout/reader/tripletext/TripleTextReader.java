@@ -1,5 +1,6 @@
 package com.graphinout.reader.tripletext;
 
+import com.graphinout.base.GioReader;
 import com.graphinout.base.cj.CjDirection;
 import com.graphinout.base.cj.CjEdgeTypeSource;
 import com.graphinout.base.cj.ICjEdgeType;
@@ -9,9 +10,8 @@ import com.graphinout.base.cj.element.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
-import com.graphinout.base.GioReader;
-import com.graphinout.foundation.input.ContentError;
 import com.graphinout.base.reader.GioFileFormat;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 
@@ -26,7 +26,7 @@ import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
 public class TripleTextReader implements GioReader {
 
     public static final String FORMAT_ID = "tripletext";
-    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "TripleText Format", ".tt", "triple.txt", ".tripletext");
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "TripleText Format", ".tt.txt", ".tt", "triple.txt", ".tripletext");
     private Consumer<ContentError> errorHandler;
 
     public static ICjDocument parseToCjDocument(SingleInputSource input) throws IOException {
@@ -35,11 +35,6 @@ public class TripleTextReader implements GioReader {
         CjStream2CjWriter streamToWriter = new CjStream2CjWriter(elementsWriter);
         reader.read(input, streamToWriter);
         return elementsWriter.resultDoc();
-    }
-
-    @Override
-    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
-        this.errorHandler = errorHandler;
     }
 
     @Override
@@ -73,8 +68,8 @@ public class TripleTextReader implements GioReader {
             nodeChunk.id(node.id);
 
             // TODO make simpkler to do this
-            ifPresentAccept( node.label, label->      {
-                nodeChunk.setLabel(l-> l.addEntry(entry -> {
+            ifPresentAccept(node.label, label -> {
+                nodeChunk.setLabel(l -> l.addEntry(entry -> {
                     entry.value(label);
                     // we dont know the language
                 }));
@@ -114,6 +109,11 @@ public class TripleTextReader implements GioReader {
 
         writer.graphEnd();
         writer.documentEnd();
+    }
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
 }

@@ -41,7 +41,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class GraphmlReader extends BaseOutput implements GioReader {
 
     public static final String FORMAT_ID = "graphml";
-    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "GraphML", ".graphml", ".graphml.xml");
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "GraphML",  ".graphml.xml", ".graphml");
 
     private static final Logger log = getLogger(GraphmlReader.class);
     /**

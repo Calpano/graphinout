@@ -11,10 +11,13 @@ import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 import com.networknt.schema.regex.JoniRegularExpressionFactory;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class CjValidator {
 
@@ -44,7 +47,7 @@ public class CjValidator {
         JsonSchema schema = jsonSchemaFactory.getSchema(SchemaLocation.of(Cj.SCHEMA_URL), config);
 
         // read input source to string
-        String json = IOUtils.toString(inputSource.asSingle().inputStream(), StandardCharsets.UTF_8);
+        String json = inputSource.asSingle().getContentAsUtf8String();
 
         Set<ValidationMessage> assertions = schema.validate(json, InputFormat.JSON, executionContext -> {
             // By default since Draft 2019-09 the format keyword only generates annotations and not assertions
@@ -52,6 +55,7 @@ public class CjValidator {
         });
 
         if(!assertions.isEmpty()) {
+            log.warn("Failed to validate:\n----\n"+json+"\n----\n");
             for (ValidationMessage assertion : assertions) {
                 System.err.println(assertion);
             }
@@ -59,5 +63,7 @@ public class CjValidator {
 
         return assertions.isEmpty();
     }
+
+    private static final Logger log = getLogger(CjValidator.class);
 
 }

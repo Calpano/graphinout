@@ -1,11 +1,11 @@
 package com.graphinout.reader.ocif;
 
+import com.graphinout.base.GioReader;
 import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.element.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.GioReader;
-import com.graphinout.foundation.input.ContentError;
 import com.graphinout.base.reader.GioFileFormat;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.json.path.IJsonContainerNavigationStep;
@@ -36,15 +36,10 @@ import static java.util.Objects.requireNonNull;
 public class OcifReader implements GioReader {
 
     public static final String FORMAT_ID = "ocif";
-    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "OCIF Open Canvas Interchange Format (OCIF v0.6)", ".ocif", ".ocif.json");
+    public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "OCIF Open Canvas Interchange Format (OCIF v0.6)", ".ocif.json", ".ocif");
     private static final Logger log = LoggerFactory.getLogger(OcifReader.class);
 
     private @Nullable Consumer<ContentError> errorHandler;
-
-    @Override
-    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
-        this.errorHandler = errorHandler;
-    }
 
     @Override
     public GioFileFormat fileFormat() {
@@ -193,6 +188,11 @@ public class OcifReader implements GioReader {
 
         cjStream.graphEnd();
         cjStream.documentEnd();
+    }
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.graphinout.reader.jgrapht.dot;
+package com.graphinout.reader.dot;
 
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.GioReader;
@@ -17,7 +17,7 @@ import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-class DotReaderTest extends AbstractReaderTest {
+public class DotReaderTest extends AbstractReaderTest {
 
     private static final Logger log = getLogger(DotReaderTest.class);
 

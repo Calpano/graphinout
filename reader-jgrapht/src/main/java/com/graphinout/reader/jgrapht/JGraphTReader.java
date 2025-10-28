@@ -10,7 +10,6 @@ import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonValue;
 import com.graphinout.foundation.xml.XML;
-import com.graphinout.reader.jgrapht.dot.DotReader;
 import org.jgrapht.alg.util.Pair;
 import org.jgrapht.nio.Attribute;
 import org.jgrapht.nio.AttributeType;
@@ -26,7 +25,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Used by {@link DotReader} and {@link Graph6Reader}
+ * Used by {@link Graph6Reader}
  *
  * @param <N> node type is often {@link Integer} or {@link String}
  */
@@ -186,7 +185,7 @@ public class JGraphTReader<N> {
                     yield new CurrentJgtEntity(jgtObject, nodeChunk);
                 }
                 case Edge -> new CurrentJgtEntity(jgtObject, cjStream.createEdgeChunk());
-                case Graph -> new CurrentJgtEntity(jgtObject, cjStream.createGraphChunk());
+                case Graph -> new CurrentJgtEntity(jgtObject, graphChunk);
             };
         }
     }
@@ -201,6 +200,7 @@ public class JGraphTReader<N> {
                 emitJgtEdge((Pair<N, N>) currentJgtEntity.jgtEntity, (ICjEdgeChunkMutable) currentJgtEntity.chunk);
             } else if (currentJgtEntity.jgtEntity.getClass().equals(JGraphTReader.class)) {
                 // graph
+                startFromJgtGraph((ICjGraphChunkMutable) currentJgtEntity.chunk);
             } else {
                 emitJgtNode((N) currentJgtEntity.jgtEntity, (ICjNodeChunkMutable) currentJgtEntity.chunk);
             }

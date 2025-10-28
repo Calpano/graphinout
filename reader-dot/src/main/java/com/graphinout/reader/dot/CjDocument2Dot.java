@@ -1,6 +1,5 @@
 package com.graphinout.reader.dot;
 
-import com.graphinout.base.cj.CjDirection;
 import com.graphinout.base.cj.element.*;
 import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonPrimitive;
@@ -11,9 +10,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CjDocument2Dot {
@@ -115,7 +112,11 @@ public class CjDocument2Dot {
             }
         }
 
+        private static final String DOT_SYNTH_DUP = "dot.syntheticDup";
+
         private void writeNodes(ICjGraph g) {
+            List<String> stmts = new ArrayList<>();
+            List<String> dupStmts = new ArrayList<>();
             g.nodes().forEach(n -> {
                 String id = safeId(n.id());
                 if (id == null) return; // cannot emit unnamed node
@@ -124,8 +125,26 @@ public class CjDocument2Dot {
                 String lbl = firstLabel(n);
                 if (lbl != null) attrs.add("label=" + quote(lbl));
                 String stmt = id + (attrs.isEmpty() ? "" : " [" + String.join(", ", attrs) + "]") + ";";
-                line(stmt);
+                stmts.add(stmt);
+                // If synthetic duplicate flag is present, schedule an extra emission after all nodes
+                IJsonValue data = n.jsonValue();
+                if (data != null) {
+                    IJsonObject obj = data.asObjectOrNull();
+                    if (obj != null) {
+                        IJsonValue v = obj.get(DOT_SYNTH_DUP);
+                        if (v != null && v.isPrimitive()) {
+                            try {
+                                int times = Integer.parseInt(v.asString());
+                                if (times > 1) dupStmts.add(stmt);
+                            } catch (Exception ignore) {}
+                        }
+                    }
+                }
             });
+            // first pass: all nodes in original order
+            for (String s : stmts) line(s);
+            // second pass: duplicate emissions
+            for (String s : dupStmts) line(s);
         }
 
         private void writeEdges(ICjGraph g, boolean directed) {
@@ -205,7 +224,7 @@ public class CjDocument2Dot {
         }
 
         private @Nullable String safeId(@Nullable String id) {
-            if (id == null || id.isEmpty()) return null;
+            if (id == null) return null;
             return idOrString(id);
         }
 

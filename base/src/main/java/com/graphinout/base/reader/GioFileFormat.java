@@ -17,12 +17,18 @@ public class GioFileFormat {
     private final Set<String> fileExtensions;
 
     /**
-     * @param extensions handled file extensions (optional), should be listed as ".foo" (with dot)
+     * @param mainExtension the one used for output file naming (and as input), syntax: ".foo" (with dot)
+     * @param extensions further handled file extensions (optional), should be listed as ".foo" (with dot)
      */
-    public GioFileFormat(String id, String label, String... extensions) {
+    public GioFileFormat(String id, String label, String mainExtension, String... extensions) {
         this.id = id;
         this.label = label;
-        this.fileExtensions = extensions == null ? new HashSet<>() : new HashSet<>(Arrays.asList(extensions));
+        if (extensions == null) this.fileExtensions = Set.of(mainExtension);
+        else {
+            this.fileExtensions = new HashSet<>();
+            this.fileExtensions.add(mainExtension);
+            this.fileExtensions.addAll(Arrays.asList(extensions));
+        }
     }
 
     public Set<String> fileExtensions() {

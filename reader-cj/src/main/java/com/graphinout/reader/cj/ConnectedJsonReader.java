@@ -1,14 +1,14 @@
 package com.graphinout.reader.cj;
 
+import com.graphinout.base.GioReader;
 import com.graphinout.base.cj.element.ICjDocument;
 import com.graphinout.base.cj.stream.api.CjWriter2CjStream;
 import com.graphinout.base.cj.stream.api.ICjStream;
 import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.stream.impl.Json2CjWriter;
-import com.graphinout.base.GioReader;
 import com.graphinout.base.gio.GioWriter;
-import com.graphinout.foundation.input.ContentError;
 import com.graphinout.base.reader.GioFileFormat;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
 import com.graphinout.foundation.json.stream.JsonWriter;
@@ -25,7 +25,7 @@ public class ConnectedJsonReader implements GioReader {
 
     public static final String FORMAT_ID = "connected-json";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Connected JSON Format", //
-            ".con.json", ".connected.json", ".cj.json");
+            ".cj.json", ".con.json", ".connected.json");
     private @Nullable Consumer<ContentError> errorHandler;
 
     public static ICjDocument readToDocument(String json) {
@@ -42,11 +42,6 @@ public class ConnectedJsonReader implements GioReader {
     }
 
     @Override
-    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
-        this.errorHandler = errorHandler;
-    }
-
-    @Override
     public GioFileFormat fileFormat() {
         return FORMAT;
     }
@@ -57,6 +52,11 @@ public class ConnectedJsonReader implements GioReader {
         JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(cjWriter2CjStream);
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         jsonReader.read(inputSource, jsonWriter_in);
+    }
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
 }

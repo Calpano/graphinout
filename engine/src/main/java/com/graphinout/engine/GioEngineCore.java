@@ -21,7 +21,7 @@ import com.graphinout.reader.graphml.GraphmlReader;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.graphml.cj.CjStream2GraphmlWriter;
 import com.graphinout.reader.jgrapht.Graph6Reader;
-import com.graphinout.reader.jgrapht.dot.DotReader;
+import com.graphinout.reader.dot.DotReader;
 import com.graphinout.reader.tgf.TgfReader;
 import com.graphinout.reader.tripletext.TripleTextReader;
 import org.slf4j.Logger;
