@@ -1,5 +1,6 @@
 package com.graphinout.base.cj.stream.impl;
 
+import com.graphinout.base.BaseOutput;
 import com.graphinout.base.cj.CjDirection;
 import com.graphinout.base.cj.CjEdgeTypeSource;
 import com.graphinout.base.cj.CjType;
@@ -26,7 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * <p>
  * Strategy: Merge aliase, e.g., normalize both "node" and "nodes" to "nodes". Do not buffer.
  */
-public class Json2CjWriter implements JsonWriter {
+public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     static class ParseStack {
 

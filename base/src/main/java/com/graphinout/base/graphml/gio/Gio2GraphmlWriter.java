@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 
+@Deprecated
 public class Gio2GraphmlWriter extends BufferingJsonWriter implements GioWriter {
 
     final GraphmlWriter graphmlWriter;

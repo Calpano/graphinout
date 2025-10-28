@@ -1,12 +1,11 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.gio.GioWriter;
-import com.graphinout.base.graphml.Graphml2XmlWriter;
-import com.graphinout.base.graphml.gio.Gio2GraphmlWriter;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.cj.stream.api.NoopCjStream;
+import com.graphinout.base.reader.Location;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.xml.Xml2AppendableWriter;
 import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,22 +40,30 @@ class GraphmlReaderContentErrorTest {
         try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content)) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
-            graphmlReader.errorHandler(contentErrors::add);
-            GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(Xml2AppendableWriter.createNoop()));
-            graphmlReader.read(singleInputSource, gioWriter);
+            graphmlReader.setContentErrorHandler(contentErrors::add);
+
+            ICjStream cjStream = new NoopCjStream();
+            graphmlReader.read(singleInputSource, cjStream);
             List<ContentError> contentErrorsResult = contentErrors.stream().toList();
-            assertEquals(3, contentErrorsResult.size());
-            assertEquals(ContentError.ErrorLevel.Warn, contentErrorsResult.get(0).getLevel());
-            assertEquals("The Element <myroot> not acceptable tag for Graphml.", contentErrorsResult.get(0).getMessage());
-            assertEquals("2:9", contentErrorsResult.get(0).getLocation().toString());
+            assertEquals(2, contentErrorsResult.size());
+            ContentError first = contentErrorsResult.getFirst();
+            {
+                assertEquals(ContentError.ErrorLevel.Error, first.getLevel());
+                assertEquals(Location.of(2, 9), first.getLocation());
+                assertEquals("While parsing 2:9\n" +
+                        "Message: XML Element <myroot> is not a Graphml tag and not allowing XML here. XmlParseContext{elementStack=[], mode=Graphml}", first.getMessage());
+            }
+            ContentError second = contentErrorsResult.get(1);
+            {
+                assertEquals(ContentError.ErrorLevel.Error, second.getLevel());
+                assertEquals("""
+                        While parsing 4:10
+                        Message: Unexpected content ('
+                            Hello
+                        ') outside Graphml content tags.""", second.getMessage());
+                assertEquals(Location.of( 4,10), second.getLocation());
 
-            assertEquals(ContentError.ErrorLevel.Warn, contentErrorsResult.get(1).getLevel());
-            assertEquals("Unexpected characters '\n" + "    Hello\n" + "' [No open element to add characters to.]", contentErrorsResult.get(1).getMessage());
-            assertEquals("4:1", contentErrorsResult.get(1).getLocation().toString());
-
-            assertEquals(ContentError.ErrorLevel.Warn, contentErrorsResult.get(2).getLevel());
-            assertEquals("The Element </myroot> not acceptable tag for Graphml.", contentErrorsResult.get(2).getMessage());
-            assertEquals("4:10", contentErrorsResult.get(2).getLocation().toString());
+            }
         }
     }
 
@@ -80,9 +87,9 @@ class GraphmlReaderContentErrorTest {
         try (SingleInputSource singleInputSource = inputSource(graphmlResource)) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
-            graphmlReader.errorHandler(contentErrors::add);
-            GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(Xml2AppendableWriter.createNoop()));
-            graphmlReader.read(singleInputSource, gioWriter);
+            graphmlReader.setContentErrorHandler(contentErrors::add);
+            ICjStream cjStream = new NoopCjStream();
+            graphmlReader.read(singleInputSource, cjStream);
             assertEquals(0, contentErrors.stream().count());
         }
     }

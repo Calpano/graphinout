@@ -7,3 +7,5 @@
 ----
 
 The XML id `name` is used twice, this violates the XML semantics of ID.
+
+Intellij: `Duplicate key value [name] found for identity constraint "key_id_key" of element "graphml".`

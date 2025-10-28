@@ -1,5 +1,6 @@
 package com.graphinout.foundation.json.impl;
 
+import com.graphinout.base.BaseOutput;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.JsonWriter;
 
@@ -10,7 +11,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-public class ValidatingJsonWriter implements JsonWriter {
+public class ValidatingJsonWriter extends BaseOutput implements JsonWriter {
 
     enum ContainerType {Document, Array, Object, Property, String}
 
@@ -43,15 +44,15 @@ public class ValidatingJsonWriter implements JsonWriter {
         Set<String> usedKeys = new HashSet<>();
 
         @Override
-        public ContainerType type() {
-            return ContainerType.Object;
+        public String toString() {
+            return "Object{" +
+                    "keys=" + usedKeys.stream().map(s -> '"' + s + '"').collect(Collectors.joining(", ")) +
+                    '}';
         }
 
         @Override
-        public String toString() {
-            return "Object{" +
-                    "keys=" + usedKeys.stream().map(s->'"'+s+'"').collect(Collectors.joining(", ")) +
-                    '}';
+        public ContainerType type() {
+            return ContainerType.Object;
         }
 
     }
@@ -139,7 +140,7 @@ public class ValidatingJsonWriter implements JsonWriter {
     public void onKey(String key) throws JsonException {
         Container top = stack.peek();
         if (top.type() != ContainerType.Object) {
-            throw new IllegalStateException("Validation: Expected object on stack, but found " + top+ " stack="+stack);
+            throw new IllegalStateException("Validation: Expected object on stack, but found " + top + " stack=" + stack);
         }
         // verify key is not used yet
         ValObject valObject = (ValObject) top;

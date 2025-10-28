@@ -7,9 +7,9 @@ import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.element.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.cj.stream.impl.CjStream2CjDocumentWriter;
-import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
+import com.graphinout.base.GioReader;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.base.reader.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
@@ -39,14 +39,14 @@ public class TgfReader implements GioReader {
 
     public static ICjDocument parseTgfToCjDocument(SingleInputSource inputSource) throws IOException {
         TgfReader tgfReader = new TgfReader();
-        CjStream2CjDocumentWriter cj2document = new CjStream2CjDocumentWriter();
+        CjWriter2CjDocumentWriter cj2document = new CjWriter2CjDocumentWriter();
         ICjStream cjStream2cj = new CjStream2CjWriter(cj2document);
         tgfReader.read(inputSource, cjStream2cj);
         return cj2document.resultDoc();
     }
 
     @Override
-    public void errorHandler(Consumer<ContentError> errorHandler) {
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
         this.errorHandler = errorHandler;
     }
 

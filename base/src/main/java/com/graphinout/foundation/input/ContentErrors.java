@@ -1,5 +1,6 @@
-package com.graphinout.base.reader;
+package com.graphinout.foundation.input;
 
+import com.graphinout.base.reader.InMemoryErrorHandler;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -11,10 +12,18 @@ public class ContentErrors {
 
     private static final Logger log = getLogger(ContentErrors.class);
 
+    public static Consumer<ContentError> SIMPLE_LOGGING = (contentError) -> {
+        String msg = buildMessage(contentError);
+        switch (contentError.level) {
+            case Error -> log.error(msg);
+            case Warn -> log.warn(msg);
+        }
+    };
+
     private static String buildMessage(ContentError contentError) {
         StringBuilder b = new StringBuilder();
         b.append(contentError.message);
-        contentError.location().ifPresent(loc -> b.append("@" + loc.line + ":" + loc.col));
+        contentError.location().ifPresent(loc -> b.append("@").append(loc.line()).append(":").append(loc.col()));
         return b.toString();
     }
 

@@ -2,7 +2,7 @@ package com.graphinout.foundation.xml;
 
 import java.io.IOException;
 
-public class XmlCharacter2AppendableWriter implements XmlCharacterWriter {
+public class XmlCharacter2AppendableWriter extends BaseXmlHandler implements XmlCharacterWriter {
 
     protected final Appendable appendable;
     private final boolean xmlEncodeOnWrite;

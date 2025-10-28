@@ -1,5 +1,9 @@
 package com.graphinout.foundation.xml;
 
+import com.graphinout.foundation.input.ContentErrorAware;
+import com.graphinout.foundation.input.IHandleContentErrors;
+import com.graphinout.foundation.input.LocationAware;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -7,7 +11,7 @@ import java.util.Map;
 /**
  * XML writer without namespace support, but we do allow colons in element names
  */
-public interface XmlWriter extends XmlCharacterWriter {
+public interface XmlWriter extends XmlCharacterWriter, IHandleContentErrors {
 
     void documentEnd() throws IOException;
 
@@ -51,6 +55,5 @@ public interface XmlWriter extends XmlCharacterWriter {
      *                   implementation."
      */
     void elementStart(String uri, String localName, String qName, Map<String, String> attributes) throws IOException;
-
 
 }

@@ -1,6 +1,6 @@
 package com.graphinout.engine;
 
-import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.GioReader;
 
 import java.io.File;
 import java.util.List;

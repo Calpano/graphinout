@@ -1,17 +1,18 @@
 package com.graphinout.base.cj.stream.api;
 
-import com.graphinout.base.cj.CjFactory;
+import com.graphinout.base.cj.BaseCjOutput;
 import com.graphinout.base.cj.CjType;
 import com.graphinout.base.cj.element.ICjDocumentChunk;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
 import com.graphinout.base.cj.element.ICjGraphChunk;
 import com.graphinout.base.cj.element.ICjNodeChunk;
 import com.graphinout.base.cj.stream.ICjWriter;
-import com.graphinout.foundation.json.value.IJsonFactory;
-import com.graphinout.foundation.json.value.java.JavaJsonFactory;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.util.PowerStackEnum;
 
-public class CjStream2CjWriter extends CjFactory implements ICjStream {
+import java.util.function.Consumer;
+
+public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
 
     /**
      * The 'None' marker in the following protocol is a marker that the element was started but none of the expected
@@ -32,6 +33,7 @@ public class CjStream2CjWriter extends CjFactory implements ICjStream {
 
     private final ICjWriter cjWriter;
     private final PowerStackEnum<Protocol> protocolStack = PowerStackEnum.create();
+
 
     public CjStream2CjWriter(ICjWriter cjWriter) {this.cjWriter = cjWriter;}
 
@@ -144,6 +146,20 @@ public class CjStream2CjWriter extends CjFactory implements ICjStream {
             default -> throw new IllegalStateException("Unexpected protocol: " + protocolStack.peek());
         }
         node.fireStartChunk(cjWriter);
+    }
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        super.setContentErrorHandler(errorHandler);
+        // chaining:
+        cjWriter.setContentErrorHandler(errorHandler);
+    }
+
+    @Override
+    public void setLocator(com.graphinout.base.reader.Locator locator) {
+        super.setLocator(locator);
+        // chaining:
+        cjWriter.setLocator(locator);
     }
 
     private void maybeEndOpenList() {

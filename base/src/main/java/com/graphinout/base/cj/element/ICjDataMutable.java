@@ -45,4 +45,6 @@ public interface ICjDataMutable extends ICjData {
         add(List.of(), jsonValue);
     }
 
+    void removeProperty(String propertyKey);
+
 }

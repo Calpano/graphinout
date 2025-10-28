@@ -8,7 +8,7 @@ class TripleTextTest {
 
     @Test
     void testMeta() {
-        Triple triple = TripleText.parseToTriple("A --is-- B .. meta");
+        Triple<String, String, String> triple = TripleText.parseToTriple("A --is-- B .. meta");
         assertEquals("A", triple.s);
         assertEquals("is", triple.p);
         assertEquals("B", triple.o);
@@ -17,7 +17,7 @@ class TripleTextTest {
 
     @Test
     void testNoMeta() {
-        Triple triple = TripleText.parseToTriple("A --is-- B");
+        Triple<String, String, String> triple = TripleText.parseToTriple("A --is-- B");
         assertEquals("A", triple.s);
         assertEquals("is", triple.p);
         assertEquals("B", triple.o);

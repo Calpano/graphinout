@@ -1,5 +1,6 @@
 package com.graphinout.reader.graphml.cj;
 
+import com.graphinout.base.BaseOutput;
 import com.graphinout.base.cj.CjDirection;
 import com.graphinout.base.cj.ICjEdgeType;
 import com.graphinout.base.cj.element.ICjData;
@@ -76,7 +77,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class Graphml2CjDocument implements GraphmlWriter {
+public class Graphml2CjDocument extends BaseOutput implements GraphmlWriter {
 
     private static final Logger log = getLogger(Graphml2CjDocument.class);
     /** doc-level */

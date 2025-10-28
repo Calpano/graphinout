@@ -1,5 +1,9 @@
 package com.graphinout.foundation.json.stream.impl;
 
+import com.graphinout.base.BaseOutput;
+import com.graphinout.foundation.input.ContentError;
+import com.graphinout.base.reader.Locator;
+import com.graphinout.foundation.input.IHandleContentErrors;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.JsonWriter;
 
@@ -7,8 +11,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
-public class DelegatingJsonWriter implements JsonWriter {
+public class DelegatingJsonWriter extends BaseOutput implements JsonWriter, IHandleContentErrors {
 
     protected final List<JsonWriter> jsonWriters = new ArrayList<>();
 
@@ -97,6 +102,18 @@ public class DelegatingJsonWriter implements JsonWriter {
     @Override
     public void onString(String s) throws JsonException {
         jsonWriters.forEach(w -> w.onString(s));
+    }
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        super.setContentErrorHandler(errorHandler);
+        jsonWriters.forEach(w -> w.setContentErrorHandler(errorHandler));
+    }
+
+    @Override
+    public void setLocator(Locator locator) {
+        super.setLocator(locator);
+        jsonWriters.forEach(w -> w.setLocator(locator));
     }
 
 }

@@ -1,12 +1,12 @@
 package com.graphinout.reader.graphml;
 
 import com.graphinout.base.AbstractReaderTest;
-import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.gio.GioWriter;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.GioReader;
 import com.graphinout.base.reader.Location;
-import com.graphinout.base.writer.LoggingGioWriter;
+import com.graphinout.base.writer.LoggingCjStream;
 import com.graphinout.foundation.TestFileUtil;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.output.InMemoryOutputSink;
 import io.github.classgraph.Resource;
@@ -33,9 +33,9 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
     protected List<ContentError> expectedErrors(String resourceName) {
         return switch (resourceName) {
             case "xml/graphml/greek2--INVALIDgraphml.graphml" ->
-                    Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(33, 57)));
+                    List.of(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(33, 57)));
             case "xml/graphml/haitimap2--INVALIDgraphml.graphml" ->
-                    Arrays.asList(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(25, 57)));
+                    List.of(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(25, 57)));
             case "xml/graphml/graphml/synthetic/invalidgraphml-root.graphml" -> Arrays.asList( //
                     new ContentError(ContentError.ErrorLevel.Warn, "The Element <myroot> not acceptable tag for Graphml.", new Location(2, 9)), //
                     new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "    Hello\n" + "' [No open element to add characters to.]", new Location(4, 1)), //
@@ -50,6 +50,7 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
     }
 
     /** test with a LoggingReader to see GioWriter calls 1:1 */
+    @SuppressWarnings("resource")
     @Test
     void test() throws IOException {
         GioReader gioReader = new GraphmlReader();
@@ -60,10 +61,10 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
         log.info("Reading " + resourceUrl + " as " + gioReader.fileFormat());
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
         SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
-        GioWriter gioWriter = new LoggingGioWriter();
+        ICjStream cjStream = new LoggingCjStream();
         List<ContentError> contentErrors = new ArrayList<>();
-        gioReader.errorHandler(contentErrors::add);
-        gioReader.read(inputSource, gioWriter);
+        gioReader.setContentErrorHandler(contentErrors::add);
+        gioReader.read(inputSource, cjStream);
         log.info("Recorded content errors: " + contentErrors);
     }
 
@@ -72,7 +73,7 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
     @Disabled("intended for local use to debug a specific resource")
     void testWithOneResource() throws IOException {
         GioReader gioReader = new GraphmlReader();
-        Resource resource = TestFileUtil.resource( "xml/graphml/aws/AWS - Analytics.graphml");
+        Resource resource = TestFileUtil.resource("xml/graphml/aws/AWS - Analytics.graphml");
         List<ContentError> expectedErrors = expectedErrors(resource);
         testReadResourceToGraph(gioReader, resource, expectedErrors);
     }

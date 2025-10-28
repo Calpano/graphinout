@@ -253,6 +253,8 @@ public class GraphmlNormalizer {
             case Graphml.XSI_SCHEMA_LOCATION_YWORKS_1_0 -> Graphml.XSI_SCHEMA_LOCATION_1_1;
             case Graphml.XSI_SCHEMA_LOCATION_YWORKS_1_0b -> Graphml.XSI_SCHEMA_LOCATION_1_1;
             case Graphml.XSI_SCHEMA_LOCATION_YWORKS_1_1 -> Graphml.XSI_SCHEMA_LOCATION_1_1;
+            // fix for one particular file
+            case "http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.html/2.0/ygraphml.xsd" -> Graphml.XSI_SCHEMA_LOCATION_1_1;
             default -> loc;
         });
 

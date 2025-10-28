@@ -1,5 +1,6 @@
 package com.graphinout.foundation.json.stream.impl;
 
+import com.graphinout.base.BaseOutput;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.JsonWriter;
 import com.graphinout.foundation.json.value.IJsonArrayAppendable;
@@ -17,7 +18,7 @@ import java.util.Stack;
 /**
  * Base class for collecting all JSON calls into a string. Impl uses {@link #jsonValue()} and {@link #reset()}.
  */
-public class Json2JavaJsonWriter implements JsonWriter {
+public class Json2JavaJsonWriter extends BaseOutput implements JsonWriter {
 
     private final Stack<Object> stack = new Stack<>();
     private IJsonValue root = null;

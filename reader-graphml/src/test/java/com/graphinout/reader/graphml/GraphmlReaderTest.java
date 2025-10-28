@@ -1,25 +1,53 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.gio.GioWriter;
+import com.graphinout.base.cj.stream.api.DelegatingCjStream;
+import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.graphml.DelegatingGraphmlWriter;
 import com.graphinout.base.graphml.Graphml2XmlWriter;
-import com.graphinout.base.graphml.gio.Gio2GraphmlWriter;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.base.graphml.GraphmlWriter;
+import com.graphinout.base.validation.graphml.ValidatingGraphMlWriter;
+import com.graphinout.base.writer.ValidatingCjStream;
+import com.graphinout.foundation.TestFileUtil;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.foundation.output.OutputSink;
+import com.graphinout.foundation.xml.ValidatingXmlWriter;
 import com.graphinout.foundation.xml.Xml2AppendableWriter;
+import com.graphinout.foundation.xml.XmlWriter;
+import com.graphinout.foundation.xml.XmlWriterImpl;
+import com.graphinout.reader.graphml.cj.CjStream2GraphmlWriter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertWithMessage;
 import static com.graphinout.foundation.TestFileUtil.inputSource;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class GraphmlReaderTest {
 
-    private static final Logger log = LoggerFactory.getLogger(GraphmlReaderTest.class);
+    public static ICjStream createCjStream(OutputSink outputSink, boolean validateXml, boolean validateGraphml, boolean validateGio) throws IOException {
+        XmlWriter xmlWriter = XmlWriterImpl.create(outputSink);
+        if (validateXml) {
+            xmlWriter = new ValidatingXmlWriter(xmlWriter);
+        }
+
+        GraphmlWriter graphmlWriter = new Graphml2XmlWriter(xmlWriter);
+        if (validateGraphml) {
+            graphmlWriter = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), graphmlWriter);
+        }
+
+
+        ICjStream cjStream = new CjStream2GraphmlWriter(graphmlWriter);
+        if (validateGio) {
+            cjStream = new DelegatingCjStream(new ValidatingCjStream(), cjStream);
+        }
+        return cjStream;
+    }
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.foundation.TestFileProvider#graphmlResources")
@@ -27,10 +55,25 @@ class GraphmlReaderTest {
         try (SingleInputSource singleInputSource = inputSource(resource)) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
-            graphmlReader.errorHandler(contentErrors::add);
-            GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(Xml2AppendableWriter.createNoop()));
-            graphmlReader.read(singleInputSource, gioWriter);
+            graphmlReader.setContentErrorHandler(contentErrors::add);
+
+            Graphml2XmlWriter graphmlWriter = new Graphml2XmlWriter(Xml2AppendableWriter.createNoop());
+            ICjStream cjStream = new CjStream2GraphmlWriter(graphmlWriter);
+            boolean isInvalid = TestFileUtil.isInvalid(resource, "xml", "graphml");
+            try {
+                graphmlReader.read(singleInputSource, cjStream);
+                if (isInvalid) {
+                    fail("Invalid resource should have thrown");
+                }
+            } catch (Throwable t) {
+                if (isInvalid) {
+                    assertWithMessage("Found no contentErrors although we got: " + t.getMessage()).that(contentErrors).isNotEmpty();
+                } else {
+                    fail("Unexpected error on valid file", t);
+                }
+            }
         }
     }
+
 
 }

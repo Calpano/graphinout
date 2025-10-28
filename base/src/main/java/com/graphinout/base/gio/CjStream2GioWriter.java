@@ -1,5 +1,6 @@
-package com.graphinout.base;
+package com.graphinout.base.gio;
 
+import com.graphinout.base.cj.BaseCjOutput;
 import com.graphinout.base.cj.CjFactory;
 import com.graphinout.base.cj.ICjEdgeType;
 import com.graphinout.base.cj.element.ICjData;
@@ -11,26 +12,16 @@ import com.graphinout.base.cj.element.ICjLabel;
 import com.graphinout.base.cj.element.ICjNodeChunk;
 import com.graphinout.base.cj.element.ICjPort;
 import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.gio.GioData;
-import com.graphinout.base.gio.GioDocument;
-import com.graphinout.base.gio.GioEdge;
-import com.graphinout.base.gio.GioEndpoint;
-import com.graphinout.base.gio.GioEndpointDirection;
-import com.graphinout.base.gio.GioGraph;
-import com.graphinout.base.gio.GioNode;
-import com.graphinout.base.gio.GioPort;
-import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.graphml.CjGraphmlMapping;
-import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 import com.graphinout.foundation.json.value.java.JavaJsonObject;
 import com.graphinout.foundation.xml.XmlFragmentString;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 
-public class CjStream2GioWriter extends CjFactory implements ICjStream {
+@Deprecated
+public class CjStream2GioWriter extends BaseCjOutput implements ICjStream {
 
     private final GioWriter gioWriter;
 

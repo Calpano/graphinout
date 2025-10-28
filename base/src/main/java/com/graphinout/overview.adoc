@@ -436,12 +436,6 @@ Provides validation functionality for graph writers and formats.
 
 Contains various writer implementations and utilities for output generation.
 
-.Core Writers
-* `DelegatingGioWriter` - Delegating writer pattern
-* `LoggingGioWriter` - Writer with logging capabilities
-* `ValidatingGioWriter` - Writer with validation
-* `NoopGioWriter` - No-operation writer for testing
-
 .Utilities
 * `NoopJsonWriter` - No-operation JSON writer
 

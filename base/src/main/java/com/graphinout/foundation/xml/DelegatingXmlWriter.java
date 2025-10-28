@@ -1,16 +1,18 @@
 package com.graphinout.foundation.xml;
 
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.util.ThrowingConsumer;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Simple XmlWriter implementation that writes to a StringWriter
  */
-public class DelegatingXmlWriter implements XmlWriter {
+public class DelegatingXmlWriter extends BaseXmlHandler implements XmlWriter {
 
     protected final List<XmlWriter> writers = new ArrayList<>();
 
@@ -28,6 +30,11 @@ public class DelegatingXmlWriter implements XmlWriter {
 
     public void charactersStart() {
         forEachWriter(XmlWriter::charactersStart);
+    }
+
+    @Override
+    public Consumer<ContentError> contentErrorHandler() {
+        return this::onContentError;
     }
 
     @Override
@@ -51,13 +58,23 @@ public class DelegatingXmlWriter implements XmlWriter {
     }
 
     @Override
-    public void lineBreak() throws IOException {
+    public void lineBreak() {
         forEachWriter(XmlWriter::lineBreak);
+    }
+
+    @Override
+    public void onContentError(ContentError contentError) {
+        forEachWriter(w -> w.onContentError(contentError));
     }
 
     @Override
     public void raw(String rawXml) {
         forEachWriter(w -> w.raw(rawXml));
+    }
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        // ignored
     }
 
     private void forEachWriter(ThrowingConsumer<XmlWriter, Exception> consumer) {

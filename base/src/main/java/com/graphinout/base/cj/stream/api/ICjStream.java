@@ -4,6 +4,7 @@ import com.graphinout.base.cj.element.ICjDocumentChunk;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
 import com.graphinout.base.cj.element.ICjGraphChunk;
 import com.graphinout.base.cj.element.ICjNodeChunk;
+import com.graphinout.foundation.input.IHandleContentErrors;
 import com.graphinout.foundation.json.value.IJsonFactory;
 
 /**
@@ -11,7 +12,7 @@ import com.graphinout.foundation.json.value.IJsonFactory;
  * <p>
  * This is the API that should replace GioWriter.
  */
-public interface ICjStream extends ICjFactory {
+public interface ICjStream extends ICjFactory, IHandleContentErrors {
 
     default void document(ICjDocumentChunk document) {
         documentStart(document);

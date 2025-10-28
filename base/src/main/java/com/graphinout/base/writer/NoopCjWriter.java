@@ -5,6 +5,11 @@ import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.CjType;
 import com.graphinout.base.cj.ICjEdgeType;
 import com.graphinout.base.cj.stream.ICjWriter;
+import com.graphinout.foundation.input.ContentError;
+import com.graphinout.base.reader.Locator;
+
+import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public class NoopCjWriter extends NoopJsonWriter implements ICjWriter {
 
@@ -25,6 +30,12 @@ public class NoopCjWriter extends NoopJsonWriter implements ICjWriter {
 
     @Override
     public void connectedJson__versionNumber(String s) {}
+
+    @Nullable
+    @Override
+    public Consumer<ContentError> contentErrorHandler() {
+        return null;
+    }
 
     @Override
     public void direction(CjDirection direction) {}
@@ -74,6 +85,12 @@ public class NoopCjWriter extends NoopJsonWriter implements ICjWriter {
     @Override
     public void listStart(CjType cjType) {}
 
+    @Nullable
+    @Override
+    public Locator locator() {
+        return null;
+    }
+
     @Override
     public void nodeEnd() {}
 
@@ -91,6 +108,14 @@ public class NoopCjWriter extends NoopJsonWriter implements ICjWriter {
 
     @Override
     public void portStart() {}
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+    }
+
+    @Override
+    public void setLocator(Locator locator) {
+    }
 
     @Override
     public void value(String value) {}

@@ -9,6 +9,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.LexicalHandler;
 
+import javax.annotation.Nullable;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import java.io.File;
@@ -70,13 +71,21 @@ public class XmlTool {
         return reader;
     }
 
-    public static void ifAttributeNotNull(Map<String, String> attributes, String attributeName, Consumer<String> consumer) {
+    /**
+     * @param attributes
+     * @param attributeName
+     * @param consumer      gets the XML attribute value if the attribute is present and value not null
+     * @retur same as consumer call
+     */
+    public static @Nullable String ifAttributeNotNull(Map<String, String> attributes, String attributeName, Consumer<String> consumer) {
         if (attributes != null) {
             String value = attributes.get(attributeName);
             if (value != null) {
                 consumer.accept(value);
+                return value;
             }
         }
+        return null;
     }
 
     /**
@@ -150,7 +159,7 @@ public class XmlTool {
     }
 
     private static void parseAndWrite(InputSource saxInputSource, XmlWriter xmlWriter) throws IOException, SAXException, ParserConfigurationException {
-        Sax2XmlWriter handler2XmlWriter = new Sax2XmlWriter(xmlWriter, xmlError -> log.warn("Error " + xmlError));
+        Sax2XmlWriter handler2XmlWriter = new Sax2XmlWriter(xmlWriter);
         XMLReader reader = XmlTool.createXmlReaderOn(handler2XmlWriter);
         reader.parse(saxInputSource);
     }

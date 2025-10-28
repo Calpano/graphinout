@@ -5,10 +5,13 @@ import com.graphinout.base.cj.element.ICjDocumentChunk;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
 import com.graphinout.base.cj.element.ICjGraphChunk;
 import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.foundation.json.value.IJsonFactory;
+import com.graphinout.foundation.input.ContentError;
+import com.graphinout.base.reader.Locator;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Delegates one input stream to n output streams. The first one needs working factory methods like
@@ -20,6 +23,17 @@ public class DelegatingCjStream extends CjFactory implements ICjStream {
 
     public DelegatingCjStream(ICjStream... streams) {
         this.streams = Arrays.asList(streams);
+    }
+
+    @Nullable
+    @Override
+    public Consumer<ContentError> contentErrorHandler() {
+        // try all streams
+        for (ICjStream stream : streams) {
+            Consumer<ContentError> errorHandler = stream.contentErrorHandler();
+            if (errorHandler != null) return errorHandler;
+        }
+        return null;
     }
 
     @Override
@@ -64,6 +78,18 @@ public class DelegatingCjStream extends CjFactory implements ICjStream {
         }
     }
 
+    @Nullable
+    @Override
+    public Locator locator() {
+        // try all streams
+        for (ICjStream stream : streams) {
+            Locator locator = stream.locator();
+            if (locator != null) return locator
+                    ;
+        }
+        return null;
+    }
+
     @Override
     public void nodeEnd() {
         for (ICjStream stream : streams) {
@@ -76,6 +102,17 @@ public class DelegatingCjStream extends CjFactory implements ICjStream {
         for (ICjStream stream : streams) {
             stream.nodeStart(node);
         }
+    }
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        streams.forEach(s -> s.setContentErrorHandler(errorHandler));
+    }
+
+    @Override
+    public void setLocator(Locator locator) {
+        // set in all streams
+        streams.forEach(s -> s.setLocator(locator));
     }
 
 }

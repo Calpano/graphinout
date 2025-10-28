@@ -1,9 +1,14 @@
-package com.graphinout.base.reader;
+package com.graphinout.foundation.input;
+
+import com.graphinout.base.reader.Location;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * See {@link ContentErrors} for simpler handlers.
+ */
 public class ContentError {
 
     public enum ErrorLevel {
@@ -18,6 +23,14 @@ public class ContentError {
         this.level = level;
         this.message = message;
         this.location = location;
+    }
+
+    public static ContentError of(ErrorLevel level, String message, @Nullable Location location) {
+        return new ContentError(level, message, location);
+    }
+
+    public static ContentError of(ErrorLevel level, String message) {
+        return new ContentError(level, message, null);
     }
 
     @Override
@@ -45,7 +58,7 @@ public class ContentError {
     }
 
     public Optional<Location> location() {
-        return Optional.of(location);
+        return Optional.ofNullable(location);
     }
 
     @Override

@@ -16,21 +16,20 @@ public class XmlParseContext {
 
     /** we use a LinkedList so we can peek deeper */
     private final LinkedList<XmlElementContext> elementStack = new LinkedList<>();
-    @Deprecated
-    private XmlMode mode = XmlMode.Graphml;
+    @Deprecated private XmlMode mode = XmlMode.Graphml;
 
     public boolean isEmpty() {
         return elementStack.isEmpty();
     }
 
-    @Deprecated
-    public boolean isInterpretedAsGraphml() {
-        return mode != XmlMode.GENERIC_PC_DATA;
-    }
-
     /** i.e. XML is not interpreted as GraphML here */
     public boolean isInterpretedAsGenericPCDATA() {
         return mode == XmlMode.GENERIC_PC_DATA;
+    }
+
+    @Deprecated
+    public boolean isInterpretedAsGraphml() {
+        return mode != XmlMode.GENERIC_PC_DATA;
     }
 
     public void mode(XmlMode xmlMode) {
@@ -60,7 +59,7 @@ public class XmlParseContext {
      *
      * @param elementName
      * @param attributes
-     * @param isRawXml is the element itself part of a rawXml string?
+     * @param isRawXml    is the element itself part of a rawXml string?
      * @param builder
      * @param xmlMode
      * @return
@@ -70,6 +69,11 @@ public class XmlParseContext {
         elementStack.push(context);
         this.mode = xmlMode;
         return context;
+    }
+
+    @Override
+    public String toString() {
+        return "XmlParseContext{" + "elementStack=" + elementStack + ", mode=" + mode + '}';
     }
 
     @Nullable

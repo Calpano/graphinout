@@ -1,8 +1,8 @@
 package com.graphinout.reader.adjlist;
 
 import com.graphinout.base.AbstractReaderTest;
-import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.base.GioReader;
+import com.graphinout.foundation.input.ContentError;
 
 import java.util.Arrays;
 import java.util.Collections;

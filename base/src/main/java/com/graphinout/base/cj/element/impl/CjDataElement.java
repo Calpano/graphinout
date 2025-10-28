@@ -25,6 +25,14 @@ public class CjDataElement implements ICjDataMutable {
     }
 
     @Override
+    public void removeProperty(String propertyKey) {
+        if(root==null) {
+            throw new IllegalStateException("Root is null");
+        }
+        root = JsonMaker.removeProperty(root, propertyKey);
+    }
+
+    @Override
     public CjType cjType() {
         return CjType.Data;
     }

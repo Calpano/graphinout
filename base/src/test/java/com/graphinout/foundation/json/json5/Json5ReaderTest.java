@@ -1,11 +1,13 @@
 package com.graphinout.foundation.json.json5;
 
-import com.graphinout.base.gio.GioDocument;
-import com.graphinout.base.gio.GioEdge;
-import com.graphinout.base.gio.GioGraph;
-import com.graphinout.base.gio.GioNode;
-import com.graphinout.base.gio.GioWriter;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.base.cj.CjFactory;
+import com.graphinout.base.cj.element.ICjDocumentChunk;
+import com.graphinout.base.cj.element.ICjEdgeChunk;
+import com.graphinout.base.cj.element.ICjGraphChunk;
+import com.graphinout.base.cj.element.ICjNodeChunk;
+import com.graphinout.base.cj.stream.api.ICjFactory;
+import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -28,9 +30,10 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 class Json5ReaderTest {
 
+    private final ICjFactory cjFactory = new CjFactory();
     private AutoCloseable closeable;
     private Json5Reader underTest;
-    @Mock private GioWriter mockGioWriter;
+    @Mock private ICjStream mockCjStream;
     private List<ContentError> capturedErrors;
     private Consumer<ContentError> errorConsumer;
 
@@ -45,16 +48,23 @@ class Json5ReaderTest {
         this.underTest = new Json5Reader();
         this.capturedErrors = new ArrayList<>();
         this.errorConsumer = capturedErrors::add;
+
+        // setup chunk methods
+        Mockito.when(mockCjStream.createDocumentChunk()).thenReturn(cjFactory.createDocumentChunk());
+        Mockito.when(mockCjStream.createGraphChunk()).thenReturn(cjFactory.createGraphChunk());
+        Mockito.when(mockCjStream.createNodeChunk()).thenReturn(cjFactory.createNodeChunk());
+        Mockito.when(mockCjStream.createNodeChunkWithId(any(String.class))).thenAnswer(invocation -> cjFactory.createNodeChunkWithId(invocation.getArgument(0)));
+        Mockito.when(mockCjStream.createEdgeChunk()).thenReturn(cjFactory.createEdgeChunk());
     }
 
     @Test
     void shouldNotCallErrorConsumerAndGioWriterWhenJson5IsEmpty() throws IOException {
         SingleInputSource inputSource = SingleInputSource.of("test-empty", "");
 
-        underTest.errorHandler(errorConsumer);
-        underTest.read(inputSource, mockGioWriter);
+        underTest.setContentErrorHandler(errorConsumer);
+        underTest.read(inputSource, mockCjStream);
 
-        verifyNoInteractions(mockGioWriter);
+        verifyNoInteractions(mockCjStream);
         // Verify no errors were captured
         assert capturedErrors.isEmpty();
     }
@@ -65,17 +75,17 @@ class Json5ReaderTest {
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
         SingleInputSource singleInputSource = SingleInputSource.of("example.connected.json5", content);
 
-        underTest.errorHandler(errorConsumer);
-        underTest.read(singleInputSource, mockGioWriter);
+        underTest.setContentErrorHandler(errorConsumer);
+        underTest.read(singleInputSource, mockCjStream);
 
-        InOrder inOrder = Mockito.inOrder(mockGioWriter);
-        inOrder.verify(mockGioWriter).startDocument(any(GioDocument.class));
-        inOrder.verify(mockGioWriter).startGraph(any(GioGraph.class));
+        InOrder inOrder = Mockito.inOrder(mockCjStream);
+        inOrder.verify(mockCjStream).documentStart(any(ICjDocumentChunk.class));
+        inOrder.verify(mockCjStream).graphStart(any(ICjGraphChunk.class));
 
         // Should create multiple nodes and edges based on the example file
         // We don't verify exact counts here, just that the structure is correct
-        inOrder.verify(mockGioWriter).endGraph(Mockito.any());
-        inOrder.verify(mockGioWriter).endDocument();
+        inOrder.verify(mockCjStream).graphEnd();
+        inOrder.verify(mockCjStream).documentEnd();
 
         // Verify no errors were captured
         assert capturedErrors.isEmpty();
@@ -98,25 +108,22 @@ class Json5ReaderTest {
 
         SingleInputSource inputSource = SingleInputSource.of("test-json5", json5Content);
 
-        underTest.errorHandler(errorConsumer);
-        underTest.read(inputSource, mockGioWriter);
+        underTest.setContentErrorHandler(errorConsumer);
+        underTest.read(inputSource, mockCjStream);
 
-        InOrder inOrder = Mockito.inOrder(mockGioWriter);
-        inOrder.verify(mockGioWriter).startDocument(any(GioDocument.class));
-        inOrder.verify(mockGioWriter).startGraph(any(GioGraph.class));
+        InOrder inOrder = Mockito.inOrder(mockCjStream);
+        inOrder.verify(mockCjStream).documentStart(any(ICjDocumentChunk.class));
+        inOrder.verify(mockCjStream).graphStart(any(ICjGraphChunk.class));
 
         // Verify nodes are created
-        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
-        inOrder.verify(mockGioWriter).endNode(Mockito.any());
-        inOrder.verify(mockGioWriter).startNode(any(GioNode.class));
-        inOrder.verify(mockGioWriter).endNode(Mockito.any());
+        inOrder.verify(mockCjStream).node(any(ICjNodeChunk.class));
+        inOrder.verify(mockCjStream).node(any(ICjNodeChunk.class));
 
         // Verify edge is created
-        inOrder.verify(mockGioWriter).startEdge(any(GioEdge.class));
-        inOrder.verify(mockGioWriter).endEdge();
+        inOrder.verify(mockCjStream).edge(any(ICjEdgeChunk.class));
 
-        inOrder.verify(mockGioWriter).endGraph(Mockito.any());
-        inOrder.verify(mockGioWriter).endDocument();
+        inOrder.verify(mockCjStream).graphEnd();
+        inOrder.verify(mockCjStream).documentEnd();
 
         // Verify no errors were captured
         assert capturedErrors.isEmpty();

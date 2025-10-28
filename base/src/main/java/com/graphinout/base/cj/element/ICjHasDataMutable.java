@@ -6,7 +6,7 @@ import com.graphinout.foundation.json.value.IJsonXmlString;
 
 import java.util.function.Consumer;
 
-public interface ICjHasDataMutable extends ICjHasData, ICjChunkMutable {
+public interface ICjHasDataMutable extends ICjHasData {
 
     ICjDataMutable data();
 

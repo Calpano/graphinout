@@ -1,7 +1,5 @@
 package com.graphinout.base;
 
-import com.graphinout.base.gio.GioReader;
-
 import java.util.List;
 
 /**

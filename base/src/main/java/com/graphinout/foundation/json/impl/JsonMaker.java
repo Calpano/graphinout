@@ -5,6 +5,7 @@ import com.graphinout.foundation.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.json.path.IJsonObjectNavigationStep;
 import com.graphinout.foundation.json.value.IJsonArrayMutable;
 import com.graphinout.foundation.json.value.IJsonFactory;
+import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.graphinout.foundation.json.value.IJsonValue;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -144,6 +145,33 @@ public class JsonMaker {
             }
         }
         throw new AssertionError("unreachable");
+    }
+
+    /**
+     *
+     * @param value
+     * @param propertyKey
+     * @return
+     * @throws IllegalStateException if not a {@link IJsonObject}
+     */
+    public static IJsonValue removeProperty(
+            IJsonValue value, String propertyKey) throws IllegalStateException {
+        if(!value.isObject())
+            throw new IllegalStateException();
+        IJsonObject object = value.asObject();
+        if(object instanceof IJsonObjectMutable objectMutable) {
+            objectMutable.removeProperty(propertyKey);
+            return object;
+        } else {
+            // create a copy without that property
+            IJsonObjectMutable newObject = value.factory().createObjectMutable();
+            for(String key : object.keys()) {
+                if(!key.equals(propertyKey)) {
+                    newObject.addProperty(key, object.get(key));
+                }
+            }
+            return newObject;
+        }
     }
 
 }

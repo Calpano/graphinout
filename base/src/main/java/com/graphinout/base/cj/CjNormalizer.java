@@ -1,7 +1,5 @@
 package com.graphinout.base.cj;
 
-import com.graphinout.base.cj.element.CjDocuments;
-import com.graphinout.base.cj.element.ICjDocument;
 import com.graphinout.base.graphml.CjGraphmlMapping;
 import com.graphinout.foundation.json.JsonConstants;
 import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
@@ -74,7 +72,7 @@ public class CjNormalizer {
         //TODO parse to CjDoc, but this requires reader-cj, which depends still on reader-graphml for the gio bridge
         // ICjDocument cjDoc = CjDocuments.parseJsonString(cjJson);
 
-        if(cjJson.isBlank()) {
+        if (cjJson.isBlank()) {
             this.resultJson = "";
             return;
         }

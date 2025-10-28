@@ -2,7 +2,7 @@ package com.graphinout.base.cj;
 
 
 import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.cj.stream.impl.CjStream2CjDocumentWriter;
+import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.graphinout.foundation.TestFileUtil;
@@ -32,7 +32,7 @@ public class Cj2CjElementsTest {
     @DisplayName("Test all Canonical CJ files together")
     void test_Json2Cj2Elements2Cj2Json(String displayPath, Resource xmlResource) throws Exception {
         // == OUT Pipeline
-        CjStream2CjDocumentWriter cj2ElementsWriter = new CjStream2CjDocumentWriter();
+        CjWriter2CjDocumentWriter cj2ElementsWriter = new CjWriter2CjDocumentWriter();
         // == IN Pipeline
         SingleInputSourceOfString inputSource = TestFileUtil.inputSource(xmlResource);
 

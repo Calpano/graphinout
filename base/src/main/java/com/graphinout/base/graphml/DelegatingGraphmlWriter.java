@@ -1,10 +1,15 @@
 package com.graphinout.base.graphml;
 
+import com.graphinout.base.BaseOutput;
+import com.graphinout.base.reader.Locator;
+import com.graphinout.foundation.input.ContentError;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
-public class DelegatingGraphmlWriter implements GraphmlWriter {
+public class DelegatingGraphmlWriter extends BaseOutput implements GraphmlWriter {
 
     private final List<GraphmlWriter> writers;
 
@@ -108,6 +113,20 @@ public class DelegatingGraphmlWriter implements GraphmlWriter {
         for (GraphmlWriter writer : writers) {
             writer.portStart(port);
         }
+    }
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        super.setContentErrorHandler(errorHandler);
+        // chain
+        writers.forEach(w -> w.setContentErrorHandler(errorHandler));
+    }
+
+    @Override
+    public void setLocator(Locator locator) {
+        super.setLocator(locator);
+        // chain
+        writers.forEach(w -> w.setLocator(locator));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.graphinout.foundation.json.stream;
 
 
+import com.graphinout.foundation.input.IHandleContentErrors;
 import com.graphinout.foundation.json.JsonException;
 
 /**
@@ -18,7 +19,7 @@ import com.graphinout.foundation.json.JsonException;
  *
  * @author xamde
  */
-public interface JsonWriter extends JsonValueWriter {
+public interface JsonWriter extends JsonValueWriter, IHandleContentErrors {
 
 
     /**

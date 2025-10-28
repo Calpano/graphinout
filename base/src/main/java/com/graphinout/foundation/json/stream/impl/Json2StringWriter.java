@@ -1,5 +1,6 @@
 package com.graphinout.foundation.json.stream.impl;
 
+import com.graphinout.base.BaseOutput;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.JsonWriter;
 
@@ -9,10 +10,9 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 
 /**
- * Base class for collecting all JSON calls into a string.
- * Impl uses {@link #jsonString()} and {@link #reset()}.
+ * Base class for collecting all JSON calls into a string. Impl uses {@link #jsonString()} and {@link #reset()}.
  */
-public class Json2StringWriter implements JsonWriter {
+public class Json2StringWriter extends BaseOutput implements JsonWriter {
 
     private final StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter();
     private final @Nullable Consumer<String> onDone;
@@ -23,11 +23,6 @@ public class Json2StringWriter implements JsonWriter {
 
     public Json2StringWriter(@Nullable Consumer<String> onDone) {
         this.onDone = onDone;
-    }
-
-    @Override
-    public String toString() {
-        return jsonWriter.json();
     }
 
     @Override
@@ -120,6 +115,11 @@ public class Json2StringWriter implements JsonWriter {
 
     public void reset() {
         jsonWriter.reset();
+    }
+
+    @Override
+    public String toString() {
+        return jsonWriter.json();
     }
 
 }

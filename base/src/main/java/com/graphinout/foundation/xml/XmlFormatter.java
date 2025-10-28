@@ -2,6 +2,7 @@ package com.graphinout.foundation.xml;
 
 import com.graphinout.foundation.text.ITextWriter;
 import com.graphinout.foundation.text.TextReader;
+import com.graphinout.foundation.text.TextWriterOnStringBuilder;
 import org.slf4j.Logger;
 
 import java.util.Locale;
@@ -85,7 +86,7 @@ public class XmlFormatter {
      */
     public static String wrap(String raw, int lineLength) {
         StringBuilder result = new StringBuilder();
-        ITextWriter resultWriter = new ITextWriter.TextWriterOnStringBuilder(result);
+        ITextWriter resultWriter = new TextWriterOnStringBuilder(result);
 
         TextReader.read(raw, rawLine -> {
             StringBuilder line = new StringBuilder();

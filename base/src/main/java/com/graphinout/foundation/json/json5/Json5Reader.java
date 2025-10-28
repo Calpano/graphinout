@@ -3,44 +3,31 @@ package com.graphinout.foundation.json.json5;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.graphinout.base.gio.GioDocument;
-import com.graphinout.base.gio.GioEdge;
-import com.graphinout.base.gio.GioEndpoint;
-import com.graphinout.base.gio.GioGraph;
-import com.graphinout.base.gio.GioNode;
-import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.gio.GioWriter;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.base.BaseOutput;
+import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
+import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.GioReader;
 import com.graphinout.base.reader.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Reader for JSON5 format (JSON with comments and other extensions). Handles the Connected JSON format with JSON5
  * syntax.
  */
-public class Json5Reader implements GioReader {
+public class Json5Reader extends BaseOutput implements GioReader {
 
-    private static final JsonFactory JSON_FACTORY = new JsonFactory();
     public static final String FORMAT_ID = "json5";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Connected JSON5 Format", ".json5");
-
-    private @Nullable Consumer<ContentError> errorHandler;
-
-    @Override
-    public void errorHandler(Consumer<ContentError> errorHandler) {
-        this.errorHandler = errorHandler;
-    }
+    private static final JsonFactory JSON_FACTORY = new JsonFactory();
 
     @Override
     public GioFileFormat fileFormat() {
@@ -48,7 +35,7 @@ public class Json5Reader implements GioReader {
     }
 
     @Override
-    public void read(InputSource inputSource, GioWriter writer) throws IOException {
+    public void read(InputSource inputSource, ICjStream writer) throws IOException {
         if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
@@ -70,17 +57,14 @@ public class Json5Reader implements GioReader {
             }
 
         } catch (Exception e) {
-            if (errorHandler != null) {
-                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "Failed to parse JSON5 content: " + e.getMessage(), null));
-            }
-            throw new IOException("Failed to parse JSON5 content", e);
+            throw sendContentError_Error("Failed to parse JSON5 content", e);
         }
     }
 
-    private void ensureNodeExists(String nodeId, GioWriter writer, Map<String, String> createdNodes) throws IOException {
+    private void ensureNodeExists(String nodeId, ICjStream writer, Map<String, String> createdNodes) {
         if (!createdNodes.containsKey(nodeId)) {
-            writer.startNode(GioNode.builder().id(nodeId).build());
-            writer.endNode(null);
+            // Create the node
+            writer.node(writer.createNodeChunkWithId(nodeId));
             createdNodes.put(nodeId, nodeId);
         }
     }
@@ -120,7 +104,7 @@ public class Json5Reader implements GioReader {
         }
     }
 
-    private void processEdgeFromMap(Map<String, Object> edgeData, GioWriter writer, Map<String, String> createdNodes) throws IOException {
+    private void processEdgeFromMap(Map<String, Object> edgeData, ICjStream writer, Map<String, String> createdNodes) throws IOException {
         // Handle simple source/target format
         Object sourceObj = edgeData.get("source");
         Object targetObj = edgeData.get("target");
@@ -133,14 +117,10 @@ public class Json5Reader implements GioReader {
             ensureNodeExists(sourceId, writer, createdNodes);
             ensureNodeExists(targetId, writer, createdNodes);
 
-            // Create edge
-            List<GioEndpoint> endpoints = new ArrayList<>();
-            endpoints.add(GioEndpoint.builder().node(sourceId).build());
-            endpoints.add(GioEndpoint.builder().node(targetId).build());
-
-            GioEdge edge = GioEdge.builder().endpoints(endpoints).build();
-            writer.startEdge(edge);
-            writer.endEdge();
+            ICjEdgeChunkMutable edgeChunk = writer.createEdgeChunk();
+            edgeChunk.addEndpoint(ep -> ep.node(sourceId));
+            edgeChunk.addEndpoint(ep -> ep.node(targetId));
+            writer.edge(edgeChunk);
             return;
         }
 
@@ -149,8 +129,8 @@ public class Json5Reader implements GioReader {
         if (endpointsObj instanceof List) {
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> endpointsList = (List<Map<String, Object>>) endpointsObj;
-            List<GioEndpoint> endpoints = new ArrayList<>();
 
+            ICjEdgeChunkMutable edgeChunk = writer.createEdgeChunk();
             for (Map<String, Object> endpointData : endpointsList) {
                 Object nodeIdObj = endpointData.get("node");
                 Object portObj = endpointData.get("port");
@@ -159,26 +139,25 @@ public class Json5Reader implements GioReader {
                 if (nodeIdObj != null) {
                     String nodeId = nodeIdObj instanceof String ? (String) nodeIdObj : String.valueOf(nodeIdObj);
                     ensureNodeExists(nodeId, writer, createdNodes);
-
-                    GioEndpoint.GioEndpointBuilder endpointBuilder = GioEndpoint.builder().node(nodeId);
-                    if (portObj != null) {
-                        endpointBuilder.port(String.valueOf(portObj));
-                    }
-                    endpoints.add(endpointBuilder.build());
+                    edgeChunk.addEndpoint(ep -> {
+                        ep.node(nodeId);
+                        if (portObj != null) {
+                            ep.port(String.valueOf(portObj));
+                        }
+                    });
                 }
             }
 
-            if (!endpoints.isEmpty()) {
-                GioEdge edge = GioEdge.builder().endpoints(endpoints).build();
-                writer.startEdge(edge);
-                writer.endEdge();
+            if (edgeChunk.endpoints().findAny().isPresent()) {
+                writer.edge(edgeChunk);
             }
         }
     }
 
-    private void processJson5ContentWithJackson(JsonParser parser, GioWriter writer) throws IOException {
-        writer.startDocument(GioDocument.builder().build());
-        writer.startGraph(GioGraph.builder().build());
+
+    private void processJson5ContentWithJackson(JsonParser parser, ICjStream writer) throws IOException {
+        writer.documentStart(writer.createDocumentChunk());
+        writer.graphStart(writer.createGraphChunk());
 
         Map<String, String> createdNodes = new HashMap<>();
         Map<String, Object> rootData = new HashMap<>();
@@ -214,18 +193,17 @@ public class Json5Reader implements GioReader {
             }
         }
 
-        writer.endGraph(null);
-        writer.endDocument();
+        writer.graphEnd();
+        writer.documentEnd();
     }
 
-    private void processNodeFromMap(Map<String, Object> nodeData, GioWriter writer, Map<String, String> createdNodes) throws IOException {
+    private void processNodeFromMap(Map<String, Object> nodeData, ICjStream writer, Map<String, String> createdNodes) throws IOException {
         Object idObj = nodeData.get("id");
         if (idObj != null) {
             String nodeId = idObj instanceof String ? (String) idObj : String.valueOf(idObj);
 
             if (!createdNodes.containsKey(nodeId)) {
-                writer.startNode(GioNode.builder().id(nodeId).build());
-                writer.endNode(null);
+                writer.node(writer.createNodeChunkWithId(nodeId));
                 createdNodes.put(nodeId, nodeId);
             }
         }

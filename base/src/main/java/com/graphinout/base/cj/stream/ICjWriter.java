@@ -4,8 +4,8 @@ import com.graphinout.base.cj.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.CjType;
 import com.graphinout.base.cj.ICjEdgeType;
+import com.graphinout.foundation.input.IHandleContentErrors;
 import com.graphinout.foundation.json.stream.IJsonXmlStringWriter;
-import com.graphinout.foundation.json.stream.JsonValueWriter;
 import com.graphinout.foundation.json.stream.JsonWriter;
 
 import java.util.List;
@@ -60,7 +60,7 @@ import java.util.function.Consumer;
  *     <li>{@link ICjWriter#documentEnd() CJ document end}</li>
  * </ol>
  */
-public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWriter {
+public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWriter, IHandleContentErrors {
 
     /** Document base uri */
     void baseUri(String baseUri);
@@ -68,6 +68,16 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
     default ICjWriter cjWriter() {
         return this;
     }
+
+    void connectedJsonEnd();
+
+    void connectedJsonStart();
+
+    void connectedJson__canonical(boolean b);
+
+    void connectedJson__versionDate(String s);
+
+    void connectedJson__versionNumber(String s);
 
     /** endpoint.direction */
     void direction(CjDirection direction);
@@ -119,25 +129,7 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
      */
     void graphStart() throws CjException;
 
-    void connectedJsonStart();
-    void connectedJson__canonical(boolean b);
-    void connectedJson__versionDate(String s);
-    void connectedJson__versionNumber(String s);
-    void connectedJsonEnd();
-
     void id(String id);
-
-    /**
-     * Convenience method to send JSON data.
-     * "data"
-     *
-     * @param jsonValue to send
-     */
-    default void jsonData(Consumer<JsonValueWriter> jsonValue) {
-        jsonDataStart();
-        jsonValue.accept(this);
-        jsonDataEnd();
-    }
 
     /** Marker for extension data end. */
     void jsonDataEnd();
@@ -165,11 +157,25 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
 
     void language(String language);
 
+    default <T> void list(List<T> list, CjType cjArrayType, BiConsumer<T, ICjWriter> element_writer) {
+        if (!list.isEmpty()) {
+            listStart(cjArrayType);
+            list.forEach(x -> element_writer.accept(x, this));
+            listEnd(cjArrayType);
+        }
+    }
+
     /** TODO doc */
     void listEnd(CjType cjType);
 
     /** TODO doc */
     void listStart(CjType cjType);
+
+    default <T> void maybe(T object, Consumer<T> consumer) {
+        if (object != null) {
+            consumer.accept(object);
+        }
+    }
 
     /**
      * CJ Node end event.
@@ -209,19 +215,5 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
     void portStart();
 
     void value(String value);
-
-   default <T> void list(List<T> list, CjType cjArrayType, BiConsumer<T, ICjWriter> element_writer) {
-       if(!list.isEmpty()) {
-           listStart(cjArrayType);
-           list.forEach(x->element_writer.accept(x,this));
-           listEnd(cjArrayType);
-       }
-   }
-
-    default <T> void  maybe(T object, Consumer<T> consumer) {
-       if(object!=null) {
-            consumer.accept(object);
-        }
-    }
 
 }

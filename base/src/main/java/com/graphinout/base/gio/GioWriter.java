@@ -17,6 +17,7 @@ import java.net.URL;
  * <p>
  * For large files, we don't want to keep the entire graph object in memory.
  */
+@Deprecated
 public interface GioWriter extends JsonValueWriter {
 
     void baseUri(String baseUri) throws IOException;

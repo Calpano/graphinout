@@ -1,5 +1,6 @@
 package com.graphinout.base.validation.graphml;
 
+import com.graphinout.base.BaseOutput;
 import com.graphinout.base.graphml.GraphmlWriter;
 import com.graphinout.base.graphml.IGraphmlData;
 import com.graphinout.base.graphml.IGraphmlDocument;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class ValidatingGraphMlWriter implements GraphmlWriter {
+public class ValidatingGraphMlWriter extends BaseOutput implements GraphmlWriter {
 
     public enum CurrentElement {
         /**

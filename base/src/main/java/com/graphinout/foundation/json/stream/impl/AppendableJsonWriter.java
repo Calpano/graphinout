@@ -1,5 +1,6 @@
 package com.graphinout.foundation.json.stream.impl;
 
+import com.graphinout.base.BaseOutput;
 import com.graphinout.foundation.json.JSON;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.JsonWriter;
@@ -12,7 +13,7 @@ import java.util.Stack;
 /**
  * Reconstructs a JSON syntax string from a {@link JsonWriter}. Reusable.
  */
-public abstract class AppendableJsonWriter implements JsonWriter {
+public abstract class AppendableJsonWriter extends BaseOutput implements JsonWriter {
 
     enum State {First, Later, Property}
 

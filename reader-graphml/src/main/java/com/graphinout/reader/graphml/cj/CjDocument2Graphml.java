@@ -43,6 +43,8 @@ import com.graphinout.base.graphml.impl.GraphmlData;
 import com.graphinout.foundation.json.value.IJsonValue;
 import com.graphinout.foundation.json.value.java.JavaJsonObject;
 import com.graphinout.foundation.util.Nullables;
+import com.graphinout.foundation.util.PowerStreams;
+import com.graphinout.foundation.util.ThrowingConsumer;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;
 
@@ -78,7 +80,7 @@ public class CjDocument2Graphml {
     }
 
     public static void writeToGraphml(ICjDocument cjDoc, GraphmlWriter graphmlWriter) throws IOException {
-        assert cjDoc != null;
+        if (cjDoc == null) return;
         new CjDocument2Graphml(graphmlWriter).writeDocumentToGraphml(cjDoc);
     }
 
@@ -113,8 +115,22 @@ public class CjDocument2Graphml {
         writeData_CustomAttributes(cjDoc, graphmlBuilder);
 
         this.graphmlSchema = CjData2GraphmlKeyData.buildGraphmlSchema(cjDoc);
+
+        boolean usesCjData = PowerStreams.filterMap(cjDoc.allElements(), ICjHasData.class) //
+                .map(ICjHasData::data).anyMatch(Objects::nonNull);
+        if(!usesCjData) {
+            graphmlSchema.removeKeyById(CjGraphmlMapping.GraphmlDataElement.CjJsonData.attrName);
+        }
+
+        // TODO are cj_jsonData used in this document?
+        // TODO are cj_label used in this doc?
+        // TODO are cj_edgeType used?
+
+        // FIXME filter out unused keys (such as some builtin CJ)
+
         // <!ELEMENT graphml  (desc?,key*,(data|graph)*)>
         graphmlWriter.documentStart(graphmlBuilder.build());
+
         forEach(graphmlSchema.keys(), graphmlWriter::key);
 
         // Write <data> for CJ:baseUri (Graphml has no baseUri)
@@ -127,7 +143,7 @@ public class CjDocument2Graphml {
             graphmlWriter.data(graphmlData);
         }
         // emit cjData as graphMl data
-        writeData_Json(cjDoc);
+        writeData_Json(cjDoc, graphmlWriter::data);
 
         forEach(cjDoc.graphs(), this::writeGraph);
 
@@ -200,7 +216,7 @@ public class CjDocument2Graphml {
         });
 
         writeCjLabelAsGraphmlData(cjEdge.label());
-        writeData_Json(cjEdge);
+        writeData_Json(cjEdge, graphmlWriter::data);
 
         forEach(cjEdge.graphs(), this::writeGraph);
 
@@ -225,7 +241,7 @@ public class CjDocument2Graphml {
         writeData_Description(cjGraph, graphmlBuilder);
 
         graphmlWriter.graphStart(graphmlBuilder.build());
-        writeData_Json(cjGraph);
+        writeData_Json(cjGraph, graphmlWriter::data);
 
         writeCjLabelAsGraphmlData(cjGraph.label());
 
@@ -255,7 +271,7 @@ public class CjDocument2Graphml {
         graphmlWriter.nodeStart(graphmlBuilder.build());
 
         writeCjLabelAsGraphmlData(cjNode.label());
-        writeData_Json(cjNode);
+        writeData_Json(cjNode, graphmlWriter::data);
 
         forEach(cjNode.ports(), this::writePort);
         forEach(cjNode.graphs(), this::writeGraph);
@@ -271,7 +287,7 @@ public class CjDocument2Graphml {
         graphmlWriter.portStart(portBuilder.build());
 
         writeCjLabelAsGraphmlData(cjPort.label());
-        writeData_Json(cjPort);
+        writeData_Json(cjPort, graphmlWriter::data);
 
         forEach(cjPort.ports(), this::writePort);
         graphmlWriter.portEnd();
@@ -318,7 +334,7 @@ public class CjDocument2Graphml {
     }
 
     /** Write CJ .data to GraphMl {@code <data>} */
-    private void writeData_Json(ICjHasData cjHasData) throws IOException {
+    private void writeData_Json(ICjHasData cjHasData, ThrowingConsumer<IGraphmlData, IOException> graphmlDataConsumer) {
         ICjData data = cjHasData.data();
         if (data == null) return;
         IJsonValue value = data.jsonValue();
@@ -326,7 +342,7 @@ public class CjDocument2Graphml {
 
         if (value.isPrimitive() || value.isArray()) {
             IGraphmlData graphmlData = GraphmlDataElement.CjJsonData.toGraphmlData(value.toJsonString());
-            graphmlWriter.data(graphmlData);
+            graphmlDataConsumer.accept(graphmlData);
             return;
         }
 
@@ -355,15 +371,11 @@ public class CjDocument2Graphml {
                     graphmlData.addXmlAttributes(Map.of(XML.XML_SPACE, XML.XML_SPACE__PRESERVE));
                 }
 
-                try {
-                    graphmlWriter.data(graphmlData);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                graphmlDataConsumer.accept(graphmlData);
             });
         } else {
             IGraphmlData graphmlData = GraphmlDataElement.CjJsonData.toGraphmlData(value.toJsonString());
-            graphmlWriter.data(graphmlData);
+            graphmlDataConsumer.accept(graphmlData);
         }
     }
 

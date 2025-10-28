@@ -5,8 +5,11 @@ import com.graphinout.base.cj.element.ICjDocumentChunk;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
 import com.graphinout.base.cj.element.ICjGraphChunk;
 import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.foundation.json.value.IJsonFactory;
-import com.graphinout.foundation.json.value.java.JavaJsonFactory;
+import com.graphinout.foundation.input.ContentError;
+import com.graphinout.base.reader.Locator;
+
+import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 /**
  * A no-op implementation of ICjStream.
@@ -15,6 +18,12 @@ import com.graphinout.foundation.json.value.java.JavaJsonFactory;
  * as usual even if the stream ignores them.
  */
 public class NoopCjStream extends CjFactory implements ICjStream {
+
+    @Nullable
+    @Override
+    public Consumer<ContentError> contentErrorHandler() {
+        return null;
+    }
 
     @Override
     public void documentEnd() {
@@ -46,6 +55,12 @@ public class NoopCjStream extends CjFactory implements ICjStream {
         // no-op
     }
 
+    @Nullable
+    @Override
+    public Locator locator() {
+        return null;
+    }
+
     @Override
     public void nodeEnd() {
         // no-op
@@ -53,6 +68,16 @@ public class NoopCjStream extends CjFactory implements ICjStream {
 
     @Override
     public void nodeStart(ICjNodeChunk node) {
+        // no-op
+    }
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        // no-op
+    }
+
+    @Override
+    public void setLocator(Locator locator) {
         // no-op
     }
 

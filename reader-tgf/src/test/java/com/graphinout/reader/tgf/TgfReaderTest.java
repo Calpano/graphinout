@@ -6,7 +6,7 @@ import com.graphinout.base.cj.element.ICjEdgeChunk;
 import com.graphinout.base.cj.element.ICjGraphChunk;
 import com.graphinout.base.cj.element.ICjNodeChunk;
 import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.json.value.java.JavaJsonFactory;
@@ -87,7 +87,7 @@ class TgfReaderTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(EDGES_ONLY.getBytes(StandardCharsets.UTF_8));
         when(mockInputSrc.inputStream()).thenReturn(inputStream);
 
-        underTest.errorHandler(mockErrorConsumer);
+        underTest.setContentErrorHandler(mockErrorConsumer);
         underTest.read(mockInputSrc, mockCjStream);
 
         // Verify interactions counts with adapter semantics
@@ -104,7 +104,7 @@ class TgfReaderTest {
     void shouldNotCallErrorConsumerAndGioWriterWhenTGFIsEmpty() throws IOException {
         when(mockInputSrc.inputStream()).thenReturn(new ByteArrayInputStream(EMPTY_FILE.getBytes()));
 
-        underTest.errorHandler(mockErrorConsumer);
+        underTest.setContentErrorHandler(mockErrorConsumer);
         underTest.read(mockInputSrc, mockCjStream);
 
         InOrder inOrder = Mockito.inOrder(mockCjStream);
@@ -119,7 +119,7 @@ class TgfReaderTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(NODES_ONLY.getBytes(StandardCharsets.UTF_8));
         when(mockInputSrc.inputStream()).thenReturn(inputStream);
 
-        underTest.errorHandler(mockErrorConsumer);
+        underTest.setContentErrorHandler(mockErrorConsumer);
         underTest.read(mockInputSrc, mockCjStream);
 
         // Verify counts, order not enforced due to adapter semantics
@@ -147,7 +147,7 @@ class TgfReaderTest {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(THREE_NODES_TWO_EDGES_WITH_LABEL.getBytes(StandardCharsets.UTF_8));
         when(mockInputSrc.inputStream()).thenReturn(byteArrayInputStream);
 
-        underTest.errorHandler(TgfReaderTest.this.mockErrorConsumer);
+        underTest.setContentErrorHandler(TgfReaderTest.this.mockErrorConsumer);
         underTest.read(mockInputSrc, mockCjStream);
 
         verify(mockCjStream).createDocumentChunk();

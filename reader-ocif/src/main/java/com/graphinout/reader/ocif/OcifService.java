@@ -1,7 +1,7 @@
 package com.graphinout.reader.ocif;
 
 import com.graphinout.base.GioService;
-import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.GioReader;
 
 import java.util.Arrays;
 import java.util.List;

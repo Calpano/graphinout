@@ -1,12 +1,5 @@
-package com.graphinout.foundation.output;
+package com.graphinout.base.graphml;
 
-import com.graphinout.base.graphml.IGraphmlDocument;
-import com.graphinout.base.graphml.IGraphmlEndpoint;
-import com.graphinout.base.graphml.IGraphmlGraph;
-import com.graphinout.base.graphml.IGraphmlKey;
-import com.graphinout.base.graphml.IGraphmlLocator;
-import com.graphinout.base.graphml.IGraphmlNode;
-import com.graphinout.base.graphml.IGraphmlPort;
 import com.graphinout.base.graphml.impl.GraphmlData;
 import com.graphinout.base.graphml.impl.GraphmlEdge;
 import com.graphinout.base.graphml.impl.GraphmlHyperEdge;

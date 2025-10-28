@@ -1,14 +1,13 @@
 package com.graphinout.reader.cj;
 
-import com.graphinout.base.CjDocument2CjStream;
-import com.graphinout.base.CjStream2GioWriter;
 import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.graphinout.base.cj.stream.impl.CjStream2CjDocumentWriter;
+import com.graphinout.base.cj.stream.api.CjWriter2CjStream;
+import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.stream.impl.Json2CjWriter;
-import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.GioReader;
 import com.graphinout.base.gio.GioWriter;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.base.reader.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
@@ -30,7 +29,7 @@ public class ConnectedJsonReader implements GioReader {
     private @Nullable Consumer<ContentError> errorHandler;
 
     public static ICjDocument readToDocument(String json) {
-        CjStream2CjDocumentWriter cj2ElementsWriter = new CjStream2CjDocumentWriter();
+        CjWriter2CjDocumentWriter cj2ElementsWriter = new CjWriter2CjDocumentWriter();
         JsonWriter jsonWriter = Json2CjWriter.createWritingTo(cj2ElementsWriter);
         try {
             JsonReaderImpl jsonReader = new JsonReaderImpl();
@@ -43,7 +42,7 @@ public class ConnectedJsonReader implements GioReader {
     }
 
     @Override
-    public void errorHandler(Consumer<ContentError> errorHandler) {
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
         this.errorHandler = errorHandler;
     }
 
@@ -53,29 +52,11 @@ public class ConnectedJsonReader implements GioReader {
     }
 
     @Override
-    public void read(InputSource inputSource, GioWriter writer) throws IOException {
-        // we won't build a CJ to GIO Reader
-        // so we reuse the path CJ -> GraphML -> GIO, until Graphinout replaced GIO with CJ
-
-        // JSON -> CJ doc
-        CjStream2CjDocumentWriter cj2ElementsWriter = new CjStream2CjDocumentWriter();
-        JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(cj2ElementsWriter);
-        try {
-            JsonReaderImpl jsonReader = new JsonReaderImpl();
-            jsonReader.read(inputSource, jsonWriter_in);
-            ICjDocument cjDoc = cj2ElementsWriter.resultDoc();
-            if (cjDoc == null) {
-                cjDoc = new CjDocumentElement();
-            }
-            // CJ doc -> GIO
-            CjStream2GioWriter cjStream2GioWriter = new CjStream2GioWriter(writer);
-            CjDocument2CjStream.toCjStream(cjDoc, cjStream2GioWriter);
-        } catch (Exception e) {
-            if (errorHandler != null) {
-                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "Failed to parse JSON content: " + e.getMessage(), null));
-            }
-            throw new IOException("Failed to parse JSON content", e);
-        }
+    public void read(InputSource inputSource, ICjStream writer) throws IOException {
+        CjWriter2CjStream cjWriter2CjStream = new CjWriter2CjStream(writer);
+        JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(cjWriter2CjStream);
+        JsonReaderImpl jsonReader = new JsonReaderImpl();
+        jsonReader.read(inputSource, jsonWriter_in);
     }
 
 }

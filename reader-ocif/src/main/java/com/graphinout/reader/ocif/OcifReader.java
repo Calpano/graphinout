@@ -3,8 +3,8 @@ package com.graphinout.reader.ocif;
 import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.element.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.base.GioReader;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.base.reader.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
@@ -42,7 +42,7 @@ public class OcifReader implements GioReader {
     private @Nullable Consumer<ContentError> errorHandler;
 
     @Override
-    public void errorHandler(Consumer<ContentError> errorHandler) {
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
         this.errorHandler = errorHandler;
     }
 

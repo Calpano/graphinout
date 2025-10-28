@@ -1,8 +1,9 @@
 package com.graphinout.foundation.xml;
 
 
-import com.graphinout.base.reader.ContentError;
 import com.graphinout.base.reader.Location;
+import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.input.ContentErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -12,12 +13,10 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Consumer;
 
 /**
  * Listen to SAX events and map them to XmlWriter events. No stack is used, as XML validation either happened before or
@@ -27,16 +26,13 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     private static final Logger log = LoggerFactory.getLogger(Sax2XmlWriter.class);
     private final XmlWriter xmlWriter;
-    private final @Nullable Consumer<ContentError> errorConsumer;
     private final Map<String, String> namespaces = new HashMap<>();
-    private Locator locator;
+    private final SaxCharBuffer saxCharBuffer;
     private boolean isFirstElement = true;
-    private final  SaxCharBuffer saxCharBuffer;
 
-    public Sax2XmlWriter(XmlWriter xmlWriter, @Nullable Consumer<ContentError> errorConsumer) {
+    public Sax2XmlWriter(XmlWriter xmlWriter) {
         assert xmlWriter != null;
         this.xmlWriter = xmlWriter;
-        this.errorConsumer = errorConsumer;
         this.saxCharBuffer = new SaxCharBuffer(xmlWriter);
     }
 
@@ -88,8 +84,10 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
         try {
             saxCharBuffer.charactersEnd();
             xmlWriter.elementEnd(uri, localName, qName);
+        } catch (ContentErrorException e) {
+            // already handled
         } catch (Exception e) {
-            throw buildError(e);
+            throw xmlWriter.sendContentError_Error("endElement", e);
         }
     }
 
@@ -98,7 +96,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     @Override
     public void error(SAXParseException e) throws SAXException {
-        throw buildError(e);
+        throw xmlWriter.sendContentError_Error("SAX error", e);
     }
 
     @Override
@@ -113,8 +111,13 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     }
 
     @Override
-    public void setDocumentLocator(Locator locator) {
-        this.locator = locator;
+    public void setDocumentLocator(Locator saxLocator) {
+        this.xmlWriter.setLocator(new com.graphinout.base.reader.Locator() {
+            @Override
+            public Location location() {
+                return new Location(saxLocator.getLineNumber(), saxLocator.getColumnNumber());
+            }
+        });
     }
 
     @Override
@@ -161,10 +164,24 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
                 }
                 isFirstElement = false;
             }
-            xmlWriter.elementStart(uri,localName,qName, attMap);
+            xmlWriter.elementStart(uri, localName, qName, attMap);
+        } catch (ContentErrorException e) {
+            // this one is already logged
         } catch (Exception e) {
-            throw buildError(e);
+            throw xmlWriter.sendContentError_Error("While parsing start element <"+qName+"> with atts="+toString(attributes)+": "+e.getMessage(), e);
         }
+    }
+
+    private static String toString(Attributes attributes) {
+        if(attributes.getLength()==0)
+            return "--";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            String attributesQName = attributes.getQName(i);
+            String attributesValue = attributes.getValue(i);
+            sb.append(attributesQName).append("=\"").append(attributesValue).append("\" ");
+        }
+        return sb.toString();
     }
 
     @Override
@@ -178,27 +195,11 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     @Override
     public void warning(SAXParseException e) throws SAXException {
-        //noinspection ThrowableNotThrown
-        buildException(ContentError.ErrorLevel.Warn, e);
+        xmlWriter.onContentError(new ContentError(ContentError.ErrorLevel.Warn, e.getMessage(), new Location(e.getLineNumber(), e.getColumnNumber())));
     }
 
-    private RuntimeException buildError(Exception e) {
-        return buildException(ContentError.ErrorLevel.Error, e);
-    }
-
-
-    private @Nullable RuntimeException buildException(ContentError.ErrorLevel errorLevel, Exception e) {
-        ContentError contentError = new ContentError(errorLevel, e.getMessage(), locator == null ? null : new Location(locator.getLineNumber(), locator.getColumnNumber()));
-        if (errorConsumer != null) {
-            errorConsumer.accept(contentError);
-        }
-        String location = locator == null ? "N/A" : locator.getLineNumber() + ":" + locator.getColumnNumber();
-        if (errorLevel == ContentError.ErrorLevel.Error) {
-            return new RuntimeException("While parsing " + location + "\n" + "Message: " + e.getMessage(), e);
-        } else {
-            log.warn("ContentError: " + contentError, e);
-            return null;
-        }
+    private void onContentError(ContentError contentError) {
+        xmlWriter.onContentError(contentError);
     }
 
 }

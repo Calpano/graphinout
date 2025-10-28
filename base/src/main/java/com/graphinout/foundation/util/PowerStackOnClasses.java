@@ -94,7 +94,7 @@ public class PowerStackOnClasses<S> {
 
     /** @return the added element. */
     public <T extends S> T push(T element) {
-        assert element != null;
+        assert element != null : "Don't push null into the stack";
         stack.push(element);
         return element;
     }

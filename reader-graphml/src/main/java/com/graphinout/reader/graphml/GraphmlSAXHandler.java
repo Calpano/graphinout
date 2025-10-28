@@ -13,7 +13,7 @@ import com.graphinout.base.gio.GioPort;
 import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.graphml.Graphml;
 import com.graphinout.base.graphml.GraphmlElements;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.base.reader.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

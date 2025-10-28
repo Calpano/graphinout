@@ -1,14 +1,16 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.gio.GioWriter;
+import com.graphinout.base.cj.element.ICjDocument;
 import com.graphinout.base.graphml.Graphml2XmlWriter;
-import com.graphinout.base.graphml.gio.Gio2GraphmlWriter;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.base.graphml.GraphmlWriter;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.TestFileUtil;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.xml.Xml2StringWriter;
 import com.graphinout.foundation.xml.XmlNormalizer;
+import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
+import com.graphinout.reader.graphml.cj.CjStream2GraphmlWriter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,12 +34,21 @@ class GraphmlXmlNamespacesTest {
         return TestFileProvider.graphmlResources().filter(tr -> tr.resource().getPath().contains("synthetic/namespace"));
     }
 
-    private static String parse_uri_string_graphml_gio_xml_string(Resource resource) throws IOException {
-        SingleInputSource singleInputSource = inputSource(resource);
+    /**
+     * Parse XML->Graphml->CJ->Graphml->XML
+     *
+     * @param resource
+     * @return
+     * @throws IOException
+     */
+    private static String parse_uri_string_graphml_xml_string(Resource resource) throws IOException {
         GraphmlReader graphmlReader = new GraphmlReader();
+        SingleInputSource singleInputSource = inputSource(resource);
+        @Nullable ICjDocument cjDoc = graphmlReader.readToCjDocument(singleInputSource);
+
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(xmlWriter));
-        graphmlReader.read(singleInputSource, gioWriter);
+        Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xmlWriter);
+        CjDocument2Graphml.writeToGraphml(cjDoc, graphml2XmlWriter);
         return xmlWriter.resultString();
     }
 
@@ -49,7 +60,7 @@ class GraphmlXmlNamespacesTest {
                 <?xml version="1.0" encoding="UTF-8"?>
                 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:foo="http://foo.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd">
                 </graphml>"""; //
-        String actual = parse_uri_string_graphml_gio_xml_string(resource);
+        String actual = parse_uri_string_graphml_xml_string(resource);
         assertEquals(expected, actual);
     }
 
@@ -60,14 +71,18 @@ class GraphmlXmlNamespacesTest {
         String content = resource.getContentAsString();
         SingleInputSource singleInputSource = inputSource(resource);
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        GraphmlReader graphmlReader = new GraphmlReader();
-        GioWriter gioWriter = new Gio2GraphmlWriter(new Graphml2XmlWriter(xmlWriter));
+        GraphmlWriter graphmlWriter = new Graphml2XmlWriter(xmlWriter);
+        CjStream2GraphmlWriter cjStream2GraphmlWriter = new CjStream2GraphmlWriter(graphmlWriter);
+
         List<ContentError> errorList = new ArrayList<>();
-        graphmlReader.errorHandler(errorList::add);
-        graphmlReader.read(singleInputSource, gioWriter);
+        GraphmlReader graphmlReader = new GraphmlReader();
+        graphmlReader.setContentErrorHandler(errorList::add);
+        graphmlReader.read(singleInputSource, cjStream2GraphmlWriter);
         assertEquals(2, errorList.size(), "Expect contentError for <myRoot> element");
-        assertEquals(ContentError.ErrorLevel.Warn, errorList.getFirst().getLevel());
-        assertEquals("The Element <myroot> not acceptable tag for Graphml.", errorList.getFirst().getMessage());
+        ContentError first = errorList.getFirst();
+        assertEquals(ContentError.ErrorLevel.Error, first.getLevel());
+        assertEquals("While parsing 2:83\n" +
+                "Message: XML Element <myroot> is not a Graphml tag and not allowing XML here. XmlParseContext{elementStack=[], mode=Graphml}", first.getMessage());
     }
 
     @Test
@@ -81,7 +96,7 @@ class GraphmlXmlNamespacesTest {
         @Nullable Resource expectedResource = TestFileUtil.expectedResource(resource, TEST_ID);
         assertThat(expectedResource).isNotNull();
 
-        String actual = parse_uri_string_graphml_gio_xml_string(resource);
+        String actual = parse_uri_string_graphml_xml_string(resource);
         actual = XmlNormalizer.normalize(actual);
 
         String expected = expectedResource.getContentAsString();

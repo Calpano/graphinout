@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import com.graphinout.base.BaseOutput;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.JsonWriter;
 
@@ -16,7 +17,7 @@ import java.util.Stack;
 /**
  * Base class for collecting all JSON calls into a string. Impl uses {@link #jsonNode()} and {@link #reset()}.
  */
-public class CjJson2JacksonNodeWriter implements JsonWriter {
+public class CjJson2JacksonNodeWriter extends BaseOutput implements JsonWriter {
 
     private final Stack<Object> stack = new Stack<>();
     private final JsonNodeFactory nf = JsonNodeFactory.instance;

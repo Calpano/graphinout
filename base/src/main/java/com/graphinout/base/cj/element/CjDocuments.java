@@ -1,6 +1,6 @@
 package com.graphinout.base.cj.element;
 
-import com.graphinout.base.cj.stream.impl.CjStream2CjDocumentWriter;
+import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
 import com.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.graphinout.foundation.input.SingleInputSource;
@@ -28,7 +28,7 @@ public class CjDocuments {
 
     public static ICjDocument parseCjJsonString(String contentName, String content) throws IOException {
         SingleInputSource singleInputSource = SingleInputSource.of(contentName, content);
-        CjStream2CjDocumentWriter cj2elements = new CjStream2CjDocumentWriter();
+        CjWriter2CjDocumentWriter cj2elements = new CjWriter2CjDocumentWriter();
         Json2CjWriter json2Cj = new Json2CjWriter(cj2elements);
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         jsonReader.read(singleInputSource, json2Cj);

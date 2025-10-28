@@ -6,9 +6,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 
 /**
- * Aggregates the multiple Java SAX API 'characters' calls into a single span of characters.
- * Also handles CDATA vs. normal, 'xml:space' = 'default' vs. 'preserve'.
- * Translates to {@link XmlCharacterWriter}.
+ * Aggregates the multiple Java SAX API 'characters' calls into a single span of characters. Also handles CDATA vs.
+ * normal, 'xml:space' = 'default' vs. 'preserve'. Translates to {@link XmlCharacterWriter}.
  */
 public class SaxCharBuffer {
 
@@ -69,6 +68,7 @@ public class SaxCharBuffer {
 
     /**
      * If we have a non-empty buffer, emit it.
+     *
      * @return if anything was emitted
      */
     private boolean maybeEmitCurrentSection() throws IOException {
@@ -88,10 +88,14 @@ public class SaxCharBuffer {
         // we need early line break normalization across platforms (CR LF->CR), even in CDATA
         String buffered = buffer.toString();
         buffered = StringFormatter.normalizeLineBreaks(buffered);
-        xmlCharacterWriter.characters(buffered, currentKind);
+        try {
+            xmlCharacterWriter.characters(buffered, currentKind);
+        } finally {
+            // resetting the buffer avoid reporting the same contentError several times
+            buffer.setLength(0);
+            currentKind = null;
+        }
 
-        buffer.setLength(0);
-        currentKind = null;
         return true;
     }
 

@@ -1,6 +1,11 @@
 package com.graphinout.base.writer;
 
+import com.graphinout.foundation.input.ContentError;
+import com.graphinout.base.reader.Locator;
 import com.graphinout.foundation.json.stream.JsonWriter;
+
+import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public class NoopJsonWriter implements JsonWriter {
 
@@ -10,11 +15,23 @@ public class NoopJsonWriter implements JsonWriter {
     @Override
     public void arrayStart() {}
 
+    @Nullable
+    @Override
+    public Consumer<ContentError> contentErrorHandler() {
+        return null;
+    }
+
     @Override
     public void documentEnd() {}
 
     @Override
     public void documentStart() {}
+
+    @Nullable
+    @Override
+    public Locator locator() {
+        return null;
+    }
 
     @Override
     public void objectEnd() {}
@@ -51,5 +68,15 @@ public class NoopJsonWriter implements JsonWriter {
 
     @Override
     public void onString(String s) {}
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+
+    }
+
+    @Override
+    public void setLocator(Locator locator) {
+
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.graphinout.reader.graphml;
 
+import com.graphinout.base.BaseOutput;
 import com.graphinout.base.gio.GioData;
 import com.graphinout.base.gio.GioDocument;
 import com.graphinout.base.gio.GioEdge;
@@ -30,7 +31,8 @@ import java.io.IOException;
 import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
 import static com.graphinout.foundation.util.Nullables.mapOrNull;
 
-public class Graphml2GioWriter implements GraphmlWriter {
+@Deprecated
+public class Graphml2GioWriter extends BaseOutput implements GraphmlWriter {
 
     private final GioWriter gioWriter;
     /** Graphml elements on the stack for locators */

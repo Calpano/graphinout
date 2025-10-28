@@ -18,11 +18,9 @@ import com.graphinout.base.cj.element.ICjHasIdMutable;
 import com.graphinout.base.cj.element.ICjHasLabelMutable;
 import com.graphinout.base.cj.element.ICjHasPortsMutable;
 import com.graphinout.base.cj.element.ICjLabelEntryMutable;
-import com.graphinout.base.cj.element.ICjLabelMutable;
 import com.graphinout.base.cj.element.ICjNodeMutable;
 import com.graphinout.base.cj.element.ICjPortMutable;
 import com.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.graphinout.base.cj.element.impl.CjLabelElement;
 import com.graphinout.base.cj.stream.ICjWriter;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
@@ -37,17 +35,17 @@ import static com.graphinout.foundation.util.Nullables.ifConsumerPresentAccept;
 /**
  * {@link ICjWriter} to {@link ICjDocument}
  */
-public class CjStream2CjDocumentWriter extends Json2JavaJsonWriter implements ICjWriter {
+public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements ICjWriter {
 
     private final PowerStackOnClasses<ICjElement> stack = PowerStackOnClasses.create();
     private final @Nullable Consumer<ICjDocument> onDone;
     private ICjDocument resultDoc;
 
-    public CjStream2CjDocumentWriter(@Nullable Consumer<ICjDocument> onDone) {
+    public CjWriter2CjDocumentWriter(@Nullable Consumer<ICjDocument> onDone) {
         this.onDone = onDone;
     }
 
-    public CjStream2CjDocumentWriter() {
+    public CjWriter2CjDocumentWriter() {
         this(null);
     }
 

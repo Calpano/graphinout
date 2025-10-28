@@ -6,7 +6,7 @@ import com.graphinout.base.cj.element.ICjEdge;
 import com.graphinout.base.cj.element.ICjEndpoint;
 import com.graphinout.base.cj.element.ICjGraph;
 import com.graphinout.base.cj.element.ICjNode;
-import com.graphinout.base.cj.stream.impl.CjStream2CjDocumentWriter;
+import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.stream.impl.Json2CjWriter;
 import com.graphinout.base.cj.stream.util.DelegatingCjWriter;
 import com.graphinout.base.cj.stream.util.LoggingCjWriter;
@@ -34,7 +34,7 @@ public class CjElementsParsingTest {
         assertThat(resourceUrl).isNotNull();
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
 
-        CjStream2CjDocumentWriter cj2elements = new CjStream2CjDocumentWriter();
+        CjWriter2CjDocumentWriter cj2elements = new CjWriter2CjDocumentWriter();
         DelegatingCjWriter cjWriter = new DelegatingCjWriter(cj2elements);
         cjWriter.addCjWriter(new LoggingCjWriter(false));
         SingleInputSource singleInputSource = SingleInputSource.of(resourceUrl.toString(), content);

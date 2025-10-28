@@ -8,9 +8,9 @@ import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.element.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.cj.stream.impl.CjStream2CjDocumentWriter;
-import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
+import com.graphinout.base.GioReader;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.base.reader.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
@@ -31,14 +31,14 @@ public class TripleTextReader implements GioReader {
 
     public static ICjDocument parseToCjDocument(SingleInputSource input) throws IOException {
         TripleTextReader reader = new TripleTextReader();
-        CjStream2CjDocumentWriter elementsWriter = new CjStream2CjDocumentWriter();
+        CjWriter2CjDocumentWriter elementsWriter = new CjWriter2CjDocumentWriter();
         CjStream2CjWriter streamToWriter = new CjStream2CjWriter(elementsWriter);
         reader.read(input, streamToWriter);
         return elementsWriter.resultDoc();
     }
 
     @Override
-    public void errorHandler(Consumer<ContentError> errorHandler) {
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
         this.errorHandler = errorHandler;
     }
 

@@ -1,6 +1,6 @@
 package com.graphinout.reader.ocif;
 
-import com.graphinout.base.cj.CjFactory;
+import com.graphinout.base.cj.BaseCjOutput;
 import com.graphinout.base.cj.element.ICjData;
 import com.graphinout.base.cj.element.ICjDocumentChunk;
 import com.graphinout.base.cj.element.ICjEdgeChunk;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 import static com.graphinout.foundation.util.Nullables.ifConsumerPresentAccept;
 import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
 
-public class Ocif2CjStream extends CjFactory implements ICjStream {
+public class Ocif2CjStream extends BaseCjOutput implements ICjStream {
 
     public static final String OCIF = "ocif";
     public static final String NODE = "node";
@@ -86,9 +86,9 @@ public class Ocif2CjStream extends CjFactory implements ICjStream {
     public void edgeStart(ICjEdgeChunk edge) {
         ensureRelations();
         // Prefer full OCIF relation stored under edge.data.ocif.relation
-        edge.data(data-> ifPresentAccept(data.jsonValue(), IJsonValue::asObjectOrNull, eo-> //
-                eo.getMaybeAs(OCIF, IJsonValue::asObjectOrNull, ocif-> //
-                        ocif.getMaybe(RELATION, rel-> relationsArr.add(rel)))));
+        edge.data(data -> ifPresentAccept(data.jsonValue(), IJsonValue::asObjectOrNull, eo -> //
+                eo.getMaybeAs(OCIF, IJsonValue::asObjectOrNull, ocif -> //
+                        ocif.getMaybe(RELATION, rel -> relationsArr.add(rel)))));
         // Fallback: create a minimal relation from endpoints if needed (skipped for now)
     }
 

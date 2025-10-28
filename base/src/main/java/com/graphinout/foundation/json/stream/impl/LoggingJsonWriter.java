@@ -1,5 +1,6 @@
 package com.graphinout.foundation.json.stream.impl;
 
+import com.graphinout.base.BaseOutput;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.JsonWriter;
 import org.slf4j.Logger;
@@ -9,7 +10,7 @@ import java.math.BigInteger;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class LoggingJsonWriter implements JsonWriter {
+public class LoggingJsonWriter extends BaseOutput implements JsonWriter {
 
     public enum Output {Log, SystemOut}
 

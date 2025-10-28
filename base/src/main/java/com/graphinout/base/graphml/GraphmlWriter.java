@@ -1,5 +1,8 @@
 package com.graphinout.base.graphml;
 
+import com.graphinout.foundation.input.ContentErrorAware;
+import com.graphinout.foundation.input.IHandleContentErrors;
+
 import java.io.IOException;
 
 /**
@@ -8,7 +11,7 @@ import java.io.IOException;
  * DESC is considered small and attached to data object. Also DESC is always FIRST in streaming order. DEFAULT value in
  * KEY same.
  */
-public interface GraphmlWriter {
+public interface GraphmlWriter extends IHandleContentErrors {
 
     /**
      * Writes a {@code <data>} element.

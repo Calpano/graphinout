@@ -1,7 +1,6 @@
 package com.graphinout.base;
 
-import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.base.reader.Location;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Test;
@@ -37,7 +36,6 @@ public abstract class AbstractReaderTest {
         List<GioReader> gioReaders = readersToTest();
         for (GioReader gioReader : gioReaders) {
             ReaderTests.testWithAllResource(gioReader, this::expectedErrors);
-
         }
     }
 

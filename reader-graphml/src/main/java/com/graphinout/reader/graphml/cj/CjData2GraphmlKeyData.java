@@ -4,7 +4,9 @@ import com.graphinout.base.cj.element.CjDataSchema;
 import com.graphinout.base.cj.element.CjDocuments;
 import com.graphinout.base.cj.element.ICjData;
 import com.graphinout.base.cj.element.ICjDocument;
+import com.graphinout.base.cj.element.ICjEdge;
 import com.graphinout.base.cj.element.ICjHasData;
+import com.graphinout.base.cj.element.ICjHasLabel;
 import com.graphinout.base.cj.element.impl.CjDocumentElement;
 import com.graphinout.base.graphml.CjGraphmlMapping;
 import com.graphinout.base.graphml.GraphmlDataType;
@@ -13,6 +15,7 @@ import com.graphinout.base.graphml.IGraphmlKey;
 import com.graphinout.base.graphml.builder.GraphmlKeyBuilder;
 import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.util.PowerStreams;
 
 import java.util.Map;
 import java.util.Objects;
@@ -29,7 +32,8 @@ public class CjData2GraphmlKeyData {
      *
      * <li>(1) De-serialized Graphml KEYs definitions (we should keep IDs as they are)</li>
      * <li>(2) Computed KEYs from CJ:data (should get keys distinct from Graphml)</li>
-     * <li>(3) Built-in CJ KEYs to represent CJ features as Graphml data (ids are 'cj_"...)</li>
+     * <li>(3) Built-in CJ KEYs to represent CJ features as Graphml data (ids are 'cj_"...). These can be omitted in
+     * GraphMl documents not effectively using them.</li>
      */
     public static GraphmlSchema buildGraphmlSchema(ICjDocument cjDoc) {
         GraphmlSchema graphmlSchema = new GraphmlSchema();
@@ -58,7 +62,7 @@ public class CjData2GraphmlKeyData {
                 if (existingKey != null) {
                     GraphmlDataType existingType = GraphmlDataType.fromString(existingKey.attrType());
                     GraphmlDataType keyType = GraphmlDataType.fromString(key.attrType());
-                    if(existingType.canRepresent(keyType )) {
+                    if (existingType.canRepresent(keyType)) {
                         // just keep using that
                         return;
                     }
@@ -78,10 +82,44 @@ public class CjData2GraphmlKeyData {
             ifPresentAccept(cjDoc.baseUri(), baseUri -> //
                     // value of baseUri is not relevant here
                     graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.BaseUri.toGraphmlKey()));
-            graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.EdgeType.toGraphmlKey());
-            graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.Label.toGraphmlKey());
+
+            boolean usesCjEdgeType = PowerStreams.filterMap(cjDoc.allElements(), ICjEdge.class)
+                    .map(ICjEdge::edgeType).anyMatch(Objects::nonNull);
+            if (usesCjEdgeType) {
+                graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.EdgeType.toGraphmlKey());
+            }
+
+            boolean usesCjLabels =
+                    PowerStreams.filterMap(cjDoc.allElements(), ICjHasLabel.class)
+                            .map(ICjHasLabel::label).anyMatch(Objects::nonNull);
+            if (usesCjLabels) {
+                graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.Label.toGraphmlKey());
+            }
+
             // prepare <key> for CJ:data (graphml needs it pre-declared)
-            graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.CjJsonData.toGraphmlKey());
+            boolean usesCjData = PowerStreams.filterMap(cjDoc.allElements(), ICjHasData.class) //
+                    .map(ICjHasData::data)
+                    .filter(Objects::nonNull)
+                    .map(ICjData::jsonValue)
+                    .anyMatch(jsonValue -> {
+                        if(jsonValue == null) {
+                            // TODO how to deal with this?
+                            return true;
+                        }
+                        if (jsonValue.isObject()) {
+                            // graphml round-tripped data will get exported as native GraphML
+                            // so does not count as usage of cj-data
+                            IJsonObject o = jsonValue.asObject();
+                            return o.properties().map(Map.Entry::getKey)
+                                    .anyMatch(key -> !key.startsWith("graphml:"));
+                        } else {
+                            return true;
+                        }
+                    });
+            if (usesCjData) {
+                graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.CjJsonData.toGraphmlKey());
+            }
+
             // are synthetic nodes used in this doc?
             if (CjDocument2Graphml.containsSyntheticNodes(cjDoc)) {
                 graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.SyntheticNode.toGraphmlKey());
@@ -123,7 +161,7 @@ public class CjData2GraphmlKeyData {
                     return;
                 }
                 GraphmlKeyBuilder builder = IGraphmlKey.builder();
-                builder.id(keyForType.graphmlName()+"-"+ propertyKey);
+                builder.id(keyForType.graphmlName() + "-" + propertyKey);
                 builder.attrName(propertyKey);
                 builder.forType(keyForType);
                 builder.attrType(graphmlDataType);

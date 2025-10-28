@@ -1,5 +1,6 @@
 package com.graphinout.foundation.json.stream.impl;
 
+import com.graphinout.base.BaseOutput;
 import com.graphinout.foundation.json.JsonEvent;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.JsonWriter;
@@ -17,7 +18,7 @@ import static com.graphinout.foundation.json.JsonEvent.Type.ObjectStart;
 import static com.graphinout.foundation.json.JsonEvent.Type.PropertyName;
 import static com.graphinout.foundation.json.JsonEvent.Type.Value;
 
-public class Json2EventWriter implements JsonWriter {
+public class Json2EventWriter extends BaseOutput implements JsonWriter {
 
     private final Consumer<JsonEvent> eventConsumer;
 

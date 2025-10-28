@@ -1,6 +1,7 @@
 package com.graphinout.foundation.xml.element;
 
 import com.graphinout.foundation.util.PowerStackOnClasses;
+import com.graphinout.foundation.xml.BaseXmlHandler;
 import com.graphinout.foundation.xml.CharactersKind;
 import com.graphinout.foundation.xml.IXmlName;
 import com.graphinout.foundation.xml.Sax2XmlWriter;
@@ -9,15 +10,26 @@ import com.graphinout.foundation.xml.XmlWriter;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
- * This class assumes that an XML parser (like Java SAX2) parsed XML and sends events via {@link Sax2XmlWriter} or an equivalent mechanism to this {@link XmlWriter} implementation.
- * IN particular, XML decoding of the character inputs has already happened.
+ * This class assumes that an XML parser (like Java SAX2) parsed XML and sends events via {@link Sax2XmlWriter} or an
+ * equivalent mechanism to this {@link XmlWriter} implementation. IN particular, XML decoding of the character inputs
+ * has already happened.
  */
-public class Xml2DocumentWriter implements XmlWriter {
+public class Xml2DocumentWriter extends BaseXmlHandler implements XmlWriter {
 
     PowerStackOnClasses<IXmlNode> stack = PowerStackOnClasses.create();
     @Nullable XmlDocument resultDoc;
+    private @Nullable Consumer<XmlDocument> onDone;
+
+    public Xml2DocumentWriter(@Nullable Consumer<XmlDocument> onDone) {
+        this.onDone = onDone;
+    }
+
+    public Xml2DocumentWriter() {
+        this(null);
+    }
 
     /** read into doc */
     public static XmlDocument parseToDoc(String xml) throws Exception {
@@ -30,8 +42,7 @@ public class Xml2DocumentWriter implements XmlWriter {
      * @param xmlFragment has no xmlDeclaration
      */
     public static XmlContent parseToXmlContent(String xmlFragment) throws Exception {
-        XmlDocument doc = parseToDoc(
-                "<wrapperRoot>" + xmlFragment + "</wrapperRoot>");
+        XmlDocument doc = parseToDoc("<wrapperRoot>" + xmlFragment + "</wrapperRoot>");
         XmlElement wrapperRoot = doc.rootElement();
         XmlContent content = wrapperRoot;
         return content;
@@ -79,7 +90,7 @@ public class Xml2DocumentWriter implements XmlWriter {
             XmlElement child = stack.push(new XmlElement(parentElement, xmlName, attributes));
             parentElement.addChild(child);
         } else {
-            throw new IllegalStateException("Unexpected parent '" + parent+"'");
+            throw new IllegalStateException("Unexpected parent '" + parent + "'");
         }
     }
 
@@ -89,6 +100,7 @@ public class Xml2DocumentWriter implements XmlWriter {
 
     /**
      * When the {@link Xml2DocumentWriter} gets sent a raw XML snippet, that snippet is stored in the DOM unparsed.
+     *
      * @param rawXml may contain line breaks, processing instructions and any other syntax constructs. MUST be a valid
      *               XML fragment to get valid XML.
      */

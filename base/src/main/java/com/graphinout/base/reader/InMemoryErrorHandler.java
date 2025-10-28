@@ -1,5 +1,7 @@
 package com.graphinout.base.reader;
 
+import com.graphinout.foundation.input.ContentError;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -14,7 +16,7 @@ public class InMemoryErrorHandler implements Consumer<ContentError> {
     }
 
     public boolean hasNoErrors() {
-        return list.stream().noneMatch(ce -> ce.level == ContentError.ErrorLevel.Error);
+        return list.stream().noneMatch(ce -> ce.getLevel() == ContentError.ErrorLevel.Error);
     }
 
     public boolean isEmpty() {

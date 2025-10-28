@@ -1,5 +1,6 @@
 package com.graphinout.base.cj.stream.api;
 
+import com.graphinout.base.cj.BaseCjOutput;
 import com.graphinout.base.cj.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.CjType;
@@ -19,6 +20,7 @@ import com.graphinout.base.cj.element.ICjLabelMutable;
 import com.graphinout.base.cj.element.ICjNodeChunkMutable;
 import com.graphinout.base.cj.element.ICjPortMutable;
 import com.graphinout.base.cj.stream.ICjWriter;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
 import com.graphinout.foundation.json.value.IJsonValue;
@@ -27,8 +29,9 @@ import com.graphinout.foundation.util.PowerStackOnClasses;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
+import java.util.function.Consumer;
 
-public class CjWriter2CjStream implements ICjWriter {
+public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     // Start-state markers live on the same stack right above their corresponding chunk
     private static class StartState {
@@ -44,14 +47,12 @@ public class CjWriter2CjStream implements ICjWriter {
     private static class StartEdge extends StartState {}
 
     private static class StartDocument extends StartState {}
-
     final ICjStream cjStream;
     // Buffer for JSON data values between jsonDataStart/jsonDataEnd
     private final Json2JavaJsonWriter jsonBuffer = new Json2JavaJsonWriter();
     // Unified type-aware stack for ALL elements (document parts, graphs, nodes, edges, endpoints, ports, label, data)
     private final PowerStackOnClasses<Object> stack = PowerStackOnClasses.create();
     private boolean inJsonData = false;
-
     public CjWriter2CjStream(ICjStream cjStream) {this.cjStream = cjStream;}
 
     @Override
@@ -103,7 +104,7 @@ public class CjWriter2CjStream implements ICjWriter {
     public void documentEnd() throws JsonException {
         // Ensure document was started properly; fail fast otherwise
         StartDocument sd = stack.peekSearch(StartDocument.class);
-        Objects.requireNonNull(sd, "documentEnd() without prior documentStart()") ;
+        Objects.requireNonNull(sd, "documentEnd() without prior documentStart()");
         if (!sd.started) {
             ensureDocumentStartSent();
         }
@@ -234,14 +235,14 @@ public class CjWriter2CjStream implements ICjWriter {
 
     @Override
     public void listEnd(CjType cjType) {
-        if(cjType==CjType.ArrayOfLabelEntries) {
+        if (cjType == CjType.ArrayOfLabelEntries) {
             stack.pop(ICjLabelMutable.class);
         }
     }
 
     @Override
     public void listStart(CjType cjType) {
-        if(cjType==CjType.ArrayOfLabelEntries) {
+        if (cjType == CjType.ArrayOfLabelEntries) {
             ICjHasLabelMutable hasLabel = currentHasLabel();
             if (hasLabel != null) {
                 hasLabel.setLabel(stack::push);
@@ -361,6 +362,12 @@ public class CjWriter2CjStream implements ICjWriter {
         if (hasPorts != null) {
             hasPorts.addPort(stack::push);
         }
+    }
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        super.setContentErrorHandler(errorHandler);
+        cjStream.setContentErrorHandler(errorHandler);
     }
 
     @Override

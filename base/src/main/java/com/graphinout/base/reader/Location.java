@@ -1,40 +1,20 @@
 package com.graphinout.base.reader;
 
-import java.util.Objects;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
-public class Location {
+public record Location(int line, int col) {
 
-    int line;
-    int col;
+    public static final Location UNAVAILABLE = new Location(-1, -1);
 
-    public Location(int lineNumber, int columnNumber) {
-        this.line = lineNumber;
-        this.col = columnNumber;
+    public static Location of(int line, int col) {
+        return new Location(line, col);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Location location = (Location) o;
-        return line == location.line && col == location.col;
-    }
-
-    public int getCol() {
-        return col;
-    }
-
-    public int getLine() {
-        return line;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(line, col);
-    }
-
-    @Override
-    public String toString() {
+    public @NonNull String toString() {
+        if (this == UNAVAILABLE) {
+            return "N/A";
+        }
         return line + ":" + col;
     }
 

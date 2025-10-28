@@ -22,8 +22,8 @@ public class CjDocument2CjStream {
 
     private void writeGraphToCjStream(ICjGraph cjGraph) {
         cjStream.graphStart(cjGraph);
-        cjGraph.nodes().forEach(cjStream::nodeStart);
-        cjGraph.edges().forEach(cjStream::edgeStart);
+        cjGraph.nodes().forEach(cjStream::node);
+        cjGraph.edges().forEach(cjStream::edge);
         cjGraph.graphs().forEach(this::writeGraphToCjStream);
         cjStream.graphEnd();
     }

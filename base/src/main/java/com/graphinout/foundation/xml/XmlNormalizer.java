@@ -54,7 +54,7 @@ public class XmlNormalizer {
     public XmlNormalizer normalizeMultipleSpacesInXsiAttributeValue() {
         // replace all multiple spaces with single space
         doc().rootElement().changeIfPresent(XML.ATT_XSI_SCHEMA_LOCATION, val -> //
-                val.replaceAll("\\s+", " "));
+                val.replaceAll("\\s+", " ").trim());
         return this;
     }
 

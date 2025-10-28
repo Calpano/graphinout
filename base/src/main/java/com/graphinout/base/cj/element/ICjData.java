@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 import static com.graphinout.foundation.util.Nullables.mapOrDefault;
 
 /**
- * Represents a CJ data value attached to elements in the CJ model, exposing access to the underlying JSON structure.
- * It is the bridge between GIO/CJ structures and the JSON value API used for properties and metadata.
+ * Represents a CJ data value attached to elements in the CJ model, exposing access to the underlying JSON structure. It
+ * is the bridge between GIO/CJ structures and the JSON value API used for properties and metadata.
  */
 public interface ICjData extends ICjElement {
 
@@ -37,5 +37,11 @@ public interface ICjData extends ICjElement {
      */
     @Nullable
     IJsonValue jsonValue();
+
+    default IJsonValue jsonValue_() {
+        IJsonValue value = jsonValue();
+        assert value != null;
+        return value;
+    }
 
 }

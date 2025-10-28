@@ -1,8 +1,8 @@
 package com.graphinout.reader.cj;
 
-import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.gio.GioWriter;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.GioReader;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.base.reader.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
@@ -32,8 +32,8 @@ public class ConnectedJson5Reader implements GioReader {
 
 
     @Override
-    public void errorHandler(Consumer<ContentError> errorHandler) {
-        this.cjReader.errorHandler(errorHandler);
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        this.cjReader.setContentErrorHandler(errorHandler);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ConnectedJson5Reader implements GioReader {
     }
 
     @Override
-    public void read(InputSource inputSource, GioWriter writer) throws IOException {
+    public void read(InputSource inputSource, ICjStream writer) throws IOException {
         if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
@@ -62,6 +62,5 @@ public class ConnectedJson5Reader implements GioReader {
 
         cjReader.read(strippedInput, writer);
     }
-
 
 }

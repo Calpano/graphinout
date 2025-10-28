@@ -203,7 +203,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
 
     public void listEnd(CjType cjType) {
         CjType type = pop();
-        assert type == cjType : "Expected " + cjType + " but found " + type + ".";
+        assert type == cjType : "Expected '" + cjType + "' but found '" + type + "'.";
         super.arrayEnd();
     }
 

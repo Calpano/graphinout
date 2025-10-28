@@ -6,7 +6,7 @@ import com.graphinout.base.cj.element.ICjEdgeChunk;
 import com.graphinout.base.cj.element.ICjGraphChunk;
 import com.graphinout.base.cj.element.ICjNodeChunk;
 import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.json.value.java.JavaJsonFactory;
@@ -73,7 +73,7 @@ class AdjListReaderTest {
     void shouldNotCallErrorConsumerAndGioWriterWhenTGFIsEmpty() throws IOException {
         SingleInputSource inputSource = SingleInputSource.of("test-empty", EMPTY_FILE);
 
-        underTest.errorHandler(errorConsumer);
+        underTest.setContentErrorHandler(errorConsumer);
         underTest.read(inputSource, mockCjStream);
 
         verifyNoInteractions(mockCjStream);
@@ -85,7 +85,7 @@ class AdjListReaderTest {
     void shouldNotReturnErrorWhenTgfFileHasNoEdges() throws IOException {
         SingleInputSource inputSource = SingleInputSource.of("test-nodes-only", NODES_ONLY);
 
-        underTest.errorHandler(errorConsumer);
+        underTest.setContentErrorHandler(errorConsumer);
         underTest.read(inputSource, mockCjStream);
 
         InOrder inOrder = Mockito.inOrder(mockCjStream);
@@ -104,7 +104,7 @@ class AdjListReaderTest {
     void shouldWork() throws IOException {
         SingleInputSource inputSource = SingleInputSource.of("test-small", SMALL);
 
-        underTest.errorHandler(errorConsumer);
+        underTest.setContentErrorHandler(errorConsumer);
         underTest.read(inputSource, mockCjStream);
 
         InOrder inOrder = Mockito.inOrder(mockCjStream);
