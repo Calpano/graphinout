@@ -1,0 +1,3 @@
+digraph A { a -> b; }
+
+strict graph B { a -- b; }

@@ -1,0 +1,12 @@
+digraph Assign {
+  rankdir=LR;
+  size="10,5";
+  layout=dot;
+
+  graph [pad=0.5; nodesep=0.25; ranksep=1];
+  node [shape=ellipse; style=filled; fillcolor=white];
+  edge [dir=both; arrowsize=.8];
+
+  A [label="A"]; B [label="B"]; C [label="C"]; // multiple statements per line
+  A -> B [label="A to B"]; B -> C [label="B to C"];
+}

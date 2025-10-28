@@ -1,0 +1,4 @@
+digraph Chain {
+  A -> {B C} -> D -> {E F};
+  { rank=same; B; C; }
+}
