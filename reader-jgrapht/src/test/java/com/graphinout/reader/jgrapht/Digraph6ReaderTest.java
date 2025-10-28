@@ -2,7 +2,7 @@ package com.graphinout.reader.jgrapht;
 
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.ReaderTests;
-import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.GioReader;
 import com.graphinout.base.validation.graphml.GraphmlValidator;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.output.InMemoryOutputSink;
@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -22,7 +21,7 @@ class Digraph6ReaderTest extends AbstractReaderTest {
 
     @Override
     protected List<GioReader> readersToTest() {
-        return Arrays.asList(new Digraph6Reader());
+        return List.of(new Digraph6Reader());
     }
 
     @Test

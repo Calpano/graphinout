@@ -1,0 +1,5 @@
+The syntax is valid, some online tools handle it correct.
+
+But there is a filed issue in JGraphT
+https://github.com/jgrapht/jgrapht/issues/1131
+
