@@ -19,7 +19,7 @@ import com.graphinout.foundation.json.value.JsonTypes;
 import com.graphinout.foundation.util.ObjectRef;
 import com.graphinout.foundation.util.PowerStreams;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.XmlTool;
+import com.graphinout.foundation.xml.util.XmlTool;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

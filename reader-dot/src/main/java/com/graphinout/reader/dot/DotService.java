@@ -1,7 +1,7 @@
 package com.graphinout.reader.dot;
 
-import com.graphinout.base.GioReader;
-import com.graphinout.base.GioService;
+import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.gio.GioService;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,17 +1,18 @@
 package com.graphinout.base;
 
-import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
-import com.graphinout.base.cj.stream.api.DelegatingCjStream;
-import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
-import com.graphinout.base.writer.ValidatingCjStream;
+import com.graphinout.base.cj.stream.CjStream2CjWriter;
+import com.graphinout.base.cj.stream.DelegatingCjStream;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.cj.writer.Cj2JsonWriter;
+import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.cj.stream.ValidatingCjStream;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.json.impl.ValidatingJsonWriter;
-import com.graphinout.foundation.json.stream.JsonWriter;
-import com.graphinout.foundation.json.stream.impl.DelegatingJsonWriter;
-import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
+import com.graphinout.foundation.json.writer.impl.ValidatingJsonWriter;
+import com.graphinout.foundation.json.writer.JsonWriter;
+import com.graphinout.foundation.json.writer.impl.DelegatingJsonWriter;
+import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.output.InMemoryOutputSink;
 import com.graphinout.foundation.output.OutputSink;
 import io.github.classgraph.Resource;

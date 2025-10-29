@@ -1,9 +1,9 @@
 package com.graphinout.reader.cj;
 
-import com.graphinout.base.cj.stream.impl.Json2CjWriter;
-import com.graphinout.base.cj.stream.util.LoggingCjWriter;
+import com.graphinout.base.cj.writer.Json2CjWriter;
+import com.graphinout.base.cj.writer.LoggingCjWriter;
 import com.graphinout.foundation.input.InputSource;
-import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.graphinout.foundation.json.JsonReaderImpl;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

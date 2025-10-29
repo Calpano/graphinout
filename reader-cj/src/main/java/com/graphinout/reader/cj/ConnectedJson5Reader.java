@@ -1,14 +1,14 @@
 package com.graphinout.reader.cj;
 
-import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.GioReader;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.gio.GioReader;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.base.reader.GioFileFormat;
+import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.json5.Json5Preprocessor;
-import com.graphinout.foundation.json.json5.Json5Reader;
+import com.graphinout.foundation.json5.Json5Preprocessor;
+import com.graphinout.foundation.json5.Json5Reader;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

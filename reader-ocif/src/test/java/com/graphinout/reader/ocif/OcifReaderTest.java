@@ -2,7 +2,7 @@ package com.graphinout.reader.ocif;
 
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.cj.CjAssert;
-import com.graphinout.base.GioReader;
+import com.graphinout.base.gio.GioReader;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
 import io.github.classgraph.Resource;

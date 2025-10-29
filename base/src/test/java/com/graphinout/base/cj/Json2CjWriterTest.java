@@ -1,8 +1,8 @@
 package com.graphinout.base.cj;
 
-import com.graphinout.base.cj.stream.impl.Json2CjWriter;
-import com.graphinout.base.cj.stream.util.LoggingCjWriter;
-import com.graphinout.foundation.json.stream.JsonWriter;
+import com.graphinout.base.cj.writer.Json2CjWriter;
+import com.graphinout.base.cj.writer.LoggingCjWriter;
+import com.graphinout.foundation.json.writer.JsonWriter;
 import org.junit.jupiter.api.Test;
 
 public class Json2CjWriterTest {

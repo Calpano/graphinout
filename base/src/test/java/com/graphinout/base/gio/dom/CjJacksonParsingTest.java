@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.graphinout.base.cj.helper.jackson.CjJacksonDocument;
-import com.graphinout.base.cj.helper.jackson.CjJacksonEdge;
-import com.graphinout.base.cj.helper.jackson.CjJacksonEndpoint;
-import com.graphinout.base.cj.helper.jackson.CjJacksonGraph;
-import com.graphinout.base.cj.helper.jackson.CjJacksonNode;
+import com.graphinout.base.cj.jackson.CjJacksonDocument;
+import com.graphinout.base.cj.jackson.CjJacksonEdge;
+import com.graphinout.base.cj.jackson.CjJacksonEndpoint;
+import com.graphinout.base.cj.jackson.CjJacksonGraph;
+import com.graphinout.base.cj.jackson.CjJacksonNode;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

@@ -1,10 +1,10 @@
 package com.graphinout.reader.jgrapht;
 
-import com.graphinout.base.cj.element.ICjChunkMutable;
-import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
-import com.graphinout.base.cj.element.ICjGraphChunkMutable;
-import com.graphinout.base.cj.element.ICjNodeChunkMutable;
-import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.cj.document.ICjChunkMutable;
+import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
+import com.graphinout.base.cj.document.ICjGraphChunkMutable;
+import com.graphinout.base.cj.document.ICjNodeChunkMutable;
+import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.json.value.IJsonFactory;

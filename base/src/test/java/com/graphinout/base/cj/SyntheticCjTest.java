@@ -1,10 +1,10 @@
 package com.graphinout.base.cj;
 
 import com.graphinout.base.ReaderTests;
-import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
-import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
-import com.graphinout.base.cj.element.ICjGraphChunk;
-import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
+import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
+import com.graphinout.base.cj.document.ICjGraphChunk;
+import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.foundation.output.InMemoryOutputSink;
 import com.graphinout.foundation.output.OutputSink;
 import org.junit.jupiter.api.Test;

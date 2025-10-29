@@ -5,9 +5,9 @@ import com.graphinout.reader.graphml.elements.builder.GraphmlKeyBuilder;
 import com.graphinout.foundation.util.Nullables;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.element.XmlContent;
-import com.graphinout.foundation.xml.element.XmlDocumentFragment;
-import com.graphinout.foundation.xml.element.XmlElement;
+import com.graphinout.foundation.xml.document.XmlContent;
+import com.graphinout.foundation.xml.document.XmlDocumentFragment;
+import com.graphinout.foundation.xml.document.XmlElement;
 import com.graphinout.reader.graphml.cj.CjGraphmlMapping;
 
 import javax.annotation.Nonnull;

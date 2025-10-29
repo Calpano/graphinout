@@ -1,8 +1,9 @@
 package com.graphinout.base.cj;
 
-import com.graphinout.base.cj.element.CjDocuments;
-import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.foundation.json.impl.JsonFormatter;
+import com.graphinout.base.cj.document.CjDocuments;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.util.CjNormalizer;
+import com.graphinout.foundation.json.util.JsonFormatter;
 import io.github.classgraph.Resource;
 
 import javax.annotation.Nullable;

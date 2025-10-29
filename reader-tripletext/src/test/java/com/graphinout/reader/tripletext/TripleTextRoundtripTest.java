@@ -1,12 +1,12 @@
 package com.graphinout.reader.tripletext;
 
-import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
-import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
-import com.graphinout.base.cj.stream.impl.Json2CjWriter;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.stream.CjStream2CjWriter;
+import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
+import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.graphinout.foundation.json.JsonReaderImpl;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;

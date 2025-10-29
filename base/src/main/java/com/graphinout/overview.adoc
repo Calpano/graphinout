@@ -506,7 +506,7 @@ XML processing and writing capabilities.
 * `XmlWriter` - Interface for XML writing
 * `XmlWriterImpl` - Implementation of XML writer
 * `ValidatingXmlWriter` - XML writer with validation
-* `Sax2Log` - SAX to logging bridge
+* `SaxErrors2Log` - SAX to logging bridge
 
 == Architecture Overview
 

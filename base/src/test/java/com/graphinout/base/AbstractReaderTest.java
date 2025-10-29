@@ -1,7 +1,8 @@
 package com.graphinout.base;
 
+import com.graphinout.base.gio.GioReader;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.base.reader.Location;
+import com.graphinout.foundation.input.Location;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

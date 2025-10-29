@@ -1,11 +1,11 @@
 package com.graphinout.reader.tgf;
 
-import com.graphinout.base.cj.CjFactory;
-import com.graphinout.base.cj.element.ICjDocumentChunk;
-import com.graphinout.base.cj.element.ICjEdgeChunk;
-import com.graphinout.base.cj.element.ICjGraphChunk;
-import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.cj.factory.CjFactory;
+import com.graphinout.base.cj.document.ICjDocumentChunk;
+import com.graphinout.base.cj.document.ICjEdgeChunk;
+import com.graphinout.base.cj.document.ICjGraphChunk;
+import com.graphinout.base.cj.document.ICjNodeChunk;
+import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.input.SingleInputSource;

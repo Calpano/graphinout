@@ -1,6 +1,6 @@
 package com.graphinout.foundation.util.path;
 
-import com.graphinout.base.cj.element.ICjData;
+import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.foundation.json.value.IJsonArray;
 import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonValue;

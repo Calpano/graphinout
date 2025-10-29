@@ -4,7 +4,7 @@ import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonXmlString;
 
 /**
- * Similar to an {@link com.graphinout.foundation.xml.element.XmlDocumentFragment}, but in plain string form.
+ * Similar to an {@link com.graphinout.foundation.xml.document.XmlDocumentFragment}, but in plain string form.
  *
  */
 public record XmlFragmentString(String rawXml, XML.XmlSpace xmlSpace) {

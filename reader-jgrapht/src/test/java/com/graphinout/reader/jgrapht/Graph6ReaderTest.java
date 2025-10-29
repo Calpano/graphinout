@@ -2,8 +2,8 @@ package com.graphinout.reader.jgrapht;
 
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.ReaderTests;
-import com.graphinout.base.GioReader;
-import com.graphinout.base.validation.CjValidator;
+import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.cj.util.CjValidator;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.output.InMemoryOutputSink;
 import com.graphinout.foundation.output.OutputSink;

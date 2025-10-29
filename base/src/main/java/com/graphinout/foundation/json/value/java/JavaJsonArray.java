@@ -1,6 +1,6 @@
 package com.graphinout.foundation.json.value.java;
 
-import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
+import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.json.value.IJsonArrayAppendable;
 import com.graphinout.foundation.json.value.IJsonArrayMutable;
 import com.graphinout.foundation.json.value.IJsonFactory;

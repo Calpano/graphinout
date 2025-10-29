@@ -6,10 +6,10 @@ import com.graphinout.reader.graphml.elements.IGraphmlGraph;
 import com.graphinout.foundation.xml.CharactersKind;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.XmlNormalizer;
-import com.graphinout.foundation.xml.XmlWriter;
-import com.graphinout.foundation.xml.element.IXmlNode;
-import com.graphinout.foundation.xml.element.XmlElement;
+import com.graphinout.foundation.xml.util.XmlNormalizer;
+import com.graphinout.foundation.xml.writer.XmlWriter;
+import com.graphinout.foundation.xml.document.IXmlNode;
+import com.graphinout.foundation.xml.document.XmlElement;
 
 import java.util.ArrayList;
 import java.util.Comparator;

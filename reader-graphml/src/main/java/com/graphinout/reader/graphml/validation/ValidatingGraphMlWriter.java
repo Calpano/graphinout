@@ -1,6 +1,6 @@
 package com.graphinout.reader.graphml.validation;
 
-import com.graphinout.base.BaseOutput;
+import com.graphinout.foundation.input.BaseOutput;
 import com.graphinout.reader.graphml.GraphmlWriter;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDocument;

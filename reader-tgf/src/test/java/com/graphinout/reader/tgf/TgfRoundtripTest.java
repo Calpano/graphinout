@@ -1,7 +1,7 @@
 package com.graphinout.reader.tgf;
 
-import com.graphinout.base.cj.element.CjDocuments;
-import com.graphinout.base.cj.element.ICjDocument;
+import com.graphinout.base.cj.document.CjDocuments;
+import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.SingleInputSource;

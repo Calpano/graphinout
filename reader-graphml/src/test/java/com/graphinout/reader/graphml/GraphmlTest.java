@@ -1,8 +1,8 @@
 package com.graphinout.reader.graphml;
 
 import com.graphinout.foundation.TestFileUtil;
-import com.graphinout.foundation.xml.Xml2StringWriter;
-import com.graphinout.foundation.xml.XmlTool;
+import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.foundation.xml.util.XmlTool;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

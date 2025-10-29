@@ -1,7 +1,5 @@
 package com.graphinout.foundation.input;
 
-import com.graphinout.base.reader.Location;
-
 import javax.annotation.Nullable;
 
 public class ContentErrorException extends RuntimeException {

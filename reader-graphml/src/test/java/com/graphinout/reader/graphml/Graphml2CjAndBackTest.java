@@ -1,12 +1,12 @@
 package com.graphinout.reader.graphml;
 
 
-import com.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.graphinout.base.cj.stream.util.LoggingCjWriter;
+import com.graphinout.base.cj.document.impl.CjDocumentElement;
+import com.graphinout.base.cj.writer.LoggingCjWriter;
 import com.graphinout.foundation.TestFileUtil;
-import com.graphinout.foundation.xml.Xml2StringWriter;
-import com.graphinout.foundation.xml.XmlAssert;
-import com.graphinout.foundation.xml.XmlTool;
+import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.foundation.xml.testing.XmlAssert;
+import com.graphinout.foundation.xml.util.XmlTool;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.graphml.cj.Graphml2CjDocument;
 import com.graphinout.reader.graphml.cj.Graphml2CjWriter;

@@ -1,7 +1,7 @@
 package com.graphinout.reader.graphml;
 
 
-import com.graphinout.base.BaseOutput;
+import com.graphinout.foundation.input.BaseOutput;
 import com.graphinout.reader.graphml.elements.GraphmlElements;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDocument;
@@ -15,7 +15,7 @@ import com.graphinout.reader.graphml.elements.IGraphmlNode;
 import com.graphinout.reader.graphml.elements.IGraphmlPort;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.XmlWriter;
+import com.graphinout.foundation.xml.writer.XmlWriter;
 import org.slf4j.Logger;
 
 import java.io.IOException;

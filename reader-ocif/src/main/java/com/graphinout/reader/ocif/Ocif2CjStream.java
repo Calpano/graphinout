@@ -1,13 +1,13 @@
 package com.graphinout.reader.ocif;
 
-import com.graphinout.base.cj.BaseCjOutput;
-import com.graphinout.base.cj.element.ICjData;
-import com.graphinout.base.cj.element.ICjDocumentChunk;
-import com.graphinout.base.cj.element.ICjEdgeChunk;
-import com.graphinout.base.cj.element.ICjGraphChunk;
-import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
+import com.graphinout.base.cj.factory.BaseCjOutput;
+import com.graphinout.base.cj.document.ICjData;
+import com.graphinout.base.cj.document.ICjDocumentChunk;
+import com.graphinout.base.cj.document.ICjEdgeChunk;
+import com.graphinout.base.cj.document.ICjGraphChunk;
+import com.graphinout.base.cj.document.ICjNodeChunk;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.json.value.IJsonArray;
 import com.graphinout.foundation.json.value.IJsonArrayMutable;
 import com.graphinout.foundation.json.value.IJsonObject;

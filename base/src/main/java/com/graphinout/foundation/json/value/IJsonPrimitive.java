@@ -1,7 +1,7 @@
 package com.graphinout.foundation.json.value;
 
 import com.graphinout.foundation.json.path.IJsonNavigationPath;
-import com.graphinout.foundation.json.stream.JsonWriter;
+import com.graphinout.foundation.json.writer.JsonWriter;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;

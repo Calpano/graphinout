@@ -1,14 +1,14 @@
 package com.graphinout.base.cj;
 
 
-import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
-import com.graphinout.base.cj.stream.api.CjWriter2CjStream;
-import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
-import com.graphinout.base.cj.stream.impl.Json2CjWriter;
+import com.graphinout.base.cj.stream.CjStream2CjWriter;
+import com.graphinout.base.cj.writer.Cj2JsonWriter;
+import com.graphinout.base.cj.writer.CjWriter2CjStream;
+import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
-import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.json.JsonReaderImpl;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

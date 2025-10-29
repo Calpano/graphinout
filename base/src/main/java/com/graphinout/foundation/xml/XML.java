@@ -1,7 +1,7 @@
 package com.graphinout.foundation.xml;
 
 import com.graphinout.foundation.json.JSON;
-import com.graphinout.foundation.xml.element.XmlElement;
+import com.graphinout.foundation.xml.document.XmlElement;
 
 import javax.annotation.Nullable;
 import java.util.Set;

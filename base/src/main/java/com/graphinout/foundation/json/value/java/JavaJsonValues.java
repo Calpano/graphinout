@@ -1,7 +1,7 @@
 package com.graphinout.foundation.json.value.java;
 
-import com.graphinout.foundation.json.stream.impl.Json2JavaJsonWriter;
-import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.graphinout.foundation.json.writer.impl.Json2JavaJsonWriter;
+import com.graphinout.foundation.json.JsonReaderImpl;
 import com.graphinout.foundation.json.value.IJsonValue;
 
 import javax.annotation.Nullable;

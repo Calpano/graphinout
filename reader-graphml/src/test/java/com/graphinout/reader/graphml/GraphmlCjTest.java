@@ -1,9 +1,9 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.cj.CjType;
-import com.graphinout.base.cj.element.CjDataSchema;
-import com.graphinout.base.cj.element.CjDocuments;
-import com.graphinout.base.cj.element.ICjDocument;
+import com.graphinout.base.cj.document.CjType;
+import com.graphinout.base.cj.document.CjDataSchema;
+import com.graphinout.base.cj.document.CjDocuments;
+import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.reader.graphml.cj.CjGraphmlMapping;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
 import com.graphinout.foundation.TestFileProvider;

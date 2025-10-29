@@ -1,8 +1,8 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.cj.stream.api.NoopCjStream;
-import com.graphinout.base.reader.Location;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.cj.stream.NoopCjStream;
+import com.graphinout.foundation.input.Location;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.SingleInputSource;

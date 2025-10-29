@@ -3,8 +3,8 @@ package com.graphinout.foundation.json.value;
 
 import com.graphinout.foundation.json.JSON;
 import com.graphinout.foundation.json.JsonType;
-import com.graphinout.foundation.json.stream.JsonValueWriter;
-import com.graphinout.foundation.json.stream.JsonWriter;
+import com.graphinout.foundation.json.writer.JsonValueWriter;
+import com.graphinout.foundation.json.writer.JsonWriter;
 import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;

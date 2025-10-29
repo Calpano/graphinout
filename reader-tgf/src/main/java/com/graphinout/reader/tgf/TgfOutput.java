@@ -1,12 +1,12 @@
 package com.graphinout.reader.tgf;
 
-import com.graphinout.base.cj.CjDataProperty;
-import com.graphinout.base.cj.CjDirection;
-import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.cj.element.ICjEndpoint;
-import com.graphinout.base.cj.element.ICjGraph;
-import com.graphinout.base.cj.element.ICjHasData;
-import com.graphinout.base.cj.element.ICjLabelEntry;
+import com.graphinout.base.cj.data.CjDataProperty;
+import com.graphinout.base.cj.document.CjDirection;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.document.ICjEndpoint;
+import com.graphinout.base.cj.document.ICjGraph;
+import com.graphinout.base.cj.document.ICjHasData;
+import com.graphinout.base.cj.document.ICjLabelEntry;
 import com.graphinout.foundation.json.value.IJsonValue;
 import org.slf4j.Logger;
 

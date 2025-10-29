@@ -5,7 +5,7 @@ import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.foundation.xml.IXmlName;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.XmlWriter;
+import com.graphinout.foundation.xml.writer.XmlWriter;
 
 import java.io.IOException;
 import java.util.Map;

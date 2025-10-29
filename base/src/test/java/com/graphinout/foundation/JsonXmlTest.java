@@ -5,8 +5,8 @@ import com.graphinout.foundation.json.value.IJsonXmlString;
 import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.element.Xml2DocumentWriter;
-import com.graphinout.foundation.xml.element.XmlDocumentFragment;
+import com.graphinout.foundation.xml.document.Xml2DocumentWriter;
+import com.graphinout.foundation.xml.document.XmlDocumentFragment;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;

@@ -13,8 +13,6 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import static com.graphinout.foundation.xml.AttMaps.getOrDefault;
-
 /**
  * @author rbaba
  * @implNote GraphML consists of a graphml element and a variety of subelements: graph, key, headers. GRAPHML is an XML
@@ -28,6 +26,15 @@ public class GraphmlDocument extends GraphmlElementWithDesc implements IGraphmlD
 
     public GraphmlDocument(@Nullable Map<String, String> extraAttrib, @Nullable IGraphmlDescription desc) {
         super(extraAttrib, desc);
+    }
+
+    public static void getOrDefault(@Nullable Map<String, String> attributes, String attName, String defaultValue, BiConsumer<String, Supplier<String>> name_value) {
+        if(attributes==null) {
+            name_value.accept(attName, () -> defaultValue);
+            return;
+        }
+        String value = attributes.getOrDefault(attName,defaultValue);
+        name_value.accept(attName, () -> value);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.graphinout.reader.dot;
 
 import com.graphinout.base.AbstractReaderTest;
-import com.graphinout.base.GioReader;
+import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.ReaderTests;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.ContentError;

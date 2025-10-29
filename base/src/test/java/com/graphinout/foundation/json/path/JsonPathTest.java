@@ -1,6 +1,6 @@
 package com.graphinout.foundation.json.path;
 
-import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.graphinout.foundation.json.JsonReaderImpl;
 import com.graphinout.foundation.json.value.IJsonValue;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -1,7 +1,7 @@
 package com.graphinout.reader.graphml.cj;
 
-import com.graphinout.base.cj.CjDataProperty;
-import com.graphinout.base.cj.CjMappedProperties;
+import com.graphinout.base.cj.data.CjDataProperty;
+import com.graphinout.base.cj.data.CjMappedProperties;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
 import com.graphinout.reader.graphml.elements.GraphmlElements;
 import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
@@ -17,8 +17,8 @@ import com.graphinout.foundation.json.value.IJsonValue;
 import com.graphinout.foundation.json.value.IJsonXmlString;
 import com.graphinout.foundation.json.value.java.JavaJsonObject;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.element.XmlDocument;
-import com.graphinout.foundation.xml.element.XmlElement;
+import com.graphinout.foundation.xml.document.XmlDocument;
+import com.graphinout.foundation.xml.document.XmlElement;
 
 import java.util.Comparator;
 import java.util.HashMap;

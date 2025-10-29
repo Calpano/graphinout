@@ -1,8 +1,5 @@
 package com.graphinout.foundation.input;
 
-import com.graphinout.base.reader.Location;
-import com.graphinout.base.reader.Locator;
-
 import javax.annotation.Nullable;
 
 /**

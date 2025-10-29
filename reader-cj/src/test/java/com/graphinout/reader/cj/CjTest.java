@@ -1,17 +1,17 @@
 package com.graphinout.reader.cj;
 
 import com.graphinout.base.cj.CjAssert;
-import com.graphinout.base.cj.element.CjDataSchema;
-import com.graphinout.base.cj.element.CjDocuments;
-import com.graphinout.base.cj.element.ICjData;
-import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.cj.element.ICjHasData;
-import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
-import com.graphinout.base.cj.stream.impl.Json2CjWriter;
+import com.graphinout.base.cj.document.CjDataSchema;
+import com.graphinout.base.cj.document.CjDocuments;
+import com.graphinout.base.cj.document.ICjData;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.document.ICjHasData;
+import com.graphinout.base.cj.writer.Cj2JsonWriter;
+import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.stream.JsonWriter;
-import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
-import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.graphinout.foundation.json.writer.JsonWriter;
+import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.json.JsonReaderImpl;
 import io.github.classgraph.Resource;
 import jdk.jfr.Description;
 import org.junit.jupiter.params.ParameterizedTest;

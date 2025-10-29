@@ -1,6 +1,6 @@
 package com.graphinout.reader.graphml.cj;
 
-import com.graphinout.base.cj.stream.ICjWriter;
+import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.reader.graphml.GraphmlWriter;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.util.Nullables;

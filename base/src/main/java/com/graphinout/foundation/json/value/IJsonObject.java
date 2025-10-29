@@ -3,7 +3,7 @@ package com.graphinout.foundation.json.value;
 import com.graphinout.foundation.json.JsonType;
 import com.graphinout.foundation.json.path.IJsonNavigationPath;
 import com.graphinout.foundation.json.path.IJsonObjectNavigationStep;
-import com.graphinout.foundation.json.stream.JsonWriter;
+import com.graphinout.foundation.json.writer.JsonWriter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

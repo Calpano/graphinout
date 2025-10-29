@@ -1,10 +1,10 @@
 package com.graphinout.reader.graphml;
 
 import com.graphinout.base.AbstractReaderTest;
-import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.GioReader;
-import com.graphinout.base.reader.Location;
-import com.graphinout.base.writer.LoggingCjStream;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.gio.GioReader;
+import com.graphinout.foundation.input.Location;
+import com.graphinout.base.cj.stream.LoggingCjStream;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;

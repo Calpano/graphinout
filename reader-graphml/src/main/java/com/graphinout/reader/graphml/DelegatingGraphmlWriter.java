@@ -1,6 +1,6 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.BaseOutput;
+import com.graphinout.foundation.input.BaseOutput;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDocument;
 import com.graphinout.reader.graphml.elements.IGraphmlEdge;
@@ -9,7 +9,7 @@ import com.graphinout.reader.graphml.elements.IGraphmlHyperEdge;
 import com.graphinout.reader.graphml.elements.IGraphmlKey;
 import com.graphinout.reader.graphml.elements.IGraphmlNode;
 import com.graphinout.reader.graphml.elements.IGraphmlPort;
-import com.graphinout.base.reader.Locator;
+import com.graphinout.foundation.input.Locator;
 import com.graphinout.foundation.input.ContentError;
 
 import java.io.IOException;

@@ -1,6 +1,5 @@
 package com.graphinout.foundation.input;
 
-import com.graphinout.base.reader.InMemoryErrorHandler;
 import org.slf4j.Logger;
 
 import java.util.List;

@@ -1,17 +1,17 @@
 package com.graphinout.reader.cj;
 
-import com.graphinout.base.GioReader;
-import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.cj.stream.api.CjWriter2CjStream;
-import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
-import com.graphinout.base.cj.stream.impl.Json2CjWriter;
-import com.graphinout.base.reader.GioFileFormat;
+import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.writer.CjWriter2CjStream;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
+import com.graphinout.base.cj.writer.Json2CjWriter;
+import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.stream.JsonWriter;
-import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
+import com.graphinout.foundation.json.writer.JsonWriter;
+import com.graphinout.foundation.json.JsonReaderImpl;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

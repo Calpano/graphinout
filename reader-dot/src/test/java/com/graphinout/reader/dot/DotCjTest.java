@@ -1,8 +1,8 @@
 package com.graphinout.reader.dot;
 
 import com.graphinout.base.cj.CjAssert;
-import com.graphinout.base.cj.element.CjDocuments;
-import com.graphinout.base.cj.element.ICjDocument;
+import com.graphinout.base.cj.document.CjDocuments;
+import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSourceOfString;

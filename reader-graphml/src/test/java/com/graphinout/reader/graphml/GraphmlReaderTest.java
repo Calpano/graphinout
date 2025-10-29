@@ -1,17 +1,17 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.cj.stream.api.DelegatingCjStream;
-import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.cj.stream.DelegatingCjStream;
+import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.reader.graphml.validation.ValidatingGraphMlWriter;
-import com.graphinout.base.writer.ValidatingCjStream;
+import com.graphinout.base.cj.stream.ValidatingCjStream;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.output.OutputSink;
-import com.graphinout.foundation.xml.ValidatingXmlWriter;
-import com.graphinout.foundation.xml.Xml2AppendableWriter;
-import com.graphinout.foundation.xml.XmlWriter;
-import com.graphinout.foundation.xml.XmlWriterImpl;
+import com.graphinout.foundation.xml.writer.ValidatingXmlWriter;
+import com.graphinout.foundation.xml.writer.Xml2AppendableWriter;
+import com.graphinout.foundation.xml.writer.XmlWriter;
+import com.graphinout.foundation.xml.writer.XmlWriterImpl;
 import com.graphinout.reader.graphml.cj.CjStream2GraphmlWriter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.params.ParameterizedTest;

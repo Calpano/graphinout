@@ -1,8 +1,7 @@
 package com.graphinout.foundation.json;
 
 import com.graphinout.foundation.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
-import com.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
+import com.graphinout.foundation.json.writer.impl.StringBuilderJsonWriter;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 

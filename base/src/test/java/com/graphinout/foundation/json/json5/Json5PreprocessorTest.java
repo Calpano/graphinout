@@ -1,8 +1,9 @@
 package com.graphinout.foundation.json.json5;
 
 import com.graphinout.foundation.json.JsonReader;
-import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
-import com.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
+import com.graphinout.foundation.json.JsonReaderImpl;
+import com.graphinout.foundation.json.writer.impl.StringBuilderJsonWriter;
+import com.graphinout.foundation.json5.Json5Preprocessor;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,8 @@
 package com.graphinout.reader.jgrapht;
 
-import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.GioReader;
-import com.graphinout.base.reader.GioFileFormat;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.InputSource;
 import org.jgrapht.nio.graph6.Graph6Sparse6EventDrivenImporter;

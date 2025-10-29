@@ -1,7 +1,7 @@
 package com.graphinout.engine;
 
 import com.graphinout.base.ReaderTests;
-import com.graphinout.base.GioReader;
+import com.graphinout.base.gio.GioReader;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.ContentErrors;
 import com.graphinout.foundation.TestFileProvider;

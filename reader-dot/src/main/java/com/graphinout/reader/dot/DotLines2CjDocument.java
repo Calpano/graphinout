@@ -1,13 +1,13 @@
 package com.graphinout.reader.dot;
 
-import com.graphinout.base.BaseOutput;
-import com.graphinout.base.cj.CjDirection;
-import com.graphinout.base.cj.element.ICjGraphMutable;
-import com.graphinout.base.cj.element.ICjHasDataMutable;
-import com.graphinout.base.cj.element.ICjHasLabelMutable;
-import com.graphinout.base.cj.element.ICjNodeMutable;
-import com.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.graphinout.base.reader.Location;
+import com.graphinout.foundation.input.BaseOutput;
+import com.graphinout.base.cj.document.CjDirection;
+import com.graphinout.base.cj.document.ICjGraphMutable;
+import com.graphinout.base.cj.document.ICjHasDataMutable;
+import com.graphinout.base.cj.document.ICjHasLabelMutable;
+import com.graphinout.base.cj.document.ICjNodeMutable;
+import com.graphinout.base.cj.document.impl.CjDocumentElement;
+import com.graphinout.foundation.input.Location;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.text.ITextWriter;
 import com.graphinout.foundation.json.value.IJsonObjectMutable;

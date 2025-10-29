@@ -1,6 +1,6 @@
 package com.graphinout.reader.graphml.elements;
 
-import com.graphinout.base.cj.CjDirection;
+import com.graphinout.base.cj.document.CjDirection;
 
 /**
  * @author rbaba

@@ -1,10 +1,10 @@
 package com.graphinout.reader.ocif;
 
-import com.graphinout.base.GioReader;
-import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
-import com.graphinout.base.cj.element.ICjNodeChunkMutable;
-import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.reader.GioFileFormat;
+import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
+import com.graphinout.base.cj.document.ICjNodeChunkMutable;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
@@ -98,7 +98,7 @@ public class OcifReader implements GioReader {
         cjStream.documentStart(doc);
 
         // Create single graph to hold nodes/relations
-        com.graphinout.base.cj.element.ICjGraphChunkMutable graph = cjStream.createGraphChunk();
+        com.graphinout.base.cj.document.ICjGraphChunkMutable graph = cjStream.createGraphChunk();
         cjStream.graphStart(graph);
 
         // Nodes
@@ -140,7 +140,7 @@ public class OcifReader implements GioReader {
             IJsonArray rels = relsVal.asArray();
             for (int i = 0; i < rels.size(); i++) {
                 IJsonObject rel = rels.get_(i).asObject();
-                com.graphinout.base.cj.element.ICjEdgeChunkMutable edge = cjStream.createEdgeChunk();
+                com.graphinout.base.cj.document.ICjEdgeChunkMutable edge = cjStream.createEdgeChunk();
                 // endpoints depend on relation type
 
                 String type = nonNullOrDefault(rel.get("type"), IJsonValue::asString, "@ocif/rel/edge");

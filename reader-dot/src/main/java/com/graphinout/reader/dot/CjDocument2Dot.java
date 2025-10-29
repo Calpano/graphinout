@@ -1,6 +1,6 @@
 package com.graphinout.reader.dot;
 
-import com.graphinout.base.cj.element.*;
+import com.graphinout.base.cj.document.*;
 import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonPrimitive;
 import com.graphinout.foundation.json.value.IJsonValue;

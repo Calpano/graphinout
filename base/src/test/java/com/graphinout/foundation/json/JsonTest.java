@@ -2,8 +2,7 @@ package com.graphinout.foundation.json;
 
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
-import com.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
+import com.graphinout.foundation.json.writer.impl.StringBuilderJsonWriter;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

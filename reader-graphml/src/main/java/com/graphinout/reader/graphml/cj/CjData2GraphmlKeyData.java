@@ -1,14 +1,14 @@
 package com.graphinout.reader.graphml.cj;
 
-import com.graphinout.base.cj.CjDataProperty;
-import com.graphinout.base.cj.element.CjDataSchema;
-import com.graphinout.base.cj.element.CjDocuments;
-import com.graphinout.base.cj.element.ICjData;
-import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.cj.element.ICjEdge;
-import com.graphinout.base.cj.element.ICjHasData;
-import com.graphinout.base.cj.element.ICjHasLabel;
-import com.graphinout.base.cj.element.impl.CjDocumentElement;
+import com.graphinout.base.cj.data.CjDataProperty;
+import com.graphinout.base.cj.document.CjDataSchema;
+import com.graphinout.base.cj.document.CjDocuments;
+import com.graphinout.base.cj.document.ICjData;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.document.ICjEdge;
+import com.graphinout.base.cj.document.ICjHasData;
+import com.graphinout.base.cj.document.ICjHasLabel;
+import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
 import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
 import com.graphinout.reader.graphml.elements.IGraphmlKey;

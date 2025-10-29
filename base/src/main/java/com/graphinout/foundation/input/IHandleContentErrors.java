@@ -1,7 +1,5 @@
 package com.graphinout.foundation.input;
 
-import com.graphinout.base.reader.Location;
-import com.graphinout.base.reader.Locator;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;

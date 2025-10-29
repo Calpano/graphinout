@@ -1,8 +1,8 @@
 package com.graphinout.reader.cj;
 
-import com.graphinout.base.cj.CjFactory;
-import com.graphinout.base.cj.stream.api.ICjFactory;
-import com.graphinout.base.cj.stream.api.ICjStream;
+import com.graphinout.base.cj.factory.CjFactory;
+import com.graphinout.base.cj.factory.ICjFactory;
+import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
 import io.github.classgraph.Resource;

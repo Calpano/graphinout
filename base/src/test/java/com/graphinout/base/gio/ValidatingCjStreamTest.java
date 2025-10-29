@@ -1,10 +1,10 @@
 package com.graphinout.base.gio;
 
-import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
-import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
-import com.graphinout.base.cj.element.ICjGraphChunkMutable;
-import com.graphinout.base.cj.element.ICjNodeChunkMutable;
-import com.graphinout.base.writer.ValidatingCjStream;
+import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
+import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
+import com.graphinout.base.cj.document.ICjGraphChunkMutable;
+import com.graphinout.base.cj.document.ICjNodeChunkMutable;
+import com.graphinout.base.cj.stream.ValidatingCjStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

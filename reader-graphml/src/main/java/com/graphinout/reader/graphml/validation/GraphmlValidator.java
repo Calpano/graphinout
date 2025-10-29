@@ -2,7 +2,7 @@ package com.graphinout.reader.graphml.validation;
 
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.xml.Sax2Log;
+import com.graphinout.foundation.xml.sax.SaxErrors2Log;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
@@ -43,7 +43,7 @@ public class GraphmlValidator {
 
         try {
             String schemaAsString = IOUtils.resourceToString(xmlSchemaResource, StandardCharsets.UTF_8);
-            Sax2Log errorHandler = new Sax2Log(log);
+            SaxErrors2Log errorHandler = new SaxErrors2Log(log);
 
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             factory.setErrorHandler(errorHandler);

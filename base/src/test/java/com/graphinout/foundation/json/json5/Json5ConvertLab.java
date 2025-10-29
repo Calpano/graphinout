@@ -1,5 +1,7 @@
 package com.graphinout.foundation.json.json5;
 
+import com.graphinout.foundation.json5.Json5Preprocessor;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;

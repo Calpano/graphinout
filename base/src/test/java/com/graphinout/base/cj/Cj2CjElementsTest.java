@@ -1,23 +1,24 @@
 package com.graphinout.base.cj;
 
 
-import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
-import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
-import com.graphinout.base.cj.stream.impl.Json2CjWriter;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.util.CjNormalizer;
+import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
+import com.graphinout.base.cj.writer.Cj2JsonWriter;
+import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.impl.JsonFormatter;
-import com.graphinout.foundation.json.stream.JsonWriter;
-import com.graphinout.foundation.json.stream.impl.JsonReaderImpl;
-import com.graphinout.foundation.json.stream.impl.StringBuilderJsonWriter;
+import com.graphinout.foundation.json.util.JsonFormatter;
+import com.graphinout.foundation.json.writer.JsonWriter;
+import com.graphinout.foundation.json.JsonReaderImpl;
+import com.graphinout.foundation.json.writer.impl.StringBuilderJsonWriter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.foundation.json.impl.JsonFormatter.formatDebug;
+import static com.graphinout.foundation.json.util.JsonFormatter.formatDebug;
 
 
 /**

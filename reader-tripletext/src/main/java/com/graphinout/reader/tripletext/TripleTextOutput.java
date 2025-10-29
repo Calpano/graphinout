@@ -1,13 +1,13 @@
 package com.graphinout.reader.tripletext;
 
-import com.graphinout.base.cj.CjDirection;
-import com.graphinout.base.cj.ICjEdgeType;
-import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.cj.element.ICjEdge;
-import com.graphinout.base.cj.element.ICjEndpoint;
-import com.graphinout.base.cj.element.ICjGraph;
-import com.graphinout.base.cj.element.ICjLabelEntry;
-import com.graphinout.base.cj.element.ICjNode;
+import com.graphinout.base.cj.document.CjDirection;
+import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.document.ICjEdge;
+import com.graphinout.base.cj.document.ICjEndpoint;
+import com.graphinout.base.cj.document.ICjGraph;
+import com.graphinout.base.cj.document.ICjLabelEntry;
+import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.foundation.util.Nullables;
 import org.slf4j.Logger;
 

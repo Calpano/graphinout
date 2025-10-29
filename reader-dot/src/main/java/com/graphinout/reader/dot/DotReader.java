@@ -1,18 +1,18 @@
 package com.graphinout.reader.dot;
 
-import com.graphinout.base.GioReader;
-import com.graphinout.base.cj.element.impl.CjDocumentElement;
-import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
-import com.graphinout.base.cj.stream.api.CjWriter2CjStream;
-import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.cj.stream.impl.Cj2JsonWriter;
-import com.graphinout.base.reader.GioFileFormat;
-import com.graphinout.base.validation.CjValidator;
+import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.cj.document.impl.CjDocumentElement;
+import com.graphinout.base.cj.stream.CjStream2CjWriter;
+import com.graphinout.base.cj.writer.CjWriter2CjStream;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.cj.writer.Cj2JsonWriter;
+import com.graphinout.base.gio.GioFileFormat;
+import com.graphinout.base.cj.util.CjValidator;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.stream.impl.Json2StringWriter;
+import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.text.TextReader;
 import org.slf4j.Logger;
 

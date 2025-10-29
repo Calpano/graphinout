@@ -1,5 +1,7 @@
 package com.graphinout.foundation.xml;
 
+import com.graphinout.foundation.xml.testing.XmlAssert;
+import com.graphinout.foundation.xml.testing.XmlTests;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

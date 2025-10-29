@@ -1,16 +1,16 @@
 package com.graphinout.reader.tgf;
 
-import com.graphinout.base.cj.CjDirection;
-import com.graphinout.base.cj.element.ICjDocument;
-import com.graphinout.base.cj.element.ICjEdgeChunk;
-import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
-import com.graphinout.base.cj.element.ICjNodeChunkMutable;
-import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
-import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
-import com.graphinout.base.GioReader;
+import com.graphinout.base.cj.document.CjDirection;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.document.ICjEdgeChunk;
+import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
+import com.graphinout.base.cj.document.ICjNodeChunkMutable;
+import com.graphinout.base.cj.stream.CjStream2CjWriter;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
+import com.graphinout.base.gio.GioReader;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.base.reader.GioFileFormat;
+import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;

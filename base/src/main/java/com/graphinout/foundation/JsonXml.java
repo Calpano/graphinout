@@ -2,11 +2,11 @@ package com.graphinout.foundation;
 
 import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonXmlString;
-import com.graphinout.foundation.xml.Xml2StringWriter;
+import com.graphinout.foundation.xml.writer.Xml2StringWriter;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.element.Xml2DocumentWriter;
-import com.graphinout.foundation.xml.element.XmlContent;
-import com.graphinout.foundation.xml.element.XmlDocumentFragment;
+import com.graphinout.foundation.xml.document.Xml2DocumentWriter;
+import com.graphinout.foundation.xml.document.XmlContent;
+import com.graphinout.foundation.xml.document.XmlDocumentFragment;
 
 import java.io.IOException;
 

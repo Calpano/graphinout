@@ -1,12 +1,12 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.cj.element.ICjDocument;
+import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.xml.Xml2StringWriter;
-import com.graphinout.foundation.xml.XmlNormalizer;
+import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.foundation.xml.util.XmlNormalizer;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.graphml.cj.CjStream2GraphmlWriter;
 import io.github.classgraph.Resource;

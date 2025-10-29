@@ -1,19 +1,19 @@
 package com.graphinout.reader.graphml.cj;
 
-import com.graphinout.base.cj.BaseCjOutput;
-import com.graphinout.base.cj.element.ICjDocumentChunk;
-import com.graphinout.base.cj.element.ICjDocumentChunkMutable;
-import com.graphinout.base.cj.element.ICjEdgeChunk;
-import com.graphinout.base.cj.element.ICjEdgeChunkMutable;
-import com.graphinout.base.cj.element.ICjGraphChunk;
-import com.graphinout.base.cj.element.ICjGraphChunkMutable;
-import com.graphinout.base.cj.element.ICjNodeChunk;
-import com.graphinout.base.cj.element.ICjNodeChunkMutable;
-import com.graphinout.base.cj.stream.api.CjStream2CjWriter;
-import com.graphinout.base.cj.stream.api.ICjStream;
-import com.graphinout.base.cj.stream.impl.CjWriter2CjDocumentWriter;
+import com.graphinout.base.cj.factory.BaseCjOutput;
+import com.graphinout.base.cj.document.ICjDocumentChunk;
+import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
+import com.graphinout.base.cj.document.ICjEdgeChunk;
+import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
+import com.graphinout.base.cj.document.ICjGraphChunk;
+import com.graphinout.base.cj.document.ICjGraphChunkMutable;
+import com.graphinout.base.cj.document.ICjNodeChunk;
+import com.graphinout.base.cj.document.ICjNodeChunkMutable;
+import com.graphinout.base.cj.stream.CjStream2CjWriter;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.reader.graphml.GraphmlWriter;
-import com.graphinout.base.reader.Locator;
+import com.graphinout.foundation.input.Locator;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.json.value.IJsonFactory;
 
