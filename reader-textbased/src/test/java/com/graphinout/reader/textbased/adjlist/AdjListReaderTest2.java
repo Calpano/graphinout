@@ -1,4 +1,4 @@
-package com.graphinout.reader.adjlist;
+package com.graphinout.reader.textbased.adjlist;
 
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.gio.GioReader;

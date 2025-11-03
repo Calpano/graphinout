@@ -14,7 +14,7 @@ import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.output.OutputSink;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.writer.Xml2StringWriter;
-import com.graphinout.reader.adjlist.AdjListReader;
+import com.graphinout.reader.textbased.adjlist.AdjListReader;
 import com.graphinout.reader.cj.ConnectedJson5Reader;
 import com.graphinout.reader.cj.ConnectedJsonReader;
 import com.graphinout.reader.graphml.GraphmlReader;
