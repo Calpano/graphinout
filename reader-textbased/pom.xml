@@ -8,9 +8,9 @@
         <version>0.1.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>reader-adjlist</artifactId>
-    <name>reader-adjlist</name>
-    <description>Reader for NetworkX AdjList</description>
+    <artifactId>reader-textbased</artifactId>
+    <name>reader-textbased</name>
+    <description>Reader for simple textual formats, such as NetworkX AdjList, edge list</description>
 
     <dependencies>
         <dependency>

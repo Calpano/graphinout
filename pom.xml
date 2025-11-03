@@ -42,7 +42,7 @@
         <module>reader-ocif</module>
         <module>reader-tripletext</module>
         <module>reader-jgrapht</module>
-        <module>reader-adjlist</module>
+        <module>reader-textbased</module>
         <module>engine</module>
     </modules>
 
