@@ -6,10 +6,12 @@ import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjHasData;
+import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.base.cj.document.ICjLabelEntry;
 import com.graphinout.foundation.json.value.IJsonValue;
 import org.slf4j.Logger;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -47,7 +49,7 @@ public class GmlOutput {
         List<ICjGraph> graphs = cjDoc.graphs().toList();
         for (ICjGraph g : graphs) {
             // Nodes section
-            g.nodes().forEach(n -> {
+            g.nodes().sorted(Comparator.comparing(ICjNode::id)).forEach(n -> {
                 String id = n.id();
                 if (id == null) return; // skip nodes without id
                 b.append("  node [\n");

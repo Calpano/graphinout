@@ -1,7 +1,7 @@
 package com.graphinout.base.gio;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class GioFileFormat {
@@ -18,14 +18,14 @@ public class GioFileFormat {
 
     /**
      * @param mainExtension the one used for output file naming (and as input), syntax: ".foo" (with dot)
-     * @param extensions further handled file extensions (optional), should be listed as ".foo" (with dot)
+     * @param extensions    further handled file extensions (optional), should be listed as ".foo" (with dot)
      */
     public GioFileFormat(String id, String label, String mainExtension, String... extensions) {
         this.id = id;
         this.label = label;
         if (extensions == null) this.fileExtensions = Set.of(mainExtension);
         else {
-            this.fileExtensions = new HashSet<>();
+            this.fileExtensions = new LinkedHashSet<>();
             this.fileExtensions.add(mainExtension);
             this.fileExtensions.addAll(Arrays.asList(extensions));
         }
@@ -41,6 +41,10 @@ public class GioFileFormat {
 
     public String label() {
         return label;
+    }
+
+    public String mainExtension() {
+        return fileExtensions.iterator().next();
     }
 
     /**

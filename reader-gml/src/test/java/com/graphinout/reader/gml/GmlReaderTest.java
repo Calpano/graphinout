@@ -1,25 +1,28 @@
 package com.graphinout.reader.gml;
 
-import com.graphinout.base.cj.factory.CjFactory;
 import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjEdgeChunk;
 import com.graphinout.base.cj.document.ICjGraphChunk;
 import com.graphinout.base.cj.document.ICjNodeChunk;
+import com.graphinout.base.cj.factory.CjFactory;
+import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.foundation.TestFileProvider;
+import com.graphinout.foundation.TestFileUtil;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.json.value.java.JavaJsonFactory;
+import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -31,19 +34,31 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.slf4j.LoggerFactory.getLogger;
 
 class GmlReaderTest {
 
     public static final String GML_EXAMPLE = """
             Creator "yFiles" Version 2.2 graph [ hierarchic 1 directed 1 node [ id 0 graphics [ x 200.0 y 0.0 ] LabelGraphics [ text "January" ] ] node [ id 1 graphics [ x 425.0 y 75.0 ] LabelGraphics [ text "December" ] ] edge [ source 1 target 0 graphics [ Line [ point [ x 425.0 y 75.0 ] point [ x 425.0 y 0.0 ] point [ x 200.0 y 0.0 ] ] ] LabelGraphics [ text "Happy New Year!" model "six_pos" position "head" ] ] ]""";
+    private static final Logger log = getLogger(GmlReaderTest.class);
     private AutoCloseable closeable;
     private GmlReader underTest;
     @Mock private ICjStream mockCjStream;
     @Mock private SingleInputSource mockInputSrc;
     @Mock private Consumer<ContentError> mockErrorConsumer;
+
+    public static Stream<TestFileProvider.TestResource> gmlResources() {
+        return TestFileProvider.getAllTestResources() //
+                .filter(res -> res.resource().getPath().endsWith(GmlReader.FORMAT.mainExtension()));
+    }
+
+    @Test
+    void testResources() {
+        assertThat(GmlReader.FORMAT.mainExtension()).isEqualTo(".gml");
+        assertThat(TestFileProvider.getAllTestResources().findAny().isPresent()).isTrue();
+        assertThat(gmlResources().findAny().isPresent()).isTrue();
+    }
 
     @AfterEach
     public void releaseMocks() throws Exception {
@@ -79,6 +94,25 @@ class GmlReaderTest {
         verify(mockCjStream, times(1)).edge(any(ICjEdgeChunk.class));
         verify(mockCjStream, times(1)).graphEnd();
         verify(mockCjStream, times(1)).documentEnd();
+    }
+
+    @ParameterizedTest
+    @MethodSource("gmlResources")
+    void shouldWorkAsIntended(String displayPath, Resource resource) throws IOException {
+        if (TestFileUtil.isInvalid(resource, "gml")) {
+            log.info("Skipping invalid GML file " + resource.getURI());
+            return;
+        }
+
+        String content = resource.getContentAsString();
+        SingleInputSource singleInputSource = SingleInputSource.of(displayPath, content);
+
+        Json2StringWriter json2StringWriter = new Json2StringWriter();
+        Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
+        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2JsonWriter);
+        underTest.read(singleInputSource, cjStream2CjWriter);
+        String json = json2StringWriter.jsonString();
+        log.info("JSON: " + json);
     }
 
 }
