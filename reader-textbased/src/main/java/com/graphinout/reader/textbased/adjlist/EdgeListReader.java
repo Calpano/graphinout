@@ -21,7 +21,6 @@ public class EdgeListReader implements GioReader, ITextWriter {
 
     public static final String FORMAT_ID = "edgelist";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Edge List Format", ".edgelist");
-    private static final String DELIMITER = " ";
     private static final String HASH = "#";
     private final Set<String> nodesCreatedSet = new HashSet<>();
     private @Nullable Consumer<ContentError> errorHandler;
@@ -46,30 +45,55 @@ public class EdgeListReader implements GioReader, ITextWriter {
             return;
         }
 
-        String[] parts = line.split(DELIMITER);
-        String sourceId = null;
-        for (int i = 0; i < parts.length; i++) {
-            String part = parts[i];
-            // create nodes for all parts that have not yet been created
-            if (nodesCreatedSet.add(part)) {
-                var node = cjStream.createNodeChunk();
-                node.id(part);
-                cjStream.nodeStart(node);
-                cjStream.nodeEnd();
-            }
-            if (i == 0) {
-                sourceId = part;
-            } else {
-                String targetId = parts[i];
-                var edge = cjStream.createEdgeChunk();
-                // endpoints: source -> target
-                final String src = sourceId;
-                edge.addEndpoint(ep -> ep.node(src));
-                edge.addEndpoint(ep -> ep.node(targetId));
-                cjStream.edgeStart(edge);
-                cjStream.edgeEnd();
-            }
+        String sourceId, targetId;
+        String dataString;
+
+        String[] parts = line.split("\\s+", 2);
+        if (parts.length < 2) {
+            // Not enough parts for an edge (source and target)
+            return;
         }
+        sourceId = parts[0];
+
+        String rest = parts[1];
+        parts = rest.split("\\s+", 2);
+        targetId = parts[0];
+
+        if (parts.length > 1) {
+            dataString = parts[1];
+        } else {
+            dataString = null;
+        }
+
+
+        // create nodes for all parts that have not yet been created
+        if (nodesCreatedSet.add(sourceId)) {
+            var node = cjStream.createNodeChunk();
+            node.id(sourceId);
+            cjStream.nodeStart(node);
+            cjStream.nodeEnd();
+        }
+        if (nodesCreatedSet.add(targetId)) {
+            var node = cjStream.createNodeChunk();
+            node.id(targetId);
+            cjStream.nodeStart(node);
+            cjStream.nodeEnd();
+        }
+
+        var edge = cjStream.createEdgeChunk();
+        // endpoints: source -> target
+        edge.addEndpoint(ep -> ep.node(sourceId));
+        edge.addEndpoint(ep -> ep.node(targetId));
+        if (dataString != null) {
+            // TODO map better to suitable JSON
+            // parse dataString -- is it a python dict or JSON map? -> JSON object
+            // single string?
+            edge.dataMutable(d -> {
+                d.addProperty("data", dataString);
+            });
+        }
+        cjStream.edgeStart(edge);
+        cjStream.edgeEnd();
     }
 
     @Override
