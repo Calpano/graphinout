@@ -10,6 +10,10 @@ import static com.graphinout.foundation.util.Nullables.mapOrNull;
 
 public interface ICjHasData extends ICjElement {
 
+    /**
+     * Read existing data. To write, you need an {@link ICjHasDataMutable}.
+     * @return read-only data or null
+     */
     @Nullable
     ICjData data();
 
