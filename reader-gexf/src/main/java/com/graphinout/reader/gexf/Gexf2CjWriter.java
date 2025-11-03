@@ -28,14 +28,14 @@ public class Gexf2CjWriter extends DefaultHandler {
     @Override
     public void startDocument() throws SAXException {
         CjWriter2CjStream cjWriter2CjStream = new CjWriter2CjStream(cjStream);
-        cjWriter2CjStream.onDocumentStart();
+        cjWriter2CjStream.documentStart();
     }
 
     @Override
     public void endDocument() throws SAXException {
         CjWriter2CjStream cjWriter2CjStream = new CjWriter2CjStream(cjStream);
         cjDocument.fire(cjWriter2CjStream);
-        cjWriter2CjStream.onDocumentEnd();
+        cjWriter2CjStream.documentEnd();
     }
 
     @Override
