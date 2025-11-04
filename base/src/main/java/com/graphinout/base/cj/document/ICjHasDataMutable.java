@@ -15,6 +15,11 @@ public interface ICjHasDataMutable extends ICjHasData {
      */
     void dataMutable(Consumer<ICjDataMutable> consumer);
 
+    /**
+     * Set the <em>description</em> to a plain-text string.
+     * @param jsonFactory
+     * @param descriptionText
+     */
     default void descriptionPlainText(IJsonFactory jsonFactory, String descriptionText) {
         dataMutable(data -> {
             IJsonXmlString value = IJsonXmlString.ofPlainString(jsonFactory, descriptionText);
