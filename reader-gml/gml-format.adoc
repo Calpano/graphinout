@@ -1,0 +1,2 @@
+See also
+https://docs.yworks.com/yfiles/doc/developers-guide/gml.html#gml_yFiles

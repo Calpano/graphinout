@@ -2,7 +2,9 @@ package com.graphinout.reader.gml;
 
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
+import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
@@ -107,28 +109,102 @@ public class GmlReader implements GioReader {
                     label = value;
                 }
             } else {
-                // Skip other attributes for now
-                // TODO ...
-                skipBlock(scanner, value);
+                // Capture simple attributes (non-nested) into edge data; skip nested blocks
+                if ("[".equals(value)) {
+                    skipBlock(scanner, value);
+                } else {
+                    String attrValue = value;
+                    if (attrValue.startsWith("\"")) {
+                        StringBuilder quoted = new StringBuilder(attrValue.substring(1));
+                        while (scanner.hasNext() && !attrValue.endsWith("\"")) {
+                            attrValue = scanner.next();
+                            quoted.append(" ").append(attrValue);
+                        }
+                        attrValue = quoted.toString().replaceAll("\"", "");
+                    }
+                    final String k = key;
+                    final String v = attrValue;
+                    edgeChunk.dataMutable(d -> d.addProperty(k, v));
+                }
             }
         }
     }
 
     private void parseGraph(Scanner scanner, ICjStream cjStream) throws IOException {
+        ICjGraphChunkMutable graphChunk = cjStream.createGraphChunk();
+        boolean started = false;
         while (scanner.hasNext()) {
             String token = scanner.next();
             if (token.equalsIgnoreCase("node")) {
                 if (scanner.hasNext() && scanner.next().equals("[")) {
+                    if (!started) {
+                        cjStream.graphStart(graphChunk);
+                        started = true;
+                    }
                     parseNode(scanner, cjStream);
                 }
             } else if (token.equalsIgnoreCase("edge")) {
                 if (scanner.hasNext() && scanner.next().equals("[")) {
+                    if (!started) {
+                        cjStream.graphStart(graphChunk);
+                        started = true;
+                    }
                     parseEdge(scanner, cjStream);
                 }
+            } else if (token.equalsIgnoreCase("graph")) {
+                // nested graph
+                if (scanner.hasNext() && scanner.next().equals("[")) {
+                    if (!started) {
+                        cjStream.graphStart(graphChunk);
+                        started = true;
+                    }
+                    parseGraph(scanner, cjStream);
+                }
+            } else if (token.equalsIgnoreCase("name")) {
+                String value = scanner.next();
+                if (value.startsWith("\"")) {
+                    StringBuilder quotedName = new StringBuilder(value.substring(1));
+                    while (scanner.hasNext() && !value.endsWith("\"")) {
+                        value = scanner.next();
+                        quotedName.append(" ").append(value);
+                    }
+                    graphChunk.addLabelWithoutLanguage(quotedName.toString().replaceAll("\"", ""));
+                } else {
+                    graphChunk.addLabelWithoutLanguage(value);
+                }
             } else if (token.equals("]")) {
-                return;
+                break;
+            } else {
+                // generic attribute inside graph
+                if (!started) {
+                    // if we encounter attributes before any child lists, we still need to start the graph later
+                }
+                if (scanner.hasNext()) {
+                    String value = scanner.next();
+                    if ("[".equals(value)) {
+                        // nested block attribute, skip it
+                        skipBlock(scanner, value);
+                    } else {
+                        String attrValue = value;
+                        if (attrValue.startsWith("\"")) {
+                            StringBuilder quoted = new StringBuilder(attrValue.substring(1));
+                            while (scanner.hasNext() && !attrValue.endsWith("\"")) {
+                                attrValue = scanner.next();
+                                quoted.append(" ").append(attrValue);
+                            }
+                            attrValue = quoted.toString().replaceAll("\"", "");
+                        }
+                        final String key = token;
+                        final String val = attrValue;
+                        graphChunk.dataMutable(d -> d.addProperty(key, val));
+                    }
+                }
             }
         }
+        if (!started) {
+            cjStream.graphStart(graphChunk);
+        }
+        cjStream.graphEnd();
     }
 
     private void parseNode(Scanner scanner, ICjStream writer) throws IOException {
@@ -166,27 +242,84 @@ public class GmlReader implements GioReader {
                     label = value;
                 }
             } else {
-                // Skip other attributes for now, including nested blocks
-                skipBlock(scanner, value);
+                // Capture simple attributes (non-nested) into node data; skip nested blocks
+                if ("[".equals(value)) {
+                    // nested block -> skip entirely
+                    skipBlock(scanner, value);
+                } else {
+                    // value may be quoted; collect full quoted token if needed
+                    String attrValue = value;
+                    if (attrValue.startsWith("\"")) {
+                        StringBuilder quoted = new StringBuilder(attrValue.substring(1));
+                        while (scanner.hasNext() && !attrValue.endsWith("\"")) {
+                            attrValue = scanner.next();
+                            quoted.append(" ").append(attrValue);
+                        }
+                        attrValue = quoted.toString().replaceAll("\"", "");
+                    }
+                    final String key = token;
+                    final String val = attrValue;
+                    nodeChunk.dataMutable(d -> d.addProperty(key, val));
+                }
             }
         }
     }
 
     private void processFileContent(final Scanner scanner, final ICjStream cjStream) throws IOException {
-        cjStream.documentStart(cjStream.createDocumentChunk());
-        cjStream.graphStart(cjStream.createGraphChunk());
+        ICjDocumentChunkMutable doc = cjStream.createDocumentChunk();
+        boolean documentStarted = false;
 
         while (scanner.hasNext()) {
             String token = scanner.next();
             if (token.equalsIgnoreCase("graph")) {
-                // Skip the opening bracket
+                // On first graph, start the document (emits accumulated document-level attributes)
+                if (!documentStarted) {
+                    cjStream.documentStart(doc);
+                    documentStarted = true;
+                }
+                // Expect opening bracket and parse graph
                 if (scanner.hasNext() && scanner.next().equals("[")) {
                     parseGraph(scanner, cjStream);
+                }
+            } else if (token.equals("#")) {
+                // comment till end of line; skip
+                if (scanner.hasNextLine()) scanner.nextLine();
+            } else if (!documentStarted) {
+                // Treat as document-level attribute until the document is started
+                if (!scanner.hasNext()) break;
+                String value = scanner.next();
+                if ("[".equals(value)) {
+                    // nested block at top level - skip
+                    skipBlock(scanner, value);
+                } else {
+                    String attrValue = value;
+                    if (attrValue.startsWith("\"")) {
+                        StringBuilder quoted = new StringBuilder(attrValue.substring(1));
+                        while (scanner.hasNext() && !attrValue.endsWith("\"")) {
+                            attrValue = scanner.next();
+                            quoted.append(" ").append(attrValue);
+                        }
+                        attrValue = quoted.toString().replaceAll("\"", "");
+                    }
+                    final String key = token;
+                    final String val = attrValue;
+                    doc.dataMutable(d -> d.addProperty(key, val));
+                }
+            } else {
+                // After document started: ignore stray tokens at top-level or skip nested blocks gracefully
+                if (scanner.hasNext()) {
+                    String maybe = scanner.next();
+                    if ("[".equals(maybe)) {
+                        skipBlock(scanner, maybe);
+                    }
                 }
             }
         }
 
-        cjStream.graphEnd();
+        if (!documentStarted) {
+            // no graphs encountered; still emit empty document with collected attributes
+            cjStream.documentStart(doc);
+        }
         cjStream.documentEnd();
     }
 
