@@ -1,2 +1,54 @@
 See also
 https://docs.yworks.com/yfiles/doc/developers-guide/gml.html#gml_yFiles
+
+[source,gml]
+----
+Creator "yFiles"
+Version 2.2
+graph
+[ hierarchic  1
+  directed  1
+  node
+  [ id  0
+    graphics
+    [ x 200.0
+      y 0.0
+    ]
+    LabelGraphics
+    [ text  "January" ]
+  ]
+]
+----
+
+The grammar is LISP-like.
+
+The core tokenizer should produce:
+
+key(Creator)
+value("yFiles")
+key(Version)
+value(2.2)
+key(graph)
+open
+key(hierarchic)
+value(1)
+key(directed)
+value(1)
+key(node)
+open
+key(id)
+value(0)
+key(graphics)
+open
+key(x)
+value(200.0)
+key(y)
+value(0.0)
+close
+key(LabelGraphics)
+open
+key(text)
+value("January")
+close
+close
+close
