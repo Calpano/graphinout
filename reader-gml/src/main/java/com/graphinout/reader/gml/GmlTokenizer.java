@@ -5,11 +5,14 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class GmlTokenizer {
 
+    private static final Logger log = getLogger(GmlTokenizer.class);
     private final StreamTokenizer tokenizer;
     private final IGmlHandler handler;
 
@@ -18,6 +21,22 @@ public class GmlTokenizer {
         this.handler = handler;
         tokenizer.commentChar('#');
         tokenizer.wordChars('_', '_');
+    }
+
+    public static void tokenize(Reader reader, IGmlHandler gmlHandler) {
+        GmlTokenizer tokenizer = new GmlTokenizer(reader, gmlHandler);
+        try {
+            tokenizer.parse();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Object> tokenizeToList(String string) {
+        GmlListHandler handler = new GmlListHandler();
+        StringReader stringReader = new StringReader(string);
+        tokenize(stringReader, handler);
+        return handler.list();
     }
 
     public void parse() throws IOException {
@@ -42,10 +61,9 @@ public class GmlTokenizer {
             } else if (tokenizer.ttype == ']') {
                 handler.close();
             } else {
-                log.warn("Unhandled token "+tokenizer.ttype);
+                log.warn("Unhandled token " + tokenizer.ttype);
             }
         }
     }
 
-    private static final Logger log = getLogger(GmlTokenizer.class);
 }

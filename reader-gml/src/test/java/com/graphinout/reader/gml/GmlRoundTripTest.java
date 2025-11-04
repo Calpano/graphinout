@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,20 +28,25 @@ class GmlRoundTripTest {
     void testRoundTrip(String displayPath, Resource resource) throws IOException {
         // GML to CJ
         String gmlContent = resource.getContentAsString();
+        List<Object> expectedList = GmlTokenizer.tokenizeToList(gmlContent);
+
         SingleInputSource inputSource = SingleInputSource.of("gml-test", gmlContent);
         ICjDocument cjDocument = GmlReader.parseGmlToCjDocument(inputSource);
         log.info("CJ JSON: "+ CjDocuments.toJsonString(cjDocument));
 
         // CJ to GML
         GmlOutput  gmlOutput = new GmlOutput(cjDocument);
+        List<Object> actualList = gmlOutput.toGmlList();
+
         String newGmlContent = gmlOutput.toGml();
+        log.info("Result GML: \n"+newGmlContent);
 
         String expected = normalizeGml(gmlContent);
         String actual = normalizeGml(newGmlContent);
-        System.out.println("[DEBUG_LOG] Expected (normalized):\n" + expected);
-        System.out.println("[DEBUG_LOG] Actual   (normalized):\n" + actual);
+        System.out.println("[DEBUG_LOG] Expected (normalized):\n" + expectedList);
+        System.out.println("[DEBUG_LOG] Actual   (normalized):\n" + actualList);
 
-        assertEquals(expected, actual);
+        GmlAssert.assertEquals(expectedList, actualList);
     }
 
     @Test

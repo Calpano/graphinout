@@ -58,32 +58,12 @@ public class GmlReaderHandler implements IGmlHandler {
         Object currentChunk = chunkStack.peek();
         String raw = value;
         String unquotedValue = (raw.startsWith("\"") && raw.endsWith("\"")) ? raw.substring(1, raw.length() - 1) : raw;
-        // normalize numeric values for certain keys (strip trailing .0)
-        if (unquotedValue.matches("-?\\d+\\.0") && (
-                "id".equalsIgnoreCase(lastKey) ||
-                "source".equalsIgnoreCase(lastKey) ||
-                "target".equalsIgnoreCase(lastKey) ||
-                "directed".equalsIgnoreCase(lastKey) ||
-                "hierarchic".equalsIgnoreCase(lastKey)
-        )) {
-            unquotedValue = unquotedValue.substring(0, unquotedValue.length() - 2);
-        }
         IJsonFactory jsonFactory = writer.jsonFactory();
 
         Context ctx = contextStack.peek();
         // Build path for JSON data based on nested unknown blocks
         List<IJsonContainerNavigationStep> currentPath = buildPathWithLastKey();
-        // some keys should normalize trailing .0 when stored as numbers
         String effectiveRaw = raw;
-        if (raw.matches("-?\\d+\\.0") && (
-                "directed".equalsIgnoreCase(lastKey) ||
-                "hierarchic".equalsIgnoreCase(lastKey) ||
-                "id".equalsIgnoreCase(lastKey) ||
-                "source".equalsIgnoreCase(lastKey) ||
-                "target".equalsIgnoreCase(lastKey)
-        )) {
-            effectiveRaw = raw.substring(0, raw.length() - 2);
-        }
 
         switch (ctx) {
             case NODE -> {
@@ -92,7 +72,6 @@ public class GmlReaderHandler implements IGmlHandler {
                     node.id(unquotedValue);
                 } else if ("label".equalsIgnoreCase(lastKey)) {
                     String val = unquotedValue;
-                    if (val.matches("-?\\d+\\.0")) val = val.substring(0, val.length() - 2);
                     node.addLabelWithoutLanguage(val);
                 } else if (ctx == Context.UNKNOWN) {
                     // never reached due to switch
