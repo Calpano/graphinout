@@ -2,15 +2,14 @@ package com.graphinout.reader.gml;
 
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.ICjDocument;
-import com.graphinout.base.cj.document.ICjEdgeChunk;
 import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
+import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;
@@ -20,12 +19,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public class GmlReader implements GioReader {
@@ -43,11 +37,6 @@ public class GmlReader implements GioReader {
         ICjStream cjStream2cj = new CjStream2CjWriter(cj2document);
         gmlReader.read(inputSource, cjStream2cj);
         return cj2document.resultDoc();
-    }
-
-    @Override
-    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
-        this.errorHandler = errorHandler;
     }
 
     @Override
@@ -74,80 +63,9 @@ public class GmlReader implements GioReader {
         }
     }
 
-
-    private void processFileContent(final Scanner scanner, final ICjStream writer) throws IOException {
-        writer.documentStart(writer.createDocumentChunk());
-        writer.graphStart(writer.createGraphChunk());
-
-        while (scanner.hasNext()) {
-            String token = scanner.next();
-            if (token.equalsIgnoreCase("graph")) {
-                // Skip the opening bracket
-                if (scanner.hasNext() && scanner.next().equals("[")) {
-                    parseGraph(scanner, writer);
-                }
-            }
-        }
-
-        writer.graphEnd();
-        writer.documentEnd();
-    }
-
-    private void parseGraph(Scanner scanner, ICjStream writer) throws IOException {
-        while (scanner.hasNext()) {
-            String token = scanner.next();
-            if (token.equalsIgnoreCase("node")) {
-                if (scanner.hasNext() && scanner.next().equals("[")) {
-                    parseNode(scanner, writer);
-                }
-            } else if (token.equalsIgnoreCase("edge")) {
-                if (scanner.hasNext() && scanner.next().equals("[")) {
-                    parseEdge(scanner, writer);
-                }
-            } else if (token.equals("]")) {
-                return;
-            }
-        }
-    }
-
-    private void parseNode(Scanner scanner, ICjStream writer) throws IOException {
-        ICjNodeChunkMutable nodeChunk = writer.createNodeChunk();
-        String id = null;
-        String label = null;
-
-        while (scanner.hasNext()) {
-            String key = scanner.next();
-            if (key.equals("]")) {
-                if (id != null) {
-                    nodeChunk.id(id);
-                }
-                if (label != null) {
-                    nodeChunk.descriptionPlainText(writer.jsonFactory(), label);
-                }
-                writer.node(nodeChunk);
-                return;
-            }
-
-            String value = scanner.next();
-            if (key.equalsIgnoreCase("id")) {
-                id = value;
-            } else if (key.equalsIgnoreCase("label")) {
-                // GML labels can be quoted
-                if (value.startsWith("\"")) {
-                    StringBuilder quotedLabel = new StringBuilder(value.substring(1));
-                    while (scanner.hasNext() && !value.endsWith("\"")) {
-                        value = scanner.next();
-                        quotedLabel.append(" ").append(value);
-                    }
-                    label = quotedLabel.toString().replaceAll("\"", "");
-                } else {
-                    label = value;
-                }
-            } else {
-                // Skip other attributes for now, including nested blocks
-                skipBlock(scanner, value);
-            }
-        }
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
     private void parseEdge(Scanner scanner, ICjStream writer) throws IOException {
@@ -165,7 +83,7 @@ public class GmlReader implements GioReader {
                     edgeChunk.addEndpoint(ep -> ep.node(finalSource).direction(CjDirection.OUT));
                     edgeChunk.addEndpoint(ep -> ep.node(finalTarget).direction(CjDirection.IN));
                     if (label != null) {
-                        edgeChunk.descriptionPlainText(writer.jsonFactory(), label);
+                        edgeChunk.addLabelWithoutLanguage(label);
                     }
                     writer.edge(edgeChunk);
                 }
@@ -178,7 +96,7 @@ public class GmlReader implements GioReader {
             } else if (key.equalsIgnoreCase("target")) {
                 target = value;
             } else if (key.equalsIgnoreCase("label")) {
-                 if (value.startsWith("\"")) {
+                if (value.startsWith("\"")) {
                     StringBuilder quotedLabel = new StringBuilder(value.substring(1));
                     while (scanner.hasNext() && !value.endsWith("\"")) {
                         value = scanner.next();
@@ -190,9 +108,86 @@ public class GmlReader implements GioReader {
                 }
             } else {
                 // Skip other attributes for now
+                // TODO ...
                 skipBlock(scanner, value);
             }
         }
+    }
+
+    private void parseGraph(Scanner scanner, ICjStream cjStream) throws IOException {
+        while (scanner.hasNext()) {
+            String token = scanner.next();
+            if (token.equalsIgnoreCase("node")) {
+                if (scanner.hasNext() && scanner.next().equals("[")) {
+                    parseNode(scanner, cjStream);
+                }
+            } else if (token.equalsIgnoreCase("edge")) {
+                if (scanner.hasNext() && scanner.next().equals("[")) {
+                    parseEdge(scanner, cjStream);
+                }
+            } else if (token.equals("]")) {
+                return;
+            }
+        }
+    }
+
+    private void parseNode(Scanner scanner, ICjStream writer) throws IOException {
+        ICjNodeChunkMutable nodeChunk = writer.createNodeChunk();
+        String id = null;
+        String label = null;
+
+        while (scanner.hasNext()) {
+            String token = scanner.next();
+            if (token.equals("]")) {
+                if (id != null) {
+                    nodeChunk.id(id);
+                }
+                if (label != null) {
+                    nodeChunk.addLabelWithoutLanguage(label);
+                }
+                writer.node(nodeChunk);
+                return;
+            }
+
+            String value = scanner.next();
+            if (token.equalsIgnoreCase("id")) {
+                id = value;
+            } else if (token.equalsIgnoreCase("label")) {
+                // GML labels can be quoted
+                if (value.startsWith("\"")) {
+                    StringBuilder quotedLabel = new StringBuilder(value.substring(1));
+                    while (scanner.hasNext() && !value.endsWith("\"")) {
+                        value = scanner.next();
+                        quotedLabel.append(" ").append(value);
+                    }
+                    // unescape quotes
+                    label = quotedLabel.toString().replaceAll("\"", "");
+                } else {
+                    label = value;
+                }
+            } else {
+                // Skip other attributes for now, including nested blocks
+                skipBlock(scanner, value);
+            }
+        }
+    }
+
+    private void processFileContent(final Scanner scanner, final ICjStream cjStream) throws IOException {
+        cjStream.documentStart(cjStream.createDocumentChunk());
+        cjStream.graphStart(cjStream.createGraphChunk());
+
+        while (scanner.hasNext()) {
+            String token = scanner.next();
+            if (token.equalsIgnoreCase("graph")) {
+                // Skip the opening bracket
+                if (scanner.hasNext() && scanner.next().equals("[")) {
+                    parseGraph(scanner, cjStream);
+                }
+            }
+        }
+
+        cjStream.graphEnd();
+        cjStream.documentEnd();
     }
 
     private void skipBlock(Scanner scanner, String value) {
@@ -208,4 +203,5 @@ public class GmlReader implements GioReader {
             }
         }
     }
+
 }
