@@ -21,17 +21,17 @@ public record JsonTransformer(IJsonTransformHandler handler) {
 
     }
 
+    private static List<Object> nextSteps(List<Object> steps, Object step) {
+        List<Object> nextSteps = new ArrayList<>(steps);
+        nextSteps.add(step);
+        return nextSteps;
+    }
+
     /**
      * @param jsonValue must have mutable containers
      */
     public void traverse(IJsonValue jsonValue) {
         traverse(List.of(), jsonValue);
-    }
-
-    private static List<Object> nextSteps(List<Object> steps, Object step) {
-        List<Object> nextSteps = new ArrayList<>(steps);
-        nextSteps.add(step);
-        return nextSteps;
     }
 
     /**
@@ -41,8 +41,9 @@ public record JsonTransformer(IJsonTransformHandler handler) {
      * @param jsonValue to traverse
      */
     private void traverse(List<Object> steps, IJsonValue jsonValue) {
-        if (jsonValue.isPrimitive()) return;
-        else if (jsonValue.isObject()) {
+        if (jsonValue.isPrimitive()) {
+            return;
+        } else if (jsonValue.isObject()) {
             IJsonObjectMutable o = (IJsonObjectMutable) jsonValue;
             handler.transformObjectPre(steps, o);
             o.forEach((k, v) -> traverse(nextSteps(steps, k), v));

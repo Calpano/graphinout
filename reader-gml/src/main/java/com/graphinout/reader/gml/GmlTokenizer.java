@@ -19,8 +19,24 @@ public class GmlTokenizer {
     public GmlTokenizer(Reader reader, IGmlHandler handler) {
         this.tokenizer = new StreamTokenizer(reader);
         this.handler = handler;
-        tokenizer.commentChar('#');
+        // Configure tokenizer to avoid numeric parsing so numbers remain strings
+        tokenizer.resetSyntax();
+        // Whitespace (ASCII control to space)
+        tokenizer.whitespaceChars(0, ' ');
+        // Words: letters, digits, underscore, dot, minus
+        tokenizer.wordChars('a', 'z');
+        tokenizer.wordChars('A', 'Z');
+        tokenizer.wordChars('0', '9');
         tokenizer.wordChars('_', '_');
+        tokenizer.wordChars('.', '.');
+        tokenizer.wordChars('-', '-');
+        // Quoted strings
+        tokenizer.quoteChar('"');
+        // Brackets as ordinary characters so we can detect list boundaries
+        tokenizer.ordinaryChar('[');
+        tokenizer.ordinaryChar(']');
+        // Line comments starting with '#'
+        tokenizer.commentChar('#');
     }
 
     public static void tokenize(Reader reader, IGmlHandler gmlHandler) {

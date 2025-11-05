@@ -20,6 +20,7 @@ public class GmlListHandler implements IGmlHandler {
     }
 
     record Value(String value) {
+
         @Override
         public String toString() {
             return "Value(" + value + ')';

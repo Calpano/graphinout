@@ -1,0 +1,25 @@
+{
+  "data": { "Creator": "yFiles", "Version": 2.2 },
+  "graphs": [
+    {
+      "data": {
+        "hierarchic": 1,
+        "directed": 1
+      },
+      "nodes": [
+        {
+          "id": "0",
+          "data": {
+            "graphics": {
+                "x": 200.0,
+                "y": 0.0
+            },
+            "LabelGraphics": {
+                "text": "January"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -249,6 +249,7 @@ public record GmlOutput(ICjDocument cjDoc) {
         b.close();
     }
 
+    @Deprecated
     private static boolean looksLikePointPairs(IJsonArray arr) {
         // Expect an even-length array alternating between {x: num} and {y: num}
         if (arr.size() < 2 || (arr.size() % 2) != 0) return false;

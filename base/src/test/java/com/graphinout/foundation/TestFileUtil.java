@@ -42,8 +42,8 @@ public class TestFileUtil {
     public static final String EXPECTED = "EXPECTED";
     public static final String RECORD_MODE = "RECORD_MODE";
     public static final String TARGET_TEST_CLASSES = "target/test-classes";
-    private static final Logger log = getLogger(TestFileUtil.class);
     public static final String EMOJI_VIDEOCASSETTE = "\uD83D\uDCFC";
+    private static final Logger log = getLogger(TestFileUtil.class);
     static Pattern INVALID_MARKER = Pattern.compile("invalid([a-z]*).*");
 
     private static File asSrcMainResource(File targetTestClasses) {
@@ -79,7 +79,8 @@ public class TestFileUtil {
     }
 
     public static @Nullable Resource expectedResource(Resource resource, String testId) {
-        return tagResource(resource, expectedTag(testId));
+        String tag = expectedTag(testId);
+        return tagResource(resource, tag);
     }
 
     private static String expectedTag(String testId) {
@@ -119,7 +120,7 @@ public class TestFileUtil {
 
     public static boolean isExpected(Resource resource) {
         String tags = tags(resource);
-        return tags.startsWith(EXPECTED+"-");
+        return tags.startsWith(EXPECTED + "-");
     }
 
     /**
@@ -154,7 +155,7 @@ public class TestFileUtil {
         String tags = tags(resource);
         String tagsLower = tags.toLowerCase(Locale.ROOT);
         for (String marker : markers) {
-            String search = "invalid"+marker.toLowerCase(Locale.ROOT);
+            String search = "invalid" + marker.toLowerCase(Locale.ROOT);
             if (tagsLower.contains(search)) {
                 return true;
             }
@@ -252,7 +253,7 @@ public class TestFileUtil {
             case Off -> {
                 // if not in RECORD_MODE, read EXPECTED from tag file 'filePath--EXPECTED' and compare
                 if (expectedResource != null) {
-                    log.info(EMOJI_VIDEOCASSETTE + " Loaded expected output from " +expectedResource.getPath());
+                    log.info(EMOJI_VIDEOCASSETTE + " Loaded expected output from " + expectedResource.getPath());
                     String expectedStringFromFile = expectedResource.getContentAsString();
                     // maybe normalizer function changed slightly, so normalize again
                     String expectedNorm = normalizerFun.apply(expectedStringFromFile);
@@ -260,7 +261,7 @@ public class TestFileUtil {
                     boolean ok = actual_expected.test(actualNorm, expectedNorm);
                     if (!ok) fail();
                 } else {
-                    log.info(EMOJI_VIDEOCASSETTE +" You can use env RECORD_MODE= { 'init' | 'on' } as { EXPECTED | ACTUAL } result.");
+                    log.info(EMOJI_VIDEOCASSETTE + " You can use env RECORD_MODE= { 'init' | 'on' } as { EXPECTED | ACTUAL } result.");
                     // check
                     String expectedNorm = normalizerFun.apply(expectedString);
                     String actualNorm = normalizerFun.apply(actualString);
@@ -275,7 +276,7 @@ public class TestFileUtil {
                     File f = TestFileUtil.expectedFile(resource, testId);
                     String expectedNorm = normalizerFun.apply(expectedString);
                     FileUtils.writeStringToFile(f, expectedNorm, StandardCharsets.UTF_8);
-                    log.info(EMOJI_VIDEOCASSETTE +" Wrote expected to {}", f.getAbsolutePath());
+                    log.info(EMOJI_VIDEOCASSETTE + " Wrote expected to {}", f.getAbsolutePath());
                 }
             }
             case RecordTheActual -> {
@@ -285,8 +286,29 @@ public class TestFileUtil {
                 File f = TestFileUtil.expectedFile(resource, testId);
                 String actualNorm = normalizerFun.apply(actualString);
                 FileUtils.writeStringToFile(f, actualNorm, StandardCharsets.UTF_8);
-                log.info(EMOJI_VIDEOCASSETTE +" Wrote actual {}", f.getAbsolutePath());
+                log.info(EMOJI_VIDEOCASSETTE + " Wrote actual {}", f.getAbsolutePath());
             }
+        }
+    }
+
+    /**
+     * @param resource         with current extension
+     * @param currentExtension required due to multi-dot extensions, such as ".graphml.xml
+     * @param anotherExtension e.g. "cj.json'
+     * @return resource with another extension or null if not found
+     */
+    public static @Nullable Resource withAnotherExtension(Resource resource,
+                                                          String currentExtension,
+                                                          String anotherExtension) {
+        String path = resource.getPath();
+        // change current extension
+        String newPath = path;
+        if (path.endsWith(currentExtension)) {
+            newPath = path.substring(0, path.length() - currentExtension.length()) + anotherExtension;
+            return resource(newPath);
+        } else {
+            log.warn("Resource path '{}' does not end with expected current extension '{}'. Cannot reliably change extension.", path, currentExtension);
+            return null;
         }
     }
 

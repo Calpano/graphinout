@@ -1,5 +1,8 @@
 package com.graphinout.reader.gml;
 
+import com.graphinout.base.cj.CjAssert;
+import com.graphinout.base.cj.document.CjDocuments;
+import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjEdgeChunk;
 import com.graphinout.base.cj.document.ICjGraphChunk;
@@ -8,6 +11,7 @@ import com.graphinout.base.cj.factory.CjFactory;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
+import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.ContentError;
@@ -16,10 +20,12 @@ import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
@@ -56,16 +62,43 @@ class GmlReaderTest {
                 .filter(res -> res.resource().getPath().endsWith(GmlReader.FORMAT.mainExtension()));
     }
 
-    @Test
-    void testResources() {
-        assertThat(GmlReader.FORMAT.mainExtension()).isEqualTo(".gml");
-        assertThat(TestFileProvider.getAllTestResources().findAny().isPresent()).isTrue();
-        assertThat(gmlResources().findAny().isPresent()).isTrue();
-    }
-
     @AfterEach
     public void releaseMocks() throws Exception {
         closeable.close();
+    }
+
+    /**
+     * Parse GML to CJ and compared with expected CJ.
+     *
+     * @param path
+     * @throws IOException
+     */
+    @ParameterizedTest
+    @ValueSource(strings = "text/gml/example-small.gml")
+    void parseGmlToExpectedCj(String path) throws IOException {
+        Resource resource = TestFileUtil.resource(path);
+        Assertions.assertNotNull(resource);
+        String displayPath = resource.getPath();
+        if (TestFileUtil.isInvalid(resource, "gml")) {
+            log.info("Skipping invalid GML file " + resource.getURI());
+            return;
+        }
+
+        String content = resource.getContentAsString();
+        SingleInputSource singleInputSource = SingleInputSource.of(displayPath, content);
+
+        CjWriter2CjDocumentWriter cjWriter2cjDoc = new CjWriter2CjDocumentWriter();
+        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cjWriter2cjDoc);
+        underTest.read(singleInputSource, cjStream2CjWriter);
+
+        ICjDocument actualCjDoc = cjWriter2cjDoc.resultDoc();
+        Resource expected = TestFileUtil.withAnotherExtension(resource,".gml", ".cj.json");
+        Assertions.assertNotNull(expected);
+        ICjDocument expectedCjDoc = CjDocuments.parseCjJsonString(expected.getPath(), expected.getContentAsString());
+
+        CjAssert.xAssertThatIsSameCj(actualCjDoc, expectedCjDoc, () -> {
+            log.info("GML tokens: " + GmlTokenizer.tokenizeToList(content));
+        });
     }
 
     @BeforeEach
@@ -116,6 +149,13 @@ class GmlReaderTest {
         underTest.read(singleInputSource, cjStream2CjWriter);
         String json = json2StringWriter.jsonString();
         log.info("JSON: " + json);
+    }
+
+    @Test
+    void testResources() {
+        assertThat(GmlReader.FORMAT.mainExtension()).isEqualTo(".gml");
+        assertThat(TestFileProvider.getAllTestResources().findAny().isPresent()).isTrue();
+        assertThat(gmlResources().findAny().isPresent()).isTrue();
     }
 
 }
