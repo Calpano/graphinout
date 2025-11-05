@@ -11,11 +11,11 @@ import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonValue;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -25,19 +25,11 @@ public class GmlReaderHandler implements IGmlHandler {
         DOCUMENT, GRAPH, NODE, EDGE, UNKNOWN
     }
 
-    public static final String SOURCE = "source";
-    public static final String TARGET = "target";
-    public static final String GRAPH = "graph";
-    public static final String NODE = "node";
-    public static final String EDGE = "edge";
-
     private final ICjStream writer;
     private final Deque<Context> contextStack = new ArrayDeque<>();
     private final Deque<Object> chunkStack = new ArrayDeque<>();
     private final Deque<String> blockNameStack = new ArrayDeque<>(); // holds nested unknown block names
-    private final Deque<Integer> blockIndexStack = new ArrayDeque<>(); // aligns with blockNameStack; index within siblings
     private final Map<ICjGraphChunkMutable, Boolean> startedGraphs = new IdentityHashMap<>();
-    private final java.util.Map<String, Integer> siblingCounters = new java.util.HashMap<>();
     private final ICjDocumentChunkMutable documentChunk;
     private boolean documentStarted;
     private String lastKey;
@@ -71,7 +63,6 @@ public class GmlReaderHandler implements IGmlHandler {
             case UNKNOWN -> {
                 // pop the nested block name and its aligned index if present
                 if (!blockNameStack.isEmpty()) blockNameStack.pop();
-                if (!blockIndexStack.isEmpty()) blockIndexStack.pop();
             }
             case DOCUMENT -> {
                 // shouldn't normally happen via tokenizer; handled in endDocument()
@@ -103,7 +94,7 @@ public class GmlReaderHandler implements IGmlHandler {
         }
 
         switch (lastKey) {
-            case GRAPH:
+            case Gml.GRAPH:
                 ensureDocumentStarted();
                 contextStack.push(Context.GRAPH);
                 ICjGraphChunkMutable graphChunk = writer.createGraphChunk();
@@ -111,7 +102,7 @@ public class GmlReaderHandler implements IGmlHandler {
                 // defer starting graph until we see first child or on close, so attributes can be applied first
                 startedGraphs.put(graphChunk, Boolean.FALSE);
                 break;
-            case NODE:
+            case Gml.NODE:
                 // ensure current graph is started before adding nodes
                 if (contextStack.peek() == Context.GRAPH) {
                     ICjGraphChunkMutable currentGraph = (ICjGraphChunkMutable) chunkStack.peek();
@@ -124,7 +115,7 @@ public class GmlReaderHandler implements IGmlHandler {
                 ICjNodeChunkMutable nodeChunk = writer.createNodeChunk();
                 chunkStack.push(nodeChunk);
                 break;
-            case EDGE:
+            case Gml.EDGE:
                 // ensure current graph is started before adding edges
                 if (contextStack.peek() == Context.GRAPH) {
                     ICjGraphChunkMutable currentGraph = (ICjGraphChunkMutable) chunkStack.peek();
@@ -140,13 +131,7 @@ public class GmlReaderHandler implements IGmlHandler {
             default:
                 contextStack.push(Context.UNKNOWN);
                 chunkStack.push(new Object()); // Placeholder unknown
-                // compute and push sibling index for array-like unknown block sequences
-                String basePath = qualifiedUnknownPathWith(lastKey);
-                int idx = siblingCounters.getOrDefault(basePath, -1) + 1;
-                siblingCounters.put(basePath, idx);
                 blockNameStack.push(lastKey); // remember the nested block name for path
-                // Always track index for innermost unknown block so repeated keys form arrays from the start
-                blockIndexStack.push(idx);
                 break;
         }
         lastKey = null;
@@ -157,14 +142,12 @@ public class GmlReaderHandler implements IGmlHandler {
         if (lastKey == null) return;
 
         Object currentChunk = chunkStack.peek();
-        String raw = value;
-        String unquotedValue = (raw.startsWith("\"") && raw.endsWith("\"")) ? raw.substring(1, raw.length() - 1) : raw;
+        String unquotedValue = (value.startsWith("\"") && value.endsWith("\"")) ? value.substring(1, value.length() - 1) : value;
         IJsonFactory jsonFactory = writer.jsonFactory();
 
         Context ctx = contextStack.peek();
         // Build path for JSON data based on nested unknown blocks
         List<IJsonContainerNavigationStep> currentPath = buildPathWithLastKey();
-        String effectiveRaw = raw;
 
         switch (ctx) {
             case NODE -> {
@@ -174,42 +157,40 @@ public class GmlReaderHandler implements IGmlHandler {
                 } else if ("label".equalsIgnoreCase(lastKey)) {
                     String val = unquotedValue;
                     node.addLabelWithoutLanguage(val);
-                } else if (ctx == Context.UNKNOWN) {
-                    // never reached due to switch
                 } else {
-                    final IJsonValue jsonVal = toJsonValue(jsonFactory, effectiveRaw);
+                    final IJsonValue jsonVal = toJsonValue(jsonFactory, value);
                     node.dataMutable(d -> d.add(currentPath, jsonVal));
                 }
             }
             case EDGE -> {
                 ICjEdgeChunkMutable edge = (ICjEdgeChunkMutable) currentChunk;
-                if (SOURCE.equalsIgnoreCase(lastKey)) {
+                if (Gml.SOURCE.equalsIgnoreCase(lastKey)) {
                     final String val = unquotedValue;
                     edge.addEndpoint(ep -> ep.node(val).direction(CjDirection.OUT));
-                } else if (TARGET.equalsIgnoreCase(lastKey)) {
+                } else if (Gml.TARGET.equalsIgnoreCase(lastKey)) {
                     final String val = unquotedValue;
                     edge.addEndpoint(ep -> ep.node(val).direction(CjDirection.IN));
                 } else if ("label".equalsIgnoreCase(lastKey)) {
                     edge.addLabelWithoutLanguage(unquotedValue);
                 } else {
-                    final IJsonValue jsonVal = toJsonValue(jsonFactory, effectiveRaw);
+                    final IJsonValue jsonVal = toJsonValue(jsonFactory, value);
                     edge.dataMutable(d -> d.add(currentPath, jsonVal));
                 }
             }
             case GRAPH -> {
                 ICjGraphChunkMutable graph = (ICjGraphChunkMutable) currentChunk;
-                final IJsonValue jsonVal = toJsonValue(jsonFactory, effectiveRaw);
+                final IJsonValue jsonVal = toJsonValue(jsonFactory, value);
                 graph.dataMutable(d -> d.add(currentPath, jsonVal));
             }
             case DOCUMENT -> {
                 ICjDocumentChunkMutable doc = (ICjDocumentChunkMutable) currentChunk;
-                final IJsonValue jsonVal = toJsonValue(jsonFactory, raw);
+                final IJsonValue jsonVal = toJsonValue(jsonFactory, value);
                 doc.dataMutable(d -> d.add(currentPath, jsonVal));
             }
             case UNKNOWN -> {
                 // Values inside UNKNOWN blocks are still applied to the nearest non-UNKNOWN chunk at nested path
                 Object targetChunk = findNearestNonUnknownChunk();
-                final IJsonValue jsonVal = toJsonValue(jsonFactory, raw);
+                final IJsonValue jsonVal = toJsonValue(jsonFactory, value);
                 if (targetChunk instanceof ICjNodeChunkMutable node) {
                     node.dataMutable(d -> d.add(currentPath, jsonVal));
                 } else if (targetChunk instanceof ICjEdgeChunkMutable edge) {
@@ -220,6 +201,7 @@ public class GmlReaderHandler implements IGmlHandler {
                     doc.dataMutable(d -> d.add(currentPath, jsonVal));
                 }
             }
+            case null -> throw new IllegalStateException();
         }
         lastKey = null;
     }
@@ -228,17 +210,12 @@ public class GmlReaderHandler implements IGmlHandler {
         // Compose path as: name0, idx0, name1, idx1, ..., lastKey (arrays for repeated unknown blocks)
         List<Object> steps = new ArrayList<>();
         Object[] names = blockNameStack.toArray();
-        Object[] idxs = blockIndexStack.toArray();
         int n = names.length;
         // Index only the innermost unknown block (current open block) so siblings form arrays at that level
         int indexedLevel = n > 0 ? 0 : -1;
         for (int i = n - 1; i >= 0; i--) {
             String name = (String) names[i];
             steps.add(name);
-            if (i == indexedLevel) {
-                Integer idx = (Integer) idxs[i];
-                if (idx != null && idx >= 0) steps.add(idx);
-            }
         }
         if (lastKey != null) steps.add(lastKey);
         return IJsonContainerNavigationStep.pathOf(steps.toArray());
@@ -253,8 +230,8 @@ public class GmlReaderHandler implements IGmlHandler {
 
     private Object findNearestNonUnknownChunk() {
         // Iterate aligned with contextStack from top to bottom
-        java.util.Iterator<Context> ctxIt = contextStack.iterator();
-        java.util.Iterator<Object> chIt = chunkStack.iterator();
+        Iterator<Context> ctxIt = contextStack.iterator();
+        Iterator<Object> chIt = chunkStack.iterator();
         while (ctxIt.hasNext() && chIt.hasNext()) {
             Context c = ctxIt.next();
             Object ch = chIt.next();

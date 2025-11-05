@@ -17,16 +17,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import static com.graphinout.reader.gml.Gml.DIRECTED;
+import static com.graphinout.reader.gml.Gml.EDGE;
+import static com.graphinout.reader.gml.Gml.GRAPH;
+import static com.graphinout.reader.gml.Gml.HIERARCHIC;
+import static com.graphinout.reader.gml.Gml.NAME;
+import static com.graphinout.reader.gml.Gml.NODE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public record GmlOutput(ICjDocument cjDoc) {
 
-    public static final String EDGE = "edge";
-    public static final String GRAPH = "graph";
-    public static final String NAME = "name";
-    public static final String DIRECTED = "directed";
-    public static final String HIERARCHIC = "hierarchic";
-    public static final String NODE = "node";
     private static final Logger log = getLogger(GmlOutput.class);
 
     private static boolean allElementsSimpleObjects(IJsonArray arr) {
@@ -66,20 +66,20 @@ public record GmlOutput(ICjDocument cjDoc) {
         ICjEndpoint outEp = cjEdge.endpoints().filter(ep -> ep.direction() == CjDirection.OUT).findFirst().orElse(null);
 
         if (outEp != null && inEp != null) {
-            attributes.put("source", formatValue(outEp.node()));
-            attributes.put("target", formatValue(inEp.node()));
+            attributes.put(Gml.SOURCE, formatValue(outEp.node()));
+            attributes.put(Gml.TARGET, formatValue(inEp.node()));
         } else {
             List<ICjEndpoint> eps = cjEdge.endpoints().toList();
             if (eps.size() == 2) {
-                attributes.put("source", formatValue(eps.get(0).node()));
-                attributes.put("target", formatValue(eps.get(1).node()));
+                attributes.put(Gml.SOURCE, formatValue(eps.get(0).node()));
+                attributes.put(Gml.TARGET, formatValue(eps.get(1).node()));
             } else {
                 log.warn("Cannot represent hyper-edge in GML");
                 return;
             }
         }
 
-        cjEdge.labelEntries().stream().findFirst().ifPresent(label -> attributes.put("label", formatValue(label.value())));
+        cjEdge.labelEntries().stream().findFirst().ifPresent(label -> attributes.put(Gml.LABEL, formatValue(label.value())));
 
         // Collect additional edge data properties (generic)
         b.key(EDGE);
@@ -95,7 +95,7 @@ public record GmlOutput(ICjDocument cjDoc) {
             IJsonObject obj = json == null ? null : json.asObjectOrNull();
             if (obj != null) {
                 // skip keys already emitted as mandatory
-                Set<String> skip = java.util.Set.of("source", "target", "label");
+                Set<String> skip = java.util.Set.of(Gml.SOURCE, Gml.TARGET, Gml.LABEL);
                 emitJsonObjectPropertiesPreferred(obj, b, skip, java.util.List.of("graphics", "LabelGraphics"));
             }
         });
@@ -117,53 +117,7 @@ public record GmlOutput(ICjDocument cjDoc) {
                 b.close();
             }
             case Array -> {
-                IJsonArray arr = val.asArray();
-                // Special handling: merge simple object elements for common GML compound keys
-                if (("graphics".equals(key) || "LabelGraphics".equals(key)) && allElementsSimpleObjects(arr)) {
-                    b.key(key);
-                    b.open();
-                    // Merge properties in order
-                    for (int i = 0; i < arr.size(); i++) {
-                        IJsonValue e = arr.get_(i);
-                        IJsonObject obj = e.asObject();
-                        emitJsonObjectProperties(obj, b, java.util.Set.of());
-                    }
-                    b.close();
-                } else if ("point".equals(key) && looksLikePointPairs(arr)) {
-                    // Emit pairs of x/y into single point blocks
-                    for (int i = 0; i + 1 < arr.size(); i += 2) {
-                        IJsonObject xo = arr.get_(i).asObject();
-                        IJsonObject yo = arr.get_(i + 1).asObject();
-                        b.key(key);
-                        b.open();
-                        if (xo.hasProperty("x")) {
-                            b.key("x");
-                            b.value(formatValue(xo.get_("x").asPrimitive().toJavaString()));
-                        }
-                        if (yo.hasProperty("y")) {
-                            b.key("y");
-                            b.value(formatValue(yo.get_("y").asPrimitive().toJavaString()));
-                        }
-                        b.close();
-                    }
-                } else {
-                    for (int i = 0; i < arr.size(); i++) {
-                        IJsonValue e = arr.get_(i);
-                        if (e.isPrimitive()) {
-                            String s = e.asPrimitive().toJavaString();
-                            b.key(key);
-                            b.value(formatValue(s));
-                        } else if (e.isObject()) {
-                            b.key(key);
-                            b.open();
-                            emitJsonObjectProperties(e.asObject(), b, java.util.Set.of());
-                            b.close();
-                        } else if (e.isArray()) {
-                            // Nested arrays: represent as repeated key blocks recursively
-                            emitJsonEntry(key, e, b);
-                        }
-                    }
-                }
+                throw new IllegalArgumentException("GML uses only nested objects");
             }
         }
     }
@@ -281,7 +235,7 @@ public record GmlOutput(ICjDocument cjDoc) {
         b.value(formatValue(id));
         cjNode.labelEntries().stream().findFirst().ifPresent(label -> //
         {
-            b.key("label");
+            b.key(Gml.LABEL);
             b.value(formatValue(label.value()));
         });
 
@@ -290,7 +244,7 @@ public record GmlOutput(ICjDocument cjDoc) {
             IJsonValue json = data.jsonValue();
             IJsonObject obj = json == null ? null : json.asObjectOrNull();
             if (obj != null) {
-                Set<String> skip = java.util.Set.of("id", "label");
+                Set<String> skip = java.util.Set.of("id", Gml.LABEL);
                 emitJsonObjectPropertiesPreferred(obj, b, skip, java.util.List.of("graphics", "LabelGraphics", "group", "fill", "border"));
             }
         });
