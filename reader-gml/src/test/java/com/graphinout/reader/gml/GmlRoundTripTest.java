@@ -41,8 +41,6 @@ class GmlRoundTripTest {
         String newGmlContent = gmlOutput.toGml();
         log.info("Result GML: \n"+newGmlContent);
 
-        String expected = normalizeGml(gmlContent);
-        String actual = normalizeGml(newGmlContent);
         System.out.println("[DEBUG_LOG] Expected (normalized):\n" + expectedList);
         System.out.println("[DEBUG_LOG] Actual   (normalized):\n" + actualList);
 
