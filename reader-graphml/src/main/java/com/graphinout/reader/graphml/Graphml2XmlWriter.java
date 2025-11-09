@@ -27,7 +27,7 @@ import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
 import static com.graphinout.foundation.util.Nullables.ifPresentAcceptThrowing;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class Graphml2XmlWriter extends BaseOutput implements GraphmlWriter {
+public class Graphml2XmlWriter extends BaseOutput implements IGraphmlWriter {
 
     private static final Logger log = getLogger(Graphml2XmlWriter.class);
 

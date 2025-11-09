@@ -393,7 +393,7 @@ Comprehensive support for the GraphML format, including reading, writing, and va
 * `GraphmlDefault` - Default value handling
 
 .Writers
-* `GraphmlWriter` - Interface for GraphML writing
+* `IGraphmlWriter` - Interface for GraphML writing
 * `Graphml2XmlWriter` - Implementation of GraphML writer
 * `DelegatingGraphmlWriter` - Delegating writer pattern
 * `Gio2GraphmlWriter` - Converter from GIO to GraphML

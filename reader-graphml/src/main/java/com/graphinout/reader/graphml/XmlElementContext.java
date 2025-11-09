@@ -113,13 +113,13 @@ public class XmlElementContext {
     }
 
     /**
-     * Mark we wrote the START of this element to the downstream {@link GraphmlWriter}.
+     * Mark we wrote the START of this element to the downstream {@link IGraphmlWriter}.
      */
     public void markAsStarted() {
         isStarted = true;
     }
 
-    public void maybeWriteStartTo(GraphmlWriter graphmlWriter) throws IOException {
+    public void maybeWriteStartTo(IGraphmlWriter graphmlWriter) throws IOException {
         if (isStarted()) return;
         if (parent != null) {
             parent.maybeWriteStartTo(graphmlWriter);
@@ -155,7 +155,7 @@ public class XmlElementContext {
         return "XmlElementContext{" + "'" + xmlElementName + "'}";
     }
 
-    public void writeEndTo(GraphmlWriter graphmlWriter) throws IOException {
+    public void writeEndTo(IGraphmlWriter graphmlWriter) throws IOException {
         maybeWriteStartTo(graphmlWriter);
         switch (xmlElementName.localName()) {
             case GraphmlElements.GRAPHML -> graphmlWriter.documentEnd();

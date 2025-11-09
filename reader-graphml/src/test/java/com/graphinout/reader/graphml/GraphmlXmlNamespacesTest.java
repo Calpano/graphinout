@@ -69,7 +69,7 @@ class GraphmlXmlNamespacesTest {
         String content = resource.getContentAsString();
         SingleInputSource singleInputSource = inputSource(resource);
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        GraphmlWriter graphmlWriter = new Graphml2XmlWriter(xmlWriter);
+        IGraphmlWriter graphmlWriter = new Graphml2XmlWriter(xmlWriter);
         CjStream2GraphmlWriter cjStream2GraphmlWriter = new CjStream2GraphmlWriter(graphmlWriter);
 
         List<ContentError> errorList = new ArrayList<>();

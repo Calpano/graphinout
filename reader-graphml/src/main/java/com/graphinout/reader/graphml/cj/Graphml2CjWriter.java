@@ -1,13 +1,13 @@
 package com.graphinout.reader.graphml.cj;
 
 import com.graphinout.base.cj.writer.ICjWriter;
-import com.graphinout.reader.graphml.GraphmlWriter;
+import com.graphinout.reader.graphml.IGraphmlWriter;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.util.Nullables;
 
 import java.util.function.Consumer;
 
-public class Graphml2CjWriter extends Graphml2CjDocument implements GraphmlWriter {
+public class Graphml2CjWriter extends Graphml2CjDocument implements IGraphmlWriter {
 
     private final ICjWriter cjWriter;
 

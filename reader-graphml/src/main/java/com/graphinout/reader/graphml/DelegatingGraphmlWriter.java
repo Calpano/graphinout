@@ -17,108 +17,108 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class DelegatingGraphmlWriter extends BaseOutput implements GraphmlWriter {
+public class DelegatingGraphmlWriter extends BaseOutput implements IGraphmlWriter {
 
-    private final List<GraphmlWriter> writers;
+    private final List<IGraphmlWriter> writers;
 
-    public DelegatingGraphmlWriter(GraphmlWriter... writers) {
+    public DelegatingGraphmlWriter(IGraphmlWriter... writers) {
         this.writers = Arrays.asList(writers);
     }
 
     @Override
     public void data(IGraphmlData data) throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.data(data);
         }
     }
 
     @Override
     public void documentEnd() throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.documentEnd();
         }
     }
 
     @Override
     public void documentStart(IGraphmlDocument document) throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.documentStart(document);
         }
     }
 
     @Override
     public void edgeEnd() throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.edgeEnd();
         }
     }
 
     @Override
     public void edgeStart(IGraphmlEdge edge) throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.edgeStart(edge);
         }
     }
 
     @Override
     public void graphEnd() throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.graphEnd();
         }
     }
 
     @Override
     public void graphStart(IGraphmlGraph graphmlGraph) throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.graphStart(graphmlGraph);
         }
     }
 
     @Override
     public void hyperEdgeEnd() throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.hyperEdgeEnd();
         }
     }
 
     @Override
     public void hyperEdgeStart(IGraphmlHyperEdge edge) throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.hyperEdgeStart(edge);
         }
     }
 
     @Override
     public void key(IGraphmlKey data) throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.key(data);
         }
     }
 
     @Override
     public void nodeEnd() throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.nodeEnd();
         }
     }
 
     @Override
     public void nodeStart(IGraphmlNode node) throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.nodeStart(node);
         }
     }
 
     @Override
     public void portEnd() throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.portEnd();
         }
     }
 
     @Override
     public void portStart(IGraphmlPort port) throws IOException {
-        for (GraphmlWriter writer : writers) {
+        for (IGraphmlWriter writer : writers) {
             writer.portStart(port);
         }
     }

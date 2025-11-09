@@ -17,7 +17,7 @@ import com.graphinout.reader.graphml.cj.CjGraphmlMapping.GraphmlDataElement;
 import com.graphinout.reader.graphml.elements.GraphmlDirection;
 import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
 import com.graphinout.reader.graphml.elements.GraphmlParseInfo;
-import com.graphinout.reader.graphml.GraphmlWriter;
+import com.graphinout.reader.graphml.IGraphmlWriter;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDefault;
 import com.graphinout.reader.graphml.elements.IGraphmlDescription;
@@ -60,14 +60,14 @@ import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
 import static com.graphinout.foundation.util.PowerStreams.forEach;
 
 /**
- * CJ to GraphML: {@link ICjDocument} to {@link GraphmlWriter}.
+ * CJ to GraphML: {@link ICjDocument} to {@link IGraphmlWriter}.
  */
 public class CjDocument2Graphml {
 
-    private final GraphmlWriter graphmlWriter;
+    private final IGraphmlWriter graphmlWriter;
     private GraphmlSchema graphmlSchema;
 
-    public CjDocument2Graphml(GraphmlWriter graphmlWriter) {
+    public CjDocument2Graphml(IGraphmlWriter graphmlWriter) {
         this.graphmlWriter = graphmlWriter;
     }
 
@@ -79,7 +79,7 @@ public class CjDocument2Graphml {
                 .anyMatch(o -> o.hasProperty(CjDataProperty.SyntheticNode.cjPropertyKey));
     }
 
-    public static void writeToGraphml(ICjDocument cjDoc, GraphmlWriter graphmlWriter) throws IOException {
+    public static void writeToGraphml(ICjDocument cjDoc, IGraphmlWriter graphmlWriter) throws IOException {
         if (cjDoc == null) return;
         new CjDocument2Graphml(graphmlWriter).writeDocumentToGraphml(cjDoc);
     }

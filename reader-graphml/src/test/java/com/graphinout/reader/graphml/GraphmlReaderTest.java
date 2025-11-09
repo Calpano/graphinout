@@ -33,7 +33,7 @@ class GraphmlReaderTest {
             xmlWriter = new ValidatingXmlWriter(xmlWriter);
         }
 
-        GraphmlWriter graphmlWriter = new Graphml2XmlWriter(xmlWriter);
+        IGraphmlWriter graphmlWriter = new Graphml2XmlWriter(xmlWriter);
         if (validateGraphml) {
             graphmlWriter = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), graphmlWriter);
         }

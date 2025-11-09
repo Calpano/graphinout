@@ -27,7 +27,7 @@ import com.graphinout.reader.graphml.cj.CjGraphmlMapping.GraphmlDataElement;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
 import com.graphinout.reader.graphml.elements.GraphmlDirection;
 import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
-import com.graphinout.reader.graphml.GraphmlWriter;
+import com.graphinout.reader.graphml.IGraphmlWriter;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.reader.graphml.elements.IGraphmlDocument;
@@ -76,7 +76,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class Graphml2CjDocument extends BaseOutput implements GraphmlWriter {
+public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
 
     private static final Logger log = getLogger(Graphml2CjDocument.class);
     /** doc-level */

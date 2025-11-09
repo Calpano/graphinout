@@ -88,7 +88,7 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
     /** Buffers XML content for {#code <key><default>}, {@code <data>} and {#code <desc>} elements. */
     private final Xml2DocumentFragmentWriter xmlBuffer = new Xml2DocumentFragmentWriter();
     /** downstream writer */
-    private final GraphmlWriter graphmlWriter;
+    private final IGraphmlWriter graphmlWriter;
     /** also required to detect the end of raw XML */
     private final XmlParseContext elementStack = new XmlParseContext();
     /** XML is buffered during 'PCDATA' as in {@code <key><default>, <data>, and <desc>} elements. */
@@ -97,7 +97,7 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
     /**
      * @param graphmlWriter downstream
      */
-    public Xml2GraphmlWriter(GraphmlWriter graphmlWriter) {
+    public Xml2GraphmlWriter(IGraphmlWriter graphmlWriter) {
         this.graphmlWriter = graphmlWriter;
     }
 

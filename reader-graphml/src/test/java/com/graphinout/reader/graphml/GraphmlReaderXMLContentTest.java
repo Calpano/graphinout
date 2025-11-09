@@ -23,7 +23,7 @@ class GraphmlReaderXMLContentTest {
     private static String parseGraphmlToString(Path inputSource) throws IOException {
         // out
         Xml2StringWriter xml2stringWriter = new Xml2StringWriter();
-        GraphmlWriter graphml2xmlWriter = new Graphml2XmlWriter(xml2stringWriter);
+        IGraphmlWriter graphml2xmlWriter = new Graphml2XmlWriter(xml2stringWriter);
         // in
         URI resourceUri = inputSource.toUri();
         String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);

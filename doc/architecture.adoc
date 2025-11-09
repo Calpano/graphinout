@@ -37,7 +37,7 @@ Writer -> Output
 == Projects and Packages
 
 base:: Basic IO helpers, streaming Graph API (`Gio...`), API for Readers.
-Converts an incoming Graph API stream (`GioWriter`) to a GraphML/XML stream (`GraphmlWriter`).
+Converts an incoming Graph API stream (`GioWriter`) to a GraphML/XML stream (`IGraphmlWriter`).
 
 reader-__X__:: Can read a certain file format __X__ and interpret as Graph API stream
 
@@ -132,7 +132,7 @@ NOTE: A corresponding `GraphMlReader` is in project `reader-graphml` and can re-
 
 base.gio::: Unified model for all kinds of graphs, inspired by GraphML model, clear mapping to/from GraphML (no round-trip assertions)
 
-- GioWriter: Knows how to map to GraphML model and calls `GraphmlWriter`
+- GioWriter: Knows how to map to GraphML model and calls `IGraphmlWriter`
 
 .Package `com.graphinout.base`
 [plantuml,project-base,svg]

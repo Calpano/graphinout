@@ -1,31 +1,33 @@
 package com.graphinout.engine;
 
-import com.graphinout.base.gio.GioService;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
-import com.graphinout.base.gio.GioReader;
-import com.graphinout.reader.graphml.Graphml2XmlWriter;
 import com.graphinout.base.gio.GioFileFormat;
+import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.gio.GioService;
+import com.graphinout.base.gio.GioWriter;
 import com.graphinout.foundation.input.InputSource;
-import com.graphinout.foundation.json5.Json5Reader;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.json5.Json5Reader;
 import com.graphinout.foundation.output.OutputSink;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.writer.Xml2StringWriter;
-import com.graphinout.reader.textbased.adjlist.AdjListReader;
 import com.graphinout.reader.cj.ConnectedJson5Reader;
 import com.graphinout.reader.cj.ConnectedJsonReader;
+import com.graphinout.reader.dot.DotReader;
+import com.graphinout.reader.graphml.Graphml2XmlWriter;
 import com.graphinout.reader.graphml.GraphmlReader;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.graphml.cj.CjStream2GraphmlWriter;
 import com.graphinout.reader.jgrapht.Graph6Reader;
-import com.graphinout.reader.dot.DotReader;
+import com.graphinout.reader.textbased.adjlist.AdjListReader;
 import com.graphinout.reader.tgf.TgfReader;
 import com.graphinout.reader.tripletext.TripleTextReader;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ public class GioEngineCore {
 
     private static final Logger log = getLogger(GioEngineCore.class);
     private final List<GioReader> readers = new ArrayList<>();
-
+    private final List<GioWriter> writers = new ArrayList<>();
     @SuppressWarnings("unused") private final Map<String, GioService> services = new HashMap<>();
 
     public GioEngineCore() {
@@ -59,6 +61,7 @@ public class GioEngineCore {
     }
 
     @SuppressWarnings("UnnecessaryLocalVariable")
+    @Deprecated
     public ICjStream createCjOutputStream(String outputFileFormatId, OutputSink outputSink) {
         switch (outputFileFormatId) {
             case ConnectedJsonReader.FORMAT_ID:
@@ -107,6 +110,7 @@ public class GioEngineCore {
         throw new IllegalArgumentException("Unknown format id '" + outputFileFormatId + "'");
     }
 
+    @Deprecated
     public ICjStream createCjStream(String outputFileFormatId, OutputSink outputSink) {
         switch (outputFileFormatId) {
             case ConnectedJsonReader.FORMAT_ID:
@@ -158,8 +162,20 @@ public class GioEngineCore {
         );
     }
 
+    public @Nullable GioWriter getWriter(String fileFormatId) throws IOException {
+        return writers.stream().filter(writer -> writer.fileFormat().id().equals(fileFormatId)).findFirst().orElse(null);
+    }
+
     public List<GioReader> readers() {
         return readers;
+    }
+
+    public Map<String, GioService> services() {
+        return services;
+    }
+
+    public List<GioWriter> writers() {
+        return writers;
     }
 
     private void loadServices() {
@@ -171,6 +187,10 @@ public class GioEngineCore {
             for (GioReader reader : gioService.readers()) {
                 readers.add(reader);
                 log.info("  Found reader '" + reader.fileFormat().id() + "'");
+            }
+            for (GioWriter writer : gioService.writers()) {
+                writers.add(writer);
+                log.info("  Found writer '" + writer.fileFormat().id() + "'");
             }
         }
     }

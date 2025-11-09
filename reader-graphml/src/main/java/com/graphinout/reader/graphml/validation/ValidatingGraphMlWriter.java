@@ -1,7 +1,7 @@
 package com.graphinout.reader.graphml.validation;
 
 import com.graphinout.foundation.input.BaseOutput;
-import com.graphinout.reader.graphml.GraphmlWriter;
+import com.graphinout.reader.graphml.IGraphmlWriter;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDocument;
 import com.graphinout.reader.graphml.elements.IGraphmlEdge;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class ValidatingGraphMlWriter extends BaseOutput implements GraphmlWriter {
+public class ValidatingGraphMlWriter extends BaseOutput implements IGraphmlWriter {
 
     public enum CurrentElement {
         /**
