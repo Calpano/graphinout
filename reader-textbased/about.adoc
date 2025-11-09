@@ -1,0 +1,8 @@
+= Text-based Formats
+:toc:
+
+This reader reads simple, text-based formats.
+
+include::adjacency-list-format.adoc[leveloffset=+1]
+
+include::edge-list-format.adoc[leveloffset=+1]

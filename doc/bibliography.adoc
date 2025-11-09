@@ -1,0 +1,10 @@
+= Bibliography
+:hardbreaks:
+
+__Unravelling Graph-Exchange File Formats__
+M. Roughan, Simon Jonathan Tuke
+Published in arXiv.org 9 March 2015
+** https://www.semanticscholar.org/paper/Unravelling-Graph-Exchange-File-Formats-Roughan-Tuke/c5eab720b91bdf406b9490a578a8fe1e3c90e292[Semantic Scholar]
+** https://arxiv.org/abs/1503.02781[arXiv]
+** https://arxiv.org/pdf/1503.02781[PDF]
+
