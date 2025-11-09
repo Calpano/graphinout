@@ -1,6 +1,9 @@
 See also
 https://docs.yworks.com/yfiles/doc/developers-guide/gml.html#gml_yFiles
 
+.Archived copy of `gml-technical-report.pdf`
+https://github.com/GunterMueller/UNI_PASSAU_FMI_Graph_Drawing/blob/master/GML/gml-technical-report.pdf[]
+
 [source,gml]
 ----
 Creator "yFiles"

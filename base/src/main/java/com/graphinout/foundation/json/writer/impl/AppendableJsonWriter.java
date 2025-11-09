@@ -68,7 +68,12 @@ public abstract class AppendableJsonWriter extends BaseOutput implements JsonWri
     @Override
     public void onBigDecimal(BigDecimal bigDecimal) {
         maybeDelimiter();
-        append(bigDecimal.toString());
+        // strip zeroes after the dot
+        String s = bigDecimal.toPlainString();
+        while (s.contains(".") && (s.endsWith("0") || s.endsWith("."))) {
+            s = s.substring(0, s.length() - 1);
+        }
+        append(s);
     }
 
     @Override

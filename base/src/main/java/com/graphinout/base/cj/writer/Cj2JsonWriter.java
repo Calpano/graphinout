@@ -24,7 +24,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     private Mode mode = Mode.Cj;
 
 
-    public Cj2JsonWriter(JsonWriter jsonWriter) {
+    public  Cj2JsonWriter(JsonWriter jsonWriter) {
         super(jsonWriter);
     }
 

@@ -30,6 +30,8 @@ public class CjAssert {
 
     public static boolean xAssertThatIsSameCj(ICjDocument actualCjDoc, ICjDocument expectedCjDoc, @Nullable Runnable extendedDebugInfos
     ) {
+        // FIXME compare doc trees
+
         String actualJson = CjDocuments.toJsonString(actualCjDoc);
         String expectedJson = CjDocuments.toJsonString(expectedCjDoc);
         return xAssertThatIsSameCj(actualJson, expectedJson, extendedDebugInfos);

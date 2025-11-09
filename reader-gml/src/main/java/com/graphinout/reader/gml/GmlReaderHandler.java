@@ -1,34 +1,31 @@
 package com.graphinout.reader.gml;
 
 import com.graphinout.base.cj.document.CjDirection;
+import com.graphinout.base.cj.document.CjType;
+import com.graphinout.base.cj.document.ICjChunkMutable;
+import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.ICjStream;
-import com.graphinout.foundation.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.json.value.IJsonFactory;
+import com.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.graphinout.foundation.json.value.IJsonValue;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class GmlReaderHandler implements IGmlHandler {
 
-    private enum Context {
-        DOCUMENT, GRAPH, NODE, EDGE, UNKNOWN
-    }
-
+    public static final String LABEL = "label";
+    public static final String ID = "id";
     private final ICjStream writer;
-    private final Deque<Context> contextStack = new ArrayDeque<>();
-    private final Deque<Object> chunkStack = new ArrayDeque<>();
-    private final Deque<String> blockNameStack = new ArrayDeque<>(); // holds nested unknown block names
+    /** {@link ICjChunkMutable} or {@link GmlData} */
+    private final Deque<Object> stack = new ArrayDeque<>();
     private final Map<ICjGraphChunkMutable, Boolean> startedGraphs = new IdentityHashMap<>();
     private final ICjDocumentChunkMutable documentChunk;
     private boolean documentStarted;
@@ -36,43 +33,40 @@ public class GmlReaderHandler implements IGmlHandler {
 
     public GmlReaderHandler(ICjStream writer) {
         this.writer = writer;
-        this.contextStack.push(Context.DOCUMENT);
         this.documentChunk = writer.createDocumentChunk();
-        this.chunkStack.push(documentChunk);
+        this.stack.push(documentChunk);
         // defer documentStart until we have accumulated top-level attributes or first graph
         this.documentStarted = false;
     }
 
     @Override
     public void close() {
-        Context closedContext = contextStack.pop();
-        Object closedChunk = chunkStack.pop();
+        Object closedChunk = stack.pop();
 
-        switch (closedContext) {
-            case GRAPH -> {
-                ICjGraphChunkMutable graph = (ICjGraphChunkMutable) closedChunk;
-                if (startedGraphs.getOrDefault(graph, Boolean.FALSE) == Boolean.FALSE) {
-                    // start and end graph to emit graph-level attributes only
-                    writer.graphStart(graph);
+        if (closedChunk instanceof ICjChunkMutable chunk) {
+            switch (chunk.cjType()) {
+                case CjType.RootObject -> throw new IllegalStateException();
+                case CjType.Graph -> {
+                    ICjGraphChunkMutable graph = (ICjGraphChunkMutable) chunk;
+                    if (startedGraphs.getOrDefault(graph, Boolean.FALSE) == Boolean.FALSE) {
+                        writer.graphStart(graph);
+                    }
+                    writer.graphEnd();
+                    startedGraphs.remove(graph);
                 }
-                writer.graphEnd();
-                startedGraphs.remove(graph);
+                case CjType.Node -> writer.node((ICjNodeChunkMutable) chunk);
+                case CjType.Edge -> writer.edge((ICjEdgeChunkMutable) chunk);
             }
-            case NODE -> writer.node((ICjNodeChunkMutable) closedChunk);
-            case EDGE -> writer.edge((ICjEdgeChunkMutable) closedChunk);
-            case UNKNOWN -> {
-                // pop the nested block name and its aligned index if present
-                if (!blockNameStack.isEmpty()) blockNameStack.pop();
-            }
-            case DOCUMENT -> {
-                // shouldn't normally happen via tokenizer; handled in endDocument()
-            }
+        } else {
+            assert closedChunk instanceof IJsonObjectMutable;
+            IJsonObjectMutable o = (IJsonObjectMutable) closedChunk;
+            // nothing to do with it
         }
     }
 
     public void endDocument() {
-        // end any still-open contexts except DOCUMENT
-        while (!contextStack.isEmpty() && contextStack.peek() != Context.DOCUMENT) {
+        // auto-fix malformed GML: close any still-open contexts except DOCUMENT
+        while (!stack.isEmpty() && !(stack.peek() instanceof ICjDocumentChunk)) {
             close();
         }
         ensureDocumentStarted();
@@ -87,52 +81,43 @@ public class GmlReaderHandler implements IGmlHandler {
     @Override
     public void open() {
         if (lastKey == null) {
-            contextStack.push(Context.UNKNOWN);
-            chunkStack.push(new Object()); // Placeholder unknown
-            // no block name to push
-            return;
+            throw new IllegalStateException("Missing key before brackets");
         }
 
         switch (lastKey) {
-            case Gml.GRAPH:
+            case Gml.GRAPH -> {
                 ensureDocumentStarted();
-                contextStack.push(Context.GRAPH);
                 ICjGraphChunkMutable graphChunk = writer.createGraphChunk();
-                chunkStack.push(graphChunk);
+                stack.push(graphChunk);
                 // defer starting graph until we see first child or on close, so attributes can be applied first
                 startedGraphs.put(graphChunk, Boolean.FALSE);
-                break;
-            case Gml.NODE:
-                // ensure current graph is started before adding nodes
-                if (contextStack.peek() == Context.GRAPH) {
-                    ICjGraphChunkMutable currentGraph = (ICjGraphChunkMutable) chunkStack.peek();
-                    if (startedGraphs.getOrDefault(currentGraph, Boolean.FALSE) == Boolean.FALSE) {
-                        writer.graphStart(currentGraph);
-                        startedGraphs.put(currentGraph, Boolean.TRUE);
-                    }
-                }
-                contextStack.push(Context.NODE);
+            }
+            case Gml.NODE -> {
+                ensureGraphStarted();
                 ICjNodeChunkMutable nodeChunk = writer.createNodeChunk();
-                chunkStack.push(nodeChunk);
-                break;
-            case Gml.EDGE:
-                // ensure current graph is started before adding edges
-                if (contextStack.peek() == Context.GRAPH) {
-                    ICjGraphChunkMutable currentGraph = (ICjGraphChunkMutable) chunkStack.peek();
-                    if (startedGraphs.getOrDefault(currentGraph, Boolean.FALSE) == Boolean.FALSE) {
-                        writer.graphStart(currentGraph);
-                        startedGraphs.put(currentGraph, Boolean.TRUE);
-                    }
-                }
-                contextStack.push(Context.EDGE);
+                stack.push(nodeChunk);
+            }
+            case Gml.EDGE -> {
+                ensureGraphStarted();
                 ICjEdgeChunkMutable edgeChunk = writer.createEdgeChunk();
-                chunkStack.push(edgeChunk);
-                break;
-            default:
-                contextStack.push(Context.UNKNOWN);
-                chunkStack.push(new Object()); // Placeholder unknown
-                blockNameStack.push(lastKey); // remember the nested block name for path
-                break;
+                stack.push(edgeChunk);
+            }
+            default -> {
+                // JSON mode, we have some property 'lastKey'
+                Object context = stack.peek();
+                GmlData parent;
+                if (context instanceof GmlData data) {
+                    // nest a new sub-object
+                    parent = data;
+                } else {
+                    // start and open a new sub-object
+                    parent = new GmlData();
+                    stack.push(parent);
+                }
+                GmlData child = new GmlData();
+                parent.add(lastKey, child);
+                stack.push(child);
+            }
         }
         lastKey = null;
     }
@@ -141,85 +126,61 @@ public class GmlReaderHandler implements IGmlHandler {
     public void value(String value) {
         if (lastKey == null) return;
 
-        Object currentChunk = chunkStack.peek();
         String unquotedValue = (value.startsWith("\"") && value.endsWith("\"")) ? value.substring(1, value.length() - 1) : value;
-        IJsonFactory jsonFactory = writer.jsonFactory();
 
-        Context ctx = contextStack.peek();
-        // Build path for JSON data based on nested unknown blocks
-        List<IJsonContainerNavigationStep> currentPath = buildPathWithLastKey();
-
-        switch (ctx) {
-            case NODE -> {
-                ICjNodeChunkMutable node = (ICjNodeChunkMutable) currentChunk;
-                if ("id".equalsIgnoreCase(lastKey)) {
-                    node.id(unquotedValue);
-                } else if ("label".equalsIgnoreCase(lastKey)) {
-                    String val = unquotedValue;
-                    node.addLabelWithoutLanguage(val);
-                } else {
-                    final IJsonValue jsonVal = toJsonValue(jsonFactory, value);
-                    node.dataMutable(d -> d.add(currentPath, jsonVal));
+        Object current = stack.peek();
+        if (current instanceof ICjChunkMutable chunk) {
+            // "key value" on doc/graph/node/edge
+            switch (chunk.cjType()) {
+                case CjType.RootObject -> {
+                    assert lastKey != null;
+                    ICjDocumentChunkMutable doc = (ICjDocumentChunkMutable) chunk;
+                    final IJsonValue jsonVal = toJsonValue(writer.jsonFactory(), value);
+                    doc.dataMutable(d -> d.addProperty(lastKey, jsonVal));
                 }
-            }
-            case EDGE -> {
-                ICjEdgeChunkMutable edge = (ICjEdgeChunkMutable) currentChunk;
-                if (Gml.SOURCE.equalsIgnoreCase(lastKey)) {
-                    final String val = unquotedValue;
-                    edge.addEndpoint(ep -> ep.node(val).direction(CjDirection.OUT));
-                } else if (Gml.TARGET.equalsIgnoreCase(lastKey)) {
-                    final String val = unquotedValue;
-                    edge.addEndpoint(ep -> ep.node(val).direction(CjDirection.IN));
-                } else if ("label".equalsIgnoreCase(lastKey)) {
-                    edge.addLabelWithoutLanguage(unquotedValue);
-                } else {
-                    final IJsonValue jsonVal = toJsonValue(jsonFactory, value);
-                    edge.dataMutable(d -> d.add(currentPath, jsonVal));
+                case CjType.Graph -> {
+                    assert lastKey != null;
+                    ICjGraphChunkMutable graph = (ICjGraphChunkMutable) chunk;
+                    final IJsonValue jsonVal = toJsonValue(writer.jsonFactory(), value);
+                    graph.dataMutable(d -> d.addProperty(lastKey, jsonVal));
                 }
-            }
-            case GRAPH -> {
-                ICjGraphChunkMutable graph = (ICjGraphChunkMutable) currentChunk;
-                final IJsonValue jsonVal = toJsonValue(jsonFactory, value);
-                graph.dataMutable(d -> d.add(currentPath, jsonVal));
-            }
-            case DOCUMENT -> {
-                ICjDocumentChunkMutable doc = (ICjDocumentChunkMutable) currentChunk;
-                final IJsonValue jsonVal = toJsonValue(jsonFactory, value);
-                doc.dataMutable(d -> d.add(currentPath, jsonVal));
-            }
-            case UNKNOWN -> {
-                // Values inside UNKNOWN blocks are still applied to the nearest non-UNKNOWN chunk at nested path
-                Object targetChunk = findNearestNonUnknownChunk();
-                final IJsonValue jsonVal = toJsonValue(jsonFactory, value);
-                if (targetChunk instanceof ICjNodeChunkMutable node) {
-                    node.dataMutable(d -> d.add(currentPath, jsonVal));
-                } else if (targetChunk instanceof ICjEdgeChunkMutable edge) {
-                    edge.dataMutable(d -> d.add(currentPath, jsonVal));
-                } else if (targetChunk instanceof ICjGraphChunkMutable graph) {
-                    graph.dataMutable(d -> d.add(currentPath, jsonVal));
-                } else if (targetChunk instanceof ICjDocumentChunkMutable doc) {
-                    doc.dataMutable(d -> d.add(currentPath, jsonVal));
+                case CjType.Node -> {
+                    assert lastKey != null;
+                    ICjNodeChunkMutable node = (ICjNodeChunkMutable) chunk;
+                    if (ID.equalsIgnoreCase(lastKey)) {
+                        node.id(unquotedValue);
+                    } else if (LABEL.equalsIgnoreCase(lastKey)) {
+                        node.addLabelWithoutLanguage(unquotedValue);
+                    } else {
+                        final IJsonValue jsonVal = toJsonValue(writer.jsonFactory(), value);
+                        node.dataMutable(d -> d.addProperty(lastKey, jsonVal));
+                    }
                 }
+                case CjType.Edge -> {
+                    assert lastKey != null;
+                    ICjEdgeChunkMutable edge = (ICjEdgeChunkMutable) chunk;
+                    if (Gml.SOURCE.equalsIgnoreCase(lastKey)) {
+                        edge.addEndpoint(ep -> ep.node(unquotedValue).direction(CjDirection.IN));
+                    } else if (Gml.TARGET.equalsIgnoreCase(lastKey)) {
+                        edge.addEndpoint(ep -> ep.node(unquotedValue).direction(CjDirection.OUT));
+                    } else if (LABEL.equalsIgnoreCase(lastKey)) {
+                        edge.addLabelWithoutLanguage(unquotedValue);
+                    } else {
+                        final IJsonValue jsonVal = toJsonValue(writer.jsonFactory(), value);
+                        edge.dataMutable(d -> d.addProperty(lastKey, jsonVal));
+                    }
+                }
+                default -> throw new IllegalStateException();
             }
-            case null -> throw new IllegalStateException();
+        } else {
+            assert current instanceof GmlData;
+            GmlData gmlData = (GmlData) current;
+            gmlData.add(lastKey, unquotedValue);
         }
+
         lastKey = null;
     }
 
-    private List<IJsonContainerNavigationStep> buildPathWithLastKey() {
-        // Compose path as: name0, idx0, name1, idx1, ..., lastKey (arrays for repeated unknown blocks)
-        List<Object> steps = new ArrayList<>();
-        Object[] names = blockNameStack.toArray();
-        int n = names.length;
-        // Index only the innermost unknown block (current open block) so siblings form arrays at that level
-        int indexedLevel = n > 0 ? 0 : -1;
-        for (int i = n - 1; i >= 0; i--) {
-            String name = (String) names[i];
-            steps.add(name);
-        }
-        if (lastKey != null) steps.add(lastKey);
-        return IJsonContainerNavigationStep.pathOf(steps.toArray());
-    }
 
     private void ensureDocumentStarted() {
         if (!documentStarted) {
@@ -228,38 +189,20 @@ public class GmlReaderHandler implements IGmlHandler {
         }
     }
 
-    private Object findNearestNonUnknownChunk() {
-        // Iterate aligned with contextStack from top to bottom
-        Iterator<Context> ctxIt = contextStack.iterator();
-        Iterator<Object> chIt = chunkStack.iterator();
-        while (ctxIt.hasNext() && chIt.hasNext()) {
-            Context c = ctxIt.next();
-            Object ch = chIt.next();
-            if (c != Context.UNKNOWN) return ch;
+    /** ensure current graph is started before adding nodes/edges/subgraphs */
+    private void ensureGraphStarted() {
+        ICjGraphChunkMutable currentGraph = (ICjGraphChunkMutable) stack.peek();
+        if (startedGraphs.getOrDefault(currentGraph, Boolean.FALSE) == Boolean.FALSE) {
+            writer.graphStart(currentGraph);
+            startedGraphs.put(currentGraph, Boolean.TRUE);
         }
-        return documentChunk;
     }
 
-    private String qualifiedUnknownPathWith(String nextName) {
-        // Build a string key representing current unknown path plus nextName to count siblings consistently
-        // Scope the counter by the nearest non-UNKNOWN chunk to avoid cross-parent collisions
-        Object parentChunk = findNearestNonUnknownChunk();
-        StringBuilder sb = new StringBuilder();
-        sb.append(System.identityHashCode(parentChunk)).append(':');
-        Object[] names = blockNameStack.toArray();
-        for (int i = names.length - 1; i >= 0; i--) {
-            if (sb.length() > 0) sb.append('/');
-            sb.append(names[i]);
-        }
-        if (sb.charAt(sb.length() - 1) != ':') sb.append('/');
-        sb.append(nextName);
-        return sb.toString();
-    }
 
     /**
      *
      * @param jsonFactory
-     * @param raw GML strings cannot be null
+     * @param raw         GML strings cannot be null
      * @return
      */
     private IJsonValue toJsonValue(IJsonFactory jsonFactory, @Nonnull String raw) {

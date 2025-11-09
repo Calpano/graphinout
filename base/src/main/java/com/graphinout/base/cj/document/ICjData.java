@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.graphinout.foundation.util.Nullables.mapOrDefault;
+import static com.graphinout.foundation.util.Nullables.mapOrNull;
 
 /**
  * Represents a CJ data value attached to elements in the CJ model, exposing access to the underlying JSON structure. It
@@ -23,6 +24,14 @@ public interface ICjData extends ICjElement {
     }
 
     IJsonFactory factory();
+
+    default @Nullable IJsonValue get(List<IJsonContainerNavigationStep> path) {
+        return mapOrNull(jsonValue(), j -> j.get(path));
+    }
+
+    default @Nullable IJsonValue getProperty(String propertyKey) {
+        return get(IJsonContainerNavigationStep.pathOf(propertyKey));
+    }
 
     default boolean has(List<IJsonContainerNavigationStep> path) {
         return mapOrDefault(jsonValue(), j -> j.has(path), false);

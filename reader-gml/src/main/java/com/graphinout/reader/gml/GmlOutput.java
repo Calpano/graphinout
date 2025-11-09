@@ -21,7 +21,7 @@ import static com.graphinout.reader.gml.Gml.DIRECTED;
 import static com.graphinout.reader.gml.Gml.EDGE;
 import static com.graphinout.reader.gml.Gml.GRAPH;
 import static com.graphinout.reader.gml.Gml.HIERARCHIC;
-import static com.graphinout.reader.gml.Gml.NAME;
+import static com.graphinout.reader.gml.Gml.LABEL;
 import static com.graphinout.reader.gml.Gml.NODE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -66,8 +66,8 @@ public record GmlOutput(ICjDocument cjDoc) {
         ICjEndpoint outEp = cjEdge.endpoints().filter(ep -> ep.direction() == CjDirection.OUT).findFirst().orElse(null);
 
         if (outEp != null && inEp != null) {
-            attributes.put(Gml.SOURCE, formatValue(outEp.node()));
-            attributes.put(Gml.TARGET, formatValue(inEp.node()));
+            attributes.put(Gml.SOURCE, formatValue(inEp.node()));
+            attributes.put(Gml.TARGET, formatValue(outEp.node()));
         } else {
             List<ICjEndpoint> eps = cjEdge.endpoints().toList();
             if (eps.size() == 2) {
@@ -117,7 +117,8 @@ public record GmlOutput(ICjDocument cjDoc) {
                 b.close();
             }
             case Array -> {
-                throw new IllegalArgumentException("GML uses only nested objects");
+                // repeat key for each value
+                val.asArray().forEach(v -> emitJsonEntry(key, v, b));
             }
         }
     }
@@ -158,7 +159,7 @@ public record GmlOutput(ICjDocument cjDoc) {
         // Graph-level attributes from labels and data
         cjGraph.labelEntries().stream().findFirst().ifPresent(label -> //
         {
-            b.key(NAME);
+            b.key(LABEL);
             b.value(formatValue(label.value()));
         });
         cjGraph.data(data -> {
@@ -175,7 +176,7 @@ public record GmlOutput(ICjDocument cjDoc) {
                         skip.add(prop);
                     }
                 };
-                onProp.accept(NAME);
+                onProp.accept(LABEL);
                 // Emit known attributes in preferred order matching samples
                 onProp.accept(HIERARCHIC);
                 onProp.accept(DIRECTED);
@@ -203,23 +204,6 @@ public record GmlOutput(ICjDocument cjDoc) {
         b.close();
     }
 
-    @Deprecated
-    private static boolean looksLikePointPairs(IJsonArray arr) {
-        // Expect an even-length array alternating between {x: num} and {y: num}
-        if (arr.size() < 2 || (arr.size() % 2) != 0) return false;
-        for (int i = 0; i < arr.size(); i += 2) {
-            IJsonValue a = arr.get_(i);
-            IJsonValue b = arr.get_(i + 1);
-            if (!a.isObject() || !b.isObject()) return false;
-            IJsonObject xo = a.asObject();
-            IJsonObject yo = b.asObject();
-            if (!xo.hasProperty("x") || !yo.hasProperty("y")) return false;
-            IJsonValue xv = xo.get_("x");
-            IJsonValue yv = yo.get_("y");
-            if (!xv.isPrimitive() || !yv.isPrimitive()) return false;
-        }
-        return true;
-    }
 
     private static void nodeToGml(ICjNode cjNode, IGmlHandler b) {
         String id = cjNode.id();

@@ -39,17 +39,24 @@ public class GmlReader implements GioReader {
     }
 
     @Override
-    public void read(InputSource inputSource, ICjStream writer) throws IOException {
+    public void read(InputSource inputSource, ICjStream cjStream) throws IOException {
         if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
 
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
         try (InputStreamReader reader = new InputStreamReader(singleInputSource.inputStream(), StandardCharsets.UTF_8)) {
-            GmlReaderHandler handler = new GmlReaderHandler(writer);
+            Gml2GmlDataHandler handler = new Gml2GmlDataHandler();
             GmlTokenizer tokenizer = new GmlTokenizer(reader, handler);
             tokenizer.parse();
-            handler.endDocument();
+
+            GmlData gmlDoc = handler.result();
+            //            gmlDoc.dump();
+            //            CjWriter2CjDocumentWriter cjWriter2CjDocumentWriter = new CjWriter2CjDocumentWriter();
+            //            CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cjWriter2CjDocumentWriter);
+            //            GmlDocs.toCjDocument(gmlDoc, cjStream2CjWriter);
+
+            GmlDocs.toCjDocument(gmlDoc, cjStream);
         }
     }
 
@@ -57,4 +64,5 @@ public class GmlReader implements GioReader {
     public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
         this.errorHandler = errorHandler;
     }
+
 }

@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +22,25 @@ import static org.slf4j.LoggerFactory.getLogger;
 class GmlRoundTripTest {
 
     private static final Logger log = getLogger(GmlRoundTripTest.class);
+
+    @ParameterizedTest
+    @MethodSource("com.graphinout.reader.gml.GmlReaderTest#gmlResources")
+    void testTokenList(String displayPath, Resource resource) throws IOException {
+        // GML to CJ
+        String gmlContent = resource.getContentAsString();
+        List<Object> expectedList = GmlTokenizer.tokenizeToList(gmlContent);
+
+        SingleInputSource inputSource = SingleInputSource.of("gml-test", gmlContent);
+        ICjDocument cjDocument = GmlReader.parseGmlToCjDocument(inputSource);
+        log.info("CJ JSON: "+ CjDocuments.toJsonString(cjDocument));
+
+        // CJ to GML
+        GmlOutput  gmlOutput = new GmlOutput(cjDocument);
+        List<Object> actualList = gmlOutput.toGmlList();
+
+        GmlAssert.assertEqualsList(expectedList, actualList);
+    }
+
     @ParameterizedTest
     @MethodSource("com.graphinout.reader.gml.GmlReaderTest#gmlResources")
     void testRoundTrip(String displayPath, Resource resource) throws IOException {
@@ -41,10 +59,7 @@ class GmlRoundTripTest {
         String newGmlContent = gmlOutput.toGml();
         log.info("Result GML: \n"+newGmlContent);
 
-        System.out.println("[DEBUG_LOG] Expected (normalized):\n" + expectedList);
-        System.out.println("[DEBUG_LOG] Actual   (normalized):\n" + actualList);
-
-        GmlAssert.assertEquals(expectedList, actualList);
+        GmlAssert.assertEqualsList(expectedList, actualList);
     }
 
     @Test

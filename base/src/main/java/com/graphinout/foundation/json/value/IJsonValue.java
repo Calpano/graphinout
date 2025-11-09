@@ -108,6 +108,30 @@ public interface IJsonValue {
 
     void forEachLeaf(IJsonNavigationPath prefix, BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive);
 
+    default @Nullable IJsonValue get(List<IJsonContainerNavigationStep> path) {
+        if (path.isEmpty()) return this;
+
+        // resolve first step
+        IJsonContainerNavigationStep step = path.getFirst();
+        switch (step.containerType()) {
+            case Array:
+                if (isArray()) {
+                    @Nullable IJsonValue child = asArray().get(step.asArrayStep().index());
+                    if (child == null)
+                        return null;
+                    return child.get(path.subList(1, path.size()));
+                }
+            case Object:
+                if (isObject()) {
+                    @Nullable IJsonValue child = asObject().get(step.asObjectStep().propertyKey());
+                    if (child == null)
+                        return null;
+                    return child.get(path.subList(1, path.size()));
+                }
+        }
+        return null;
+    }
+
     default boolean has(List<IJsonContainerNavigationStep> path) {
         if (path.isEmpty()) return true;
 

@@ -41,14 +41,14 @@ public class JsonMaker {
     /**
      * Create a new nested JSON container structure with the given value
      *
-     * @param path a chain of JSON property keys, intermediate objects are created as needed.
-     * @param value         to set at propertySteps(last)
+     * @param path  a chain of JSON property keys, intermediate objects are created as needed.
+     * @param value to set at propertySteps(last)
      */
     public static IJsonValue create(IJsonFactory factory, List<IJsonContainerNavigationStep> path, IJsonValue value) {
         if (path.isEmpty()) return value;
         // create intermediate objects & arrays
         IJsonContainerNavigationStep firstStep = path.getFirst();
-        List<IJsonContainerNavigationStep> lastSteps = path.subList(1,path.size());
+        List<IJsonContainerNavigationStep> lastSteps = path.subList(1, path.size());
         return switch (firstStep.containerType()) {
             case Object -> {
                 IJsonObjectMutable o = factory.createObjectMutable();
@@ -73,7 +73,7 @@ public class JsonMaker {
     /**
      *
      * @param factory for creating new values
-     * @param current    to which to append
+     * @param current to which to append
      * @param path    e.g. 'foo'/'bar'/[2]/'baz', can be empty
      * @param value   e.g. 123
      * @return root replaced with the merge of (1) root and (2) value at the given path at root
@@ -93,7 +93,8 @@ public class JsonMaker {
                     a.add(value);
                     return a;
                 }
-                case Object -> throw new IllegalStateException("Cannot merge a value into an object");
+                case Object ->
+                        throw new IllegalStateException("Cannot merge a value '" + value + "' into an object '" + current + "'");
             }
         } else {
             // merge root and step 0
@@ -154,19 +155,17 @@ public class JsonMaker {
      * @return
      * @throws IllegalStateException if not a {@link IJsonObject}
      */
-    public static IJsonValue removeProperty(
-            IJsonValue value, String propertyKey) throws IllegalStateException {
-        if(!value.isObject())
-            throw new IllegalStateException();
+    public static IJsonValue removeProperty(IJsonValue value, String propertyKey) throws IllegalStateException {
+        if (!value.isObject()) throw new IllegalStateException();
         IJsonObject object = value.asObject();
-        if(object instanceof IJsonObjectMutable objectMutable) {
+        if (object instanceof IJsonObjectMutable objectMutable) {
             objectMutable.removeProperty(propertyKey);
             return object;
         } else {
             // create a copy without that property
             IJsonObjectMutable newObject = value.factory().createObjectMutable();
-            for(String key : object.keys()) {
-                if(!key.equals(propertyKey)) {
+            for (String key : object.keys()) {
+                if (!key.equals(propertyKey)) {
                     newObject.addProperty(key, object.get(key));
                 }
             }

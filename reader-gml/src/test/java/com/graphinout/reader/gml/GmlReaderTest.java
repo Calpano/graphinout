@@ -74,7 +74,7 @@ class GmlReaderTest {
      * @throws IOException
      */
     @ParameterizedTest
-    @ValueSource(strings = "text/gml/example-small.gml")
+    @ValueSource(strings = {"text/gml/example-small.gml", "text/gml/array.gml"})
     void parseGmlToExpectedCj(String path) throws IOException {
         Resource resource = TestFileUtil.resource(path);
         Assertions.assertNotNull(resource);

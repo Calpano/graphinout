@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
     <version>0.1.4-SNAPSHOT</version>
 
-    <description>Graphinout reads many common graph file formats and converts them to Connected JSON or GraphML.</description>
+    <description> 🦋 Graphinout reads many common graph file formats and converts them to Connected JSON or GraphML.</description>
     <url>https://graphinout.com</url>
     <licenses>
         <license>
