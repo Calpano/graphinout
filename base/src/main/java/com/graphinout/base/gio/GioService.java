@@ -19,4 +19,9 @@ public interface GioService {
      */
     List<GioReader> readers();
 
+    // TODO remove
+    default List<GioWriter> writers() {
+        return List.of();
+    }
+
 }

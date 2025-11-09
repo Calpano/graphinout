@@ -1,10 +1,9 @@
 package com.graphinout.reader.gml;
 
-import com.graphinout.base.gio.GioService;
 import com.graphinout.base.gio.GioReader;
-import com.graphinout.reader.gml.GmlReader;
+import com.graphinout.base.gio.GioService;
+import com.graphinout.base.gio.GioWriter;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class GmlService implements GioService {
@@ -16,7 +15,12 @@ public class GmlService implements GioService {
 
     @Override
     public List<GioReader> readers() {
-        return Arrays.asList(new GmlReader());
+        return List.of(new GmlReader());
+    }
+
+    @Override
+    public List<GioWriter> writers() {
+        return List.of(new GmlWriter());
     }
 
 }
