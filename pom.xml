@@ -36,6 +36,7 @@
         <module>base</module>
         <module>reader-cj</module>
         <module>reader-dot</module>
+        <module>reader-gexf</module>
         <module>reader-graphml</module>
         <module>reader-gml</module>
         <module>reader-tgf</module>
