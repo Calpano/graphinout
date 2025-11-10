@@ -16,8 +16,8 @@ class GexfReaderTest {
 
     @Test
     void read() throws Exception {
-        String content = IOUtils.resourceToString("/sample.gexf", StandardCharsets.UTF_8);
-        InputSource inputSource = SingleInputSource.of("sample.gexf", content);
+        String content = IOUtils.resourceToString("/xml/gexf/sample.gexf", StandardCharsets.UTF_8);
+        InputSource inputSource = SingleInputSource.of("xml/gexf/sample.gexf", content);
 
         GexfReader reader = new GexfReader();
         Json2StringWriter json2StringWriter = new Json2StringWriter();

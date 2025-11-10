@@ -15,7 +15,7 @@ public class GexfService implements GioService {
 
     @Override
     public List<GioReader> readers() {
-        return Arrays.asList(new GexfReader());
+        return List.of(new GexfReader());
     }
 
 }
