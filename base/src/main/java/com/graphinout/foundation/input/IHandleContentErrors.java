@@ -20,7 +20,12 @@ public interface IHandleContentErrors extends ContentErrorAware, LocationAware {
      */
     default ContentErrorException sendContentError_Error(String message, @Nullable Throwable baseException) {
         Location location = Locator.locationOrNotAvailable(locator());
-        ContentError contentError = new ContentError(ContentError.ErrorLevel.Error, "While parsing " + location + "\n" + "Message: " + message, location);
+        // FIXME use baseException.msg if present
+        ContentError contentError = new ContentError(ContentError.ErrorLevel.Error,
+                // TODO remove this redundant default and use only a clear message
+                "While parsing " + location + "\n" + "Message: " + message,
+
+                location);
         onContentError(contentError);
         return ContentErrorException.of(contentError,baseException);
     }
