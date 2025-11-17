@@ -10,7 +10,7 @@ import java.util.Optional;
 public class ContentError {
 
     public enum ErrorLevel {
-        Warn, Error
+        Error, Warn, Info
     }
 
     final ErrorLevel level;
