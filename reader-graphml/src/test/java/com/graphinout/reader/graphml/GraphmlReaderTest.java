@@ -2,6 +2,7 @@ package com.graphinout.reader.graphml;
 
 import com.graphinout.base.cj.stream.DelegatingCjStream;
 import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.reader.graphml.validation.ValidatingGraphMlWriter;
 import com.graphinout.base.cj.stream.ValidatingCjStream;
 import com.graphinout.foundation.TestFileUtil;
@@ -14,6 +15,7 @@ import com.graphinout.foundation.xml.writer.XmlWriter;
 import com.graphinout.foundation.xml.writer.XmlWriterImpl;
 import com.graphinout.reader.graphml.cj.CjStream2GraphmlWriter;
 import io.github.classgraph.Resource;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 import static com.graphinout.foundation.TestFileUtil.inputSource;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -38,12 +41,18 @@ class GraphmlReaderTest {
             graphmlWriter = new DelegatingGraphmlWriter(new ValidatingGraphMlWriter(), graphmlWriter);
         }
 
-
         ICjStream cjStream = new CjStream2GraphmlWriter(graphmlWriter);
         if (validateGio) {
             cjStream = new DelegatingCjStream(new ValidatingCjStream(), cjStream);
         }
         return cjStream;
+    }
+
+    @Test
+    void testBug() throws Exception {
+        String resource = "xml/graphml/images/kubernetes-opensource-deployment--SMALL.graphml";
+        Resource r = TestFileProvider.resourceByPath(resource).resource();
+        readAllGraphmlFiles(resource, r);
     }
 
     @ParameterizedTest(name = "{index}: {0}")

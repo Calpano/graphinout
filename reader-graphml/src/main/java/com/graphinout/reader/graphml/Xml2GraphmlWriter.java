@@ -109,7 +109,7 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
             if (!characters.trim().isEmpty()) {
                 // characters between elements when not in data/desc/default -> not allowed in Graphml
                 throw sendContentError_Error("Unexpected content ('" + characters +
-                        "') outside Graphml content tags.");
+                        "') outside Graphml content tags.",locator());
             }
         }
     }
@@ -170,7 +170,7 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
             case DEFAULT -> graphmlDefaultEnd();
             case LOCATOR -> graphmlLocatorEnd();
             case ENDPOINT -> graphmlEndpointEnd();
-            default -> throw sendContentError_Error("The Element </" + localName + "> not acceptable tag for Graphml.");
+            default -> throw sendContentError_Error("The Element </" + localName + "> not acceptable tag for Graphml.",locator());
         }
     }
 
@@ -198,7 +198,7 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
             case DEFAULT -> graphmlDefaultStart(attributes);
             case LOCATOR -> graphmlLocatorStart(attributes);
             case ENDPOINT -> graphmlEndpointStart(attributes);
-            default -> throw sendContentError_Error("XML Element <" + localName + "> is not a Graphml tag and not allowing XML here. "+stackToString());
+            default -> throw sendContentError_Error("XML Element <" + localName + "> is not a Graphml tag and not allowing XML here. "+stackToString(),locator());
         }
     }
 
@@ -468,7 +468,7 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
         // Graphml ID semantics state the id must be unique
         IGraphmlKey prev = dataId_key.put(id, key);
         if(prev != null) {
-            throw sendContentError_Error("<key id> used multiple times for different keys. Check "+prev+" and "+key);
+            throw sendContentError_Error("<key id> used multiple times for different keys. Check "+prev+" and "+key,locator());
         }
     }
 
@@ -484,7 +484,7 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
             builder.id(id);
             IGraphmlKey prev = dataId_key.get(id);
             if(prev!=null) {
-                throw sendContentError_Error("<key id> used multiple times for different keys. Check "+prev+" and "+builder.build());
+                throw sendContentError_Error("<key id> used multiple times for different keys. Check "+prev+" and "+builder.build(),locator());
             }
         });
 

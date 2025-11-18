@@ -390,6 +390,12 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
     private ICjHasIdMutable currentHasId() {
         ICjPortMutable port = safePeekPort();
         if (port != null) return port;
+        // Prefer an in-progress graph (subgraph) over node/edge when a StartGraph is present but not started
+        StartGraph sg = stack.peekOrNull(StartGraph.class);
+        if (sg != null && !sg.started) {
+            ICjGraphChunkMutable g = currentGraph();
+            if (g != null) return g;
+        }
         ICjHasIdMutable hasId = stack.peekSearchOrNull(ICjEdgeChunkMutable.class);
         if (hasId != null) return hasId;
         hasId = stack.peekSearchOrNull(ICjNodeChunkMutable.class);
@@ -401,6 +407,12 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
         // Prefer most nested element: port > edge > node > graph
         ICjPortMutable port = safePeekPort();
         if (port instanceof ICjHasLabelMutable lh) return lh;
+        // If a subgraph is currently being built (StartGraph present and not started), prefer it over node/edge
+        StartGraph sg = stack.peekOrNull(StartGraph.class);
+        if (sg != null && !sg.started) {
+            ICjGraphChunkMutable g = currentGraph();
+            if (g instanceof ICjHasLabelMutable gl) return gl;
+        }
         ICjHasLabelMutable has = stack.peekSearchOrNull(ICjEdgeChunkMutable.class);
         if (has != null) return has;
         has = stack.peekSearchOrNull(ICjNodeChunkMutable.class);
@@ -441,12 +453,12 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
     private void ensureCurrentNodeStartSent() {
         ICjNodeChunkMutable n = currentNode();
         if (n != null) {
-            StartNode sn = stack.peekSearch(StartNode.class);
-            Objects.requireNonNull(sn, "Node chunk present without StartNode marker");
-            if (!sn.started) {
+            StartNode startNode = stack.peekSearch(StartNode.class);
+            Objects.requireNonNull(startNode, "Node chunk present without StartNode marker");
+            if (!startNode.started) {
                 ensureCurrentGraphStartSent();
                 cjStream.nodeStart(n);
-                sn.started = true;
+                startNode.started = true;
             }
         }
     }

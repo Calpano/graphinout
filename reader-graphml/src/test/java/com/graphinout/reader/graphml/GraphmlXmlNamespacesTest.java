@@ -5,8 +5,8 @@ import com.graphinout.foundation.TestFileProvider;
 import com.graphinout.foundation.TestFileUtil;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
 import com.graphinout.foundation.xml.util.XmlNormalizer;
+import com.graphinout.foundation.xml.writer.Xml2StringWriter;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.graphml.cj.CjStream2GraphmlWriter;
 import io.github.classgraph.Resource;
@@ -79,8 +79,8 @@ class GraphmlXmlNamespacesTest {
         assertEquals(2, errorList.size(), "Expect contentError for <myRoot> element");
         ContentError first = errorList.getFirst();
         assertEquals(ContentError.ErrorLevel.Error, first.getLevel());
-        assertEquals("While parsing 2:83\n" +
-                "Message: XML Element <myroot> is not a Graphml tag and not allowing XML here. XmlParseContext{elementStack=[], mode=Graphml}", first.getMessage());
+        assertEquals(
+                "XML Element <myroot> is not a Graphml tag and not allowing XML here. XmlParseContext{elementStack=[], mode=Graphml}", first.getMessage());
     }
 
     @Test

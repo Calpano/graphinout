@@ -30,7 +30,7 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
      * {@link ICjWriter#listStart(CjType) subgraphs}, { InGraphs, InNodes, None }<br>
      * {@link #edgeStart(ICjEdgeChunk) edgeStart}, { InGraphs, InNodes, InEdges }<br> ...
      */
-    enum Protocol {None, InNodes, InEdges, InGraphs}
+    enum Protocol {None, InNodes, InEdges, InGraphsAtGraph, InGraphsAtNode}
 
     private final ICjWriter cjWriter;
     private final PowerStackEnum<Protocol> protocolStack = PowerStackEnum.create();
@@ -53,8 +53,12 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
     @Override
     public void edgeEnd() {
         // maybe end open graphs list
-        if (protocolStack.peek() == Protocol.InGraphs) {
-            protocolStack.pop(Protocol.InGraphs);
+        Protocol peek = protocolStack.peek();
+        if (peek == Protocol.InGraphsAtGraph) {
+            protocolStack.pop(Protocol.InGraphsAtGraph);
+            cjWriter.listEnd(CjType.ArrayOfGraphs);
+        } else if (peek == Protocol.InGraphsAtNode) {
+            protocolStack.pop(Protocol.InGraphsAtNode);
             cjWriter.listEnd(CjType.ArrayOfGraphs);
         }
         cjWriter.edgeEnd();
@@ -63,6 +67,16 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
     @Override
     public void edgeStart(ICjEdgeChunk edge) {
         Protocol peek = protocolStack.peek();
+        // Close any open graphs lists before starting edges
+        if (peek == Protocol.InGraphsAtGraph) {
+            protocolStack.pop(Protocol.InGraphsAtGraph);
+            cjWriter.listEnd(CjType.ArrayOfGraphs);
+            peek = protocolStack.peek();
+        } else if (peek == Protocol.InGraphsAtNode) {
+            protocolStack.pop(Protocol.InGraphsAtNode);
+            cjWriter.listEnd(CjType.ArrayOfGraphs);
+            peek = protocolStack.peek(); // likely InNodes under a node
+        }
         switch (peek) {
             case None -> protocolStack.pop(Protocol.None);
             case InNodes -> {
@@ -77,13 +91,8 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
                 protocolStack.push(Protocol.InEdges);
             }
             case InEdges -> { /* good */ }
-            case InGraphs -> {
-                // gracefully end graphs list to allow edges after graphs
-                protocolStack.pop(Protocol.InGraphs);
-                cjWriter.listEnd(CjType.ArrayOfGraphs);
-                // start edges list
-                cjWriter.listStart(CjType.ArrayOfEdges);
-                protocolStack.push(Protocol.InEdges);
+            case InGraphsAtGraph, InGraphsAtNode -> {
+                // already handled above
             }
             default -> throw new IllegalStateException("Unexpected protocol: " + peek);
         }
@@ -99,27 +108,31 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
     @Override
     public void graphStart(ICjGraphChunk graph) {
         Protocol peek = protocolStack.peek();
-        // end current list
+        // end current list only when appropriate
         switch (peek) {
             case None -> protocolStack.pop(Protocol.None);
-            case InNodes -> {
-                protocolStack.pop(Protocol.InNodes);
-                cjWriter.listEnd(CjType.ArrayOfNodes);
-            }
+            case InNodes -> { /* do NOT end nodes; graphs will be nested under node */ }
             case InEdges -> {
                 protocolStack.pop(Protocol.InEdges);
                 cjWriter.listEnd(CjType.ArrayOfEdges);
             }
+            case InGraphsAtGraph, InGraphsAtNode -> { /* already in graphs list */ }
+            default -> {}
         }
-        // start new list
+        // start new graphs list depending on context
         switch (peek) {
-            case None, InNodes, InEdges -> {
-                // start graphs list
+            case InNodes -> {
+                // nested graphs inside current node
                 cjWriter.listStart(CjType.ArrayOfGraphs);
-                protocolStack.push(Protocol.InGraphs);
+                protocolStack.push(Protocol.InGraphsAtNode);
             }
-            case InGraphs -> { /* good */ }
-            default -> throw new IllegalStateException("Unexpected protocol: " + peek);
+            case None, InEdges -> {
+                // graphs at graph level
+                cjWriter.listStart(CjType.ArrayOfGraphs);
+                protocolStack.push(Protocol.InGraphsAtGraph);
+            }
+            case InGraphsAtGraph, InGraphsAtNode -> { /* good: already in a graphs list */ }
+            default -> {}
         }
         // state in new graph
         protocolStack.push(Protocol.None);
@@ -129,12 +142,29 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
 
     @Override
     public void nodeEnd() {
+        // If a node had an open graphs-under-node list, close it before ending the node
+        Protocol peek = protocolStack.peek();
+        if (peek == Protocol.InGraphsAtNode) {
+            protocolStack.pop(Protocol.InGraphsAtNode);
+            cjWriter.listEnd(CjType.ArrayOfGraphs);
+        }
         cjWriter.nodeEnd();
     }
 
     @Override
     public void nodeStart(ICjNodeChunk node) {
-        switch (protocolStack.peek()) {
+        Protocol peek = protocolStack.peek();
+        // If we are inside a graphs list, close it first
+        if (peek == Protocol.InGraphsAtNode) {
+            protocolStack.pop(Protocol.InGraphsAtNode);
+            cjWriter.listEnd(CjType.ArrayOfGraphs);
+            peek = protocolStack.peek(); // should now be InNodes
+        } else if (peek == Protocol.InGraphsAtGraph) {
+            protocolStack.pop(Protocol.InGraphsAtGraph);
+            cjWriter.listEnd(CjType.ArrayOfGraphs);
+            peek = protocolStack.peek(); // likely None
+        }
+        switch (peek) {
             case None -> { // start nodes list
                 cjWriter.listStart(CjType.ArrayOfNodes);
                 protocolStack.pop(Protocol.None);
@@ -143,7 +173,7 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
             case InNodes -> { // perfect
             }
             case InEdges -> throw new IllegalStateException("Cannot get node when in edges.");
-            case InGraphs -> throw new IllegalStateException("Cannot get node when in graphs.");
+            case InGraphsAtGraph, InGraphsAtNode -> throw new IllegalStateException("Cannot get node when in graphs.");
             default -> throw new IllegalStateException("Unexpected protocol: " + protocolStack.peek());
         }
         node.fireStartChunk(cjWriter);
@@ -168,7 +198,7 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
         switch (protocol) {
             case InEdges -> cjWriter.listEnd(CjType.ArrayOfEdges);
             case InNodes -> cjWriter.listEnd(CjType.ArrayOfNodes);
-            case InGraphs -> cjWriter.listEnd(CjType.ArrayOfGraphs);
+            case InGraphsAtGraph, InGraphsAtNode -> cjWriter.listEnd(CjType.ArrayOfGraphs);
             case None -> { // empty doc is ok
             }
             default -> throw new IllegalStateException("Unexpected protocol: " + protocol);

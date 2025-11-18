@@ -2,9 +2,9 @@ package com.graphinout.reader.graphml;
 
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.stream.NoopCjStream;
-import com.graphinout.foundation.input.Location;
-import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.TestFileUtil;
+import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.input.Location;
 import com.graphinout.foundation.input.SingleInputSource;
 import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
@@ -40,7 +40,8 @@ class GraphmlReaderContentErrorTest {
         try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content)) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
-            graphmlReader.setContentErrorHandler(contentErrors::add);
+            graphmlReader.setContentErrorHandler(ce -> {
+                contentErrors.add(ce);});
 
             ICjStream cjStream = new NoopCjStream();
             graphmlReader.read(singleInputSource, cjStream);
@@ -50,18 +51,17 @@ class GraphmlReaderContentErrorTest {
             {
                 assertEquals(ContentError.ErrorLevel.Error, first.getLevel());
                 assertEquals(Location.of(2, 9), first.getLocation());
-                assertEquals("While parsing 2:9\n" +
-                        "Message: XML Element <myroot> is not a Graphml tag and not allowing XML here. XmlParseContext{elementStack=[], mode=Graphml}", first.getMessage());
+                assertEquals(
+                        "XML Element <myroot> is not a Graphml tag and not allowing XML here. XmlParseContext{elementStack=[], mode=Graphml}", first.getMessage());
             }
             ContentError second = contentErrorsResult.get(1);
             {
                 assertEquals(ContentError.ErrorLevel.Error, second.getLevel());
                 assertEquals("""
-                        While parsing 4:10
-                        Message: Unexpected content ('
+                        Unexpected content ('
                             Hello
                         ') outside Graphml content tags.""", second.getMessage());
-                assertEquals(Location.of( 4,10), second.getLocation());
+                assertEquals(Location.of(4, 10), second.getLocation());
 
             }
         }

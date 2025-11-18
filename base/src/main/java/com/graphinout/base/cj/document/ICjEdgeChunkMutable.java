@@ -14,4 +14,13 @@ public interface ICjEdgeChunkMutable extends ICjChunkMutable, ICjEdgeChunk, ICjH
 
     void edgeType(ICjEdgeType edgeType);
 
+    /** Incoming endpoint (from the perspective of the edge)  */
+    default void addEndpointIncoming(String nodeId) {
+        addEndpoint(ep -> ep.direction(CjDirection.IN).node(nodeId));
+    }
+    /** Outgoing endpoint (from the perspective of the edge)  */
+    default void addEndpointOutgoing(String nodeId) {
+        addEndpoint(ep -> ep.direction(CjDirection.OUT).node(nodeId));
+    }
+
 }
