@@ -29,6 +29,11 @@ public interface OutputSink extends AutoCloseable {
      */
     OutputStream outputStream() throws IOException;
 
+    /**
+     * Write a string to out and close stream.
+     * @param string
+     * @throws IOException
+     */
     default void write(String string) throws IOException {
         try (OutputStream out = outputStream()) {
             out.write(string.getBytes(StandardCharsets.UTF_8));
