@@ -42,8 +42,8 @@ public interface IHandleContentErrors extends ContentErrorAware, LocationAware {
         return ContentErrorException.of(contentError, baseException);
     }
 
-    default ContentErrorException sendContentError_Error(String message) {
-        return sendContentError_Error(message, null, null);
+    default ContentErrorException sendContentError_Error(String message, Locator locator) {
+        return sendContentError_Error(message, null, locator);
     }
 
     default void sendContentError_Warn(String message, Throwable baseException) {
