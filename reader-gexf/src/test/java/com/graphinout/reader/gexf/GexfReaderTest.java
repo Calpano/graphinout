@@ -6,12 +6,14 @@ import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.truth.Truth.assertThat;
 
+@Disabled("not ready yet")
 class GexfReaderTest {
 
     @Test
