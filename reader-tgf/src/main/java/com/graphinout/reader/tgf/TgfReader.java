@@ -8,11 +8,14 @@ import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
+import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
+import com.graphinout.foundation.input.Location;
+import com.graphinout.foundation.input.Locator;
 import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.foundation.util.IntRef;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +30,9 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import static com.graphinout.foundation.util.IntRef.intRef;
+import static com.graphinout.foundation.util.Nullables.ifConsumerPresentAccept;
 
 public class TgfReader implements GioReader {
 
@@ -46,11 +52,6 @@ public class TgfReader implements GioReader {
     }
 
     @Override
-    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
-        this.errorHandler = errorHandler;
-    }
-
-    @Override
     public GioFileFormat fileFormat() {
         return FORMAT;
     }
@@ -66,6 +67,7 @@ public class TgfReader implements GioReader {
 
         if (content.isEmpty()) {
             // Emit empty document (no graphs) for empty TGF content to allow exact empty roundtrip
+            ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content is empty"));
             writer.document(writer.createDocumentChunk());
             return;
         }
@@ -74,14 +76,17 @@ public class TgfReader implements GioReader {
         }
     }
 
-    private void ensureNodesExist(final String[] edgeParts, ICjStream writer, final Set<String> nodesCreatedSet) throws IOException {
-        for (String nodeId : Arrays.asList(edgeParts[0], edgeParts[1])) {
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        this.errorHandler = errorHandler;
+    }
+
+    /** auto-create nodes if they don't exist */
+    private void ensureNodesExist(final String[] edgeParts, ICjStream writer, final Set<String> nodesCreatedSet, Locator locator) {
+        for (String nodeId : List.of(edgeParts[0], edgeParts[1])) {
             if (!nodesCreatedSet.contains(nodeId)) {
-                // auto-create nodes if they don't exist
-                log.warn("Auto-create node '{}' found in the file for edge: {}", nodeId, Arrays.toString(edgeParts));
-                if (errorHandler != null) {
-                    errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "No nodes found for edge endpoint: " + nodeId, null));
-                }
+                String msg = String.format("Auto-create node '%s' found in the file for edge: %s", nodeId, Arrays.toString(edgeParts));
+                sendIssue(ContentError.ErrorLevel.Warn, msg, locator);
                 ICjNodeChunkMutable nodeChunk = writer.createNodeChunk();
                 nodeChunk.id(nodeId);
                 writer.node(nodeChunk);
@@ -90,25 +95,18 @@ public class TgfReader implements GioReader {
         }
     }
 
-    private void handleWarnings(final boolean edges, final boolean nodes) {
-        if (!edges) {
-            if (!nodes) {
-                if (errorHandler != null) {
-                    errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, "No nodes found in file", null));
-                }
-            } else {
-                log.warn("No edges found in the file.");
-            }
-        }
-    }
-
-    private void processEdge(final String rawLine, final ICjStream writer, final Set<String> nodesCreatedSet, Consumer<ICjEdgeChunk> edgeConsumer) throws IOException {
+    private void processEdge(final String rawLine, final ICjStream writer, final Set<String> nodesCreatedSet, Locator locator, Consumer<ICjEdgeChunk> edgeConsumer) throws IOException {
         String line = rawLine.trim();
-        if (line.isEmpty()) return;
+        if (line.isEmpty()) {
+            sendIssue(ContentError.ErrorLevel.Info, "Skipping empty edge", locator);
+            return;
+        }
         String[] edgeParts = line.split(DELIMITER_REGEX, 3);
-        if (edgeParts.length < 2) return; // invalid edge line
-        // ensure nodes exist
-        ensureNodesExist(edgeParts, writer, nodesCreatedSet);
+        if (edgeParts.length < 2) {
+            sendIssue(ContentError.ErrorLevel.Info, "Skipping invalid edge", locator);
+            return; // invalid edge line
+        }
+        ensureNodesExist(edgeParts, writer, nodesCreatedSet, locator);
 
         ICjEdgeChunkMutable edgeChunk = writer.createEdgeChunk();
         //source
@@ -117,15 +115,14 @@ public class TgfReader implements GioReader {
         edgeChunk.addEndpoint(ep -> ep.node(edgeParts[1]).direction(CjDirection.OUT));
 
         if (edgeParts.length == 3 && !edgeParts[2].isBlank()) {
-            edgeChunk.descriptionPlainText(writer.jsonFactory(), edgeParts[2]);
+            edgeChunk.addLabelWithoutLanguage(edgeParts[2]);
         }
         edgeConsumer.accept(edgeChunk);
     }
 
     private void processFileContent(final Scanner scanner, final ICjStream writer) throws IOException {
-        boolean edges = false;
-        boolean nodes = false;
-
+        boolean foundEdges = false;
+        boolean foundNodes = false;
 
         writer.documentStart(writer.createDocumentChunk());
         writer.graphStart(writer.createGraphChunk());
@@ -133,48 +130,65 @@ public class TgfReader implements GioReader {
         Set<String> nodesCreatedSet = new HashSet<>();
 
         List<ICjEdgeChunk> edgeBuffer = new ArrayList<>();
+        IntRef lineNumber = intRef(0);
+        Locator locator = () -> Location.of(lineNumber.value, 1);
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
+            lineNumber.value++;
             String trimmed = line.trim();
             if (trimmed.isEmpty()) {
                 continue; // skip empty lines
             }
             if (trimmed.equals(SECTION_MARKER)) {
-                edges = true;
+                foundEdges = true;
                 continue;
             }
-            if (!edges) {
-                nodes = true;
-                processNode(line, writer, nodesCreatedSet);
+            if (!foundEdges) {
+                foundNodes = true;
+                processNode(line, writer, nodesCreatedSet, locator);
             } else {
-                processEdge(line, writer, nodesCreatedSet, edgeBuffer::add);
+                processEdge(line, writer, nodesCreatedSet, locator, edgeBuffer::add);
             }
         }
 
+        if (!foundNodes) {
+            ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content contains no nodes"));
+        }
+        if (!foundEdges) {
+            ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content contains no edges"));
+        }
         edgeBuffer.forEach(writer::edge);
 
         writer.graphEnd();
         writer.documentEnd();
-
-        handleWarnings(edges, nodes);
     }
 
-    private void processNode(final String rawLine, final ICjStream writer, final Set<String> nodesCreatedSet) throws IOException {
+    private void processNode(final String rawLine, final ICjStream writer, final Set<String> nodesCreatedSet, Locator locator) {
         String line = rawLine.trim();
         if (line.isEmpty()) return;
         String[] nodeParts = line.split(DELIMITER_REGEX, 2);
-        if (nodeParts.length == 0 || nodeParts[0].isBlank()) return;
+        if (nodeParts.length == 0 || nodeParts[0].isBlank()) {
+            sendIssue(ContentError.ErrorLevel.Info, "Skipping empty node", locator);
+            return;
+        }
         String nodeId = nodeParts[0];
-        if (!nodesCreatedSet.contains(nodeId)) {
-            nodesCreatedSet.add(nodeId);
+        boolean isNew = nodesCreatedSet.add(nodeId);
+        if (!isNew) {
+            sendIssue(ContentError.ErrorLevel.Warn, "Skipping duplicate node ID: " + nodeId, locator);
+        } else {
             ICjNodeChunkMutable nodeChunk = writer.createNodeChunk();
             nodeChunk.id(nodeId);
+            // add optional label
             if (nodeParts.length == 2 && !nodeParts[1].isBlank()) {
-                nodeChunk.descriptionPlainText(writer.jsonFactory(), nodeParts[1]);
+                nodeChunk.addLabelWithoutLanguage(nodeParts[1]);
             }
             writer.nodeStart(nodeChunk);
             writer.nodeEnd();
         }
+    }
+
+    private void sendIssue(ContentError.ErrorLevel errorLevel, String msg, Locator locator) {
+        ifConsumerPresentAccept(errorHandler, ContentError.of(errorLevel, msg, locator.location()));
     }
 
 }

@@ -57,7 +57,7 @@ public class Json5Reader extends BaseOutput implements GioReader {
             }
 
         } catch (Exception e) {
-            throw sendContentError_Error("Failed to parse JSON5 content", e);
+            throw sendContentError_Error("Failed to parse JSON5 content", e, null);
         }
     }
 

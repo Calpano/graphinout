@@ -132,7 +132,7 @@ public class JGraphTReader<N> {
             cjStream.documentEnd();
         } catch (ImportException | IOException e) {
             if (e.getCause() instanceof IOException ioException) throw ioException;
-            throw cjStream.sendContentError_Error("JGraphT error: " + e.getMessage(), e);
+            throw cjStream.sendContentError_Error("JGraphT error: " + e.getMessage(), e, null);
         }
     }
 

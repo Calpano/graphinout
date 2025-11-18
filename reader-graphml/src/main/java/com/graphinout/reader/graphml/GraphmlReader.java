@@ -89,7 +89,7 @@ public class GraphmlReader extends BaseOutput implements GioReader {
     @Override
     public void read(InputSource inputSource, ICjStream writer) throws IOException {
         if (inputSource.isMulti()) {
-            throw sendContentError_Error("--", new IllegalArgumentException("MultiInputSource is not supported by GraphmlReader"));
+            throw sendContentError_Error(null, new IllegalArgumentException("MultiInputSource is not supported by GraphmlReader"), null);
         }
         SingleInputSource singleInputSource = ((SingleInputSource) inputSource);
 
@@ -109,10 +109,10 @@ public class GraphmlReader extends BaseOutput implements GioReader {
                     org.xml.sax.InputSource saxInputSource = new org.xml.sax.InputSource(in);
                     reader.parse(saxInputSource);
                 } catch (SAXException e) {
-                    throw sendContentError_Error("--", new IOException(e));
+                    throw sendContentError_Error(null, e, null);
                 }
             } catch (ParserConfigurationException e) {
-                throw sendContentError_Error("--", new IOException(e));
+                throw sendContentError_Error(null, e, null);
             }
         } catch (ContentErrorException t) {
             log.warn("ContentError", t);
@@ -131,7 +131,7 @@ public class GraphmlReader extends BaseOutput implements GioReader {
      */
     void validateExternalSchema(SingleInputSource inputSource) throws SAXException, IOException, ParserConfigurationException {
         if (externalSchemaMap.isEmpty())
-            throw sendContentError_Error("--", new IllegalStateException("no schemas loaded"));
+            throw sendContentError_Error(null, new IllegalStateException("no schemas loaded"), null);
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(false);
@@ -156,7 +156,7 @@ public class GraphmlReader extends BaseOutput implements GioReader {
         });
         String graphmlSchema = externalSchemaMap.get("graphml.xsd.xml");
         if (graphmlSchema == null) {
-            throw sendContentError_Error("--", new IllegalStateException("Required schema 'graphml.xsd.xml' not loaded"));
+            throw sendContentError_Error(null, new IllegalStateException("Required schema 'graphml.xsd.xml' not loaded"), null);
         }
         Source source = new StreamSource(new StringReader(graphmlSchema));
         factory.setSchema(schemaFactory.newSchema(source));

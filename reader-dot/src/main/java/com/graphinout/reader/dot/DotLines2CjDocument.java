@@ -9,6 +9,7 @@ import com.graphinout.base.cj.document.ICjNodeMutable;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.foundation.input.Location;
 import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.input.Locator;
 import com.graphinout.foundation.text.ITextWriter;
 import com.graphinout.foundation.json.value.IJsonObjectMutable;
 
@@ -529,9 +530,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         } catch (RuntimeException ex) {
             // Emit a content error with precise location
             int pos = currentParser != null ? currentParser.position() : dot.length();
-            Location loc = mapPosToLocation(pos);
-            String msg = ex.getMessage() == null ? (ex.getClass().getSimpleName()) : ex.getMessage();
-            throw sendContentError_Error("DOT parse error at " + loc + ": " + msg, ex);
+            throw sendContentError_Error("DOT parse error", ex, ()->mapPosToLocation(pos));
         }
     }
 
