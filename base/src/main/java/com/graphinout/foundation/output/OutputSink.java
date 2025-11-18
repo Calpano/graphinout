@@ -3,6 +3,8 @@ package com.graphinout.foundation.output;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 public interface OutputSink extends AutoCloseable {
@@ -37,6 +39,19 @@ public interface OutputSink extends AutoCloseable {
     default void write(String string) throws IOException {
         try (OutputStream out = outputStream()) {
             out.write(string.getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    /**
+     * Users need to close {@link Writer} after usage.
+     *
+     * @return a writer on this {@link OutputSink}
+     */
+    default Writer writerUtf8() {
+        try (OutputStream out = outputStream(); OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
+            return writer;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -6,6 +6,8 @@ import com.graphinout.base.cj.writer.CjWriter2CjStream;
 import com.graphinout.foundation.output.OutputSink;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -27,7 +29,7 @@ public interface GioWriter {
      */
     GioFileFormat fileFormat();
 
-    default void writeCjDocument(ICjDocument cjDoc, OutputSink outputSink) {
+    default void writeCjDocument(ICjDocument cjDoc, OutputSink outputSink) throws IOException {
         ICjStream cjStream = createCjStream(outputSink);
         CjWriter2CjStream cjWriter2Stream = new CjWriter2CjStream(cjStream);
         cjDoc.fire(cjWriter2Stream);

@@ -82,14 +82,14 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) {
         try {
             saxCharBuffer.charactersEnd();
             xmlWriter.elementEnd(uri, localName, qName);
         } catch (ContentErrorException e) {
             // already handled
-        } catch (Exception e) {
-            throw xmlWriter.sendContentError_Error("endElement", e);
+        } catch (IOException e) {
+            throw xmlWriter.sendContentError_Error("While parsing endElement", e, null);
         }
     }
 
@@ -98,7 +98,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     @Override
     public void error(SAXParseException e) throws SAXException {
-        throw xmlWriter.sendContentError_Error("SAX error", e);
+        throw xmlWriter.sendContentError_Error("SAX error", e, null);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
         } catch (ContentErrorException e) {
             // this one is already logged
         } catch (Exception e) {
-            throw xmlWriter.sendContentError_Error("While parsing start element <"+qName+"> with atts="+toString(attributes)+": "+e.getMessage(), e);
+            throw xmlWriter.sendContentError_Error("While parsing start element <"+qName+"> with atts="+toString(attributes)+": "+e.getMessage(), e, null);
         }
     }
 
