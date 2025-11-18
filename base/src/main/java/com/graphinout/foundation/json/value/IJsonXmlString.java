@@ -66,6 +66,7 @@ public interface IJsonXmlString extends IJsonPrimitive {
     static IJsonXmlString ofJsonValue(IJsonValue jsonValue) {
         return switch (jsonValue.jsonType()) {
             case XmlString -> (IJsonXmlString) jsonValue;
+            case Object -> ofJsonObject(jsonValue.asObject());
             case String -> IJsonXmlString.ofPlainString(jsonValue.factory(), jsonValue.asString());
             case Boolean, Number -> IJsonXmlString.ofPlainString(jsonValue.factory(), jsonValue.toJsonString());
             default ->
