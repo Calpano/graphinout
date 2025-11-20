@@ -49,7 +49,7 @@ public class DotReaderTest extends AbstractReaderTest {
                 InputSource inputSource = SingleInputSourceOfString.of(resource.getPath(), content);
                 DotReader.readToCjJson(inputSource);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("while parsing "+resource.getPath(), e);
             }
         });
     }

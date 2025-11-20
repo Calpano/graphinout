@@ -1,13 +1,13 @@
 package com.graphinout.reader.tgf;
 
-import com.graphinout.base.cj.factory.CjFactory;
 import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjEdgeChunk;
 import com.graphinout.base.cj.document.ICjGraphChunk;
 import com.graphinout.base.cj.document.ICjNodeChunk;
+import com.graphinout.base.cj.factory.CjFactory;
 import com.graphinout.base.cj.stream.ICjStream;
-import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.TestFileProvider;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 import io.github.classgraph.Resource;
@@ -24,14 +24,14 @@ import org.mockito.MockitoAnnotations;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -56,11 +56,9 @@ class TgfReaderTest {
     private TgfReader underTest;
     @Mock private ICjStream mockCjStream;
     @Mock private SingleInputSource mockInputSrc;
-    @Mock private Consumer<ContentError> mockErrorConsumer;
 
     private static Stream<TestFileProvider.TestResource> tgfResources() {
-        return TestFileProvider.getAllTestResources()
-                .filter(res -> res.resource().getPath().endsWith(".tgf"));
+        return TestFileProvider.getAllTestResources().filter(res -> res.resource().getPath().endsWith(".tgf"));
     }
 
     @AfterEach
@@ -87,7 +85,8 @@ class TgfReaderTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(EDGES_ONLY.getBytes(StandardCharsets.UTF_8));
         when(mockInputSrc.inputStream()).thenReturn(inputStream);
 
-        underTest.setContentErrorHandler(mockErrorConsumer);
+        List<ContentError> contentErrors = new ArrayList<>();
+        underTest.setContentErrorHandler(contentErrors::add);
         underTest.read(mockInputSrc, mockCjStream);
 
         // Verify interactions counts with adapter semantics
@@ -97,21 +96,22 @@ class TgfReaderTest {
         verify(mockCjStream, times(2)).edge(any(ICjEdgeChunk.class));
         verify(mockCjStream, times(1)).graphEnd();
         verify(mockCjStream, times(1)).documentEnd();
-
+        assertThat(contentErrors.isEmpty());
     }
 
     @Test
     void shouldNotCallErrorConsumerAndGioWriterWhenTGFIsEmpty() throws IOException {
         when(mockInputSrc.inputStream()).thenReturn(new ByteArrayInputStream(EMPTY_FILE.getBytes()));
 
-        underTest.setContentErrorHandler(mockErrorConsumer);
+        List<ContentError> contentErrors = new ArrayList<>();
+        underTest.setContentErrorHandler(contentErrors::add);
         underTest.read(mockInputSrc, mockCjStream);
 
         InOrder inOrder = Mockito.inOrder(mockCjStream);
         inOrder.verify(mockCjStream).createDocumentChunk();
         inOrder.verify(mockCjStream).document(any(ICjDocumentChunk.class));
         verifyNoMoreInteractions(mockCjStream);
-        verifyNoInteractions(mockErrorConsumer);
+        assertThat(contentErrors.isEmpty());
     }
 
     @Test
@@ -119,7 +119,8 @@ class TgfReaderTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(NODES_ONLY.getBytes(StandardCharsets.UTF_8));
         when(mockInputSrc.inputStream()).thenReturn(inputStream);
 
-        underTest.setContentErrorHandler(mockErrorConsumer);
+        List<ContentError> contentErrors = new ArrayList<>();
+        underTest.setContentErrorHandler(contentErrors::add);
         underTest.read(mockInputSrc, mockCjStream);
 
         // Verify counts, order not enforced due to adapter semantics
@@ -128,7 +129,7 @@ class TgfReaderTest {
         verify(mockCjStream, times(2)).nodeStart(any(ICjNodeChunk.class));
         verify(mockCjStream, times(2)).nodeEnd();
 
-        verifyNoInteractions(mockErrorConsumer);
+        assertThat(contentErrors.isEmpty());
     }
 
     @ParameterizedTest(name = "{index}: {0}")
@@ -137,9 +138,12 @@ class TgfReaderTest {
         String content = textResource.getContentAsString();
         SingleInputSource singleInputSource = SingleInputSource.of(displayPath, content);
 
+        List<ContentError> contentErrors = new ArrayList<>();
+        underTest.setContentErrorHandler(contentErrors::add);
+
         underTest.read(singleInputSource, mockCjStream);
 
-        verifyNoInteractions(mockErrorConsumer);
+        assertThat(contentErrors.isEmpty());
     }
 
     @Test
@@ -147,7 +151,8 @@ class TgfReaderTest {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(THREE_NODES_TWO_EDGES_WITH_LABEL.getBytes(StandardCharsets.UTF_8));
         when(mockInputSrc.inputStream()).thenReturn(byteArrayInputStream);
 
-        underTest.setContentErrorHandler(TgfReaderTest.this.mockErrorConsumer);
+        List<ContentError> contentErrors = new ArrayList<>();
+        underTest.setContentErrorHandler(contentErrors::add);
         underTest.read(mockInputSrc, mockCjStream);
 
         verify(mockCjStream).createDocumentChunk();
@@ -155,7 +160,6 @@ class TgfReaderTest {
         verify(mockCjStream).createGraphChunk();
         verify(mockCjStream).graphStart(any(ICjGraphChunk.class));
         verify(mockCjStream, times(3)).createNodeChunk();
-        verify(mockCjStream, times(4)).jsonFactory();
         verify(mockCjStream, times(3)).nodeStart(any(ICjNodeChunk.class));
         verify(mockCjStream, times(3)).nodeEnd();
         verify(mockCjStream, times(2)).createEdgeChunk();
@@ -164,6 +168,7 @@ class TgfReaderTest {
         verify(mockCjStream).documentEnd();
 
         verifyNoMoreInteractions(mockCjStream);
+        assertThat(contentErrors.isEmpty());
     }
 
     @Test

@@ -15,6 +15,7 @@ import com.graphinout.foundation.json.writer.impl.DelegatingJsonWriter;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.output.InMemoryOutputSink;
 import com.graphinout.foundation.output.OutputSink;
+import com.graphinout.foundation.util.ThrowingConsumer;
 import io.github.classgraph.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
@@ -58,7 +59,7 @@ public class ReaderTests {
         return cjStream;
     }
 
-    public static void forEachReadableResource(GioReader gioReader, Consumer<Resource> resourceConsumer) {
+    public static void forEachReadableResource(GioReader gioReader, ThrowingConsumer<Resource,RuntimeException> resourceConsumer) {
         TestFileProvider.getAllTestResources() //
                 .filter(tr -> ReaderTests.hasReadableFileExtension(gioReader, tr.resource().getPath())) //
                 .forEach(tr -> resourceConsumer.accept(tr.resource()));

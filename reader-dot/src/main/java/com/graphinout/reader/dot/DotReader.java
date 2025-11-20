@@ -37,7 +37,7 @@ public class DotReader implements GioReader {
         dotReader.read(inputSource, cjStream2CjWriter);
 
         String json = json2StringWriter.jsonString();
-        SingleInputSourceOfString jsonInputSource = new SingleInputSourceOfString("parsed", json);
+        SingleInputSourceOfString jsonInputSource = new SingleInputSourceOfString(inputSource.name() +"-parsed", json);
         assert CjValidator.isValidCjCanonical(jsonInputSource);
         return json;
     }

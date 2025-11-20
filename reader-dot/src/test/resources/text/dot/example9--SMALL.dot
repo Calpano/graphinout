@@ -1,0 +1,10 @@
+digraph AAA {
+  subgraph cluster_BBB {
+    subgraph cluster_CCC {
+      a;
+      subgraph cluster_DDD {
+         b;
+      }
+    }
+  }
+}

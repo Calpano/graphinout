@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
+import static com.google.common.truth.Truth.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class DotTextReaderTest {
@@ -62,6 +63,12 @@ class DotTextReaderTest {
     void setUp() {
         this.underTest = new DotReader();
         this.cjStream = new NoopCjStream();
+    }
+
+    @Test
+    void testExample9() throws IOException {
+        TestFileProvider.TestResource res = TestFileProvider.resourceByPath("text/dot/example9--SMALL.dot");
+        shouldWorkAsIntended(res.asPath(),res.resource());
     }
 
     @ParameterizedTest

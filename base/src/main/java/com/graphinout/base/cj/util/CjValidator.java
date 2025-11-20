@@ -47,19 +47,23 @@ public class CjValidator {
         // read input source to string
         String json = inputSource.asSingle().getContentAsUtf8String();
 
-        Set<ValidationMessage> assertions = schema.validate(json, InputFormat.JSON, executionContext -> {
-            // By default since Draft 2019-09 the format keyword only generates annotations and not assertions
-            executionContext.getExecutionConfig().setFormatAssertionsEnabled(true);
-        });
-
-        if(!assertions.isEmpty()) {
-            log.warn("Failed to validate:\n----\n"+json+"\n----\n");
-            for (ValidationMessage assertion : assertions) {
-                System.err.println(assertion);
+        try {
+            Set<ValidationMessage> assertions = schema.validate(json, InputFormat.JSON, executionContext -> {
+                // By default since Draft 2019-09 the format keyword only generates annotations and not assertions
+                executionContext.getExecutionConfig().setFormatAssertionsEnabled(true);
+            });
+            if(!assertions.isEmpty()) {
+                log.warn("Failed to validate:\n----\n"+json+"\n----\n");
+                for (ValidationMessage assertion : assertions) {
+                    System.err.println(assertion);
+                }
             }
+
+            return assertions.isEmpty();
+        } catch (Throwable t) {
+            throw new RuntimeException("while validating "+inputSource.name(),t);
         }
 
-        return assertions.isEmpty();
     }
 
     private static final Logger log = getLogger(CjValidator.class);

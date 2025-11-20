@@ -281,6 +281,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
         return o instanceof CjType && ((CjType) o).isArray() || o instanceof JsonType && ((JsonType) o) == JsonType.Array;
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T pop() {
         return (T) stack.pop();
     }
@@ -289,7 +290,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
         Object o = stack.pop();
         assert o instanceof CjType : "Expected " + cjType + " but found " + o + ".";
         CjType x = (CjType) o;
-        assert x == cjType;
+        assert x == cjType : "Expected '" + cjType + "' but found '" + x + "'.";
     }
 
     private void pop(Object... expectedCjTypes) {
