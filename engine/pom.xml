@@ -5,22 +5,22 @@
     <parent>
         <artifactId>graphinout</artifactId>
         <groupId>com.graphinout</groupId>
-        <version>0.1.5</version>
+        <version>0.1.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>engine</artifactId>
     <name>engine</name>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.5</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.1.5</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.1.5</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-dot</artifactId><version>0.1.5</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gml</artifactId><version>0.1.5</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.1.5</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-jgrapht</artifactId><version>0.1.5</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tgf</artifactId><version>0.1.5</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.1.5</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.6-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.1.6-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.1.6-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-dot</artifactId><version>0.1.6-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gml</artifactId><version>0.1.6-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.1.6-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-jgrapht</artifactId><version>0.1.6-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tgf</artifactId><version>0.1.6-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.1.6-SNAPSHOT</version></dependency>
         <!-- test -->
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
@@ -29,18 +29,18 @@
         <dependency>
             <groupId>com.graphinout</groupId>
             <artifactId>base</artifactId>
-            <version>0.1.5</version>
+            <version>0.1.6-SNAPSHOT</version>
             <type>test-jar</type>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
         <!-- depend on all reader projects you want to test -->
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tgf</artifactId><version>0.1.5</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-jgrapht</artifactId><version>0.1.5</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gml</artifactId><version>0.1.5</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.1.5</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.1.5</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.1.5</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tgf</artifactId><version>0.1.6-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-jgrapht</artifactId><version>0.1.6-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gml</artifactId><version>0.1.6-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.1.6-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.1.6-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.1.6-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
 
     </dependencies>
 
