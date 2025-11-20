@@ -162,8 +162,12 @@ public class GioEngineCore {
         );
     }
 
-    public @Nullable GioWriter getWriter(String fileFormatId) throws IOException {
+    public @Nullable GioWriter getWriter(String fileFormatId) {
         return writers.stream().filter(writer -> writer.fileFormat().id().equals(fileFormatId)).findFirst().orElse(null);
+    }
+
+    public @Nullable GioReader getReader(String fileFormatId) {
+        return readers.stream().filter(writer -> writer.fileFormat().id().equals(fileFormatId)).findFirst().orElse(null);
     }
 
     public List<GioReader> readers() {

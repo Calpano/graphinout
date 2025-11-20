@@ -42,17 +42,5 @@ public interface OutputSink extends AutoCloseable {
         }
     }
 
-    /**
-     * Users need to close {@link Writer} after usage.
-     *
-     * @return a writer on this {@link OutputSink}
-     */
-    default Writer writerUtf8() {
-        try (OutputStream out = outputStream(); OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
-            return writer;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 }
