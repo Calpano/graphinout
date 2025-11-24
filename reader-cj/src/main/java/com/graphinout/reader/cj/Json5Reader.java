@@ -1,4 +1,4 @@
-package com.graphinout.foundation.json5;
+package com.graphinout.reader.cj;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -10,6 +10,7 @@ import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.foundation.json5.Json5Preprocessor;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;

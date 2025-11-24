@@ -10,7 +10,7 @@ import com.graphinout.base.gio.GioService;
 import com.graphinout.base.gio.GioWriter;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
-import com.graphinout.foundation.json5.Json5Reader;
+import com.graphinout.reader.cj.Json5Reader;
 import com.graphinout.foundation.output.OutputSink;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.writer.Xml2StringWriter;

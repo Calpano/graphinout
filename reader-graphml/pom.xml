@@ -11,16 +11,24 @@
     <name>reader-graphml</name>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.7-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.7-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.7-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.7-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
+
         <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId></dependency>
         <!-- test -->
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.1.7-SNAPSHOT</version><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
-                    <classifier>tests</classifier>
-                    <type>test-jar</type>
-                    <scope>test</scope>
-        </dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><scope>test</scope></dependency>

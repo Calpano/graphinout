@@ -75,6 +75,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>${logback-classic-version}</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.7-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId>
+                <classifier>tests</classifier>
+                <type>test-jar</type>
+                <scope>test</scope>
+                <version>0.1.7-SNAPSHOT</version>
+            </dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.7-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
                 <classifier>tests</classifier>
@@ -89,6 +96,7 @@
             <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.17.0</version></dependency>
             <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><version>4.8.157</version></dependency>
             <dependency><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>4.7.3</version></dependency>
+            <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId><version>1.0.0</version></dependency>
             <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>${junit-jupiter.version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><version>${mockito-core-version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><version>${mockito-junit-jupiter-version}</version><scope>test</scope></dependency>

@@ -1,6 +1,5 @@
 package com.graphinout.foundation.util.path;
 
-import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.foundation.json.value.IJsonArray;
 import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonValue;
@@ -33,12 +32,6 @@ public class PathResolver {
         // add JSON adapters
         registerMap(IJsonObject.class, IJsonValue::asMapLike);
         registerList(IJsonArray.class, IJsonValue::asListLike);
-        registerMap(ICjData.class, data -> {
-            IJsonValue jsonValue = data.jsonValue();
-            if (jsonValue == null) return IMapLike.EMPTY;
-            return jsonValue.asMapLike();
-        });
-
     }
 
     /**
@@ -121,7 +114,7 @@ public class PathResolver {
         List<Object> current = List.of(root);
         while (!current.isEmpty()) {
             current = getDirectChildrenOfList(typeAdapters(), current);
-            for(Object child : current) {
+            for (Object child : current) {
                 Result childFull = Result.ofStep("..", child);
                 anyChildFull.add(childFull);
             }

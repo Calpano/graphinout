@@ -1,8 +1,8 @@
 package com.graphinout.reader.graphml.elements;
 
 import com.graphinout.reader.graphml.elements.builder.GraphmlEndpointBuilder;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 

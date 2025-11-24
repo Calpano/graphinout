@@ -1,6 +1,7 @@
 package com.graphinout.reader.tripletext;
 
-import org.jetbrains.annotations.Nullable;
+
+import org.jspecify.annotations.Nullable;
 
 public class Triple<S, P, O> {
 

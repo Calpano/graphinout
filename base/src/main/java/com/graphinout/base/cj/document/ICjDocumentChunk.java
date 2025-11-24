@@ -1,8 +1,7 @@
 package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.writer.ICjWriter;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 
 /**

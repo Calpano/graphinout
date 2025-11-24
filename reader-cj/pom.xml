@@ -13,11 +13,19 @@
     <description>Reader for Connected JSON</description>
 
     <dependencies>
-        <dependency>
-            <groupId>com.graphinout</groupId>
-            <artifactId>base</artifactId>
-            <version>0.1.7-SNAPSHOT</version>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.7-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.7-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.7-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.7-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <!-- until we replace GIO by CJ -->
 <!--        <dependency>-->
 <!--            <groupId>com.graphinout</groupId>-->
@@ -60,6 +68,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind-version}</version>
-        </dependency>
+        </dependency><dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.7-SNAPSHOT</version><scope>compile</scope></dependency>
     </dependencies>
 </project>

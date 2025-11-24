@@ -1,4 +1,4 @@
-package com.graphinout.foundation.json.json5;
+package com.graphinout.reader.cj;
 
 import com.graphinout.base.cj.factory.CjFactory;
 import com.graphinout.base.cj.document.ICjDocumentChunk;
@@ -9,7 +9,6 @@ import com.graphinout.base.cj.factory.ICjFactory;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.json5.Json5Reader;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

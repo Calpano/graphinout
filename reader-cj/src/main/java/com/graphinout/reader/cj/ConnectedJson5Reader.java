@@ -8,7 +8,6 @@ import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
 import com.graphinout.foundation.json5.Json5Preprocessor;
-import com.graphinout.foundation.json5.Json5Reader;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class ConnectedJson5Reader implements GioReader {
     public static final String FORMAT_ID = "connected-json5";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Connected JSON5 Format", //
             ".cj.json5", ".con.json5", ".connected.json5");
-    private static final Logger log = LoggerFactory.getLogger(Json5Reader.class);
+    private static final Logger log = LoggerFactory.getLogger(ConnectedJson5Reader.class);
     private final ConnectedJsonReader cjReader = new ConnectedJsonReader();
 
 
