@@ -63,7 +63,7 @@ Users:: can re-use their existing data effortlessly using almost any format thei
 
 
 == Usage
-{gio} can be used as a Java library to read format X and write to a GraphML file or `Writer`.
+{gio} can be used as a Java library to read format X (`GioReader`) and write format Y (`GioWriter`).
 See `GioEngineCore` as currently the best entry point.
 
 You can use this lib in the free online service for graph conversion running at https://graphinout.com
