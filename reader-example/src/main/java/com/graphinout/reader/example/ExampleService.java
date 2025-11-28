@@ -1,6 +1,6 @@
 package com.graphinout.reader.example;
 
-import com.graphinout.base.GioService;
+import com.graphinout.base.gio.GioService;
 import com.graphinout.base.gio.GioReader;
 
 import java.util.Arrays;

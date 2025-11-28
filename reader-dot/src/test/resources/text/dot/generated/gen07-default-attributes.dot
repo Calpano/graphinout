@@ -1,0 +1,9 @@
+digraph Defaults {
+  graph [pad="0.5", nodesep="0.25"];
+  node [shape=box, style=filled, fillcolor=lightgray];
+  edge [weight=2, minlen=2];
+
+  A; B; C;
+  A -> B;
+  B -> C [weight=3];
+}

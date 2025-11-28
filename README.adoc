@@ -1,4 +1,4 @@
-= GraphInOut: Graph In -> Graph Out
+= 🦋 GraphInOut: Graph In -> Graph Out
 :gio: GraphInOut
 :toc:
 
@@ -39,6 +39,10 @@ Check the latest version at https://central.sonatype.com/artifact/com.graphinout
     <version>0.1.6</version>
 </dependency>
 ----
+
+****
+https://GraphInOut.com[Convert any graph file format to GraphML and Connected JSON (CJ) online for free with 🦋 GraphInOut.com]
+****
 
 == Purpose
 There are many graph toolkits, graph databases and graph-based apps, which all implement their importers and map incoming graph to their internal APIs.
@@ -83,6 +87,9 @@ You found a bug or want a feature? Please https://github.com/Calpano/graphinout/
 == Background: Introduction to Graphs
 A graph is first a mathematical concept.
 As it turns out, it is rather a family of concepts.
+Graphs can be directed or undirected.
+Their edges can have two endpoints (bi-edges) or many endpoints (hyper-edges).
+
 A good introduction into the general idea can be found in https://en.wikipedia.org/wiki/Graph_theory[Wikipedia on Graph Theory].
 In computer science, a graph is an abstract data type, see https://en.wikipedia.org/wiki/Graph_(abstract_data_type)[Wikipedia].
 An exhausting https://en.wikipedia.org/wiki/Glossary_of_graph_theory[glossary of graph theory] explains all terms with a special meaning in a graph context.

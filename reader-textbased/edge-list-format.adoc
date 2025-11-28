@@ -1,0 +1,100 @@
+= Edge List Format
+
+A simple text-based format for directed bi-graphs.
+
+NOTE: The Edge List format does not have a single, official, centralized specification.
+It is not a formal standard like GraphML (which has an XML schema) or JSON (which has an RFC). Instead, it's a de facto standard, meaning it has become a common format simply through widespread use and mutual agreement.
+
+== Format
+https://networkx.org/documentation/stable/reference/readwrite/edgelist.html[Edge List in NetworkX documentation]:
+____
+The multi-line adjacency list format is useful for graphs with nodes that can be meaningfully represented as strings. With the edgelist format simple edge data can be stored but node or graph data is not. There is no way of representing isolated nodes unless the node has a self-loop edge.
+____
+
+== Tools
+NetworkX (Python library)::
+Specified as https://networkx.org/documentation/stable/reference/readwrite/edgelist.html[Edge List] in NetworkX documentation. NetworkX can read and write the format.
+
+Gephi (Visualization tool)::
+Gephi's "official" way of importing edge lists is through its "Import Spreadsheet" feature. Its documentation specifies that it expects a CSV (Comma-Separated Values) file with columns explicitly labeled Source and Target. It can also have optional columns like Weight or Type (for directed/undirected).
+
+igraph (R and Python library)::
+The read_graph function in igraph has a format="edgelist" option. Its documentation specifies its rules, which include using zero-based vertex IDs and space delimiters.
+
+Pajek (.NET, .edge)::
+The Pajek network analysis software has its own variations. Its `.edge` format is a simple edge list. The `.net` format is more complex, starting with a *Vertices* block and then an *Edges* or *Arcs* block.
+
+
+.Example
+The graph with edges a-b, a-c, d-e can be represented as the following adjacency list (anything following the `#` in a line is a comment):
+
+.Node pairs with no data:
+[source,edgelist]
+----
+1 2
+----
+
+.Corresponding CJ
+****
+[source,connected json]
+----
+{ "graph":[ "edges":[
+
+    { "endpoints": [
+        { "direction": "in", "node":  "1"},
+        { "direction": "out", "node":  "2"}
+      ]}
+
+] ] }
+----
+****
+
+
+.Python dictionary as data:
+[source,edgelist]
+----
+1 2 {'weight':7, 'color':'green'}
+----
+
+.Corresponding CJ
+****
+[source,connected json]
+----
+{ "graph":[ "edges":[
+
+    { "endpoints": [
+        { "direction": "in", "node":  "1"},
+        { "direction": "out", "node":  "2"}
+      ],
+      "data": { "weight":7, "color":"green" }
+    }
+}
+
+] ] }
+----
+****
+
+
+.Arbitrary data:
+[source,edgelist]
+----
+1 2 7 green
+----
+
+.Corresponding CJ
+****
+[source,connected json]
+----
+{ "graph":[ "edges":[
+
+    { "endpoints": [
+        { "direction": "in", "node":  "1"},
+        { "direction": "out", "node":  "2"}
+      ],
+      "data": "7 green"
+    }
+}
+
+] ] }
+----
+****

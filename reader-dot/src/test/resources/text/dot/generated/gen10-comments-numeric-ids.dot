@@ -1,0 +1,17 @@
+strict digraph "G Name" {
+  // line comment
+  # hash comment
+  /* block comment */
+
+  graph [rankdir=LR; ratio=1];
+  node [shape=box; style=filled; fillcolor=white];
+
+  1; "two two"; 0.5;
+
+  { // anonymous subgraph
+    1 -> "two two" [label="edge AB"]; /* e1 */
+    1 -> 0.5 [weight=2]; // e2
+  }
+
+  1 -> { "two two" 0.5 } -> 1;
+}

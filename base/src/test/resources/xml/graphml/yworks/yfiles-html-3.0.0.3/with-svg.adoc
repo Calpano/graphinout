@@ -1,13 +1,13 @@
 This is an interesting bug.
 
-The file `with-svg--INVALIDxml.graphml.xml` causes errors when parsing.
-Even the much simpler `with-svg-SIMPLER--INVALIDxml.graphml.xml` fails to be parsed.
+The file `with-svg.graphml.xml` causes errors when parsing.
+Even the much simpler `with-svg-SIMPLER.graphml.xml` fails to be parsed.
 Surprisingly, the even simpler `with-svg-SIMPLER2.graphml.xml` works correctly.
 
 .Contents of `with-svg-SIMPLER--INVALIDxml.graphml.xml`
 [source,xml]
 ----
-include::with-svg-SIMPLER--INVALIDxml.graphml.xml[]
+include::with-svg-SIMPLER.graphml.xml[]
 ----
 
 .Contents of `with-svg-SIMPLER2.graphml.xml`

@@ -1,0 +1,24 @@
+= Manual Maven Release Process
+
+.Step 1
+Prepare the release with
+
+----
+mvn release:prepare -DpushChanges=false -P central-deploy,sign-for-sonar
+----
+
+That creates those release commits but does not yet push that into your GitHub project.
+Using local profiles.
+
+.Step 2
+Perform the release with
+
+----
+mvn release:perform -DlocalCheckout=true -DdeployAtEnd=true -P central-deploy,sign-for-sonar
+----
+
+.Step 3
+Push the release tag and commits into the GitHub project.
+
+.Step 4
+Manually deploy from https://central.sonatype.com/publishing/deployments[] -- requires credentials.

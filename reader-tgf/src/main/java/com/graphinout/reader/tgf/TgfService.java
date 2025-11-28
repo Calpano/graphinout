@@ -1,9 +1,9 @@
 package com.graphinout.reader.tgf;
 
-import com.graphinout.base.GioService;
 import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.gio.GioService;
+import com.graphinout.base.gio.GioWriter;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class TgfService implements GioService {
@@ -15,7 +15,12 @@ public class TgfService implements GioService {
 
     @Override
     public List<GioReader> readers() {
-        return Arrays.asList(new TgfReader());
+        return List.of(new TgfReader());
+    }
+
+    @Override
+    public List<GioWriter> writers() {
+        return List.of(new TgfWriter());
     }
 
 }

@@ -1,0 +1,6 @@
+digraph G {
+  graph [rankdir=LR, ratio=1.2];
+  A [label="Node A", shape=box, width=1.5, height=.75, color=blue];
+  B [label="Node B", shape=ellipse, style=filled, fillcolor="lightgray"];
+  A -> B [label="A to B", weight=2, minlen=3];
+}

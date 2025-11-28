@@ -1,0 +1,81 @@
+{
+  "ocif": "https://spec.canvasprotocol.org/v0.6",
+  "nodes": [
+    {
+      "id": "start-node",
+      "position": [100, 200],
+      "size": [100, 50],
+      "resource": "start-resource",
+      "data": [
+        {
+          "type": "@ocif/node/rect",
+          "strokeWidth": 2,
+          "strokeColor": "#0066cc",
+          "fillColor": "#e6f2ff"
+        }
+      ]
+    },
+    {
+      "id": "end-node",
+      "position": [400, 200],
+      "size": [100, 50],
+      "resource": "end-resource",
+      "data": [
+        {
+          "type": "@ocif/node/rect",
+          "strokeWidth": 2,
+          "strokeColor": "#0066cc",
+          "fillColor": "#e6f2ff"
+        }
+      ]
+    },
+    {
+      "id": "arrow-node",
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "strokeWidth": 3,
+          "strokeColor": "#ff6b6b",
+          "start": [200, 225],
+          "end": [350, 225],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "connection-rel"
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "connection-rel",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "start": "start-node",
+          "end": "end-node"
+        }
+      ],
+      "node": "arrow-node"
+    }
+  ],
+  "resources": [
+    {
+      "id": "start-resource",
+      "representations": [
+        {
+          "mimeType": "text/plain",
+          "content": "Start Node"
+        }
+      ]
+    },
+    {
+      "id": "end-resource",
+      "representations": [
+        {
+          "mimeType": "text/plain",
+          "content": "End Node"
+        }
+      ]
+    }
+  ]
+}

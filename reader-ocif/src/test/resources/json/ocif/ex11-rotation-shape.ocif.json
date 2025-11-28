@@ -1,0 +1,7 @@
+{
+  "nodes": [
+    {"id": "rect", "position": [50, 50], "size": [80, 40], "shape": "rectangle", "rotation": 0},
+    {"id": "ellipse", "position": [200, 120], "size": [60, 60], "shape": "ellipse", "rotation": 30},
+    {"id": "triangle", "position": [320, 80], "size": [50, 50], "shape": "triangle", "rotation": -15}
+  ]
+}

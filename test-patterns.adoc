@@ -1,0 +1,61 @@
+= Test Patterns
+
+For a graph format called 'AAA':
+
+**AAA Parser and Converter: Design and Testing Strategy**
+
+This document outlines the components and testing methodology for a system designed to parse *AAA* format files into an intermediate *CJ* representation and convert them back.
+
+'''
+
+== 1. Components
+
+=== 1.1. AAA-to-CJ Parser
+A parser will be developed to read text files in the *AAA* syntax. This parser will process the input and generate an in-memory or stream-based representation, designated as *CJ*.
+
+=== 1.2. CJ-to-AAA Converter
+A converter will be created to take a *CJ* document (or stream) as input and generate a corresponding text file in the *AAA* syntax as output.
+
+=== 1.3. AAA Normalizer
+Due to technical constraints, a direct round-trip conversion (stem:[AAA \rightarrow CJ \rightarrow AAA]) does not produce a file that is byte-for-byte identical to the original.
+
+To facilitate accurate testing, a *normalizer* utility is required. This tool will read any file in *AAA* format and output a "canonical" version of it. This canonical syntax ensures that two semantically identical *AAA* files will produce an identical output file after normalization.
+
+'''
+
+== 2. Testing Plan
+
+The system will be validated using a two-phased testing approach.
+
+=== 2.1. Phase 1: Parser Stability Test
+Objective::
+Ensure the *AAA-to-CJ Parser* is robust and can handle all valid *AAA* files without crashing.
+
+Procedure::
+. Feed the entire corpus of existing *AAA* files to the parser.
+. Monitor the parser for any crashes, unhandled exceptions, or processing failures.
+
+Success Criteria::
+* The parser successfully processes all files without critical errors.
+
+=== 2.2. Phase 2: Round-Trip Conversion Test
+Objective::
+Verify that the full conversion pipeline (stem:[AAA \rightarrow CJ \rightarrow AAA]) preserves the semantic integrity of the data.
+
+Procedure::
+. *Input:* Select an original file (+original.aaa+).
+. *Parse:* Use the *AAA-to-CJ Parser* to convert the file:
++
++original.aaa+ → +intermediate.cj+
++
+. *Convert:* Use the *CJ-to-AAA Converter* to convert it back:
++
++intermediate.cj+ → +roundtrip.aaa+
++
+. *Normalize:* Use the *AAA Normalizer* on *both* the original and the round-tripped files:
+** +original.aaa+ → +original.canonical.aaa+
+** +roundtrip.aaa+ → +roundtrip.canonical.aaa+
+. *Compare:* Perform a file comparison (e.g., +diff+) on the two canonical outputs.
+
+Success Criteria::
+* The two canonical files (+original.canonical.aaa+ and +roundtrip.canonical.aaa+) must be identical.

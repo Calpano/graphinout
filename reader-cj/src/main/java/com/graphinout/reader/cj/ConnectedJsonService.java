@@ -1,9 +1,9 @@
 package com.graphinout.reader.cj;
 
-import com.graphinout.base.GioService;
 import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.gio.GioService;
+import com.graphinout.base.gio.GioWriter;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class ConnectedJsonService implements GioService {
@@ -15,7 +15,12 @@ public class ConnectedJsonService implements GioService {
 
     @Override
     public List<GioReader> readers() {
-        return Arrays.asList(new ConnectedJsonReader(), new ConnectedJson5Reader());
+        return List.of(new ConnectedJsonReader(), new ConnectedJson5Reader());
+    }
+
+    @Override
+    public List<GioWriter> writers() {
+        return List.of(new ConnectedJsonWriter());
     }
 
 }

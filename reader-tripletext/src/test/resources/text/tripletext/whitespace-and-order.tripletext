@@ -1,0 +1,6 @@
+   b   --   label   --   Bob
+
+# Blank lines and comments/non-matching lines should be ignored by the normalizer
+
+ a--knows--b
+ a   --   label   --   Alice

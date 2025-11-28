@@ -1,0 +1,88 @@
+= reader-ocif Code Style and Quality Issues
+:revdate: 2025-10-22
+
+This audit checks the reader-ocif module against the conventions described in reader-cj/code-style.adoc (2025-10-22). Findings are grouped by rule/topic, with concrete file references and brief rationales.
+
+== Language and Libraries (Java version compliance)
+
+- Use of Java 9+ Collections factory methods (Set.of) — violates guideline “Java 8+”.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:81,115
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/document/OcifDocumentParser.java:116,194,213,233,239,247,256,267,276,293,303,312,326,332
+- Use of local variable type inference (var) — requires Java 10+, violates “Java 8+”.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/Ocif2CjStream.java:57
+- Use of modern switch (arrow labels “->”) — requires Java 14+, violates “Java 8+”.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:139–166
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/document/OcifDocumentParser.java:198–286 (multiple cases)
+
+== Imports
+
+- Wildcard imports — guideline says “Use explicit imports; avoid wildcard imports”.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/document/OcifDocumentParser.java:
+    - com.graphinout.foundation.json.value.*
+    - com.graphinout.reader.ocif.document.extension.*
+    - java.util.*
+
+== Error Handling and Contracts
+
+- Do not silently continue on invalid input; “Fail fast and translate to IOException; report via errorHandler before throwing”. Current behavior ends the document without reporting an error.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:61–66
+    - If JSON root is null or not an object, it calls cjStream.documentEnd() and returns without invoking errorHandler or throwing.
+- Use of assert for runtime contract — guideline prefers explicit guard clauses with exceptions.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:51
+    - assert inputSource instanceof SingleInputSource; should be a concrete check with IllegalArgumentException (asserts may be disabled in production).
+- Unknown relation types are only logged; consider also reporting via errorHandler with Warn level to make validation observable to callers.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:165
+
+== Logging
+
+- Per the guide: “Use SLF4J with a private static final logger per class.” OcifReader relies on GioReader.log (a shared interface logger) rather than declaring its own per-class Logger.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:165 (log.warn)
+
+== Naming and Constants
+
+- Readers are expected to expose both FORMAT_ID and FORMAT constants (see examples like TgfReader). OcifReader defines only FORMAT.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:33
+
+== Nullability and Optionality
+
+- Fields that may be null should be annotated with @Nullable (javax.annotation.Nullable) as per the guide.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:34 — errorHandler may be null; missing @Nullable annotation.
+  - Model classes expose many optional fields without @Nullable annotations:
+    - reader-ocif/src/main/java/com/graphinout/reader/ocif/document/OcifNode.java:31–39,56–66 (id, position, size, resource, resourceFit, data, rotation, relation, extras)
+    - reader-ocif/src/main/java/com/graphinout/reader/ocif/document/OcifRelation.java:25–41 (id, data, node, extras)
+    - reader-ocif/src/main/java/com/graphinout/reader/ocif/document/OcifResource.java:18 (id)
+    - reader-ocif/src/main/java/com/graphinout/reader/ocif/document/OcifRepresentation.java:16–18 (location, mimeType, content)
+    - reader-ocif/src/main/java/com/graphinout/reader/ocif/document/OcifSchema.java:18–21 (uri, schema, location, name)
+    - Extension classes under reader-ocif/src/main/java/com/graphinout/reader/ocif/document/extension/... (numerous optional fields)
+
+== Formatting and Structure
+
+- Overall formatting (indentation/braces) is consistent; however, keep line length ≤ 120 characters and group members by constants → fields → constructors → methods. Most classes follow this, no blocking issues detected here.
+
+== Code Quality (dead code and minor issues)
+
+- Unused field json2StringWriter — a Json2StringWriter is instantiated as a field but not used; resultOcifJsonString() creates a separate writer instance.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/Ocif2CjStream.java:27 (field); 168–175 (method uses local writer instead)
+- Potential CJ stream contract inconsistency for early-return path: documentEnd() is called without a prior documentStart() when JSON root is null.
+  - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:61–66
+
+== Tests (informational)
+
+- Tests exist and cover JSON→CJ→JSON roundtrips and DOM parsing. No explicit violations per style guide were found, but note usage of jdk.jfr.Description annotations (may not be necessary in unit tests).
+  - reader-ocif/src/test/java/com/graphinout/reader/ocif/OcifReaderTest.java
+  - reader-ocif/src/test/java/com/graphinout/reader/ocif/document/OcifDocumentParserTest.java
+
+== Suggested Remediations (non-exhaustive)
+
+- Replace Java 9+/10+/14+ usages with Java 8-compatible code:
+  - Replace Set.of(...) with Collections.unmodifiableSet(new HashSet<>(Arrays.asList(...))) or predeclared constants.
+  - Replace var with explicit types.
+  - Replace arrow-switch with classic switch statements.
+- Replace wildcard imports with explicit imports, especially in OcifDocumentParser.
+- In OcifReader:
+  - Replace assert with explicit type check and throw IllegalArgumentException if not SingleInputSource.
+  - On invalid JSON (null root/object), call errorHandler (if present) with ContentError.ErrorLevel.Error and throw an IOException with context.
+  - Consider declaring a per-class private static final Logger LOGGER = LoggerFactory.getLogger(OcifReader.class) and use it instead of GioReader.log.
+  - Add a FORMAT_ID constant alongside FORMAT for consistency with other readers.
+- Annotate nullable fields and return types with @Nullable across reader and model/extension classes where appropriate.
+- Remove or use the unused json2StringWriter field in Ocif2CjStream.

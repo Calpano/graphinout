@@ -1,14 +1,15 @@
 package com.graphinout.base.gio;
 
-import com.graphinout.base.graphml.gio.Gio2GraphmlWriter;
-import com.graphinout.base.reader.ContentError;
-import com.graphinout.base.reader.GioFileFormat;
-import com.graphinout.base.validation.graphml.ValidatingGraphMlWriter;
-import com.graphinout.base.writer.DelegatingGioWriter;
-import com.graphinout.base.writer.ValidatingGioWriter;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.stream.CjStream2CjWriter;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
+import com.graphinout.base.cj.writer.ValidatingCjWriter;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.InputSource;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -20,13 +21,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public interface GioReader {
 
-    Logger log = getLogger(GioReader.class);
-
-    /**
-     * Set the error handler to the reader. Reader will use it to report errors while parsing. IOExceptions remain
-     * normal IOExceptions.
-     */
-    void errorHandler(Consumer<ContentError> errorHandler);
+    Logger _log = getLogger(GioReader.class);
 
     /**
      * Which file format can this reader read?
@@ -43,20 +38,31 @@ public interface GioReader {
                 valid.set(false);
             }
         };
-        errorHandler(eh);
+        setContentErrorHandler(eh);
         try {
-            GioWriter writer = new DelegatingGioWriter(new ValidatingGioWriter(), new Gio2GraphmlWriter(new ValidatingGraphMlWriter()));
-            read(singleInputSource, writer);
+            ValidatingCjWriter validatingCjWriter = new ValidatingCjWriter();
+            CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(validatingCjWriter);
+            read(singleInputSource, cjStream2CjWriter);
         } catch (Throwable t) {
-            log.warn("Invalid input in {}", singleInputSource.name(), t);
+            _log.warn("Invalid input in {}", singleInputSource.name(), t);
             eh.accept(new ContentError(ContentError.ErrorLevel.Error, t.getMessage(), null));
         }
         return valid.get();
     }
 
+    void read(InputSource inputSource, ICjStream cjStream) throws IOException;
+
+    default @Nullable ICjDocument readToCjDocument(InputSource inputSource) throws IOException {
+        CjWriter2CjDocumentWriter cjStream2CjDocumentWriter = new CjWriter2CjDocumentWriter();
+        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cjStream2CjDocumentWriter);
+        read(inputSource, cjStream2CjWriter);
+        return cjStream2CjDocumentWriter.resultDoc();
+    }
+
     /**
-     * Map all incoming graph structures to the internal GIO model.
+     * Set the error handler to the reader. Reader will use it to report errors while parsing. IOExceptions remain
+     * normal IOExceptions.
      */
-    void read(InputSource inputSource, GioWriter writer) throws IOException;
+    void setContentErrorHandler(Consumer<ContentError> errorHandler);
 
 }

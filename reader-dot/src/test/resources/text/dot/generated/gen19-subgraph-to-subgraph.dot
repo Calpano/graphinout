@@ -1,0 +1,5 @@
+digraph G {
+  subgraph cluster_a { A; }
+  subgraph cluster_b { B; }
+  subgraph cluster_a { A; } -> subgraph cluster_b { B; };
+}

@@ -1,7 +1,0 @@
-= Gio API
-
-`GioWriter` and its helper interfaces define the API for emitting graphs.
-
-== Migration
-GioWriter is replaced by ICjStream
-

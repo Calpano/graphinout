@@ -1,14 +1,13 @@
 package com.graphinout.reader.cj;
 
+import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.gio.GioWriter;
-import com.graphinout.base.reader.ContentError;
-import com.graphinout.base.reader.GioFileFormat;
+import com.graphinout.foundation.input.ContentError;
+import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.InputSource;
 import com.graphinout.foundation.input.SingleInputSource;
 import com.graphinout.foundation.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.json5.Json5Preprocessor;
-import com.graphinout.foundation.json.json5.Json5Reader;
+import com.graphinout.foundation.json5.Json5Preprocessor;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +25,14 @@ public class ConnectedJson5Reader implements GioReader {
 
     public static final String FORMAT_ID = "connected-json5";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Connected JSON5 Format", //
-            ".con.json5", ".connected.json5");
-    private static final Logger log = LoggerFactory.getLogger(Json5Reader.class);
+            ".cj.json5", ".con.json5", ".connected.json5");
+    private static final Logger log = LoggerFactory.getLogger(ConnectedJson5Reader.class);
     private final ConnectedJsonReader cjReader = new ConnectedJsonReader();
 
 
     @Override
-    public void errorHandler(Consumer<ContentError> errorHandler) {
-        this.cjReader.errorHandler(errorHandler);
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        this.cjReader.setContentErrorHandler(errorHandler);
     }
 
     @Override
@@ -42,7 +41,7 @@ public class ConnectedJson5Reader implements GioReader {
     }
 
     @Override
-    public void read(InputSource inputSource, GioWriter writer) throws IOException {
+    public void read(InputSource inputSource, ICjStream writer) throws IOException {
         if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
@@ -62,6 +61,5 @@ public class ConnectedJson5Reader implements GioReader {
 
         cjReader.read(strippedInput, writer);
     }
-
 
 }

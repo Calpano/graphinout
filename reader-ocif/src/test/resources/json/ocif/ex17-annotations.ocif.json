@@ -1,0 +1,9 @@
+{
+  "nodes": [
+    {"id": "n1"}, {"id": "n2"}
+  ],
+  "annotations": [
+    {"type": "note", "target": "n1", "text": "Check this node", "position": [120, 40]},
+    {"type": "highlight", "target": "n2", "style": {"stroke": "#ff0000", "strokeWidth": 3}}
+  ]
+}

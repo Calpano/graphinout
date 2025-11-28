@@ -1,55 +1,38 @@
 package com.graphinout.base.gio;
 
-import com.graphinout.base.reader.Locator;
-import com.graphinout.foundation.json.stream.JsonValueWriter;
-import com.graphinout.foundation.json.stream.JsonWriter;
-import com.graphinout.foundation.xml.XmlWriter;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.cj.writer.CjWriter2CjStream;
+import com.graphinout.foundation.output.OutputSink;
+import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
-import java.net.URL;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * This interface allows pushing parser events as GIO. Usually used with more basic writers like an {@link XmlWriter} or
- * {@link JsonWriter}.
- * <p>
- * Also, implementations of this interface convert GIO into syntaxes like CJ/JSON or GraphML/XML.
- * <p>
- * For large files, we don't want to keep the entire graph object in memory.
+ * One of the most central interfaces in Graphinout. Defines the contract for reading graph data from a file.
  */
-public interface GioWriter extends JsonValueWriter {
+public interface GioWriter {
 
-    void baseUri(String baseUri) throws IOException;
-
-    void data(GioData data) throws IOException;
-
-    void endDocument() throws IOException;
-
-    void endEdge() throws IOException;
-
-    void endGraph(@Nullable URL locator) throws IOException;
-
-    void endNode(@Nullable URL locator) throws IOException;
-
-    void endPort() throws IOException;
-
-    void key(GioKey gioKey) throws IOException;
-
-    /** Receive a {@link Locator}, that can be used to retrieve line:col information about the current parse location () */
-    default void setLocator(Locator locator) {}
-
-    void startDocument(GioDocument document) throws IOException;
-
-    void startEdge(GioEdge edge) throws IOException;
-
-    void startGraph(GioGraph gioGraph) throws IOException;
+    Logger _log = getLogger(GioWriter.class);
 
     /**
-     * May contain #startGraph -- DTD is a bit unclear here whether 1 or multiple graphs are allowed. 1 seems more
-     * plausible.
+     *
+     * @param outputSink
+     * @return a CJ stream which writes the data send as CJ into the {@link #fileFormat()} in the outputSink
      */
-    void startNode(GioNode node) throws IOException;
+    ICjStream createCjStream(OutputSink outputSink);
 
-    void startPort(GioPort port) throws IOException;
+    /**
+     * Which file format can this writer write?
+     */
+    GioFileFormat fileFormat();
+
+    default void writeCjDocument(ICjDocument cjDoc, OutputSink outputSink) throws IOException {
+        ICjStream cjStream = createCjStream(outputSink);
+        CjWriter2CjStream cjWriter2Stream = new CjWriter2CjStream(cjStream);
+        cjDoc.fire(cjWriter2Stream);
+    }
 
 }

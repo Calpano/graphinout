@@ -1,6 +1,6 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.foundation.xml.XmlFormatter;
+import com.graphinout.foundation.xml.util.XmlFormatter;
 
 import javax.annotation.Nullable;
 

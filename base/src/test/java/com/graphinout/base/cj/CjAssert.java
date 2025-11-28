@@ -1,6 +1,9 @@
 package com.graphinout.base.cj;
 
-import com.graphinout.foundation.json.impl.JsonFormatter;
+import com.graphinout.base.cj.document.CjDocuments;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.util.CjNormalizer;
+import com.graphinout.foundation.json.util.JsonFormatter;
 import io.github.classgraph.Resource;
 
 import javax.annotation.Nullable;
@@ -23,6 +26,15 @@ public class CjAssert {
         String actualWrapped = JsonFormatter.formatDebug(json_out);
         verifyOrRecord(resource, testId, actualWrapped, expectedWrapped, (actual, expected) -> //
                 CjAssert.xAssertThatIsSameCj(actual, expected, extendedDebugInfos), CjAssert::normalize);
+    }
+
+    public static boolean xAssertThatIsSameCj(ICjDocument actualCjDoc, ICjDocument expectedCjDoc, @Nullable Runnable extendedDebugInfos
+    ) {
+        // FIXME compare doc trees
+
+        String actualJson = CjDocuments.toJsonString(actualCjDoc);
+        String expectedJson = CjDocuments.toJsonString(expectedCjDoc);
+        return xAssertThatIsSameCj(actualJson, expectedJson, extendedDebugInfos);
     }
 
     public static boolean xAssertThatIsSameCj(String actualJson, String expectedJson, @Nullable Runnable extendedDebugInfos) {

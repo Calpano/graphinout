@@ -6,9 +6,9 @@
     <artifactId>graphinout</artifactId>
     <name>graphinout</name>
     <packaging>pom</packaging>
-    <version>0.1.3-SNAPSHOT</version>
+    <version>0.1.7-SNAPSHOT</version>
 
-    <description>Graphinout reads many common graph file formats and converts them to Connected JSON or GraphML.</description>
+    <description> &#x1f98b; Graphinout reads many common graph file formats and converts them to Connected JSON or GraphML.</description>
     <url>https://graphinout.com</url>
     <licenses>
         <license>
@@ -34,13 +34,18 @@
 
     <modules>
         <module>base</module>
+        <module>foundation</module>
         <module>reader-cj</module>
+        <module>reader-dot</module>
+        <module>reader-gexf</module>
         <module>reader-graphml</module>
+        <module>reader-gml</module>
         <module>reader-tgf</module>
         <module>reader-example</module>
+        <module>reader-ocif</module>
         <module>reader-tripletext</module>
         <module>reader-jgrapht</module>
-        <module>reader-adjlist</module>
+        <module>reader-textbased</module>
         <module>engine</module>
     </modules>
 
@@ -70,12 +75,19 @@
     <dependencyManagement>
         <dependencies>
             <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>${logback-classic-version}</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.3-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.7-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId>
+                <classifier>tests</classifier>
+                <type>test-jar</type>
+                <scope>test</scope>
+                <version>0.1.7-SNAPSHOT</version>
+            </dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.7-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
                 <classifier>tests</classifier>
                 <type>test-jar</type>
                 <scope>test</scope>
-                <version>0.1.3-SNAPSHOT</version>
+                <version>0.1.7-SNAPSHOT</version>
             </dependency>
             <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-core-version}</version></dependency>
             <dependency><groupId>com.fasterxml.jackson.datatype</groupId><artifactId>jackson-datatype-jsr310</artifactId><version>${jackson-databind-version}</version></dependency>
@@ -84,6 +96,7 @@
             <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.17.0</version></dependency>
             <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><version>4.8.157</version></dependency>
             <dependency><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>4.7.3</version></dependency>
+            <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId><version>1.0.0</version></dependency>
             <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>${junit-jupiter.version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><version>${mockito-core-version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><version>${mockito-junit-jupiter-version}</version><scope>test</scope></dependency>

@@ -10,7 +10,7 @@ class ExampleReaderTest extends AbstractReaderTest {
 
     @Override
     protected List<GioReader> readersToTest() {
-        return Arrays.asList(new ExampleReader());
+        return List.of(new ExampleReader());
     }
 
 }

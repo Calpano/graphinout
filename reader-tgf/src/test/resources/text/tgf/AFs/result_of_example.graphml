@@ -26,8 +26,12 @@
     <edge source="1" target="2"/>
     <edge source="3" target="2"/>
     <edge source="4" target="3"/>
-    <edge source="5" target="1" edge_label="Happy New Year!"/>
-    <edge source="5" target="3" edge_label="April Fools Day"/>
+    <edge source="5" target="1">
+      <data key="label">Happy New Year!</data>
+    </edge>
+    <edge source="5" target="3">
+      <data key="label">April Fools Day</data>
+    </edge>
     <edge source="6" target="3"/>
     <edge source="6" target="1"/>
     <edge source="7" target="5"/>

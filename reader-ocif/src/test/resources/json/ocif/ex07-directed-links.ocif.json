@@ -1,0 +1,9 @@
+{
+  "nodes": [
+    {"id": "s"}, {"id": "m"}, {"id": "t"}
+  ],
+  "relations": [
+    {"type": "@ocif/rel/link", "source": "s", "target": "m", "directed": true, "label": "s→m"},
+    {"type": "@ocif/rel/link", "source": "m", "target": "t", "directed": true, "label": "m→t"}
+  ]
+}

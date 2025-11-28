@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    {"id": "doc", "resource": "r"}
+  ],
+  "resources": [
+    {
+      "id": "r",
+      "representations": [
+        {"mime-type": "text/markdown", "content": "# Title\nSome text.", "priority": 10},
+        {"mime-type": "text/plain", "content": "Fallback text", "priority": 0}
+      ]
+    }
+  ]
+}

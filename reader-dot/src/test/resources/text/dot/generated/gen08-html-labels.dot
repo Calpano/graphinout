@@ -1,0 +1,6 @@
+digraph HtmlLabels {
+  tbl [
+    shape=plaintext
+    label=<<table border='0' cellborder='1' cellspacing='0'><tr><td>foo</td><td>bar</td></tr></table>>
+  ];
+}

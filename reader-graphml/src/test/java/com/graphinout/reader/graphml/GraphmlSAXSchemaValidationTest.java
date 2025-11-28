@@ -1,6 +1,6 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.reader.ContentError;
+import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +56,7 @@ public class GraphmlSAXSchemaValidationTest {
         try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content)) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
-            graphmlReader.errorHandler(contentErrors::add);
+            graphmlReader.setContentErrorHandler(contentErrors::add);
             boolean isValid = graphmlReader.isValid(singleInputSource);
             Map<String, Long> expectedErrors = expectedErrors("xml/graphml/aws/AWS - Analytics.graphml");
 
@@ -79,7 +79,7 @@ public class GraphmlSAXSchemaValidationTest {
         try (SingleInputSource singleInputSource = SingleInputSource.of(filePath, content)) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
-            graphmlReader.errorHandler(contentErrors::add);
+            graphmlReader.setContentErrorHandler(contentErrors::add);
             boolean isValid = graphmlReader.isValid(singleInputSource);
             Map<String, Long> actualErrors = contentErrors.stream().collect(Collectors.groupingBy(ContentError::toString, Collectors.counting()));
             Map<String, Long> expectedErrors = expectedErrors(filePath);

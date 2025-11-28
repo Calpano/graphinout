@@ -1,0 +1,5 @@
+digraph P {
+  A:out -> B:in;
+  C:"p ort" -> D:"HTMLPORT";
+  X:port -> Y:port [label="with ports"];
+}
