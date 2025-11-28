@@ -1,0 +1,74 @@
+= Graph File Format Ecosystem
+:toc:
+
+== Graph Formats
+A great 2015 paper on graph file formats: https://arxiv.org/pdf/1503.02781.pdf[]
+including links to graph data repositories or time frames indicates when the format was/is used.
+
+Text based::
+Diverse text syntaxes to encode graphs.
+Common formats:
+
+* TGF Trivial Graph Format https://en.wikipedia.org/wiki/Trivial_Graph_Format[Wikipedia]
+* DOT language https://graphviz.org/doc/info/lang.html[spec]
+* Pajek, http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf[spec]
+* Nested Network Format
+* BioGRID Tab 3.0 Format https://wiki.thebiogrid.org/doku.php/biogrid_tab_version_3.0[spec]
+* PSI-MI Tab Version 2.5 Format https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-5-44[spec]
+* Matrix Market from the large 'Matrix Market' https://math.nist.gov/MatrixMarket/formats.html#MMformat[spec]
+
+XML based::
+Expressed as XML.
+Common formats:
+
+* link:src/main/doc/graphml.adoc[GraphML] (<- our notes about the format)
+* GEXF (Graph Exchange XML Format). http://gexf.net/schema.html[specification], http://gexf.net/basic.html[examples]
+* GML Graph Modelling Language https://en.wikipedia.org/wiki/Graph_Modelling_Language[Wikipedia]; http://www.graphviewer.nl/misc/gmllanguage/gml-technical-report.pdf[spec 1997] predecessor of GraphML
+* GXL Graph eXchange Language https://en.wikipedia.org/wiki/GXL[Wikipedia]
+* XGMML https://en.wikipedia.org/wiki/XGMML[spec]
+* Systems Biology Markup Language (SBML) http://sbml.org/documents/[spec]
+
+JSON based::
+In JSON format.
+Common formats:
+
+* Connected JSON https://j-s-o-n.org (NEW, not in the paper)
+* JSON Graph https://netflix.github.io/falcor/documentation/jsongraph.html[spec]
+* Json Graph Format https://github.com/jsongraph/json-graph-specification[spec]
+* CytoscapeCX https://cytoscape.org/cx/[spec]
+
+Triple based::
+Triples (semantic web) can be encoded themselves as XML or text-based syntaxes.
+They are used for knowledge graphs, vocabularies, linked open data and ontologies.
+Common file types:
+
+* Turtle (text-based, `.ttl`)
+* RDF/XML (XML-based, `.rdf.xml`
+* N3 (text-based, `n3`)
+* N-Triples (text-based, `nt`)
+* Web Ontology Language (XML-based, `.owl.xml`)
+* BioPAX (OWL-based) BioPAX (Biological PAthways eXchange) Format http://www.biopax.org/[spec]
+
+== Graph Application Domains
+* *Software engineering* (2002) https://userpages.uni-koblenz.de/~ist/GXL/tools/tools.html[]
+
+
+== Graph Toolkits
+* https://networkx.org/[NetworkX] <- GEXF, GML, GraphML, LEDA, Pajek
+* https://en.wikipedia.org/wiki/Boost_(C%2B%2B_libraries)[BOOST] C++ library <--> GraphML
+* https://graph-tool.skewed.de/[graph-tool] <-> GraphML, GML
+
+== Graph Databases
+* https://neo4j.com/[neo4j]
+* MemGraph
+
+== Graph Drawing
+
+* GraphViz
+* https://js.cytoscape.org/[Cytoscape.js]
+* https://gephi.org/[Gephi] <--> GraphML subset
+* yED <--> partial GraphML support
+
+== Graph Datasets
+* https://networks.skewed.de/ -- GraphML and GML exports
+* https://snap.stanford.edu/data/ -- wide mix of data formats
