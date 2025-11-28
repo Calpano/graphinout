@@ -3,7 +3,7 @@ package com.graphinout.reader.graphml.elements.builder;
 import com.graphinout.reader.graphml.elements.IGraphmlLocator;
 import com.graphinout.reader.graphml.elements.impl.GraphmlNode;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Map;
 
 public class GraphmlNodeBuilder extends GraphmlElementWithDescAndIdBuilder<GraphmlNodeBuilder> implements ILocatorBuilder {

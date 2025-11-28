@@ -9,7 +9,7 @@ import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.writer.ICjWriter;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

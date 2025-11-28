@@ -10,8 +10,9 @@ import com.graphinout.foundation.util.path.IListLike;
 import com.graphinout.foundation.util.path.IMapLike;
 import com.graphinout.foundation.xml.XmlFragmentString;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -114,14 +115,14 @@ public interface IJsonValue {
         // resolve first step
         IJsonContainerNavigationStep step = path.getFirst();
         switch (step.containerType()) {
-            case Array:
+            case JsonType.ContainerType.Array:
                 if (isArray()) {
                     @Nullable IJsonValue child = asArray().get(step.asArrayStep().index());
                     if (child == null)
                         return null;
                     return child.get(path.subList(1, path.size()));
                 }
-            case Object:
+            case JsonType.ContainerType.Object:
                 if (isObject()) {
                     @Nullable IJsonValue child = asObject().get(step.asObjectStep().propertyKey());
                     if (child == null)
@@ -138,12 +139,12 @@ public interface IJsonValue {
         // resolve first step
         IJsonContainerNavigationStep step = path.getFirst();
         switch (step.containerType()) {
-            case Array:
+            case JsonType.ContainerType.Array:
                 if (isArray()) {
                     @Nullable IJsonValue child = asArray().get(step.asArrayStep().index());
                     return child != null && child.has(path.subList(1, path.size()));
                 }
-            case Object:
+            case JsonType.ContainerType.Object:
                 if (isObject()) {
                     @Nullable IJsonValue child = asObject().get(step.asObjectStep().propertyKey());
                     return child != null && child.has(path.subList(1, path.size()));
@@ -242,9 +243,9 @@ public interface IJsonValue {
 
     default XmlFragmentString toXmlFragmentString() {
         return switch (jsonType()) {
-            case XmlString -> ((IJsonXmlString) this).toXmlFragmentString();
-            case String -> XmlFragmentString.ofPlainText(asString());
-            case Object -> {
+            case JsonType.XmlString -> ((IJsonXmlString) this).toXmlFragmentString();
+            case JsonType.String -> XmlFragmentString.ofPlainText(asString());
+            case JsonType.Object -> {
                 IJsonObject obj = asObject();
                 if (obj.hasProperty(IJsonXmlString.XML)) {
                     IJsonValue xml = obj.get_(IJsonXmlString.XML);
@@ -268,6 +269,17 @@ public interface IJsonValue {
             default ->
                     throw new IllegalStateException("Unexpected value to convert to XmlFragmentString: " + jsonType() + " JSON=" + this.toJsonString());
         };
+    }
+
+    default Object toJaJsonValue() {
+        if (isPrimitive()) {
+            return asPrimitive().toJaJsonPrimitive();
+        } else if (isArray()) {
+            return asArray().toJaJsonList();
+        } else if (isObject()) {
+            return asObject().toJaJsonMap();
+        }
+        throw new IllegalStateException("Unknown JsonType: " + jsonType());
     }
 
 }

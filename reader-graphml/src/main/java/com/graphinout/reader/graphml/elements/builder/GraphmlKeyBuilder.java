@@ -7,7 +7,7 @@ import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.reader.graphml.elements.IGraphmlKey;
 import com.graphinout.reader.graphml.elements.impl.GraphmlKey;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Map;
 
 /** builds {@link IGraphmlKey} */

@@ -9,11 +9,10 @@ import com.graphinout.base.cj.document.ICjNodeMutable;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.foundation.input.Location;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.Locator;
-import com.graphinout.foundation.text.ITextWriter;
+import com.graphinout.base.text.ITextWriter;
 import com.graphinout.foundation.json.value.IJsonObjectMutable;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;

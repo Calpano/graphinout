@@ -43,7 +43,7 @@ import com.graphinout.reader.graphml.elements.IGraphmlNode;
 import com.graphinout.reader.graphml.elements.IGraphmlPort;
 import com.graphinout.reader.graphml.elements.impl.GraphmlKey;
 import com.graphinout.foundation.json.JsonType;
-import com.graphinout.foundation.json.JsonReaderImpl;
+import com.graphinout.base.json.JsonReaderImpl;
 import com.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.graphinout.foundation.json.value.IJsonPrimitive;
 import com.graphinout.foundation.json.value.IJsonValue;

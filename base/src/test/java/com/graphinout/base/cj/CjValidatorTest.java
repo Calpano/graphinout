@@ -1,7 +1,7 @@
 package com.graphinout.base.cj;
 
 import com.graphinout.base.cj.util.CjValidator;
-import com.graphinout.foundation.input.SingleInputSourceOfString;
+import com.graphinout.base.input.SingleInputSourceOfString;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

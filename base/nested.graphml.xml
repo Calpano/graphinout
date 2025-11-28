@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd">
+
+    <key attr.name="cj_label" attr.type="string" id="cj_label">
+        <desc>Connected JSON label</desc>
+    </key>
+    <key attr.name="cj_syntheticNode" attr.type="boolean" for="node" id="cj_syntheticNode">
+        <desc>Marks a node which only exists to wrap a CJ graph-in-graph</desc>
+    </key>
+
+
+    <graph edgedefault="directed" id="world" parse.edgeids="free" parse.edges="1" parse.nodeids="free" parse.nodes="2"
+           parse.order="nodesfirst">
+        <node id="canada"/>
+        <node id="usa"/>
+        <edge directed="false" id="trade_na" source="canada" target="usa"/>
+
+
+        <node id="node-europe">
+            <data key="cj_syntheticNode">true</data>
+
+
+            <graph edgedefault="directed" id="europe" parse.edgeids="free" parse.edges="2" parse.nodeids="free"
+                   parse.nodes="2" parse.order="nodesfirst">
+                <data key="cj_label">European Partition</data>
+                <node id="france"/>
+                <node id="germany"/>
+                <edge directed="false" id="trade_eu" source="france" target="germany"/>
+                <edge directed="false" id="trade_transatlantic" source="germany" target="usa"/>
+            </graph>
+        </node>
+    </graph>
+</graphml>

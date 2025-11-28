@@ -4,7 +4,7 @@ import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.reader.graphml.elements.IGraphmlLocator;
 import com.graphinout.reader.graphml.elements.IGraphmlNode;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.Objects;
 

@@ -1,7 +1,7 @@
 package com.graphinout.base.cj.document;
 
+import com.graphinout.base.json.JsonReaderImpl;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
-import com.graphinout.foundation.json.JsonReaderImpl;
 import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonValue;
 

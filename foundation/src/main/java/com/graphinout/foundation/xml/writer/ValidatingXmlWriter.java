@@ -1,5 +1,7 @@
 package com.graphinout.foundation.xml.writer;
 
+import com.graphinout.base.xml.writer.XmlWriter;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Stack;

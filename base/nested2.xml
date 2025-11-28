@@ -1,0 +1,70 @@
+<Document>
+    <ArrayOfGraphs>
+        <Graph>
+            <Id value='world'/>
+            <ArrayOfNodes>
+                <Node>
+                    <Id value='canada'/>
+                </Node>
+                <Node>
+                    <Id value='usa'/>
+                </Node>
+            </ArrayOfNodes>
+            <ArrayOfEdges>
+                <Edge>
+                    <Id value='trade_na'/>
+                    <ArrayOfEndpoints>
+                        <Endpoint>
+                            <NodeId value='canada'/>
+                        </Endpoint>
+                        <Endpoint>
+                            <NodeId value='usa'/>
+                        </Endpoint>
+                    </ArrayOfEndpoints>
+                </Edge>
+            </ArrayOfEdges>
+            <ArrayOfGraphs>
+                <Graph>
+                    <Id value='europe'/>
+                    <ArrayOfLabelEntries>
+                        <LabelEntry>
+                            <Value value='European Partition'/>
+                        </LabelEntry>
+                    </ArrayOfLabelEntries>
+                    <ArrayOfNodes>
+                        <Node>
+                            <Id value='france'/>
+                        </Node>
+                        <Node>
+                            <Id value='germany'/>
+                        </Node>
+                    </ArrayOfNodes>
+                    <ArrayOfEdges>
+                        <Edge>
+                            <Id value='trade_eu'/>
+                            <ArrayOfEndpoints>
+                                <Endpoint>
+                                    <NodeId value='france'/>
+                                </Endpoint>
+                                <Endpoint>
+                                    <NodeId value='germany'/>
+                                </Endpoint>
+                            </ArrayOfEndpoints>
+                        </Edge>
+                        <Edge>
+                            <Id value='trade_transatlantic'/>
+                            <ArrayOfEndpoints>
+                                <Endpoint>
+                                    <NodeId value='germany'/>
+                                </Endpoint>
+                                <Endpoint>
+                                    <NodeId value='usa'/>
+                                </Endpoint>
+                            </ArrayOfEndpoints>
+                        </Edge>
+                    </ArrayOfEdges>
+                </Graph>
+            </ArrayOfGraphs>
+        </Graph>
+    </ArrayOfGraphs>
+</Document>

@@ -1,5 +1,6 @@
 package com.graphinout.foundation.json;
 
+
 import com.graphinout.foundation.xml.XML;
 
 public class JSON {

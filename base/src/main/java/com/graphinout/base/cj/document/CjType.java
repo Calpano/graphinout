@@ -3,7 +3,7 @@ package com.graphinout.base.cj.document;
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.foundation.json.JsonConstants;
 import com.graphinout.foundation.json.JsonType;
-import edu.umd.cs.findbugs.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.HashMap;

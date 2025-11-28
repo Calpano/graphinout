@@ -1,9 +1,8 @@
 package com.graphinout.foundation.xml;
 
 import com.graphinout.foundation.json.JSON;
-import com.graphinout.foundation.xml.document.XmlElement;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -26,10 +25,6 @@ public interface XML {
                 case XML_SPACE__PRESERVE -> preserve;
                 default -> throw new IllegalArgumentException("Unknown xml:space value: " + xmlSpaceValue);
             };
-        }
-
-        public static XmlSpace fromElement(XmlElement element) {
-            return fromAttributesValue(element.attribute(XML_SPACE));
         }
 
         public JSON.XmlSpace toJson_XmlSpace() {

@@ -1,6 +1,6 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.foundation.xml.IXmlName;
+import com.graphinout.base.xml.IXmlName;
 
 import java.util.HashMap;
 import java.util.HashSet;

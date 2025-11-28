@@ -4,9 +4,9 @@ import com.graphinout.base.cj.document.*;
 import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonPrimitive;
 import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.text.ITextWriter;
+import com.graphinout.base.text.ITextWriter;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

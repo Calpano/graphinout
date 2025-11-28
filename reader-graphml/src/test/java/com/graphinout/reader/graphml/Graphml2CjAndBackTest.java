@@ -3,10 +3,10 @@ package com.graphinout.reader.graphml;
 
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.cj.writer.LoggingCjWriter;
-import com.graphinout.foundation.TestFileUtil;
+import com.graphinout.base.TestFileUtil;
 import com.graphinout.foundation.xml.writer.Xml2StringWriter;
-import com.graphinout.foundation.xml.testing.XmlAssert;
-import com.graphinout.foundation.xml.util.XmlTool;
+import com.graphinout.base.xml.XmlAssert;
+import com.graphinout.base.xml.util.XmlTool;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.graphml.cj.Graphml2CjDocument;
 import com.graphinout.reader.graphml.cj.Graphml2CjWriter;
@@ -32,7 +32,7 @@ public class Graphml2CjAndBackTest {
      */
     @ParameterizedTest(name = "{index}: {0}")
     @DisplayName("GraphMl files parse as XML (Baseline 1)")
-    @MethodSource("com.graphinout.foundation.TestFileProvider#graphmlResources")
+    @MethodSource("com.graphinout.base.TestFileProvider#graphmlResources")
     void testAllXml(String displayPath, Resource xmlResource) throws Exception {
         // == OUT Pipeline
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
@@ -45,7 +45,7 @@ public class Graphml2CjAndBackTest {
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.foundation.TestFileProvider#graphmlResources")
+    @MethodSource("com.graphinout.base.TestFileProvider#graphmlResources")
     @DisplayName("Run XML->Graphml->Cj")
     @Disabled("Run manually to log intermediate CJ output")
     void testAllXml_Graphml_Cj(String displayPath, Resource xmlResource) throws Exception {
@@ -73,7 +73,7 @@ public class Graphml2CjAndBackTest {
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.foundation.TestFileProvider#graphmlResources")
+    @MethodSource("com.graphinout.base.TestFileProvider#graphmlResources")
     @DisplayName("Test XML<->Graphml<->Cj (all Graphml)")
     void testAllXml_Graphml_Cj_Graphml_Xml(String displayPath, Resource xmlResource) throws Exception {
         log.info("TEST-" + TEST_ID + " on " + xmlResource.getURI());

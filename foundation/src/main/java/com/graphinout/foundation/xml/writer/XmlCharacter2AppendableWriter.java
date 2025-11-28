@@ -1,9 +1,10 @@
 package com.graphinout.foundation.xml.writer;
 
-import com.graphinout.foundation.xml.factory.BaseXmlHandler;
-import com.graphinout.foundation.xml.CharactersKind;
+import com.graphinout.base.xml.BaseXmlHandler;
+import com.graphinout.base.xml.CharactersKind;
+import com.graphinout.base.xml.writer.XmlCharacterWriter;
 import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.util.XmlTool;
+import com.graphinout.foundation.xml.XmlFoundation;
 
 import java.io.IOException;
 
@@ -27,7 +28,7 @@ public class XmlCharacter2AppendableWriter extends BaseXmlHandler implements Xml
             // Do encode regular character data
             String toAppend = characters;
             if (xmlEncodeOnWrite) {
-                toAppend = XmlTool.xmlEncode(characters);
+                toAppend = XmlFoundation.xmlEncode(characters);
             }
             appendable.append(toAppend);
         }

@@ -1,6 +1,6 @@
 package com.graphinout.foundation.input;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.jspecify.annotations.NonNull;
 
 public record Location(int line, int col) {
 

@@ -9,10 +9,10 @@ import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.writer.Json2CjWriter;
-import com.graphinout.foundation.input.SingleInputSourceOfString;
+import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.foundation.json.writer.JsonWriter;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
-import com.graphinout.foundation.json.JsonReaderImpl;
+import com.graphinout.base.json.JsonReaderImpl;
 import io.github.classgraph.Resource;
 import jdk.jfr.Description;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +23,7 @@ import java.io.IOException;
 public class CjStreamTest {
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
+    @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
     @Description("Test JSON->CJ->JSON (all)")
     void test_Json_Cj(String displayName, Resource resource) throws IOException {
         String json = resource.getContentAsString();

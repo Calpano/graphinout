@@ -8,8 +8,8 @@ import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.gio.GioFileFormat;
-import com.graphinout.foundation.input.InputSource;
-import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.base.input.InputSource;
+import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.json5.Json5Preprocessor;
 import org.apache.commons.io.IOUtils;
 

@@ -4,10 +4,11 @@ import com.graphinout.foundation.json.JsonType;
 import com.graphinout.foundation.json.path.IJsonNavigationPath;
 import com.graphinout.foundation.json.path.IJsonObjectNavigationStep;
 import com.graphinout.foundation.json.writer.JsonWriter;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.AbstractMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -72,7 +73,7 @@ public interface IJsonObject extends IJsonContainer {
         });
     }
 
-    @Nonnull
+    @NonNull
     default IJsonValue get_(String key) {
         return Objects.requireNonNull(get(key));
     }
@@ -97,6 +98,12 @@ public interface IJsonObject extends IJsonContainer {
 
     default int size() {
         return keys().size();
+    }
+
+    default Map<String, Object> toJaJsonMap() {
+        Map<String, Object> map = new LinkedHashMap<>(size());
+        forEach((key, value) -> map.put(key, value.toJaJsonValue()));
+        return map;
     }
 
     /** includes potentially null values */

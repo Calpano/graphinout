@@ -1,13 +1,13 @@
 package com.graphinout.foundation.json.value.java;
 
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonObjectAppendable;
 import com.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;

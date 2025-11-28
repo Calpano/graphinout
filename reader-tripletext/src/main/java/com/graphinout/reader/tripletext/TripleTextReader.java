@@ -12,8 +12,8 @@ import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.InputSource;
-import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.base.input.InputSource;
+import com.graphinout.base.input.SingleInputSource;
 
 import java.io.BufferedReader;
 import java.io.IOException;

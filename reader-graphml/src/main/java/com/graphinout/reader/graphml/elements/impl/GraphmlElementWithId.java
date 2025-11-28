@@ -2,7 +2,7 @@ package com.graphinout.reader.graphml.elements.impl;
 
 import com.graphinout.reader.graphml.elements.IGraphmlElementWithId;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.Objects;
 

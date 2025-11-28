@@ -9,11 +9,11 @@ import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.cj.util.CjValidator;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.InputSource;
-import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.input.SingleInputSourceOfString;
+import com.graphinout.base.input.InputSource;
+import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
-import com.graphinout.foundation.text.TextReader;
+import com.graphinout.base.text.TextReader;
 import org.slf4j.Logger;
 
 import java.io.IOException;

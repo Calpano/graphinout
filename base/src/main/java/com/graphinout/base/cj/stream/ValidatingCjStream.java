@@ -15,7 +15,7 @@ import com.graphinout.base.cj.document.ICjPort;
 import com.graphinout.foundation.json.writer.impl.ValidatingJsonWriter;
 import com.graphinout.foundation.json.value.IJsonFactory;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;

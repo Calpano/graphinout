@@ -1,11 +1,11 @@
 package com.graphinout.foundation.input;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
- * See {@link ContentErrors} for simpler handlers.
+ * See {@code ContentErrors} for simpler handlers.
  */
 public class ContentError {
 
@@ -13,9 +13,9 @@ public class ContentError {
         Error, Warn, Info
     }
 
-    final ErrorLevel level;
-    final String message;
-    final @Nullable Location location;
+    public final ErrorLevel level;
+    public final String message;
+    public final @Nullable Location location;
 
     public ContentError(ErrorLevel level, String message, @Nullable Location location) {
         this.level = level;

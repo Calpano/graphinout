@@ -4,9 +4,11 @@ import com.graphinout.foundation.json.JsonType;
 import com.graphinout.foundation.json.path.IJsonArrayNavigationStep;
 import com.graphinout.foundation.json.path.IJsonNavigationPath;
 import com.graphinout.foundation.json.writer.JsonWriter;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -57,7 +59,7 @@ public interface IJsonArray extends IJsonContainer {
     @Nullable
     IJsonValue get(int index);
 
-    default @Nonnull IJsonValue get_(int index) {
+    default @NonNull IJsonValue get_(int index) {
         return Objects.requireNonNull(get(index));
     }
 
@@ -72,6 +74,12 @@ public interface IJsonArray extends IJsonContainer {
 
     default JsonType jsonType() {
         return JsonType.Array;
+    }
+
+    default List<Object> toJaJsonList() {
+        List<Object> list = new ArrayList<>(size());
+        forEach(element -> list.add(element.toJaJsonValue()));
+        return list;
     }
 
 }

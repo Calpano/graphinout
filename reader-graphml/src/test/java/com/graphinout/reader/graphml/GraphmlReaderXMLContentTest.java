@@ -1,7 +1,7 @@
 package com.graphinout.reader.graphml;
 
 import com.graphinout.foundation.xml.writer.Xml2StringWriter;
-import com.graphinout.foundation.xml.util.XmlTool;
+import com.graphinout.base.xml.util.XmlTool;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

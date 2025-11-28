@@ -1,0 +1,91 @@
+<Document>
+    <ArrayOfGraphs>
+
+
+        <Graph>
+            <Id value='world'/>
+            <Data>◀{ 【graphml:xmlAttributes】: ◀{ 【parse.edgeids】: 'free', 【parse.edges】: '1', 【parse.nodeids】: 'free',
+                【parse.nodes】: '2', 【parse.order】: 'nodesfirst' }▶ }▶
+            </Data>
+            <ArrayOfNodes>
+                <Node>
+                    <Id value='canada'/>
+                </Node>
+                <Node>
+                    <Id value='usa'/>
+                </Node>
+
+
+
+                <Node>
+                    <Id value='node-europe'/>
+                    <Data>◀{ 【graphml:syntheticNode】: boolean(true) }▶</Data>
+                    <ArrayOfGraphs>
+                        <Graph>
+                            <Id value='europe'/>
+                            <Data>◀{ 【graphml:xmlAttributes】: ◀{ 【parse.edgeids】: 'free', 【parse.edges】: '2',
+                                【parse.nodeids】: 'free', 【parse.nodes】: '2', 【parse.order】: 'nodesfirst' }▶ }▶
+                            </Data>
+                            <ArrayOfLabelEntries>
+                                <LabelEntry>
+                                    <Value value='European Partition'/>
+                                </LabelEntry>
+                            </ArrayOfLabelEntries>
+                            <ArrayOfNodes>
+                                <Node>
+                                    <Id value='france'/>
+                                </Node>
+                                <Node>
+                                    <Id value='germany'/>
+                                </Node>
+                            </ArrayOfNodes>
+                            <ArrayOfEdges>
+                                <Edge>
+                                    <Id value='trade_eu'/>
+                                    <ArrayOfEndpoints>
+                                        <Endpoint>
+                                            <NodeId value='france'/>
+                                            <Direction value='UNDIR'/>
+                                        </Endpoint>
+                                        <Endpoint>
+                                            <NodeId value='germany'/>
+                                            <Direction value='UNDIR'/>
+                                        </Endpoint>
+                                    </ArrayOfEndpoints>
+                                </Edge>
+                                <Edge>
+                                    <Id value='trade_transatlantic'/>
+                                    <ArrayOfEndpoints>
+                                        <Endpoint>
+                                            <NodeId value='germany'/>
+                                            <Direction value='UNDIR'/>
+                                        </Endpoint>
+                                        <Endpoint>
+                                            <NodeId value='usa'/>
+                                            <Direction value='UNDIR'/>
+                                        </Endpoint>
+                                    </ArrayOfEndpoints>
+                                </Edge>
+                            </ArrayOfEdges>
+                        </Graph>
+                    </ArrayOfGraphs>
+                </Node>
+            </ArrayOfNodes>
+            <ArrayOfEdges>
+                <Edge>
+                    <Id value='trade_na'/>
+                    <ArrayOfEndpoints>
+                        <Endpoint>
+                            <NodeId value='canada'/>
+                            <Direction value='UNDIR'/>
+                        </Endpoint>
+                        <Endpoint>
+                            <NodeId value='usa'/>
+                            <Direction value='UNDIR'/>
+                        </Endpoint>
+                    </ArrayOfEndpoints>
+                </Edge>
+            </ArrayOfEdges>
+        </Graph>
+    </ArrayOfGraphs>
+</Document>

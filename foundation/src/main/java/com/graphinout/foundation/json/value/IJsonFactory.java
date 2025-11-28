@@ -3,7 +3,7 @@ package com.graphinout.foundation.json.value;
 import com.graphinout.foundation.json.JSON;
 import com.graphinout.foundation.json.JsonType;
 import com.graphinout.foundation.xml.XML;
-import edu.umd.cs.findbugs.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.math.BigDecimal;
@@ -164,10 +164,10 @@ public interface IJsonFactory {
         if (value == null) return createNull();
         String valueTrimmedMaybe = preserveSpace ? value : value.trim();
         return switch (desiredJsonType) {
-            case Boolean -> createBooleanFromString(valueTrimmedMaybe);
-            case Number -> createNumberFromString(valueTrimmedMaybe);
-            case String -> createString(valueTrimmedMaybe);
-            case XmlString ->
+            case JsonType.Boolean -> createBooleanFromString(valueTrimmedMaybe);
+            case JsonType.Number -> createNumberFromString(valueTrimmedMaybe);
+            case JsonType.String -> createString(valueTrimmedMaybe);
+            case JsonType.XmlString ->
                     IJsonXmlString.of(this, value, preserveSpace ? JSON.XmlSpace.preserve : JSON.XmlSpace.auto);
             default -> throw new IllegalArgumentException("Unsupported type: " + desiredJsonType);
         };

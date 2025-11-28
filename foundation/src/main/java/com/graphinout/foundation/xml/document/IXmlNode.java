@@ -1,9 +1,9 @@
 package com.graphinout.foundation.xml.document;
 
-import com.graphinout.foundation.xml.CharactersKind;
+import com.graphinout.base.xml.CharactersKind;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.writer.XmlWriter;
+import com.graphinout.base.xml.writer.XmlWriter;
 
 import java.io.IOException;
 

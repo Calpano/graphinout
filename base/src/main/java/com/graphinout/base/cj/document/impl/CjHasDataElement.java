@@ -3,7 +3,7 @@ package com.graphinout.base.cj.document.impl;
 import com.graphinout.base.cj.document.ICjDataMutable;
 import com.graphinout.base.cj.document.ICjHasDataMutable;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 /** Helper class to track element context */

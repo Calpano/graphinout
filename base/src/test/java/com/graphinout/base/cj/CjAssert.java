@@ -6,11 +6,11 @@ import com.graphinout.base.cj.util.CjNormalizer;
 import com.graphinout.foundation.json.util.JsonFormatter;
 import io.github.classgraph.Resource;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.foundation.TestFileUtil.verifyOrRecord;
+import static com.graphinout.base.TestFileUtil.verifyOrRecord;
 
 public class CjAssert {
 
