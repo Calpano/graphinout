@@ -19,7 +19,8 @@ class CjFormatterTest {
             {"$schema":"https://calpano.github.io/connected-json/_attachments/cj-schema.json","$id":"https://j-s-o-n.org/schema/connected-json/5.0.0","graphs":[{"id":"world","nodes":[{"id":"canada"},{"id":"usa"}],"edges":[{"id":"trade_na","endpoints":[{"node":"canada"},{"node":"usa"}]}],"graphs":[{"id":"europe","label":[{"value":"European Partition"}],"nodes":[{"id":"france"},{"id":"germany"}],"edges":[{"id":"trade_eu","endpoints":[{"node":"france"},{"node":"germany"}]},{"id":"trade_transatlantic","endpoints":[{"node":"germany"},{"node":"usa"}]}]}]}]}
             """;
     static String formatted = """
-            { "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
+            {
+              "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
               "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
               "graphs": [{
                   "id": "world",
@@ -59,6 +60,15 @@ class CjFormatterTest {
     @Test
     void testArray() throws IOException {
         List<Object> jaJsonInput = List.of(2,3,4);
+        String formatted = """
+            [ 2, 3, 4 ]""";
+        String actual = JsonCompactFormatter.formatCompact(jaJsonInput, 120, Set.of("nodes","edges","graphs"));
+        assertThat(actual).isEqualTo(formatted);
+    }
+
+    @Test
+    void testArrayOfObjects() throws IOException {
+        List<Object> jaJsonInput = List.of(Map.of("a", 5),Map.of("b", 6, "c", 7),4);
         String formatted = """
             [ 2, 3, 4 ]""";
         String actual = JsonCompactFormatter.formatCompact(jaJsonInput, 120, Set.of("nodes","edges","graphs"));
