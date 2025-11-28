@@ -8,5 +8,4 @@ target
 tmp
 *.cache
 *.svg
-
-.vscode/settings.json
+.vscode

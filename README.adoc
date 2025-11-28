@@ -1,113 +1,90 @@
-
-= 🦋 GraphInOut: graph in -> graph out
-:gio: graphinout
+= 🦋 GraphInOut: Graph In -> Graph Out
+:gio: GraphInOut
 :toc:
 
 * Convert between graph formats
-* Validate GraphML
+* Advanced converters usually include support for graph/node/edge labels/attributes, nested graphs, hyper-edges, ...
+* As intermediate formate the modern GraphML successor *Connected JSON (CJ)* (spec: https://j-s-o-n.org) is used. It has all features of GraphML, but even more extensible JSON data support on all entities.
+
+.Input Formats
+Graphinout *reads* many common graph file formats
+
+- GraphML,
+- https://j-s-o-n.org[Connected JSON],
+- GML,
+- GraphViz/DOT,
+- Graph6,
+- Trivial Graph Format,
+- Adjacency List Format of NetworkX)
+
+into *CJ* and *writes* losslessly to many output graph file formats.
+
+.Output Formats
+- GraphML,
+- https://j-s-o-n.org[Connected JSON],
+- GML,
+- GraphViz/DOT, and
+- Trivial Graph Format.
+
+NOTE: Earlier versions of {gio} used GraphML as the lingua franca, but we since then switched to https://j-s-o-n.org[Connected JSON].
+
+== Maven Coordinates
+Check the latest version at https://central.sonatype.com/artifact/com.graphinout/engine[]
+
+[source.xml]
+----
+<dependency>
+    <groupId>com.graphinout</groupId>
+    <artifactId>engine</artifactId>
+    <version>0.1.6</version>
+</dependency>
+----
 
 ****
 https://GraphInOut.com[Convert any graph file format to GraphML and Connected JSON (CJ) online for free with 🦋 GraphInOut.com]
 ****
 
 == Purpose
-
-Graphinout reads many common graph file formats and converts them losslessly to a common format: *GraphML*.
-
 There are many graph toolkits, graph databases and graph-based apps, which all implement their importers and map incoming graph to their internal APIs.
 As there are so many variants of graphs and even more kinds of internal APIs, there is no "common Java graph API" in sight.
-Instead, {gio} just reads all kinds of formats and converts them to a common graph file format, *GraphML*.
+{gio} develops into the 'https://pandoc.org/[pandoc] of graph file formats'.
 
 .Benefits
 App developers:: of graph-related software can focus on core features.
-Need only to read *GraphML*.
+Need only to implement one importer for *Connected JSON (CJ)* to be able to import a bunch for graph formats.
 Converter developers:: easy to add more input formats
-Users:: can re-use their existing data effortlessly using almost any format their data producing software writes.
+Users:: can re-use their existing data effortlessly using almost any format their data-producing software writes.
 
 == Features
-
-* Written in modern Java (17).
-* Parses input and either converts to valid GraphML file, or
-* Shows comprehensible validation errors.
+* Parses input and either converts to valid output file, or
+* Shows comprehensible validation errors [Ok, we need to improve here].
 * Easy to integrate into existing software.
+* Written in modern Java (17+).
 
 .Non-Features
 * Java graph API
 * Convert relational data (CSV, Excel, databases) into graphs
 
-=== Output Format
-
-* link:reader-graphml/graphml-spec.adoc/[GraphML] (<- our notes about the format)
-
-Writing other formats could be a nice _future_ extension.
-This would turn {gio} into the 'https://pandoc.org/[pandoc] of graph file formats'.
-
-=== Input Formats
-
-A great 2015 paper on graph file formats: https://arxiv.org/pdf/1503.02781.pdf[]
-including links to graph data repositories -- time frames indicate when the format was/is used
-
-==== Text based
-Diverse text syntaxes to encode graphs.
-Common formats:
-
-.Supported
-* TGF Trivial Graph Format https://en.wikipedia.org/wiki/Trivial_Graph_Format[Wikipedia]
-* DOT language https://graphviz.org/doc/info/lang.html[spec]
-
-.Planned
-* Pajek, http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf[spec]
-* Nested Network Format
-* BioGRID Tab 3.0 Format https://wiki.thebiogrid.org/doku.php/biogrid_tab_version_3.0[spec]
-* PSI-MI Tab Version 2.5 Format https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-5-44[spec]
-* Matrix Market from the large 'Matrix Market' https://math.nist.gov/MatrixMarket/formats.html#MMformat[spec]
-
-==== XML based
-Expressed as XML.
-Common formats:
-
-.Supported
-* link:reader-graphml/graphml-spec.adoc/[GraphML] (<- our notes about the format)
-
-
-.Planned
-* GEXF (Graph Exchange XML Format). http://gexf.net/schema.html[specification], http://gexf.net/basic.html[examples]
-* GML Graph Modelling Language https://en.wikipedia.org/wiki/Graph_Modelling_Language[Wikipedia]; http://www.graphviewer.nl/misc/gmllanguage/gml-technical-report.pdf[spec 1997] predecessor of GraphML
-* GXL Graph eXchange Language https://en.wikipedia.org/wiki/GXL[Wikipedia]
-* XGMML https://en.wikipedia.org/wiki/XGMML[spec]
-* Systems Biology Markup Language (SBML) http://sbml.org/documents/[spec]
-
-==== JSON based
-In JSON format.
-Common formats:
-
-.Supported
-* Connected JSON (CJ) https://j-s-o-n.org[spec]
-
-.Planned
-* JSON Graph https://netflix.github.io/falcor/documentation/jsongraph.html[spec]
-* Json Graph Format https://github.com/jsongraph/json-graph-specification[spec]
-* CytoscapeCX https://cytoscape.org/cx/[spec]
-
-==== Triple based
-Triples (semantic web) can be encoded themselves as XML or text-based syntaxes.
-They are used for knowledge graphs, vocabularies, linked open data and ontologies.
-Common file types:
-
-.Planned
-* Turtle (text-based, `.ttl`)
-* RDF/XML (XML-based, `.rdf.xml`
-* N3 (text-based, `n3`)
-* N-Triples (text-based, `nt`)
-* Web Ontology Language (XML-based, `.owl.xml`)
-* BioPAX (OWL-based) BioPAX (Biological PAthways eXchange) Format http://www.biopax.org/[spec]
 
 == Usage
-{gio} can be used as a Java library to read format X and write to Y.
-Or use the https://GraphInOut.com[free online service].
+{gio} can be used as a Java library to read format X (`GioReader`) and write format Y (`GioWriter`).
+See `GioEngineCore` as currently the best entry point.
 
-== Introduction to Graphs
+You can use this lib in the free online service for graph conversion running at https://graphinout.com
 
+
+== Road Map
+
+- Clarify underspecified edge cases such as https://github.com/Calpano/graphinout/issues/105[#105]
+- Fix minor bugs such as https://github.com/Calpano/graphinout/issues/133[#133]
+- Add https://github.com/Calpano/graphinout/issues?q=is%3Aissue%20state%3Aopen%20label%3AFormat-Specific%20type%3AFeature[more readers and writers]
+- Document better for converter authors
+
+== Issues
+You found a bug or want a feature? Please https://github.com/Calpano/graphinout/issues[file an issue].
+
+
+== Background: Introduction to Graphs
 A graph is first a mathematical concept.
 As it turns out, it is rather a family of concepts.
 Graphs can be directed or undirected.
@@ -125,8 +102,7 @@ A graph file format needs to be able to represent e.g. directed graphs.
 All formats which do can represent cycle-free directed graphs as well as graphs with cycles.
 There are many, many graph concepts, which are not required to understand or even know when converting graph input data is your job.
 
-== Graph File Format Features
-
+.Graph File Format Features
 - undirected graphs
 - directed graphs https://en.wikipedia.org/wiki/Directed_graph[Wikipedia]
 - mixed graph: mix of directed and undirected edges
@@ -136,30 +112,4 @@ There are many, many graph concepts, which are not required to understand or eve
 - node attributes (e.g. type of node or weight)
 - hyper-graphs: edges with more than 2 endpoints
 
-== Ecosystem
-
-* Domain Software engineering (2002) https://userpages.uni-koblenz.de/~ist/GXL/tools/tools.html[]
-
-=== Graph Toolkits
-
-* https://networkx.org/[NetworkX] <- GEXF, GML, GraphML, LEDA, Pajek
-* https://en.wikipedia.org/wiki/Boost_(C%2B%2B_libraries)[BOOST] C++ library <--> GraphML
-* https://graph-tool.skewed.de/[graph-tool] <-> GraphML, GML
-
-=== Graph Databases
-
-* https://neo4j.com/[neo4j]
-* MemGraph
-
-=== Graph Drawing
-
-* GraphViz
-* https://js.cytoscape.org/[Cytoscape.js]
-* https://gephi.org/[Gephi] <--> GraphML subset
-* yED <--> partial GraphML support
-
-=== Graph Datasets
-
-* https://networks.skewed.de/ -- GraphML and GML exports
-* https://snap.stanford.edu/data/ -- wide mix of data formats
 
