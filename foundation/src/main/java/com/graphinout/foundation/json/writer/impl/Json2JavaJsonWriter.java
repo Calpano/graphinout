@@ -10,7 +10,7 @@ import com.graphinout.foundation.json.value.java.JavaJsonObject;
 import com.graphinout.foundation.json.value.java.JavaJsonPrimitive;
 import com.graphinout.foundation.json.writer.JsonWriter;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Stack;

@@ -1,9 +1,11 @@
 package com.graphinout.foundation.json.value;
 
+
+import com.graphinout.foundation.json.JsonType;
 import com.graphinout.foundation.json.path.IJsonNavigationPath;
 import com.graphinout.foundation.json.writer.JsonWriter;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.BiConsumer;
@@ -16,12 +18,11 @@ public interface IJsonPrimitive extends IJsonValue {
 
     default void fire(JsonWriter jsonWriter) {
         switch (jsonType()) {
-            case Null -> jsonWriter.onNull();
-            case Boolean -> jsonWriter.onBoolean(castTo(Boolean.class));
-            case String -> jsonWriter.onString(castTo(String.class));
-            case XmlString ->
-                        castTo(IJsonXmlString.class).fire(jsonWriter);
-            case Number -> {
+            case JsonType.Null -> jsonWriter.onNull();
+            case JsonType.Boolean -> jsonWriter.onBoolean(castTo(Boolean.class));
+            case JsonType.String -> jsonWriter.onString(castTo(String.class));
+            case JsonType.XmlString -> castTo(IJsonXmlString.class).fire(jsonWriter);
+            case JsonType.Number -> {
                 // TODO use same Number to primitive code as elsewhere
                 Object base = base();
                 if (base instanceof Long v) {
@@ -52,14 +53,25 @@ public interface IJsonPrimitive extends IJsonValue {
 
     default boolean isPrimitive() {return true;}
 
+    default Object toJaJsonPrimitive() {
+        return switch (jsonType()) {
+            case JsonType.String -> asString();
+            case JsonType.XmlString -> castTo(IJsonXmlString.class).toJaJsonMap();
+            case JsonType.Boolean -> asBoolean();
+            case JsonType.Number -> asNumber();
+            case JsonType.Null -> null;
+            default -> throw new IllegalStateException("Unexpected value: " + jsonType());
+        };
+    }
+
     /** JSON null is Java null */
     default @Nullable String toJavaString() {
         return switch (jsonType()) {
-            case String -> asString();
-            case XmlString -> castTo(IJsonXmlString.class).rawXmlString();
-            case Boolean -> asBoolean().toString();
-            case Number -> asNumber().toString();
-            case Null -> null;
+            case JsonType.String -> asString();
+            case JsonType.XmlString -> castTo(IJsonXmlString.class).rawXmlString();
+            case JsonType.Boolean -> asBoolean().toString();
+            case JsonType.Number -> asNumber().toString();
+            case JsonType.Null -> null;
             default -> throw new IllegalStateException("Unexpected value: " + jsonType());
         };
     }

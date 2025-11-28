@@ -2,11 +2,11 @@ package com.graphinout.reader.graphml.elements;
 
 import com.graphinout.reader.graphml.elements.builder.GraphmlEdgeBuilder;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import static com.graphinout.foundation.text.StringFormatter.toStringOrNull;
+import static com.graphinout.foundation.test.StringFormatter.toStringOrNull;
 
 public interface IGraphmlEdge extends IGraphmlElementWithDescAndId {
 

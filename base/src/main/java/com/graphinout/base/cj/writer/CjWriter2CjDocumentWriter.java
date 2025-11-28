@@ -26,7 +26,7 @@ import com.graphinout.foundation.json.writer.impl.Json2JavaJsonWriter;
 import com.graphinout.foundation.json.value.IJsonValue;
 import com.graphinout.foundation.util.PowerStackOnClasses;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 import static com.graphinout.foundation.util.Nullables.ifConsumerPresentAccept;

@@ -3,11 +3,11 @@ package com.graphinout.reader.graphml;
 import com.graphinout.reader.graphml.cj.CjGraphmlMapping.GraphmlDataElement;
 import com.graphinout.reader.graphml.elements.GraphmlElements;
 import com.graphinout.reader.graphml.elements.IGraphmlGraph;
-import com.graphinout.foundation.xml.CharactersKind;
+import com.graphinout.base.xml.CharactersKind;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.util.XmlNormalizer;
-import com.graphinout.foundation.xml.writer.XmlWriter;
+import com.graphinout.base.xml.XmlNormalizer;
+import com.graphinout.base.xml.writer.XmlWriter;
 import com.graphinout.foundation.xml.document.IXmlNode;
 import com.graphinout.foundation.xml.document.XmlElement;
 

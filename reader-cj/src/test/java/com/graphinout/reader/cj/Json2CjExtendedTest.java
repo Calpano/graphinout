@@ -2,8 +2,8 @@ package com.graphinout.reader.cj;
 
 import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.base.cj.writer.LoggingCjWriter;
-import com.graphinout.foundation.input.InputSource;
-import com.graphinout.foundation.json.JsonReaderImpl;
+import com.graphinout.base.input.InputSource;
+import com.graphinout.base.json.JsonReaderImpl;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.graphinout.foundation.input.SingleInputSourceOfString.inputSource;
+import static com.graphinout.base.input.SingleInputSourceOfString.inputSource;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

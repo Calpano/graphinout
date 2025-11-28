@@ -9,7 +9,7 @@ import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonValue;
 import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.List;
 
 public class CjDataElement implements ICjDataMutable {

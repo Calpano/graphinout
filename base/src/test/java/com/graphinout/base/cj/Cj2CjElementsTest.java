@@ -6,11 +6,11 @@ import com.graphinout.base.cj.util.CjNormalizer;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.Json2CjWriter;
-import com.graphinout.foundation.TestFileUtil;
-import com.graphinout.foundation.input.SingleInputSourceOfString;
+import com.graphinout.base.TestFileUtil;
+import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.foundation.json.util.JsonFormatter;
 import com.graphinout.foundation.json.writer.JsonWriter;
-import com.graphinout.foundation.json.JsonReaderImpl;
+import com.graphinout.base.json.JsonReaderImpl;
 import com.graphinout.foundation.json.writer.impl.StringBuilderJsonWriter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ public class Cj2CjElementsTest {
     boolean addLogging = true;
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
+    @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test all Canonical CJ files together")
     void test_Json2Cj2Elements2Cj2Json(String displayPath, Resource xmlResource) throws Exception {
         // == OUT Pipeline

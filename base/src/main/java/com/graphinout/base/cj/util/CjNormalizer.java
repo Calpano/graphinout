@@ -4,13 +4,13 @@ import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.data.CjDataProperty;
 import com.graphinout.foundation.json.JsonConstants;
 import com.graphinout.foundation.json.JsonTransformer;
+import com.graphinout.base.json.value.JavaJsonValuesBase;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.json.value.IJsonArrayMutable;
 import com.graphinout.foundation.json.value.IJsonContainer;
 import com.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.graphinout.foundation.json.value.IJsonValue;
 import com.graphinout.foundation.json.value.JsonPaths;
-import com.graphinout.foundation.json.value.java.JavaJsonValues;
 
 import java.util.List;
 
@@ -79,7 +79,7 @@ public class CjNormalizer {
             return;
         }
 
-        IJsonValue jsonValue = JavaJsonValues.ofJsonString(cjJson);
+        IJsonValue jsonValue = JavaJsonValuesBase.ofJsonString(cjJson);
         // is mutated in-place
         new JsonTransformer(HANDLER).traverse(jsonValue);
 

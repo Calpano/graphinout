@@ -1,5 +1,6 @@
 package com.graphinout.foundation.json.writer;
 
+
 import com.graphinout.foundation.json.JsonException;
 
 import java.util.function.Consumer;

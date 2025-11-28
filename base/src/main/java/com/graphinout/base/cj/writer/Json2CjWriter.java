@@ -8,7 +8,7 @@ import com.graphinout.base.cj.document.ICjEdgeType;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.JsonType;
 import com.graphinout.foundation.json.writer.JsonWriter;
-import edu.umd.cs.findbugs.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.math.BigDecimal;

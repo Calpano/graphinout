@@ -6,7 +6,7 @@ import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjEdgeType;
 import com.graphinout.foundation.json.JsonException;
 import com.graphinout.foundation.json.writer.impl.LoggingJsonWriter;
-import edu.umd.cs.findbugs.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.math.BigDecimal;
@@ -243,7 +243,7 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
             } else {
                 buffer("<");
                 buffer(event.name());
-                buffer(" '");
+                buffer(" value='");
                 buffer(o.toString());
                 buffer("' />");
             }

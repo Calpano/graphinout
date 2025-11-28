@@ -15,7 +15,7 @@ import com.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.graphinout.foundation.json.value.IJsonPrimitive;
 import com.graphinout.foundation.json.value.IJsonValue;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 import static com.graphinout.foundation.util.Nullables.ifConsumerPresentAccept;

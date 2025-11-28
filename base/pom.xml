@@ -12,10 +12,16 @@
     <name>base</name>
 
     <dependencies>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId></dependency>
         <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId></dependency>
         <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
-        <dependency><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId></dependency>
+        <dependency>
+          <groupId>org.gwtproject.regexp</groupId>
+          <artifactId>gwt-regexp</artifactId>
+          <version>1.0.0-RC1</version>
+        </dependency>
+
         <dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>33.2.0-jre</version></dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -44,7 +50,6 @@
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId></dependency>
 
         <!-- test -->
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><scope>test</scope></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId>
             <classifier>tests</classifier>
             <type>test-jar</type>
@@ -52,7 +57,13 @@
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><scope>test</scope></dependency>
-        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope></dependency><dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.7-SNAPSHOT</version><scope>compile</scope></dependency>
+        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope>
+            <exclusions>
+                <!-- TODO do this in every POM -->
+                <!-- exclude Guava to avoid com.google.guava:guava:jar:33.2.1-android -->
+                <exclusion><groupId>com.google.guava</groupId><artifactId>guava</artifactId></exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <build>

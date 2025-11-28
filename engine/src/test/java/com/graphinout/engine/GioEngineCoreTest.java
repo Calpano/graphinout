@@ -3,10 +3,10 @@ package com.graphinout.engine;
 import com.graphinout.base.ReaderTests;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.ContentErrors;
-import com.graphinout.foundation.TestFileProvider;
-import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.output.InMemoryOutputSink;
+import com.graphinout.base.input.ContentErrors;
+import com.graphinout.base.TestFileProvider;
+import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.base.output.InMemoryOutputSink;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.foundation.TestFileUtil.resource;
+import static com.graphinout.base.TestFileUtil.resource;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.slf4j.LoggerFactory.getLogger;
 

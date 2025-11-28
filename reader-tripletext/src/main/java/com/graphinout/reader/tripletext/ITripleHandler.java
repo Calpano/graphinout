@@ -1,6 +1,6 @@
 package com.graphinout.reader.tripletext;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface ITripleHandler<S, P, O> {
 

@@ -8,7 +8,7 @@ import com.graphinout.base.cj.document.ICjNodeChunk;
 import com.graphinout.base.cj.factory.ICjFactory;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.base.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

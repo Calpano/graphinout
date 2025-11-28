@@ -4,9 +4,9 @@ import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.ReaderTests;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.cj.util.CjValidator;
-import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.output.InMemoryOutputSink;
-import com.graphinout.foundation.output.OutputSink;
+import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.base.output.InMemoryOutputSink;
+import com.graphinout.base.output.OutputSink;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 

@@ -4,7 +4,7 @@ import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjDocumentMetaMutable;
 import com.graphinout.base.cj.writer.ICjWriter;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class CjDocumentMetaElement implements ICjDocumentMetaMutable {
 

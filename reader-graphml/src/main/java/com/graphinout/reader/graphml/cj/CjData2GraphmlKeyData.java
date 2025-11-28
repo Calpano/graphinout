@@ -9,13 +9,13 @@ import com.graphinout.base.cj.document.ICjEdge;
 import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjHasLabel;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
+import com.graphinout.foundation.json.value.IJsonObject;
+import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.util.PowerStreams;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
 import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
 import com.graphinout.reader.graphml.elements.IGraphmlKey;
 import com.graphinout.reader.graphml.elements.builder.GraphmlKeyBuilder;
-import com.graphinout.foundation.json.value.IJsonObject;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.util.PowerStreams;
 
 import java.util.Map;
 import java.util.Objects;
@@ -102,7 +102,7 @@ public class CjData2GraphmlKeyData {
                     .filter(Objects::nonNull)
                     .map(ICjData::jsonValue)
                     .anyMatch(jsonValue -> {
-                        if(jsonValue == null) {
+                        if (jsonValue == null) {
                             // TODO how to deal with this?
                             return true;
                         }
@@ -120,8 +120,8 @@ public class CjData2GraphmlKeyData {
                 graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.CjJsonData.toGraphmlKey());
             }
 
-            // are synthetic nodes used in this doc?
-            if (CjDocument2Graphml.containsSyntheticNodes(cjDoc)) {
+            // are synthetic nodes used OR REQUIRED in this doc?
+            if (CjDocument2Graphml.containsSyntheticNodes(cjDoc) || CjDocument2Graphml.requiresSyntheticNodes(cjDoc)) {
                 graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.SyntheticNode.toGraphmlKey());
             }
         }

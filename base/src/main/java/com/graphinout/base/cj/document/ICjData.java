@@ -4,8 +4,9 @@ import com.graphinout.foundation.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonValue;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.graphinout.foundation.util.Nullables.mapOrDefault;
@@ -51,6 +52,14 @@ public interface ICjData extends ICjElement {
         IJsonValue value = jsonValue();
         assert value != null;
         return value;
+    }
+
+    default Object toJaJsonValue() {
+        IJsonValue json = jsonValue();
+        if (json == null) {
+            return null;
+        }
+        return json.toJaJsonValue();
     }
 
 }

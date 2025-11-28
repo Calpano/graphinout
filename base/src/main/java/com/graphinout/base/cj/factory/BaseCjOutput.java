@@ -4,7 +4,7 @@ import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.Locator;
 import com.graphinout.foundation.input.IHandleContentErrors;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 public class BaseCjOutput extends CjFactory implements IHandleContentErrors {

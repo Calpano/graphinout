@@ -26,7 +26,6 @@
         </dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <!-- test -->
-        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId></dependency>
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><scope>test</scope></dependency>

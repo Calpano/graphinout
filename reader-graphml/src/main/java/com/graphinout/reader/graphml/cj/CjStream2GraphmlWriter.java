@@ -17,7 +17,7 @@ import com.graphinout.foundation.input.Locator;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.json.value.IJsonFactory;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.util.function.Consumer;
 

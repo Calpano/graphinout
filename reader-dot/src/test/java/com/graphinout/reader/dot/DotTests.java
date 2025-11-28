@@ -1,11 +1,11 @@
 package com.graphinout.reader.dot;
 
-import com.graphinout.foundation.TestFileProvider;
+import com.graphinout.base.TestFileProvider;
 
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.graphinout.foundation.TestFileProvider.resources;
+import static com.graphinout.base.TestFileProvider.resources;
 
 public class DotTests {
 

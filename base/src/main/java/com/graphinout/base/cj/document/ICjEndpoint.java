@@ -1,6 +1,9 @@
 package com.graphinout.base.cj.document;
 
-import javax.annotation.Nullable;
+import com.graphinout.base.cj.CjConstants;
+import com.graphinout.foundation.jajson.JaJson;
+import org.jspecify.annotations.Nullable;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -44,5 +47,12 @@ public interface ICjEndpoint extends ICjHasData {
 
     @Nullable
     String typeUri();
+
+    default Map<String, Object> toJaJsonMap() {
+        return JaJson.createMap()
+                .putMaybe(CjConstants.ENDPOINT__NODE, node())
+                .putMaybe(CjConstants.ENDPOINT__PORT, port())
+                .build();
+    }
 
 }

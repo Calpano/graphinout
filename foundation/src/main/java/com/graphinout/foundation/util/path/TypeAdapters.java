@@ -3,7 +3,7 @@ package com.graphinout.foundation.util.path;
 import com.graphinout.foundation.util.MapMap;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -1,9 +1,9 @@
 package com.graphinout.foundation.xml.document;
 
-import com.graphinout.foundation.xml.CharactersKind;
+import com.graphinout.base.xml.CharactersKind;
+import com.graphinout.base.xml.XmlSerializer;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.util.XmlSerializer;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;

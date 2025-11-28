@@ -1,7 +1,7 @@
 package com.graphinout.base.cj.util;
 
 import com.graphinout.base.cj.Cj;
-import com.graphinout.foundation.input.InputSource;
+import com.graphinout.base.input.InputSource;
 import com.networknt.schema.InputFormat;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;

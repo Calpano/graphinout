@@ -2,8 +2,8 @@ package com.graphinout.reader.gexf;
 
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
-import com.graphinout.foundation.input.InputSource;
-import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.base.input.InputSource;
+import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;

@@ -6,10 +6,10 @@ import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.writer.ValidatingCjWriter;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.InputSource;
+import com.graphinout.base.input.InputSource;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;

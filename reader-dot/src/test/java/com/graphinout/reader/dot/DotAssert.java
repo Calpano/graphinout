@@ -1,11 +1,11 @@
 package com.graphinout.reader.dot;
 
 import com.graphinout.base.cj.document.ICjDocument;
-import com.graphinout.foundation.text.StringFormatter;
-import com.graphinout.foundation.text.TextReader;
-import com.graphinout.foundation.text.TextWriterOnStringBuilder;
+import com.graphinout.foundation.test.StringFormatter;
+import com.graphinout.base.text.TextReader;
+import com.graphinout.base.text.TextWriterOnStringBuilder;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import static com.google.common.truth.Truth.assertThat;
 

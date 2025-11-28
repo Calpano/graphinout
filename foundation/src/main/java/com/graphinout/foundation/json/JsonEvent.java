@@ -1,6 +1,6 @@
 package com.graphinout.foundation.json;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import static com.graphinout.foundation.json.JsonEvent.Type.ArrayEnd;
 import static com.graphinout.foundation.json.JsonEvent.Type.ArrayStart;

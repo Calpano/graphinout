@@ -4,13 +4,13 @@ import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.InputSource;
-import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.base.input.InputSource;
+import com.graphinout.base.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;

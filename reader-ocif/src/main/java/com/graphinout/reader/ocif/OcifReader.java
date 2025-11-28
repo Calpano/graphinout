@@ -6,19 +6,19 @@ import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.InputSource;
-import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.base.input.InputSource;
+import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.json.value.IJsonArray;
 import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonObjectMutable;
 import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.json.value.java.JavaJsonValues;
+import com.graphinout.base.json.value.JavaJsonValuesBase;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -62,7 +62,7 @@ public class OcifReader implements GioReader {
         }
 
         // Parse OCIF JSON and emit CJ stream events
-        IJsonValue root = JavaJsonValues.ofJsonString(json);
+        IJsonValue root = JavaJsonValuesBase.ofJsonString(json);
         IJsonObject o = root == null ? null : root.asObject();
         if (o == null) {
             if (errorHandler != null) {

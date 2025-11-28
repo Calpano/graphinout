@@ -3,7 +3,7 @@ package com.graphinout.foundation.xml.writer;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.document.XmlDocument;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.util.function.Consumer;
 

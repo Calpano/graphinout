@@ -1,7 +1,8 @@
 package com.graphinout.foundation.json.writer;
 
+
 import com.graphinout.foundation.json.JsonException;
-import edu.umd.cs.findbugs.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -1,8 +1,9 @@
 package com.graphinout.foundation.input;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
+
 import java.util.Objects;
 
 import static org.slf4j.LoggerFactory.getLogger;

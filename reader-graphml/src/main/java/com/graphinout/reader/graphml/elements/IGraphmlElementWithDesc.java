@@ -1,6 +1,6 @@
 package com.graphinout.reader.graphml.elements;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Objects;
 
 /**

@@ -5,7 +5,7 @@ import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjLabelEntryMutable;
 import com.graphinout.base.cj.writer.ICjWriter;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class CjLabelEntryElement extends CjHasDataElement implements ICjLabelEntryMutable {
 

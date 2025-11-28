@@ -1,6 +1,6 @@
 package com.graphinout.base.cj.document;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Direction for edge endpoints according to Connected JSON specification.

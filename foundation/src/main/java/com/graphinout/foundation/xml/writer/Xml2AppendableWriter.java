@@ -1,9 +1,10 @@
 package com.graphinout.foundation.xml.writer;
 
-import com.graphinout.foundation.xml.CharactersKind;
+import com.graphinout.base.xml.CharactersKind;
+import com.graphinout.base.xml.writer.XmlWriter;
 import com.graphinout.foundation.xml.XML;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

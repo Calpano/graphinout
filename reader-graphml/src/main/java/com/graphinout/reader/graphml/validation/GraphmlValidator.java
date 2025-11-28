@@ -1,8 +1,8 @@
 package com.graphinout.reader.graphml.validation;
 
-import com.graphinout.foundation.input.InputSource;
-import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.xml.sax.SaxErrors2Log;
+import com.graphinout.base.input.InputSource;
+import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.base.xml.sax.SaxErrors2Log;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;

@@ -2,10 +2,10 @@ package com.graphinout.reader.graphml.cj;
 
 import com.graphinout.base.cj.data.CjDataProperty;
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjEdgeType;
 import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
+import com.graphinout.base.cj.document.ICjEdgeType;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjHasData;
@@ -13,11 +13,18 @@ import com.graphinout.base.cj.document.ICjLabel;
 import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.base.cj.document.ICjPort;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
+import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.json.value.java.JavaJsonObject;
+import com.graphinout.foundation.util.Nullables;
+import com.graphinout.foundation.util.PowerStreams;
+import com.graphinout.foundation.util.ThrowingConsumer;
+import com.graphinout.foundation.xml.XML;
+import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.reader.graphml.IGraphmlWriter;
 import com.graphinout.reader.graphml.cj.CjGraphmlMapping.GraphmlDataElement;
 import com.graphinout.reader.graphml.elements.GraphmlDirection;
 import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
 import com.graphinout.reader.graphml.elements.GraphmlParseInfo;
-import com.graphinout.reader.graphml.IGraphmlWriter;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDefault;
 import com.graphinout.reader.graphml.elements.IGraphmlDescription;
@@ -40,15 +47,8 @@ import com.graphinout.reader.graphml.elements.builder.GraphmlHyperEdgeBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlNodeBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlPortBuilder;
 import com.graphinout.reader.graphml.elements.impl.GraphmlData;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.json.value.java.JavaJsonObject;
-import com.graphinout.foundation.util.Nullables;
-import com.graphinout.foundation.util.PowerStreams;
-import com.graphinout.foundation.util.ThrowingConsumer;
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.XmlFragmentString;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -71,12 +71,19 @@ public class CjDocument2Graphml {
         this.graphmlWriter = graphmlWriter;
     }
 
-    /** Synthetic nodes allow graphml to represent, e.g., a CJ's graph-graph nesting */
+    /**
+     * Synthetic nodes allow graphml to represent, e.g., a CJ's graph-graph nesting.
+     */
     public static boolean containsSyntheticNodes(ICjDocument cjDoc) {
         return CjData2GraphmlKeyData.findAllDatas((CjDocumentElement) cjDoc) //
                 .map(ICjData::jsonValue).filter(Objects::nonNull) //
                 .filter(IJsonValue::isObject).map(IJsonValue::asObject) //
                 .anyMatch(o -> o.hasProperty(CjDataProperty.SyntheticNode.cjPropertyKey));
+    }
+
+    /** @return true iff there is at least one graph-graph nesting */
+    public static boolean requiresSyntheticNodes(ICjDocument cjDoc) {
+        return cjDoc.allElements().anyMatch(cjElement -> cjElement.cjType() == CjType.Graph && cjElement.directChildren().anyMatch(child -> child.cjType() == CjType.Graph));
     }
 
     public static void writeToGraphml(ICjDocument cjDoc, IGraphmlWriter graphmlWriter) throws IOException {
@@ -118,7 +125,7 @@ public class CjDocument2Graphml {
 
         boolean usesCjData = PowerStreams.filterMap(cjDoc.allElements(), ICjHasData.class) //
                 .map(ICjHasData::data).anyMatch(Objects::nonNull);
-        if(!usesCjData) {
+        if (!usesCjData) {
             graphmlSchema.removeKeyById(CjGraphmlMapping.GraphmlDataElement.CjJsonData.attrName);
         }
 

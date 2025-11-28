@@ -1,8 +1,8 @@
 package com.graphinout.foundation.xml.document;
 
 import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.writer.Xml2AppendableWriter;
 import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.foundation.xml.writer.Xml2AppendableWriter;
 
 import java.io.IOException;
 

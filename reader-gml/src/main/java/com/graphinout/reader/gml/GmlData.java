@@ -5,7 +5,7 @@ import com.graphinout.foundation.json.value.IJsonValue;
 import com.graphinout.foundation.json.writer.JsonWriter;
 import com.graphinout.foundation.json.writer.impl.Json2JavaJsonWriter;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
