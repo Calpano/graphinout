@@ -7,6 +7,7 @@ import java.util.List;
 
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.COMMA;
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.SPACE;
+import static com.graphinout.foundation.json.util.JsonCompactFormatter.indent;
 
 class BlockContainer extends Block {
 
@@ -14,6 +15,7 @@ class BlockContainer extends Block {
     String open;
     String close;
     List<Block> children = new ArrayList<>();
+    boolean isInline = false;
 
     BlockContainer(int depth, JsonType.ContainerType containerType, String open, String close) {
         super(depth);
@@ -35,7 +37,15 @@ class BlockContainer extends Block {
     }
 
     @Override
-    public void compact() {
+    public void compact(int maxLineLength) {
+        children.forEach(block -> block.compact(maxLineLength));
+
+        if (!children.isEmpty() && children.stream().allMatch(Block::isInline)) {
+            // try to inline all children
+            if (indent(depth, SPACE).length() + width() < maxLineLength) {
+                isInline = true;
+            }
+        }
     }
 
     public void prependClose(String s) {
@@ -56,32 +66,41 @@ class BlockContainer extends Block {
                 if (isArrayWithSingleObjectChild()) {
                     // place open and close braces of array on object next to each other
                     // so we get `[{ "foo": 123 }]`
-                    child.toWriter(writer, depth+1);
+                    child.toWriter(writer, depth + 1);
                 } else {
                     writer.append(SPACE);
-                    child.toWriter(writer, depth+1);
+                    child.toWriter(writer, depth + 1);
                     writer.append(SPACE);
                 }
             }
             default -> {
-                //writer.append(SPACE);
                 // put on multiple lines
                 for (int i = 0; i < children.size(); i++) {
                     Block child = children.get(i);
                     if (i > 0) {
                         writer.append(COMMA);
                     }
-                    writer.newLine(child.depth);
-                    child.toWriter(writer, depth+1);
+                    if (!isInline) {
+                        writer.newLine(child.depth);
+                    } else {
+                        writer.append(SPACE);
+                    }
+                    child.toWriter(writer, depth + 1);
                 }
             }
         }
 
-        if(children.size() > 1) {
+        if (!isInline && children.size() > 1) {
             writer.newLine(parentDepth);
+        } else {
+            writer.append(SPACE);
         }
         // CLOSE brace
         writer.append(close());
+    }
+
+    protected boolean isInline() {
+        return isInline;
     }
 
     String close() {
@@ -109,7 +128,11 @@ class BlockContainer extends Block {
 
     @Override
     int width() {
-        return children.stream().mapToInt(Block::width).max().orElse(0);
+        if (isInline) {
+            return children.stream().mapToInt(Block::width).sum();
+        } else {
+            return children.stream().mapToInt(Block::width).max().orElse(0);
+        }
     }
 
 

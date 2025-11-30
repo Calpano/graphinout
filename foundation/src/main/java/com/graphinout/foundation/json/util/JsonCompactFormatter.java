@@ -35,7 +35,7 @@ public class JsonCompactFormatter {
     public static String formatCompact(Object jaJson, int maxLineLength, Set<String> forceMultiLineKeys) {
         JsonCompactFormatter formatter = new JsonCompactFormatter(maxLineLength, forceMultiLineKeys);
         Block block = valueToBlock(0, jaJson, formatter.config());
-        block.compact();
+        block.compact(maxLineLength);
 
         return IndentWriter.of(block).resultString();
     }

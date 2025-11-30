@@ -6,7 +6,7 @@ public abstract class Block {
 
     Block(int depth) {this.depth = depth;}
 
-    public abstract void compact();
+    public abstract void compact(int maxLineLength);
 
     @Override
     public String toString() {
@@ -14,6 +14,10 @@ public abstract class Block {
     }
 
     public abstract void toWriter(IndentWriter writer, int parentDepth);
+
+    protected boolean isInline() {
+        return true;
+    }
 
     abstract String firstLine();
 

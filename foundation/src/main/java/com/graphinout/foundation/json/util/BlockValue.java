@@ -10,7 +10,7 @@ class BlockValue extends Block {
     }
 
     @Override
-    public void compact() {
+    public void compact(int maxLineLength) {
     }
 
     @Override

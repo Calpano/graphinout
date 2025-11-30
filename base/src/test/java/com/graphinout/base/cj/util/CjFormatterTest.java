@@ -53,7 +53,7 @@ class CjFormatterTest {
         ICjDocument cjDoc = CjDocuments.parseCjJsonString("test", jsonInput);
 
         Map<String,Object> jaDoc = cjDoc.toJaJsonMap();
-        String actual = JsonCompactFormatter.formatCompact(jaDoc, 120, Set.of("nodes","edges","graphs"));
+        String actual = JsonCompactFormatter.formatCompact(jaDoc, 60, Set.of("nodes","edges","graphs"));
         assertThat(actual).isEqualTo(formatted);
     }
 
@@ -70,7 +70,7 @@ class CjFormatterTest {
     void testArrayOfObjects() throws IOException {
         List<Object> jaJsonInput = List.of(Map.of("a", 5),Map.of("b", 6, "c", 7),4);
         String formatted = """
-            [ 2, 3, 4 ]""";
+            [ { "a": 5 }, { "b": 6, "c": 7 }, 4 ]""";
         String actual = JsonCompactFormatter.formatCompact(jaJsonInput, 120, Set.of("nodes","edges","graphs"));
         assertThat(actual).isEqualTo(formatted);
     }
