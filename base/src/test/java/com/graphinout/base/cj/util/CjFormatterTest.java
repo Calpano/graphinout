@@ -76,6 +76,24 @@ class CjFormatterTest {
     }
 
     @Test
+    void testObjectWithArrays() {
+        Map<String, Object> jaJsonInput = Map.of(
+                "key1", List.of(1, 2, 3),
+                "key2", List.of(Map.of("nestedKey", "nestedValue"), Map.of("anotherNestedKey", "anotherNestedValue"))
+        );
+        String formatted = """
+            {
+              "key1": [ 1, 2, 3 ],
+              "key2": [
+                { "nestedKey": "nestedValue" },
+                { "anotherNestedKey": "anotherNestedValue" }
+              ]
+            }""";
+        String actual = JsonCompactFormatter.formatCompact(jaJsonInput, 60, Set.of("key1", "key2"));
+        assertThat(actual).isEqualTo(formatted);
+    }
+
+    @Test
     void testObject() throws IOException {
         Map<String,Object> jaJsonInput = new TreeMap<>(Map.of("a",2,"b",3,"c",4));
         String formatted = """
