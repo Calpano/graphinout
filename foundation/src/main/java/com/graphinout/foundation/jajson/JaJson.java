@@ -2,22 +2,24 @@ package com.graphinout.foundation.jajson;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /** Implements the Java-JSON from jajson.adoc */
 public class JaJson {
 
+    /** Creates a {@link LinkedHashMap} internally to respect insertion order */
     public static JaJsonMapBuilder createMap() {
         return new JaJsonMapBuilder();
     }
 
-    public static boolean isJaJason(Object value) {
+    public static boolean isJaJson(Object value) {
         return isJaJsonPrimitive(value) || isJaJsonList(value) || isJaJsonMap(value);
     }
 
     public static boolean isJaJsonList(Object value) {
-        return value instanceof List && ((List<?>) value).stream().allMatch(JaJson::isJaJason);
+        return value instanceof List && ((List<?>) value).stream().allMatch(JaJson::isJaJson);
     }
 
     public static boolean isJaJsonMap(Object object) {
@@ -27,7 +29,7 @@ public class JaJson {
     public static boolean isJaJsonMapEntry(Object object) {
         return object instanceof Map.Entry<?, ?>  //
                 && ((Map.Entry<?, ?>) object).getKey() instanceof String //
-                && isJaJason(((Map.Entry<?, ?>) object).getValue()) //
+                && isJaJson(((Map.Entry<?, ?>) object).getValue()) //
                 ;
     }
 
