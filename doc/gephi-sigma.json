@@ -1,0 +1,41 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "label": "Node A",
+      "x": -10.5,
+      "y": 5.2,
+      "size": 10.0,
+      "color": "rgb(255,0,0)",
+      "attributes": {
+        "pagerank": "0.25",
+        "community": "1"
+      }
+    },
+    {
+      "id": "n1",
+      "label": "Node B",
+      "x": 2.0,
+      "y": 3.0,
+      "size": 10.0,
+      "color": "rgb(0,0,255)",
+      "attributes": {
+        "pagerank": "0.15",
+        "community": "1"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e0",
+      "source": "n0",
+      "target": "n1",
+      "size": 1.0,
+      "label": "Link",
+      "color": "rgb(127,0,127)",
+      "attributes": {
+        "type": "Undirected"
+      }
+    }
+  ]
+}
