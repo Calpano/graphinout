@@ -1,19 +1,11 @@
 package com.graphinout.foundation.json.util;
 
-import java.util.function.Consumer;
-
 class BlockValue extends Block {
 
-    String value;
+    final String value;
 
-    BlockValue(int depth, String value) {
-        super(depth);
+    BlockValue(String value) {
         this.value = value;
-    }
-
-    @Override
-    public void toFormattedString(int charBudget, Consumer<String> lines) {
-        lines.accept(value);
     }
 
     @Override
@@ -21,20 +13,5 @@ class BlockValue extends Block {
         return Tile.of(value);
     }
 
-
-    @Override
-    public void toWriter(IndentWriter writer, int parentDepth) {
-        writer.append(value);
-    }
-
-    @Override
-    String firstLine() {
-        return value;
-    }
-
-    @Override
-    int width() {
-        return value.length();
-    }
 
 }

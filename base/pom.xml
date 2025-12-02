@@ -50,6 +50,7 @@
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId></dependency>
 
         <!-- test -->
+        <!-- get access to test resources -->
         <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId>
             <classifier>tests</classifier>
             <type>test-jar</type>

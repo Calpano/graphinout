@@ -8,11 +8,12 @@ import java.util.List;
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.NEWLINE;
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.SPACE;
 
+/** A rectangular, mutable text layout. May be {@link #isFixed()}. */
 public class Tile {
 
     private final List<String> lines = new ArrayList<>();
-    /** fixed layout? */
-    private boolean isFixed = false;
+    /** fixed layout */
+    private final boolean isFixed;
 
     public Tile(boolean isFixed) {
         this.isFixed = isFixed;
@@ -46,10 +47,6 @@ public class Tile {
         return lines.size();
     }
 
-    public void insertFirstLineLeft(String insert) {
-        lines.set(0, insert + lines.getFirst());
-    }
-
     public void insertLastLineRight(String insert) {
         lines.set(lines.size() - 1, lines.getLast() + insert);
     }
@@ -57,7 +54,7 @@ public class Tile {
     /**
      * Must contain at least 1 line.
      *
-     * @param first prepended to first line
+     * @param first prepended to the first line
      * @param body  prepended to each line in the middle
      */
     public void insertLeft(String first, String body) {
@@ -76,10 +73,6 @@ public class Tile {
 
     public void insertLineAbove(String line) {
         lines.addFirst(line);
-    }
-
-    public void insertRight(String insert) {
-        lines.replaceAll(s -> s + insert);
     }
 
     public boolean isFixed() {

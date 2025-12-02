@@ -1,42 +1,16 @@
 package com.graphinout.foundation.json.util;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
+import java.util.Set;
 
+/** A structural block consisting of other Blocks, finally in {@link BlockValue} there are strings. */
 public abstract class Block {
-
-    final int depth;
-
-    Block(int depth) {this.depth = depth;}
-
-    public abstract void toFormattedString(int charBudget, Consumer<String> lines);
-
-    public ArrayList<String> toFormattedString(int charBudget) {
-        ArrayList<String> list = new ArrayList<>();
-        toFormattedString(charBudget, list::add);
-        return list;
-    }
 
     @Override
     public String toString() {
-        return IndentWriter.of(this).resultString();
+        Tile tile = toTile(FormatterConfig.of(80, Set.of()), false);
+        return tile.toString();
     }
 
     public abstract Tile toTile(FormatterConfig config, boolean forceMultiLine);
-
-    public abstract void toWriter(IndentWriter writer, int parentDepth);
-
-    protected boolean isInline() {
-        return true;
-    }
-
-    protected boolean isObject() {
-        return false;
-    }
-
-    abstract String firstLine();
-
-    /** excluding indent */
-    abstract int width();
 
 }

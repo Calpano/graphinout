@@ -9,11 +9,12 @@ public class Symbols {
 
     public static final String CIRCLE = "⏺";
     public static final String SQUARE = "⏹";
-    public static final String WIFI = "\uD83D\uDCF6";
     public static final String PAUSE = "⏸";
-    public static final String NUMBER_1 = "❶";
+
     public static final String INLINE_FALSE = "↩";
     public static final String INLINE_TRUE = "➡";
+
+    public static final String NUMBER_1 = "❶";
     public static final String NUMBER_2 = "❷";
     public static final String NUMBER_3 = "❸";
     public static final String NUMBER_4 = "❹";
@@ -53,7 +54,6 @@ public class Symbols {
     public static final String NUMBER_18_DARK = "⑱";
     public static final String NUMBER_19_DARK = "⑲";
     public static final String NUMBER_20_DARK = "⑳";
-
 
     public static final String NONE = "";
 
