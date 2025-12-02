@@ -87,6 +87,7 @@ class BlockContainer extends Block {
                 if (!childTile.isFixed()) {
                     String singleLine = childTile.toSingleLine(maxChildWidth);
                     if (singleLine != null) {
+                        // replace existing childTile with wrapped version
                         childTile = Tile.of(singleLine);
                     }
                 }

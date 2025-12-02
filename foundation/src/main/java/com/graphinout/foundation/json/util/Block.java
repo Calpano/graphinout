@@ -7,7 +7,7 @@ public abstract class Block {
 
     @Override
     public String toString() {
-        Tile tile = toTile(FormatterConfig.of(80, Set.of()), false);
+        Tile tile = toTile(FormatterConfig.of(80, Set.of(), false), false);
         return tile.toString();
     }
 

@@ -22,9 +22,9 @@ class BlockProperty extends Block {
         int valueTileMaxWidth = config.maxWidth() - keyLine.length()
                 // reserve a SPACE
                 - 1;
-        FormatterConfig valueConfig = config.withMaxWidth(valueTileMaxWidth);
         boolean forceMultiLineValue = config.forceMultiLineKeys().contains(key);
         if (!forceMultiLineValue) {
+            FormatterConfig valueConfig = config.withMaxWidth(valueTileMaxWidth);
             Tile valueTile = value.toTile(valueConfig, false);
             String valueOneLine = valueTile.toSingleLine(valueTileMaxWidth);
             if (valueOneLine != null) {
@@ -32,7 +32,7 @@ class BlockProperty extends Block {
             }
         }
         // fall-back
-        Tile valueTile = value.toTile(valueConfig, forceMultiLineValue);
+        Tile valueTile = value.toTile(config, forceMultiLineValue);
         valueTile.insertLeft(SPACE2);
         valueTile.insertLineAbove(keyLine);
         return valueTile;

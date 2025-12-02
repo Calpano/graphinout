@@ -1,13 +1,12 @@
 package com.graphinout.reader.graphml;
 
+import com.graphinout.base.TestFileUtil;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.stream.NoopCjStream;
-import com.graphinout.base.TestFileUtil;
+import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.Location;
-import com.graphinout.base.input.SingleInputSource;
 import io.github.classgraph.Resource;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,13 +14,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.graphinout.base.TestFileUtil.inputSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,14 +30,14 @@ class GraphmlReaderContentErrorTest {
 
     @Test
     void elementsGraphmlDoesNotAllowCharacter_invalid_root() throws Exception {
-        Path inputSource = Paths.get("../base/src/test/resources/xml/graphml/synthetic/invalidgraphml-root.graphml");
-        URI resourceUri = inputSource.toUri();
-        String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
-        try (SingleInputSource singleInputSource = SingleInputSource.of(inputSource.toAbsolutePath().toString(), content)) {
+        String resourcePath = "xml/graphml/synthetic/invalidgraphml-root.graphml";
+        Resource resource = TestFileUtil.resource(resourcePath);
+        assertThat(resource).isNotNull();
+        String content = resource.getContentAsString();
+        try (SingleInputSource singleInputSource = SingleInputSource.of(resourcePath, content)) {
             GraphmlReader graphmlReader = new GraphmlReader();
             List<ContentError> contentErrors = new ArrayList<>();
-            graphmlReader.setContentErrorHandler(ce -> {
-                contentErrors.add(ce);});
+            graphmlReader.setContentErrorHandler(contentErrors::add);
 
             ICjStream cjStream = new NoopCjStream();
             graphmlReader.read(singleInputSource, cjStream);

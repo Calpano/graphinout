@@ -10,9 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -20,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.graphinout.base.TestFileUtil.file;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -38,8 +35,7 @@ public class Json5PreprocessorTest {
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.base.TestFileProvider#jsonResources")
     void testJson5Preprocessor(String displayPath, Resource jsonResource) throws IOException {
-        File jsonFile = file(jsonResource);
-        String originalContent = Files.readString(jsonFile.toPath());
+        String originalContent = jsonResource.getContentAsString();
         List<String> originalUrls = findUrls(originalContent);
 
         String processedContent = Json5Preprocessor.toJson(originalContent);
@@ -48,14 +44,14 @@ public class Json5PreprocessorTest {
         assertDoesNotThrow(() -> {
             // A simple way to check for valid JSON is to try to parse it.
             JsonReader jsonReader = new JsonReaderImpl();
-            InputSource inputSource = SingleInputSourceOfString.of(jsonFile.toString(), processedContent);
+            InputSource inputSource = SingleInputSourceOfString.of(originalContent, processedContent);
             StringBuilderJsonWriter writer = new StringBuilderJsonWriter();
             jsonReader.read(inputSource, writer);
-        }, "Processed content should be valid JSON for " + jsonFile);
+        }, "Processed content should be valid JSON for " + originalContent);
 
         // 2. Verify that all URLs in source file are still unchanged present.
         List<String> processedUrls = findUrls(processedContent);
-        assertEquals(originalUrls, processedUrls, "URLs should be unchanged after preprocessing " + jsonFile);
+        assertEquals(originalUrls, processedUrls, "URLs should be unchanged after preprocessing " + originalContent);
     }
 
     @Test

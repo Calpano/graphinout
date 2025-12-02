@@ -1,5 +1,6 @@
 package com.graphinout.reader.graphml;
 
+import com.graphinout.base.TestFileUtil;
 import com.graphinout.foundation.xml.writer.Xml2StringWriter;
 import com.graphinout.base.xml.util.XmlTool;
 import org.apache.commons.io.IOUtils;
@@ -20,13 +21,12 @@ class GraphmlReaderXMLContentTest {
     /**
      * String -> XML -> GraphML -> XML -> String
      */
-    private static String parseGraphmlToString(Path inputSource) throws IOException {
+    private static String parseGraphmlToString(String resourceName) throws IOException {
         // out
         Xml2StringWriter xml2stringWriter = new Xml2StringWriter();
         IGraphmlWriter graphml2xmlWriter = new Graphml2XmlWriter(xml2stringWriter);
         // in
-        URI resourceUri = inputSource.toUri();
-        String content = IOUtils.toString(resourceUri, StandardCharsets.UTF_8);
+        String content = TestFileUtil.resource(resourceName).getContentAsString();
         Xml2GraphmlWriter xml2GraphmlWriter = new Xml2GraphmlWriter(graphml2xmlWriter);
         try {
             XmlTool.parseAndWriteXml(content, xml2GraphmlWriter);
@@ -43,8 +43,8 @@ class GraphmlReaderXMLContentTest {
     @Test
     @Disabled("See issue #84")
     void html_Content_Tag_test() throws IOException {
-        Path inputSource = Paths.get("../base/src/test/resources/xml/graphml/HTML_Content_In_Data.xml");
-        String result = parseGraphmlToString(inputSource);
+        String resourceName = "xml/graphml/HTML_Content_In_Data.xml";
+        String result = parseGraphmlToString(resourceName);
         String expected = """
             <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
             <graph>
@@ -71,25 +71,25 @@ class GraphmlReaderXMLContentTest {
 
     @Test
     void xml_content_in_data() throws IOException {
-        Path inputSource = Paths.get("../base/src/test/resources/xml/XML_Standard_Content_In_Data.xml");
-        String result = parseGraphmlToString(inputSource);
-        String expected = IOUtils.toString(inputSource.toUri(), StandardCharsets.UTF_8);
+        String resourceName= "xml/XML_Standard_Content_In_Data.xml";
+        String result = parseGraphmlToString(resourceName);
+        String expected = TestFileUtil.resource(resourceName).getContentAsString();
         GraphmlAssert.xAssertThatIsSameGraphml(result, expected, null);
     }
 
     @Test
     void xml_content_in_default() throws IOException {
-        Path inputSource = Paths.get("../base/src/test/resources/xml/XML_Standard_Content_In_default.xml");
-        String expected = IOUtils.toString(inputSource.toUri(), StandardCharsets.UTF_8);
-        String result = parseGraphmlToString(inputSource);
+        String resourceName= "xml/XML_Standard_Content_In_default.xml";
+        String expected = TestFileUtil.resource(resourceName).getContentAsString();
+        String result = parseGraphmlToString(resourceName);
         GraphmlAssert.xAssertThatIsSameGraphml(result, expected, null);
     }
 
     @Test
     void xml_content_in_desc() throws IOException {
-        Path inputSource = Paths.get("../base/src/test/resources/xml/XML_Standard_Content_In_Desc.xml");
-        String result = parseGraphmlToString(inputSource);
-        String expected = IOUtils.toString(inputSource.toUri(), StandardCharsets.UTF_8);
+        String resourceName= "xml/XML_Standard_Content_In_Desc.xml";
+        String result = parseGraphmlToString(resourceName);
+        String expected = TestFileUtil.resource(resourceName).getContentAsString();
         GraphmlAssert.xAssertThatIsSameGraphml(result, expected, null);
     }
 

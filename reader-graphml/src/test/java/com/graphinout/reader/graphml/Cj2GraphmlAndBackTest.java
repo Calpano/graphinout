@@ -12,6 +12,9 @@ import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.base.json.JsonReaderImpl;
+import com.graphinout.foundation.jajson.JaJson;
+import com.graphinout.foundation.json.util.FormatterConfig;
+import com.graphinout.foundation.json.util.JsonCompactFormatter;
 import com.graphinout.foundation.json.writer.JsonWriter;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.json.writer.impl.StringBuilderJsonWriter;
@@ -30,6 +33,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.graphinout.base.TestFileUtil.inputSource;
@@ -86,8 +90,8 @@ public class Cj2GraphmlAndBackTest {
     @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
     @Description("Test JSON->CJ->Graphml->CjStream->CJ->JSON (all)")
     void test_Json_Cj_Graphml_CjStream_Cj_Json(String displayName, Resource resource) throws IOException {
-        String json = resource.getContentAsString();
-        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", json);
+        String jsonInput = resource.getContentAsString();
+        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", jsonInput);
 
         // JSON -> CJ doc
         CjWriter2CjDocumentWriter cj2ElementsWriter = new CjWriter2CjDocumentWriter();
@@ -106,7 +110,14 @@ public class Cj2GraphmlAndBackTest {
         CjDocument2Graphml cjDocument2Graphml = new CjDocument2Graphml(graphml2CjWriter);
         cjDocument2Graphml.writeDocumentToGraphml(cjDoc);
 
-        CjAssert.verifySameCjOrRecord(resource, "Cj2Gml2Cj", json2StringWriter.jsonString(), json, null);
+        String jsonOut = json2StringWriter.jsonString();
+        CjAssert.verifySameCjOrRecord(resource, "Cj2Gml2Cj", jsonOut, jsonInput,()->{
+            // format both pretty, then diff
+            FormatterConfig config = FormatterConfig.of(60, Set.of("nodes","edges","graphs"), true);
+            String compactOut =   JsonCompactFormatter.formatCompact(JaJson.parse(CjAssert.normalize(jsonOut)), config);
+            String compactIn =  JsonCompactFormatter.formatCompact(JaJson.parse(CjAssert.normalize(jsonInput)), config);
+            assertThat(compactOut).isEqualTo(compactIn);
+        });
     }
 
     @ParameterizedTest(name = "{index}: {0}")

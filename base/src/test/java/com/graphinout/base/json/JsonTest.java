@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static com.google.common.truth.Truth.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -135,9 +136,8 @@ public class JsonTest {
 
     private String readJsonFile(String filename) throws IOException {
         TestFileProvider.TestResource res = TestFileProvider.resourceByPath(testResourcesPrefix + "/" + filename);
-        File f =res.asFile();
-        Assertions.assertTrue(f.exists(), "JSON test file should exist: " + filename);
-        return FileUtils.readFileToString(f, StandardCharsets.UTF_8);
+        assertThat(res).isNotNull();
+        return res.resource().getContentAsString();
     }
 
     private void testJsonFile(String filename) throws IOException {

@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
- * Translates JSON first into a tree of {@link Block} ({@link BlockProperty}, {@link BlockContainer}, {@link BlockValue}) in O(n) and then top-down into a {@link Tile}.
+ * Translates JSON first into a tree of {@link Block} ({@link BlockProperty}, {@link BlockContainer},
+ * {@link BlockValue}) in O(n) and then top-down into a {@link Tile}.
  */
 public class JsonCompactFormatter {
 
@@ -19,8 +21,8 @@ public class JsonCompactFormatter {
 
     private final FormatterConfig config;
 
-    private JsonCompactFormatter(int maxLineLength, Set<String> forceMultiLineKeys) {
-        this.config = FormatterConfig.of(maxLineLength, forceMultiLineKeys);
+    private JsonCompactFormatter(FormatterConfig config) {
+        this.config = config;
     }
 
     /** Format with a width of 80 */
@@ -33,8 +35,13 @@ public class JsonCompactFormatter {
     }
 
     public static String formatCompact(Object jaJson, int maxLineLength, Set<String> forceMultiLineKeys) {
-        JsonCompactFormatter formatter = new JsonCompactFormatter(maxLineLength, forceMultiLineKeys);
-        FormatterConfig config = formatter.config();
+        FormatterConfig config = FormatterConfig.of(maxLineLength, forceMultiLineKeys, false);
+        return formatCompact(jaJson, config);
+    }
+
+
+    public static String formatCompact(Object jaJson, FormatterConfig config) {
+        JsonCompactFormatter formatter = new JsonCompactFormatter(config);
         Block block = valueToBlock(0, jaJson, config);
         Tile tile = block.toTile(config, false);
         return tile.toString();
@@ -51,15 +58,15 @@ public class JsonCompactFormatter {
 
     static Block mapToBlock(int depth, Map<String, Object> jaJason, FormatterConfig config) {
         BlockContainer blockObject = BlockContainer.createObjectBlock();
-        for (Map.Entry<String, Object> entry : jaJason.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-
-            Block valueBlock = valueToBlock(depth + 1, value, config);
-            BlockProperty propertyBlock = new BlockProperty(key, valueBlock);
-
-            blockObject.children.add(propertyBlock);
+        Map<String, Object> usedMap = jaJason;
+        if (config.sortMaps()) {
+            usedMap = new TreeMap<>(jaJason);
         }
+        usedMap.forEach((k, v) -> {
+            Block valueBlock = valueToBlock(depth + 1, v, config);
+            BlockProperty propertyBlock = new BlockProperty(k, valueBlock);
+            blockObject.children.add(propertyBlock);
+        });
         return blockObject;
     }
 

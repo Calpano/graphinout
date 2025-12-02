@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.graphinout.base.TestFileUtil;
 import com.graphinout.base.cj.jackson.CjJacksonDocument;
 import com.graphinout.base.cj.jackson.CjJacksonEdge;
 import com.graphinout.base.cj.jackson.CjJacksonEndpoint;
@@ -11,7 +12,6 @@ import com.graphinout.base.cj.jackson.CjJacksonGraph;
 import com.graphinout.base.cj.jackson.CjJacksonNode;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -28,10 +28,8 @@ public class CjJacksonParsingTest {
 
         // load resource "sample-1.cj.json"
         // Use ClassLoader to get the resource URL
-        java.net.URL resourceUrl = getClass().getClassLoader().getResource("json/cj/extended/sample-1.cj.json");
-        assertThat(resourceUrl).isNotNull();
-        File jsonFile = new File(resourceUrl.getFile());
-        CjJacksonDocument doc = objectMapper.readValue(jsonFile, CjJacksonDocument.class);
+        String jsonIn = TestFileUtil.resource("json/cj/extended/sample-1.cj.json").getContentAsString();
+        CjJacksonDocument doc = objectMapper.readValue(jsonIn, CjJacksonDocument.class);
 
         // Test document-level nodes and edges
         assertThat(doc.getNodes()).isNotNull();

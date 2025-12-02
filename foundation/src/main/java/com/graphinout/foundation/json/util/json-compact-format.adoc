@@ -1,4 +1,5 @@
 = JSON Compact Formatter
+:toc:
 
 A JSON pretty printer without the hot air.
 

@@ -1,7 +1,9 @@
 package com.graphinout.foundation.jajson;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,14 +56,19 @@ public class JaJson {
         return value;
     }
 
-    public static @Nullable String toJsonString(Object o) {
+    public static @NonNull String toJsonString(Object o) {
         return toString(o);
     }
 
     @Nonnull
     public static String toString(@Nullable Object javaJson) {
+        return toString(javaJson, false);
+    }
+
+    @Nonnull
+    public static String toString(@Nullable Object javaJson, boolean sortMaps) {
         StringBuilder sb = new StringBuilder();
-        JaJsonWriter.writeJson(javaJson, sb);
+        JaJsonWriter.writeJson(javaJson, sb, sortMaps);
         return sb.toString();
     }
 

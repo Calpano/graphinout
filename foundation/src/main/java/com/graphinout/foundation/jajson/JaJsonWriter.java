@@ -1,62 +1,72 @@
 package com.graphinout.foundation.jajson;
 
+import com.graphinout.foundation.util.BooleanRef;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class JaJsonWriter {
+
+    static void writeJson(@Nullable Object value, @Nonnull StringBuilder sb) {
+        writeJson(value, sb, false);
+    }
 
     /**
      * @param value to write
      * @param sb    to write to
      */
-    static void writeJson(@Nullable Object value, @Nonnull StringBuilder sb) {
-        if (value == null) {
-            sb.append("null");
-            return;
-        }
-
-        if (value instanceof Boolean b) {
-            sb.append(b ? "true" : "false");
-            return;
-        }
-
-        if (value instanceof Number n) {
-            if (n instanceof Double d) {
-                if (d.isNaN() || d.isInfinite()) {
-                    throw new IllegalArgumentException("NaN/Infinity not allowed in JSON");
-                }
-                // Use lowercase 'e' for exponents to follow common convention
-                sb.append(d.toString().replace('E', 'e'));
-            } else if (n instanceof Float f) {
-                if (f.isNaN() || f.isInfinite()) {
-                    throw new IllegalArgumentException("NaN/Infinity not allowed in JSON");
-                }
-                // Use lowercase 'e' for exponents to follow common convention
-                sb.append(n.toString().replace('E', 'e'));
-            } else if (n instanceof java.math.BigDecimal bd) {
-                // Prefer BigDecimal's canonical toString (which may use exponent)
-                // and normalize exponent letter to lowercase for consistency.
-                sb.append(bd.toString().replace('E', 'e'));
-            } else {
-                sb.append(n);
+    static void writeJson(@Nullable Object value, @Nonnull StringBuilder sb, boolean sortMaps) {
+        switch (value) {
+            case null -> {
+                sb.append("null");
+                return;
             }
-            return;
-        }
-
-        if (value instanceof String s) {
-            writeString(sb, s);
-            return;
-        }
-        if (value instanceof Character c) {
-            writeString(sb, String.valueOf(c));
-            return;
-        }
-
-        if (value instanceof Enum<?> e) {
-            writeString(sb, e.name());
-            return;
+            case Boolean b -> {
+                sb.append(b ? "true" : "false");
+                return;
+            }
+            case Number n -> {
+                switch (n) {
+                    case Double d -> {
+                        if (d.isNaN() || d.isInfinite()) {
+                            throw new IllegalArgumentException("NaN/Infinity not allowed in JSON");
+                        }
+                        // Use lowercase 'e' for exponents to follow common convention
+                        sb.append(d.toString().replace('E', 'e'));
+                    }
+                    case Float f -> {
+                        if (f.isNaN() || f.isInfinite()) {
+                            throw new IllegalArgumentException("NaN/Infinity not allowed in JSON");
+                        }
+                        // Use lowercase 'e' for exponents to follow common convention
+                        sb.append(n.toString().replace('E', 'e'));
+                    }
+                    case java.math.BigDecimal bd ->
+                        // Prefer BigDecimal's canonical toString (which may use exponent)
+                        // and normalize exponent letter to lowercase for consistency.
+                            sb.append(bd.toString().replace('E', 'e'));
+                    default -> sb.append(n);
+                }
+                return;
+            }
+            case String s -> {
+                writeString(sb, s);
+                return;
+            }
+            case Character c -> {
+                writeString(sb, String.valueOf(c));
+                return;
+            }
+            case Enum<?> e -> {
+                writeString(sb, e.name());
+                return;
+            }
+            default -> {
+            }
         }
 
         if (value.getClass().isArray()) {
@@ -81,17 +91,20 @@ public class JaJsonWriter {
             return;
         }
 
-        if (value instanceof java.util.Map<?, ?> map) {
+        if (value instanceof Map<?, ?> map) {
             sb.append('{');
-            boolean first = true;
-            for (java.util.Map.Entry<?, ?> entry : map.entrySet()) {
-                if (!first) sb.append(',');
-                first = false;
-                Object k = entry.getKey();
+            final BooleanRef first = BooleanRef.booleanRef(true);
+            Map<?, ?> usedMap = map;
+            if (sortMaps) {
+                usedMap = new TreeMap<>(map);
+            }
+            usedMap.forEach((k, v) -> {
+                if (!first.value) sb.append(',');
+                first.value = false;
                 writeString(sb, k == null ? "null" : String.valueOf(k));
                 sb.append(':');
-                writeJson(entry.getValue(), sb);
-            }
+                writeJson(v, sb);
+            });
             sb.append('}');
             return;
         }
