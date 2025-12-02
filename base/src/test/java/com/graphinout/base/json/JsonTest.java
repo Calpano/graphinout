@@ -1,5 +1,6 @@
 package com.graphinout.base.json;
 
+import com.graphinout.base.TestFileProvider;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.foundation.json.writer.impl.StringBuilderJsonWriter;
@@ -12,11 +13,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -28,12 +27,12 @@ public class JsonTest {
 
     private static final Logger log = getLogger(JsonTest.class);
     private JsonReader jsonReader;
-    private Path testResourcesPath;
+    private String testResourcesPrefix;
 
     @BeforeEach
     void setUp() {
         jsonReader = new JsonReaderImpl();
-        testResourcesPath = Paths.get("src/test/resources/json");
+        testResourcesPrefix = "json";
     }
 
     @Test
@@ -135,9 +134,10 @@ public class JsonTest {
     }
 
     private String readJsonFile(String filename) throws IOException {
-        Path filePath = testResourcesPath.resolve(filename);
-        Assertions.assertTrue(Files.exists(filePath), "JSON test file should exist: " + filename);
-        return FileUtils.readFileToString(filePath.toFile(), StandardCharsets.UTF_8);
+        TestFileProvider.TestResource res = TestFileProvider.resourceByPath(testResourcesPrefix + "/" + filename);
+        File f =res.asFile();
+        Assertions.assertTrue(f.exists(), "JSON test file should exist: " + filename);
+        return FileUtils.readFileToString(f, StandardCharsets.UTF_8);
     }
 
     private void testJsonFile(String filename) throws IOException {
