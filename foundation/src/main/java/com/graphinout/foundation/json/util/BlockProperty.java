@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.SPACE2;
-import static com.graphinout.foundation.json.util.JsonCompactFormatter.SPACE4;
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.oneChildLine;
 
 
@@ -19,11 +18,6 @@ class BlockProperty extends Block {
         super(depth);
         this.key = key;
         this.value = value;
-    }
-
-    @Override
-    public void compact(int maxLineLength) {
-        value.compact(maxLineLength);
     }
 
     @Override
@@ -52,20 +46,26 @@ class BlockProperty extends Block {
     }
 
     @Override
-    public Tile toTile(int maxLineLength) {
+    public Tile toTile(FormatterConfig config, boolean forceMultiLine) {
+        // TODO respect forceMultiLine for key - value
         String keyLine = "\"" + JSON.jsonEscape(key) + "\":";
-        int valueTileMaxWidth = maxLineLength - keyLine.length()
+        int valueTileMaxWidth = config.maxWidth() - keyLine.length()
                 // reserve a SPACE
                 - 1;
-        Tile valueTile = value.toTile(valueTileMaxWidth);
-        String valueOneLine = valueTile.toSingleLine(valueTileMaxWidth);
-        if (valueOneLine != null) {
-            return Tile.of(keyLine + " " + valueOneLine);
-        } else {
-            valueTile.insertLeft(SPACE2);
-            valueTile.insertLineAbove(keyLine);
-            return valueTile;
+        FormatterConfig valueConfig = config.withMaxWidth(valueTileMaxWidth);
+        boolean forceMultiLineValue = config.forceMultiLineKeys().contains(key);
+        if (!forceMultiLineValue) {
+            Tile valueTile = value.toTile(valueConfig, false);
+            String valueOneLine = valueTile.toSingleLine(valueTileMaxWidth);
+            if (valueOneLine != null) {
+                return Tile.of(keyLine + " " + valueOneLine);
+            }
         }
+        // fall-back
+        Tile valueTile = value.toTile(valueConfig, forceMultiLineValue);
+        valueTile.insertLeft(SPACE2);
+        valueTile.insertLineAbove(keyLine);
+        return valueTile;
     }
 
     @Override

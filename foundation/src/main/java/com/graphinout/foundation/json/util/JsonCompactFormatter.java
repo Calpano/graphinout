@@ -17,12 +17,10 @@ public class JsonCompactFormatter {
     public static final String SPACE4 = "    ";
 
     private static final int INDENT_SIZE = 2;
-    private final int maxLineLength;
-    private final Set<String> forceMultiLineKeys;
+    private final FormatterConfig config;
 
     private JsonCompactFormatter(int maxLineLength, Set<String> forceMultiLineKeys) {
-        this.maxLineLength = maxLineLength;
-        this.forceMultiLineKeys = forceMultiLineKeys;
+        this.config = FormatterConfig.of(maxLineLength, forceMultiLineKeys);
     }
 
     /** Format with a width of 80 */
@@ -36,19 +34,13 @@ public class JsonCompactFormatter {
 
     public static String formatCompact(Object jaJson, int maxLineLength, Set<String> forceMultiLineKeys) {
         JsonCompactFormatter formatter = new JsonCompactFormatter(maxLineLength, forceMultiLineKeys);
-        Block block = valueToBlock(0, jaJson, formatter.config());
-        // block.compact(maxLineLength);
-
-        Tile tile = block.toTile(maxLineLength);
+        FormatterConfig config = formatter.config();
+        Block block = valueToBlock(0, jaJson, config);
+        Tile tile = block.toTile(config, false);
         return tile.toString();
-
-//        List<String> lines = block.toFormattedString(maxLineLength);
-//        return String.join("\n", lines);
-//        return IndentWriter.of(block).resultString();
     }
 
     /**
-     *
      * @param depth
      * @param indent for debug, something else than space can be put here.
      * @return
@@ -61,7 +53,7 @@ public class JsonCompactFormatter {
         return indent(depth, SPACE);
     }
 
-    static Block listToBlock(int depth, List<Object> jaJason, Config config) {
+    static Block listToBlock(int depth, List<Object> jaJason, FormatterConfig config) {
         BlockContainer blockArray = BlockContainer.createArrayBlock(depth);
         for (Object o : jaJason) {
             Block valueBlock = valueToBlock(depth + 1, o, config);
@@ -70,7 +62,7 @@ public class JsonCompactFormatter {
         return blockArray;
     }
 
-    static Block mapToBlock(int depth, Map<String, Object> jaJason, Config config) {
+    static Block mapToBlock(int depth, Map<String, Object> jaJason, FormatterConfig config) {
         BlockContainer blockObject = BlockContainer.createObjectBlock(depth);
         for (Map.Entry<String, Object> entry : jaJason.entrySet()) {
             String key = entry.getKey();
@@ -111,7 +103,7 @@ public class JsonCompactFormatter {
     }
 
     @SuppressWarnings("unchecked")
-    static Block valueToBlock(int depth, Object jaJson, Config config) {
+    static Block valueToBlock(int depth, Object jaJson, FormatterConfig config) {
         if (jaJson instanceof Map<?, ?> map) {
             return mapToBlock(depth, (Map<String, Object>) map, config);
         } else if (jaJson instanceof List<?> list) {
@@ -121,9 +113,8 @@ public class JsonCompactFormatter {
         }
     }
 
-    private Config config() {
-        return new Config(maxLineLength, forceMultiLineKeys);
+    private FormatterConfig config() {
+        return config;
     }
-
 
 }

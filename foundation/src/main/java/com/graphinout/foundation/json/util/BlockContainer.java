@@ -10,7 +10,6 @@ import java.util.function.Consumer;
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.COMMA;
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.SPACE;
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.SPACE2;
-import static com.graphinout.foundation.json.util.JsonCompactFormatter.indent;
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.oneLargeLine;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -22,7 +21,7 @@ class BlockContainer extends Block {
     final List<Block> children = new ArrayList<>();
     private final String open;
     private final String close;
-    /** result of {@link #compact(int)} */
+    @Deprecated
     boolean isInline = false;
 
     BlockContainer(int depth, String open, String close) {
@@ -37,23 +36,6 @@ class BlockContainer extends Block {
 
     static BlockContainer createObjectBlock(int depth) {
         return new BlockContainer(depth, "{", "}");
-    }
-
-    @Override
-    public void compact(int maxLineLength) {
-        children.forEach(block -> block.compact(maxLineLength));
-
-        if (!children.isEmpty() && children.stream().allMatch(Block::isInline)) {
-            // try to inline all children
-            if (indent(depth).length() +
-                    // plus COMMA SPACE between each
-                    children.stream().mapToInt(b -> b.width() + 2).sum() - 2 < maxLineLength) {
-                isInline = true;
-                log.info("Inline: " + this);
-            } else {
-                log.info("Not inline: " + this);
-            }
-        }
     }
 
     public boolean isArray() {
@@ -99,26 +81,33 @@ class BlockContainer extends Block {
     }
 
     @Override
-    public Tile toTile(int maxWidth) {
+    public Tile toTile(FormatterConfig config, boolean forceMultiLine) {
         if (children.isEmpty()) {
             return Tile.of(open() + close());
         }
 
         // Try to render the whole block in one line.
         // This works only if (a) each child can be in one line and (b) they fit together.
-        int maxChildWidth = maxWidth - bracesAndSpaces;
-        int childTilesSumMaxBudget = maxWidth - (bracesAndSpaces
+        int maxChildWidth = config.maxWidth() - bracesAndSpaces;
+        int childTilesSumMaxBudget = config.maxWidth() - (bracesAndSpaces
                 // Reserve space for COMMA SPACE between each child.
                 + ((children.size() - 1) * 2));
+        if (forceMultiLine) {
+            // give up on inlining
+            childTilesSumMaxBudget = -1;
+        }
 
         List<Tile> childTiles = new ArrayList<>();
         for (Block childBlock : children) {
-            Tile childTile = childBlock.toTile(maxChildWidth);
+            Tile childTile = childBlock.toTile(config.withMaxWidth(maxChildWidth), false);
             childTiles.add(childTile);
+            if (childTile.isFixed()) {
+                childTilesSumMaxBudget = -1;
+            }
             // only compute singleLine if still possible
             if (childTilesSumMaxBudget >= 0) {
                 String singleLine = childTile.toSingleLine(childTilesSumMaxBudget);
-                if(singleLine != null) {
+                if (singleLine != null) {
                     childTilesSumMaxBudget -= singleLine.length();
                 } else {
                     childTilesSumMaxBudget = -1;
@@ -132,15 +121,17 @@ class BlockContainer extends Block {
             String oneLine = String.join(COMMA + SPACE, childLines);
             return Tile.of(open() + SPACE + oneLine + SPACE + close());
         } else {
-            // some children are too long on their own OR together they are too long
-            // TODO still try to render at least each child in one line, if possible
-            Tile tile = Tile.create();
+            // Some children are too long on their own OR together they are too long.
+            // Still try to render at least each child in one line, if possible.
+            Tile tile = Tile.create(forceMultiLine);
             for (int i = 0; i < childTiles.size(); i++) {
                 Tile childTile = childTiles.get(i);
                 // Try to wrap in a single line.
-                String singleLine = childTile.toSingleLine(maxChildWidth);
-                if (singleLine != null) {
-                    childTile = Tile.of(singleLine);
+                if (!childTile.isFixed()) {
+                    String singleLine = childTile.toSingleLine(maxChildWidth);
+                    if (singleLine != null) {
+                        childTile = Tile.of(singleLine);
+                    }
                 }
 
                 // Use tile. First tile gets the braces
@@ -152,7 +143,7 @@ class BlockContainer extends Block {
                 tile.add(childTile);
             }
             // closing brace on its own line
-            tile.addLine( close());
+            tile.addLine(close());
             return tile;
         }
     }
@@ -169,10 +160,6 @@ class BlockContainer extends Block {
 
     protected boolean isInline() {
         return isInline;
-    }
-
-    boolean allChildrenAreObjects() {
-        return children.stream().allMatch(Block::isObject);
     }
 
     String close() {

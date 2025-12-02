@@ -12,16 +12,12 @@ class BlockValue extends Block {
     }
 
     @Override
-    public void compact(int maxLineLength) {
-    }
-
-    @Override
     public void toFormattedString(int charBudget, Consumer<String> lines) {
         lines.accept(value);
     }
 
     @Override
-    public Tile toTile(int maxLineLength) {
+    public Tile toTile(FormatterConfig config, boolean forceMultiLine) {
         return Tile.of(value);
     }
 

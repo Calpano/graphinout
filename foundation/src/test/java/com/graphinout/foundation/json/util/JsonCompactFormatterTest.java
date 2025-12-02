@@ -1,7 +1,6 @@
 package com.graphinout.foundation.json.util;
 
 import com.graphinout.foundation.jajson.JaJson;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -126,22 +125,6 @@ class JsonCompactFormatterTest {
     }
 
     @Test
-    @Disabled
-    void formatWithForceMultiLineKeys() {
-        String in = "{\"myList\": [1, 2, 3]}";
-        String actual = JsonCompactFormatter.formatCompact(JaJson.parse(in), 80, Set.of("myList"));
-        String expected = """
-                {
-                  "myList": [
-                    1,
-                    2,
-                    3
-                  ]
-                }""";
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
     void testObject() throws IOException {
         Map<String, Object> jaJsonInput = new TreeMap<>(Map.of("a", 2, "b", 3, "c", 4));
         String formatted = """
@@ -150,26 +133,6 @@ class JsonCompactFormatterTest {
         assertThat(actual).isEqualTo(formatted);
     }
 
-    @Test
-    @Disabled
-    void testObjectWithArrays_forced() {
-        Map<String, Object> jaJsonInput = createMap() //
-                .put("key1", List.of(1, 2, 3)) //
-                .put("key2", List.of( //
-                        createMap().put("nestedKey", "nestedValue").build(), //
-                        createMap().put("anotherNestedKey", "anotherNestedValue").build()) //
-                ).build();
-        String formatted = """
-                {
-                  "key1": [ 1, 2, 3 ],
-                  "key2": [
-                    { "nestedKey": "nestedValue" },
-                    { "anotherNestedKey": "anotherNestedValue" }
-                  ]
-                }""";
-        String actual = JsonCompactFormatter.formatCompact(jaJsonInput, 80, Set.of("key1", "key2"));
-        assertThat(actual).isEqualTo(formatted);
-    }
 
     @Test
     void testObjectWithArrays_shortLine() {

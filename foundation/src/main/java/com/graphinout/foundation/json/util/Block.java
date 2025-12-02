@@ -9,8 +9,6 @@ public abstract class Block {
 
     Block(int depth) {this.depth = depth;}
 
-    public abstract void compact(int maxLineLength);
-
     public abstract void toFormattedString(int charBudget, Consumer<String> lines);
 
     public ArrayList<String> toFormattedString(int charBudget) {
@@ -24,7 +22,7 @@ public abstract class Block {
         return IndentWriter.of(this).resultString();
     }
 
-    public abstract Tile toTile(int maxLineLength);
+    public abstract Tile toTile(FormatterConfig config, boolean forceMultiLine);
 
     public abstract void toWriter(IndentWriter writer, int parentDepth);
 
