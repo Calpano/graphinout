@@ -1,5 +1,7 @@
 package com.graphinout.foundation.json.util;
 
+import com.graphinout.foundation.util.Symbols;
+
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.NEWLINE;
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.SPACE;
 import static com.graphinout.foundation.json.util.JsonCompactFormatter.indent;
@@ -18,9 +20,12 @@ public class IndentWriter {
         b.append(s);
     }
 
-    public void newLine(int depth) {
+    public void newLine(int depth, String debugSymbol) {
         b.append(NEWLINE);
-        b.append(indent(depth, SPACE));
+        b.append(indent(depth,SPACE));
+        if(!debugSymbol.isEmpty() && Symbols._DEBUG) {
+            b.append(debugSymbol);
+        }
     }
 
     public String resultString() {

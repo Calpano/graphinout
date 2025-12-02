@@ -3,7 +3,6 @@ package com.graphinout.foundation.json.util;
 import com.graphinout.foundation.json.JSON;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,6 +13,8 @@ public class JsonCompactFormatter {
     public static final String COMMA = ",";
     public static final String NEWLINE = "\n";
     public static final String SPACE = " ";
+    public static final String SPACE2 = "  ";
+    public static final String SPACE4 = "    ";
 
     private static final int INDENT_SIZE = 2;
     private final int maxLineLength;
@@ -24,6 +25,7 @@ public class JsonCompactFormatter {
         this.forceMultiLineKeys = forceMultiLineKeys;
     }
 
+    /** Format with a width of 80 */
     public static String formatCompact(Object jaJson) {
         return formatCompact(jaJson, 80, Collections.emptySet());
     }
@@ -35,9 +37,14 @@ public class JsonCompactFormatter {
     public static String formatCompact(Object jaJson, int maxLineLength, Set<String> forceMultiLineKeys) {
         JsonCompactFormatter formatter = new JsonCompactFormatter(maxLineLength, forceMultiLineKeys);
         Block block = valueToBlock(0, jaJson, formatter.config());
-        block.compact(maxLineLength);
+        // block.compact(maxLineLength);
 
-        return IndentWriter.of(block).resultString();
+        Tile tile = block.toTile(maxLineLength);
+        return tile.toString();
+
+//        List<String> lines = block.toFormattedString(maxLineLength);
+//        return String.join("\n", lines);
+//        return IndentWriter.of(block).resultString();
     }
 
     /**
@@ -48,6 +55,10 @@ public class JsonCompactFormatter {
      */
     static String indent(int depth, @SuppressWarnings("SameParameterValue") String indent) {
         return indent.repeat(depth * INDENT_SIZE);
+    }
+
+    static String indent(int depth) {
+        return indent(depth, SPACE);
     }
 
     static Block listToBlock(int depth, List<Object> jaJason, Config config) {
@@ -61,8 +72,7 @@ public class JsonCompactFormatter {
 
     static Block mapToBlock(int depth, Map<String, Object> jaJason, Config config) {
         BlockContainer blockObject = BlockContainer.createObjectBlock(depth);
-        for (Iterator<Map.Entry<String, Object>> iterator = jaJason.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry<String, Object> entry = iterator.next();
+        for (Map.Entry<String, Object> entry : jaJason.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
 
@@ -72,6 +82,22 @@ public class JsonCompactFormatter {
             blockObject.children.add(propertyBlock);
         }
         return blockObject;
+    }
+
+    public static String oneChildLine(List<String> lines) {
+        return String.join("\n", lines);
+    }
+
+    public static String oneLargeLine(List<List<String>> lines, String joiner) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < lines.size(); i++) {
+            List<String> childLines = lines.get(i);
+            b.append(oneChildLine(childLines));
+            if (i < lines.size() - 1) {
+                b.append(joiner);
+            }
+        }
+        return b.toString();
     }
 
     static Block primitiveToBlock(int depth, Object jaJason) {
