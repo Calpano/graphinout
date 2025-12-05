@@ -1,12 +1,12 @@
 package com.graphinout.reader.graphml.cj;
 
-import com.graphinout.foundation.input.BaseOutput;
 import com.graphinout.base.cj.document.CjDirection;
-import com.graphinout.base.cj.document.ICjEdgeType;
 import com.graphinout.base.cj.document.ICjData;
+import com.graphinout.base.cj.document.ICjDataMutable;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
+import com.graphinout.base.cj.document.ICjEdgeType;
 import com.graphinout.base.cj.document.ICjElement;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjGraphChunkMutable;
@@ -23,11 +23,24 @@ import com.graphinout.base.cj.document.ICjPortMutable;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.cj.document.impl.CjGraphElement;
 import com.graphinout.base.cj.document.impl.CjNodeElement;
+import com.graphinout.base.json.JsonReaderImpl;
+import com.graphinout.foundation.input.BaseOutput;
+import com.graphinout.foundation.json.JsonType;
+import com.graphinout.foundation.json.value.IJsonObjectMutable;
+import com.graphinout.foundation.json.value.IJsonPrimitive;
+import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.util.PowerStackOnClasses;
+import com.graphinout.foundation.util.path.IMapLike;
+import com.graphinout.foundation.util.path.KPaths;
+import com.graphinout.foundation.util.path.PathResolver;
+import com.graphinout.foundation.util.path.Result;
+import com.graphinout.foundation.xml.XML;
+import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.reader.graphml.IGraphmlWriter;
 import com.graphinout.reader.graphml.cj.CjGraphmlMapping.GraphmlDataElement;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
 import com.graphinout.reader.graphml.elements.GraphmlDirection;
 import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
-import com.graphinout.reader.graphml.IGraphmlWriter;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.reader.graphml.elements.IGraphmlDocument;
@@ -42,32 +55,20 @@ import com.graphinout.reader.graphml.elements.IGraphmlKey;
 import com.graphinout.reader.graphml.elements.IGraphmlNode;
 import com.graphinout.reader.graphml.elements.IGraphmlPort;
 import com.graphinout.reader.graphml.elements.impl.GraphmlKey;
-import com.graphinout.foundation.json.JsonType;
-import com.graphinout.base.json.JsonReaderImpl;
-import com.graphinout.foundation.json.value.IJsonObjectMutable;
-import com.graphinout.foundation.json.value.IJsonPrimitive;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.util.PowerStackOnClasses;
-import com.graphinout.foundation.util.path.IMapLike;
-import com.graphinout.foundation.util.path.KPaths;
-import com.graphinout.foundation.util.path.PathResolver;
-import com.graphinout.foundation.util.path.Result;
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.XmlFragmentString;
 import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.graphinout.base.cj.document.CjDirection.IN;
-import static com.graphinout.base.cj.document.CjDirection.OUT;
-import static com.graphinout.base.cj.document.CjDirection.UNDIR;
 import static com.graphinout.base.cj.data.CjDataProperty.CustomXmlAttributes;
 import static com.graphinout.base.cj.data.CjDataProperty.DataId;
 import static com.graphinout.base.cj.data.CjDataProperty.Description;
 import static com.graphinout.base.cj.data.CjDataProperty.EdgeDefault;
 import static com.graphinout.base.cj.data.CjDataProperty.Keys;
 import static com.graphinout.base.cj.data.CjDataProperty.SyntheticNode;
+import static com.graphinout.base.cj.document.CjDirection.IN;
+import static com.graphinout.base.cj.document.CjDirection.OUT;
+import static com.graphinout.base.cj.document.CjDirection.UNDIR;
 import static com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf;
 import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
 import static com.graphinout.foundation.util.Nullables.mapOrDefault;
@@ -375,17 +376,21 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
                 IMapLike.ofProperty("nodes", () -> value.nodes().toList()));
         pathResolver.registerMap(ICjNode.class, value -> //
                 IMapLike.ofProperty("data", value::data));
+        pathResolver.registerMap(ICjDataMutable.class, value -> {
+            IJsonValue jsonValue = value.jsonValue();
+            if (jsonValue == null) {
+                return IMapLike.EMPTY;
+            }
+            return IMapLike.ofMap(jsonValue.asObject().toJaJsonMap());
+        });
 
         List<Result> graph_node_data = pathResolver.resolveAll(cjDoc, path);
         List<Result> data_with_syntheticNode = graph_node_data.stream().filter(o -> {
             List<Result> list = pathResolver.resolve1(o.value(), SyntheticNode.cjPropertyKey);
             if (list.isEmpty()) return false;
             assert list.size() == 1 : "Exactly one result for 'syntheticNode' in " + o.value() + ". Got " + list.size();
-
-            IJsonValue jsonValue = (IJsonValue) list.getFirst().value();
-            assert jsonValue.jsonType().valueType() == JsonType.ValueType.Primitive;
-            IJsonPrimitive primitive = jsonValue.asPrimitive();
-            return primitive.asBoolean() == true;
+            assert list.getFirst().value() instanceof Boolean;
+            return (Boolean) list.getFirst().value();
         }).toList();
 
         for (Result data : data_with_syntheticNode) {
