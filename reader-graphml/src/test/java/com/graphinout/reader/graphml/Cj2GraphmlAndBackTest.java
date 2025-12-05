@@ -49,8 +49,8 @@ public class Cj2GraphmlAndBackTest {
     void testNestedGraphs() throws IOException {
         Resource resource = TestFileUtil.resource("json/cj/canonical/nested-graphs.cj.json");
         assertThat(resource).isNotNull();
-        String json = resource.getContentAsString();
-        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", json);
+        String jsonIn = resource.getContentAsString();
+        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", jsonIn);
 
         // JSON -> CJ doc
         CjWriter2CjDocumentWriter cj2ElementsWriter = new CjWriter2CjDocumentWriter();
@@ -79,7 +79,7 @@ public class Cj2GraphmlAndBackTest {
         CjDocument2Graphml cjDocument2GraphmlCj = new CjDocument2Graphml(graphml2CjWriter);
         cjDocument2GraphmlCj.writeDocumentToGraphml(cjDoc);
         String jsonOut = json2StringWriter.jsonString();
-        CjAssert.verifySameCjOrRecord(resource, "Cj2Gml2Cj", jsonOut, json, null);
+        CjAssert.verifySameCjOrRecord(resource, "Cj2Gml2Cj", jsonOut, jsonIn, null);
     }
 
     @ParameterizedTest(name = "{index}: {0}")

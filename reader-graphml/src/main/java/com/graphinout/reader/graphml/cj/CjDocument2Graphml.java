@@ -6,8 +6,10 @@ import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
 import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElement;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
+import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjLabel;
 import com.graphinout.base.cj.document.ICjNode;
@@ -86,8 +88,16 @@ public class CjDocument2Graphml {
         return cjDoc.allElements().anyMatch(cjElement -> cjElement.cjType() == CjType.Graph && cjElement.directChildren().anyMatch(child -> child.cjType() == CjType.Graph));
     }
 
+    /**
+     *
+     * @param cjDoc         is modified in-place to remove synthetic nodes if they ar present. So graph-node-graph is
+     *                      changed to graph-graph nesting.
+     * @param graphmlWriter
+     * @throws IOException
+     */
     public static void writeToGraphml(ICjDocument cjDoc, IGraphmlWriter graphmlWriter) throws IOException {
         if (cjDoc == null) return;
+        assert !containsSyntheticNodes(cjDoc) : " post-process was not called";
         new CjDocument2Graphml(graphmlWriter).writeDocumentToGraphml(cjDoc);
     }
 
@@ -260,7 +270,7 @@ public class CjDocument2Graphml {
             // What to do when we are in a graph? GraphML has no graph-graph nesting.
             // We need to insert a synthetic node.
             graphmlWriter.nodeStart(IGraphmlNode.builder() //
-                     // create a unique subgraph id, IMPROVE use a UUID?
+                    // create a unique subgraph id, IMPROVE use a UUID?
                     .id("node-" + cjSubGraph.id()) //
                     .build());
             graphmlWriter.data(GraphmlDataElement.SyntheticNode.toGraphmlData("" + true));

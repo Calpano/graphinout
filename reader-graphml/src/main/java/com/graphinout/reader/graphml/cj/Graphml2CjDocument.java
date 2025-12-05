@@ -155,7 +155,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
         } else if (key.is(GraphmlDataElement.SyntheticNode)) {
             assert graphmlDataValue.equals("true");
             // add a marker in the CJ node, so we can strip the node out once the full document is constructed
-            assert cjHasData instanceof ICjNodeMutable : "cjData is "+cjHasData.getClass()+" but the marker should only go into nodes";
+            assert cjHasData instanceof ICjNodeMutable : "cjData is " + cjHasData.getClass() + " but the marker should only go into nodes";
             cjHasData.dataMutable(m -> //
                     m.addProperty(SyntheticNode.cjPropertyKey, m.factory().createBoolean(true)));
         } else {// other, generic GraphML <data> tags
@@ -291,6 +291,9 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
         });
     }
 
+    /*
+     This node may be synthetic. For CJ export, the CJ Doc should have been post-processed to remove such nodes.
+     */
     @Override
     public void nodeStart(IGraphmlNode node) {
         stack.peek(ICjGraphMutable.class).addNode(cjNode -> {
