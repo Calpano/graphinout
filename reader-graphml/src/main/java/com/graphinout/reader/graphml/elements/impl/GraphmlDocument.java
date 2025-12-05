@@ -7,7 +7,7 @@ import com.graphinout.reader.graphml.elements.IGraphmlDocument;
 import com.graphinout.reader.graphml.elements.IGraphmlElementWithDesc;
 import com.graphinout.foundation.xml.XML;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;

@@ -3,7 +3,7 @@ package com.graphinout.base.gio;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjStream;
-import com.graphinout.foundation.output.OutputSink;
+import com.graphinout.base.output.OutputSink;
 import org.slf4j.Logger;
 
 import java.io.IOException;

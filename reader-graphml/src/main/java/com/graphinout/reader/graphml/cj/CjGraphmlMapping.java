@@ -1,5 +1,6 @@
 package com.graphinout.reader.graphml.cj;
 
+import com.graphinout.foundation.xml.XmlFoundation;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
 import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
@@ -19,9 +20,8 @@ import com.graphinout.foundation.json.value.JsonTypes;
 import com.graphinout.foundation.util.ObjectRef;
 import com.graphinout.foundation.util.PowerStreams;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.util.XmlTool;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -178,7 +178,7 @@ public interface CjGraphmlMapping {
     /**
      * What is the best JSON type to represent the data coming from Graphml?
      *
-     * @param factory to create JSON values
+     * @param factory                 to create JSON values
      * @param declaredGraphmlDataType to inform the conversion
      * @param xmlFragmentString       what we get from a Graphml {@code <data>} or {@code <key><default>} or
      *                                {@code <desc>} element. The 'rawXml' in it is a valid XML fragment, as it could be
@@ -191,7 +191,7 @@ public interface CjGraphmlMapping {
         if (xmlFragmentString == null) return factory.createNull();
 
         String rawXml = xmlFragmentString.rawXml();
-        if (rawXml.equals(XmlTool.xmlEncode(rawXml))) {
+        if (rawXml.equals(XmlFoundation.xmlEncode(rawXml))) {
             // we can use a plain string (and be sure, the rawXml did not contain CDATA or "<"
             // this is also a precondition for boolean, number, string
             String plainString = rawXml;

@@ -1,4 +1,5 @@
 = Graph Exchange File Formats
+:toc:
 
 This document provides an overview of various graph exchange file formats, based on the paper "Unravelling Graph-Exchange File Formats" by Roughan and Tuke (2015).
 
@@ -81,6 +82,17 @@ This document provides an overview of various graph exchange file formats, based
 === SBML (Systems Biology Markup Language)
 * Type: XML-based
 * Specification: http://sbml.org/documents/[spec]
+
+
+
+== JSON-based Formats
+
+=== Connected JSON (CJ)
+See https://j-s-o-n.org
+Also, more JSON formats there
+
+=== VOSviewer
+* https://app.vosviewer.com/docs/file-types/json-file-type/[]
 
 == Triple-based Formats
 

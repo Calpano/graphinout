@@ -1,14 +1,14 @@
 package com.graphinout.foundation.util;
 
-import com.google.common.collect.Maps;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MapMap<K, L, E> {
 
-    private final Map<K, Map<L, E>> map = Maps.newHashMap();
+    private final Map<K, Map<L, E>> map = new HashMap<>();
 
     public static <K, L, E> MapMap<K, L, E> create() {
         return new MapMap<>();
@@ -26,7 +26,7 @@ public class MapMap<K, L, E> {
     }
 
     public @Nullable E put(K key1, L key2, E entry) {
-        Map<L, E> subMap = map.computeIfAbsent(key1, k -> Maps.newHashMap());
+        Map<L, E> subMap = map.computeIfAbsent(key1, k -> new HashMap<>());
         return subMap.put(key2, entry);
     }
 

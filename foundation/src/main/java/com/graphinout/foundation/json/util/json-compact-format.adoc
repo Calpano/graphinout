@@ -1,0 +1,406 @@
+= JSON Compact Formatter
+:toc:
+
+A JSON pretty printer without the hot air.
+
+A compact format is initially defined as using no whitespace at all. We then add rules using whitespace.
+
+The conceptual model of the text layout is based on the JSON tree structure. Inner nodes in this tree are objects, arrays, and properties (key-value pairs). Leafs are primitives.
+Given a configurable _max line length_, e.g., 60 characters, some primitives are already overly long on their own.
+
+.Structure
+- VALUE := OBJECT | ARRAY | PRIMITIVE
+- OBJECT := PROPERTY*
+- PROPERTY := KEY VALUE
+- ARRAY := VALUE*
+
+== Rules
+
+=== Indent
+If an indent is used, the indent is always defined by the brace nesting depth. That is the number of open curly and square braces combined gives the nesting depth.
+Nesting depth times default indent (e.g., 2) given indent depth.
+
+=== Primitives
+An overly long primitive is never broken up.
+It is considered 'fits in the line', regardless of the actual primitive length in characters.
+
+=== Properties (PROPERTY)
+Properties are always on the same line.
+The syntax is (KEY Colon Space VALUE).
+Example: `"myKey": "myValue"`
+A single property is always consider 'fits on the line'.
+
+===  Object (OBJECT)
+An object that fits into a single line is kept on a single line.
+It fits, if indent, curcly braces and all properties fir together on a line.
+
+The syntax is (Indent OpenCurlyBrace Space PROPERTY (Comma Space PROPERTY)* Space CloseCurlyBrace) or just (OpenCurlyBrace CloseCurlyBrace) for the empty object.
+
+If the object does not fit on a single line, the syntax is
+(Indent OpenCurlyBrace Space PROPERTY (Comma Newline Indent PROPERTY)* Newline Indent CloseCurlyBrace).
+
+.Examples:
+- `{}`
+- `{ "myKey": "myValue" }`
+- `{ "myKey": "myValue", "myOtherKey": 234 }`
+
+.Multi-line Examples
+----
+{ "myKey": "myValue",
+  "myOtherKey": 234
+}
+----
+
+[NOTE]
+--
+This differs from standard pretty-printing of other tools which would use
+
+.Too Many Linebreaks
+----
+{
+  "myKey": "myValue",
+  "myOtherKey": 234
+}
+----
+--
+
+
+
+=== Array (ARRAY)
+An array that fits into a single line is kept on a single line.
+The syntax is (OpenSquareBrace Space VALUE (Comma Space VALUE)* Space CloseSquareBrace) or just (OpenSquareBrace CloseSquareBrace) for the empty array.
+
+.Examples:
+- `[]`
+- `[ "value1" ]`
+- `[ "value1", "value2", 123 ]`
+
+When an array does not fit on a single line, each value starts on a new line with the current indent level.
+The closing bracket is placed on a new line at the previous indent level.
+
+=== Additional Rules
+In arrays which contain more than one object element, each element is placed on its own line.
+
+=== Key-aware
+As additional config even one-line arrays can be forced to render as multiple lines. A list of property keys is given for this.
+
+== Discussion
+The formatting places open braces on the same indent level as closing braces -- or puts them in the same line.
+The only exception to this rule is one-element arrays, which may layout as
+----
+[{
+  "for: "bar",
+  "baz": "bing"
+}]
+----
+which effectively treats the `[{` and `}]` like a special brace.
+
+== Implementation Strategy
+In the JSON tree, go bottom up and keep everything in a single line, as long as possible. On traverse up, note if we are in single-line or multi-line mode.
+
+
+
+== Experiments
+
+
+=== Classic
+Classic pretty-print.
+
+.Option A (17 Lines)
+[source,json]
+----
+{
+  "key1": [ 1, 2, 3 ],
+  "key2": [
+    {
+      "nestedKey": "nestedValue",
+      "aaa": "bbb"
+    },
+    {
+      "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb"
+    },
+    {
+      "anotherNestedKey2": "anotherNestedValue2",
+      "aaa": "bbb"
+    }
+  ]
+}
+----
+
+.Features
+* (+) Looks familiar
+* (-) Verbose
+
+
+
+=== Next Object
+.Option B (15 Lines)
+[source,json]
+----
+{
+  "key1": [ 1, 2, 3 ],
+  "key2": [
+    {
+      "nestedKey": "nestedValue",
+      "aaa": "bbb"
+    },{
+      "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb"
+    },{
+      "anotherNestedKey2": "anotherNestedValue2",
+      "aaa": "bbb"
+    }
+  ]
+}
+----
+
+.Features
+* (+) Objects clearly separated by blank lines
+* (-) Little improvement over standard
+
+
+== Combined Braces
+.Option C (13 Lines)
+[source,json]
+----
+{
+  "key1": [ 1, 2, 3 ],
+  "key2": [{
+      "nestedKey": "nestedValue",
+      "aaa": "bbb"
+  },{
+      "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb"
+  },{
+      "anotherNestedKey2": "anotherNestedValue2",
+      "aaa": "bbb"
+  }]
+}
+----
+Combined braces
+
+.Features
+* (+) Objects clearly separated by blank lines
+* (-) Little improvement over standard
+
+
+=== Braces At The End
+.Option D (10 Lines)
+[source,json]
+----
+{ "key1": [ 1, 2, 3 ],
+  "key2": [
+    { "nestedKey": "nestedValue",
+      "aaa": "bbb" },
+    { "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb" },
+    { "anotherNestedKey2": "anotherNestedValue2",
+      "aaa": "bbb" }
+  ]
+}
+----
+inline but wrapped objects
+
+.Features
+* (+) Quite compact
+* (-) Hard to mentally match braces
+
+
+=== Combined Braces After Key
+.Option E (10 Lines)
+[source,json]
+----
+{ "key1": [ 1, 2, 3 ],
+  "key2": [{
+      "nestedKey": "nestedValue",
+      "aaa": "bbb"
+  },{ "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb"
+  },{ "anotherNestedKey2": "anotherNestedValue2",
+      "aaa": "bbb"
+  }]
+}
+----
+
+.Option E' (10 Lines)
+[source,json]
+----
+{ "key1": [ 1, 2, 3 ],
+  "key2":
+  [{  "nestedKey": "nestedValue",
+      "aaa": "bbb"
+  },{ "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb"
+  },{ "anotherNestedKey2": "anotherNestedValue2",
+      "aaa": "bbb"
+  }]
+}
+----
+
+.Option E'' (14 Lines)
+[source,json]
+----
+{
+  "key1": [ 1, 2, 3 ],
+  "key2":
+  [{
+      "nestedKey": "nestedValue",
+      "aaa": "bbb"
+  },{
+      "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb"
+  },{
+      "anotherNestedKey2": "anotherNestedValue2",
+      "aaa": "bbb"
+  }]
+}
+----
+Combined braces compact.
+
+TIP: If you indent anyway, use the free space at the front to place braces.
+
+.Features
+* (+) Very compact
+* (+) Good brace matching
+
+== Combined Braces Front
+.Option F (8 Lines)
+[source,json]
+----
+{ "key1": [ 1, 2, 3 ],
+  "key2":
+  [ { "nestedKey": "nestedValue",
+      "aaa": "bbb" },
+    { "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb" },
+    { "anotherNestedKey2": "anotherNestedValue2",
+      "aaa": "bbb" } ] }
+----
+Very compact.
+
+.Features
+* (+) Very compact
+* (+) Bad brace matching
+
+== Formalising
+
+.Full
+[source,json]
+----
+{ "key1": [ 1, 2, 3 ],
+  "key2":
+  [ { "nestedKey": "nestedValue",
+      "aaa": "bbb"
+    },
+    { "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb"
+    },
+    { "anotherNestedKey2": "anotherNestedValue2",
+      "aaa": "bbb"
+    }
+  ]
+}
+----
+
+.Full'
+[source,json]
+----
+{ "key1": [ 1, 2, 3 ],
+  "key2":
+  [ { "nestedKey": "nestedValue", "aaa": "bbb" },
+    { "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb"
+    },{
+      "anotherNestedKey2": "anotherNestedValue2",
+      "aaa": "bbb"
+    }
+  ]
+}
+----
+
+.Full''
+[source,json]
+----
+{ "key1": [ 1, 2, 3 ],
+  "key2":
+  [ { "nestedKey": "nestedValue", "aaa": "bbb" },
+    { "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb"
+    },
+    { "anotherNestedKey2": "anotherNestedValue2",
+      "aaa": "bbb"
+    }
+  ]
+}
+----
+
+- open brace of container is always followed by content (no line break)
+- closing brace is always at same indent as opening brace -- or at the end of the same line
+- DEFAULT is multi-line
+- Every container has OPEN, BODY (0,1,n) and CLOSE
+- Wrapping opportunities have clear priority: Keep on one line:
+** Property - Primitive
+** Objects/Arrays
+
+.Full'' - One Object
+[source,json]
+----
+{ "key2":
+  [ { "anotherNestedKey": "anotherNestedValue",
+      "aaa": "bbb"
+    }
+  ]
+}
+----
+
+.Full'' - Abstracted Container
+[source]
+----
+< KEY < VALUE, VALUE, VALUE >,
+  KEY
+  < < KEY VALUE, KEY VALUE >,
+    < KEY VALUE,
+      KEY VALUE
+    >,
+    < KEY VALUE,
+      KEY VALUE
+    >
+  >
+>
+----
+
+
+
+
+.Array of Primitives
+[source,json]
+----
+[ PRIMITIVES ]
+----
+
+.Array of Objects
+[source,json]
+----
+  [{  PROPERTIES
+  },{ PROPERTIES
+  },{ PROPERTIES
+  }]
+----
+
+
+.Object
+[source,json]
+----
+{ KEY: VALUE,
+  KEY: VALUE,
+  KEY: VALUE
+}
+----
+
+
+
+
+
+
+

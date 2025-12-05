@@ -3,7 +3,7 @@ package com.graphinout.reader.graphml.elements.builder;
 import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.reader.graphml.elements.impl.GraphmlEdge;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Map;
 
 public class GraphmlEdgeBuilder extends GraphmlElementWithDescAndIdBuilder<GraphmlEdgeBuilder> implements IIdBuilder {

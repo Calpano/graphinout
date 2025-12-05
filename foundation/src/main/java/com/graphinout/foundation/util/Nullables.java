@@ -1,7 +1,7 @@
 package com.graphinout.foundation.util;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -161,7 +161,7 @@ public class Nullables {
     /**
      * If given input is not null, return a mapped version. If it is null, return null.
      */
-    public static <T, R> @Nullable R mapOrNull(@Nullable T input, Function<T, R> mapFun) {
+    public static <T, R> @Nullable R mapOrNull(@Nullable T input, Function<@NonNull T, R> mapFun) {
         return Optional.ofNullable(input).map(mapFun).orElse(null);
     }
 
@@ -213,8 +213,7 @@ public class Nullables {
     }
 
     public static <T> Stream<T> streamOf(@Nullable T nullable) {
-        if (nullable == null) return Stream.empty();
-        return Stream.of(nullable);
+        return Stream.ofNullable(nullable);
     }
 
     /** @return either a Stream.of(value) or an empty Stream */

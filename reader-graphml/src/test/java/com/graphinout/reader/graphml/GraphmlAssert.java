@@ -1,8 +1,8 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.foundation.xml.util.XmlFormatter;
+import com.graphinout.base.xml.util.XmlFormatter;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import static com.google.common.truth.Truth.assertThat;
 

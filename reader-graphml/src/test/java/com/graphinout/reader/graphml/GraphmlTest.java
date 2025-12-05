@@ -1,8 +1,8 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.foundation.TestFileUtil;
+import com.graphinout.base.TestFileUtil;
 import com.graphinout.foundation.xml.writer.Xml2StringWriter;
-import com.graphinout.foundation.xml.util.XmlTool;
+import com.graphinout.base.xml.util.XmlTool;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +18,7 @@ public class GraphmlTest {
     private static final Logger log = getLogger(GraphmlTest.class);
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.foundation.TestFileProvider#graphmlResources")
+    @MethodSource("com.graphinout.base.TestFileProvider#graphmlResources")
     @DisplayName("Test XML<->Graphml (all)")
     void testAllGraphmlFiles(String displayPath, Resource xmlResource) throws Exception {
         if (TestFileUtil.isInvalid(xmlResource, "graphml", "xml")) {

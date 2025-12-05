@@ -8,7 +8,7 @@ import com.graphinout.base.cj.document.ICjNodeChunk;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.Locator;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**

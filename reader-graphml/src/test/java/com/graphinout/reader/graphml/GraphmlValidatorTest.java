@@ -1,6 +1,6 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.reader.graphml.validation.GraphmlValidator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

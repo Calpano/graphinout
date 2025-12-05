@@ -6,7 +6,7 @@
     <artifactId>graphinout</artifactId>
     <name>graphinout</name>
     <packaging>pom</packaging>
-    <version>0.1.7-SNAPSHOT</version>
+    <version>0.1.8-SNAPSHOT</version>
 
     <description> &#x1f98b; Graphinout reads many common graph file formats and converts them to Connected JSON or GraphML.</description>
     <url>https://graphinout.com</url>
@@ -75,24 +75,33 @@
     <dependencyManagement>
         <dependencies>
             <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>${logback-classic-version}</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.7-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId>
                 <classifier>tests</classifier>
                 <type>test-jar</type>
                 <scope>test</scope>
-                <version>0.1.7-SNAPSHOT</version>
+                <version>0.1.8-SNAPSHOT</version>
             </dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.7-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
                 <classifier>tests</classifier>
                 <type>test-jar</type>
                 <scope>test</scope>
-                <version>0.1.7-SNAPSHOT</version>
+                <version>0.1.8-SNAPSHOT</version>
             </dependency>
             <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-core-version}</version></dependency>
             <dependency><groupId>com.fasterxml.jackson.datatype</groupId><artifactId>jackson-datatype-jsr310</artifactId><version>${jackson-databind-version}</version></dependency>
             <dependency><groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId><version>3.0.2</version></dependency>
-            <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><version>1.4.4</version></dependency>
+
+            <!-- Truth should not use guava xxx-android ... -->
+            <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><version>1.4.4</version>
+                <exclusions>
+                    <exclusion><groupId>com.google.guava</groupId><artifactId>guava</artifactId></exclusion>
+                </exclusions>
+            </dependency>
+            <!-- ... but the xxx-jre variant -->
+            <dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>33.2.0-jre</version></dependency>
+
             <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.17.0</version></dependency>
             <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><version>4.8.157</version></dependency>
             <dependency><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>4.7.3</version></dependency>
@@ -103,6 +112,12 @@
             <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>${slf4j-version}</version></dependency>
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId></dependency>
+        <dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId></dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

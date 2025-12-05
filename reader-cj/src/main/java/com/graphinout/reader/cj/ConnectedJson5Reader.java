@@ -4,9 +4,9 @@ import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.base.gio.GioFileFormat;
-import com.graphinout.foundation.input.InputSource;
-import com.graphinout.foundation.input.SingleInputSource;
-import com.graphinout.foundation.input.SingleInputSourceOfString;
+import com.graphinout.base.input.InputSource;
+import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.foundation.json5.Json5Preprocessor;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
-import static com.graphinout.foundation.input.SingleInputSourceOfString.inputSource;
+import static com.graphinout.base.input.SingleInputSourceOfString.inputSource;
 
 /**
  * Buffers all content in memory first.

@@ -3,7 +3,7 @@ package com.graphinout.reader.graphml.elements.builder;
 import com.graphinout.reader.graphml.elements.impl.GraphmlData;
 import com.graphinout.foundation.xml.XmlFragmentString;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.HashMap;
 
 public class GraphmlDataBuilder extends GraphmlElementWithIdBuilder<GraphmlDataBuilder> {

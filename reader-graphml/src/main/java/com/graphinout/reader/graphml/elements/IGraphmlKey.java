@@ -1,5 +1,6 @@
 package com.graphinout.reader.graphml.elements;
 
+import com.graphinout.base.xml.XmlTool;
 import com.graphinout.reader.graphml.elements.builder.GraphmlDataBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlKeyBuilder;
 import com.graphinout.foundation.util.Nullables;
@@ -11,7 +12,7 @@ import com.graphinout.foundation.xml.document.XmlElement;
 import com.graphinout.reader.graphml.cj.CjGraphmlMapping;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -58,7 +59,7 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
         ifPresentAccept(key.directChildren().filter(node -> node instanceof XmlElement xmlElement && xmlElement.localName().equals(GraphmlElements.DEFAULT)), node -> (XmlElement) node, defaultXmlElement -> {
             XmlContent content = defaultXmlElement;
             // TODO obtain current XmlSpace value from key-element instead
-            XML.XmlSpace xmlSpace = XML.XmlSpace.fromElement(defaultXmlElement);
+            XML.XmlSpace xmlSpace = XmlTool.fromElement(defaultXmlElement);
             XmlFragmentString xmlFragmentString = XmlDocumentFragment.of(content, xmlSpace).toXmlFragmentString();
             IGraphmlDefault defaultValue = IGraphmlDefault.of(xmlFragmentString);
             builder.defaultValue(defaultValue);

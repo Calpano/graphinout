@@ -2,10 +2,10 @@ package com.graphinout.reader.graphml.elements.impl;
 
 import com.graphinout.reader.graphml.Graphml;
 import com.graphinout.reader.graphml.elements.IGraphmlDescription;
-import com.graphinout.foundation.xml.IXmlName;
+import com.graphinout.base.xml.IXmlName;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.writer.XmlWriter;
+import com.graphinout.base.xml.writer.XmlWriter;
 
 import java.io.IOException;
 import java.util.Map;

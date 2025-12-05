@@ -5,10 +5,10 @@ import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.CjWriter2CjStream;
 import com.graphinout.base.cj.writer.Json2CjWriter;
-import com.graphinout.foundation.TestFileUtil;
-import com.graphinout.foundation.input.SingleInputSourceOfString;
+import com.graphinout.base.TestFileUtil;
+import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
-import com.graphinout.foundation.json.JsonReaderImpl;
+import com.graphinout.base.json.JsonReaderImpl;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class Cj2CjStreamTest {
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.foundation.TestFileProvider#cjResourcesCanonical")
+    @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
     @DisplayName("JSON<->CjWriter<->CjStream")
     void test_Json_CjWriter_CjStream_CjWriter_Json(String displayPath, Resource xmlResource) throws Exception {
         Json2StringWriter json2StringWriter = new Json2StringWriter();

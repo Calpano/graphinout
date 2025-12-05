@@ -4,15 +4,17 @@ import com.graphinout.reader.graphml.elements.IGraphmlGraph;
 import com.graphinout.reader.graphml.elements.IGraphmlLocator;
 import com.graphinout.reader.graphml.elements.impl.GraphmlGraph;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import static com.graphinout.foundation.util.Nullables.nonNullOrDefault;
 
 @SuppressWarnings("UnusedReturnValue")
 public class GraphmlGraphBuilder extends GraphmlElementWithDescAndIdBuilder<GraphmlGraphBuilder> implements ILocatorBuilder {
 
-    private @Nullable IGraphmlGraph.EdgeDefault edgedefault;
-    private @Nullable IGraphmlLocator locator;
+    /** @Nullable */
+    private IGraphmlGraph.EdgeDefault edgedefault;
+    /** @Nullable */
+    private IGraphmlLocator locator;
 
     @Override
     public IGraphmlGraph build() {

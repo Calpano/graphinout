@@ -14,7 +14,7 @@ import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.json.value.IJsonFactory;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;

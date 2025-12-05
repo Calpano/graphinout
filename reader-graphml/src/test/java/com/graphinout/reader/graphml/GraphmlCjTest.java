@@ -6,7 +6,7 @@ import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.reader.graphml.cj.CjGraphmlMapping;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
-import com.graphinout.foundation.TestFileProvider;
+import com.graphinout.base.TestFileProvider;
 import com.graphinout.foundation.json.path.JsonTypeAnalysisTree;
 import com.graphinout.reader.cj.ConnectedJsonReader;
 import jdk.jfr.Description;

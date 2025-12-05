@@ -1,6 +1,6 @@
 package com.graphinout.foundation.input;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * (Textual) inout can be processed such that the parser knows the {@link Location} within the input file.

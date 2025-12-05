@@ -1,6 +1,7 @@
 package com.graphinout.foundation.input;
 
-import javax.annotation.Nullable;
+
+import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 public class BaseOutput implements IHandleContentErrors {

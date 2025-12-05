@@ -5,8 +5,8 @@ import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.document.ICjGraphChunk;
 import com.graphinout.base.cj.stream.ICjStream;
-import com.graphinout.foundation.output.InMemoryOutputSink;
-import com.graphinout.foundation.output.OutputSink;
+import com.graphinout.base.output.InMemoryOutputSink;
+import com.graphinout.base.output.OutputSink;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 

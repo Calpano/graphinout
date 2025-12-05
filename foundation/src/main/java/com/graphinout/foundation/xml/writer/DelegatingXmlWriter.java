@@ -1,9 +1,10 @@
 package com.graphinout.foundation.xml.writer;
 
+import com.graphinout.base.xml.BaseXmlHandler;
+import com.graphinout.base.xml.writer.XmlWriter;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.util.ThrowingConsumer;
-import com.graphinout.foundation.xml.factory.BaseXmlHandler;
-import com.graphinout.foundation.xml.CharactersKind;
+import com.graphinout.base.xml.CharactersKind;
 
 import java.io.IOException;
 import java.util.ArrayList;

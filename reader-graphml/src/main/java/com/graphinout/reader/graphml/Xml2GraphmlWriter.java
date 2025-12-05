@@ -33,18 +33,18 @@ import com.graphinout.foundation.input.Location;
 import com.graphinout.foundation.input.Locator;
 import com.graphinout.foundation.input.ContentError;
 import com.graphinout.foundation.input.ContentErrorException;
-import com.graphinout.foundation.xml.factory.BaseXmlHandler;
-import com.graphinout.foundation.xml.CharactersKind;
-import com.graphinout.foundation.xml.IXmlName;
+import com.graphinout.base.xml.BaseXmlHandler;
+import com.graphinout.base.xml.CharactersKind;
+import com.graphinout.base.xml.IXmlName;
 import com.graphinout.foundation.xml.XML;
 import com.graphinout.foundation.xml.XML.XmlSpace;
-import com.graphinout.foundation.xml.writer.Xml2DocumentFragmentWriter;
+import com.graphinout.base.xml.writer.Xml2DocumentFragmentWriter;
 import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.writer.XmlWriter;
+import com.graphinout.base.xml.writer.XmlWriter;
 import com.graphinout.foundation.xml.document.XmlDocumentFragment;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,7 +71,7 @@ import static com.graphinout.reader.graphml.elements.IGraphmlGraph.ATTRIBUTE_EDG
 import static com.graphinout.reader.graphml.elements.IGraphmlPort.ATTRIBUTE_NAME;
 import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
 import static com.graphinout.foundation.util.Nullables.mapOrNull;
-import static com.graphinout.foundation.xml.util.XmlTool.ifAttributeNotNull;
+import static com.graphinout.base.xml.util.XmlTool.ifAttributeNotNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 

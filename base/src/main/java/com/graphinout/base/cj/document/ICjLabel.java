@@ -2,13 +2,14 @@ package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.document.impl.CjLabelElement;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
-import com.graphinout.foundation.input.SingleInputSourceOfString;
+import com.graphinout.base.input.SingleInputSourceOfString;
+import com.graphinout.base.json.JsonReaderImpl;
+import com.graphinout.foundation.json.value.IJsonValue;
 import com.graphinout.foundation.json.writer.impl.Json2JavaJsonWriter;
 import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
-import com.graphinout.foundation.json.JsonReaderImpl;
-import com.graphinout.foundation.json.value.IJsonValue;
 import org.slf4j.Logger;
 
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.graphinout.foundation.util.Nullables.mapOrNull;
@@ -46,6 +47,16 @@ public interface ICjLabel extends ICjElement {
     }
 
     Stream<ICjLabelEntry> entries();
+
+    default Object toJaJsonMap() {
+        if (entries().count() == 1) {
+            ICjLabelEntry firstEntry = entries().findFirst().get();
+            if (firstEntry.language() == null) {
+                return firstEntry.value();
+            }
+        }
+        return entries().map(ICjLabelEntry::toJaJsonMap).collect(Collectors.toList());
+    }
 
     default String toJsonString() {
         Json2StringWriter w = new Json2StringWriter();

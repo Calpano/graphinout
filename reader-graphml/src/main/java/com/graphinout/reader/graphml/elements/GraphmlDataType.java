@@ -2,7 +2,7 @@ package com.graphinout.reader.graphml.elements;
 
 import com.graphinout.foundation.json.JsonType;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Data types for {@link IGraphmlData} values, defined in corresponding {@link IGraphmlKey}.

@@ -1,7 +1,7 @@
 package com.graphinout.reader.graphml;
 
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.base.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -71,7 +71,7 @@ public class GraphmlSAXSchemaValidationTest {
     }
 
     @ParameterizedTest
-    @MethodSource("com.graphinout.foundation.TestFileProvider#graphmlResources")
+    @MethodSource("com.graphinout.base.TestFileProvider#graphmlResources")
     void readAllGraphmlFiles(String filePath) throws Exception {
 
         URL resourceUrl = ClassLoader.getSystemResource(filePath);

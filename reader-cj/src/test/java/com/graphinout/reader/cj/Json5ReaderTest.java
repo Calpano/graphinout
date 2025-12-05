@@ -8,7 +8,7 @@ import com.graphinout.base.cj.document.ICjNodeChunk;
 import com.graphinout.base.cj.factory.ICjFactory;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.SingleInputSource;
+import com.graphinout.base.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,7 +71,7 @@ class Json5ReaderTest {
 
     @Test
     void shouldParseExampleConnectedJson5File() throws IOException {
-        URL resourceUrl = ClassLoader.getSystemResource("json5/cj-extended-json5/example.connected.json5");
+        URL resourceUrl = ClassLoader.getSystemResource("cj-extended-json5/example.connected.json5");
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
         SingleInputSource singleInputSource = SingleInputSource.of("example.connected.json5", content);
 

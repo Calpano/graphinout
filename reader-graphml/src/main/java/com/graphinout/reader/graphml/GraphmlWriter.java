@@ -6,7 +6,7 @@ import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioWriter;
-import com.graphinout.foundation.output.OutputSink;
+import com.graphinout.base.output.OutputSink;
 import com.graphinout.foundation.xml.writer.Xml2StringWriter;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 

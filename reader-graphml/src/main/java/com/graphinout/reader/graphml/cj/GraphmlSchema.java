@@ -9,7 +9,7 @@ import com.graphinout.reader.graphml.elements.IGraphmlDefault;
 import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.reader.graphml.elements.IGraphmlKey;
 import com.graphinout.reader.graphml.elements.builder.GraphmlKeyBuilder;
-import com.graphinout.foundation.JsonXml;
+import com.graphinout.base.xml.JsonXml;
 import com.graphinout.foundation.json.value.IJsonFactory;
 import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.foundation.json.value.IJsonObjectAppendable;

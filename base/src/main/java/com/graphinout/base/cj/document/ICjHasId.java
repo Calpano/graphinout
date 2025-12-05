@@ -1,6 +1,6 @@
 package com.graphinout.base.cj.document;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface ICjHasId extends ICjElement {
 

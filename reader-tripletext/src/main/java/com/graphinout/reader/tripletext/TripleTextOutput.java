@@ -11,7 +11,7 @@ import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.foundation.util.Nullables;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;

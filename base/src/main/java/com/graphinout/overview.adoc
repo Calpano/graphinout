@@ -498,7 +498,7 @@ Experimental JSON features and extensions.
 .Experimental Classes
 * `ExtensibleJson` - Extensible JSON functionality
 
-=== XML Package (`com.graphinout.foundation.xml`)
+=== XML Package (`com.graphinout.base.xml`)
 
 XML processing and writing capabilities.
 

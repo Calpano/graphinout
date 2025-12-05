@@ -15,9 +15,9 @@ import com.graphinout.reader.graphml.elements.builder.GraphmlLocatorBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlNodeBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlPortBuilder;
 import com.graphinout.reader.graphml.elements.builder.ILocatorBuilder;
-import com.graphinout.foundation.xml.IXmlName;
+import com.graphinout.base.xml.IXmlName;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.util.Map;
 
@@ -113,7 +113,7 @@ public class XmlElementContext {
     }
 
     /**
-     * Mark we wrote the START of this element to the downstream {@link IGraphmlWriter}.
+     * Mark that we wrote the START of this element to the downstream {@link IGraphmlWriter}.
      */
     public void markAsStarted() {
         isStarted = true;

@@ -1,12 +1,12 @@
 package com.graphinout.foundation.xml.document;
 
 import com.graphinout.foundation.util.PowerStreams;
-import com.graphinout.foundation.xml.CharactersKind;
-import com.graphinout.foundation.xml.IXmlName;
+import com.graphinout.base.xml.CharactersKind;
+import com.graphinout.base.xml.IXmlName;
 import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.writer.XmlWriter;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import com.graphinout.base.xml.writer.XmlWriter;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,6 +1,10 @@
 package com.graphinout.base.cj.document;
 
-import javax.annotation.Nullable;
+import com.graphinout.base.cj.CjConstants;
+import com.graphinout.foundation.jajson.JaJson;
+import org.jspecify.annotations.Nullable;
+
+import java.util.Map;
 import java.util.stream.Stream;
 
 public interface ICjLabelEntry extends ICjHasData {
@@ -17,5 +21,12 @@ public interface ICjLabelEntry extends ICjHasData {
     String language();
 
     String value();
+
+    default Map<String, Object> toJaJsonMap() {
+        return JaJson.createMap()
+                .putMaybe(CjConstants.LANGUAGE, language())
+                .putMaybe(CjConstants.VALUE, value())
+                .build();
+    }
 
 }

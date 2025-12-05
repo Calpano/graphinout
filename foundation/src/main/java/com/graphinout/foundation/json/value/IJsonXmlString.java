@@ -1,15 +1,17 @@
 package com.graphinout.foundation.json.value;
 
 
+import com.graphinout.foundation.jajson.JaJson;
 import com.graphinout.foundation.json.JSON;
 import com.graphinout.foundation.json.JsonType;
+import com.graphinout.foundation.json.value.java.JavaJsonFactory;
 import com.graphinout.foundation.json.writer.JsonValueWriter;
 import com.graphinout.foundation.json.writer.JsonWriter;
-import com.graphinout.foundation.json.value.java.JavaJsonFactory;
-import com.graphinout.foundation.xml.XML;
+import com.graphinout.foundation.xml.XML.XmlSpace;
 import com.graphinout.foundation.xml.XmlFragmentString;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.graphinout.foundation.util.Nullables.mapOrDefault;
@@ -65,10 +67,11 @@ public interface IJsonXmlString extends IJsonPrimitive {
 
     static IJsonXmlString ofJsonValue(IJsonValue jsonValue) {
         return switch (jsonValue.jsonType()) {
-            case XmlString -> (IJsonXmlString) jsonValue;
-            case Object -> ofJsonObject(jsonValue.asObject());
-            case String -> IJsonXmlString.ofPlainString(jsonValue.factory(), jsonValue.asString());
-            case Boolean, Number -> IJsonXmlString.ofPlainString(jsonValue.factory(), jsonValue.toJsonString());
+            case JsonType.XmlString -> (IJsonXmlString) jsonValue;
+            case JsonType.Object -> ofJsonObject(jsonValue.asObject());
+            case JsonType.String -> IJsonXmlString.ofPlainString(jsonValue.factory(), jsonValue.asString());
+            case JsonType.Boolean, JsonType.Number ->
+                    IJsonXmlString.ofPlainString(jsonValue.factory(), jsonValue.toJsonString());
             default ->
                     throw new IllegalArgumentException("Cannot convert JSON type '" + jsonValue.jsonType() + "' to IJsonXmlString String.");
         };
@@ -102,8 +105,15 @@ public interface IJsonXmlString extends IJsonPrimitive {
     /** raw XML document fragment string. Usually has no XML declaration and may or may not have a root element. */
     String rawXmlString();
 
+    default Map<String, Object> toJaJsonMap() {
+        return JaJson.createMap()
+                .putMaybe(XML, rawXmlString())
+                .putMaybe(XML_SPACE, xmlSpace(), x -> x.jsonStringValue)
+                .build();
+    }
+
     default XmlFragmentString toXmlFragmentString() {
-        XML.XmlSpace xmlSpace = xmlSpace().toXml_XmlSpace();
+        XmlSpace xmlSpace = xmlSpace().toXml_XmlSpace();
         String rawXml = rawXmlString();
         return XmlFragmentString.of(rawXml, xmlSpace);
     }
