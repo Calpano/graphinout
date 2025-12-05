@@ -83,6 +83,8 @@ You can use this lib in the free online service for graph conversion running at 
 == Issues
 You found a bug or want a feature? Please https://github.com/Calpano/graphinout/issues[file an issue].
 
+== Questions?
+image:https://deepwiki.com/badge.svg[Ask DeepWiki, link="https://deepwiki.com/Calpano/graphinout"]
 
 == Background: Introduction to Graphs
 A graph is first a mathematical concept.
