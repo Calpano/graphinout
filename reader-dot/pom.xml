@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.graphinout</groupId>
         <artifactId>graphinout</artifactId>
-        <version>0.1.7</version>
+        <version>0.1.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -12,14 +12,14 @@
     <description>Reader for AT&amp;T DOT Syntax as used in GraphViz.</description>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.7</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.7</version>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version>
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.7</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.7</version>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version>
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
