@@ -260,6 +260,7 @@ public class CjDocument2Graphml {
             // What to do when we are in a graph? GraphML has no graph-graph nesting.
             // We need to insert a synthetic node.
             graphmlWriter.nodeStart(IGraphmlNode.builder() //
+                     // create a unique subgraph id, IMPROVE use a UUID?
                     .id("node-" + cjSubGraph.id()) //
                     .build());
             graphmlWriter.data(GraphmlDataElement.SyntheticNode.toGraphmlData("" + true));

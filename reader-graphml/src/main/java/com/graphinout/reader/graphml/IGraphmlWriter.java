@@ -23,8 +23,8 @@ public interface IGraphmlWriter extends IHandleContentErrors {
     /**
      * Writes a {@code <data>} element.
      * <p>
-     * The {@code <data>} element is used to attach application-specific data to GraphML elements.
-     * The data is associated with a key, which is defined by a {@code <key>} element.
+     * The {@code <data>} element is used to attach application-specific data to GraphML elements. The data is
+     * associated with a key, which is defined by a {@code <key>} element.
      * <p>
      * DTD: {@code <!ELEMENT data (#PCDATA)>}
      * <p>

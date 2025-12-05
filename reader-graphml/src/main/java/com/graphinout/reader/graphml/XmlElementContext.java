@@ -113,7 +113,7 @@ public class XmlElementContext {
     }
 
     /**
-     * Mark we wrote the START of this element to the downstream {@link IGraphmlWriter}.
+     * Mark that we wrote the START of this element to the downstream {@link IGraphmlWriter}.
      */
     public void markAsStarted() {
         isStarted = true;

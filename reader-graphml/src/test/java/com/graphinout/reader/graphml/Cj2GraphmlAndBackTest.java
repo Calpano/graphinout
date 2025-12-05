@@ -25,7 +25,6 @@ import com.graphinout.reader.graphml.cj.Graphml2CjWriter;
 import com.graphinout.reader.graphml.validation.ValidatingGraphMlWriter;
 import io.github.classgraph.Resource;
 import jdk.jfr.Description;
-import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -48,7 +47,7 @@ public class Cj2GraphmlAndBackTest {
 
     @Test
     void testNestedGraphs() throws IOException {
-        @Nullable Resource resource = TestFileUtil.resource("json/cj/canonical/nested-graphs.cj.json");
+        Resource resource = TestFileUtil.resource("json/cj/canonical/nested-graphs.cj.json");
         assertThat(resource).isNotNull();
         String json = resource.getContentAsString();
         SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", json);
@@ -64,25 +63,22 @@ public class Cj2GraphmlAndBackTest {
         }
 
         // FIXME debug
-//        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(new LoggingCjWriter(false));
-//        CjWriter2CjStream cjWriter2Stream = new CjWriter2CjStream(cjStream2CjWriter);
-//        cjDoc.fire(cjWriter2Stream);
-//        log.info("----------------------");
+        // for debug: write GraphML/XML, too
+        {
+            Xml2StringWriter xmlWriter = new Xml2StringWriter();
+            Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xmlWriter);
+            CjDocument2Graphml cjDocument2GraphmlXml = new CjDocument2Graphml(graphml2XmlWriter);
+            cjDocument2GraphmlXml.writeDocumentToGraphml(cjDoc);
+            log.info("GraphML/XML:\n---------------\n{}\n---------------", xmlWriter.resultString());
+        }
 
         // CJ doc -> GraphML -> CJ
         Json2StringWriter json2StringWriter = new Json2StringWriter();
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
-        // Graphml2CjDocument graphml2CjWriter = new Graphml2CjWriter(cj2JsonWriter);
         Graphml2CjDocument graphml2CjWriter = new Graphml2CjWriter(cj2JsonWriter);
-
-//        Xml2StringWriter xmlWriter = new Xml2StringWriter();
-//        Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xmlWriter);
-        CjDocument2Graphml cjDocument2Graphml = new CjDocument2Graphml(graphml2CjWriter);
-        cjDocument2Graphml.writeDocumentToGraphml(cjDoc);
-//        log.info("GraphML:\n---------------\n" + xmlWriter.resultString() + "\n---------------");
-
+        CjDocument2Graphml cjDocument2GraphmlCj = new CjDocument2Graphml(graphml2CjWriter);
+        cjDocument2GraphmlCj.writeDocumentToGraphml(cjDoc);
         String jsonOut = json2StringWriter.jsonString();
-
         CjAssert.verifySameCjOrRecord(resource, "Cj2Gml2Cj", jsonOut, json, null);
     }
 
@@ -111,11 +107,11 @@ public class Cj2GraphmlAndBackTest {
         cjDocument2Graphml.writeDocumentToGraphml(cjDoc);
 
         String jsonOut = json2StringWriter.jsonString();
-        CjAssert.verifySameCjOrRecord(resource, "Cj2Gml2Cj", jsonOut, jsonInput,()->{
+        CjAssert.verifySameCjOrRecord(resource, "Cj2Gml2Cj", jsonOut, jsonInput, () -> {
             // format both pretty, then diff
-            FormatterConfig config = FormatterConfig.of(60, Set.of("nodes","edges","graphs"), true);
-            String compactOut =   JsonCompactFormatter.formatCompact(JaJson.parse(CjAssert.normalize(jsonOut)), config);
-            String compactIn =  JsonCompactFormatter.formatCompact(JaJson.parse(CjAssert.normalize(jsonInput)), config);
+            FormatterConfig config = FormatterConfig.of(60, Set.of("nodes", "edges", "graphs"), true);
+            String compactOut = JsonCompactFormatter.formatCompact(JaJson.parse(CjAssert.normalize(jsonOut)), config);
+            String compactIn = JsonCompactFormatter.formatCompact(JaJson.parse(CjAssert.normalize(jsonInput)), config);
             assertThat(compactOut).isEqualTo(compactIn);
         });
     }

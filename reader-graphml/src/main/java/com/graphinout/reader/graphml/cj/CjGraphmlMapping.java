@@ -178,7 +178,7 @@ public interface CjGraphmlMapping {
     /**
      * What is the best JSON type to represent the data coming from Graphml?
      *
-     * @param factory to create JSON values
+     * @param factory                 to create JSON values
      * @param declaredGraphmlDataType to inform the conversion
      * @param xmlFragmentString       what we get from a Graphml {@code <data>} or {@code <key><default>} or
      *                                {@code <desc>} element. The 'rawXml' in it is a valid XML fragment, as it could be
