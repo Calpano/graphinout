@@ -12,7 +12,7 @@ import static com.google.common.truth.Truth.assertThat;
 class NamedEntitiesTest {
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#xmlResources")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#xmlResources")
     @DisplayName("XML->XmlString (All XML files)")
     void test(String xml) {
         String actual = NamedEntities.htmlEntitiesTo(xml, entityName-> "&" + entityName + ";", entityNum-> "&#" + entityNum + ";");

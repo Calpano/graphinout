@@ -3,11 +3,11 @@ package com.graphinout.base.cj.document.impl;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjDataMutable;
 import com.graphinout.base.cj.writer.ICjWriter;
-import com.graphinout.foundation.json.util.JsonMaker;
-import com.graphinout.foundation.json.path.IJsonContainerNavigationStep;
-import com.graphinout.foundation.json.value.IJsonFactory;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.json.value.java.JavaJsonFactory;
+import com.graphinout.foundation.pure.json.util.JsonMaker;
+import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.value.java.JavaJsonFactory;
 
 import org.jspecify.annotations.Nullable;
 import java.util.List;

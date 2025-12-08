@@ -1,12 +1,12 @@
 package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.writer.ICjWriter;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 
 import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
-import static com.graphinout.foundation.util.Nullables.mapOrNull;
+import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
 
 public interface ICjHasData extends ICjElement {
 

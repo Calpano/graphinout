@@ -1,13 +1,14 @@
 package com.graphinout.base.xml.writer;
 
-import com.graphinout.base.xml.IXmlName;
-import com.graphinout.foundation.xml.XML;
+import com.graphinout.foundation.pure.xml.IXmlName;
+import com.graphinout.foundation.pure.xml.XML;
 import com.graphinout.base.xml.Xml2DocumentWriter;
-import com.graphinout.foundation.xml.document.XmlDocument;
-import com.graphinout.foundation.xml.document.XmlDocumentFragment;
-import com.graphinout.foundation.xml.document.XmlElement;
-import com.graphinout.foundation.xml.writer.DelegatingXmlWriter;
+import com.graphinout.foundation.pure.xml.document.XmlDocument;
+import com.graphinout.foundation.pure.xml.document.XmlDocumentFragment;
+import com.graphinout.foundation.pure.xml.document.XmlElement;
+import com.graphinout.foundation.pure.xml.writer.DelegatingXmlWriter;
 
+import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;

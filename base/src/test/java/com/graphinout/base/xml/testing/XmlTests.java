@@ -1,12 +1,12 @@
 package com.graphinout.base.xml.testing;
 
 
-import com.graphinout.foundation.xml.XML;
+import com.graphinout.foundation.pure.xml.XML;
 
 import java.util.stream.Stream;
 
-import static com.graphinout.foundation.util.Texts.CR_13_R;
-import static com.graphinout.foundation.util.Texts.LF_10_N;
+import static com.graphinout.foundation.pure.text.Texts.CR_13_R;
+import static com.graphinout.foundation.pure.text.Texts.LF_10_N;
 import static com.graphinout.base.xml.testing.Input_Expected.input_expected;
 
 public class XmlTests {

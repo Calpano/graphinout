@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.foundation.json.value.java.JavaJsonFactory.INSTANCE;
+import static com.graphinout.foundation.pure.json.value.java.JavaJsonFactory.INSTANCE;
 import static com.graphinout.reader.graphml.cj.CjGraphmlMapping.toGraphmlType;
 import static com.graphinout.reader.graphml.elements.GraphmlDataType.typeBoolean;
 import static com.graphinout.reader.graphml.elements.GraphmlDataType.typeDouble;

@@ -7,7 +7,7 @@ import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioWriter;
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import com.graphinout.base.output.OutputSink;
 
 import java.io.IOException;

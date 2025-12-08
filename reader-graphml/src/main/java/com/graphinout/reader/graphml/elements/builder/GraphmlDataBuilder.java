@@ -1,7 +1,7 @@
 package com.graphinout.reader.graphml.elements.builder;
 
 import com.graphinout.reader.graphml.elements.impl.GraphmlData;
-import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
 
 import org.jspecify.annotations.Nullable;
 import java.util.HashMap;

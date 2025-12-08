@@ -1,6 +1,17 @@
 package com.graphinout.reader.graphml.cj;
 
-import com.graphinout.foundation.xml.XmlFoundation;
+import com.graphinout.foundation.pure.json.JsonType;
+import com.graphinout.foundation.pure.json.path.IJsonObjectNavigationStep;
+import com.graphinout.foundation.pure.json.path.JsonTypeAnalysisTree;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import com.graphinout.foundation.pure.json.document.IJsonPrimitive;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.document.IJsonXmlString;
+import com.graphinout.foundation.pure.json.value.JsonTypes;
+import com.graphinout.foundation.pure.value.ObjectRef;
+import com.graphinout.foundation.pure.stream.PowerStreams;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
 import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
@@ -9,25 +20,14 @@ import com.graphinout.reader.graphml.elements.IGraphmlKey;
 import com.graphinout.reader.graphml.elements.builder.GraphmlDataBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlKeyBuilder;
 import com.graphinout.reader.graphml.elements.impl.GraphmlData;
-import com.graphinout.foundation.json.JsonType;
-import com.graphinout.foundation.json.path.IJsonObjectNavigationStep;
-import com.graphinout.foundation.json.path.JsonTypeAnalysisTree;
-import com.graphinout.foundation.json.value.IJsonFactory;
-import com.graphinout.foundation.json.value.IJsonPrimitive;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.json.value.IJsonXmlString;
-import com.graphinout.foundation.json.value.JsonTypes;
-import com.graphinout.foundation.util.ObjectRef;
-import com.graphinout.foundation.util.PowerStreams;
-import com.graphinout.foundation.xml.XmlFragmentString;
-
 import org.jspecify.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.graphinout.foundation.util.ObjectRef.objectRef;
+import static com.graphinout.foundation.pure.value.ObjectRef.objectRef;
 
 /**
  * Mapping data between CJ and GraphML models.
@@ -191,7 +191,7 @@ public interface CjGraphmlMapping {
         if (xmlFragmentString == null) return factory.createNull();
 
         String rawXml = xmlFragmentString.rawXml();
-        if (rawXml.equals(XmlFoundation.xmlEncode(rawXml))) {
+        if (rawXml.equals(XML.xmlEncode(rawXml))) {
             // we can use a plain string (and be sure, the rawXml did not contain CDATA or "<"
             // this is also a precondition for boolean, number, string
             String plainString = rawXml;

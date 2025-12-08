@@ -4,12 +4,12 @@ import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.base.input.SingleInputSource;
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import com.graphinout.base.json.JsonReaderImpl;
 
 import java.io.IOException;
 
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
 public class CjDocuments {
 

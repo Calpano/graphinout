@@ -1,7 +1,7 @@
 package com.graphinout.base.cj.document;
 
-import com.graphinout.foundation.json.path.JsonTypeAnalysisTree;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.path.JsonTypeAnalysisTree;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 
 import java.util.HashMap;
 import java.util.Map;

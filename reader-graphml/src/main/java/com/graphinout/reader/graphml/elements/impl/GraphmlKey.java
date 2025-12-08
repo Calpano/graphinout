@@ -12,7 +12,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.graphinout.foundation.util.Nullables.nonNullOrDefault;
+import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
 
 /**
  * @author rbaba

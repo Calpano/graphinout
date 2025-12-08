@@ -21,15 +21,14 @@ import com.graphinout.base.cj.document.ICjLabelEntryMutable;
 import com.graphinout.base.cj.document.ICjNodeMutable;
 import com.graphinout.base.cj.document.ICjPortMutable;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
-import com.graphinout.foundation.json.JsonException;
-import com.graphinout.foundation.json.writer.impl.Json2JavaJsonWriter;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.util.PowerStackOnClasses;
+import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.json.JsonException;
+import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.collections.PowerStackOnClasses;
 
 import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
-
-import static com.graphinout.foundation.util.Nullables.ifConsumerPresentAccept;
 
 /**
  * {@link ICjWriter} to {@link ICjDocument}
@@ -86,7 +85,7 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
     @Override
     public void documentEnd() throws JsonException {
         stack.pop(ICjDocumentMutable.class);
-        ifConsumerPresentAccept(onDone, resultDoc);
+        Nullables.ifConsumerPresentAccept(onDone, resultDoc);
     }
 
     @Override

@@ -12,10 +12,10 @@ import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.base.cj.writer.DelegatingCjWriter;
 import com.graphinout.base.cj.writer.LoggingCjWriter;
 import com.graphinout.base.input.SingleInputSource;
-import com.graphinout.foundation.json.writer.impl.DelegatingJsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.DelegatingJsonWriter;
 import com.graphinout.base.json.JsonReaderImpl;
-import com.graphinout.foundation.json.writer.impl.LoggingJsonWriter;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.writer.impl.LoggingJsonWriter;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -80,12 +80,12 @@ public class CjElementsParsingTest {
         // Test first node
         ICjNode firstNode = graph_0.nodes().findFirst().orElseThrow();
         assertThat(firstNode.id()).isEqualTo("node1");
-        assertThat(firstNode.labelEntries().getFirst().value()).isEqualTo("First Node");
+        assertThat(firstNode.labelEntries().get(0).value()).isEqualTo("First Node");
 
         // Test second node with ports
         ICjNode secondNode = graph_0.nodes().skip(1).findFirst().orElseThrow();
         assertThat(secondNode.id()).isEqualTo("node2");
-        assertThat(secondNode.labelEntries().getFirst().value()).isEqualTo("Second Node");
+        assertThat(secondNode.labelEntries().get(0).value()).isEqualTo("Second Node");
         assertThat(secondNode.ports()).isNotNull();
 
         // Test first edge (simple source/target)

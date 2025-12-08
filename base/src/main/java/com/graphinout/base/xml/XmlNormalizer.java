@@ -1,10 +1,10 @@
 package com.graphinout.base.xml;
 
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.document.IXmlNode;
-import com.graphinout.foundation.xml.document.XmlDocument;
-import com.graphinout.foundation.xml.document.XmlElement;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.document.IXmlNode;
+import com.graphinout.foundation.pure.xml.document.XmlDocument;
+import com.graphinout.foundation.pure.xml.document.XmlElement;
+import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;

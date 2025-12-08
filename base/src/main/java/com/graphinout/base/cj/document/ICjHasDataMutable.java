@@ -1,8 +1,8 @@
 package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.data.CjDataProperty;
-import com.graphinout.foundation.json.value.IJsonFactory;
-import com.graphinout.foundation.json.value.IJsonXmlString;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import com.graphinout.foundation.pure.json.document.IJsonXmlString;
 
 import java.util.function.Consumer;
 

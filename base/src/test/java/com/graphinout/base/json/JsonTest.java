@@ -1,10 +1,9 @@
 package com.graphinout.base.json;
 
-import com.graphinout.base.TestFileProvider;
+import com.graphinout.testdata.TestFileProvider;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.writer.impl.StringBuilderJsonWriter;
-import org.apache.commons.io.FileUtils;
+import com.graphinout.foundation.pure.json.writer.impl.StringBuilderJsonWriter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,9 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;

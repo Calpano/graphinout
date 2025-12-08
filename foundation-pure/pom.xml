@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>graphinout</artifactId>
+        <groupId>com.graphinout</groupId>
+        <version>0.1.8-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>foundation-pure</artifactId>
+    <name>foundation-pure</name>
+    <description>
+        Foundation is in general a dependency-free base layer for Java projects.
+        Foundation has four layers: pure, shared, jvm and client.
+
+        ⚪️Pure: No dependencies, only classes from the j2cl compatible fragment. Java 11+ (maybe up to 21) syntax.
+        Exception: Annotations are allowed, e.g., jspecify or Jackson.
+        ⚪️Shared: Only j2cl-dependencies allowed (e.g. elements). Java 11+ (maybe up to 21) syntax.
+        ⚪️Client: This code runs only j2cl-compiled in the client. It may have dependencies to j2cl DOM libraries.
+        Java 11+ (maybe up to 21) syntax. Graphinout does not need 'client' code.
+        ⚪️JVM: This code cannot j2cl-compile. Any java syntax.
+    </description>
+
+
+    <dependencies>
+        <!-- we inlined (copied) the jspecify annotations and removed the MODULE enum value -->
+        <!--        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId><optional>true</optional></dependency>-->
+        <!--        <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId></dependency>-->
+        <!--        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId>-->
+        <!--            <classifier>sources</classifier>-->
+        <!--        </dependency>-->
+
+        <!-- jackson annotation sources used too many non-j2cl dependencies -->
+        <!--        <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId>-->
+        <!--            <classifier>sources</classifier>-->
+        <!--        </dependency>-->
+
+        <!-- Test Dependencies -->
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><scope>test</scope></dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- current j2cl version is Java 8 syntax. See j2cl.adoc -->
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <!-- to use JDK 24 or 25 with Mockito -->
+                        <argLine>-Dnet.bytebuddy.experimental=true</argLine>
+                    </configuration>
+                </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>${j2cl-mp-group}</groupId><artifactId>${j2cl-mp-artifact}</artifactId>
+                <version>${j2cl-mp-version}</version>
+                <executions><execution>
+                    <phase>compile</phase>
+                    <goals><goal>build</goal></goals>
+                </execution></executions>
+                <configuration>
+                    <webappDirectory>${project.basedir}/target/webapp</webappDirectory>
+                    <initialScriptFilename>j2cl-result.js</initialScriptFilename>
+                    <enableSourcemaps>${j2cl-mp-enableSourceMaps}</enableSourcemaps>
+                    <compilationLevel>${j2cl-mp-compilationLevel}</compilationLevel>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+
+</project>

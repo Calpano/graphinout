@@ -7,7 +7,7 @@ import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjLabelEntry;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.slf4j.Logger;
 
 import java.util.List;

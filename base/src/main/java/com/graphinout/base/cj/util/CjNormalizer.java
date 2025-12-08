@@ -2,19 +2,19 @@ package com.graphinout.base.cj.util;
 
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.data.CjDataProperty;
-import com.graphinout.foundation.json.JsonConstants;
-import com.graphinout.foundation.json.JsonTransformer;
+import com.graphinout.foundation.pure.json.JsonConstants;
+import com.graphinout.foundation.pure.json.JsonTransformer;
 import com.graphinout.base.json.value.JavaJsonValuesBase;
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
-import com.graphinout.foundation.json.value.IJsonArrayMutable;
-import com.graphinout.foundation.json.value.IJsonContainer;
-import com.graphinout.foundation.json.value.IJsonObjectMutable;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.json.value.JsonPaths;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
+import com.graphinout.foundation.pure.json.document.IJsonContainer;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.path.JsonPaths;
 
 import java.util.List;
 
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
 public class CjNormalizer {
 

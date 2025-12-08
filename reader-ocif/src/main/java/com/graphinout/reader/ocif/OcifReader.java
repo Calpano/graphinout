@@ -5,14 +5,15 @@ import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioFileFormat;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
-import com.graphinout.foundation.json.path.IJsonContainerNavigationStep;
-import com.graphinout.foundation.json.value.IJsonArray;
-import com.graphinout.foundation.json.value.IJsonObject;
-import com.graphinout.foundation.json.value.IJsonObjectMutable;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
+import com.graphinout.foundation.pure.json.document.IJsonArray;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.base.json.value.JavaJsonValuesBase;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -26,10 +27,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static com.graphinout.foundation.json.path.IJsonContainerNavigationStep.of;
-import static com.graphinout.foundation.json.path.IJsonContainerNavigationStep.pathOf;
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
-import static com.graphinout.foundation.util.Nullables.nonNullOrDefault;
+import static com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep.of;
+import static com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep.pathOf;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 
@@ -143,7 +144,7 @@ public class OcifReader implements GioReader {
                 com.graphinout.base.cj.document.ICjEdgeChunkMutable edge = cjStream.createEdgeChunk();
                 // endpoints depend on relation type
 
-                String type = nonNullOrDefault(rel.get("type"), IJsonValue::asString, "@ocif/rel/edge");
+                String type = Nullables.nonNullOrDefault(rel.get("type"), IJsonValue::asString, "@ocif/rel/edge");
                 switch (type) {
                     case "@ocif/rel/parent-child" -> {
                         String parent = requireNonNull(rel.get("parent")).asString();

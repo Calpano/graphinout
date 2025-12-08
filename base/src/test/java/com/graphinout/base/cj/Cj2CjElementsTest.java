@@ -1,24 +1,24 @@
 package com.graphinout.base.cj;
 
 
+import com.graphinout.base.TestFileUtil2;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.util.CjNormalizer;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.Json2CjWriter;
-import com.graphinout.base.TestFileUtil;
 import com.graphinout.base.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.util.JsonFormatter;
-import com.graphinout.foundation.json.writer.JsonWriter;
+import com.graphinout.foundation.pure.text.JsonFormatting;
+import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import com.graphinout.base.json.JsonReaderImpl;
-import com.graphinout.foundation.json.writer.impl.StringBuilderJsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.StringBuilderJsonWriter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.foundation.json.util.JsonFormatter.formatDebug;
+import static com.graphinout.foundation.pure.text.JsonFormatting.formatDebug;
 
 
 /**
@@ -29,13 +29,13 @@ public class Cj2CjElementsTest {
     boolean addLogging = true;
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test all Canonical CJ files together")
     void test_Json2Cj2Elements2Cj2Json(String displayPath, Resource xmlResource) throws Exception {
         // == OUT Pipeline
         CjWriter2CjDocumentWriter cj2ElementsWriter = new CjWriter2CjDocumentWriter();
         // == IN Pipeline
-        SingleInputSourceOfString inputSource = TestFileUtil.inputSource(xmlResource);
+        SingleInputSourceOfString inputSource = TestFileUtil2.inputSource(xmlResource);
 
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         /* receive JSON events -> send CJ events  */
@@ -50,8 +50,8 @@ public class Cj2CjElementsTest {
 
         String json_in = xmlResource.getContentAsString();
         String json_out = jsonWriter.json();
-        assertThat(formatDebug(CjNormalizer.canonicalize(JsonFormatter.removeWhitespace(json_out)))) //
-                .isEqualTo(formatDebug(CjNormalizer.canonicalize(JsonFormatter.removeWhitespace(json_in))));
+        assertThat(formatDebug(CjNormalizer.canonicalize(JsonFormatting.removeWhitespace(json_out)))) //
+                .isEqualTo(formatDebug(CjNormalizer.canonicalize(JsonFormatting.removeWhitespace(json_in))));
     }
 
 

@@ -2,7 +2,7 @@ package com.graphinout.reader.graphml.elements.impl;
 
 import com.graphinout.reader.graphml.elements.IGraphmlDefault;
 import com.graphinout.reader.graphml.elements.IGraphmlElement;
-import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
 
 import java.util.Map;
 import java.util.Objects;

@@ -4,7 +4,7 @@ import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.writer.Json2CjWriter;
-import com.graphinout.base.TestFileProvider;
+import com.graphinout.testdata.TestFileProvider;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.json.JsonReaderImpl;
 import io.github.classgraph.Resource;

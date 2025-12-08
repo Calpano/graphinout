@@ -15,7 +15,7 @@ import com.graphinout.reader.graphml.elements.builder.GraphmlLocatorBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlNodeBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlPortBuilder;
 import com.graphinout.reader.graphml.elements.builder.ILocatorBuilder;
-import com.graphinout.base.xml.IXmlName;
+import com.graphinout.foundation.pure.xml.IXmlName;
 
 import org.jspecify.annotations.Nullable;
 import java.io.IOException;

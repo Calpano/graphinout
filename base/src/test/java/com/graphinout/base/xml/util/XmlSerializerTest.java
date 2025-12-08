@@ -1,11 +1,11 @@
 package com.graphinout.base.xml.util;
 
 import com.graphinout.base.xml.XmlAssert;
-import com.graphinout.base.xml.XmlSerializer;
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
 import com.graphinout.base.xml.Xml2DocumentWriter;
-import com.graphinout.foundation.xml.document.XmlDocument;
+import com.graphinout.foundation.pure.xml.XmlSerializer;
+import com.graphinout.foundation.pure.xml.document.XmlDocument;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +21,7 @@ class XmlSerializerTest {
      */
     @ParameterizedTest(name = "{index}: {0}")
     @DisplayName("GraphMl files parse as XML (Baseline 1)")
-    @MethodSource("com.graphinout.base.TestFileProvider#xmlResources")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#xmlResources")
     void testAllXml(String displayPath, Resource xmlResource) throws Exception {
         // prep
         String xmlString = xmlResource.getContentAsString();

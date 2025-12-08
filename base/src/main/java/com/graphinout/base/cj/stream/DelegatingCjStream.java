@@ -5,8 +5,8 @@ import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjEdgeChunk;
 import com.graphinout.base.cj.document.ICjGraphChunk;
 import com.graphinout.base.cj.document.ICjNodeChunk;
-import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.Locator;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.input.Locator;
 
 import org.jspecify.annotations.Nullable;
 import java.util.Arrays;

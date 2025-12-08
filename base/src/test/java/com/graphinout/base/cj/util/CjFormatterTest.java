@@ -2,8 +2,8 @@ package com.graphinout.base.cj.util;
 
 import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
-import com.graphinout.foundation.jajson.JaJson;
-import com.graphinout.foundation.json.util.JsonCompactFormatter;
+import com.graphinout.foundation.pure.collections.jajson.JaJson;
+import com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

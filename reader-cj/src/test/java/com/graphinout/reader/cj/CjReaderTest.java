@@ -3,7 +3,7 @@ package com.graphinout.reader.cj;
 import com.graphinout.base.cj.factory.CjFactory;
 import com.graphinout.base.cj.factory.ICjFactory;
 import com.graphinout.base.cj.stream.ICjStream;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.SingleInputSource;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.AfterEach;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static com.graphinout.base.TestFileUtil.inputSource;
+import static com.graphinout.base.TestFileUtil2.inputSource;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +69,7 @@ class CjReaderTest {
 
 
     @ParameterizedTest
-    @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     void shouldWorkAsIntended(String displayName, Resource resource) throws IOException {
         SingleInputSource singleInputSource = inputSource(resource);
 

@@ -1,7 +1,7 @@
 package com.graphinout.base.xml.util;
 
 import com.graphinout.base.xml.testing.XmlTests;
-import com.graphinout.foundation.xml.XML;
+import com.graphinout.foundation.pure.xml.XML;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;

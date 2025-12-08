@@ -3,14 +3,14 @@ package com.graphinout.reader.cj;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.graphinout.foundation.input.BaseOutput;
+import com.graphinout.foundation.pure.input.BaseOutput;
 import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
-import com.graphinout.foundation.json5.Json5Preprocessor;
+import com.graphinout.foundation.pure.json.json5.Json5Preprocessor;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -93,7 +93,7 @@ public class Json5Reader extends BaseOutput implements GioReader {
                 Map<String, Object> struct = new HashMap<>();
                 while ((token = parser.nextToken()) != JsonToken.END_OBJECT) {
                     if (token == JsonToken.FIELD_NAME) {
-                        String fieldName = parser.getCurrentName();
+                        String fieldName = parser.currentName();
                         token = parser.nextToken(); // Move to the value
                         Object value = parseJsonValue(parser, token);
                         struct.put(fieldName, value);

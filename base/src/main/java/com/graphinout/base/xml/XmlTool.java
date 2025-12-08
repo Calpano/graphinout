@@ -1,7 +1,7 @@
 package com.graphinout.base.xml;
 
-import com.graphinout.foundation.xml.document.XmlElement;
-import com.graphinout.foundation.xml.XML;
+import com.graphinout.foundation.pure.xml.document.XmlElement;
+import com.graphinout.foundation.pure.xml.XML;
 
 public class XmlTool {
 

@@ -7,7 +7,7 @@ import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.output.OutputSink;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 
 import java.io.IOException;

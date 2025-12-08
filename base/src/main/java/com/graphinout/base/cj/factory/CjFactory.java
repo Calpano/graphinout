@@ -8,8 +8,8 @@ import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.cj.document.impl.CjEdgeElement;
 import com.graphinout.base.cj.document.impl.CjGraphElement;
 import com.graphinout.base.cj.document.impl.CjNodeElement;
-import com.graphinout.foundation.json.value.IJsonFactory;
-import com.graphinout.foundation.json.value.java.JavaJsonFactory;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import com.graphinout.foundation.pure.json.value.java.JavaJsonFactory;
 
 public class CjFactory implements ICjFactory {
 

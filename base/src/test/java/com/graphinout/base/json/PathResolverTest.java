@@ -1,14 +1,14 @@
 package com.graphinout.base.json;
 
 import com.google.common.truth.Truth;
-import com.graphinout.foundation.json.value.IJsonObject;
-import com.graphinout.foundation.json.value.IJsonPrimitive;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.json.value.java.JavaJsonObject;
-import com.graphinout.foundation.util.path.IListLike;
-import com.graphinout.foundation.util.path.PathResolver;
-import com.graphinout.foundation.util.path.Result;
-import com.graphinout.foundation.util.path.TypeAdapters;
+import com.graphinout.foundation.pure.collections.IListLike;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonPrimitive;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.value.java.JavaJsonObject;
+import com.graphinout.foundation.jvm.kpath.PathResolver;
+import com.graphinout.foundation.jvm.kpath.Result;
+import com.graphinout.foundation.jvm.kpath.TypeAdapters;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -113,7 +113,7 @@ class PathResolverTest {
         PathResolver resolver = new PathResolver();
         List<Result> results = resolver.resolveAll(jsonValue, List.of("a", "b", "[0]", "c", "d"));
         assertThat(results).hasSize(1);
-        Object value = results.getFirst().value();
+        Object value = results.get(0).value();
         assert value instanceof IJsonPrimitive;
         IJsonPrimitive jsonPrimitive = (IJsonPrimitive) value;
         assertThat(jsonPrimitive.asString()).isEqualTo("found me");

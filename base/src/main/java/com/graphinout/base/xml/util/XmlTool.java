@@ -3,13 +3,11 @@ package com.graphinout.base.xml.util;
 import com.graphinout.base.xml.NamedEntities;
 import com.graphinout.base.xml.factory.XmlFactory;
 import com.graphinout.base.xml.sax.Sax2XmlWriter;
-import com.graphinout.base.xml.writer.XmlWriter;
-import com.graphinout.foundation.xml.XmlFoundation;
-import com.graphinout.foundation.xml.writer.Xml2AppendableWriter;
-import io.github.classgraph.Resource;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.writer.XmlWriter;
+import com.graphinout.foundation.jvm.xml.XmlFoundation;
 import org.apache.commons.io.FileUtils;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -22,34 +20,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.graphinout.foundation.util.Texts.LF_10_N;
+import static com.graphinout.foundation.pure.text.Texts.LF_10_N;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class XmlTool {
 
     /** SAX config */
     @SuppressWarnings("HttpUrlsUsage") public static final String PROPERTIES_LEXICAL_HANDLER = "http://xml.org/sax/properties/lexical-handler";
-
-    private static final Logger log = getLogger(XmlTool.class);
-
-    /**
-     * check if that is valid XML to begin with. CAUTION: File-based reading can fail in a CI/CD pipeline. Better use
-     * {@link #assertCanParseAsXml(Resource)}
-     */
-    public static void assertCanParseAsXml(Path xmlFilePath) throws Exception {
-        XmlTool.parseAndWriteXml(xmlFilePath.toFile(), Xml2AppendableWriter.createNoop());
-    }
-
-    /** check if that is valid XML to begin with */
-    public static void assertCanParseAsXml(Resource xmlResource) throws Exception {
-        XmlTool.parseAndWriteXml(xmlResource, Xml2AppendableWriter.createNoop());
-    }
 
     public static <T extends ContentHandler & LexicalHandler> XMLReader createXmlReaderOn(T contentHandlerAndLexicalHandler) throws SAXException, ParserConfigurationException {
         SAXParser saxParser = XmlFactory.createSaxParser();
@@ -107,7 +89,7 @@ public class XmlTool {
         // before SAX parsing
         String preprocessed = NamedEntities.htmlEntitiesToAmpEncoded(xml);
         // simulate SAX parsing
-        String decoded = XmlFoundation.xmlDecode(preprocessed);
+        String decoded = XML.xmlDecode(preprocessed);
         // normalize CR LF to LF and similar;
         String normalizedLineEndings = normalizeLineEndingsLikeSax(decoded);
         String resolvedNumericalEntities = resolveNumericalEntities(normalizedLineEndings);
@@ -159,11 +141,6 @@ public class XmlTool {
     public static void parseAndWriteXml(File xmlFile, XmlWriter xmlWriter) throws Exception {
         String xmlString = FileUtils.readFileToString(xmlFile, StandardCharsets.UTF_8);
         parseAndWriteXml(xmlFile.getAbsolutePath(), xmlString, xmlWriter);
-    }
-
-    public static void parseAndWriteXml(Resource xmlResource, XmlWriter xmlWriter) throws Exception {
-        String xmlString = xmlResource.getContentAsString();
-        parseAndWriteXml(xmlResource.getURI().toString(), xmlString, xmlWriter);
     }
 
     public static void parseAndWriteXml(String inputName, String xmlString, XmlWriter xmlWriter) throws Exception {

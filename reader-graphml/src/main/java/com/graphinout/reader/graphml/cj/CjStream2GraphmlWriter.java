@@ -13,9 +13,9 @@ import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.reader.graphml.IGraphmlWriter;
-import com.graphinout.foundation.input.Locator;
-import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.json.value.IJsonFactory;
+import com.graphinout.foundation.pure.input.Locator;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
 
 import org.jspecify.annotations.Nullable;
 import java.io.IOException;

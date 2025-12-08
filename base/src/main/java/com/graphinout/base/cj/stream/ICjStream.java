@@ -5,8 +5,8 @@ import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjEdgeChunk;
 import com.graphinout.base.cj.document.ICjGraphChunk;
 import com.graphinout.base.cj.document.ICjNodeChunk;
-import com.graphinout.foundation.input.IHandleContentErrors;
-import com.graphinout.foundation.json.value.IJsonFactory;
+import com.graphinout.foundation.pure.input.IHandleContentErrors;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
 
 /**
  * A coarse-granular streaming CJ API. Assumptions: data is small.

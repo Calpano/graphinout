@@ -2,8 +2,8 @@ package com.graphinout.reader.graphml.cj;
 
 import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.reader.graphml.IGraphmlWriter;
-import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.util.Nullables;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.functional.Nullables;
 
 import java.util.function.Consumer;
 

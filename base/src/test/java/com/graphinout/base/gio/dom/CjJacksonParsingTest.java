@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.graphinout.base.TestFileUtil;
+import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.base.cj.jackson.CjJacksonDocument;
 import com.graphinout.base.cj.jackson.CjJacksonEdge;
 import com.graphinout.base.cj.jackson.CjJacksonEndpoint;
@@ -43,7 +43,7 @@ public class CjJacksonParsingTest {
         assertThat(doc.getGraphs()).hasSize(1);
 
         // Test first node
-        CjJacksonNode firstNode = doc.getNodes().getFirst();
+        CjJacksonNode firstNode = doc.getNodes().get(0);
         assertThat(firstNode.getId()).isEqualTo("node1");
         assertThat(firstNode.getLabel()).isEqualTo("First Node");
 
@@ -54,7 +54,7 @@ public class CjJacksonParsingTest {
         assertThat(secondNode.getPorts()).isNotNull();
 
         // Test first edge (simple source/target)
-        CjJacksonEdge firstEdge = doc.getEdges().getFirst();
+        CjJacksonEdge firstEdge = doc.getEdges().get(0);
         assertThat(firstEdge.getSource()).isEqualTo("node1");
         assertThat(firstEdge.getTarget()).isEqualTo("node2");
 
@@ -70,7 +70,7 @@ public class CjJacksonParsingTest {
         assertThat(data.get("foo")).isNotNull();
         assertThat(data.get("foo").asText()).isEqualTo("bar");
 
-        CjJacksonEndpoint firstEndpoint = secondEdge.getEndpoints().getFirst();
+        CjJacksonEndpoint firstEndpoint = secondEdge.getEndpoints().get(0);
         assertThat(firstEndpoint.getDirection()).isEqualTo("out");
         assertThat(firstEndpoint.getNode()).isEqualTo("node1");
 
@@ -80,7 +80,7 @@ public class CjJacksonParsingTest {
         assertThat(secondEndpoint.getPort()).isEqualTo("port1");
 
         // Test subgraph
-        CjJacksonGraph subgraph = doc.getGraphs().getFirst();
+        CjJacksonGraph subgraph = doc.getGraphs().get(0);
         assertThat(subgraph.getId()).isEqualTo("subgraph1");
         assertThat(subgraph.getNodes()).isNotNull();
         assertThat(subgraph.getNodes()).hasSize(1);

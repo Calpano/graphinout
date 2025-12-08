@@ -3,22 +3,24 @@ package com.graphinout.reader.graphml.elements;
 import com.graphinout.base.xml.XmlTool;
 import com.graphinout.reader.graphml.elements.builder.GraphmlDataBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlKeyBuilder;
-import com.graphinout.foundation.util.Nullables;
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.document.XmlContent;
-import com.graphinout.foundation.xml.document.XmlDocumentFragment;
-import com.graphinout.foundation.xml.document.XmlElement;
+import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.document.XmlContent;
+import com.graphinout.foundation.pure.xml.document.XmlDocumentFragment;
+import com.graphinout.foundation.pure.xml.document.XmlElement;
 import com.graphinout.reader.graphml.cj.CjGraphmlMapping;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+
+import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
-import static com.graphinout.foundation.util.Nullables.mapOrDefault;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.mapOrDefault;
 
 /**
  * The DTD says: There are only 'for' and 'id' attributes.
@@ -118,7 +120,7 @@ public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
     @Override
     String id();
 
-    default @Nonnull String id_() {
+    default @NonNull String id_() {
         return Objects.requireNonNull(id());
     }
 

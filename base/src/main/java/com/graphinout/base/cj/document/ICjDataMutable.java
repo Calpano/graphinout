@@ -1,8 +1,8 @@
 package com.graphinout.base.cj.document;
 
-import com.graphinout.foundation.json.path.IJsonContainerNavigationStep;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
 
 import java.util.List;
 

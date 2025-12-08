@@ -1,12 +1,13 @@
 package com.graphinout.base.xml.testing;
 
-import com.graphinout.base.TestFileUtil;
+import com.graphinout.base.xml.util.XmlTestTool;
+import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.base.xml.XmlAssert;
 import com.graphinout.base.xml.XmlNormalizer;
 import com.graphinout.base.xml.factory.XmlFactory;
 import com.graphinout.base.xml.util.XmlFormatter;
 import com.graphinout.base.xml.util.XmlTool;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ public class XmlTest {
     interface MockHandler extends ContentHandler, LexicalHandler {}
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#xmlResources")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#xmlResources")
     @DisplayName("Test all XML files together")
     void testAllXmlFiles(String displayPath, Resource xmlResource) throws Exception {
         testXmlFile(xmlResource);
@@ -121,7 +122,7 @@ public class XmlTest {
 
         // Parse and write XML
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        XmlTool.parseAndWriteXml(xmlResource, xmlWriter);
+        XmlTestTool.parseAndWriteXml(xmlResource, xmlWriter);
         String outString = xmlWriter.resultString();
 
         // Validate processed XML is not empty and is well-formed

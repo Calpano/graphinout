@@ -36,7 +36,7 @@ public interface ICjEdgeChunk extends ICjHasData, ICjHasId, ICjHasLabel {
     default @Nullable ICjEndpoint source() throws IllegalStateException {
         List<ICjEndpoint> sources = endpoints().filter(ICjEndpoint::isSource).toList();
         if (sources.size() == 1) {
-            return sources.getFirst();
+            return sources.get(0);
         } else if (sources.isEmpty()) {
             return null;
         } else {
@@ -47,7 +47,7 @@ public interface ICjEdgeChunk extends ICjHasData, ICjHasId, ICjHasLabel {
     default @Nullable ICjEndpoint target() throws IllegalStateException {
         List<ICjEndpoint> targets = endpoints().filter(ICjEndpoint::isTarget).toList();
         if (targets.size() == 1) {
-            return targets.getFirst();
+            return targets.get(0);
         } else if (targets.isEmpty()) {
             return null;
         } else {

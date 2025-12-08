@@ -1,7 +1,5 @@
 package com.graphinout.reader.ocif.document;
 
-import com.graphinout.foundation.json.value.IJsonArray;
-import com.graphinout.foundation.json.value.IJsonObject;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 
 import java.util.ArrayList;

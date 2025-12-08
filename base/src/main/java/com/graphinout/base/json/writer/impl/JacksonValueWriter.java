@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import com.graphinout.foundation.json.JsonException;
-import com.graphinout.foundation.json.writer.JsonValueWriter;
+import com.graphinout.foundation.pure.json.JsonException;
+import com.graphinout.foundation.pure.json.writer.JsonValueWriter;
 
 import org.jspecify.annotations.Nullable;
 import java.math.BigDecimal;
@@ -107,7 +107,7 @@ public class JacksonValueWriter implements JsonValueWriter {
 
     public JsonNode result() {
         assert nodes.size() == 1;
-        return nodes.getFirst();
+        return nodes.get(0);
     }
 
     protected JsonNode peek() {

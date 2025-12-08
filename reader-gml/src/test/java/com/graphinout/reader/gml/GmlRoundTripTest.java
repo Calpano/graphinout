@@ -2,9 +2,9 @@ package com.graphinout.reader.gml;
 
 import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
-import com.graphinout.base.TestFileUtil;
+import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.base.input.SingleInputSource;
-import com.graphinout.foundation.test.StringFormatter;
+import com.graphinout.foundation.pure.text.StringFormatter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

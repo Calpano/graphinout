@@ -1,7 +1,7 @@
 package com.graphinout.reader.dot;
 
 import com.graphinout.base.cj.document.ICjDocument;
-import com.graphinout.foundation.test.StringFormatter;
+import com.graphinout.foundation.pure.text.StringFormatter;
 import com.graphinout.base.text.TextReader;
 import com.graphinout.base.text.TextWriterOnStringBuilder;
 

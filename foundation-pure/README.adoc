@@ -1,0 +1,44 @@
+= Foundation
+:toc:
+
+The foundation projects comprise in general a dependency-free base layer for Java projects.
+
+== Foundation Layers
+Foundation has four technical layers: pure, shared, jvm and client.
+
+`foundation-pure`:: No dependencies, only classes from the j2cl compatible fragment. Java 8 syntax.
+
+CAUTION: Due to `jspecify` using Java9 annotations (`MODULE`), we supply the jspecify annotations within `foundation-pure`.
+
+This project is aimed as a widely usable base layer for many Java projects, including j2cl-using ones (See link:j2cl.adoc[] for details on j2cl).
+It provides and uses `@Gwt(In)Compatible` annotations, but those cause no issues in standard Java.
+Sometimes j2cl emulation is used (see `VARY` pattern). Within `foundation-pure` the JVM-version of code may not be performance degraded.
+
+`foundation-shared`:: Only j2cl-able dependencies allowed (e.g. https://github.com/google/elemental2[elemental2]). Java 8 syntax.
+
+`foundation-jvm`:: This code cannot j2cl-compile. Any java syntax.
+
+.Dependencies
+[plantuml]
+....
+hide empty members
+hide circle
+
+package Foundation {
+    class pure as "foundation-pure" {
+        no dependencies
+    }
+    class shared as "foundation-shared"
+    class jvm as "foundation-jvm" {
+        Does not j2cl compile
+    }
+}
+class J2cl as "j2cl libraries" {
+    Third party
+}
+
+shared ..> J2cl
+shared ..> pure
+jvm ..> shared
+....
+

@@ -3,7 +3,7 @@ package com.graphinout.reader.gexf;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioReader;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.InputSource;
 
 import java.io.IOException;

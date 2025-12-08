@@ -1,11 +1,11 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.TestFileUtil;
+import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.stream.NoopCjStream;
 import com.graphinout.base.input.SingleInputSource;
-import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.Location;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.input.Location;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.base.TestFileUtil.inputSource;
+import static com.graphinout.base.TestFileUtil2.inputSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GraphmlReaderContentErrorTest {
@@ -64,7 +64,7 @@ class GraphmlReaderContentErrorTest {
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#graphmlResources")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#graphmlResources")
     void readAllGraphmlFiles(String displayName, Resource graphmlResource) throws Exception {
         if (TestFileUtil.isInvalid(graphmlResource, "graphml", "xml")) {
             return;

@@ -1,7 +1,7 @@
 package com.graphinout.reader.graphml.elements.builder;
 
 import com.graphinout.reader.graphml.elements.impl.GraphmlDefault;
-import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
 
 public class GraphmlDefaultBuilder extends GraphmlElementBuilder<GraphmlDefaultBuilder> {
 

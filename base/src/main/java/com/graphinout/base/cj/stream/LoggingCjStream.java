@@ -9,9 +9,9 @@ import com.graphinout.base.cj.document.ICjGraphChunk;
 import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunk;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
-import com.graphinout.foundation.input.Locator;
-import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.json.value.IJsonFactory;
+import com.graphinout.foundation.pure.input.Locator;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import org.slf4j.Logger;
 
 import org.jspecify.annotations.Nullable;

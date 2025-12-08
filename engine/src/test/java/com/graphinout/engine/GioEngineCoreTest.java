@@ -2,9 +2,9 @@ package com.graphinout.engine;
 
 import com.graphinout.base.ReaderTests;
 import com.graphinout.base.gio.GioReader;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.ContentErrors;
-import com.graphinout.base.TestFileProvider;
+import com.graphinout.testdata.TestFileProvider;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.output.InMemoryOutputSink;
 import org.apache.commons.io.FileUtils;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.base.TestFileUtil.resource;
+import static com.graphinout.testdata.TestFileUtil.resource;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.slf4j.LoggerFactory.getLogger;
 

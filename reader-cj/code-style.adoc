@@ -17,7 +17,7 @@ Never auto-fix intermediate errors. If stuff goes wrong, throw an exception.
 == Language and Libraries
 
 - Java 8+.
-- Nullability annotations from `javax.annotation.Nullable` where applicable.
+- Nullability annotations from `jspecify` where applicable.
 - Logging via SLF4J (`org.slf4j.Logger` / `LoggerFactory`).
 - Project foundations: `com.graphinout.base`, `com.graphinout.foundation` packages.
 

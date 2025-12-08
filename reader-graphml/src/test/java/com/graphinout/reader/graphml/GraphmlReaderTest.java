@@ -2,16 +2,16 @@ package com.graphinout.reader.graphml;
 
 import com.graphinout.base.cj.stream.DelegatingCjStream;
 import com.graphinout.base.cj.stream.ICjStream;
-import com.graphinout.base.TestFileProvider;
+import com.graphinout.testdata.TestFileProvider;
 import com.graphinout.reader.graphml.validation.ValidatingGraphMlWriter;
 import com.graphinout.base.cj.stream.ValidatingCjStream;
-import com.graphinout.base.TestFileUtil;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.testdata.TestFileUtil;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.output.OutputSink;
-import com.graphinout.foundation.xml.writer.ValidatingXmlWriter;
-import com.graphinout.foundation.xml.writer.Xml2AppendableWriter;
-import com.graphinout.base.xml.writer.XmlWriter;
+import com.graphinout.foundation.pure.xml.writer.ValidatingXmlWriter;
+import com.graphinout.foundation.pure.xml.writer.Xml2AppendableWriter;
+import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 import com.graphinout.base.xml.writer.XmlWriterImpl;
 import com.graphinout.reader.graphml.cj.CjStream2GraphmlWriter;
 import io.github.classgraph.Resource;
@@ -25,7 +25,7 @@ import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
-import static com.graphinout.base.TestFileUtil.inputSource;
+import static com.graphinout.base.TestFileUtil2.inputSource;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class GraphmlReaderTest {
@@ -56,7 +56,7 @@ class GraphmlReaderTest {
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#graphmlResources")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#graphmlResources")
     void readAllGraphmlFiles(String displayName, Resource resource) throws Exception {
         try (SingleInputSource singleInputSource = inputSource(resource)) {
             GraphmlReader graphmlReader = new GraphmlReader();

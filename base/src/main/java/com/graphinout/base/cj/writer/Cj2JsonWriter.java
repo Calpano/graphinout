@@ -5,10 +5,10 @@ import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjEdgeType;
-import com.graphinout.foundation.json.JsonException;
-import com.graphinout.foundation.json.JsonType;
-import com.graphinout.foundation.json.writer.JsonWriter;
-import com.graphinout.foundation.json.writer.impl.DelegatingJsonWriter;
+import com.graphinout.foundation.pure.json.JsonException;
+import com.graphinout.foundation.pure.json.JsonType;
+import com.graphinout.foundation.pure.json.writer.JsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.DelegatingJsonWriter;
 
 import java.util.Arrays;
 import java.util.Stack;

@@ -9,7 +9,7 @@ import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 
 import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;

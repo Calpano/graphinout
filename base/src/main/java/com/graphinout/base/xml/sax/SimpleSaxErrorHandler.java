@@ -1,6 +1,6 @@
 package com.graphinout.base.xml.sax;
 
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentError;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;

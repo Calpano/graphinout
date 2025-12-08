@@ -9,9 +9,9 @@ import com.graphinout.base.cj.document.ICjEdge;
 import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjHasLabel;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
-import com.graphinout.foundation.json.value.IJsonObject;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.util.PowerStreams;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.stream.PowerStreams;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
 import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
 import com.graphinout.reader.graphml.elements.IGraphmlKey;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
 public class CjData2GraphmlKeyData {
 

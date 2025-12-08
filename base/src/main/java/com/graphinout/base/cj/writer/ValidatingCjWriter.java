@@ -5,7 +5,7 @@ import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjEdgeType;
-import com.graphinout.foundation.json.writer.impl.ValidatingJsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.ValidatingJsonWriter;
 
 import java.net.URISyntaxException;
 import java.util.ArrayDeque;

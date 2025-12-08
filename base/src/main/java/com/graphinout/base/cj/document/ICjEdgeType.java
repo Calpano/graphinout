@@ -1,9 +1,9 @@
 package com.graphinout.base.cj.document;
 
 import com.graphinout.base.json.JsonReaderImpl;
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
-import com.graphinout.foundation.json.value.IJsonObject;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 
 public interface ICjEdgeType {
 

@@ -1,7 +1,10 @@
 package com.graphinout.reader.graphml;
 
 
-import com.graphinout.foundation.input.BaseOutput;
+import com.graphinout.foundation.pure.input.BaseOutput;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 import com.graphinout.reader.graphml.elements.GraphmlElements;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDocument;
@@ -13,9 +16,6 @@ import com.graphinout.reader.graphml.elements.IGraphmlKey;
 import com.graphinout.reader.graphml.elements.IGraphmlLocator;
 import com.graphinout.reader.graphml.elements.IGraphmlNode;
 import com.graphinout.reader.graphml.elements.IGraphmlPort;
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.base.xml.writer.XmlWriter;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
-import static com.graphinout.foundation.util.Nullables.ifPresentAcceptThrowing;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAcceptThrowing;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class Graphml2XmlWriter extends BaseOutput implements IGraphmlWriter {

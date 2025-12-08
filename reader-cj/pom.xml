@@ -13,61 +13,25 @@
     <description>Reader for Connected JSON</description>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
-        <!-- until we replace GIO by CJ -->
-<!--        <dependency>-->
-<!--            <groupId>com.graphinout</groupId>-->
-<!--            <artifactId>reader-graphml</artifactId>-->
-<!--            <version>0.1.3-SNAPSHOT</version>-->
-<!--        </dependency>-->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
+        <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
+
+        <!-- Test Dependencies -->
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.1.8-SNAPSHOT</version>
+              <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
         </dependency>
-        <!-- test -->
-        <dependency>
-            <groupId>com.graphinout</groupId>
-            <artifactId>base</artifactId>
-            <version>0.1.8-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <type>test-jar</type>
-            <scope>test</scope>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version>
+              <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
         </dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
         <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope></dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
         <!-- jackson streaming json parser -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson-core-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson-databind-version}</version>
-        </dependency><dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version><scope>compile</scope></dependency>
+        <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-core</artifactId></dependency>
+        <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency>
     </dependencies>
 </project>

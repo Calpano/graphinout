@@ -8,7 +8,7 @@ import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjLabelEntry;
 import com.graphinout.base.cj.document.ICjNode;
-import com.graphinout.foundation.util.Nullables;
+import com.graphinout.foundation.pure.functional.Nullables;
 import org.slf4j.Logger;
 
 import org.jspecify.annotations.Nullable;

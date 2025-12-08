@@ -6,22 +6,21 @@ import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
 import com.graphinout.base.cj.document.ICjEdgeType;
-import com.graphinout.base.cj.document.ICjElement;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
-import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjLabel;
 import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.base.cj.document.ICjPort;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.json.value.java.JavaJsonObject;
-import com.graphinout.foundation.util.Nullables;
-import com.graphinout.foundation.util.PowerStreams;
-import com.graphinout.foundation.util.ThrowingConsumer;
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.value.java.JavaJsonObject;
+import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.functional.ThrowingConsumer;
+import com.graphinout.foundation.pure.stream.PowerStreams;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
 import com.graphinout.reader.graphml.IGraphmlWriter;
 import com.graphinout.reader.graphml.cj.CjGraphmlMapping.GraphmlDataElement;
 import com.graphinout.reader.graphml.elements.GraphmlDirection;
@@ -58,8 +57,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
-import static com.graphinout.foundation.util.PowerStreams.forEach;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.stream.PowerStreams.forEach;
 
 /**
  * CJ to GraphML: {@link ICjDocument} to {@link IGraphmlWriter}.
@@ -352,7 +351,7 @@ public class CjDocument2Graphml {
     }
 
     /** Write CJ .data to GraphMl {@code <data>} */
-    private void writeData_Json(ICjHasData cjHasData, ThrowingConsumer<IGraphmlData, IOException> graphmlDataConsumer) {
+    private void writeData_Json(ICjHasData cjHasData, ThrowingConsumer<IGraphmlData, IOException> graphmlDataConsumer) throws IOException {
         ICjData data = cjHasData.data();
         if (data == null) return;
         IJsonValue value = data.jsonValue();
@@ -389,7 +388,11 @@ public class CjDocument2Graphml {
                     graphmlData.addXmlAttributes(Map.of(XML.XML_SPACE, XML.XML_SPACE__PRESERVE));
                 }
 
-                graphmlDataConsumer.accept(graphmlData);
+                try {
+                    graphmlDataConsumer.accept(graphmlData);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             });
         } else {
             IGraphmlData graphmlData = GraphmlDataElement.CjJsonData.toGraphmlData(value.toJsonString());

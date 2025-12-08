@@ -1,0 +1,134 @@
+= JSON API
+:toc:
+
+This document provides a brief overview of the JSON manipulation APIs.
+
+== `IJsonFactory`: Creating JSON values
+
+The `IJsonFactory` interface is the entry point for creating JSON values. It provides methods to create JSON primitives, arrays, and objects.
+
+=== Primitives
+
+`IJsonFactory` offers methods to create all standard JSON primitive types:
+
+- `createString(String)`
+- `createNumber(Number)` (with overloads for `int`, `long`, `float`, `double`, `BigDecimal`, `BigInteger`)
+- `createBoolean(boolean)`
+- `createNull()`
+
+It also supports a special `XmlString` type:
+
+- `createXmlString(String rawXml, XML.XmlSpace xmlSpace)`
+
+There are also convenience methods to create primitives from a `String` representation, for example `createNumberFromString(String)`.
+
+=== Arrays
+
+To create a JSON array, use `createArrayMutable()` to get a mutable array. You can then add elements to it.
+
+[source,java]
+----
+IJsonFactory factory = ...;
+IJsonArrayMutable array = factory.createArrayMutable();
+array.add(factory.createString("hello"));
+array.add(factory.createInteger(123));
+----
+
+=== Objects
+
+Similarly, `createObjectMutable()` creates a mutable JSON object.
+
+[source,java]
+----
+IJsonFactory factory = ...;
+IJsonObjectMutable object = factory.createObjectMutable();
+object.addProperty("name", factory.createString("John Doe"));
+object.addProperty("age", factory.createInteger(42));
+----
+
+=== Creating Nested Objects
+
+You can nest objects by adding an `IJsonObjectMutable` as a property of another.
+
+[source,java]
+----
+IJsonFactory factory = ...;
+IJsonObjectMutable address = factory.createObjectMutable();
+address.addProperty("street", factory.createString("123 Main St"));
+address.addProperty("city", factory.createString("Anytown"));
+
+IJsonObjectMutable person = factory.createObjectMutable();
+person.addProperty("name", factory.createString("John Doe"));
+person.addProperty("address", address);
+----
+
+This results in the following JSON:
+
+[source,json]
+----
+{
+  "name": "John Doe",
+  "address": {
+    "street": "123 Main St",
+    "city": "Anytown"
+  }
+}
+----
+
+== `ICjDataMutable`: Building JSON data structures
+
+The `ICjDataMutable` interface allows you to build a JSON structure, typically as part of a larger document. It uses an `IJsonFactory` internally.
+
+=== Adding simple properties
+
+The easiest way to add data is by using `addProperty`:
+
+[source,java]
+----
+ICjDataMutable data = ...;
+data.addProperty("key1", "value1"); // creates a JSON string
+data.addProperty("key2", factory.createInteger(100));
+----
+
+=== Adding nested data
+
+For more complex structures, you can use the `add` method with a path. The path is a list of `IJsonContainerNavigationStep`.
+
+[source,java]
+----
+ICjDataMutable data = ...;
+List<IJsonContainerNavigationStep> path = IJsonContainerNavigationStep.pathOf("person", "address");
+data.add(path, factory.createObjectMutable()
+    .addProperty("street", factory.createString("Main St"))
+    .addProperty("city", factory.createString("Anytown"))
+);
+----
+
+This will result in a JSON structure like:
+
+[source,json]
+----
+{
+  "person": {
+    "address": {
+      "street": "Main St",
+      "city": "Anytown"
+    }
+  }
+}
+----
+
+NOTE: The IJsonContainerNavigationStep consists of property keys and array indexes, mixed, in any order.
+This reflects the fact that objects and arrays can be nested in any order.
+E.g. a path like (`annotations`, 3, `bar`, `baz`, 0, 0) with a value x is legal and will result in
+
+[source,json5]
+----
+{ "foo":
+    [ ..., ..., ,..., {
+        "bar": {
+          "baz": [ [ x ] ]
+        }
+    }]
+}
+----

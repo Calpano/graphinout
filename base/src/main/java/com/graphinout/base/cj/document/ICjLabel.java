@@ -4,15 +4,15 @@ import com.graphinout.base.cj.document.impl.CjLabelElement;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.base.json.JsonReaderImpl;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.json.writer.impl.Json2JavaJsonWriter;
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import org.slf4j.Logger;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.graphinout.foundation.util.Nullables.mapOrNull;
+import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public interface ICjLabel extends ICjElement {

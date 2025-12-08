@@ -1,5 +1,6 @@
 package com.graphinout.reader.graphml;
 
+import com.graphinout.foundation.pure.xml.BaseXmlHandler;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
 import com.graphinout.reader.graphml.elements.GraphmlDirection;
 import com.graphinout.reader.graphml.elements.GraphmlElements;
@@ -29,19 +30,18 @@ import com.graphinout.reader.graphml.elements.builder.GraphmlNodeBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlPortBuilder;
 import com.graphinout.reader.graphml.elements.impl.GraphmlDescription;
 import com.graphinout.reader.graphml.elements.impl.GraphmlEndpoint;
-import com.graphinout.foundation.input.Location;
-import com.graphinout.foundation.input.Locator;
-import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.ContentErrorException;
-import com.graphinout.base.xml.BaseXmlHandler;
-import com.graphinout.base.xml.CharactersKind;
-import com.graphinout.base.xml.IXmlName;
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.XML.XmlSpace;
+import com.graphinout.foundation.pure.input.Location;
+import com.graphinout.foundation.pure.input.Locator;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentErrorException;
+import com.graphinout.foundation.pure.xml.CharactersKind;
+import com.graphinout.foundation.pure.xml.IXmlName;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.XML.XmlSpace;
 import com.graphinout.base.xml.writer.Xml2DocumentFragmentWriter;
-import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.base.xml.writer.XmlWriter;
-import com.graphinout.foundation.xml.document.XmlDocumentFragment;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.writer.XmlWriter;
+import com.graphinout.foundation.pure.xml.document.XmlDocumentFragment;
 import org.slf4j.Logger;
 
 import org.jspecify.annotations.Nullable;
@@ -69,8 +69,8 @@ import static com.graphinout.reader.graphml.elements.IGraphmlEndpoint.ATTRIBUTE_
 import static com.graphinout.reader.graphml.elements.IGraphmlEndpoint.ATTRIBUTE_TYPE;
 import static com.graphinout.reader.graphml.elements.IGraphmlGraph.ATTRIBUTE_EDGE_DEFAULT;
 import static com.graphinout.reader.graphml.elements.IGraphmlPort.ATTRIBUTE_NAME;
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
-import static com.graphinout.foundation.util.Nullables.mapOrNull;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
 import static com.graphinout.base.xml.util.XmlTool.ifAttributeNotNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;

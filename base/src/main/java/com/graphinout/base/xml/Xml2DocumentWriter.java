@@ -1,15 +1,18 @@
 package com.graphinout.base.xml;
 
 import com.graphinout.base.xml.util.XmlTool;
-import com.graphinout.foundation.util.PowerStackOnClasses;
-import com.graphinout.base.xml.writer.XmlWriter;
+import com.graphinout.foundation.pure.xml.BaseXmlHandler;
+import com.graphinout.foundation.pure.xml.CharactersKind;
+import com.graphinout.foundation.pure.xml.IXmlName;
+import com.graphinout.foundation.pure.collections.PowerStackOnClasses;
+import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 
-import com.graphinout.foundation.xml.document.IXmlNode;
-import com.graphinout.foundation.xml.document.XmlContent;
-import com.graphinout.foundation.xml.document.XmlDocument;
-import com.graphinout.foundation.xml.document.XmlElement;
-import com.graphinout.foundation.xml.document.XmlRaw;
-import com.graphinout.foundation.xml.document.XmlText;
+import com.graphinout.foundation.pure.xml.document.IXmlNode;
+import com.graphinout.foundation.pure.xml.document.XmlContent;
+import com.graphinout.foundation.pure.xml.document.XmlDocument;
+import com.graphinout.foundation.pure.xml.document.XmlElement;
+import com.graphinout.foundation.pure.xml.document.XmlRaw;
+import com.graphinout.foundation.pure.xml.document.XmlText;
 import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.function.Consumer;

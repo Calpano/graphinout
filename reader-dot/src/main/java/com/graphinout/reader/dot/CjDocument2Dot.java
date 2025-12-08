@@ -1,9 +1,9 @@
 package com.graphinout.reader.dot;
 
 import com.graphinout.base.cj.document.*;
-import com.graphinout.foundation.json.value.IJsonObject;
-import com.graphinout.foundation.json.value.IJsonPrimitive;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonPrimitive;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.base.text.ITextWriter;
 
 import org.jspecify.annotations.Nullable;

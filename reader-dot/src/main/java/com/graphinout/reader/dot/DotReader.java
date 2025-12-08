@@ -8,18 +8,18 @@ import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.cj.util.CjValidator;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import com.graphinout.base.text.TextReader;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class DotReader implements GioReader {

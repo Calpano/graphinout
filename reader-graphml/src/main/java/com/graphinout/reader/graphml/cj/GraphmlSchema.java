@@ -10,15 +10,15 @@ import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.reader.graphml.elements.IGraphmlKey;
 import com.graphinout.reader.graphml.elements.builder.GraphmlKeyBuilder;
 import com.graphinout.base.xml.JsonXml;
-import com.graphinout.foundation.json.value.IJsonFactory;
-import com.graphinout.foundation.json.value.IJsonObject;
-import com.graphinout.foundation.json.value.IJsonObjectAppendable;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.json.value.IJsonXmlString;
-import com.graphinout.foundation.json.value.java.JavaJsonObject;
-import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.foundation.xml.document.XmlDocument;
-import com.graphinout.foundation.xml.document.XmlElement;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectAppendable;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.document.IJsonXmlString;
+import com.graphinout.foundation.pure.json.value.java.JavaJsonObject;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.document.XmlDocument;
+import com.graphinout.foundation.pure.xml.document.XmlElement;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static java.util.Objects.requireNonNullElseGet;
 
 /**

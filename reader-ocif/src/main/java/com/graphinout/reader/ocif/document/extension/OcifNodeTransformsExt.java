@@ -1,8 +1,8 @@
 package com.graphinout.reader.ocif.document.extension;
 
-import com.graphinout.foundation.json.value.IJsonArray;
-import com.graphinout.foundation.json.value.IJsonObject;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.document.IJsonArray;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 
 /**
  * Node Transforms Extension.

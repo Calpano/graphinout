@@ -1,0 +1,290 @@
+= J2CL
+:toc:
+
+J2CL is an https://github.com/google/j2cl[open source project of Google], transpiling Java to JavaScript.
+
+== Syntax
+All Java 8 language features are supported.
+On top of that, the exact language support https://github.com/google/j2cl/issues/4[is a bit unclear].
+Given the j2cl fork dated 2023-04-11 and the analysis in <<_j2cl_java_language_support_level>>, it seems wise to **use only Java 8 language level**.
+
+
+== Runtime Library
+Only some of the Java SDK runtime libraries are supported as emulation.
+There are https://github.com/google/j2cl/blob/master/docs/limitations.md[limitations].
+
+The JRE emulation _source of truth_ is https://github.com/google/j2cl/tree/master/jre/java[].
+**Again: The date of the j2cl fork needs to be respected**.
+
+== Maven
+One common way of using j2cl via Maven is the  https://central.sonatype.com/artifact/com.vertispan.j2cl/j2cl-maven-plugin/0.22.0/overview[j2cl-maven-plugin].
+
+[source,xml]
+----
+<dependency>
+    <groupId>com.vertispan.j2cl</groupId>
+    <artifactId>j2cl-maven-plugin</artifactId>
+    <version>0.22.0</version>
+</dependency>
+----
+
+The latest version is `0.22.0` which bundles https://central.sonatype.com/artifact/com.vertispan.j2cl/frontend-javac/v20230718-1[].
+Most likely, `v20230411-1` is a fork from j2cl master on the date 2023-04-11.
+
+
+
+TIP: KIE tools provide https://central.sonatype.com/artifact/org.kie.j2cl.tools/frontend-javac[] which is more recent.
+
+
+
+[#_j2cl_java_language_support_level]
+[appendix]
+== J2cl Java Language Support Level
+Let's look manually at Java language features since Java 9.
+Changes to the **Java language specification** (syntax, keywords, and grammar).
+It excludes API additions (e.g., `List.of`), JVM improvements (e.g., Virtual Threads), and features still in "Preview" status.
+
+
+
+
+
+=== Java 9 (September 2017)
+
+==== Java Platform Module System (JPMS)
+Introduced the `module` keyword and the `module-info.java` descriptor to define modules and their dependencies.
+
+[source,java]
+----
+module com.example.myapp {
+    requires java.sql;
+    exports com.example.myapp.api;
+}
+----
+
+==== Private Interface Methods
+Interfaces can now contain `private` methods to share code between default methods without exposing it to the public API.
+
+[source,java]
+----
+interface MyInterface {
+    default void methodA() { common(); }
+    default void methodB() { common(); }
+
+    private void common() {
+        System.out.println("Shared logic");
+    }
+}
+----
+
+==== Try-With-Resources Improvements
+You can now use effectively final variables in a try-with-resources statement without declaring a new local variable.
+
+[source,java]
+----
+// Before Java 9: try (AutoCloseable r = resource) { ... }
+// Java 9:
+void process(AutoCloseable resource) {
+    try (resource) { // 'resource' is effectively final
+        // use resource
+    }
+}
+----
+
+==== Diamond Operator for Anonymous Classes
+The diamond operator `<>` can now be used with anonymous inner classes if the type can be inferred.
+
+[source,java]
+----
+MyHandler<String> handler = new MyHandler<>() {
+    @Override
+    void handle(String s) { ... }
+};
+----
+
+=== Java 10 (March 2018)
+
+==== ✅ Local-Variable Type Inference (`var`)
+The `var` keyword allows the declaration of local variables where the type is inferred from the initializer.
+
+[source,java]
+----
+var list = new ArrayList<String>(); // Infers ArrayList<String>
+var stream = list.stream();         // Infers Stream<String>
+----
+
+.Analysis: Supported since
+****
+In https://github.com/google/j2cl/blob/d292ca71917a3052f6ed8a6b5b2f491aa87b8ae4/transpiler/javatests/com/google/j2cl/integration/java/lambdas/Main.java#L186[] we find a testcase that checks for `var` support.
+****
+
+
+
+=== Java 11 (September 2018)
+
+==== `var` in Lambda Expressions
+You can now use `var` in lambda parameters. This is primarily useful when you need to apply modifiers (like annotations) to inferred types.
+
+[source,java]
+----
+// Allows adding annotations to lambda parameters
+(var x, var y) -> x + y
+(@Nonnull var x, var y) -> x + y
+----
+
+=== Java 12 (March 2019) & 13 (September 2019)
+
+_No new standard language features were introduced in these versions. Features like Switch Expressions were in Preview._
+
+=== Java 14 (March 2020)
+
+==== 🟠 Switch Expressions (Standard)
+`switch` can now be used as an expression that returns a value. It introduces:
+* Arrow syntax (`->`) to prevent fall-through.
+* The `yield` keyword to return values from code blocks.
+
+[source,java]
+----
+int days = switch (month) {
+    case JANUARY, MARCH, MAY -> 31;
+    case FEBRUARY -> 28;
+    default -> 30;
+};
+----
+
+.Analysis
+****
+Work on `SwitchExpression` started in https://github.com/google/j2cl/commit/dd41be19f583052af32b0d6a7cdb874b888a28f9[2024-11].
+****
+
+=== Java 15 (September 2020)
+
+==== 🟠 Text Blocks (Standard)
+Multi-line string literals are supported using triple quotes `"""`. They preserve formatting and eliminate the need for most escape sequences.
+
+[source,java]
+----
+String json = """
+    {
+        "name": "Java",
+        "version": 15
+    }
+    """;
+----
+
+.Analysis
+****
+A test was https://github.com/google/j2cl/commit/c8ea39506239b498a01aa0b803dda5c52481598d[committed] in 2025-06.
+****
+
+=== Java 16 (March 2021)
+
+==== 🟠  Records
+A concise syntax to define immutable data-carrying classes. The compiler automatically generates the `constructor`, `equals`, `hashCode`, `toString`, and accessors.
+
+[source,java]
+----
+record Point(int x, int y) {}
+----
+
+
+.Analysis
+****
+The last https://github.com/google/j2cl/commit/47dcdd02ca287362a6ba605b50b448a9f142d822[commit] on records was in 2025-12, with work likely started in 2025-10.
+Record support seems partial or incomplete.
+****
+
+==== Pattern Matching for `instanceof`
+Allows declaring a binding variable directly in the `instanceof` check, eliminating the need for explicit casting.
+
+[source,java]
+----
+if (obj instanceof String s) {
+    System.out.println(s.length()); // 's' is already cast to String
+}
+----
+
+=== Java 17 (LTS, September 2021)
+
+==== ✅ Sealed Classes
+Classes and interfaces can restrict which other classes may extend or implement them using `sealed`, `non-sealed`, and `permits`.
+
+[source,java]
+----
+public sealed interface Shape permits Circle, Rectangle {}
+
+public final class Circle implements Shape {}
+public final class Rectangle implements Shape {}
+----
+
+.Analysis
+****
+A https://github.com/google/j2cl/commit/8b11e392356e21af653aa39eb839b4f16f928a1e[commit] with a test case for sealed classes in Java was added on 2025-06-30.
+****
+
+=== Java 18, 19 & 20 (March 2022 - March 2023)
+
+_No new standard language features were introduced in these versions. Features like Record Patterns were in Preview._
+
+=== 🟠 Java 21 (LTS, September 2023)
+
+==== Pattern Matching for `switch`
+`switch` statements and expressions can now match against types and patterns, not just constants.
+
+[source,java]
+----
+String result = switch (obj) {
+    case Integer i -> String.format("int %d", i);
+    case String s  -> String.format("string %s", s);
+    null -> "oh oh";
+    default        -> "unknown";
+};
+----
+
+.Analysis
+****
+We find a https://github.com/google/j2cl/commit/42c8dba5e1788a53bbd178232f45db1523952917[commit] on 2025-12-04 stating `[Java 21] Initial implementation of case null: and case null, default:.`
+****
+
+==== Record Patterns
+Allows the deconstruction of record values directly in pattern matching (nested patterns).
+
+[source,java]
+----
+record Point(int x, int y) {}
+
+if (obj instanceof Point(int x, int y)) {
+    System.out.println("Sum: " + (x + y));
+}
+----
+
+=== Java 22 (March 2024)
+
+==== Unnamed Variables & Patterns (`_`)
+The underscore `_` can be used to denote variables or patterns that are intentionally ignored (e.g., in loops, try-catch blocks, or pattern matching).
+
+[source,java]
+----
+try {
+    int count = 0;
+    for (Order _ : orders) { // Loop variable ignored
+        count++;
+    }
+} catch (Exception _) {      // Exception variable ignored
+    System.out.println("Error ignored");
+}
+----
+
+=== Java 23 (September 2024)
+
+==== Markdown Documentation Comments
+Javadoc comments can now be written using Markdown syntax instead of HTML. These comments start with `///`.
+
+[source,java]
+----
+/// Returns the *square* of the number.
+///
+/// - Parameter x: The input
+public int square(int x) {
+    return x * x;
+}
+----

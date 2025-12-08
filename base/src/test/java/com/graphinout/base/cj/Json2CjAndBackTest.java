@@ -5,26 +5,26 @@ import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.base.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.util.JsonFormatter;
-import com.graphinout.foundation.json.writer.impl.ValidatingJsonWriter;
-import com.graphinout.foundation.json.writer.JsonWriter;
-import com.graphinout.foundation.json.writer.impl.DelegatingJsonWriter;
+import com.graphinout.foundation.pure.text.JsonFormatting;
+import com.graphinout.foundation.pure.json.writer.impl.ValidatingJsonWriter;
+import com.graphinout.foundation.pure.json.writer.JsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.DelegatingJsonWriter;
 import com.graphinout.base.json.JsonReaderImpl;
-import com.graphinout.foundation.json.writer.impl.StringBuilderJsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.StringBuilderJsonWriter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.base.TestFileUtil.inputSource;
-import static com.graphinout.foundation.json.util.JsonFormatter.formatDebug;
-import static com.graphinout.foundation.json.util.JsonFormatter.removeWhitespace;
+import static com.graphinout.base.TestFileUtil2.inputSource;
+import static com.graphinout.foundation.pure.text.JsonFormatting.formatDebug;
+import static com.graphinout.foundation.pure.text.JsonFormatting.removeWhitespace;
 
 public class Json2CjAndBackTest {
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test JSON-Canonical CJ-JSON - all files together")
     void test_json_cj_json_AllCj(String displayPath, Resource resource) throws Exception {
         SingleInputSourceOfString inputSource = inputSource(resource);
@@ -47,11 +47,11 @@ public class Json2CjAndBackTest {
         String json_outNormWhitespace = removeWhitespace(json_out);
         String json_outNormHeader = CjNormalizer.canonicalize(json_outNormWhitespace);
         String json_outNormFormat = formatDebug(json_outNormHeader);
-        assertThat(json_outNormFormat).isEqualTo(formatDebug(CjNormalizer.canonicalize(JsonFormatter.removeWhitespace(json_in))));
+        assertThat(json_outNormFormat).isEqualTo(formatDebug(CjNormalizer.canonicalize(JsonFormatting.removeWhitespace(json_in))));
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test JSON-Canonical CJ - all files together")
     void test_json_cjCanonicalizeInput(String displayPath, Resource resource) throws Exception {
         SingleInputSourceOfString inputSource = inputSource(resource);

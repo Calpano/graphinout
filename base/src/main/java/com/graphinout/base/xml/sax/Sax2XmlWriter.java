@@ -1,11 +1,11 @@
 package com.graphinout.base.xml.sax;
 
 
-import com.graphinout.foundation.input.Location;
-import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.ContentErrorException;
-import com.graphinout.base.xml.CharactersKind;
-import com.graphinout.base.xml.writer.XmlWriter;
+import com.graphinout.foundation.pure.input.Location;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentErrorException;
+import com.graphinout.foundation.pure.xml.CharactersKind;
+import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -114,7 +114,7 @@ public class Sax2XmlWriter extends DefaultHandler implements LexicalHandler {
 
     @Override
     public void setDocumentLocator(Locator saxLocator) {
-        this.xmlWriter.setLocator(new com.graphinout.foundation.input.Locator() {
+        this.xmlWriter.setLocator(new com.graphinout.foundation.pure.input.Locator() {
             @Override
             public Location location() {
                 return new Location(saxLocator.getLineNumber(), saxLocator.getColumnNumber());

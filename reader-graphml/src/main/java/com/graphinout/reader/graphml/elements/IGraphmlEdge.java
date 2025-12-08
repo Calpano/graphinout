@@ -6,7 +6,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import static com.graphinout.foundation.test.StringFormatter.toStringOrNull;
+import static com.graphinout.foundation.pure.text.StringFormatter.toStringOrNull;
 
 public interface IGraphmlEdge extends IGraphmlElementWithDescAndId {
 

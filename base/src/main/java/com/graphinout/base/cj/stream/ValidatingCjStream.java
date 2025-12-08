@@ -12,8 +12,8 @@ import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunk;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.document.ICjPort;
-import com.graphinout.foundation.json.writer.impl.ValidatingJsonWriter;
-import com.graphinout.foundation.json.value.IJsonFactory;
+import com.graphinout.foundation.pure.json.writer.impl.ValidatingJsonWriter;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
 
 import org.jspecify.annotations.Nullable;
 import java.net.URISyntaxException;

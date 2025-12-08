@@ -8,7 +8,7 @@ import com.graphinout.reader.graphml.elements.IGraphmlHyperEdge;
 import com.graphinout.reader.graphml.elements.IGraphmlKey;
 import com.graphinout.reader.graphml.elements.IGraphmlNode;
 import com.graphinout.reader.graphml.elements.IGraphmlPort;
-import com.graphinout.foundation.input.IHandleContentErrors;
+import com.graphinout.foundation.pure.input.IHandleContentErrors;
 
 import java.io.IOException;
 

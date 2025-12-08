@@ -10,7 +10,7 @@ import com.networknt.schema.ValidationMessage;
 import com.networknt.schema.regex.JoniRegularExpressionFactory;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 

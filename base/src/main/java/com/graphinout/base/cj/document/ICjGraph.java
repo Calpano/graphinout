@@ -1,8 +1,7 @@
 package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.CjConstants;
-import com.graphinout.foundation.jajson.JaJson;
-import org.jspecify.annotations.NonNull;
+import com.graphinout.foundation.pure.collections.jajson.JaJson;
 
 import java.util.Map;
 import java.util.Objects;

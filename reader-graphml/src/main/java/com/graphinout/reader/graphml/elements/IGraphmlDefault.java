@@ -1,7 +1,7 @@
 package com.graphinout.reader.graphml.elements;
 
 import com.graphinout.reader.graphml.elements.builder.GraphmlDefaultBuilder;
-import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;

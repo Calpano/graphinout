@@ -11,34 +11,28 @@
     <name>reader-graphml</name>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
+        <!-- Main Dependencies -->
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
+
 
         <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId></dependency>
-        <!-- test -->
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.1.8-SNAPSHOT</version><scope>test</scope></dependency>
+
+        <!-- Test Dependencies -->
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId>
+            <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
+        </dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
+            <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
+        </dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><scope>test</scope></dependency>
+
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><scope>test</scope></dependency>
-        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope>
-            <exclusions>
-                <!-- TODO do this in every POM -->
-                <!-- exclude Guava to avoid com.google.guava:guava:jar:33.2.1-android -->
-                <exclusion><groupId>com.google.guava</groupId><artifactId>guava</artifactId></exclusion>
-            </exclusions>
-        </dependency>
+        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope></dependency>
     </dependencies>
 
 </project>

@@ -5,7 +5,7 @@ import com.graphinout.reader.graphml.Graphml;
 import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.reader.graphml.elements.IGraphmlDocument;
 import com.graphinout.reader.graphml.elements.IGraphmlElementWithDesc;
-import com.graphinout.foundation.xml.XML;
+import com.graphinout.foundation.pure.xml.XML;
 
 import org.jspecify.annotations.Nullable;
 import java.util.Map;

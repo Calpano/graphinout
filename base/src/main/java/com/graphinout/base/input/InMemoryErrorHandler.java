@@ -1,6 +1,6 @@
 package com.graphinout.base.input;
 
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentError;
 
 import java.util.ArrayList;
 import java.util.List;

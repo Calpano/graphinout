@@ -1,17 +1,12 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.TestFileUtil;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.testdata.TestFileUtil;
+import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import com.graphinout.base.xml.util.XmlTool;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

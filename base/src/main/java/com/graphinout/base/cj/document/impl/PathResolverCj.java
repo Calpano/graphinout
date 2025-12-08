@@ -1,9 +1,9 @@
 package com.graphinout.base.cj.document.impl;
 
 import com.graphinout.base.cj.document.ICjData;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.util.path.IMapLike;
-import com.graphinout.foundation.util.path.PathResolver;
+import com.graphinout.foundation.pure.collections.IMapLike;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.jvm.kpath.PathResolver;
 
 public class PathResolverCj {
 

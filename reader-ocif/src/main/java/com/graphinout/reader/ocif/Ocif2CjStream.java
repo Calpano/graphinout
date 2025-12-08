@@ -7,19 +7,19 @@ import com.graphinout.base.cj.document.ICjEdgeChunk;
 import com.graphinout.base.cj.document.ICjGraphChunk;
 import com.graphinout.base.cj.document.ICjNodeChunk;
 import com.graphinout.base.cj.stream.ICjStream;
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
-import com.graphinout.foundation.json.value.IJsonArray;
-import com.graphinout.foundation.json.value.IJsonArrayMutable;
-import com.graphinout.foundation.json.value.IJsonObject;
-import com.graphinout.foundation.json.value.IJsonObjectMutable;
-import com.graphinout.foundation.json.value.IJsonPrimitive;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.json.document.IJsonArray;
+import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
+import com.graphinout.foundation.pure.json.document.IJsonPrimitive;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 
 import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
-import static com.graphinout.foundation.util.Nullables.ifConsumerPresentAccept;
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
 public class Ocif2CjStream extends BaseCjOutput implements ICjStream {
 
@@ -53,7 +53,7 @@ public class Ocif2CjStream extends BaseCjOutput implements ICjStream {
         if (hasRelationsProperty && relationsArr == null && root != null) {
             root.setProperty(RELATIONS, jsonFactory().createArrayMutable());
         }
-        ifConsumerPresentAccept(onDone, resultOcifJsonString());
+        Nullables.ifConsumerPresentAccept(onDone, resultOcifJsonString());
     }
 
     @Override

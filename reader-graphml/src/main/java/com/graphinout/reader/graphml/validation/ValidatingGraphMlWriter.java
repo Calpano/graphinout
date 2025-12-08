@@ -1,6 +1,6 @@
 package com.graphinout.reader.graphml.validation;
 
-import com.graphinout.foundation.input.BaseOutput;
+import com.graphinout.foundation.pure.input.BaseOutput;
 import com.graphinout.reader.graphml.IGraphmlWriter;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDocument;
@@ -13,9 +13,9 @@ import com.graphinout.reader.graphml.elements.IGraphmlLocator;
 import com.graphinout.reader.graphml.elements.IGraphmlNode;
 import com.graphinout.reader.graphml.elements.IGraphmlPort;
 import com.graphinout.reader.graphml.elements.impl.GraphmlData;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -228,7 +228,7 @@ public class ValidatingGraphMlWriter extends BaseOutput implements IGraphmlWrite
         }
     }
 
-    private void investigatingTheExistenceOfThePort(@Nonnull IGraphmlEdge edge) throws IllegalStateException {
+    private void investigatingTheExistenceOfThePort(@NonNull IGraphmlEdge edge) throws IllegalStateException {
         for (String portName : Arrays.asList(edge.sourcePort(), edge.targetPort())) {
             if (portName != null) if (!existingPortNames.contains(portName)) {
                 nonExistingPortNames.computeIfAbsent(portName, key -> new ArrayList<>()) //
@@ -237,7 +237,7 @@ public class ValidatingGraphMlWriter extends BaseOutput implements IGraphmlWrite
         }
     }
 
-    private void investigatingTheExistenceOfThePort(@Nonnull IGraphmlHyperEdge hyperEdge) throws IllegalStateException {
+    private void investigatingTheExistenceOfThePort(@NonNull IGraphmlHyperEdge hyperEdge) throws IllegalStateException {
         for (IGraphmlEndpoint endpoint : hyperEdge.endpoints()) {
             if (endpoint.port() != null) if (!existingPortNames.contains(endpoint.port())) {
                 nonExistingPortNames.computeIfAbsent(endpoint.port(), key -> new ArrayList<>()) //

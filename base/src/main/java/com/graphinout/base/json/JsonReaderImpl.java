@@ -7,10 +7,10 @@ import com.fasterxml.jackson.core.StreamReadFeature;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.writer.JsonWriter;
-import com.graphinout.foundation.json.writer.impl.Json2JavaJsonWriter;
-import com.graphinout.foundation.json5.Json5Preprocessor;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.writer.JsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
+import com.graphinout.foundation.pure.json.json5.Json5Preprocessor;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;

@@ -1,9 +1,9 @@
 package com.graphinout.base.xml.sax;
 
-import com.graphinout.foundation.test.StringFormatter;
-import com.graphinout.base.xml.CharactersKind;
-import com.graphinout.base.xml.writer.XmlCharacterWriter;
+import com.graphinout.foundation.pure.text.StringFormatter;
+import com.graphinout.foundation.pure.xml.CharactersKind;
 
+import com.graphinout.foundation.pure.xml.writer.XmlCharacterWriter;
 import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 

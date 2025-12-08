@@ -1,7 +1,7 @@
 package com.graphinout.base.json;
 
 import com.graphinout.base.input.InputSource;
-import com.graphinout.foundation.json.writer.JsonWriter;
+import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import org.slf4j.Logger;
 
 import java.io.IOException;

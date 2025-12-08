@@ -2,7 +2,7 @@ package com.graphinout.reader.jgrapht;
 
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioReader;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.input.InputSource;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class Digraph6Reader implements GioReader {

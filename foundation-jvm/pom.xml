@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>graphinout</artifactId>
+        <groupId>com.graphinout</groupId>
+        <version>0.1.8-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>foundation-jvm</artifactId>
+    <name>foundation-jvm</name>
+    <description>
+        Foundation is in general a dependency-free base layer for Java projects.
+        Foundation has four layers: pure, shared, jvm and client.
+
+        ⚪️Pure: No dependencies, only classes from the j2cl compatible fragment. Java 11+ (maybe up to 21) syntax.
+        Exception: Jjspecify annotations are allowed.
+        ⚪️Shared: Only j2cl-dependencies allowed (e.g. elements). Java 11+ (maybe up to 21) syntax.
+        ⚪️Client: This code runs only j2cl-compiled in the client. It may have dependencies to j2cl DOM libraries.
+        Java 11+ (maybe up to 21) syntax. Graphinout does not need 'client' code.
+        ⚪️JVM: This code cannot j2cl-compile. Any java syntax.
+    </description>
+
+    <dependencies>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation-shared</artifactId></dependency>
+        <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId></dependency>
+        <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></dependency>
+
+        <!-- Test Dependencies -->
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope>
+            <exclusions>
+                <!-- exclude Guava to avoid com.google.guava:guava:jar:33.2.1-android -->
+                <exclusion><groupId>com.google.guava</groupId><artifactId>guava</artifactId></exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <!-- to use JDK 24 or 25 with Mockito -->
+                        <argLine>-Dnet.bytebuddy.experimental=true</argLine>
+                    </configuration>
+                </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

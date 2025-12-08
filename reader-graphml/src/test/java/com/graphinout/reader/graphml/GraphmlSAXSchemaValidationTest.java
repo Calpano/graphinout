@@ -1,6 +1,6 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.SingleInputSource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -39,7 +39,7 @@ public class GraphmlSAXSchemaValidationTest {
 
     private static final Logger log = getLogger(GraphmlReaderTest2.class);
 
-    protected Map<String, Long> expectedErrors(@Nonnull String resourceName) {
+    protected Map<String, Long> expectedErrors(@NonNull String resourceName) {
         Map<String, Long> errorLongMap = new HashMap<>();
         switch (resourceName) {
 
@@ -71,7 +71,7 @@ public class GraphmlSAXSchemaValidationTest {
     }
 
     @ParameterizedTest
-    @MethodSource("com.graphinout.base.TestFileProvider#graphmlResources")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#graphmlResources")
     void readAllGraphmlFiles(String filePath) throws Exception {
 
         URL resourceUrl = ClassLoader.getSystemResource(filePath);

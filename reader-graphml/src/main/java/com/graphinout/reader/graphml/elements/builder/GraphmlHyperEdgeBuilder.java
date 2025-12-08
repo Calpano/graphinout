@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
 public class GraphmlHyperEdgeBuilder extends GraphmlElementWithDescAndIdBuilder<GraphmlHyperEdgeBuilder> {
 

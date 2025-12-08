@@ -6,7 +6,6 @@ import java.util.Optional;
 
 public class SingleInputSourceOfString extends ByteArrayInputSource implements SingleInputSource {
 
-
     public SingleInputSourceOfString(String name, String content) {
         super(name, content.getBytes(StandardCharsets.UTF_8));
     }
@@ -31,6 +30,5 @@ public class SingleInputSourceOfString extends ByteArrayInputSource implements S
     public Optional<Charset> encoding() {
         return Optional.of(StandardCharsets.UTF_8);
     }
-
 
 }

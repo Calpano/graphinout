@@ -12,21 +12,18 @@
     <description>TripleText Reader</description>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
+        <!-- Main Dependencies -->
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
 
-        <!-- test -->
+        <!-- Test Dependencies -->
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId>
+            <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
+        </dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
+            <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
+        </dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
     </dependencies>

@@ -1,7 +1,7 @@
 package com.graphinout.reader.graphml;
 
 
-import com.graphinout.base.TestFileUtil;
+import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.base.cj.CjAssert;
 import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
@@ -12,13 +12,13 @@ import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.base.json.JsonReaderImpl;
-import com.graphinout.foundation.jajson.JaJson;
-import com.graphinout.foundation.json.util.FormatterConfig;
-import com.graphinout.foundation.json.util.JsonCompactFormatter;
-import com.graphinout.foundation.json.writer.JsonWriter;
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
-import com.graphinout.foundation.json.writer.impl.StringBuilderJsonWriter;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.foundation.pure.collections.jajson.JaJson;
+import com.graphinout.foundation.pure.json.formatter.FormatterConfig;
+import com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter;
+import com.graphinout.foundation.pure.json.writer.JsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.json.writer.impl.StringBuilderJsonWriter;
+import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.graphml.cj.Graphml2CjDocument;
 import com.graphinout.reader.graphml.cj.Graphml2CjWriter;
@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.base.TestFileUtil.inputSource;
+import static com.graphinout.base.TestFileUtil2.inputSource;
 import static org.slf4j.LoggerFactory.getLogger;
 
 
@@ -83,7 +83,7 @@ public class Cj2GraphmlAndBackTest {
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @Description("Test JSON->CJ->Graphml->CjStream->CJ->JSON (all)")
     void test_Json_Cj_Graphml_CjStream_Cj_Json(String displayName, Resource resource) throws IOException {
         String jsonInput = resource.getContentAsString();
@@ -117,7 +117,7 @@ public class Cj2GraphmlAndBackTest {
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Run JSON->CJ->Graphml - all files together")
     void test_json_cj_graphml_CanonicalCjFiles(String displayPath, Resource resource) throws Exception {
         String json_in = resource.getContentAsString();
@@ -135,7 +135,7 @@ public class Cj2GraphmlAndBackTest {
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test JSON<->CJ<->Graphml (all)")
     void test_json_cj_graphml_cj_json_CanonicalCjFiles(String displayPath, Resource resource) throws Exception {
         // JSON

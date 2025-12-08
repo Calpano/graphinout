@@ -45,7 +45,7 @@ This audit checks the reader-ocif module against the conventions described in re
 
 == Nullability and Optionality
 
-- Fields that may be null should be annotated with @Nullable (javax.annotation.Nullable) as per the guide.
+- Fields that may be null should be annotated with @Nullable (org.jspecify.annotations.Nullable) as per the guide.
   - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:34 — errorHandler may be null; missing @Nullable annotation.
   - Model classes expose many optional fields without @Nullable annotations:
     - reader-ocif/src/main/java/com/graphinout/reader/ocif/document/OcifNode.java:31–39,56–66 (id, position, size, resource, resourceFit, data, rotation, relation, extras)

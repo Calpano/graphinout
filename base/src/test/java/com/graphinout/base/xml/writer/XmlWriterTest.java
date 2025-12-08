@@ -1,9 +1,9 @@
 package com.graphinout.base.xml.writer;
 
-import com.graphinout.base.xml.CharactersKind;
-import com.graphinout.base.xml.IXmlName;
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.foundation.pure.xml.CharactersKind;
+import com.graphinout.foundation.pure.xml.IXmlName;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

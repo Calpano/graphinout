@@ -20,11 +20,11 @@ import com.graphinout.base.cj.document.ICjLabelEntryMutable;
 import com.graphinout.base.cj.document.ICjLabelMutable;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.document.ICjPortMutable;
-import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.json.JsonException;
-import com.graphinout.foundation.json.writer.impl.Json2JavaJsonWriter;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.util.PowerStackOnClasses;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.json.JsonException;
+import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.collections.PowerStackOnClasses;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

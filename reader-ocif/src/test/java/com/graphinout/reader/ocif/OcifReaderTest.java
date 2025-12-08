@@ -3,7 +3,7 @@ package com.graphinout.reader.ocif;
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.cj.CjAssert;
 import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.TestFileProvider;
+import com.graphinout.testdata.TestFileProvider;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import io.github.classgraph.Resource;
 import jdk.jfr.Description;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.graphinout.base.TestFileProvider.resources;
+import static com.graphinout.testdata.TestFileProvider.resources;
 
 class OcifReaderTest extends AbstractReaderTest {
 

@@ -1,0 +1,134 @@
+package com.graphinout.foundation.pure.xml.document;
+
+import com.graphinout.foundation.pure.xml.CharactersKind;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.writer.XmlWriter;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+public class XmlText implements IXmlNode {
+
+    public static class Section {
+
+        private final CharactersKind charactersKind;
+        private String text;
+
+        public Section(String text, CharactersKind charactersKind) {
+            this.text = text;
+            this.charactersKind = charactersKind;
+        }
+
+        public CharactersKind charactersKind() {
+            return charactersKind;
+        }
+
+        public boolean isEmpty(XML.XmlSpace xmlSpace) {
+            switch (charactersKind) {
+                case Default:
+                    switch (xmlSpace) {
+                        case preserve:
+                            return text.isEmpty();
+                        // remove whitespace if we may
+                        case default_:
+                            return XML.isWhitespace(text);
+                        default:
+                            throw new IllegalArgumentException();
+                    }
+                case CDATA:
+                case PreserveWhitespace:
+                    return text.isEmpty();
+                case IgnorableWhitespace:
+                    return XML.isWhitespace(text);
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        public void removeIgnorableWhitespace() {
+            switch (charactersKind) {
+                case IgnorableWhitespace:
+                case Default:
+                    this.text = text.trim();
+                    break;
+                case CDATA:
+                case PreserveWhitespace:
+                    this.text = text;
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        public String text() {
+            return text;
+        }
+
+        @Override
+        public String toString() {
+            return "<" + charactersKind.name() + ":'" + text + ">";
+        }
+
+    }
+
+    private final List<Section> sections = new ArrayList<>();
+
+
+    public XmlText() {
+    }
+
+    public static IXmlNode of(String text, CharactersKind charactersKind) {
+        XmlText xmlText = new XmlText();
+        xmlText.addSection(text, charactersKind);
+        return xmlText;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public XmlText addSection(String text, CharactersKind charactersKind) {
+        sections.add(new Section(text, charactersKind));
+        return this;
+    }
+
+    @Override
+    public Stream<IXmlNode> directChildren() {
+        return Stream.empty();
+    }
+
+    @Override
+    public void fire(XmlWriter writer) throws IOException {
+        writer.charactersStart();
+        for (Section section : sections) {
+            writer.characters(section.text, section.charactersKind);
+        }
+        writer.charactersEnd();
+    }
+
+    public boolean hasEmptyContent(XML.XmlSpace xmlSpace) {
+        return sections.stream().allMatch(section -> section.isEmpty(xmlSpace));
+    }
+
+    public void removeIgnorableWhitespace() {
+        sections.forEach(Section::removeIgnorableWhitespace);
+        sections.removeIf(section -> section.isEmpty(XML.XmlSpace.default_));
+    }
+
+    public List<Section> sections() {
+        return sections;
+    }
+
+    @Override
+    public String toString() {
+        if (sections.isEmpty()) {
+            return "XmlText{--}";
+        }
+        if (sections.size() == 1) {
+            return "XmlText{" + sections.get(0).toString() + "}";
+        }
+
+        return "XmlText{" + "sections(" + sections.size() +
+                ")=" + sections.stream().map(Section::toString).reduce("", (a, b) -> a + b) + '}';
+    }
+
+}

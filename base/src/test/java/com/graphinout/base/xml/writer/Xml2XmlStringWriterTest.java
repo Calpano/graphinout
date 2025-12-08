@@ -1,12 +1,14 @@
 package com.graphinout.base.xml.writer;
 
-import com.graphinout.base.TestFileUtil;
-import com.graphinout.foundation.text.TextTests;
-import com.graphinout.base.xml.testing.Input_Expected;
 import com.graphinout.base.xml.XmlAssert;
+import com.graphinout.base.xml.testing.Input_Expected;
+import com.graphinout.base.xml.util.XmlTestTool;
 import com.graphinout.base.xml.util.XmlTool;
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.foundation.pure.log.LoggerFactory;
+import com.graphinout.foundation.pure.text.TextTestTool;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
+import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,9 +26,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 class Xml2XmlStringWriterTest {
 
     private static final String TEST_ID = "Xml2String";
+    static TextTestTool TTT = TextTestTool.of(LoggerFactory.getLogger(Xml2XmlStringWriterTest.class));
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#xmlResources")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#xmlResources")
     @DisplayName("XML->Writer->XmlString (All XML files)")
     void testAllXml_Xml_Writer_Xml(String displayPath, Resource xmlResource) throws Exception {
         // == XML -> XmlDocument -> ZML
@@ -34,7 +37,7 @@ class Xml2XmlStringWriterTest {
         // == IN
         String xml_in = xmlResource.getContentAsString();
         try {
-            XmlTool.parseAndWriteXml(xmlResource, xml2string);
+            XmlTestTool.parseAndWriteXml(xmlResource, xml2string);
             if (TestFileUtil.isInvalid(xmlResource, "xml")) {
                 fail("Expected an exception on an invalid file");
             }
@@ -57,22 +60,6 @@ class Xml2XmlStringWriterTest {
         }
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"aaa", "äää", "a\nb", "&amp;", "&quot;", "&apos;", "&lt;", "&gt;", "\"", "'"})
-    void testParseXmlVsSimulateParse(String contentIn) throws Exception {
-        Xml2StringWriter xml2string = new Xml2StringWriter(XML.AttributeOrderPerElement.AsWritten, false, null);
-
-        String xmlIn = wrapInRoot(contentIn);
-        // actual SAX parsing
-        XmlTool.parseAndWriteXml(xmlIn, xml2string);
-        String xmlOut = xml2string.resultString();
-
-        String contentExpectedOut = XmlTool.normaliseLikeEntityPreprocessingThenSaxParsing(contentIn);
-        String xmlExpectedOut = wrapInRoot(contentExpectedOut);
-
-        assertThat(xmlOut).isEqualTo(xmlExpectedOut);
-    }
-
     /**
      * Code as a test what the SAX parser does
      *
@@ -93,7 +80,23 @@ class Xml2XmlStringWriterTest {
                 false, null);
         XmlTool.parseAndWriteXml(inXml, xml2string);
         String outActualXml = xml2string.resultString();
-        TextTests.xAssertEqual(outActualXml, expectedXml);
+        TTT.xAssertEqual(outActualXml, expectedXml);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"aaa", "äää", "a\nb", "&amp;", "&quot;", "&apos;", "&lt;", "&gt;", "\"", "'"})
+    void testParseXmlVsSimulateParse(String contentIn) throws Exception {
+        Xml2StringWriter xml2string = new Xml2StringWriter(XML.AttributeOrderPerElement.AsWritten, false, null);
+
+        String xmlIn = wrapInRoot(contentIn);
+        // actual SAX parsing
+        XmlTool.parseAndWriteXml(xmlIn, xml2string);
+        String xmlOut = xml2string.resultString();
+
+        String contentExpectedOut = XmlTool.normaliseLikeEntityPreprocessingThenSaxParsing(contentIn);
+        String xmlExpectedOut = wrapInRoot(contentExpectedOut);
+
+        assertThat(xmlOut).isEqualTo(xmlExpectedOut);
     }
 
     @ParameterizedTest
@@ -103,8 +106,7 @@ class Xml2XmlStringWriterTest {
         String expectedContent = in_out.expected();
 
         String actual = XmlTool.normaliseLikeEntityPreprocessingThenSaxParsing(inContent);
-        TextTests.xAssertEqual(actual, expectedContent);
+        TTT.xAssertEqual(actual, expectedContent);
     }
-
 
 }

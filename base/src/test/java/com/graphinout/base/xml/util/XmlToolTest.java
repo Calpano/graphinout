@@ -4,9 +4,9 @@ import com.graphinout.base.xml.XmlNormalizer;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.foundation.util.Texts.CR_13_R;
-import static com.graphinout.foundation.util.Texts.LF_10_N;
-import static com.graphinout.foundation.xml.XmlFoundation.P_TO_LF;
+import static com.graphinout.foundation.pure.text.Texts.CR_13_R;
+import static com.graphinout.foundation.pure.text.Texts.LF_10_N;
+import static com.graphinout.foundation.jvm.xml.XmlFoundation.P_TO_LF;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

@@ -3,7 +3,7 @@ package com.graphinout.reader.graphml.elements.impl;
 
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlElementWithId;
-import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
 
 import org.jspecify.annotations.Nullable;
 import java.util.Map;

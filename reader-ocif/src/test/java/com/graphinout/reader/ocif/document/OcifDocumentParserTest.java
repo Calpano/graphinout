@@ -1,6 +1,6 @@
 package com.graphinout.reader.ocif.document;
 
-import com.graphinout.base.TestFileProvider;
+import com.graphinout.testdata.TestFileProvider;
 import io.github.classgraph.Resource;
 import jdk.jfr.Description;
 import org.junit.jupiter.api.Assertions;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.graphinout.base.TestFileProvider.resources;
+import static com.graphinout.testdata.TestFileProvider.resources;
 
 /**
  * Parses all OCIF example files into the OcifDocument object model to ensure the DOM parser

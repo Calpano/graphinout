@@ -18,7 +18,6 @@
         </license>
     </licenses>
     <developers>
-        <developer><id>lilla</id><name>Lilla Diamantisz</name><roles><role>developer</role></roles></developer>
         <developer>
             <id>max</id>
             <name>Max Völkel</name>
@@ -29,12 +28,16 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer><id>lilla</id><name>Lilla Diamantisz</name><roles><role>developer</role></roles></developer>
         <developer><id>rasoul</id><name>Rasoul Babaei</name><roles><role>developer</role></roles></developer>
     </developers>
 
     <modules>
+        <module>foundation-pure</module>
+        <module>foundation-shared</module>
+        <module>foundation-jvm</module>
+        <module>testdata</module>
         <module>base</module>
-        <module>foundation</module>
         <module>reader-cj</module>
         <module>reader-dot</module>
         <module>reader-gexf</module>
@@ -70,52 +73,87 @@
         <!-- must use same version as spring, otherwise 'java.lang.NoClassDefFoundError: com/fasterxml/jackson/core/exc/StreamConstraintsException' -->
         <jackson-core-version>2.19.2</jackson-core-version>
         <jackson-databind-version>2.19.2</jackson-databind-version>
+
+        <j2cl-mp-version>0.22.0</j2cl-mp-version>
+        <j2cl-mp-group>com.vertispan.j2cl</j2cl-mp-group>
+        <j2cl-mp-artifact>j2cl-maven-plugin</j2cl-mp-artifact>
+        <j2cl-mp-enableSourceMaps>true</j2cl-mp-enableSourceMaps>
+        <j2cl-mp-compilationLevel>ADVANCED</j2cl-mp-compilationLevel>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>${logback-classic-version}</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId>
-                <classifier>tests</classifier>
-                <type>test-jar</type>
-                <scope>test</scope>
-                <version>0.1.8-SNAPSHOT</version>
+            <!-- GraphInOut Dependencies -->
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.1.8-SNAPSHOT</version>
+            </dependency>
+           <dependency><groupId>com.graphinout</groupId><artifactId>foundation-shared</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation-shared</artifactId>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.1.8-SNAPSHOT</version>
+            </dependency>
+           <dependency><groupId>com.graphinout</groupId><artifactId>foundation-jvm</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation-jvm</artifactId>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.1.8-SNAPSHOT</version>
+            </dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.1.8-SNAPSHOT</version>
             </dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
-                <classifier>tests</classifier>
-                <type>test-jar</type>
-                <scope>test</scope>
-                <version>0.1.8-SNAPSHOT</version>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.1.8-SNAPSHOT</version>
             </dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.1.8-SNAPSHOT</version>
+            </dependency>
+
+            <!-- Third Party Main and Test Dependencies -->
+            <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>${logback-classic-version}</version></dependency>
+            <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-core</artifactId><version>${logback-classic-version}</version></dependency>
+            <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId><version>${jackson-core-version}</version></dependency>
+            <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-core</artifactId><version>${jackson-core-version}</version></dependency>
             <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-core-version}</version></dependency>
             <dependency><groupId>com.fasterxml.jackson.datatype</groupId><artifactId>jackson-datatype-jsr310</artifactId><version>${jackson-databind-version}</version></dependency>
-            <dependency><groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId><version>3.0.2</version></dependency>
-
-            <!-- Truth should not use guava xxx-android ... -->
-            <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><version>1.4.4</version>
-                <exclusions>
-                    <exclusion><groupId>com.google.guava</groupId><artifactId>guava</artifactId></exclusion>
-                </exclusions>
-            </dependency>
-            <!-- ... but the xxx-jre variant -->
-            <dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>33.2.0-jre</version></dependency>
-
-            <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.17.0</version></dependency>
-            <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><version>4.8.157</version></dependency>
             <dependency><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>4.7.3</version></dependency>
+            <dependency><groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId><version>3.0.2</version></dependency>
+            <!-- Truth should not use guava xxx-android ... but the xxx-jre variant -->
+            <dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>33.2.0-jre</version></dependency>
+            <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><version>1.4.4</version><scope>test</scope>
+                <!-- Truth should not use guava xxx-android ... but the xxx-jre variant -->
+                <exclusions><exclusion><groupId>com.google.guava</groupId><artifactId>guava</artifactId></exclusion></exclusions>
+            </dependency>
+            <dependency><groupId>com.networknt</groupId><artifactId>json-schema-validator</artifactId><version>1.5.9</version>
+                <exclusions><exclusion><groupId>com.fasterxml.jackson.dataformat</groupId><artifactId>jackson-dataformat-yaml</artifactId></exclusion></exclusions>
+            </dependency>
+            <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.20.0</version></dependency>
+            <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><version>4.8.157</version></dependency>
+            <dependency><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId><version>1.14.0</version></dependency>
+            <dependency><groupId>org.gwtproject.regexp</groupId><artifactId>gwt-regexp</artifactId><version>1.0.0-RC1</version></dependency>
             <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId><version>1.0.0</version></dependency>
+            <!-- Used to validate ECMA 262 regular expressions. Approx. 2 MB. JoniRegularExpressionFactory -->
+            <dependency><groupId>org.jruby.joni</groupId><artifactId>joni</artifactId><version>2.2.6</version></dependency>
             <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>${junit-jupiter.version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><version>${mockito-core-version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><version>${mockito-junit-jupiter-version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>${slf4j-version}</version></dependency>
+
+
+            <!-- Maven Dependencies -->
+            <dependency><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.14.0</version></dependency>
+            <dependency><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.4.2</version></dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
+        <!-- No Runtime/Compile dependencies for all, due to foundation-pure staying pure -->
+        <!-- Test Scope -->
         <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId></dependency>
-        <dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId></dependency>
     </dependencies>
 
     <build>

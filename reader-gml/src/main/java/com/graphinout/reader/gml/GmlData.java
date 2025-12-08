@@ -1,9 +1,9 @@
 package com.graphinout.reader.gml;
 
-import com.graphinout.foundation.json.value.IJsonPrimitive;
-import com.graphinout.foundation.json.value.IJsonValue;
-import com.graphinout.foundation.json.writer.JsonWriter;
-import com.graphinout.foundation.json.writer.impl.Json2JavaJsonWriter;
+import com.graphinout.foundation.pure.json.document.IJsonPrimitive;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.writer.JsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
 
 import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;

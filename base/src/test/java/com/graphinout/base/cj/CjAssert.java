@@ -3,27 +3,27 @@ package com.graphinout.base.cj;
 import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.util.CjNormalizer;
-import com.graphinout.foundation.json.util.JsonFormatter;
+import com.graphinout.foundation.pure.text.JsonFormatting;
 import io.github.classgraph.Resource;
 
 import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.base.TestFileUtil.verifyOrRecord;
+import static com.graphinout.testdata.TestFileUtil.verifyOrRecord;
 
 public class CjAssert {
 
     public static String normalize(String json) {
         String canonical = CjNormalizer.canonicalize(json);
-        return JsonFormatter.formatDebug(canonical);
+        return JsonFormatting.formatDebug(canonical);
     }
 
     public static void verifySameCjOrRecord(Resource resource, String testId, String json_out, String json_in, @Nullable Runnable extendedDebugInfos) throws IOException {
         // we normalize the formatting before, so that --EXPECTED files on disk look nicer
-        String expectedWrapped = JsonFormatter.formatDebug(json_in);
+        String expectedWrapped = JsonFormatting.formatDebug(json_in);
         // we send a formatted version of actual, so that RECORD_MODE=init writes THAT to disk
-        String actualWrapped = JsonFormatter.formatDebug(json_out);
+        String actualWrapped = JsonFormatting.formatDebug(json_out);
         verifyOrRecord(resource, testId, actualWrapped, expectedWrapped, (actual, expected) -> //
                 CjAssert.xAssertThatIsSameCj(actual, expected, extendedDebugInfos), CjAssert::normalize);
     }

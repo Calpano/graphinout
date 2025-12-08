@@ -9,11 +9,11 @@ import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.ICjStream;
-import com.graphinout.foundation.json.value.IJsonFactory;
-import com.graphinout.foundation.json.value.IJsonObjectMutable;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.IdentityHashMap;
@@ -205,7 +205,7 @@ public class GmlReaderHandler implements IGmlHandler {
      * @param raw         GML strings cannot be null
      * @return
      */
-    private IJsonValue toJsonValue(IJsonFactory jsonFactory, @Nonnull String raw) {
+    private IJsonValue toJsonValue(IJsonFactory jsonFactory, @NonNull String raw) {
         // if already quoted text, strip quotes and make string
         if (raw.length() >= 2 && raw.startsWith("\"") && raw.endsWith("\"")) {
             return jsonFactory.createString(raw.substring(1, raw.length() - 1));

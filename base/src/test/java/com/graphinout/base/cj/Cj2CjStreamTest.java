@@ -1,13 +1,13 @@
 package com.graphinout.base.cj;
 
 
+import com.graphinout.base.TestFileUtil2;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.CjWriter2CjStream;
 import com.graphinout.base.cj.writer.Json2CjWriter;
-import com.graphinout.base.TestFileUtil;
 import com.graphinout.base.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import com.graphinout.base.json.JsonReaderImpl;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class Cj2CjStreamTest {
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#cjResourcesCanonical")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("JSON<->CjWriter<->CjStream")
     void test_Json_CjWriter_CjStream_CjWriter_Json(String displayPath, Resource xmlResource) throws Exception {
         Json2StringWriter json2StringWriter = new Json2StringWriter();
@@ -26,7 +26,7 @@ public class Cj2CjStreamTest {
         CjWriter2CjStream cjWriter2cjStream = new CjWriter2CjStream(cjStream2cjWriter);
         Json2CjWriter json2cjWriter = new Json2CjWriter(cjWriter2cjStream);
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-        SingleInputSourceOfString inputSource = TestFileUtil.inputSource(xmlResource);
+        SingleInputSourceOfString inputSource = TestFileUtil2.inputSource(xmlResource);
         jsonReader.read(inputSource, json2cjWriter);
 
         String json_in = xmlResource.getContentAsString();

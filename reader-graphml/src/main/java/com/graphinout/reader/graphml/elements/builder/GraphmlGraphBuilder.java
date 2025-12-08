@@ -6,7 +6,7 @@ import com.graphinout.reader.graphml.elements.impl.GraphmlGraph;
 
 import org.jspecify.annotations.Nullable;
 
-import static com.graphinout.foundation.util.Nullables.nonNullOrDefault;
+import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
 
 @SuppressWarnings("UnusedReturnValue")
 public class GraphmlGraphBuilder extends GraphmlElementWithDescAndIdBuilder<GraphmlGraphBuilder> implements ILocatorBuilder {

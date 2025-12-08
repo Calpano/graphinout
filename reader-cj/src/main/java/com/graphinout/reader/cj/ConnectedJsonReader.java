@@ -7,10 +7,10 @@ import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.base.gio.GioFileFormat;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSourceOfString;
-import com.graphinout.foundation.json.writer.JsonWriter;
+import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import com.graphinout.base.json.JsonReaderImpl;
 
 import org.jspecify.annotations.Nullable;

@@ -1,7 +1,7 @@
 package com.graphinout.base.cj.util;
 
-import com.graphinout.foundation.jajson.JaJson;
-import com.graphinout.foundation.json.util.JsonCompactFormatter;
+import com.graphinout.foundation.pure.collections.jajson.JaJson;
+import com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter;
 
 import java.util.ArrayList;
 import java.util.List;

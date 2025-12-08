@@ -1,7 +1,7 @@
 package com.graphinout.reader.graphml.elements;
 
 import com.graphinout.reader.graphml.elements.builder.GraphmlDataBuilder;
-import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
 
 import org.jspecify.annotations.Nullable;
 import java.util.function.BiConsumer;

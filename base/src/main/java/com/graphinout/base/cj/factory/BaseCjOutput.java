@@ -1,9 +1,9 @@
 package com.graphinout.base.cj.factory;
 
-import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.Locator;
-import com.graphinout.foundation.input.IHandleContentErrors;
+import com.graphinout.foundation.pure.input.ContentError;
 
+import com.graphinout.foundation.pure.input.IHandleContentErrors;
+import com.graphinout.foundation.pure.input.Locator;
 import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 

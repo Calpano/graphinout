@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BigIntegerNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.graphinout.foundation.json.JsonException;
-import com.graphinout.foundation.json.writer.JsonValueWriter;
+import com.graphinout.foundation.pure.json.JsonException;
+import com.graphinout.foundation.pure.json.writer.JsonValueWriter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

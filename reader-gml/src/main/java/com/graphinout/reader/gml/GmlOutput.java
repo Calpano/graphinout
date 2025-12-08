@@ -6,9 +6,10 @@ import com.graphinout.base.cj.document.ICjEdge;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjNode;
-import com.graphinout.foundation.json.value.IJsonArray;
-import com.graphinout.foundation.json.value.IJsonObject;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.document.IJsonArray;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.bridge.Java9;
 import org.slf4j.Logger;
 
 import java.util.Comparator;
@@ -48,7 +49,7 @@ public record GmlOutput(ICjDocument cjDoc) {
             IJsonValue json = data.jsonValue();
             IJsonObject obj = json == null ? null : json.asObjectOrNull();
             if (obj != null) {
-                emitJsonObjectProperties(obj, b, java.util.Set.of());
+                emitJsonObjectProperties(obj, b, Set.of());
             }
         });
 
@@ -113,7 +114,7 @@ public record GmlOutput(ICjDocument cjDoc) {
             case Object -> {
                 b.key(key);
                 b.open();
-                emitJsonObjectProperties(val.asObject(), b, java.util.Set.of());
+                emitJsonObjectProperties(val.asObject(), b, Java9.Set.of());
                 b.close();
             }
             case Array -> {

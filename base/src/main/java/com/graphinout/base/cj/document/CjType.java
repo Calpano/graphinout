@@ -1,8 +1,8 @@
 package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.CjConstants;
-import com.graphinout.foundation.json.JsonConstants;
-import com.graphinout.foundation.json.JsonType;
+import com.graphinout.foundation.pure.json.JsonConstants;
+import com.graphinout.foundation.pure.json.JsonType;
 import org.jspecify.annotations.Nullable;
 
 import java.util.EnumSet;

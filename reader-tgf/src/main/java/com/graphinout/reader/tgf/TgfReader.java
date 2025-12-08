@@ -10,12 +10,13 @@ import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioReader;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.InputSource;
-import com.graphinout.foundation.input.Location;
-import com.graphinout.foundation.input.Locator;
+import com.graphinout.foundation.pure.input.Location;
+import com.graphinout.foundation.pure.input.Locator;
 import com.graphinout.base.input.SingleInputSource;
-import com.graphinout.foundation.util.IntRef;
+import com.graphinout.foundation.pure.value.IntRef;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +32,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static com.graphinout.foundation.util.IntRef.intRef;
-import static com.graphinout.foundation.util.Nullables.ifConsumerPresentAccept;
+import static com.graphinout.foundation.pure.value.IntRef.intRef;
 
 public class TgfReader implements GioReader {
 
@@ -67,7 +67,7 @@ public class TgfReader implements GioReader {
 
         if (content.isEmpty()) {
             // Emit empty document (no graphs) for empty TGF content to allow exact empty roundtrip
-            ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content is empty"));
+            Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content is empty"));
             writer.document(writer.createDocumentChunk());
             return;
         }
@@ -152,10 +152,10 @@ public class TgfReader implements GioReader {
         }
 
         if (!foundNodes) {
-            ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content contains no nodes"));
+            Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content contains no nodes"));
         }
         if (!foundEdges) {
-            ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content contains no edges"));
+            Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content contains no edges"));
         }
         edgeBuffer.forEach(writer::edge);
 
@@ -188,7 +188,8 @@ public class TgfReader implements GioReader {
     }
 
     private void sendIssue(ContentError.ErrorLevel errorLevel, String msg, Locator locator) {
-        ifConsumerPresentAccept(errorHandler, ContentError.of(errorLevel, msg, locator.location()));
+        ContentError value = ContentError.of(errorLevel, msg, locator.location());
+        Nullables.ifConsumerPresentAccept(errorHandler, value);
     }
 
 }

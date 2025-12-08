@@ -1,8 +1,8 @@
 package com.graphinout.base.xml.writer;
 
 import com.graphinout.base.output.OutputSink;
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.writer.Xml2AppendableWriter;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.writer.Xml2AppendableWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

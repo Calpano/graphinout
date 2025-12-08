@@ -1,11 +1,11 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.foundation.input.BaseOutput;
+import com.graphinout.foundation.pure.input.BaseOutput;
 import com.graphinout.base.cj.writer.CjWriter2CjStream;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioReader;
-import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.ContentErrorException;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentErrorException;
 import com.graphinout.base.input.ContentErrors;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.input.InputSource;

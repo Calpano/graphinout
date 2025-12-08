@@ -1,7 +1,7 @@
 package com.graphinout.base.xml.sax;
 
-import com.graphinout.base.xml.CharactersKind;
-import com.graphinout.foundation.xml.writer.XmlCharacter2AppendableWriter;
+import com.graphinout.foundation.pure.xml.CharactersKind;
+import com.graphinout.foundation.pure.xml.writer.XmlCharacter2AppendableWriter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

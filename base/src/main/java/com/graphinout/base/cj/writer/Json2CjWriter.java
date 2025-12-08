@@ -1,13 +1,13 @@
 package com.graphinout.base.cj.writer;
 
-import com.graphinout.foundation.input.BaseOutput;
+import com.graphinout.foundation.pure.input.BaseOutput;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.CjEdgeTypeSource;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjEdgeType;
-import com.graphinout.foundation.json.JsonException;
-import com.graphinout.foundation.json.JsonType;
-import com.graphinout.foundation.json.writer.JsonWriter;
+import com.graphinout.foundation.pure.json.JsonException;
+import com.graphinout.foundation.pure.json.JsonType;
+import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 

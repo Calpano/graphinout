@@ -1,6 +1,6 @@
 package com.graphinout.base.cj;
 
-import com.graphinout.foundation.json.JsonException;
+import com.graphinout.foundation.pure.json.JsonException;
 
 public class CjException extends JsonException {
 

@@ -1,6 +1,6 @@
 package com.graphinout.base.json;
 
-import com.graphinout.foundation.json.writer.impl.ValidatingJsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.ValidatingJsonWriter;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +25,7 @@ class ValidatingJsonWriterTest {
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#jsonResources")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#jsonResources")
     @DisplayName("Test JSON-Validation - all files together")
     void test_json_Validate(String displayPath, Resource resource) throws Exception {
         JsonReaderImpl jsonReader = new JsonReaderImpl();

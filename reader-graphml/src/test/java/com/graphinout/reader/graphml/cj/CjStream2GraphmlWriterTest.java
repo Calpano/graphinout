@@ -5,7 +5,7 @@ import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.CjWriter2CjStream;
-import com.graphinout.foundation.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;

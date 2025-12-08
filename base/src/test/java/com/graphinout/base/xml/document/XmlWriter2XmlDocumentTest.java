@@ -1,12 +1,13 @@
 package com.graphinout.base.xml.document;
 
-import com.graphinout.base.TestFileUtil;
-import com.graphinout.foundation.xml.XML;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.base.xml.util.XmlTestTool;
+import com.graphinout.testdata.TestFileUtil;
+import com.graphinout.foundation.pure.xml.XML;
+import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import com.graphinout.base.xml.XmlAssert;
 import com.graphinout.base.xml.util.XmlTool;
 import com.graphinout.base.xml.Xml2DocumentWriter;
-import com.graphinout.foundation.xml.document.XmlDocument;
+import com.graphinout.foundation.pure.xml.document.XmlDocument;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,7 +22,7 @@ class XmlWriter2XmlDocumentTest {
     static final String TEST_ID = "Xml2Doc";
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#xmlResources")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#xmlResources")
     @DisplayName("XML->XmlDoc->Xml (All XML files)")
     void testAllXml_Xml_XmlDoc_Xml(String displayPath, Resource xmlResource) throws Exception {
         // == XML -> XmlDocument -> ZML
@@ -30,7 +31,7 @@ class XmlWriter2XmlDocumentTest {
         String xml_in = xmlResource.getContentAsString();
         boolean invalidXml = TestFileUtil.isInvalid(xmlResource, "xml");
         try {
-            XmlTool.parseAndWriteXml(xmlResource, xml2doc);
+            XmlTestTool.parseAndWriteXml(xmlResource, xml2doc);
             if (invalidXml) {
                 fail("Expected an exception on invalid file "+xmlResource.getURI());
             }

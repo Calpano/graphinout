@@ -1,6 +1,6 @@
 package com.graphinout.base.input;
 
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentError;
 import org.slf4j.Logger;
 
 import java.util.List;

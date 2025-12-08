@@ -2,7 +2,7 @@ package com.graphinout.reader.graphml;
 
 import com.graphinout.reader.graphml.elements.builder.GraphmlElementBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlGraphBuilder;
-import com.graphinout.base.xml.IXmlName;
+import com.graphinout.foundation.pure.xml.IXmlName;
 
 import org.jspecify.annotations.Nullable;
 import java.util.LinkedList;

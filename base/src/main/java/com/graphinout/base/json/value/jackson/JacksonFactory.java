@@ -1,14 +1,14 @@
 package com.graphinout.base.json.value.jackson;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.graphinout.foundation.json.value.IJsonArray;
-import com.graphinout.foundation.json.value.IJsonArrayAppendable;
-import com.graphinout.foundation.json.value.IJsonArrayMutable;
-import com.graphinout.foundation.json.value.IJsonFactory;
-import com.graphinout.foundation.json.value.IJsonObject;
-import com.graphinout.foundation.json.value.IJsonObjectAppendable;
-import com.graphinout.foundation.json.value.IJsonObjectMutable;
-import com.graphinout.foundation.json.value.IJsonPrimitive;
+import com.graphinout.foundation.pure.json.document.IJsonArray;
+import com.graphinout.foundation.pure.json.document.IJsonArrayAppendable;
+import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectAppendable;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
+import com.graphinout.foundation.pure.json.document.IJsonPrimitive;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

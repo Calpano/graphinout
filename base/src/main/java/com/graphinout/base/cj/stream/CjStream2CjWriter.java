@@ -7,9 +7,9 @@ import com.graphinout.base.cj.document.ICjGraphChunk;
 import com.graphinout.base.cj.document.ICjNodeChunk;
 import com.graphinout.base.cj.factory.BaseCjOutput;
 import com.graphinout.base.cj.writer.ICjWriter;
-import com.graphinout.foundation.input.ContentError;
-import com.graphinout.foundation.input.Locator;
-import com.graphinout.foundation.util.PowerStackEnum;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.input.Locator;
+import com.graphinout.foundation.pure.collections.PowerStackEnum;
 
 import java.util.function.Consumer;
 

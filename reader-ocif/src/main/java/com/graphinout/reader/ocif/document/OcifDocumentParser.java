@@ -1,14 +1,17 @@
 package com.graphinout.reader.ocif.document;
 
-import com.graphinout.foundation.json.JsonType;
-import com.graphinout.foundation.json.value.*;
-import com.graphinout.foundation.json.value.java.JavaJsonFactory;
+import com.graphinout.foundation.pure.json.JsonType;
+import com.graphinout.foundation.pure.json.value.java.JavaJsonFactory;
 import com.graphinout.base.json.value.JavaJsonValuesBase;
+import com.graphinout.foundation.pure.json.document.IJsonArray;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.document.extension.*;
 
 import java.util.*;
 
-import static com.graphinout.foundation.util.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
 /**
  * Parser that reads OCIF JSON into an {@link OcifDocument} object model.

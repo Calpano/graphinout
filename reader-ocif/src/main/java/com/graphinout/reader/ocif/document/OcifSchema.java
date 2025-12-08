@@ -1,6 +1,6 @@
 package com.graphinout.reader.ocif.document;
 
-import com.graphinout.foundation.json.value.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
 
 /**
  * OCIF Schema declaration.

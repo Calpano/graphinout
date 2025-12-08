@@ -1,12 +1,12 @@
 package com.graphinout.reader.graphml;
 
 import com.graphinout.base.cj.document.ICjDocument;
-import com.graphinout.base.TestFileProvider;
-import com.graphinout.base.TestFileUtil;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.testdata.TestFileProvider;
+import com.graphinout.testdata.TestFileUtil;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.xml.XmlNormalizer;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.graphml.cj.CjStream2GraphmlWriter;
 import io.github.classgraph.Resource;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.graphinout.base.TestFileUtil.inputSource;
+import static com.graphinout.base.TestFileUtil2.inputSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GraphmlXmlNamespacesTest {

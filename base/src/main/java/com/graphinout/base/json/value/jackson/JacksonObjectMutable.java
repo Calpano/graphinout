@@ -1,9 +1,9 @@
 package com.graphinout.base.json.value.jackson;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.graphinout.foundation.json.value.IJsonFactory;
-import com.graphinout.foundation.json.value.IJsonObjectMutable;
-import com.graphinout.foundation.json.value.IJsonValue;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 
 import org.jspecify.annotations.Nullable;
 import java.util.HashSet;

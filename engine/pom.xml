@@ -12,8 +12,8 @@
     <name>engine</name>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.1.8-SNAPSHOT</version>
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
@@ -35,7 +35,7 @@
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-tgf</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
-        <!-- test -->
+        <!-- Test Dependencies -->
         <!-- depend on all reader projects you want to test -->
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.1.8-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-dot</artifactId><version>0.1.8-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>

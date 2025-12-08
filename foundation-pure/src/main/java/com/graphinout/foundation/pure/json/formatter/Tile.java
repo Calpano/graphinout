@@ -1,0 +1,118 @@
+package com.graphinout.foundation.pure.json.formatter;
+
+import com.graphinout.foundation.pure.bridge.Java9;
+import org.jspecify.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter.NEWLINE;
+import static com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter.SPACE;
+
+/** A rectangular, mutable text layout. May be {@link #isFixed()}. */
+public class Tile {
+
+    private final List<String> lines = new ArrayList<>();
+    /** fixed layout */
+    private final boolean isFixed;
+
+    public Tile(boolean isFixed) {
+        this.isFixed = isFixed;
+    }
+
+    public static Tile create(boolean isFixed) {
+        return new Tile(isFixed);
+    }
+
+    public static Tile of(String line) {
+        Tile tile = new Tile(false);
+        tile.addLine(line);
+        return tile;
+    }
+
+    public static Tile of(List<String> line) {
+        Tile tile = new Tile(false);
+        tile.lines.addAll(line);
+        return tile;
+    }
+
+    public void add(Tile childTile) {
+        lines.addAll(childTile.lines);
+    }
+
+    public void addLine(String line) {
+        lines.add(line);
+    }
+
+    public int height() {
+        return lines.size();
+    }
+
+    public void insertLastLineRight(String insert) {
+        lines.set(lines.size() - 1, Java9.List.getLast(lines) + insert);
+    }
+
+    /**
+     * Must contain at least 1 line.
+     *
+     * @param first prepended to the first line
+     * @param body  prepended to each line in the middle
+     */
+    public void insertLeft(String first, String body) {
+        assert first.length() == body.length();
+        assert height() >= 1;
+        lines.set(0, first + lines.get(0));
+        for (int i = 1; i < lines.size(); i++) {
+            lines.set(i, body + lines.get(i));
+        }
+    }
+
+    /** Prepend each line with it */
+    public void insertLeft(String insert) {
+        lines.replaceAll(s -> insert + s);
+    }
+
+    public void insertLineAbove(String line) {
+        lines.add(0, line);
+    }
+
+    public boolean isFixed() {
+        return isFixed;
+    }
+
+    public List<String> lines() {
+        return lines;
+    }
+
+    /**
+     * Attempt to render a tile as a single line.
+     *
+     * @param maxLineLength
+     * @return single line or null
+     */
+    public @Nullable String toSingleLine(int maxLineLength) {
+        StringBuilder target = new StringBuilder();
+        for (int i = 0; i < lines().size(); i++) {
+            if (i > 0) {
+                target.append(SPACE);
+            }
+            // the trim is important
+            String line = lines.get(i).trim();
+            target.append(line);
+            if (target.length() > maxLineLength) {
+                return null;
+            }
+        }
+        return target.toString();
+    }
+
+    @Override
+    public String toString() {
+        return String.join(NEWLINE, lines);
+    }
+
+    public int width() {
+        return lines.stream().mapToInt(String::length).max().orElse(0);
+    }
+
+}

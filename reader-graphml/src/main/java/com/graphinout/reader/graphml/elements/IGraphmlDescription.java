@@ -1,8 +1,8 @@
 package com.graphinout.reader.graphml.elements;
 
 import com.graphinout.reader.graphml.elements.builder.GraphmlDescriptionBuilder;
-import com.graphinout.foundation.xml.XmlFragmentString;
-import com.graphinout.base.xml.writer.XmlWriter;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 
 import java.io.IOException;
 import java.util.Set;

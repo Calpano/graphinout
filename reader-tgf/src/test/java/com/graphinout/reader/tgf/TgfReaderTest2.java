@@ -2,7 +2,7 @@ package com.graphinout.reader.tgf;
 
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.gio.GioReader;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentError;
 
 import java.util.Arrays;
 import java.util.Collections;

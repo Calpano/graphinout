@@ -2,10 +2,10 @@ package com.graphinout.reader.textbased.edgelist;
 
 import com.graphinout.base.cj.factory.CjFactory;
 import com.graphinout.base.cj.stream.ICjStream;
-import com.graphinout.base.TestFileProvider;
-import com.graphinout.foundation.input.ContentError;
+import com.graphinout.testdata.TestFileProvider;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.SingleInputSource;
-import com.graphinout.foundation.json.value.java.JavaJsonFactory;
+import com.graphinout.foundation.pure.json.value.java.JavaJsonFactory;
 import com.graphinout.reader.textbased.adjlist.EdgeListReader;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;

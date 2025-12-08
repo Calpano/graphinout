@@ -1,11 +1,11 @@
 package com.graphinout.base.xml;
 
-import com.graphinout.foundation.json.value.IJsonFactory;
-import com.graphinout.foundation.json.value.IJsonXmlString;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
-import com.graphinout.foundation.xml.document.XmlContent;
-import com.graphinout.foundation.xml.document.XmlDocumentFragment;
-import com.graphinout.foundation.xml.XmlFragmentString;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import com.graphinout.foundation.pure.json.document.IJsonXmlString;
+import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
+import com.graphinout.foundation.pure.xml.document.XmlContent;
+import com.graphinout.foundation.pure.xml.document.XmlDocumentFragment;
+import com.graphinout.foundation.pure.xml.XmlFragmentString;
 
 import java.io.IOException;
 

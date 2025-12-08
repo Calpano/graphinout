@@ -12,41 +12,28 @@
     <description>JGraphT reader</description>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation</artifactId><version>0.1.8-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.8-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
+        <!-- Main Dependencies -->
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
 
-        <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-core</artifactId>
-            <version>1.5.2</version>
+        <!-- Test Dependencies -->
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId>
+            <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-io</artifactId>
-            <version>1.5.2</version>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
+            <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
+        </dependency>
+
+        <dependency><groupId>org.jgrapht</groupId><artifactId>jgrapht-core</artifactId><version>1.5.2</version></dependency>
+        <dependency><groupId>org.jgrapht</groupId><artifactId>jgrapht-io</artifactId><version>1.5.2</version>
             <exclusions>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-text</artifactId>
-                </exclusion>
+                <exclusion><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId></exclusion>
             </exclusions>
         </dependency>
-        <dependency><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId>
-        <version>1.14.0</version>
-        </dependency>
+        <dependency><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId></dependency>
 
-        <!-- test -->
+        <!-- Test Dependencies -->
         <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>

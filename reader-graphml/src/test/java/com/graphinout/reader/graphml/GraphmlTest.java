@@ -1,7 +1,8 @@
 package com.graphinout.reader.graphml;
 
-import com.graphinout.base.TestFileUtil;
-import com.graphinout.foundation.xml.writer.Xml2StringWriter;
+import com.graphinout.base.xml.util.XmlTestTool;
+import com.graphinout.testdata.TestFileUtil;
+import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import com.graphinout.base.xml.util.XmlTool;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +19,7 @@ public class GraphmlTest {
     private static final Logger log = getLogger(GraphmlTest.class);
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.TestFileProvider#graphmlResources")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#graphmlResources")
     @DisplayName("Test XML<->Graphml (all)")
     void testAllGraphmlFiles(String displayPath, Resource xmlResource) throws Exception {
         if (TestFileUtil.isInvalid(xmlResource, "graphml", "xml")) {
@@ -27,7 +28,7 @@ public class GraphmlTest {
         }
 
         // == pre-flight check
-        XmlTool.assertCanParseAsXml(xmlResource);
+        XmlTestTool.assertCanParseAsXml(xmlResource);
 
         // == actual test
         Xml2StringWriter xmlWriter = new Xml2StringWriter();
@@ -36,7 +37,7 @@ public class GraphmlTest {
         /* receive XML events -> send Graphml events  */
         Xml2GraphmlWriter xml2graphml = new Xml2GraphmlWriter(graphml2xml);
 
-        XmlTool.parseAndWriteXml(xmlResource, xml2graphml);
+        XmlTestTool.parseAndWriteXml(xmlResource, xml2graphml);
 
         String xml_in = xmlResource.getContentAsString();
         String xml_out = xmlWriter.resultString();

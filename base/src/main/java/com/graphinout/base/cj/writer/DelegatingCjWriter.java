@@ -3,7 +3,7 @@ package com.graphinout.base.cj.writer;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjEdgeType;
-import com.graphinout.foundation.json.writer.impl.DelegatingJsonWriter;
+import com.graphinout.foundation.pure.json.writer.impl.DelegatingJsonWriter;
 
 import java.util.function.Consumer;
 

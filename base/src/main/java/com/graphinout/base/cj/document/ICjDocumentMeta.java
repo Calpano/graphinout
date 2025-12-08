@@ -1,6 +1,6 @@
 package com.graphinout.base.cj.document;
 
-import com.graphinout.foundation.jajson.JaJson;
+import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;

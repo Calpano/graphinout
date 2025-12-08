@@ -1,16 +1,16 @@
 package com.graphinout.base.xml.sax;
 
-import com.graphinout.base.xml.CharactersKind;
+import com.graphinout.foundation.pure.xml.CharactersKind;
 import com.graphinout.base.xml.util.XmlTool;
-import com.graphinout.base.xml.writer.XmlWriter;
+import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import java.util.Collections;
 
-import static com.graphinout.foundation.xml.XML.CDATA_END;
-import static com.graphinout.foundation.xml.XML.CDATA_START;
+import static com.graphinout.foundation.pure.xml.XML.CDATA_END;
+import static com.graphinout.foundation.pure.xml.XML.CDATA_START;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;

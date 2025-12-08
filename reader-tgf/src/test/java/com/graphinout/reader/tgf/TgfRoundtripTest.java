@@ -2,8 +2,8 @@ package com.graphinout.reader.tgf;
 
 import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
-import com.graphinout.base.TestFileProvider;
-import com.graphinout.base.TestFileUtil;
+import com.graphinout.testdata.TestFileProvider;
+import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.base.input.SingleInputSource;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.params.ParameterizedTest;
