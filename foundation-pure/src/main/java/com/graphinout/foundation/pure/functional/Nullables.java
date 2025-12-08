@@ -187,7 +187,7 @@ public class Nullables {
         return nonNullOrDefault(nullable, defaultValue);
     }
 
-    public static <T, R> R nonNull(T nullable, Function<@NonNull T, R> mapFun, @NonNull R defaultValue) {
+    public static <T, R> @NonNull R nonNull(@Nullable T nullable, Function<@NonNull T, R> mapFun, @NonNull R defaultValue) {
         return mapOrDefault(nullable, mapFun, defaultValue);
     }
 

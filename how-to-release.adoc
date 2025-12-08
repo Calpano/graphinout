@@ -22,3 +22,5 @@ Push the release tag and commits into the GitHub project.
 
 .Step 4
 Manually deploy from https://central.sonatype.com/publishing/deployments[] -- requires credentials.
+
+https://central.sonatype.com/[]

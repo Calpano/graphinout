@@ -2,6 +2,7 @@ package com.graphinout.foundation.pure.input;
 
 import org.jspecify.annotations.Nullable;
 
+@FunctionalInterface
 public interface Locator {
 
     static Location locationOrNotAvailable(@Nullable Locator locator) {
