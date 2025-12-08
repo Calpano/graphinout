@@ -38,6 +38,21 @@
     </dependencies>
 
     <build>
+        <resources>
+            <!-- bundle sources with the main jar, so they are visible to j2cl -->
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.java</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <!-- keep default resources -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
         <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
