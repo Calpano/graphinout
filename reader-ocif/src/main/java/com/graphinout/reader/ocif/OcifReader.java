@@ -9,12 +9,13 @@ import com.graphinout.foundation.pure.functional.Nullables;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.foundation.pure.input.ContentError.ErrorLevel;
 import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.pure.json.document.IJsonArray;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-import com.graphinout.base.json.value.JavaJsonValuesBase;
+import com.graphinout.base.json.JavaJsons;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,10 +53,9 @@ public class OcifReader implements GioReader {
         if (inputSource.isMulti()) {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
-        if (!(inputSource instanceof SingleInputSource)) {
+        if (!(inputSource instanceof SingleInputSource sis)) {
             throw new IllegalArgumentException("Expected SingleInputSource");
         }
-        SingleInputSource sis = (SingleInputSource) inputSource;
 
         String json;
         try (sis) {
@@ -63,11 +63,11 @@ public class OcifReader implements GioReader {
         }
 
         // Parse OCIF JSON and emit CJ stream events
-        IJsonValue root = JavaJsonValuesBase.ofJsonString(json);
+        IJsonValue root = JavaJsons.ofJsonString(json);
         IJsonObject o = root == null ? null : root.asObject();
         if (o == null) {
             if (errorHandler != null) {
-                errorHandler.accept(new ContentError(ContentError.ErrorLevel.Error, "Invalid OCIF: root must be a JSON object", null));
+                errorHandler.accept(new ContentError(ErrorLevel.Error, "Invalid OCIF: root must be a JSON object", null));
             }
             throw new IOException("Invalid OCIF: Root element must be a JSON object");
         }

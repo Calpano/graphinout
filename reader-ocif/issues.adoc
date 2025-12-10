@@ -27,6 +27,7 @@ This audit checks the reader-ocif module against the conventions described in re
 - Do not silently continue on invalid input; “Fail fast and translate to IOException; report via errorHandler before throwing”. Current behavior ends the document without reporting an error.
   - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:61–66
     - If JSON root is null or not an object, it calls cjStream.documentEnd() and returns without invoking errorHandler or throwing.
+
 - Use of assert for runtime contract — guideline prefers explicit guard clauses with exceptions.
   - reader-ocif/src/main/java/com/graphinout/reader/ocif/OcifReader.java:51
     - assert inputSource instanceof SingleInputSource; should be a concrete check with IllegalArgumentException (asserts may be disabled in production).

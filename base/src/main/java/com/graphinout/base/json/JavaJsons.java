@@ -1,12 +1,11 @@
-package com.graphinout.base.json.value;
+package com.graphinout.base.json;
 
-import com.graphinout.base.json.JsonReaderImpl;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
 
 import java.io.IOException;
 
-public class JavaJsonValuesBase {
+public class JavaJsons {
 
     public static IJsonValue ofJsonString(String jsonString) {
         // parse

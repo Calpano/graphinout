@@ -2,7 +2,7 @@ package com.graphinout.reader.ocif.document;
 
 import com.graphinout.foundation.pure.json.JsonType;
 import com.graphinout.foundation.pure.json.value.java.JavaJsonFactory;
-import com.graphinout.base.json.value.JavaJsonValuesBase;
+import com.graphinout.base.json.JavaJsons;
 import com.graphinout.foundation.pure.json.document.IJsonArray;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
@@ -23,7 +23,7 @@ public class OcifDocumentParser {
 
     /** Parse a JSON string containing an OCIF document into an {@link OcifDocument}. */
     public OcifDocument parse(String json) {
-        IJsonValue root = JavaJsonValuesBase.ofJsonString(json);
+        IJsonValue root = JavaJsons.ofJsonString(json);
         IJsonObject o = root == null ? null : root.asObject();
         OcifDocument doc = new OcifDocument();
         if (o == null) return doc;
