@@ -1,5 +1,7 @@
 package com.graphinout.foundation.pure.collections;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.graphinout.foundation.pure.functional.Nullables;
 import com.graphinout.foundation.pure.bridge.Java9;
 import org.jspecify.annotations.Nullable;
@@ -14,24 +16,24 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class MapScoreIndex<K> {
+public class MapScore<K> {
 
     private final Map<K, Double> map = new LinkedHashMap<>();
 
-    // TODO @JsonCreator
-    public MapScoreIndex(Map<K, Double> map) {
+    @JsonCreator
+    public MapScore(Map<K, Double> map) {
         this.map.putAll(map);
     }
 
-    public MapScoreIndex() {
+    public MapScore() {
     }
 
-    public static <K> MapScoreIndex<K> create() {
-        return new MapScoreIndex<>();
+    public static <K> MapScore<K> create() {
+        return new MapScore<>();
     }
 
     /** Jackson expects a 'getFoo()' */
-    // TODO @JsonValue
+    @JsonValue
     public Map<K, Double> asMap() {
         return map;
     }
@@ -40,7 +42,7 @@ public class MapScoreIndex<K> {
         return map.containsKey(key);
     }
 
-    public void deIndex(K key) {
+    public void remove(K key) {
         map.remove(key);
     }
 
@@ -88,13 +90,13 @@ public class MapScoreIndex<K> {
     }
 
     /** increment */
-    public void index(K key, double score) {
+    public void add(K key, double score) {
         map.compute(key, (k, v) -> v == null ? score : v + score);
     }
 
-    /** index 1 more */
-    public void index(K key) {
-        index(key, 1);
+    /** add 1 more */
+    public void add(K key) {
+        add(key, 1);
     }
 
     public Set<K> keySet() {

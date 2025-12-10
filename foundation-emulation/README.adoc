@@ -1,0 +1,10 @@
+= Foundation Emulation
+:toc:
+
+This project provides annotations from 3rd party suppliers which were
+
+- copied
+- modified for j2cl compability
+- used in `foundation-pure`
+
+See link:../foundation-pure/README.adoc[]

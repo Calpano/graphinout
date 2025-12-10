@@ -1,0 +1,12 @@
+= Guidelines
+
+.Type Names
+Nested collections use type parameter `<E>` like entry for the last variable.
+Other keys are named `<K>` and following letters for more nested keys like `<L>`, `<M>`.
+
+- `Score` is for using doubles as entries.
+- `Count` is for using ints or longs as entries.
+
+A static `create()` method should be present.
+
+Plural forms such as `Maps` contain only static helper methods.

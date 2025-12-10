@@ -1,0 +1,16 @@
+= jspecify
+
+We cannot simply depend on `jspecify`, because the sources are not Java 8 compatible. They use the new (Java 9) `MODULE` annotation location.
+
+So we bundle these annotations themselves.
+However, we also cannot use `@NullMarked`, as that leads to j2cl dying with
+
+----
+[INFO] Starting com.graphinout:foundation-pure:0.1.10-SNAPSHOT/transpiled_js
+[ERROR] com.graphinout:foundation-pure:0.1.10-SNAPSHOT/transpiled_js: Error: @NullMarked annotation is not supported without enabling static analysis.
+[ERROR] Exception executing task com.graphinout:foundation-pure:0.1.10-SNAPSHOT/transpiled_js
+java.lang.IllegalStateException: Error while running J2CL
+    at com.vertispan.j2cl.build.provided.J2clTask.lambda$resolve$7 (J2clTask.java:83)
+    at com.vertispan.j2cl.build.TaskScheduler$2.executeTask (TaskScheduler.java:269)
+    at com.vertispan.j2cl.build.TaskScheduler$2.lambda$onReady$9 (TaskScheduler.java:322)
+----

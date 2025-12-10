@@ -57,6 +57,16 @@ public class Nullables {
         if (nullableConsumer != null) nullableConsumer.accept(value);
     }
 
+    public static <I, O> void ifPresent(@Nullable I value, Function<I, O> mapFun, Consumer<O> consumer) {
+        if (value == null) return;
+        consumer.accept(mapFun.apply(value));
+    }
+
+    public static <T> void ifPresent(@Nullable T value, Consumer<@NonNull T> consumer) {
+        if (value == null) return;
+        consumer.accept(value);
+    }
+
     /**
      * If the given value is not null, call the given consumer with it.
      *

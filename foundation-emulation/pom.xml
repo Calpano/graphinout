@@ -8,18 +8,18 @@
         <version>0.1.10-SNAPSHOT</version>
     </parent>
 
-    <artifactId>foundation-pure</artifactId>
-    <name>foundation-pure</name>
+    <artifactId>foundation-emulation</artifactId>
+    <name>foundation-emulation</name>
     <description>
         Foundation is in general a dependency-free base layer for Java projects.
-        Foundation has four layers: pure, shared, jvm and client.
+        Foundation has four layers: 'emulation', 'pure', 'shared', 'jvm'.
 
-        ⚪️Pure: No dependencies, only classes from the j2cl compatible fragment. Java 11+ (maybe up to 21) syntax.
-        Exception: Annotations are allowed, e.g., jspecify or Jackson.
-        ⚪️Shared: Only j2cl-dependencies allowed (e.g. elements). Java 11+ (maybe up to 21) syntax.
-        ⚪️Client: This code runs only j2cl-compiled in the client. It may have dependencies to j2cl DOM libraries.
-        Java 11+ (maybe up to 21) syntax. Graphinout does not need 'client' code.
+        ⚪️Emulation: Stripped down annotations (jspecify, Jackson). For 2cl-compiler. Java 8 syntax and JRE.
+        ⚪️Pure: No dependencies (except on 'emulation'), only classes from the j2cl compatible fragment. Java 8 syntax.
+        ⚪️Shared: Only j2cl-dependencies allowed (e.g. elements). Java 8 syntax and JRE.
         ⚪️JVM: This code cannot j2cl-compile. Any java syntax.
+
+        See foundation-pure/README.adoc for details.
     </description>
 
     <properties>
@@ -29,15 +29,22 @@
     </properties>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId></dependency>
+        <!-- we inlined (copied) the jspecify annotations and removed the MODULE enum value -->
+        <!--        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId><optional>true</optional></dependency>-->
+        <!--        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId>-->
+        <!--            <classifier>sources</classifier>-->
+        <!--        </dependency>-->
 
-        <!-- Test Dependencies -->
-        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>
-        <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><scope>test</scope></dependency>
-        <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><scope>test</scope></dependency>
-        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
-        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope></dependency>
-        <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><scope>test</scope></dependency>
+        <!-- Do not supply the sources. Jackson annotation sources used too many non-j2cl dependencies -->
+<!--       <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId>-->
+<!--            <version>2.20</version>-->
+<!--       </dependency>-->
+        <!-- jackson annotation sources used too many non-j2cl dependencies -->
+<!--        <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId>-->
+<!--            <classifier>sources</classifier>-->
+<!--            <version>2.20</version>-->
+<!--        </dependency>-->
+
     </dependencies>
 
     <build>
@@ -57,24 +64,6 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <!-- to use JDK 24 or 25 with Mockito -->
-                    <argLine>-Dnet.bytebuddy.experimental=true</argLine>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>${j2cl-mp-group}</groupId><artifactId>${j2cl-mp-artifact}</artifactId>
                 <version>${j2cl-mp-version}</version>

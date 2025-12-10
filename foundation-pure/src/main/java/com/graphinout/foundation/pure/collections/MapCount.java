@@ -1,5 +1,7 @@
 package com.graphinout.foundation.pure.collections;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.graphinout.foundation.pure.functional.Nullables;
 import org.jspecify.annotations.Nullable;
 
@@ -11,24 +13,24 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class MapCountIndex<K> {
+public class MapCount<K> {
 
     private final Map<K, Integer> map = new LinkedHashMap<>();
 
-    // TODO @JsonCreator
-    public MapCountIndex(Map<K, Integer> map) {
+    @JsonCreator
+    public MapCount(Map<K, Integer> map) {
         this.map.putAll(map);
     }
 
-    public MapCountIndex() {
+    public MapCount() {
     }
 
-    public static <K> MapCountIndex<K> create() {
-        return new MapCountIndex<>();
+    public static <K> MapCount<K> create() {
+        return new MapCount<>();
     }
 
     /** Jackson expects a 'getFoo()' */
-    // TODO @JsonValue
+    @JsonValue
     public Map<K, Integer> asMap() {
         return map;
     }
@@ -41,7 +43,7 @@ public class MapCountIndex<K> {
         return Nullables.nonNull(lookup(key), 0);
     }
 
-    public void deIndex(K key) {
+    public void remove(K key) {
         map.remove(key);
     }
 
@@ -58,13 +60,13 @@ public class MapCountIndex<K> {
     }
 
     /** increment */
-    public void index(K key, int count) {
+    public void add(K key, int count) {
         map.compute(key, (k, v) -> v == null ? count : v + count);
     }
 
-    /** index 1 more */
-    public void index(K key) {
-        index(key, 1);
+    /** add 1 more */
+    public void add(K key) {
+        add(key, 1);
     }
 
     public Set<K> keySet() {

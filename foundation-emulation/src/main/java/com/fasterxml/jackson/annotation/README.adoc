@@ -1,0 +1,5 @@
+We stripped object id generator, as that uses UUID -- non j2cl.
+
+Removed JsonFormat (Timezone, Locale).
+
+Removed JsonAutoDetect (relfection)

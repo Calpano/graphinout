@@ -33,6 +33,7 @@
     </developers>
 
     <modules>
+        <module>foundation-emulation</module>
         <module>foundation-pure</module>
         <module>foundation-shared</module>
         <module>foundation-jvm</module>
@@ -84,6 +85,7 @@
     <dependencyManagement>
         <dependencies>
             <!-- GraphInOut Dependencies -->
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId><version>0.1.10-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId><version>0.1.10-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId>
                 <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.1.10-SNAPSHOT</version>

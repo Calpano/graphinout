@@ -10,6 +10,8 @@ import java.util.function.Consumer;
  *
  * <p>
  * This is a functional interface whose functional method is {@link #accept(Object, Object, Object)}.
+ * <p>
+ * See also Apache Commons : commons-lang.
  *
  * @param <K> the type of the first argument to the operation
  * @param <L> the type of the second argument to the operation
@@ -46,4 +48,5 @@ public interface TriConsumer<K, L, M> {
             after.accept(k, l, m);
         };
     }
+
 }
