@@ -1,10 +1,11 @@
 package com.graphinout.foundation.pure.json.document;
 
+import com.graphinout.foundation.pure.bridge.Java9;
 import com.graphinout.foundation.pure.json.JSON;
 import com.graphinout.foundation.pure.json.JsonType;
+import com.graphinout.foundation.pure.json.value.java.JavaJsonFactory;
 import com.graphinout.foundation.pure.log.Logger;
 import com.graphinout.foundation.pure.log.LoggerFactory;
-import com.graphinout.foundation.pure.bridge.Java9;
 import com.graphinout.foundation.pure.xml.XML;
 import org.jspecify.annotations.Nullable;
 
@@ -15,6 +16,7 @@ import java.math.BigInteger;
 public interface IJsonFactory {
 
     Logger _log = LoggerFactory.getLogger(IJsonFactory.class);
+    IJsonFactory INSTANCE = JavaJsonFactory.INSTANCE;
 
     default IJsonArrayMutable asArrayMutable(IJsonArray array) {
         if (array instanceof IJsonArrayMutable) {
@@ -71,7 +73,7 @@ public interface IJsonFactory {
             return createBoolean(false);
         }
         // debatable
-        if(Java9.String.isBlank(string)) return createBoolean(false);
+        if (Java9.String.isBlank(string)) return createBoolean(false);
 
         //unparseable boolean
         // _log.warn("Could not parse as boolean: '{}'", valueTrimmedMaybe);

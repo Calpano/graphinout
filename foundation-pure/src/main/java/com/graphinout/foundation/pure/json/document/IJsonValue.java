@@ -12,6 +12,7 @@ import com.graphinout.foundation.pure.json.path.JsonPaths;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.pure.xml.XmlFragmentString;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public interface IJsonValue {
         return asPrimitive().castTo(Number.class);
     }
 
-    default IJsonObject asObject() throws ClassCastException {
+    default @NonNull IJsonObject asObject() throws ClassCastException {
         return (IJsonObject) this;
     }
 
@@ -183,6 +184,7 @@ public interface IJsonValue {
         return (this instanceof IJsonObjectMutable || this instanceof IJsonArrayMutable);
     }
 
+    /** only true for a non-null JSON object */
     boolean isObject();
 
     boolean isPrimitive();
