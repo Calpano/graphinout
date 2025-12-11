@@ -7,8 +7,10 @@ import com.graphinout.base.json.JsonReaderImpl;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,6 +49,17 @@ public interface ICjLabel extends ICjElement {
     }
 
     Stream<ICjLabelEntry> entries();
+
+    /**
+     * @return the single graph (or null if none).
+     * @throws IllegalStateException if multiple entries are present
+     */
+    default @Nullable ICjLabelEntry theEntry() throws IllegalStateException {
+        List<ICjLabelEntry> entries = entries().toList();
+        if (entries.isEmpty()) return null;
+        if (entries.size() == 1) return entries.getFirst();
+        throw new IllegalStateException("Multiple entries present, use entries() instead.");
+    }
 
     default Object toJaJsonMap() {
         if (entries().count() == 1) {
