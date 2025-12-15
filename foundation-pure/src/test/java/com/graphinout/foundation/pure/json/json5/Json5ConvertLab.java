@@ -1,5 +1,7 @@
 package com.graphinout.foundation.pure.json.json5;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -16,14 +18,14 @@ public class Json5ConvertLab {
             ClassLoader classLoader = Json5ConvertLab.class.getClassLoader();
             URL resourceUrl = classLoader.getResource(resourceName);
             Path inputPath = Paths.get(resourceUrl.toURI());
-            String json5Content = Files.readString(inputPath, StandardCharsets.UTF_8);
+            String json5Content = FileUtils.readFileToString(inputPath.toFile(), StandardCharsets.UTF_8);
 
             // strip JSON5 specifics
             String jsonContent = Json5Preprocessor.toJson(json5Content);
 
             // dump result
             Path outputPath = Paths.get("./reader-cj/src/test/resources/example.connected.json");
-            Files.writeString(outputPath, jsonContent, StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(outputPath.toFile(), jsonContent, StandardCharsets.UTF_8);
 
             System.out.println("Successfully converted JSON5 to JSON:");
             System.out.println("Input: " + inputPath.toAbsolutePath());

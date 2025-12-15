@@ -1,5 +1,6 @@
 package com.graphinout.foundation.pure.json.value;
 
+import com.graphinout.foundation.pure.bridge.Java9;
 import com.graphinout.foundation.pure.json.path.JsonPaths;
 import org.junit.jupiter.api.Test;
 
@@ -16,10 +17,10 @@ class JsonPathsTest {
 
     @Test
     void testEndsWith() {
-        assertThat(JsonPaths.endsWith(List.of(1, 2, 3, 4), is(3), is(4))).isTrue();
-        assertThat(JsonPaths.endsWith(List.of(1, 2, 3, 4), is(3), is(5))).isFalse();
-        assertThat(JsonPaths.endsWith(List.of(1, 2, 3, 4), is(1), is(2))).isFalse();
-        assertThat(JsonPaths.endsWith(List.of(1, 2, 3, 4), is(1), is(2), is(3), is(4))).isTrue();
+        assertThat(JsonPaths.endsWith(Java9.List.of(1, 2, 3, 4), is(3), is(4))).isTrue();
+        assertThat(JsonPaths.endsWith(Java9.List.of(1, 2, 3, 4), is(3), is(5))).isFalse();
+        assertThat(JsonPaths.endsWith(Java9.List.of(1, 2, 3, 4), is(1), is(2))).isFalse();
+        assertThat(JsonPaths.endsWith(Java9.List.of(1, 2, 3, 4), is(1), is(2), is(3), is(4))).isTrue();
     }
 
 }

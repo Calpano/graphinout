@@ -26,6 +26,7 @@
         <!-- current j2cl version is Java 8 syntax. See j2cl.adoc -->
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.release>8</maven.compiler.release>
     </properties>
 
     <dependencies>
