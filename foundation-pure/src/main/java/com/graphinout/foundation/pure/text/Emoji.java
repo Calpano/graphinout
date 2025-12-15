@@ -63,4 +63,7 @@ public class Emoji {
     /** rendered as 📸 */
     public static final String CAMERA = "\uD83D\uDCF7";
 
+    public static final String PLAY_BUTTON = "▶️";
+
+
 }
