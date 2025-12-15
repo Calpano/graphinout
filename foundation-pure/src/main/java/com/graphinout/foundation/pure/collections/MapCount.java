@@ -79,7 +79,7 @@ public class MapCount<K> {
 
     public @Nullable K max(Comparator<K> tieBreaker) {
         return map.entrySet().stream() //
-                .max(Map.Entry.<K, Integer>comparingByValue().reversed().thenComparing(Map.Entry::getKey, tieBreaker)) //
+                .max(Map.Entry.<K, Integer>comparingByValue().thenComparing(Map.Entry::getKey, tieBreaker)) //
                 .map(Map.Entry::getKey) //
                 .orElse(null);
     }
