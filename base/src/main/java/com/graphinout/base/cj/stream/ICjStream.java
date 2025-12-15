@@ -1,12 +1,16 @@
 package com.graphinout.base.cj.stream;
 
-import com.graphinout.base.cj.factory.ICjFactory;
 import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjEdgeChunk;
+import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.document.ICjGraphChunk;
 import com.graphinout.base.cj.document.ICjNodeChunk;
+import com.graphinout.base.cj.document.ICjNodeChunkMutable;
+import com.graphinout.base.cj.factory.ICjFactory;
 import com.graphinout.foundation.pure.input.IHandleContentErrors;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
+
+import java.util.function.Consumer;
 
 /**
  * A coarse-granular streaming CJ API. Assumptions: data is small.
@@ -30,6 +34,18 @@ public interface ICjStream extends ICjFactory, IHandleContentErrors {
         edgeEnd();
     }
 
+    /**
+     * Creates a new {@link ICjEdgeChunkMutable}, let the {@code edgeCustomizer} attach more data to it, and then adds
+     * it to the CJ stream.
+     *
+     * @param edgeCustomizer
+     */
+    default void edge(Consumer<ICjEdgeChunkMutable> edgeCustomizer) {
+        ICjEdgeChunkMutable edge = createEdgeChunk();
+        edgeCustomizer.accept(edge);
+        edge(edge);
+    }
+
     void edgeEnd();
 
     /** Start a CJ edge which may contain subgraphs */
@@ -46,6 +62,18 @@ public interface ICjStream extends ICjFactory, IHandleContentErrors {
     void graphStart(ICjGraphChunk graph);
 
     IJsonFactory jsonFactory();
+
+    /**
+     * Creates a new {@link ICjNodeChunkMutable}, let the {@code nodeCustomizer} attach more data to it, and then adds
+     * it to the CJ stream.
+     *
+     * @param nodeCustomizer
+     */
+    default void node(Consumer<ICjNodeChunkMutable> nodeCustomizer) {
+        ICjNodeChunkMutable node = createNodeChunk();
+        nodeCustomizer.accept(node);
+        node(node);
+    }
 
     default void node(ICjNodeChunk node) {
         nodeStart(node);
