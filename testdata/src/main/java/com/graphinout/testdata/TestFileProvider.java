@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -69,13 +70,47 @@ public class TestFileProvider {
 
     }
 
-    public record NamedString(String name, String content) {
+    public static final class NamedString {
 
-        public static NamedString of(String name, String content) {
-            return new NamedString(name, content);
+        private final String name;
+        private final String content;
+
+        public NamedString(String name, String content) {
+            this.name = name;
+            this.content = content;
         }
 
-    }
+            public static NamedString of(String name, String content) {
+                return new NamedString(name, content);
+            }
+
+        public String name() {return name;}
+
+        public String content() {return content;}
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (NamedString) obj;
+            return Objects.equals(this.name, that.name) &&
+                    Objects.equals(this.content, that.content);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, content);
+        }
+
+        @Override
+        public String toString() {
+            return "NamedString[" +
+                    "name=" + name + ", " +
+                    "content=" + content + ']';
+        }
+
+
+        }
 
     public static final Set<String> EXTENSIONS_GRAPHML = Set.of(".graphml.xml", ".graphml");
     public static final Set<String> EXTENSIONS_CJ_JSON = Set.of(".cj.json", ".cj");
