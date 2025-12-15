@@ -18,13 +18,13 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
-@SuppressWarnings({"unused", "SequencedCollectionMethodCanBeUsed", "PatternVariableCanBeUsed"})
+@SuppressWarnings({"unused"})
 public interface IJsonValue {
 
     static boolean isPrimitive(@Nullable IJsonValue value) {
-        if (value == null)
-            return true;
+        if (value == null) return true;
         return value.isPrimitive();
     }
 
@@ -44,8 +44,7 @@ public interface IJsonValue {
         if (isArray()) {
             IJsonArray arr = asArray();
             return IListLike.of(arr::size, arr::get);
-        } else
-            return IListLike.EMPTY;
+        } else return IListLike.EMPTY;
     }
 
     default IMapLike asMapLike() {
@@ -80,6 +79,17 @@ public interface IJsonValue {
     /** Does not convert boolean or number to string. Just type-casting here. */
     default String asString() {
         return asPrimitive().castTo(String.class);
+    }
+
+    default <F extends Throwable> String asStringOrThrow(Function<IJsonValue, F> conversionErrorSupplier) throws F {
+        if (!isPrimitive()) {
+            throw conversionErrorSupplier.apply(this);
+        }
+        if (asPrimitive().jsonType() != JsonType.String) {
+            throw conversionErrorSupplier.apply(this);
+        }
+        return asString();
+
     }
 
     /** the underlying implementation */
@@ -132,15 +142,13 @@ public interface IJsonValue {
             case Array:
                 if (isArray()) {
                     IJsonValue child = asArray().get(step.asArrayStep().index());
-                    if (child == null)
-                        return null;
+                    if (child == null) return null;
                     return child.get(path.subList(1, path.size()));
                 }
             case Object:
                 if (isObject()) {
                     IJsonValue child = asObject().get(step.asObjectStep().propertyKey());
-                    if (child == null)
-                        return null;
+                    if (child == null) return null;
                     return child.get(path.subList(1, path.size()));
                 }
         }

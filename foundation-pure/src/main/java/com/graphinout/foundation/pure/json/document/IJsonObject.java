@@ -51,6 +51,14 @@ public interface IJsonObject extends IJsonContainer {
     @Nullable
     IJsonValue get(String key);
 
+    default <E extends Throwable, F extends Throwable> String getAsNonNullStringOrThrow(String key, Function<IJsonObject, E> ifNullExceptionSupplier, Function<IJsonValue, F> conversionErrorSupplier) throws E, F {
+        IJsonValue value = get(key);
+        if (value == null) {
+            throw ifNullExceptionSupplier.apply(this);
+        }
+        return value.asStringOrThrow(conversionErrorSupplier);
+    }
+
     default void getMaybe(String propertyKey, Consumer<IJsonValue> valueConsumer) {
         IJsonValue value = get(propertyKey);
         if (value != null) {
@@ -71,6 +79,14 @@ public interface IJsonObject extends IJsonContainer {
                 typedValueConsumer.accept(value);
             }
         });
+    }
+
+    default <F extends Throwable> String getNullOrString(String key, Function<IJsonValue, F> conversionErrorSupplier) throws F {
+        IJsonValue value = get(key);
+        if (value == null) {
+            return null;
+        }
+        return value.asStringOrThrow(conversionErrorSupplier);
     }
 
     @NonNull
