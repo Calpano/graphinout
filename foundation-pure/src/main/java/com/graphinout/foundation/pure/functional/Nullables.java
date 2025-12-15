@@ -1,5 +1,6 @@
 package com.graphinout.foundation.pure.functional;
 
+import com.graphinout.foundation.pure.annotations.quality.QualityUnchecked;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -141,8 +142,47 @@ public class Nullables {
         return true;
     }
 
+    public static <T> boolean isNotNullAnd(@Nullable T input, @NonNull Predicate<@NonNull T> testNonNull) {
+        return input != null && testNonNull.test(input);
+    }
+
+    public static <T> Predicate<@Nullable T> isNotNullAnd(@NonNull Predicate<@NonNull T> testNonNull) {
+        return input -> input != null && testNonNull.test(input);
+    }
+
+    @QualityUnchecked
+    public static <T, R> Predicate<@Nullable T> isNotNullAnd(Function<@NonNull T, @Nullable R> mapToNullFun, @NonNull Predicate<@NonNull R> testNonNull) {
+        return input -> {
+            if (input == null) return false;
+            R r = mapToNullFun.apply(input);
+            if (r == null) return false;
+            return testNonNull.test(r);
+        };
+    }
+
+    public static <T> boolean isNullOr(@Nullable T input, @NonNull Predicate<@NonNull T> testNonNull) {
+        return input == null || testNonNull.test(input);
+    }
+
+    public static <T> Predicate<@Nullable T> isNullOr(@NonNull Predicate<@NonNull T> testNonNull) {
+        return input -> input == null || testNonNull.test(input);
+    }
+
     public static <T, R> R mapOrDefault(@Nullable T input, Function<T, R> mapFun, R defaultValue) {
         return Optional.ofNullable(input).map(mapFun).orElse(defaultValue);
+    }
+
+    /**
+     *
+     * @param input if null, the defaultValueSupplier is called
+     * @param mapFun if it returns null, ALSO the defaultValueSupplier is called
+     * @param defaultValueSupplier
+     * @return
+     * @param <T>
+     * @param <R>
+     */
+    public static <T, R> R mapOrGetDefault(@Nullable T input, Function<@NonNull T, @Nullable R> mapFun, Supplier<@NonNull R> defaultValueSupplier) {
+        return Optional.ofNullable(input).map(mapFun).orElse(defaultValueSupplier.get());
     }
 
     public static <T, S, R> R mapOrDefault(@Nullable T input, Function<@NonNull T, @Nullable S> mapFun1, Function<@NonNull S, @Nullable R> mapFun2, R defaultValue) {
@@ -176,7 +216,7 @@ public class Nullables {
     /**
      * If given input is not null, return a mapped version. If it is null, return null.
      */
-    public static <T, R> @Nullable R mapOrNull(@Nullable T input, Function<T, R> mapFun) {
+    public static <T, R> @Nullable R mapOrNull(@Nullable T input, Function<@NonNull T, @Nullable R> mapFun) {
         return Optional.ofNullable(input).map(mapFun).orElse(null);
     }
 
@@ -188,7 +228,8 @@ public class Nullables {
         return mapFun.apply(input);
     }
 
-    public static <T, R> R mapOrThrow(@Nullable T input, Function<T, R> mapFun, Supplier<Throwable> exceptionSupplier) throws Throwable {
+    /** Does this work in J2CL? */
+    public static <T, R,E extends Throwable> R mapOrThrow(@Nullable T input, Function<@NonNull T, R> mapFun, Supplier<E> exceptionSupplier) throws E {
         if (input == null) throw exceptionSupplier.get();
         return mapFun.apply(input);
     }
