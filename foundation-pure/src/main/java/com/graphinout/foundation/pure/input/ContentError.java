@@ -1,8 +1,10 @@
 package com.graphinout.foundation.pure.input;
 
 import org.jspecify.annotations.Nullable;
+
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * See {@code ContentErrors} for simpler handlers.
@@ -23,12 +25,28 @@ public class ContentError {
         this.location = location;
     }
 
-    public static ContentError of(ErrorLevel level, String message, @Nullable Location location) {
-        return new ContentError(level, message, location);
+    public static ContentError error(String message) {
+        return new ContentError(ErrorLevel.Error, message, Location.UNAVAILABLE);
     }
 
     public static ContentError of(ErrorLevel level, String message) {
         return new ContentError(level, message, null);
+    }
+
+    public static ContentError of(ErrorLevel level, String message, @Nullable Location location) {
+        return new ContentError(level, message, location);
+    }
+
+    public static void try_(Runnable runnable, String messageDetail, Consumer<ContentError> errorHandler) {
+        try {
+            runnable.run();
+        } catch (Throwable t) {
+            ContentError.warn(messageDetail + " Reason: " + t.getMessage()).fireTo(errorHandler);
+        }
+    }
+
+    public static ContentError warn(String message) {
+        return new ContentError(ErrorLevel.Warn, message, Location.UNAVAILABLE);
     }
 
     @Override
@@ -37,6 +55,10 @@ public class ContentError {
         if (!(o instanceof ContentError)) return false;
         ContentError that = (ContentError) o;
         return level == that.level && message.equals(that.message) && Objects.equals(location, that.location);
+    }
+
+    public void fireTo(Consumer<ContentError> errorHandler) {
+        errorHandler.accept(this);
     }
 
     public ErrorLevel getLevel() {

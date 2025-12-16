@@ -27,6 +27,20 @@ public class ContentErrorException extends RuntimeException {
         this.location = location;
     }
 
+    public ContentErrorException(ContentError.ErrorLevel errorLevel, String message) {
+        super(message);
+        this.errorLevel = errorLevel;
+        this.location = Location.UNAVAILABLE;
+    }
+
+    public static ContentErrorException contentError(String msg) {
+        return new ContentErrorException(ContentError.ErrorLevel.Error, msg, Location.UNAVAILABLE);
+    }
+
+    public static ContentErrorException contentWarn(String msg) {
+        return new ContentErrorException(ContentError.ErrorLevel.Warn, msg, Location.UNAVAILABLE);
+    }
+
     public static ContentErrorException of(ContentError contentError, @Nullable Throwable cause) {
         return cause == null ? new ContentErrorException(contentError) : new ContentErrorException(contentError, cause);
     }
