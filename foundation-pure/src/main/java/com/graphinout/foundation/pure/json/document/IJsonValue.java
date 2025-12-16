@@ -28,7 +28,10 @@ public interface IJsonValue {
         return value.isPrimitive();
     }
 
-    default IJsonArray asArray() throws ClassCastException {
+    default IJsonArray asArray() throws IllegalStateException {
+        if(!isArray()) {
+            throw new IllegalStateException("Not an array but "+jsonType());
+        }
         return (IJsonArray) this;
     }
 

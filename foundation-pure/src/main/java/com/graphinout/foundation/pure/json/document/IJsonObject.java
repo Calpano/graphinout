@@ -113,7 +113,7 @@ public interface IJsonObject extends IJsonContainer {
     default String getString(String key, Consumer<String> errorHandler) throws IllegalStateException {
         IJsonValue v = get(key);
         if (v == null) {
-            String msg = "['" + key + "'] is null";
+            String msg = "['" + key + "'] missing; expected a string.";
             errorHandler.accept(msg);
             throw new IllegalStateException(msg);
         }

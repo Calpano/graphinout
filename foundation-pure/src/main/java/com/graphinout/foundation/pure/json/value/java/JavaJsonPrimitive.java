@@ -3,13 +3,14 @@ package com.graphinout.foundation.pure.json.value.java;
 import com.graphinout.foundation.pure.json.JsonType;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonPrimitive;
+import org.jspecify.annotations.Nullable;
 
 public class JavaJsonPrimitive implements IJsonPrimitive {
 
     public static final IJsonPrimitive NULL = new JavaJsonPrimitive(null);
-    private final Object primitive;
+    private final @Nullable Object primitive;
 
-    public JavaJsonPrimitive(Object primitive) {this.primitive = primitive;}
+    public JavaJsonPrimitive(@Nullable Object primitive) {this.primitive = primitive;}
 
     public static IJsonPrimitive of(Object o) {
         return new JavaJsonPrimitive(o);
@@ -39,6 +40,11 @@ public class JavaJsonPrimitive implements IJsonPrimitive {
         }
 
         throw new AssertionError("Unknown node type: " + primitive.getClass());
+    }
+
+    @Override
+    public String toString() {
+        return "" + primitive;
     }
 
 }

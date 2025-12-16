@@ -34,7 +34,6 @@ public class Logger {
         // TODO better
         String message = level + " " + template + " DATA:" + Java9.List.of(data).toString();
         LoggerFactory.log(name, level, message);
-
     }
 
 }
