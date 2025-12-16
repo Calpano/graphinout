@@ -89,7 +89,7 @@ public class Nullables {
         consumer.accept(r);
     }
 
-    public static <T, U, R> void ifPresentAccept(@Nullable T value, Function<T, U> mapFun1, Function<U, R> mapFun2, Consumer<R> consumer) {
+    public static <T, U, R> void ifPresentAccept(@Nullable T value, Function<@NonNull T, U> mapFun1, Function<U, R> mapFun2, Consumer<R> consumer) {
         if (value == null) return;
         U u = mapFun1.apply(value);
         if (u == null) return;

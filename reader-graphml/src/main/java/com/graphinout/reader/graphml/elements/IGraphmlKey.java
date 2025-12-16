@@ -32,7 +32,7 @@ import static com.graphinout.foundation.pure.functional.Nullables.mapOrDefault;
  * string. These types are defined like the corresponding types in the Java(TM)-Programming language."
  * <p>
  * The XSD says: "This group consists of the two optional attributes - attr.name (gives the name for the data function)
- * - attr.type ((declares the range of values for the data function)".
+* <li>attr.type ((declares the range of values for the data function)".
  */
 public interface IGraphmlKey extends IGraphmlElementWithDescAndId {
 
