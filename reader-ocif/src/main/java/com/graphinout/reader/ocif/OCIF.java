@@ -7,6 +7,12 @@ package com.graphinout.reader.ocif;
  */
 public final class OCIF {
 
+    public static class OcifSchema {
+
+        public static final String V0_6 = "https://canvasprotocol.org/ocif/v0.6";
+
+    }
+
     private OCIF() {}
 
     public static final class Type {
@@ -18,9 +24,9 @@ public final class OCIF {
     }
 
 
-        /** Root-level properties of an OCIF document. */
+    /** Root-level properties of an OCIF document. */
     public static final class Root {
-        public static final String OCIF = "ocif";
+        public static final String OCIF_SCHEMA_URI = "ocif";
         public static final String NODES = "nodes";
         public static final String RELATIONS = "relations";
         public static final String RESOURCES = "resources";
@@ -33,17 +39,25 @@ public final class OCIF {
         public static final String HAS_RELATIONS_PROPERTY = "hasRelationsProperty";
     }
 
+    public static final class Node {
+
+        public static final String DATA = "data";
+        public static final String ID = "id";
+        public static final String POSITION = "position";
+        public static final String RELATION = "relation";
+        public static final String RESOURCE = "resource";
+        public static final String RESOURCE_FIT = "resourceFit";
+        public static final String ROTATION = "rotation";
+        public static final String SIZE = "size";
+
+    }
+
+
     /** Common property names used across elements and extensions. */
     public static final class Common {
         public static final String ID = "id";
         public static final String TYPE = "type";
         public static final String DATA = "data";
-        public static final String POSITION = "position";
-        public static final String SIZE = "size";
-        public static final String RESOURCE = "resource";
-        public static final String RESOURCE_FIT = "resourceFit";
-        public static final String ROTATION = "rotation";
-        public static final String RELATION = "relation";
         public static final String NODE = "node";
         public static final String REL = "rel";
         public static final String WEIGHT = "weight";

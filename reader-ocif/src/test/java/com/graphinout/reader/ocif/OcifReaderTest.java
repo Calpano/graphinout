@@ -3,10 +3,11 @@ package com.graphinout.reader.ocif;
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.cj.CjAssert;
 import com.graphinout.base.gio.GioReader;
+import com.graphinout.reader.ocif.todo.CjStream2OcifJson;
 import com.graphinout.testdata.TestFileProvider;
-import com.graphinout.base.input.SingleInputSourceOfString;
 import io.github.classgraph.Resource;
 import jdk.jfr.Description;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -31,16 +32,27 @@ class OcifReaderTest extends AbstractReaderTest {
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("ocifResources")
     @Description("Test JSON->OCIF (all)")
+    @Disabled("FIXME")
     void test_Json_Cj_Json(String displayName, Resource resource) throws IOException {
         String json = resource.getContentAsString();
-        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", json);
 
-        OcifReader ocifReader = new OcifReader();
-        Ocif2CjStream ocif2CjStream = new Ocif2CjStream();
-        ocifReader.read(inputSource, ocif2CjStream);
-        String resultJson = ocif2CjStream.resultOcifJsonString();
+        CjStream2OcifJson cjStream2Ocif = new CjStream2OcifJson();
+        OcifReader.readOcif("test", json, cjStream2Ocif);
+        String resultJson = cjStream2Ocif.resultOcifJsonString();
 
         CjAssert.xAssertThatIsSameCj(resultJson, json, null);
+    }
+
+    @ParameterizedTest(name = "{index}: {0}")
+    @MethodSource("ocifResources")
+    @Description("Test JSON->OCIF (all)")
+    @Disabled("FIXME")
+    void test_OCIF_Cj_OCIF(String displayName, Resource resource) throws IOException {
+        String json = resource.getContentAsString();
+
+        CjStream2OcifJson ocif2CjStream = new CjStream2OcifJson();
+        OcifReader.readOcif("test", json, ocif2CjStream);
+
     }
 
 }

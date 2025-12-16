@@ -1,19 +1,17 @@
-package com.graphinout.reader.ocif;
+package com.graphinout.reader.ocif.todo;
 
-import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.stream.ICjStream;
-import com.graphinout.base.cj.writer.CjWriter2CjStream;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.base.json.JavaJsons;
-import com.graphinout.foundation.pure.annotations.quality.QualityOK;
 import com.graphinout.foundation.pure.input.ContentError;
-import com.graphinout.foundation.pure.input.ContentErrorException;
+import com.graphinout.foundation.pure.input.ContentError.ErrorLevel;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-import com.graphinout.reader.ocif.document.impl.OcifDocument;
+import com.graphinout.reader.ocif.todo.OcifJson2CjStream;
 import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -24,35 +22,31 @@ import java.util.function.Consumer;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@QualityOK
-public class OcifReader implements GioReader {
+public class OcifReaderOLD implements GioReader {
 
     public static final String FORMAT_ID = "ocif";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "OCIF Open Canvas Interchange Format (OCIF v0.6)", ".ocif.json", ".ocif");
-    private static final Logger log = LoggerFactory.getLogger(OcifReader.class);
+    private static final Logger log = LoggerFactory.getLogger(OcifReaderOLD.class);
 
     private @Nullable Consumer<ContentError> errorHandler;
 
-
-    public static void parseOcifJsonString2CjStream(String json, ICjStream cjStream, @Nullable Consumer<ContentError> errorHandler) throws ContentErrorException {
-        // parse string to JSON value
+    public static void parseOcifJsonString2CjStream(String json, ICjStream cjStream, @Nullable Consumer<ContentError> errorHandler) throws IOException {
+        // Parse OCIF JSON and emit CJ stream events
         IJsonValue root = JavaJsons.ofJsonString(json);
-        if (root == null) {
-            throw ContentErrorException.contentError("Invalid OCIF: root must be a JSON object");
+        IJsonObject o = root == null ? null : root.asObject();
+        if (o == null) {
+            if (errorHandler != null) {
+                errorHandler.accept(new ContentError(ErrorLevel.Error, "Invalid OCIF: root must be a JSON object", null));
+            }
+            throw new IOException("Invalid OCIF: Root element must be a JSON object");
         }
-        // next, parse IJsonValue to OCIF document
-        OcifDocument ocifDocument = Json2OcifDoc.toOcifDocument(root, errorHandler);
-        // to CjDocument
-        ICjDocument cjDocument = OcifDoc2CjDoc.toCjDocument(ocifDocument);
-        // fire
-        CjWriter2CjStream cjWriter2CjStream = new CjWriter2CjStream(cjStream);
-        cjDocument.fire(cjWriter2CjStream);
-    }
+        OcifJson2CjStream.parseOcifJsonObject2CjStream(o, cjStream, errorHandler);
 
+    }
 
     public static void readOcif(String inputName, String ocifJson, ICjStream cjStream) throws IOException {
         SingleInputSourceOfString inputSource = SingleInputSourceOfString.of(inputName, ocifJson);
-        OcifReader ocifReader = new OcifReader();
+        OcifReaderOLD ocifReader = new OcifReaderOLD();
         ocifReader.read(inputSource, cjStream);
     }
 
