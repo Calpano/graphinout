@@ -32,7 +32,7 @@ public class PathNodeExtension extends OcifExtension {
     private String fillColor;
     /** required */
     private String path;
-    private IJsonObject extras;
+    
     public PathNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
     }
@@ -51,16 +51,11 @@ public class PathNodeExtension extends OcifExtension {
         return Set.of(OCIF.Common.STROKE_WIDTH, OCIF.Common.STROKE_COLOR, OCIF.Common.FILL_COLOR, OCIF.Common.PATH);
     }
 
-    public IJsonObject extras() {return extras;}
+    
 
     public String fillColor() {return fillColor;}
 
     public String path() {return path;}
-
-    public PathNodeExtension setExtras(IJsonObject extras) {
-        this.extras = extras;
-        return this;
-    }
 
     public PathNodeExtension setFillColor(String fillColor) {
         this.fillColor = fillColor;

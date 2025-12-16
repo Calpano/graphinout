@@ -21,7 +21,7 @@ public class TextStyleNodeExtension extends OcifExtension {
     private String align;
     private Boolean bold;
     private Boolean italic;
-    private IJsonObject extras;
+    
 
     public TextStyleNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -49,7 +49,7 @@ public class TextStyleNodeExtension extends OcifExtension {
         return Set.of(OCIF.Common.FONT_SIZE_PX, OCIF.Common.FONT_FAMILY, OCIF.Common.COLOR, OCIF.Common.ALIGN, OCIF.Common.BOLD, OCIF.Common.ITALIC);
     }
 
-    public IJsonObject extras() {return extras;}
+    
 
     public String fontFamily() {return fontFamily;}
 
@@ -69,11 +69,6 @@ public class TextStyleNodeExtension extends OcifExtension {
 
     public TextStyleNodeExtension setColor(String color) {
         this.color = color;
-        return this;
-    }
-
-    public TextStyleNodeExtension setExtras(IJsonObject extras) {
-        this.extras = extras;
         return this;
     }
 

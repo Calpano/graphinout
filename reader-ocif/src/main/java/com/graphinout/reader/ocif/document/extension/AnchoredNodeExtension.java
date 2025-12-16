@@ -12,7 +12,6 @@ import java.util.Set;
  * Anchored Node Extension.
  * <p>
  * Spec: reader-ocif/src/spec-v0.6/spec.md → "Node Extensions → Anchored Node Extension" Name: @ocif/node/anchored
- * TYPE_URI: https://spec.canvasprotocol.org/v0.6/extensions/anchored-node.json
  * <p>
  * Properties:
  * <li>topLeftAnchor (number[2]|number[3])
@@ -29,7 +28,6 @@ public class AnchoredNodeExtension extends OcifExtension {
     private IJsonArray bottomRightAnchor;
     private IJsonArray topLeftOffset;
     private IJsonArray bottomRightOffset;
-    private IJsonObject extras;
     public AnchoredNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
     }
@@ -57,8 +55,6 @@ public class AnchoredNodeExtension extends OcifExtension {
         );
     }
 
-    public IJsonObject extras() {return extras;}
-
     public AnchoredNodeExtension setBottomRightAnchor(IJsonArray bottomRightAnchor) {
         this.bottomRightAnchor = bottomRightAnchor;
         return this;
@@ -66,11 +62,6 @@ public class AnchoredNodeExtension extends OcifExtension {
 
     public AnchoredNodeExtension setBottomRightOffset(IJsonArray bottomRightOffset) {
         this.bottomRightOffset = bottomRightOffset;
-        return this;
-    }
-
-    public AnchoredNodeExtension setExtras(IJsonObject extras) {
-        this.extras = extras;
         return this;
     }
 

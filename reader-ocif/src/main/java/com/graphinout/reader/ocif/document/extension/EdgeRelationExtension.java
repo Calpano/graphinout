@@ -33,7 +33,6 @@ public class EdgeRelationExtension extends OcifExtension {
     private Boolean directed;
     private String rel;
     private String node;
-    private IJsonObject extras;
 
     public EdgeRelationExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -61,7 +60,6 @@ public class EdgeRelationExtension extends OcifExtension {
 
     public String end() {return end;}
 
-    public IJsonObject extras() {return extras;}
 
     public @Nullable String node() {return node;}
 

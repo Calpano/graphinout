@@ -24,7 +24,7 @@ public class PortsNodeExtension extends OcifExtension {
     public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/ports-node.json";
     /** array of string IDs */
     private IJsonArray ports;
-    private IJsonObject extras;
+    
     public PortsNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
     }
@@ -40,14 +40,9 @@ public class PortsNodeExtension extends OcifExtension {
         return Set.of(OCIF.Common.PORTS);
     }
 
-    public IJsonObject extras() {return extras;}
+    
 
     public IJsonArray ports() {return ports;}
-
-    public PortsNodeExtension setExtras(IJsonObject extras) {
-        this.extras = extras;
-        return this;
-    }
 
     public PortsNodeExtension setPorts(IJsonArray ports) {
         this.ports = ports;

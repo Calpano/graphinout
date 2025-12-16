@@ -12,9 +12,11 @@ import com.graphinout.base.json.JavaJsons;
 import com.graphinout.foundation.pure.annotations.quality.QualityOK;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.input.ContentErrorException;
+import com.graphinout.foundation.pure.input.ContentErrors;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.document.impl.OcifDocument;
 import org.apache.commons.io.IOUtils;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @QualityOK
@@ -31,10 +34,12 @@ public class OcifReader implements GioReader {
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "OCIF Open Canvas Interchange Format (OCIF v0.6)", ".ocif.json", ".ocif");
     private static final Logger log = LoggerFactory.getLogger(OcifReader.class);
 
-    private @Nullable Consumer<ContentError> errorHandler;
+    private @NonNull Consumer<ContentError> errorHandler;
+
+    public OcifReader() {errorHandler = ContentErrors.NOOP;}
 
 
-    public static void parseOcifJsonString2CjStream(String json, ICjStream cjStream, @Nullable Consumer<ContentError> errorHandler) throws ContentErrorException {
+    public static void parseOcifJsonString2CjStream(String json, ICjStream cjStream, @NonNull Consumer<ContentError> errorHandler) throws ContentErrorException {
         // parse string to JSON value
         IJsonValue root = JavaJsons.ofJsonString(json);
         if (root == null) {
@@ -50,9 +55,17 @@ public class OcifReader implements GioReader {
     }
 
 
-    public static void readOcif(String inputName, String ocifJson, ICjStream cjStream) throws IOException {
+    /**
+     * @param inputName
+     * @param ocifJson
+     * @param cjStream
+     * @param errorHandler if not null, is used instead of current (usually: NOOP) error handler
+     * @throws IOException
+     */
+    public static void readOcif(String inputName, String ocifJson, ICjStream cjStream, @Nullable Consumer<ContentError> errorHandler) throws IOException {
         SingleInputSourceOfString inputSource = SingleInputSourceOfString.of(inputName, ocifJson);
         OcifReader ocifReader = new OcifReader();
+        ifPresentAccept(errorHandler, ocifReader::setContentErrorHandler);
         ocifReader.read(inputSource, cjStream);
     }
 

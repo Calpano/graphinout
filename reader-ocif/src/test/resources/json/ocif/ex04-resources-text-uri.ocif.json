@@ -7,14 +7,14 @@
     {
       "id": "r-text",
       "representations": [
-        {"mime-type": "text/plain", "content": "This is inline text."},
-        {"mime-type": "application/json", "content": {"a": 1, "b": 2}}
+        {"mimeType": "text/plain", "content": "This is inline text."},
+        {"mimeType": "application/json", "content": "{\"a\": 1, \"b\": 2}"}
       ]
     },
     {
       "id": "r-uri",
       "representations": [
-        {"mime-type": "image/png", "uri": "https://example.org/sample.png"}
+        {"mimeType": "image/png", "location": "https://example.org/sample.png"}
       ]
     }
   ]

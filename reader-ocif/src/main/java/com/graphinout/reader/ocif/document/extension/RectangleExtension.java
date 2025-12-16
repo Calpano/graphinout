@@ -3,7 +3,7 @@ package com.graphinout.reader.ocif.document.extension;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
-import com.graphinout.reader.ocif.document.types.Color;
+import com.graphinout.reader.ocif.document.types.OcifColor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -28,9 +28,9 @@ public class RectangleExtension extends OcifExtension {
     /** default 1 */
     private Double strokeWidth;
     /** default #FFFFFF */
-    private Color strokeColor;
+    private OcifColor strokeColor;
     /** default none */
-    private Color fillColor;
+    private OcifColor fillColor;
 
     public RectangleExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -39,8 +39,8 @@ public class RectangleExtension extends OcifExtension {
     public static @NonNull IOcifExtension of(@NonNull IJsonObject obj) {
         RectangleExtension ext = new RectangleExtension();
         obj.ifPresent(OCIF.Common.STROKE_WIDTH, IJsonValue::asNumber, Number::doubleValue, ext::setStrokeWidth);
-        obj.ifPresent(OCIF.Common.FILL_COLOR, Color::of, ext::setFillColor);
-        obj.ifPresent(OCIF.Common.STROKE_COLOR, Color::of, ext::setStrokeColor);
+        obj.ifPresent(OCIF.Common.FILL_COLOR, OcifColor::of, ext::setFillColor);
+        obj.ifPresent(OCIF.Common.STROKE_COLOR, OcifColor::of, ext::setStrokeColor);
         return ext;
     }
 
@@ -48,14 +48,14 @@ public class RectangleExtension extends OcifExtension {
         return Set.of(OCIF.Common.TYPE, OCIF.Common.STROKE_WIDTH, OCIF.Common.STROKE_COLOR, OCIF.Common.FILL_COLOR);
     }
 
-    public @Nullable Color fillColor() {return fillColor;}
+    public @Nullable OcifColor fillColor() {return fillColor;}
 
-    public RectangleExtension setFillColor(Color fillColor) {
+    public RectangleExtension setFillColor(OcifColor fillColor) {
         this.fillColor = fillColor;
         return this;
     }
 
-    public RectangleExtension setStrokeColor(Color strokeColor) {
+    public RectangleExtension setStrokeColor(OcifColor strokeColor) {
         this.strokeColor = strokeColor;
         return this;
     }
@@ -65,7 +65,7 @@ public class RectangleExtension extends OcifExtension {
         return this;
     }
 
-    public @Nullable Color strokeColor() {return strokeColor;}
+    public @Nullable OcifColor strokeColor() {return strokeColor;}
 
     public @Nullable Double strokeWidth() {return strokeWidth;}
 

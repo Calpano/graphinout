@@ -6,8 +6,8 @@
     {
       "id": "r",
       "representations": [
-        {"mime-type": "text/markdown", "content": "# Title\nSome text.", "priority": 10},
-        {"mime-type": "text/plain", "content": "Fallback text", "priority": 0}
+        {"mimeType": "text/markdown", "content": "# Title\nSome text.", "priority": 10},
+        {"mimeType": "text/plain", "content": "Fallback text", "priority": 0}
       ]
     }
   ]

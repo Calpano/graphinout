@@ -3,11 +3,11 @@ package com.graphinout.reader.ocif.document.types;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 
-public class Id extends OcifType {
+public class OcifId extends OcifType {
 
     final String value;
 
-    public Id(String value) {
+    public OcifId(String value) {
         if (value == null || value.isEmpty()) {
             throw new IllegalArgumentException("ID cannot be null or empty.");
         }
@@ -21,8 +21,8 @@ public class Id extends OcifType {
         this.value = value;
     }
 
-    public static Id of(IJsonValue jsonValue) throws IllegalStateException {
-        return new Id(jsonValue.asString());
+    public static OcifId of(IJsonValue jsonValue) throws IllegalStateException {
+        return new OcifId(jsonValue.asString());
     }
 
     @Override

@@ -19,7 +19,6 @@ public class GroupRelationExtension extends OcifExtension {
     private IJsonArray members;
     /** default app-dependent (spec suggests ability) */
     private Boolean cascadeDelete;
-    private IJsonObject extras;
     public GroupRelationExtension() {
         super(TYPE_URI, TYPE_NAME);
     }
@@ -40,17 +39,10 @@ public class GroupRelationExtension extends OcifExtension {
         return Set.of(OCIF.Common.MEMBERS, OCIF.Common.CASCADE_DELETE);
     }
 
-    public IJsonObject extras() {return extras;}
-
     public IJsonArray members() {return members;}
 
     public GroupRelationExtension setCascadeDelete(Boolean cascadeDelete) {
         this.cascadeDelete = cascadeDelete;
-        return this;
-    }
-
-    public GroupRelationExtension setExtras(IJsonObject extras) {
-        this.extras = extras;
         return this;
     }
 

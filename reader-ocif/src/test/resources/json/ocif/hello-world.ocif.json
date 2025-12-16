@@ -24,7 +24,7 @@
       "id": "r1",
       "representations": [
         {
-          "mime-type": "text/plain",
+          "mimeType": "text/plain",
           "content": "Hello, World!"
         }
       ]

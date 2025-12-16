@@ -1,8 +1,8 @@
 package com.graphinout.reader.ocif.document.extension;
 
-import com.graphinout.foundation.pure.json.document.IJsonArray;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.reader.ocif.OCIF;
+import com.graphinout.reader.ocif.document.types.OcifVector23D;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Set;
@@ -20,9 +20,9 @@ public class CanvasViewportExtension extends OcifExtension {
     public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/viewport-canvas.json";
 
     /** [x,y,(z)] position (number[2|3], required): top-left corner of the viewport */
-    private IJsonArray position;
+    private OcifVector23D position;
     /** [w,h,(d)] size (number[2|3], required): width/height(/depth) of the viewport */
-    private IJsonArray size;
+    private OcifVector23D size;
 
     public CanvasViewportExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -30,8 +30,8 @@ public class CanvasViewportExtension extends OcifExtension {
 
     public static @NonNull IOcifExtension of(@NonNull IJsonObject obj) {
         CanvasViewportExtension ext = new CanvasViewportExtension();
-        ext.position = obj.get(OCIF.Node.POSITION).asArray();
-        ext.size = obj.get(OCIF.Node.SIZE).asArray();
+        ext.position = OcifVector23D.of(obj.get(OCIF.Node.POSITION), OcifVector23D.ZERO_2D);
+        ext.size = OcifVector23D.of(obj.get(OCIF.Node.SIZE), new OcifVector23D(new double[]{100., 100.}));
         return ext;
     }
 
@@ -40,19 +40,19 @@ public class CanvasViewportExtension extends OcifExtension {
         return Set.of(OCIF.Node.POSITION, OCIF.Node.SIZE);
     }
 
-    public IJsonArray position() {return position;}
+    public OcifVector23D position() {return position;}
 
-    public CanvasViewportExtension setPosition(IJsonArray position) {
+    public CanvasViewportExtension setPosition(OcifVector23D position) {
         this.position = position;
         return this;
     }
 
-    public CanvasViewportExtension setSize(IJsonArray size) {
+    public CanvasViewportExtension setSize(OcifVector23D size) {
         this.size = size;
         return this;
     }
 
-    public IJsonArray size() {return size;}
+    public OcifVector23D size() {return size;}
 
 
 }

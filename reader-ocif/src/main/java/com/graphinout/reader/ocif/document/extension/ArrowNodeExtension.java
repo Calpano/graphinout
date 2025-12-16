@@ -11,8 +11,7 @@ import java.util.Set;
 /**
  * Arrow Node Extension.
  * <p>
- * Spec: reader-ocif/src/spec-v0.6/spec.md → "Node Extensions → Arrow Extension" Name: @ocif/node/arrow TYPE_URI:
- * https://spec.canvasprotocol.org/v0.6/extensions/arrow-node.json
+ * Spec: reader-ocif/src/spec-v0.6/spec.md → "Node Extensions → Arrow Extension"
  * <p>
  * Properties:
  * <li>strokeWidth (number): line width

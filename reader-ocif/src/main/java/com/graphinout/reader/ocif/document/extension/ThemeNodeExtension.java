@@ -26,7 +26,7 @@ public class ThemeNodeExtension extends OcifExtension {
     private IJsonObject themes;
     /** Optional: Name of the theme to select; null selects the default (no theme). Uses JSON key "select-theme". */
     private String selectTheme;
-    private IJsonObject extras;
+    
     public ThemeNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
     }
@@ -43,14 +43,9 @@ public class ThemeNodeExtension extends OcifExtension {
         return Set.of(OCIF.Common.THEMES, OCIF.Common.SELECT_THEME);
     }
 
-    public IJsonObject extras() {return extras;}
+    
 
     public String selectTheme() {return selectTheme;}
-
-    public ThemeNodeExtension setExtras(IJsonObject extras) {
-        this.extras = extras;
-        return this;
-    }
 
     public ThemeNodeExtension setSelectTheme(String selectTheme) {
         this.selectTheme = selectTheme;

@@ -18,28 +18,28 @@ import com.graphinout.reader.ocif.document.IOcifRelationMutable;
 import com.graphinout.reader.ocif.document.IOcifRepresentation;
 import com.graphinout.reader.ocif.document.IOcifResourceMutable;
 import com.graphinout.reader.ocif.document.IOcifSchema;
-import com.graphinout.reader.ocif.document.impl.OcifDocument;
-import com.graphinout.reader.ocif.document.impl.OcifNode;
-import com.graphinout.reader.ocif.document.impl.OcifRelation;
-import com.graphinout.reader.ocif.document.impl.OcifResource;
-import com.graphinout.reader.ocif.document.impl.OcifSchema;
-import com.graphinout.reader.ocif.document.extension.CanvasViewportExtension;
-import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.AnchoredNodeExtension;
 import com.graphinout.reader.ocif.document.extension.ArrowNodeExtension;
+import com.graphinout.reader.ocif.document.extension.CanvasViewportExtension;
 import com.graphinout.reader.ocif.document.extension.DataExtension;
 import com.graphinout.reader.ocif.document.extension.EdgeRelationExtension;
 import com.graphinout.reader.ocif.document.extension.GroupRelationExtension;
 import com.graphinout.reader.ocif.document.extension.HyperedgeRelationExtension;
+import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.NodeTransformsExtension;
 import com.graphinout.reader.ocif.document.extension.OvalNodeExtension;
 import com.graphinout.reader.ocif.document.extension.PageNodeExtension;
 import com.graphinout.reader.ocif.document.extension.ParentChildRelationExtension;
 import com.graphinout.reader.ocif.document.extension.PathNodeExtension;
 import com.graphinout.reader.ocif.document.extension.PortsNodeExtension;
+import com.graphinout.reader.ocif.document.extension.RectangleExtension;
 import com.graphinout.reader.ocif.document.extension.TextStyleNodeExtension;
 import com.graphinout.reader.ocif.document.extension.ThemeNodeExtension;
-import com.graphinout.reader.ocif.document.extension.RectangleExtension;
+import com.graphinout.reader.ocif.document.impl.OcifDocument;
+import com.graphinout.reader.ocif.document.impl.OcifNode;
+import com.graphinout.reader.ocif.document.impl.OcifRelation;
+import com.graphinout.reader.ocif.document.impl.OcifResource;
+import com.graphinout.reader.ocif.document.impl.OcifSchema;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -76,8 +76,8 @@ public class Json2OcifDoc {
     static void ifPresentExpectArrayOfObjects(IJsonObject o, String key, Consumer<IJsonObject> arrayMemberConsumer) {
         IJsonValue v = o.get(key);
         if (v == null) return;
-        if (!o.isArray()) {
-            throw contentWarn("Expected array");
+        if (!v.isArray()) {
+            throw contentWarn("Expected '" + key + "'=array, but got " + v.jsonType());
         }
         IJsonArray arr = v.asArray();
         for (int i = 0; i < arr.size(); i++) {
@@ -114,7 +114,7 @@ public class Json2OcifDoc {
      * @return
      * @throws ContentErrorException for grave errors
      */
-    public static OcifDocument toOcifDocument(IJsonValue jsonValue, Consumer<ContentError> errorHandler) throws ContentErrorException {
+    public static OcifDocument toOcifDocument(IJsonValue jsonValue,@NonNull Consumer<ContentError> errorHandler) throws ContentErrorException {
         if (jsonValue.isObject()) {
             IJsonObject ocifJson = jsonValue.asObject();
             Json2OcifDoc json2OcifDoc = new Json2OcifDoc();
@@ -181,10 +181,13 @@ public class Json2OcifDoc {
             for (int j = 0; j < reps.size(); j++) {
                 IJsonObject repObj = reps.get_(j).asObject();
                 // Either content or location must be given but not both
-                String mimeType = repObj.getAsNonNullStringOrThrow(OCIF.Resource.MIME_TYPE, object -> ContentErrorException.contentError("OCIF representation has no mimeType"), value -> ContentErrorException.contentError("OCIF representation.mimeType is not a string but " + value.jsonType()));
-
-                String location = repObj.getNullOrString(OCIF.Resource.LOCATION, value -> contentWarn("OCIF representation.location is not a string but " + value.jsonType()));
-                String content = repObj.getNullOrString(OCIF.Resource.CONTENT, value -> contentWarn("OCIF representation.content is not a string but " + value.jsonType()));
+                String mimeType = repObj.getAsNonNullStringOrThrow(OCIF.Resource.MIME_TYPE, //
+                        object -> ContentErrorException.contentError("OCIF representation has no mimeType"), //
+                        value -> ContentErrorException.contentError("OCIF representation.mimeType is not a string but " + value.jsonType()));
+                String location = repObj.getNullOrString(OCIF.Resource.LOCATION, //
+                        value -> contentWarn("OCIF representation.location is not a string but " + value.jsonType()));
+                String content = repObj.getNullOrString(OCIF.Resource.CONTENT, //
+                        value -> contentWarn("OCIF representation.content is not a string but " + value.jsonType()));
                 if (location == null && content == null) {
                     throw ContentErrorException.contentError("OCIF representation must have either 'location' or 'content'");
                 }
@@ -214,7 +217,7 @@ public class Json2OcifDoc {
         return sch;
     }
 
-    public @NonNull OcifDocument jsonObject2ocifDocument(@Nullable IJsonObject o, Consumer<ContentError> errorHandler) throws ContentErrorException {
+    public @NonNull OcifDocument jsonObject2ocifDocument(@Nullable IJsonObject o, @NonNull Consumer<ContentError> errorHandler) throws ContentErrorException {
         OcifDocument doc = new OcifDocument();
         if (o == null) return doc;
 
@@ -248,7 +251,7 @@ public class Json2OcifDoc {
     }
 
     /** Parse a JSON string containing an OCIF document into an {@link OcifDocument}. */
-    public OcifDocument jsonString2ocifDocument(@NonNull String json, Consumer<ContentError> errorHandler) {
+    public OcifDocument jsonString2ocifDocument(@NonNull String json, @NonNull Consumer<ContentError> errorHandler) {
         return mapOrNull(JavaJsons.ofJsonString(json), IJsonValue::asObject, o -> jsonObject2ocifDocument(o, errorHandler));
     }
 

@@ -5,11 +5,11 @@ import com.graphinout.foundation.pure.json.document.IJsonValue;
 
 import java.net.URISyntaxException;
 
-public class Uri extends OcifType {
+public class OcifUri extends OcifType {
 
     final java.net.URI value;
 
-    public Uri(String value) {
+    public OcifUri(String value) {
         try {
             this.value = new java.net.URI(value);
         } catch (URISyntaxException e) {
@@ -17,8 +17,8 @@ public class Uri extends OcifType {
         }
     }
 
-    public static Uri of(IJsonValue jsonValue) throws IllegalStateException {
-        return new Uri(jsonValue.asString());
+    public static OcifUri of(IJsonValue jsonValue) throws IllegalStateException {
+        return new OcifUri(jsonValue.asString());
     }
 
     @Override

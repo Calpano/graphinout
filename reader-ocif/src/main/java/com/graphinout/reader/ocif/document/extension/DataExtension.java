@@ -6,6 +6,8 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 
+import static java.util.stream.Collectors.joining;
+
 /**
  * TODO add to spec
  * <p>
@@ -29,6 +31,11 @@ public class DataExtension extends OcifExtension {
     @Override
     public Set<String> definedKeys() {
         return Set.of();
+    }
+
+    @Override
+    public String toString() {
+        return "DataExtension{" + map().entrySet().stream().map(e -> e.getKey() + "='" + e.getValue()+"'").collect(joining(", ")) + "}";
     }
 
     @Override

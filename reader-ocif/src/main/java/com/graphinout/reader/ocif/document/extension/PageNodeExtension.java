@@ -26,7 +26,7 @@ public class PageNodeExtension extends OcifExtension {
     private Double pageNumber;
     /** optional label shown in UI */
     private String label;
-    private IJsonObject extras;
+    
 
     public PageNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -44,16 +44,11 @@ public class PageNodeExtension extends OcifExtension {
         return Set.of(OCIF.Common.PAGE_NUMBER, OCIF.Common.LABEL);
     }
 
-    public IJsonObject extras() {return extras;}
+    
 
     public String label() {return label;}
 
     public Double pageNumber() {return pageNumber;}
-
-    public PageNodeExtension setExtras(IJsonObject extras) {
-        this.extras = extras;
-        return this;
-    }
 
     public PageNodeExtension setLabel(String label) {
         this.label = label;

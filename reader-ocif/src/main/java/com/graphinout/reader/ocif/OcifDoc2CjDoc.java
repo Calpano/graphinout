@@ -8,9 +8,10 @@ import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.reader.ocif.document.IOcifNode;
 import com.graphinout.reader.ocif.document.IOcifRelation;
-import com.graphinout.reader.ocif.document.impl.OcifDocument;
-import com.graphinout.reader.ocif.document.extension.IOcifExtension;
+import com.graphinout.reader.ocif.document.extension.DataExtension;
 import com.graphinout.reader.ocif.document.extension.EdgeRelationExtension;
+import com.graphinout.reader.ocif.document.extension.IOcifExtension;
+import com.graphinout.reader.ocif.document.impl.OcifDocument;
 
 import java.util.Objects;
 
@@ -29,32 +30,37 @@ public class OcifDoc2CjDoc {
             }
 
             for (IOcifRelation ocifRelation : ocifDocument.relations()) {
-                for (IOcifExtension ext : ocifRelation.extensions()) {
-                    switch (ext) {
-                        case EdgeRelationExtension edge -> {
-                            assert Objects.equals(edge.typeName(), OCIF.Type.OCIF_REL_EDGE);
-                            String startId = edge.start();
-                            String endId = edge.end();
-                            cjGraph.addEdge(e -> {
+                cjGraph.addEdge(cjEdge -> {
+                    for (IOcifExtension ext : ocifRelation.extensions()) {
+                        switch (ext) {
+                            case DataExtension ocifData -> {
+                                cjEdge.dataMutable(cjData -> {
+                                    ocifData.map().forEach(cjData::addProperty);
+                                });
+                            }
+                            case EdgeRelationExtension edge -> {
+                                assert Objects.equals(edge.typeName(), OCIF.Type.OCIF_REL_EDGE);
+                                String startId = edge.start();
+                                String endId = edge.end();
                                 if (edge.directed()) {
-                                    e.addEndpointIncoming(startId);
-                                    e.addEndpointOutgoing(endId);
+                                    cjEdge.addEndpointIncoming(startId);
+                                    cjEdge.addEndpointOutgoing(endId);
                                 } else {
-                                    e.addEndpointUndirected(startId);
-                                    e.addEndpointUndirected(endId);
+                                    cjEdge.addEndpointUndirected(startId);
+                                    cjEdge.addEndpointUndirected(endId);
                                 }
                                 ifPresentAccept(edge.rel(), rel -> {
                                     // TODO rel might be a TYPE_URI
-                                    e.edgeType(ICjEdgeType.of(CjEdgeTypeSource.String, rel));
+                                    cjEdge.edgeType(ICjEdgeType.of(CjEdgeTypeSource.String, rel));
                                 });
                                 ifPresentAccept(edge.node(), nodeId -> {
-                                    e.dataMutable(data -> data.addProperty(OCIF.Common.NODE, nodeId));
+                                    cjEdge.dataMutable(data -> data.addProperty(OCIF.Common.NODE, nodeId));
                                 });
-                            });
+                            }
+                            default -> throw new IllegalStateException("Cannot represent extension in CJ: " + ext);
                         }
-                        default -> throw new IllegalStateException("Unexpected value: " + ext);
                     }
-                }
+                });
             }
         });
         return cjDocument;

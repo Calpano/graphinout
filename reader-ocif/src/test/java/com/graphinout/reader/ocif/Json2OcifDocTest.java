@@ -1,7 +1,6 @@
-package com.graphinout.reader.ocif.document;
+package com.graphinout.reader.ocif;
 
 import com.graphinout.foundation.pure.input.ContentError;
-import com.graphinout.reader.ocif.Json2OcifDoc;
 import com.graphinout.reader.ocif.document.impl.OcifDocument;
 import com.graphinout.testdata.TestFileProvider;
 import io.github.classgraph.Resource;

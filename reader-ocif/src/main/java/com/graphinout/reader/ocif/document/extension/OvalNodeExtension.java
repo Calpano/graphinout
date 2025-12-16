@@ -26,7 +26,7 @@ public class OvalNodeExtension extends OcifExtension {
     private String strokeColor;
     /** default none */
     private String fillColor;
-    private IJsonObject extras;
+    
     public OvalNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
     }
@@ -44,14 +44,9 @@ public class OvalNodeExtension extends OcifExtension {
         return Set.of(OCIF.Common.STROKE_WIDTH, OCIF.Common.STROKE_COLOR, OCIF.Common.FILL_COLOR);
     }
 
-    public IJsonObject extras() {return extras;}
+    
 
     public String fillColor() {return fillColor;}
-
-    public OvalNodeExtension setExtras(IJsonObject extras) {
-        this.extras = extras;
-        return this;
-    }
 
     public OvalNodeExtension setFillColor(String fillColor) {
         this.fillColor = fillColor;

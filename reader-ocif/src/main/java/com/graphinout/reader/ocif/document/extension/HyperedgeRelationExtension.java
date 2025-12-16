@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
 import org.jspecify.annotations.NonNull;
 
@@ -21,21 +22,13 @@ public class HyperedgeRelationExtension extends OcifExtension {
         private String direction;
         /** optional */
         private Double weight;
-        private IJsonObject extras;
 
         public String direction() {return direction;}
-
-        public IJsonObject extras() {return extras;}
 
         public String id() {return id;}
 
         public Endpoint setDirection(String direction) {
             this.direction = direction;
-            return this;
-        }
-
-        public Endpoint setExtras(IJsonObject extras) {
-            this.extras = extras;
             return this;
         }
 
@@ -60,7 +53,7 @@ public class HyperedgeRelationExtension extends OcifExtension {
     private Double weight;
     /** represented relation type */
     private String rel;
-    private IJsonObject extras;
+
 
     public HyperedgeRelationExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -69,34 +62,18 @@ public class HyperedgeRelationExtension extends OcifExtension {
     public static @NonNull IOcifExtension of(@NonNull IJsonObject obj) {
         HyperedgeRelationExtension ext = new HyperedgeRelationExtension();
         // endpoints: array of objects with id, direction, weight
-        if (obj.hasProperty(OCIF.Common.ENDPOINTS)) {
-            var epsVal = obj.get(OCIF.Common.ENDPOINTS);
-            if (epsVal != null && epsVal.isArray()) {
-                var epsArr = epsVal.asArray();
-                for (int i = 0; i < epsArr.size(); i++) {
-                    var eobj = epsArr.get_(i).asObject();
-                    Endpoint ep = new Endpoint();
-                    if (eobj.hasProperty(OCIF.Common.ID)) {
-                        String id = eobj.get(OCIF.Common.ID).asString();
-                        ep.setId(id);
-                    }
-                    if (eobj.hasProperty(OCIF.Common.DIRECTION)) {
-                        String dir = eobj.get(OCIF.Common.DIRECTION).asString();
-                        ep.setDirection(dir);
-                    }
-                    if (eobj.hasProperty(OCIF.Common.WEIGHT)) {
-                        var w = eobj.get(OCIF.Common.WEIGHT).asNumber();
-                        ep.setWeight(w.doubleValue());
-                    }
-                    ext.addEndpoint(ep);
-                }
+        obj.ifPresent(OCIF.Common.ENDPOINTS, IJsonValue::asArray, epsArr -> {
+            for (int i = 0; i < epsArr.size(); i++) {
+                var eobj = epsArr.get_(i).asObject();
+                Endpoint ep = new Endpoint();
+                eobj.ifPresent(OCIF.Common.ID, IJsonValue::asString, ep::setId);
+                eobj.ifPresent(OCIF.Common.DIRECTION, IJsonValue::asString, ep::setDirection);
+                eobj.ifPresent(OCIF.Common.WEIGHT, IJsonValue::asNumber, w -> ep.setWeight(w.doubleValue()));
+                ext.addEndpoint(ep);
             }
-        }
-        if (obj.hasProperty(OCIF.Common.WEIGHT)) {
-            var w = obj.get(OCIF.Common.WEIGHT).asNumber();
-            ext.setWeight(w.doubleValue());
-        }
-        obj.getIfString(OCIF.Common.REL, ext::setRel);
+        });
+        obj.ifPresent(OCIF.Common.WEIGHT, IJsonValue::asNumber, Number::doubleValue, ext::setWeight);
+        obj.ifPresent(OCIF.Common.REL, IJsonValue::asString, ext::setRel);
         return ext;
     }
 
@@ -112,17 +89,11 @@ public class HyperedgeRelationExtension extends OcifExtension {
 
     public List<Endpoint> endpoints() {return endpoints;}
 
-    public IJsonObject extras() {return extras;}
 
     public String rel() {return rel;}
 
     public HyperedgeRelationExtension setEndpoints(List<Endpoint> endpoints) {
         this.endpoints = endpoints;
-        return this;
-    }
-
-    public HyperedgeRelationExtension setExtras(IJsonObject extras) {
-        this.extras = extras;
         return this;
     }
 

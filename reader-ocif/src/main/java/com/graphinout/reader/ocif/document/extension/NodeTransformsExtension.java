@@ -33,7 +33,7 @@ public class NodeTransformsExtension extends OcifExtension {
     private IJsonArray rotationAxis;
     /** number or array */
     private IJsonValue offset;
-    private IJsonObject extras;
+    
 
     public NodeTransformsExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -53,7 +53,7 @@ public class NodeTransformsExtension extends OcifExtension {
         return Set.of(OCIF.Common.SCALE, OCIF.Node.ROTATION, OCIF.Common.ROTATION_AXIS, OCIF.Common.OFFSET);
     }
 
-    public IJsonObject extras() {return extras;}
+    
 
     public IJsonValue offset() {return offset;}
 
@@ -62,11 +62,6 @@ public class NodeTransformsExtension extends OcifExtension {
     public IJsonArray rotationAxis() {return rotationAxis;}
 
     public IJsonValue scale() {return scale;}
-
-    public NodeTransformsExtension setExtras(IJsonObject extras) {
-        this.extras = extras;
-        return this;
-    }
 
     public NodeTransformsExtension setOffset(IJsonValue offset) {
         this.offset = offset;

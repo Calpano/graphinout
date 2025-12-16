@@ -18,7 +18,7 @@ public class ParentChildRelationExtension extends OcifExtension {
     private String child;
     private Boolean inherit;
     private Boolean cascadeDelete;
-    private IJsonObject extras;
+    
 
     public ParentChildRelationExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -44,7 +44,7 @@ public class ParentChildRelationExtension extends OcifExtension {
         return Set.of(OCIF.Common.PARENT, OCIF.Common.CHILD, OCIF.Common.INHERIT, OCIF.Common.CASCADE_DELETE);
     }
 
-    public IJsonObject extras() {return extras;}
+    
 
     public Boolean inherit() {return inherit;}
 
@@ -57,11 +57,6 @@ public class ParentChildRelationExtension extends OcifExtension {
 
     public ParentChildRelationExtension setChild(String child) {
         this.child = child;
-        return this;
-    }
-
-    public ParentChildRelationExtension setExtras(IJsonObject extras) {
-        this.extras = extras;
         return this;
     }
 
