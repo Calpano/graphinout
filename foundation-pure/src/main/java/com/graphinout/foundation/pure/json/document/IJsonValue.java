@@ -32,8 +32,32 @@ public interface IJsonValue {
         return (IJsonArray) this;
     }
 
-    default Boolean asBoolean() {
+    default <F extends Throwable> @NonNull IJsonArray asArrayOrThrow(Function<IJsonValue, F> conversionErrorSupplier) throws F {
+        if (!isArray()) {
+            throw conversionErrorSupplier.apply(this);
+        }
+        return asArray();
+    }
+
+    default Boolean asBoolean() throws ClassCastException {
         return asPrimitive().castTo(Boolean.class);
+    }
+
+    /**
+     * Ignores values other than boolean
+     *
+     * @return given value as Boolean or just returns null.
+     */
+    default @Nullable Boolean asBooleanOrNull() {
+        return isBoolean() ? asBoolean() : null;
+    }
+
+
+    default <F extends Throwable> boolean asBooleanOrThrow(Function<IJsonValue, F> conversionErrorSupplier) throws F {
+        if (jsonType() != JsonType.Boolean) {
+            throw conversionErrorSupplier.apply(this);
+        }
+        return asBoolean();
     }
 
     default IJsonContainer asContainer() throws ClassCastException {
@@ -60,16 +84,35 @@ public interface IJsonValue {
         return (IJsonValueMutable) this;
     }
 
-    default Number asNumber() {
+    default Number asNumber() throws ClassCastException {
         return asPrimitive().castTo(Number.class);
+    }
+
+    default <F extends Throwable> @NonNull Number asNumberOrThrow(Function<IJsonValue, F> conversionErrorSupplier) throws F {
+        if (jsonType() != JsonType.Number) {
+            throw conversionErrorSupplier.apply(this);
+        }
+        return asNumber();
     }
 
     default @NonNull IJsonObject asObject() throws ClassCastException {
         return (IJsonObject) this;
     }
 
+    /**
+     * Ignores values other than object.
+     *
+     * @return given value as object or just returns null.
+     */
     default @Nullable IJsonObject asObjectOrNull() {
         return isObject() ? asObject() : null;
+    }
+
+    default <F extends Throwable> @NonNull IJsonObject asObjectOrThrow(Function<IJsonValue, F> conversionErrorSupplier) throws F {
+        if (!isObject()) {
+            throw conversionErrorSupplier.apply(this);
+        }
+        return asObject();
     }
 
     default IJsonPrimitive asPrimitive() throws ClassCastException {
@@ -77,23 +120,25 @@ public interface IJsonValue {
     }
 
     /** Does not convert boolean or number to string. Just type-casting here. */
-    default String asString() {
+    default String asString() throws ClassCastException {
         return asPrimitive().castTo(String.class);
     }
 
-    default <F extends Throwable> String asStringOrThrow(Function<IJsonValue, F> conversionErrorSupplier) throws F {
-        if (!isPrimitive()) {
-            throw conversionErrorSupplier.apply(this);
-        }
-        if (asPrimitive().jsonType() != JsonType.String) {
+    default <F extends Throwable> @NonNull String asStringOrThrow(Function<IJsonValue, F> conversionErrorSupplier) throws F {
+        if (jsonType() != JsonType.String) {
             throw conversionErrorSupplier.apply(this);
         }
         return asString();
-
     }
 
     /** the underlying implementation */
     Object base();
+
+    default <F extends Throwable> void expectNullOrThrow(Function<IJsonValue, F> conversionErrorSupplier) throws F {
+        if (jsonType() != JsonType.Null) {
+            throw conversionErrorSupplier.apply(this);
+        }
+    }
 
     IJsonFactory factory();
 
@@ -182,6 +227,10 @@ public interface IJsonValue {
 
     boolean isArray();
 
+    default boolean isBoolean() {
+        return jsonType() == JsonType.Boolean;
+    }
+
     default boolean isContainer() {
         return isArray() || isObject();
     }
@@ -190,6 +239,10 @@ public interface IJsonValue {
     @SuppressWarnings("unused")
     default boolean isMutable() {
         return (this instanceof IJsonObjectMutable || this instanceof IJsonArrayMutable);
+    }
+
+    default boolean isNumber() {
+        return jsonType() == JsonType.Number;
     }
 
     /** only true for a non-null JSON object */
@@ -316,5 +369,6 @@ public interface IJsonValue {
                 throw new IllegalStateException("Unexpected value to convert to XmlFragmentString: " + jsonType() + " JSON=" + this.toJsonString());
         }
     }
+
 
 }

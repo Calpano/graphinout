@@ -1,17 +1,23 @@
 package com.graphinout.foundation.pure.json.document;
 
 
+import com.graphinout.foundation.pure.bridge.JavaPlatform;
 import com.graphinout.foundation.pure.json.path.IJsonNavigationPath;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
-import com.graphinout.foundation.pure.bridge.JavaPlatform;
 import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.BiConsumer;
 
-@SuppressWarnings("PatternVariableCanBeUsed")
 public interface IJsonPrimitive extends IJsonValue {
+
+    default double asDouble() {
+        if (isNumber()) {
+            return asNumber().doubleValue();
+        }
+        throw new IllegalStateException("Cannot convert " + jsonType() + " to double");
+    }
 
     default <T> T castTo(Class<T> clazz) {
         return JavaPlatform.Class.cast(clazz, base());

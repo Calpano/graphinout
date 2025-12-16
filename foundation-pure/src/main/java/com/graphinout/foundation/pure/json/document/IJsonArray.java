@@ -16,6 +16,19 @@ import java.util.function.ObjIntConsumer;
 
 public interface IJsonArray extends IJsonContainer {
 
+    /**
+     * Throws an exception if not all values can be interpreted as doubles. Nulls are not doubles.
+     *
+     * @return
+     */
+    default double[] asDoubles() {
+        double[] values = new double[size()];
+        for (int i = 0; i < size(); i++) {
+            values[i] = get_(i).asPrimitive().asDouble();
+        }
+        return values;
+    }
+
     default void fire(JsonWriter jsonWriter) {
         jsonWriter.arrayStart();
         for (int i = 0; i < size(); i++) {
