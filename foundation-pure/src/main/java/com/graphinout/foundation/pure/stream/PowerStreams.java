@@ -1,9 +1,13 @@
 package com.graphinout.foundation.pure.stream;
 
 import com.graphinout.foundation.pure.annotations.GwtIncompatible;
+import com.graphinout.foundation.pure.bridge.Java9;
 import com.graphinout.foundation.pure.bridge.JavaPlatform;
 import com.graphinout.foundation.pure.functional.ThrowingConsumer;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -37,6 +41,41 @@ public class PowerStreams {
      */
     public static <I, O> Stream<O> filterMap(Stream<I> stream, Predicate<I> filter, Function<I, O> castFun) {
         return stream.filter(filter).map(castFun);
+    }
+
+    /**
+     * Finds one element in the {@link Stream}, or throws an exception if more than one element is found.
+     *
+     * @param stream
+     * @param <T>
+     * @return null if no element is found
+     * @throws IllegalStateException if multiple elements are found
+     */
+    public static <T> @Nullable T findOneOrNull(Stream<T> stream) throws IllegalStateException {
+        List<T> list = Java9.Stream.toList(stream.limit(2));
+        switch (list.size()) {
+            case 0:
+                return null;
+            case 1:
+                return list.get(0);
+            default:
+                throw new IllegalStateException("Found more than one element.");
+        }
+    }
+
+    /**
+     * Finds one element in the {@link Stream}, or throws an exception.
+     *
+     * @param stream
+     * @param <T>
+     * @throws IllegalStateException if none or multiple elements are found
+     */
+    public static <T> @NonNull T findOne(Stream<T> stream) throws IllegalStateException {
+        List<T> list = Java9.Stream.toList(stream.limit(2));
+        if (list.size() == 1) {
+            return list.get(0);
+        }
+        throw new IllegalStateException("Found more than one element.");
     }
 
     /**
