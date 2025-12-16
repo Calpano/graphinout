@@ -10,10 +10,21 @@ import org.slf4j.Logger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public abstract class AbstractReaderTest {
+
+    public static Consumer<ContentError> createErrorHandlerOnLog( Logger slf4jLog) {
+        return contentError -> {
+            switch (contentError.getLevel()) {
+                case Error -> slf4jLog.error(contentError.toString());
+                case Warn -> slf4jLog.warn(contentError.toString());
+                case Info -> slf4jLog.info(contentError.toString());
+            }
+        };
+    }
 
     private static final Logger log = getLogger(AbstractReaderTest.class);
 
