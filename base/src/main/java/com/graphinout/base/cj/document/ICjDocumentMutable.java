@@ -5,4 +5,5 @@ package com.graphinout.base.cj.document;
  */
 public interface ICjDocumentMutable extends ICjDocument, ICjHasGraphsMutable, ICjDocumentChunkMutable {
 
+
 }

@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 public interface ICjGraphMutable extends ICjGraph, ICjHasGraphsMutable, ICjGraphChunkMutable {
 
     /**
+     * Convenience method
      * @param sourceNodeId incoming
      * @param targetNodeId outgoing
      */
@@ -17,6 +18,6 @@ public interface ICjGraphMutable extends ICjGraph, ICjHasGraphsMutable, ICjGraph
 
     void addEdge(Consumer<ICjEdgeMutable> edge);
 
-    void addNode(Consumer<ICjNodeMutable> node);
+    ICjNodeMutable addNode(Consumer<ICjNodeMutable> node);
 
 }

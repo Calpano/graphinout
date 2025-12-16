@@ -40,10 +40,11 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
     }
 
     @Override
-    public void addNode(Consumer<ICjNodeMutable> node) {
+    public CjNodeElement addNode(Consumer<ICjNodeMutable> node) {
         CjNodeElement n = new CjNodeElement();
         node.accept(n);
         nodes.add(n);
+        return n;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.graphinout.base.cj.document;
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.JsonConstants;
+import com.graphinout.foundation.pure.stream.PowerStreams;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -18,6 +19,11 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk {
     @Override
     default Stream<ICjElement> directChildren() {
         return Stream.concat(Stream.concat(Stream.of(data()), Stream.of(connectedJson())).filter(Objects::nonNull), graphs());
+    }
+
+    default @Nullable ICjNode findNode(String id) throws IllegalStateException {
+        return PowerStreams.findOneOrNull(
+                graphs().flatMap(ICjGraph::nodes).filter(n -> Objects.equals(n.id(), id)));
     }
 
     /**
