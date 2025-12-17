@@ -11,6 +11,8 @@ import com.graphinout.reader.ocif.document.IOcifRepresentation;
 import com.graphinout.reader.ocif.document.IOcifResource;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+
 public class OcifDoc2Json {
 
     public static IJsonValue toJsonValue(IOcifDocument ocifDocument) {
@@ -45,37 +47,18 @@ public class OcifDoc2Json {
         return root;
     }
 
-    private static IJsonValue nodeToJson(IOcifNode node) {
+    private static IJsonValue nodeToJson(IOcifNode ocifNode) {
         IJsonObjectMutable nodeJson = JavaJsonFactory.INSTANCE.createObjectMutable();
-        nodeJson.setProperty("id", JavaJsonFactory.INSTANCE.createString(node.id()));
-        if (node.position() != null) {
-            IJsonArrayMutable posArray = JavaJsonFactory.INSTANCE.createArrayMutable();
-            for (double v : node.position()) {
-                posArray.add(JavaJsonFactory.INSTANCE.createNumber(v));
-            }
-            nodeJson.setProperty("position", posArray);
-        }
-        if (node.size() != null) {
-            IJsonArrayMutable sizeArray = JavaJsonFactory.INSTANCE.createArrayMutable();
-            for (double v : node.size()) {
-                sizeArray.add(JavaJsonFactory.INSTANCE.createNumber(v));
-            }
-            nodeJson.setProperty("size", sizeArray);
-        }
-        if (node.rotation() != null) {
-            nodeJson.setProperty("rotation", JavaJsonFactory.INSTANCE.createNumber(node.rotation()));
-        }
-        if (node.resource() != null) {
-            nodeJson.setProperty("resource", JavaJsonFactory.INSTANCE.createString(node.resource()));
-        }
-        if (node.relation() != null) {
-            nodeJson.setProperty("relation", JavaJsonFactory.INSTANCE.createString(node.relation()));
-        }
-
-        if (node.data() != null && !node.data().isEmpty()) {
-            nodeJson.setProperty("data", node.data());
-        }
-
+        nodeJson.setString(OCIF.Common.ID, ocifNode.id());
+        ifPresentAccept(ocifNode.position(), p-> nodeJson.setProperty(OCIF.Node.POSITION, p.toJson()));
+        ifPresentAccept(ocifNode.size(), s-> nodeJson.setProperty(OCIF.Node.SIZE, s.toJson()));
+        ifPresentAccept(ocifNode.resource(), r-> nodeJson.setString(OCIF.Node.RESOURCE, r));
+        ifPresentAccept(ocifNode.resourceFit(), r-> nodeJson.setString(OCIF.Node.RESOURCE_FIT, r.name()));
+        ifPresentAccept(ocifNode.rotation(), r-> nodeJson.setNumber(OCIF.Node.ROTATION, r));
+        ifPresentAccept(ocifNode.relation(), r-> nodeJson.setString(OCIF.Node.RELATION, r));
+        ifPresentAccept(ocifNode.extensions(), exts-> //
+                nodeJson.setArray(OCIF.Common.DATA, array-> exts.forEach(ext-> //
+                        array.add(extensionToJson(ext)))));
         return nodeJson;
     }
 
@@ -117,7 +100,7 @@ public class OcifDoc2Json {
         return representationJson;
     }
 
-    private static IJsonValue extensionToJson(IOcifExtension extension) {
+    public static IJsonValue extensionToJson(IOcifExtension extension) {
         IJsonObjectMutable extensionJson = JavaJsonFactory.INSTANCE.createObjectMutable();
         extensionJson.setProperty("type", JavaJsonFactory.INSTANCE.createString(extension.typeUri()));
         if (extension.map() != null) {

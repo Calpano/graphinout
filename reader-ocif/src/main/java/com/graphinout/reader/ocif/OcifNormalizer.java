@@ -24,6 +24,8 @@ public class OcifNormalizer {
         }
 
         public void transformObjectPre(List<Object> steps, IJsonObjectMutable o) {
+            // some files have this set, some dont
+            o.removeProperty("ocif");
         }
     };
     private final String resultJson;

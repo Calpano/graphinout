@@ -1,8 +1,7 @@
 package com.graphinout.reader.ocif.document;
 
-import com.graphinout.foundation.pure.json.document.IJsonArray;
-import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
+import com.graphinout.reader.ocif.document.types.OcifVector23D;
 
 import java.util.List;
 
@@ -26,16 +25,12 @@ public interface IOcifNode {
 
     enum ResourceFit {none, containX, containY, contain, cover, fill, tile}
 
-    IJsonArray data();
-
     /** Typed extensions parsed from the node's data array. */
     List<IOcifExtension> extensions();
 
-    IJsonObject extras();
-
     String id();
 
-    double[] position();
+    OcifVector23D position();
 
     String relation();
 
@@ -45,6 +40,6 @@ public interface IOcifNode {
 
     Double rotation();
 
-    double[] size();
+    OcifVector23D size();
 
 }

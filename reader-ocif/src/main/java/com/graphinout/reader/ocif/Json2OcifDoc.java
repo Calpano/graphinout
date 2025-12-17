@@ -40,6 +40,7 @@ import com.graphinout.reader.ocif.document.impl.OcifNode;
 import com.graphinout.reader.ocif.document.impl.OcifRelation;
 import com.graphinout.reader.ocif.document.impl.OcifResource;
 import com.graphinout.reader.ocif.document.impl.OcifSchema;
+import com.graphinout.reader.ocif.document.types.OcifVector23D;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -267,53 +268,23 @@ public class Json2OcifDoc {
         return extras.isEmpty() ? null : extras;
     }
 
-    private IOcifNodeMutable toOcifNode(IJsonObject no, Consumer<ContentError> errorHandler) {
+    private IOcifNodeMutable toOcifNode(IJsonObject o, Consumer<ContentError> errorHandler) {
         IOcifNodeMutable ocifNode = new OcifNode();
-        ifPresentAccept(no.get(Common.ID), IJsonValue::asString, ocifNode::setId);
-        ifPresentAccept(no.get(OCIF.Node.POSITION), v -> toNumberArray(v, errorHandler), ocifNode::setPosition);
-        ifPresentAccept(no.get(OCIF.Node.SIZE), v -> toNumberArray(v, errorHandler), ocifNode::setSize);
-        ifPresentAccept(no.get(OCIF.Node.RESOURCE), IJsonValue::asString, ocifNode::setResource);
-        ifPresentAccept(no.get(OCIF.Node.RESOURCE_FIT), IJsonValue::asString, s -> {
-            try {
-                ocifNode.setResourceFit(IOcifNodeMutable.ResourceFit.valueOf(s));
-            } catch (Exception ignored) {
-            }
+        ifPresentAccept(o.get(Common.ID), IJsonValue::asString, ocifNode::setId);
+        ifPresentAccept(o.get(OCIF.Node.POSITION), OcifVector23D::of, ocifNode::setPosition);
+        ifPresentAccept(o.get(OCIF.Node.SIZE), OcifVector23D::of, ocifNode::setSize);
+        ifPresentAccept(o.get(OCIF.Node.RESOURCE), IJsonValue::asString, ocifNode::setResource);
+        ifPresentAccept(o.get(OCIF.Node.RESOURCE_FIT), IJsonValue::asString, s -> {
+            ocifNode.setResourceFit(IOcifNodeMutable.ResourceFit.valueOf(s));
         });
-        // set data only if it is an array per spec; be lenient if not
-        IJsonValue nodeData = no.get(Common.DATA);
-        if (nodeData != null && nodeData.isArray()) {
-            ocifNode.setData(nodeData.asArray());
-            // create typed extensions from node.data
-            IJsonArray arr = nodeData.asArray();
-            for (int j = 0; j < arr.size(); j++) {
-                IJsonObject extObj = arr.get_(j).asObject();
-                IOcifExtension ext = toOcifExtension(extObj, errorHandler);
-                if (ext != null) ocifNode.addExtension(ext);
-            }
-        }
-        ifPresentAccept(no.get(OCIF.Node.ROTATION), IJsonValue::asNumber, d -> ocifNode.setRotation(d.doubleValue()));
-        ifPresentAccept(no.get(OCIF.Node.RELATION), IJsonValue::asString, ocifNode::setRelation);
-        // extras
-        IJsonObjectMutable extras = JavaJsonFactory.INSTANCE.createObjectMutable();
-        Set<String> known = new HashSet<>();
-        known.add(Common.ID);
-        known.add(OCIF.Node.POSITION);
-        known.add(OCIF.Node.SIZE);
-        known.add(OCIF.Node.RESOURCE);
-        known.add(OCIF.Node.RESOURCE_FIT);
-        known.add(Common.DATA);
-        known.add(OCIF.Node.ROTATION);
-        known.add(OCIF.Node.RELATION);
-        for (String k : no.keys()) {
-            if (!known.contains(k)) {
-                extras.setProperty(k, no.get(k));
-            }
-        }
-        // Preserve non-array node.data in extras to keep information lossless
-        if (nodeData != null && !nodeData.isArray()) {
-            extras.setProperty(Common.DATA, nodeData);
-        }
-        if (!extras.isEmpty()) ocifNode.setExtras(extras);
+        ifPresentAccept(o.get(Common.DATA),data->{
+            data.asArray().forEach(v -> {
+                IOcifExtension ext = toOcifExtension(v.asObject(), errorHandler);
+                ocifNode.addExtension(ext);
+            });
+        });
+        ifPresentAccept(o.get(OCIF.Node.ROTATION), IJsonValue::asNumber, d -> ocifNode.setRotation(d.doubleValue()));
+        ifPresentAccept(o.get(OCIF.Node.RELATION), IJsonValue::asString, ocifNode::setRelation);
         return ocifNode;
     }
 

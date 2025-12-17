@@ -24,6 +24,7 @@ import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccep
 /**
  * Creates an JSON document
  */
+@Deprecated
 public class CjStream2OcifJson extends BaseCjOutput implements ICjStream {
 
     public static final String _OCIF = "ocif";
