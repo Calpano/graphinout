@@ -16,7 +16,7 @@ import java.math.BigInteger;
 public interface IJsonFactory {
 
     Logger _log = LoggerFactory.getLogger(IJsonFactory.class);
-    IJsonFactory INSTANCE = JavaJsonFactory.INSTANCE;
+    IJsonFactory INSTANCE = new JavaJsonFactory();
 
     default IJsonArrayMutable asArrayMutable(IJsonArray array) {
         if (array instanceof IJsonArrayMutable) {
