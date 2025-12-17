@@ -1,0 +1,357 @@
+= Connected JSON (CJ) Test Plan
+:toc: left
+:toclevels: 3
+
+This document outlines the test cases for validating a parser and writer for the Connected JSON (CJ) specification. Each test case describes a specific feature to be tested, the expected outcome, and an example JSON where applicable.
+
+== 1. Document-Level Tests
+
+Tests for the root structure of a CJ document.
+
+=== 1.1. Minimal Valid Document
+*Goal:* Test that a document with only the required properties is parsed correctly. A minimal document is an empty JSON object.
+*Expected Outcome:* The parser should successfully process the document, resulting in a model with no graphs.
+*Example:*
+[source,json]
+----
+{}
+----
+
+=== 1.2. Document with `connectedJson` Metadata
+*Goal:* Test the parsing of the `connectedJson` object containing version information.
+*Expected Outcome:* The parser should read the `versionDate`, `versionNumber`, and `canonical` flags correctly.
+*Example:*
+[source,json]
+----
+{
+  "connectedJson": {
+    "versionDate": "2025-07-14",
+    "versionNumber": "5.0.0",
+    "canonical": true
+  }
+}
+----
+
+=== 1.3. Document with `baseUri`
+*Goal:* Test the parsing of the `baseUri` property.
+*Expected Outcome:* The parser should correctly read the `baseUri` string.
+*Example:*
+[source,json]
+----
+{
+  "baseUri": "http://example.org/base/"
+}
+----
+
+=== 1.4. Document with Custom `data`
+*Goal:* Test that arbitrary user-defined data in the `data` property is preserved.
+*Expected Outcome:* The parser should read and store the content of the `data` property without interpretation.
+*Example:*
+[source,json]
+----
+{
+  "data": {
+    "author": "Test Engineer",
+    "creationDate": "2025-10-27"
+  }
+}
+----
+
+=== 1.5. Document with Empty `graphs` Array
+*Goal:* Test that a document with an empty `graphs` array is handled correctly.
+*Expected Outcome:* The parser should produce a document model with zero graphs.
+*Example:*
+[source,json]
+----
+{
+  "graphs": []
+}
+----
+
+== 2. ID Management Tests
+
+Tests for the handling of identifiers and their scopes.
+
+=== 2.1. Unique IDs
+*Goal:* Test that elements with IDs (`graph`, `node`, `edge`) are correctly identified when their IDs are unique within the document.
+*Expected Outcome:* All elements should be parsed and stored correctly.
+
+=== 2.2. Duplicate Node ID
+*Goal:* Test the merge-patch behavior for a duplicate `node` ID.
+*Expected Outcome:* The parser must emit a warning. The final node object should be the result of a JSON Merge Patch of the second object onto the first.
+*Example:*
+[source,json]
+----
+{
+  "graphs": [{
+    "nodes": [
+      { "id": "n1", "label": [{"value": "First"}] },
+      { "id": "n1", "data": {"status": "merged"} }
+    ]
+  }]
+}
+----
+
+=== 2.3. Duplicate Port ID
+*Goal:* Test the merge-patch behavior for a duplicate `port` ID within the same node.
+*Expected Outcome:* The parser must emit a warning. The final port object should be the result of a merge.
+*Example:*
+[source,json]
+----
+{
+  "graphs": [{
+    "nodes": [{
+      "id": "n1",
+      "ports": [
+        { "id": "p1", "label": [{"value": "Port 1"}] },
+        { "id": "p1", "data": {"location": "top"} }
+      ]
+    }]
+  }]
+}
+----
+
+=== 2.4. Non-Unique Port IDs Across Different Nodes
+*Goal:* Test that `port` IDs only need to be unique within their parent node.
+*Expected Outcome:* The parser should process the file successfully without warnings, as the port ID scope is local to the node.
+*Example:*
+[source,json]
+----
+{
+  "graphs": [{
+    "nodes": [
+      { "id": "n1", "ports": [{ "id": "p1" }] },
+      { "id": "n2", "ports": [{ "id": "p1" }] }
+    ]
+  }]
+}
+----
+
+== 3. Label Tests
+
+Tests for the multilingual `label` property.
+
+=== 3.1. Single-Entry Label
+*Goal:* Test a label with a single value and no `language` tag.
+*Expected Outcome:* The label should be parsed correctly.
+*Example:*
+[source,json]
+----
+"label": [
+  { "value": "A Simple Label" }
+]
+----
+
+=== 3.2. Multilingual Label
+*Goal:* Test a label with multiple language-tagged values.
+*Expected Outcome:* All language-specific labels should be parsed correctly.
+*Example:*
+[source,json]
+----
+"label": [
+  { "language": "en", "value": "Hello" },
+  { "language": "de", "value": "Hallo" }
+]
+----
+
+=== 3.3. Duplicate Language in Label
+*Goal:* Test the merge-patch behavior for a duplicate language tag in a label.
+*Expected Outcome:* The parser must emit a warning. The final label entry for the language should be the result of a merge.
+*Example:*
+[source,json]
+----
+"label": [
+  { "language": "en", "value": "Old" },
+  { "language": "en", "value": "New" }
+]
+----
+
+== 4. Node, Port, Edge, and Endpoint Tests
+
+Tests for the core graph elements.
+
+=== 4.1. Minimal Node
+*Goal:* Test a node with only the required `id` property.
+*Expected Outcome:* The node is parsed successfully.
+*Example:*
+[source,json]
+----
+{ "id": "node-minimal" }
+----
+
+=== 4.2. Node with Nested Ports
+*Goal:* Test that a node can contain a hierarchy of ports.
+*Expected Outcome:* The nested port structure should be correctly represented in the model.
+*Example:*
+[source,json]
+----
+{
+  "id": "n1",
+  "ports": [
+    {
+      "id": "p1",
+      "ports": [
+        { "id": "p1-sub1" }
+      ]
+    }
+  ]
+}
+----
+
+=== 4.3. Simple Edge
+*Goal:* Test a simple directed edge connecting two nodes.
+*Expected Outcome:* The edge and its endpoints should be parsed correctly.
+*Example:*
+[source,json]
+----
+{
+  "id": "e1",
+  "endpoints": [
+    { "node": "n1", "direction": "out" },
+    { "node": "n2", "direction": "in" }
+  ]
+}
+----
+
+=== 4.4. Hyper-Edge
+*Goal:* Test an edge with more than two endpoints.
+*Expected Outcome:* The parser should correctly handle three or more endpoints.
+*Example:*
+[source,json]
+----
+{
+  "id": "hyper-edge",
+  "endpoints": [
+    { "node": "n1" },
+    { "node": "n2" },
+    { "node": "n3" }
+  ]
+}
+----
+
+=== 4.5. Edge Referencing a Port
+*Goal:* Test an edge that connects to a specific port on a node.
+*Expected Outcome:* The endpoint should be correctly linked to the specified port.
+*Example:*
+[source,json]
+----
+{
+  "id": "e-port",
+  "endpoints": [
+    { "node": "n1", "port": "p1" },
+    { "node": "n2" }
+  ]
+}
+----
+
+=== 4.6. Edge and Endpoint Type Precedence
+*Goal:* Test that endpoint-level `type` properties override edge-level `type` properties.
+*Expected Outcome:* The endpoint's type (`works for`) should take precedence over the edge's type (`related`).
+*Example:*
+[source,json]
+----
+{
+  "id": "e-type",
+  "type": "related",
+  "endpoints": [
+    { "node": "n1" },
+    { "node": "n2", "type": "works for" }
+  ]
+}
+----
+
+=== 4.7. Type Property Precedence
+*Goal:* Test the precedence among `typeUri`, `typeNode`, and `type` (`typeUri` > `typeNode` > `type`).
+*Expected Outcome:* The parser should select `typeUri` as the definitive type.
+*Example:*
+[source,json]
+----
+{
+  "id": "e-type-prec",
+  "endpoints": [
+    {
+      "node": "n1",
+      "type": "a",
+      "typeNode": "t-node",
+      "typeUri": "http://example.org/type"
+    },
+    { "node": "n2" }
+  ]
+}
+----
+
+== 5. Graph Nesting Tests
+
+Tests for nested graph structures.
+
+=== 5.1. Graph in Graph
+*Goal:* Test a graph nested inside another graph's `graphs` array.
+*Expected Outcome:* All nodes and edges from both graphs should be part of the same document-wide ID space. An edge in the inner graph should be able to reference a node in the outer graph.
+*Example:*
+[source,json]
+----
+{
+  "graphs": [{
+    "id": "g1",
+    "nodes": [{ "id": "n1" }],
+    "graphs": [{
+      "id": "g2",
+      "nodes": [{ "id": "n2" }],
+      "edges": [{ "id": "e1", "endpoints": [{ "node": "n1" }, { "node": "n2" }] }]
+    }]
+  }]
+}
+----
+
+=== 5.2. Graph in Node (Compound Node)
+*Goal:* Test a graph nested inside a node's `graphs` array.
+*Expected Outcome:* The node `n1` becomes a compound node containing `n2`. An edge should be able to connect `n2` to an external node `n3`.
+*Example:*
+[source,json]
+----
+{
+  "graphs": [{
+    "nodes": [
+      {
+        "id": "n1",
+        "graphs": [{
+          "nodes": [{ "id": "n2" }]
+        }]
+      },
+      { "id": "n3" }
+    ],
+    "edges": [{
+      "id": "e1",
+      "endpoints": [{ "node": "n2" }, { "node": "n3" }]
+    }]
+  }]
+}
+----
+
+== 6. Canonical Connected JSON ({ccj}) Tests
+
+Tests for the strict canonical format.
+
+=== 6.1. Correct Property Order
+*Goal:* Test a {ccj}-compliant file where all properties are in the specified canonical order.
+*Expected Outcome:* The file should be parsed successfully. If `canonical: true` is set, a validator should pass.
+
+=== 6.2. Incorrect Property Order
+*Goal:* Test a file where properties are not in canonical order.
+*Expected Outcome:* The file should still be parsed correctly by a non-validating parser. A {ccj} validator, however, should report an error.
+*Example (for a node):*
+[source,json]
+----
+{
+  "label": [{"value": "Incorrect Order"}],
+  "id": "node-wrong-order"
+}
+----
+
+=== 6.3. Omission of Empty Arrays
+*Goal:* Test that a {ccj} writer omits properties whose values are empty arrays (e.g., `nodes`, `edges`).
+*Expected Outcome:* A writer should not output `"nodes": []`.
+
+=== 6.4. Formatting
+*Goal:* Test that a {ccj} writer produces the exact formatting (2-space indents, `\n` line breaks, spacing around colons).
+*Expected Outcome:* The output of the writer must match the canonical formatting rules byte-for-byte.
