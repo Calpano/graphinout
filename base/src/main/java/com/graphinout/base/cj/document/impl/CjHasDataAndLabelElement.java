@@ -3,6 +3,7 @@ package com.graphinout.base.cj.document.impl;
 import com.graphinout.base.cj.document.ICjHasLabelMutable;
 import com.graphinout.base.cj.document.ICjLabelMutable;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
@@ -18,7 +19,7 @@ public abstract class CjHasDataAndLabelElement extends CjHasDataElement implemen
     }
 
     @Override
-    public ICjLabelMutable labelMutable() {
+    public @NonNull ICjLabelMutable labelMutable() {
         if (this.labelElement == null) {
             this.labelElement = new CjLabelElement();
         }

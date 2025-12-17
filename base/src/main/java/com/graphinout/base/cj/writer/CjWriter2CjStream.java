@@ -188,7 +188,7 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     @Override
     public void id(String id) {
-        ICjHasIdMutable hasId = currentHasId();
+        ICjHasIdMutable<?> hasId = currentHasId();
         if (hasId != null) hasId.id(id);
     }
 
@@ -265,7 +265,7 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
         if (ep != null) {
             ep.node(nodeId);
         } else {
-            ICjHasIdMutable hasId = currentHasId();
+            ICjHasIdMutable<?> hasId = currentHasId();
             if (hasId != null) hasId.id(nodeId);
         }
     }
@@ -387,7 +387,7 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
         return stack.peekSearchOrNull(ICjHasDataMutable.class);
     }
 
-    private ICjHasIdMutable currentHasId() {
+    private ICjHasIdMutable<?> currentHasId() {
         ICjPortMutable port = safePeekPort();
         if (port != null) return port;
         // Prefer an in-progress graph (subgraph) over node/edge when a StartGraph is present but not started
@@ -396,7 +396,7 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
             ICjGraphChunkMutable g = currentGraph();
             if (g != null) return g;
         }
-        ICjHasIdMutable hasId = stack.peekSearchOrNull(ICjEdgeChunkMutable.class);
+        ICjHasIdMutable<?> hasId = stack.peekSearchOrNull(ICjEdgeChunkMutable.class);
         if (hasId != null) return hasId;
         hasId = stack.peekSearchOrNull(ICjNodeChunkMutable.class);
         if (hasId != null) return hasId;

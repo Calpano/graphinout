@@ -17,6 +17,17 @@ public interface ICjHasDataMutable extends ICjHasData {
     void dataMutable(Consumer<ICjDataMutable> consumer);
 
     /**
+     * Add a simple property. For more complex data, use {@code
+     *   dataMutable(data-> data.addProperty(key, value));
+     * }
+     * @param key
+     * @param value
+     */
+    default void addProperty( String key, String value) {
+        dataMutable(data-> data.addProperty(key, value));
+    }
+
+    /**
      * Set the <em>description</em> to a plain-text string.
      * @param jsonFactory
      * @param descriptionText

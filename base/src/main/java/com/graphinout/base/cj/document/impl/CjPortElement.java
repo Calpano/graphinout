@@ -44,8 +44,9 @@ public class CjPortElement extends CjHasDataAndLabelElement implements ICjPortMu
     }
 
     @Override
-    public void id(String id) {
+    public CjPortElement id(String id) {
         this.id = id;
+        return this;
     }
 
     @Override

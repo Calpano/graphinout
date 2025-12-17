@@ -1,6 +1,6 @@
 package com.graphinout.base.cj.document;
 
-public interface ICjNodeMutable extends ICjNode, ICjNodeChunkMutable, ICjHasGraphsMutable {
+public interface ICjNodeMutable extends ICjNode, ICjNodeChunkMutable, ICjHasGraphsMutable, ICjHasLabelMutable {
 
 
 }

@@ -1,7 +1,8 @@
 package com.graphinout.base.cj.document;
 
-import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.pure.xml.XmlFragmentString;
 
 import java.util.List;
@@ -31,9 +32,19 @@ public interface ICjDataMutable extends ICjData {
         add(IJsonContainerNavigationStep.pathOf(propertyKey), javaString);
     }
 
+    default void addProperty(String propertyKey, boolean b) {
+        add(IJsonContainerNavigationStep.pathOf(propertyKey), IJsonFactory.INSTANCE.createBoolean(b));
+    }
+
+    default void addProperty(String propertyKey, Number number) {
+        add(IJsonContainerNavigationStep.pathOf(propertyKey), IJsonFactory.INSTANCE.createNumber(number));
+    }
+
     default void addProperty(String propertyKey, IJsonValue jsonValue) {
         add(IJsonContainerNavigationStep.pathOf(propertyKey), jsonValue);
     }
+
+    void removeProperty(String propertyKey);
 
     /**
      * @param jsonValue to set
@@ -44,7 +55,5 @@ public interface ICjDataMutable extends ICjData {
             throw new IllegalStateException("data already set");
         add(List.of(), jsonValue);
     }
-
-    void removeProperty(String propertyKey);
 
 }

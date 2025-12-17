@@ -1,4 +1,4 @@
 package com.graphinout.base.cj.document;
 
-public interface ICjPortMutable extends ICjPort, ICjHasIdMutable, ICjHasPortsMutable, ICjHasDataMutable {
+public interface ICjPortMutable extends ICjPort, ICjHasIdMutable<ICjPortMutable>, ICjHasPortsMutable, ICjHasDataMutable {
 }

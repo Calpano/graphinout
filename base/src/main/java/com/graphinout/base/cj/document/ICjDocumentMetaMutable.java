@@ -2,10 +2,10 @@ package com.graphinout.base.cj.document;
 
 public interface ICjDocumentMetaMutable extends ICjDocumentMeta {
 
-    void canonical(Boolean canonical);
+    ICjDocumentMetaMutable canonical(Boolean canonical);
 
-    void versionNumber(String versionNumber);
+    ICjDocumentMetaMutable versionNumber(String versionNumber);
 
-    void versionDate(String versionDate);
+    ICjDocumentMetaMutable versionDate(String versionDate);
 
 }

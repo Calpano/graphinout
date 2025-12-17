@@ -1,7 +1,7 @@
 package com.graphinout.base.cj.document;
 
-public interface ICjHasIdMutable extends ICjHasId {
+public interface ICjHasIdMutable<T> extends ICjHasId {
 
-    void id(String id);
+    T id(String id);
 
 }

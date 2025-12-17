@@ -79,8 +79,9 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
     }
 
     @Override
-    public void id(String id) {
+    public CjGraphElement id(String id) {
         this.id = id;
+        return this;
     }
 
     @Override

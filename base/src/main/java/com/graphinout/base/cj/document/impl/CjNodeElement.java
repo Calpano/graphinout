@@ -81,8 +81,9 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
     }
 
     @Override
-    public void id(String id) {
+    public CjNodeElement id(String id) {
         this.id = id;
+        return this;
     }
 
     @Override

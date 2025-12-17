@@ -2,10 +2,11 @@ package com.graphinout.base.cj.document;
 
 import java.util.function.Consumer;
 
-public interface ICjGraphMutable extends ICjGraph, ICjHasGraphsMutable, ICjGraphChunkMutable {
+public interface ICjGraphMutable extends ICjGraph, ICjHasGraphsMutable, ICjGraphChunkMutable, ICjHasLabelMutable {
 
     /**
      * Convenience method
+     *
      * @param sourceNodeId incoming
      * @param targetNodeId outgoing
      */

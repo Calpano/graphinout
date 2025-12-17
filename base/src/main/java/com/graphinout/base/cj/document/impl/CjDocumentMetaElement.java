@@ -3,7 +3,6 @@ package com.graphinout.base.cj.document.impl;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjDocumentMetaMutable;
 import com.graphinout.base.cj.writer.ICjWriter;
-
 import org.jspecify.annotations.Nullable;
 
 public class CjDocumentMetaElement implements ICjDocumentMetaMutable {
@@ -13,8 +12,9 @@ public class CjDocumentMetaElement implements ICjDocumentMetaMutable {
     private Boolean canonical;
 
     @Override
-    public void canonical(Boolean canonical) {
+    public ICjDocumentMetaMutable canonical(Boolean canonical) {
         this.canonical = canonical;
+        return this;
     }
 
     @Nullable
@@ -39,8 +39,9 @@ public class CjDocumentMetaElement implements ICjDocumentMetaMutable {
     }
 
     @Override
-    public void versionDate(String versionDate) {
+    public ICjDocumentMetaMutable versionDate(String versionDate) {
         this.versionDate = versionDate;
+        return this;
     }
 
     @Nullable
@@ -50,8 +51,9 @@ public class CjDocumentMetaElement implements ICjDocumentMetaMutable {
     }
 
     @Override
-    public void versionNumber(String versionNumber) {
+    public ICjDocumentMetaMutable versionNumber(String versionNumber) {
         this.versionNumber = versionNumber;
+        return this;
     }
 
     @Nullable

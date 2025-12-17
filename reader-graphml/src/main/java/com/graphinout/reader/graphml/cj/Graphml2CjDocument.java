@@ -343,7 +343,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
         });
     }
 
-    private void copyId(IGraphmlElementWithId graphmlElementWithId, ICjHasIdMutable cjHasId) {
+    private void copyId(IGraphmlElementWithId graphmlElementWithId, ICjHasIdMutable<?> cjHasId) {
         ofNullable(graphmlElementWithId.id()).ifPresent(cjHasId::id);
     }
 

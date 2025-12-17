@@ -7,7 +7,7 @@ package com.graphinout.base.cj.document;
 public interface ICjNodeChunkMutable extends //
         ICjNodeChunk, // extends the read-only version
         ICjChunkMutable, // but is generally mutable
-        ICjHasIdMutable, // mutable id
+        ICjHasIdMutable<ICjNodeChunkMutable>, // mutable id
         ICjHasDataMutable, // mutable data
         ICjHasLabelMutable, // mutable label
         ICjHasPortsMutable // mutable ports
