@@ -2,6 +2,7 @@ package com.graphinout.reader.ocif;
 
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.cj.CjAssert;
+import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
@@ -41,6 +42,17 @@ class OcifReaderTest extends AbstractReaderTest {
     @Override
     protected List<GioReader> readersToTest() {
         return List.of(new OcifReader());
+    }
+
+    @ParameterizedTest(name = "{index}: {0}")
+    @MethodSource("com.graphinout.base.cj.CjDocsTestData#testDocs")
+    @Description("Test OCIF doc<->CJ doc (all)")
+    void ocifDoc_CjDoc_ocifDoc(String displayName, ICjDocument cjDoc) throws IOException {
+        OcifDocument ocifDoc = CjDoc2OcifDoc.toOcifDocument(cjDoc, createErrorHandlerOnLog(log));
+        assertThat(ocifDoc).isNotNull();
+        ICjDocument cjDoc_out = OcifDoc2CjDoc.toCjDocument(ocifDoc);
+
+        CjAssert.xAssertThatIsSameCj(cjDoc_out, cjDoc, null);
     }
 
     @ParameterizedTest(name = "{index}: {0}")

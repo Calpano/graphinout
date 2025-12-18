@@ -7,6 +7,9 @@ import com.graphinout.base.cj.document.ICjDocumentMutable;
 import com.graphinout.base.cj.document.ICjEdgeType;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import org.junit.jupiter.params.provider.Arguments;
+
+import java.util.stream.Stream;
 
 /**
  * Provide a set of synthetic CjDocs for testing. See <a href="https://calpano.github.io/connected-json/spec-cj.html">CJ
@@ -15,9 +18,14 @@ import com.graphinout.foundation.pure.json.document.IJsonFactory;
 @SuppressWarnings({"CodeBlock2Expr", "HttpUrlsUsage"})
 public class CjDocsTestData {
 
-    // ========================================================================
-    // Test Plan Section 1: Document-Level Tests
-    // ========================================================================
+    public record TestDoc(String name, ICjDocument doc) implements Arguments {
+
+        @Override
+        public Object[] get() {
+            return new Object[] { name, doc};
+        }
+
+    }
 
     /**
      * Test Case 1.3: A document with a `baseUri`.
@@ -27,6 +35,10 @@ public class CjDocsTestData {
         cjDoc.baseUri("http://example.org/base/");
         return cjDoc;
     }
+
+    // ========================================================================
+    // Test Plan Section 1: Document-Level Tests
+    // ========================================================================
 
     /**
      * Test Case 1.4: A document with custom `data`.
@@ -64,10 +76,6 @@ public class CjDocsTestData {
         return cjDoc;
     }
 
-    // ========================================================================
-    // Test Plan Section 2: ID Management Tests
-    // ========================================================================
-
     /**
      * Test Case 2.2: A graph with a duplicate node ID, to test merge-patch behavior.
      */
@@ -86,6 +94,10 @@ public class CjDocsTestData {
         });
         return cjDoc;
     }
+
+    // ========================================================================
+    // Test Plan Section 2: ID Management Tests
+    // ========================================================================
 
     /**
      * Test Case 2.3: A node with a duplicate port ID, to test merge-patch behavior.
@@ -122,11 +134,6 @@ public class CjDocsTestData {
         return cjDoc;
     }
 
-
-    // ========================================================================
-    // Test Plan Section 3: Label Tests
-    // ========================================================================
-
     /**
      * Test Case 4.5: An edge that connects to a specific port on a node.
      */
@@ -146,7 +153,7 @@ public class CjDocsTestData {
 
 
     // ========================================================================
-    // Test Plan Section 4: Node, Port, Edge, and Endpoint Tests
+    // Test Plan Section 3: Label Tests
     // ========================================================================
 
     /**
@@ -158,6 +165,11 @@ public class CjDocsTestData {
         });
         return cjDoc;
     }
+
+
+    // ========================================================================
+    // Test Plan Section 4: Node, Port, Edge, and Endpoint Tests
+    // ========================================================================
 
     /**
      * Test Case 4.7: An endpoint with `type`, `typeNode`, and `typeUri` to test precedence.
@@ -228,11 +240,6 @@ public class CjDocsTestData {
         return cjDoc;
     }
 
-
-    // ========================================================================
-    // Test Plan Section 5: Graph Nesting Tests
-    // ========================================================================
-
     /**
      * Test Case 4.4: A hyper-edge with three endpoints.
      */
@@ -252,17 +259,17 @@ public class CjDocsTestData {
         return cjDoc;
     }
 
+
+    // ========================================================================
+    // Test Plan Section 5: Graph Nesting Tests
+    // ========================================================================
+
     /**
      * Test Case 1.1: A minimal valid document, which is an empty JSON object.
      */
     public static ICjDocument minimalDocument() {
         return new CjDocumentElement();
     }
-
-
-    // ========================================================================
-    // Existing Test Data (mapped to test plan where applicable)
-    // ========================================================================
 
     /**
      * One node with a label and one edge with a label between 'n1' and 'n2'.
@@ -283,6 +290,11 @@ public class CjDocsTestData {
         });
         return cjDoc;
     }
+
+
+    // ========================================================================
+    // Existing Test Data (mapped to test plan where applicable)
+    // ========================================================================
 
     /**
      * Test Case 4.2: A node with hierarchically nested ports.
@@ -415,6 +427,37 @@ public class CjDocsTestData {
             });
         });
         return cjDoc;
+    }
+
+    public static Stream<TestDoc> testDocs() {
+        return Stream.of(new TestDoc("documentWithBaseUri", documentWithBaseUri()),//
+                new TestDoc("documentWithCustomData", documentWithCustomData()),//
+                new TestDoc("documentWithMetadata", documentWithMetadata()),//
+                new TestDoc("duplicateLanguageInLabel", duplicateLanguageInLabel()),//
+                new TestDoc("duplicateNodeId", duplicateNodeId()),//
+                new TestDoc("duplicatePortId", duplicatePortId()),//
+                new TestDoc("edgeAndEndpointTypePrecedence", edgeAndEndpointTypePrecedence()),//
+                new TestDoc("edgeReferencingPort", edgeReferencingPort()),//
+                new TestDoc("emptyGraph", emptyGraph()),//
+                new TestDoc("endpointTypePropertyPrecedence", endpointTypePropertyPrecedence()),//
+                new TestDoc("graphInGraph", graphInGraph()),//
+                new TestDoc("graphInNode", graphInNode()),//
+                new TestDoc("graphWithLabel", graphWithLabel()),//
+                new TestDoc("hyperEdge", hyperEdge()),//
+                new TestDoc("minimalDocument", minimalDocument()),//
+                new TestDoc("nodeAndEdgeWithLabels", nodeAndEdgeWithLabels()),//
+                new TestDoc("nodeWithNestedPorts", nodeWithNestedPorts()),//
+                new TestDoc("nonUniquePortIdInDifferentNodes", nonUniquePortIdInDifferentNodes()),//
+                new TestDoc("oneEdge", oneEdge()),//
+                new TestDoc("oneNode", oneNode()),//
+                new TestDoc("oneNodeWithData", oneNodeWithData()),//
+                new TestDoc("oneNodeWithLabel", oneNodeWithLabel()),//
+                new TestDoc("oneNodeWithLabelAndTwoLanguages", oneNodeWithLabelAndTwoLanguages()),//
+                new TestDoc("oneNodeWithLabelWithoutLanguage", oneNodeWithLabelWithoutLanguage()),//
+                new TestDoc("selfLoopEdge", selfLoopEdge()),//
+                new TestDoc("twoEdgesSameNodes", twoEdgesSameNodes()),//
+                new TestDoc("twoNodesNoEdge", twoNodesNoEdge())//
+        );
     }
 
     /**

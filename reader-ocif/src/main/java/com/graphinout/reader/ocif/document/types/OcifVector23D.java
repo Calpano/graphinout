@@ -38,7 +38,7 @@ public class OcifVector23D extends OcifType {
 
     @Override
     public IJsonValue toJson() {
-        return IJsonFactory.INSTANCE.createArrayMutable().add(values);
+        return IJsonFactory.INSTANCE.createArrayMutable().addAll(values);
     }
 
 }
