@@ -103,6 +103,18 @@ public interface IJsonValue {
     }
 
     /**
+     * @param mapFun converts {@link IJsonObject} to T
+     * @param <T>
+     * @throws IllegalStateException if the value is not an object
+     */
+   default <T>  @Nullable T asObject(Function<@Nullable IJsonObject, T> mapFun) throws IllegalStateException {
+        if(isNull()) return mapFun.apply(null);
+        if(!isObject()) throw new IllegalStateException("Not an object but "+jsonType());
+        return mapFun.apply(asObject());
+   }
+
+
+    /**
      * Ignores values other than object.
      *
      * @return given value as object or just returns null.
@@ -248,6 +260,10 @@ public interface IJsonValue {
         return jsonType() == JsonType.Number;
     }
 
+    default boolean isNull() {
+        return jsonType() == JsonType.Null;
+    }
+
     /** only true for a non-null JSON object */
     boolean isObject();
 
@@ -372,6 +388,7 @@ public interface IJsonValue {
                 throw new IllegalStateException("Unexpected value to convert to XmlFragmentString: " + jsonType() + " JSON=" + this.toJsonString());
         }
     }
+
 
 
 }

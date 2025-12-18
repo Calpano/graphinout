@@ -8,6 +8,43 @@ import java.util.function.Predicate;
 /** Mutable */
 public interface IJsonObjectMutable extends IJsonObjectAppendable, IJsonValueMutable {
 
+    default IJsonObjectMutable add(String key, String value) {
+        addProperty(key, factory().createString(value));
+        return this;
+    }
+
+    default IJsonObjectMutable add(String key, Number value) {
+        addProperty(key, factory().createNumber(value));
+        return this;
+    }
+
+    default IJsonObjectMutable add(String key, boolean b) {
+        addProperty(key, factory().createBoolean(b));
+        return this;
+    }
+
+    default IJsonObjectMutable add(String key, IJsonValue value) {
+        addProperty(key, value);
+        return this;
+    }
+
+    default void addArray(String key, Consumer<IJsonArrayMutable> arrayMutable) {
+        IJsonArrayMutable a = factory().createArrayMutable();
+        arrayMutable.accept(a);
+        addProperty(key, a);
+    }
+
+    default IJsonObjectMutable addNull(String key) {
+        addProperty(key, factory().createNull());
+        return this;
+    }
+
+    default void addObject(String key, Consumer<IJsonObjectMutable> objectMutable) {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        objectMutable.accept(o);
+        addProperty(key, o);
+    }
+
     /**
      * @return this, the object at which the property was removed
      */
@@ -61,6 +98,5 @@ public interface IJsonObjectMutable extends IJsonObjectAppendable, IJsonValueMut
     default void setString(String key, String value) {
         setProperty(key, factory().createString(value));
     }
-
 
 }

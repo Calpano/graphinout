@@ -13,6 +13,8 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.ObjIntConsumer;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public interface IJsonArray extends IJsonContainer {
 
@@ -87,6 +89,11 @@ public interface IJsonArray extends IJsonContainer {
 
     default JsonType jsonType() {
         return JsonType.Array;
+    }
+
+    default Stream<IJsonValue> stream() {
+        // create an IntStream from 0 to size and map it
+        return IntStream.range(0, size()).mapToObj(this::get);
     }
 
     default List<Object> toJaJsonList() {

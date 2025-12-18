@@ -7,7 +7,27 @@ import org.jspecify.annotations.Nullable;
 
 public class JavaJsonPrimitive implements IJsonPrimitive {
 
-    public static final IJsonPrimitive NULL = new JavaJsonPrimitive(null);
+    public static final IJsonPrimitive NULL = new IJsonPrimitive() {
+        @Override
+        public Object base() {
+            return null;
+        }
+
+        @Override
+        public IJsonFactory factory() {
+            return JavaJsonFactory.INSTANCE;
+        }
+
+        @Override
+        public JsonType jsonType() {
+            return JsonType.Null;
+        }
+
+        @Override
+        public String toString() {
+            return "json:NULL";
+        }
+    };
     private final @Nullable Object primitive;
 
     public JavaJsonPrimitive(@Nullable Object primitive) {this.primitive = primitive;}

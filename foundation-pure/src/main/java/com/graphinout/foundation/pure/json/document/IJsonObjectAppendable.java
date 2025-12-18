@@ -11,17 +11,18 @@ public interface IJsonObjectAppendable extends IJsonObject {
      * @return this, the object at which the property was added
      */
     default IJsonObjectAppendable addProperty(String key, String value) {
-       return addProperty(key, factory().createString(value));
+        return addProperty(key, factory().createString(value));
     }
 
     default IJsonObjectAppendable addProperty(String key, XmlFragmentString xmlFragmentString) {
-       return addProperty(key, factory().createXmlString(xmlFragmentString.rawXml(), xmlFragmentString.xmlSpace()));
+        return addProperty(key, factory().createXmlString(xmlFragmentString.rawXml(), xmlFragmentString.xmlSpace()));
     }
 
     /**
      * @return this, the object at which the property was added
+     * @throws IllegalStateException if property already present
      */
-    IJsonObjectAppendable addProperty(String key, IJsonValue jsonValue);
+    IJsonObjectAppendable addProperty(String key, IJsonValue jsonValue) throws IllegalStateException;
 
     /**
      * @return this, the object at which the property was added

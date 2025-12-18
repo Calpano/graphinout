@@ -10,28 +10,31 @@ import org.jspecify.annotations.Nullable;
 import java.util.AbstractMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
+
 public interface IJsonObject extends IJsonContainer {
+
 
     @Override
     default void fire(JsonWriter jsonWriter) {
         jsonWriter.objectStart();
         keys().forEach(key -> {
             jsonWriter.onKey(key);
-            IJsonValue value = get_(key);
-            value.fire(jsonWriter);
+            IJsonValue value = get(key);
+            if (value == null) jsonWriter.onNull();
+            else value.fire(jsonWriter);
         });
         jsonWriter.objectEnd();
     }
 
     default void forEach(BiConsumer<String, IJsonValue> key_value) {
-        keys().forEach(key -> key_value.accept(key, get_(key)));
+        keys().forEach(key -> key_value.accept(key, nonNullOrDefault(get(key), factory()::createNull)));
     }
 
     default void forEachLeaf(IJsonNavigationPath prefix, BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive) {
@@ -103,19 +106,14 @@ public interface IJsonObject extends IJsonContainer {
         return value.asStringOrThrow(conversionErrorSupplier);
     }
 
-    /**
-     *
-     * @param key          to get
-     * @param errorHandler to notify if the object contains nothing or something else than a String
-     * @return the string
-     * @throws IllegalStateException if the object contains nothing or something else than a String
-     */
-    default String getString(String key, Consumer<String> errorHandler) throws IllegalStateException {
+    default @Nullable String getString(String key) {
+        return getString(key, msg -> {});
+    }
+
+    default @Nullable String getString(String key, Consumer<String> errorHandler) throws IllegalStateException {
         IJsonValue v = get(key);
-        if (v == null) {
-            String msg = "['" + key + "'] missing; expected a string.";
-            errorHandler.accept(msg);
-            throw new IllegalStateException(msg);
+        if (v == null || v.isNull()) {
+            return null;
         }
         if (v.isString()) {
             return v.asString();
@@ -126,9 +124,30 @@ public interface IJsonObject extends IJsonContainer {
         }
     }
 
+    /**
+     *
+     * @param key          to get
+     * @param errorHandler to notify if the object contains nothing or something else than a String
+     * @return the string
+     * @throws IllegalStateException if the object contains nothing or something else than a String
+     */
+    default @Nullable String getString_(String key, Consumer<String> errorHandler) throws IllegalStateException {
+        String s = getString(key, errorHandler);
+        if (s == null) {
+            String msg = "['" + key + "'] missing; expected a string.";
+            errorHandler.accept(msg);
+            throw new IllegalStateException(msg);
+        }
+        return s;
+    }
+
     @NonNull
     default IJsonValue get_(String key) {
-        return Objects.requireNonNull(get(key));
+        IJsonValue v = get(key);
+        if (v == null) {
+            throw new IllegalStateException("Got null at '" + key + "'");
+        }
+        return v;
     }
 
     default boolean hasProperty(String propertyStep) {

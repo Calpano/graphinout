@@ -1,40 +1,58 @@
 package com.graphinout.foundation.pure.collections.jajson;
 
-import java.util.LinkedHashMap;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.input.ContentErrorException;
+import com.graphinout.foundation.pure.input.Location;
+import com.graphinout.foundation.pure.input.Locator;
+import com.graphinout.foundation.pure.json.writer.JsonWriter;
 
-/**
- * Simple hand-written JSON parser suitable for our limited needs.
- * <p>
- *
- * @deprecated Use {@link JsonParser} with {@link Json2JaJsonWriter}
- */
-@Deprecated
-public final class JaJsonParser {
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/** Simple hand-written JSON parser suitable for our limited needs. */
+public final class JsonParser implements Locator {
 
     private final String s;
+    private final JsonWriter w;
     private int pos;
 
-    JaJsonParser(String s) {this.s = s;}
+    JsonParser(String s, JsonWriter jsonWriter) {
+        this.s = s;
+        this.w = jsonWriter;
+    }
+
+    public static void parse(String string, JsonWriter jsonWriter) {
+        new JsonParser(string, jsonWriter).parseValue();
+    }
+
+    @Override
+    public Location location() {
+        // TODO use line numbers
+        return Location.of(0, pos);
+    }
 
     public int pos() {
         return pos;
     }
 
-    boolean eof() {return pos >= s.length();}
+    boolean isEOF() {return pos >= s.length();}
 
     Object parseValue() {
         skipWs();
-        if (eof()) throw error("Unexpected end of input");
+        if (isEOF()) throw error("Unexpected end of input");
         char c = s.charAt(pos);
         switch (c) {
-            case 'n':
+            case 'n'://ull
                 return parseNull();
-            case 't':
+            case 't'://rue
                 return parseTrue();
-            case 'f':
+            case 'f'://alse
                 return parseFalse();
             case '"':
-                return parseString();
+                return parseString(true);
             case '[':
                 return parseArray();
             case '{':
@@ -48,62 +66,73 @@ public final class JaJsonParser {
     }
 
     void skipWs() {
-        while (!eof()) {
+        while (!isEOF()) {
             char c = s.charAt(pos);
-            if (c == ' ' || c == '\n' || c == '\r' || c == '\t') pos++;
-            else break;
+            if (c == ' ' || c == '\n' || c == '\r' || c == '\t') {
+                pos++;
+            } else break;
         }
     }
 
-    private IllegalArgumentException error(String msg) {
-        return new IllegalArgumentException(msg + " at position " + pos);
+    private ContentErrorException error(String msg) {
+        return new ContentErrorException(ContentError.ErrorLevel.Error, msg, location());
     }
 
-    private void expect(String lit) {
-        int end = pos + lit.length();
-        if (end > s.length() || !s.regionMatches(pos, lit, 0, lit.length())) {
-            throw error("Expected '" + lit + "'");
+    /**
+     * Eat the expected characters or fail
+     * @param characters expected characters
+     */
+    private void expect(String characters) {
+        int end = pos + characters.length();
+        if (end > s.length() || !s.regionMatches(pos, characters, 0, characters.length())) {
+            throw error("Expected '" + characters + "'");
         }
         pos = end;
     }
 
-    private int hexVal(char h) {
+    private static int hexVal(char h) {
         if (h >= '0' && h <= '9') return h - '0';
         if (h >= 'a' && h <= 'f') return 10 + (h - 'a');
         if (h >= 'A' && h <= 'F') return 10 + (h - 'A');
         return -1;
     }
 
-    private boolean isDigit(char c) {return c >= '0' && c <= '9';}
+    private static boolean isDigit(char c) {return c >= '0' && c <= '9';}
 
-    private java.util.List<Object> parseArray() {
+    private List<Object> parseArray() {
         if (s.charAt(pos) != '[') throw error("Expected [");
         pos++;
-        java.util.ArrayList<Object> list = new java.util.ArrayList<>();
+
+        w.arrayStart();
+        ArrayList<Object> list = new ArrayList<>();
         skipWs();
-        if (!eof() && s.charAt(pos) == ']') {
+        if (!isEOF() && s.charAt(pos) == ']') {
             pos++;
+            w.arrayEnd();
             return list;
         }
         while (true) {
             Object v = parseValue();
             list.add(v);
             skipWs();
-            if (eof()) throw error("Unterminated array");
+            if (isEOF()) throw error("Unterminated array");
             char ch = s.charAt(pos++);
             if (ch == ']') break;
             if (ch != ',') throw error("Expected , or ] in array");
         }
+        w.arrayEnd();
         return list;
     }
 
     private Boolean parseFalse() {
         expect("false");
+        w.onBoolean(false);
         return Boolean.FALSE;
     }
 
     private Object parseNull() {
         expect("null");
+        w.onNull();
         return null;
     }
 
@@ -111,62 +140,70 @@ public final class JaJsonParser {
         int start = pos;
         char c = s.charAt(pos);
         if (c == '-') pos++;
-        if (eof()) throw error("Unexpected end in number");
+        if (isEOF()) throw error("Unexpected end in number");
         if (s.charAt(pos) == '0') {
             pos++;
         } else {
             if (!isDigit(s.charAt(pos))) throw error("Expected digit");
-            while (!eof() && isDigit(s.charAt(pos))) pos++;
+            while (!isEOF() && isDigit(s.charAt(pos))) pos++;
         }
         boolean isFractional = false;
-        if (!eof() && s.charAt(pos) == '.') {
+        if (!isEOF() && s.charAt(pos) == '.') {
             isFractional = true;
             pos++;
-            if (eof() || !isDigit(s.charAt(pos))) throw error("Expected digit after decimal point");
-            while (!eof() && isDigit(s.charAt(pos))) pos++;
+            if (isEOF() || !isDigit(s.charAt(pos))) throw error("Expected digit after decimal point");
+            while (!isEOF() && isDigit(s.charAt(pos))) pos++;
         }
-        if (!eof() && (s.charAt(pos) == 'e' || s.charAt(pos) == 'E')) {
+        if (!isEOF() && (s.charAt(pos) == 'e' || s.charAt(pos) == 'E')) {
             isFractional = true;
             pos++;
-            if (!eof() && (s.charAt(pos) == '+' || s.charAt(pos) == '-')) pos++;
-            if (eof() || !isDigit(s.charAt(pos))) throw error("Expected digit in exponent");
-            while (!eof() && isDigit(s.charAt(pos))) pos++;
+            if (!isEOF() && (s.charAt(pos) == '+' || s.charAt(pos) == '-')) pos++;
+            if (isEOF() || !isDigit(s.charAt(pos))) throw error("Expected digit in exponent");
+            while (!isEOF() && isDigit(s.charAt(pos))) pos++;
         }
         String num = s.substring(start, pos);
         try {
             if (isFractional) {
                 double d = Double.parseDouble(num);
                 if (Double.isInfinite(d) || Double.isNaN(d)) {
-                    return new java.math.BigDecimal(num);
+                    BigDecimal bigDecimal = new BigDecimal(num);
+                    w.onBigDecimal(bigDecimal);
+                    return bigDecimal;
                 }
                 return d;
             } else {
                 // integer path: prefer Integer, then Long, else BigDecimal
                 long l = Long.parseLong(num);
                 if (l >= Integer.MIN_VALUE && l <= Integer.MAX_VALUE) return (int) l;
+                w.onLong(l);
                 return l;
             }
         } catch (NumberFormatException ex) {
             // Fallback to BigDecimal for large integers or precise fractional
-            return new java.math.BigDecimal(num);
+            BigDecimal bigDecimal = new BigDecimal(num);
+            w.onBigDecimal(bigDecimal);
+            return bigDecimal;
         }
     }
 
-    private java.util.Map<String, Object> parseObject() {
+    private Map<String, Object> parseObject() {
         if (s.charAt(pos) != '{') throw error("Expected {");
+        w.objectStart();
         pos++;
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         skipWs();
-        if (!eof() && s.charAt(pos) == '}') {
+        if (!isEOF() && s.charAt(pos) == '}') {
             pos++;
+            w.objectEnd();
             return map;
         }
         while (true) {
             skipWs();
-            if (eof() || s.charAt(pos) != '"') throw error("Expected string key");
-            String key = parseString();
+            if (isEOF() || s.charAt(pos) != '"') throw error("Expected string key");
+            String key = parseString(false);
+            w.onKey(key);
             skipWs();
-            if (eof() || s.charAt(pos) != ':') throw error("Expected : after key");
+            if (isEOF() || s.charAt(pos) != ':') throw error("Expected : after key");
             pos++;
             // Be tolerant to whitespace between ':' and the value token.
             // Although parseValue() also skips whitespace, doing it here
@@ -176,27 +213,28 @@ public final class JaJsonParser {
             Object v = parseValue();
             map.put(key, v);
             skipWs();
-            if (eof()) throw error("Unterminated object");
+            if (isEOF()) throw error("Unterminated object");
             char ch = s.charAt(pos++);
             if (ch == '}') break;
             if (ch != ',') throw error("Expected , or } in object");
         }
+        w.objectEnd();
         return map;
     }
 
-    private String parseString() {
+    private String parseString(boolean emit) {
         if (s.charAt(pos) != '"') throw error("Expected \" for string");
         pos++; // skip opening quote
         StringBuilder sb = new StringBuilder();
         boolean closed = false;
-        while (!eof()) {
+        while (!isEOF()) {
             char c = s.charAt(pos++);
             if (c == '"') {
                 closed = true;
                 break;
             }
             if (c == '\\') {
-                if (eof()) throw error("Unterminated escape sequence");
+                if (isEOF()) throw error("Unterminated escape sequence");
                 char e = s.charAt(pos++);
                 switch (e) {
                     case '"':
@@ -242,11 +280,16 @@ public final class JaJsonParser {
             }
         }
         if (!closed) throw error("Unterminated string");
-        return sb.toString();
+        String string = sb.toString();
+        if(emit) {
+            w.onString(string);
+        }
+        return string;
     }
 
     private Boolean parseTrue() {
         expect("true");
+        w.onBoolean(true);
         return Boolean.TRUE;
     }
 
