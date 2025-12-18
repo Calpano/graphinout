@@ -52,7 +52,9 @@ class OcifReaderTest extends AbstractReaderTest {
         assertThat(ocifDoc).isNotNull();
         ICjDocument cjDoc_out = OcifDoc2CjDoc.toCjDocument(ocifDoc);
 
-        CjAssert.xAssertThatIsSameCj(cjDoc_out, cjDoc, null);
+        CjAssert.xAssertThatIsSameCj(cjDoc_out, cjDoc, ()->{
+            log.info("Intermediate OCIF is:\n{}",OcifDoc2Json.toJsonString(ocifDoc));
+        });
     }
 
     @ParameterizedTest(name = "{index}: {0}")
