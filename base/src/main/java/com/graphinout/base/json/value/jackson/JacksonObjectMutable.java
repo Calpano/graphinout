@@ -20,7 +20,7 @@ public class JacksonObjectMutable implements IJsonObjectMutable {
     }
 
     @Override
-    public IJsonObjectMutable addProperty(String key, IJsonValue jsonValue) {
+    public IJsonObjectMutable addProperty(String key, IJsonValue jsonValue) throws IllegalStateException {
         if (objectNode.has(key))
             throw new IllegalStateException("Property '" + key + "' already present with value=" + objectNode.get(key));
         objectNode.set(key, JacksonValues.jacksonValue(jsonValue));
