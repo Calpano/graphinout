@@ -4,6 +4,7 @@ import com.graphinout.foundation.pure.input.BaseOutput;
 import com.graphinout.foundation.pure.json.JsonException;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import com.graphinout.foundation.pure.log.Logger;
+import com.graphinout.foundation.pure.text.Texts;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -112,13 +113,8 @@ public class LoggingJsonWriter extends BaseOutput implements JsonWriter {
                 log.info(s, o);
                 break;
             case SystemOut:
-                // replace each %s with a value from o array
-                String msg = s;
-                if (o != null) {
-                    for (Object x : o) {
-                        msg = msg.replace("{}", x.toString());
-                    }
-                }
+                @SuppressWarnings("UnnecessaryLocalVariable") Object[] args = o;
+                String msg = Texts.renderLogMessage(s, args);
                 System.out.println(msg);
                 break;
         }

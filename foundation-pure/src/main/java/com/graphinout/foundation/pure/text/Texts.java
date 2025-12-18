@@ -1,5 +1,7 @@
 package com.graphinout.foundation.pure.text;
 
+import com.graphinout.foundation.pure.annotations.quality.QualitySuboptimal;
+
 public class Texts {
 
     /** decimal: 13 */
@@ -10,7 +12,7 @@ public class Texts {
     /**
      * Convert char to int, then to hex string, padding with leading zeros
      *
-     * @param c
+     * @param c char to convert
      * @return e.g. {code\\u0034} (just one backslash)
      */
     public static String asUnicodeEscape(int c) {
@@ -23,6 +25,34 @@ public class Texts {
         }
         sb.append(hex);
         return sb.toString();
+    }
+
+    /**
+     * @return the common prefix of a and b
+     */
+    public static String commonPrefix(String a, String b) {
+        String common = "";
+        int maxLength = Math.min(a.length(), b.length());
+        for (int i = 0; i < maxLength; i++) {
+            if (a.charAt(i) == b.charAt(i)) {
+                common += a.charAt(i);
+            } else {
+                break;
+            }
+        }
+        return common;
+    }
+
+    @QualitySuboptimal
+    public static String renderLogMessage(String s, Object[] o) {
+        // replace each %s with a value from o array
+        String msg = s;
+        if (o != null) {
+            for (Object x : o) {
+                msg = msg.replace("{}", x.toString());
+            }
+        }
+        return msg;
     }
 
 }

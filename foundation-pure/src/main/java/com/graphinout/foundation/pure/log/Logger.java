@@ -1,6 +1,7 @@
 package com.graphinout.foundation.pure.log;
 
 import com.graphinout.foundation.pure.bridge.Java9;
+import com.graphinout.foundation.pure.text.Texts;
 
 public class Logger {
 
@@ -31,8 +32,7 @@ public class Logger {
     }
 
     private void render(String level, String template, Object[] data) {
-        // TODO better
-        String message = level + " " + template + " DATA:" + Java9.List.of(data).toString();
+        String message = level + " " + Texts.renderLogMessage(template, data);
         LoggerFactory.log(name, level, message);
     }
 
