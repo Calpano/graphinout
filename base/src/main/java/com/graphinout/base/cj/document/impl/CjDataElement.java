@@ -25,7 +25,7 @@ public class CjDataElement implements ICjDataMutable {
     }
 
     @Override
-    public void removeProperty(String propertyKey) {
+    public void remove(String propertyKey) {
         if(root==null) {
             throw new IllegalStateException("Root is null");
         }

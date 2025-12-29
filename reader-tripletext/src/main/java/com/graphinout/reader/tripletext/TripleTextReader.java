@@ -101,7 +101,7 @@ public class TripleTextReader implements GioReader {
             // TripleText edge meta
             if (meta != null && !meta.isBlank()) {
                 edgeChunk.dataMutable(data -> {
-                    data.addProperty("tt:meta", writer.jsonFactory().createString(meta));
+                    data.add("tt:meta", writer.jsonFactory().createString(meta));
                 });
             }
             writer.edge(edgeChunk);

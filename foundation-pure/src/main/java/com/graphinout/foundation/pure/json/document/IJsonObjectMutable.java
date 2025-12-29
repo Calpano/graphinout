@@ -1,7 +1,10 @@
 package com.graphinout.foundation.pure.json.document;
 
 import com.graphinout.foundation.pure.bridge.Java9;
+import org.jspecify.annotations.NonNull;
 
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -39,10 +42,11 @@ public interface IJsonObjectMutable extends IJsonObjectAppendable, IJsonValueMut
         return this;
     }
 
-    default void addObject(String key, Consumer<IJsonObjectMutable> objectMutable) {
+    default IJsonObjectMutable addObject(String key, Consumer<IJsonObjectMutable> objectMutable) {
         IJsonObjectMutable o = factory().createObjectMutable();
         objectMutable.accept(o);
         addProperty(key, o);
+        return this;
     }
 
     /**
@@ -97,6 +101,33 @@ public interface IJsonObjectMutable extends IJsonObjectAppendable, IJsonValueMut
 
     default void setString(String key, String value) {
         setProperty(key, factory().createString(value));
+    }
+
+    default IJsonObjectMutable addAllFromJaJson(@NonNull Map<String, Object> map) {
+        map.forEach((k,v)->{
+            if(v == null) {
+                add(k, factory().createNull());
+            } else if(v instanceof String) {
+                add(k, (String)v);
+            } else if (v instanceof Number) {
+                add(k, (Number)v);
+            } else if (v instanceof Boolean) {
+                add(k, (Boolean)v);
+            } else if (v instanceof Map) {
+                addObject(k,sub->{
+                    //noinspection unchecked
+                    sub.addAllFromJaJson((Map<String, Object>) v);
+                });
+            } else if (v instanceof List) {
+                addArray(k, sub->{
+                    //noinspection unchecked
+                    sub.addAllFromJaJson((List<Object>) v);
+                });
+            } else {
+                throw new IllegalArgumentException("Unknown type " + v.getClass().getName());
+            }
+        });
+        return this;
     }
 
 }

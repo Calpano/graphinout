@@ -77,7 +77,7 @@ public class OcifDoc2Json {
         return relationJson;
     }
 
-    private static IJsonValue resourceToJson(IOcifResource resource) {
+    static IJsonValue resourceToJson(IOcifResource resource) {
         IJsonObjectMutable resourceJson = JavaJsonFactory.INSTANCE.createObjectMutable();
         resourceJson.setProperty("id", JavaJsonFactory.INSTANCE.createString(resource.id()));
         if (!resource.representations().isEmpty()) {

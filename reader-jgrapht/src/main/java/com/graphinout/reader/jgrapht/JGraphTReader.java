@@ -141,7 +141,7 @@ public class JGraphTReader<N> {
         cjChunk.dataMutable(data -> {
             // due to our setup, we get duplicate data here
             if (!data.hasProperty(jgtAttName)) {
-                data.addProperty(jgtAttName, jsonValue);
+                data.add(jgtAttName, jsonValue);
             }
         });
     }
@@ -279,7 +279,7 @@ public class JGraphTReader<N> {
             graphChunk.dataMutable(data -> {
                 if (data.hasProperty(GRAPH_ID)) {
                     String id = data.jsonValue_().asObject().get_(GRAPH_ID).asString();
-                    data.removeProperty(GRAPH_ID);
+                    data.remove(GRAPH_ID);
                     graphChunk.id(id);
                 }
             });

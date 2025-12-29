@@ -29,6 +29,18 @@ public class MapMap<K, L, M> {
         }
     }
 
+    /** overwrite */
+    public void add(K k, L l, M m) {
+        mapK(k).put(l, m);
+    }
+
+    /**
+     * @return previous
+     */
+    public @Nullable Map<L, M> addAll(K key1, Map<L, M> l_m) {
+        return k_l_m.put(key1, l_m);
+    }
+
     public void compute(K k, L l, TriFunction<K, L, M, M> fun) {
         // IMPROVE can be optimized with less map calls
         M old = get(k, l);
@@ -57,6 +69,10 @@ public class MapMap<K, L, M> {
         }
     }
 
+    public void forEachPair(BiConsumer<K, Map<L, M>> k_lm) {
+        this.k_l_m.forEach(k_lm);
+    }
+
     public @Nullable M get(K k, L l) {
         return k_l_m.getOrDefault(k, new HashMap<>()).getOrDefault(l, null);
     }
@@ -67,9 +83,8 @@ public class MapMap<K, L, M> {
         return Java9.List.copyOf(subMap.values());
     }
 
-    /** overwrite */
-    public void add(K k, L l, M m) {
-        mapK(k).put(l, m);
+    public boolean isEmpty() {
+        return k_l_m.isEmpty() || k_l_m.values().stream().allMatch(Map::isEmpty);
     }
 
     public Set<K> keySet() {

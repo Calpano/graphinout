@@ -28,23 +28,23 @@ public interface ICjDataMutable extends ICjData {
         add(path, factory().createXmlString(xmlFragmentString.rawXml(), xmlFragmentString.xmlSpace()));
     }
 
-    default void addProperty(String propertyKey, String javaString) {
+    default void add(String propertyKey, String javaString) {
         add(IJsonContainerNavigationStep.pathOf(propertyKey), javaString);
     }
 
-    default void addProperty(String propertyKey, boolean b) {
+    default void add(String propertyKey, boolean b) {
         add(IJsonContainerNavigationStep.pathOf(propertyKey), IJsonFactory.INSTANCE.createBoolean(b));
     }
 
-    default void addProperty(String propertyKey, Number number) {
+    default void add(String propertyKey, Number number) {
         add(IJsonContainerNavigationStep.pathOf(propertyKey), IJsonFactory.INSTANCE.createNumber(number));
     }
 
-    default void addProperty(String propertyKey, IJsonValue jsonValue) {
+    default void add(String propertyKey, IJsonValue jsonValue) {
         add(IJsonContainerNavigationStep.pathOf(propertyKey), jsonValue);
     }
 
-    void removeProperty(String propertyKey);
+    void remove(String propertyKey);
 
     /**
      * @param jsonValue to set

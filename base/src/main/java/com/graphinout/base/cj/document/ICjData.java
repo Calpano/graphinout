@@ -1,10 +1,10 @@
 package com.graphinout.base.cj.document;
 
-import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-
+import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
 import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,8 +15,8 @@ import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
  * Represents a CJ data value attached to elements in the CJ model, exposing access to the underlying JSON structure. It
  * is the bridge between GIO/CJ structures and the JSON value API used for properties and metadata.
  * <p>
- * This interface provides methods to access and manipulate the JSON data associated with a CJ element.
- * It allows for querying properties and navigating the JSON structure.
+ * This interface provides methods to access and manipulate the JSON data associated with a CJ element. It allows for
+ * querying properties and navigating the JSON structure.
  */
 public interface ICjData extends ICjElement {
 
@@ -78,13 +78,20 @@ public interface ICjData extends ICjElement {
         return has(IJsonContainerNavigationStep.pathOf(propertyKey));
     }
 
+    /** true if null or json:NULL or empty String or empty JSON container */
+    default boolean isEmpty() {
+        IJsonValue v = jsonValue();
+        return v == null || v.isNull() //
+                || (v.isContainer() && v.asContainer().isEmpty()) //
+                || (v.isString() && v.asString().isEmpty());
+    }
+
     /**
      * The current JSON content of this data element.
      *
      * @return The underlying {@link IJsonValue}, or {@code null} if there is no JSON content.
      */
-    @Nullable
-    IJsonValue jsonValue();
+    @Nullable IJsonValue jsonValue();
 
     /**
      * Returns the non-null JSON value. This is a convenience method for cases where the JSON value is known to exist.

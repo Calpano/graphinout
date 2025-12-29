@@ -396,10 +396,10 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                             String v = a.value;
                             if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length()-2);
                             o.addProperty("value", m.factory().createString(v));
-                            m.addProperty(a.key, o);
+                            m.add(a.key, o);
                         });
                     } else {
-                        hasData.dataMutable(d -> d.addProperty(a.key, a.value));
+                        hasData.dataMutable(d -> d.add(a.key, a.value));
                     }
                 } else if (labelTarget != null) {
                     String val = a.value;
@@ -412,10 +412,10 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                             String v = a.value;
                             if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length()-2);
                             o.addProperty("value", m.factory().createString(v));
-                            m.addProperty(a.key, o);
+                            m.add(a.key, o);
                         });
                     } else {
-                        hasData.dataMutable(d -> d.addProperty(a.key, a.value));
+                        hasData.dataMutable(d -> d.add(a.key, a.value));
                     }
                 }
             } else {
@@ -426,10 +426,10 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                         String v = a.value;
                         if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length()-2);
                         o.addProperty("value", m.factory().createString(v));
-                        m.addProperty(a.key, o);
+                        m.add(a.key, o);
                     });
                 } else {
-                    hasData.dataMutable(d -> d.addProperty(a.key, a.value));
+                    hasData.dataMutable(d -> d.add(a.key, a.value));
                 }
             }
         }
@@ -518,7 +518,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             // Build document with a single top-level graph
             cjDocument.addGraph((ICjGraphMutable g) -> {
                 if (tl.id != null) g.id(tl.id);
-                g.dataMutable(d -> d.addProperty(DOT_TYPE_KEY, tl.directed ? "digraph" : "graph"));
+                g.dataMutable(d -> d.add(DOT_TYPE_KEY, tl.directed ? "digraph" : "graph"));
                 // parse graph body
                 p.expect(CURLY_BRACE_OPEN);
                 parseStatements(p, g, tl.directed);
@@ -712,7 +712,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 if (p.consumeIf('=')) {
                     String value = p.readIdOrString();
                     // store as graph-level data
-                    g.dataMutable(d -> d.addProperty(maybeKey, value));
+                    g.dataMutable(d -> d.add(maybeKey, value));
                     p.consumeOptionalSemicolon();
                     continue;
                 } else {

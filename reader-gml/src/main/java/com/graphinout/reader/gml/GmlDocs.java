@@ -40,17 +40,17 @@ public class GmlDocs {
                         throw new IllegalStateException("Unexpected list element type: " + o.getClass());
                     }
                 }
-                cjHasDataMutable.dataMutable(d -> d.addProperty(key, array));
+                cjHasDataMutable.dataMutable(d -> d.add(key, array));
             } else if (value instanceof GmlData gmlData) {
                 // first create sub-json object, then add it
                 IJsonValue jsonValue = gmlData.toJsonValue();
-                cjHasDataMutable.dataMutable(d -> d.addProperty(key, jsonValue));
+                cjHasDataMutable.dataMutable(d -> d.add(key, jsonValue));
             } else if (value instanceof IJsonPrimitive primitive) {
-                cjHasDataMutable.dataMutable(d -> d.addProperty(key, primitive));
+                cjHasDataMutable.dataMutable(d -> d.add(key, primitive));
             } else if (value instanceof Object o) {
                 assert GmlData.isJavaJson(o);
                 IJsonValue jsonValue = GmlDocs.toJsonValue(o);
-                cjHasDataMutable.dataMutable(d -> d.addProperty(key, jsonValue));
+                cjHasDataMutable.dataMutable(d -> d.add(key, jsonValue));
             }
 
         });
@@ -61,7 +61,7 @@ public class GmlDocs {
         // doc metadata
         gmlDoc.forEachExcept((kev, val) -> {
             IJsonValue jsonValue = toJsonValue(val);
-            cjDoc.dataMutable(d -> d.addProperty(kev, jsonValue));
+            cjDoc.dataMutable(d -> d.add(kev, jsonValue));
         }, Gml.GRAPH);
         cjStream.documentStart(cjDoc);
 

@@ -3,6 +3,7 @@ package com.graphinout.reader.ocif.document.impl;
 import com.graphinout.reader.ocif.document.IOcifNodeMutable;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.types.OcifVector23D;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class OcifNode implements IOcifNodeMutable {
     }
 
     @Override
-    public List<IOcifExtension> extensions() {return extensions;}
+    public @NonNull List<IOcifExtension> extensions() {return extensions;}
 
     @Override
     public String id() {return id;}

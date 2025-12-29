@@ -125,7 +125,7 @@ public class Json2OcifDoc {
         }
     }
 
-    private static @NonNull IOcifExtension toOcifExtension(@NonNull IJsonObject obj, Consumer<ContentError> errorHandler) {
+    static @NonNull IOcifExtension toOcifExtension(@NonNull IJsonObject obj, Consumer<ContentError> errorHandler) {
         String typeUri = obj.getString(Common.TYPE, msg -> ContentError.error(msg).fireTo(errorHandler));
 
         return switch (typeUri) {
@@ -172,7 +172,7 @@ public class Json2OcifDoc {
         return r;
     }
 
-    private static @NonNull IOcifResourceMutable toOcifResource(IJsonObject rso, Supplier<String> idFactory, Consumer<ContentError> errorHandler) throws ContentErrorException {
+    static @NonNull IOcifResourceMutable toOcifResource(IJsonObject rso, Supplier<String> idFactory, Consumer<ContentError> errorHandler) throws ContentErrorException {
         // obtain a usable resource id
         String id = Nullables.mapOrThrow(rso.get(Common.ID), IJsonValue::asString, () -> contentWarn("OCIF resource has no id"));
         IOcifResourceMutable res = new OcifResource(id);

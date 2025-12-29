@@ -8,7 +8,7 @@ import com.graphinout.reader.ocif.document.impl.OcifRepresentation;
  * Spec excerpts (schema.json $defs.representation): Either content or location MUST be present. If a data: TYPE_URI is used
  * in {@code location}, the content and MIME-type properties are implicitly defined already.
  */
-public interface IOcifRepresentation {
+public interface IOcifRepresentation extends IOcifExtensibleEntity {
 
     static IOcifRepresentation ofContent(String content, String mimeType) {
         return new OcifRepresentation(content, null, mimeType);

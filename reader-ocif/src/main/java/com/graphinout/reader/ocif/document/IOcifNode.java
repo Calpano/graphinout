@@ -2,6 +2,7 @@ package com.graphinout.reader.ocif.document;
 
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.types.OcifVector23D;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public interface IOcifNode {
     enum ResourceFit {none, containX, containY, contain, cover, fill, tile}
 
     /** Typed extensions parsed from the node's data array. */
-    List<IOcifExtension> extensions();
+    @NonNull List<IOcifExtension> extensions();
 
     String id();
 

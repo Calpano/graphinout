@@ -4,7 +4,10 @@ import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.input.ContentErrorException;
 import com.graphinout.foundation.pure.input.Location;
 import com.graphinout.foundation.pure.input.Locator;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
+import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,8 +27,23 @@ public final class JsonParser implements Locator {
         this.w = jsonWriter;
     }
 
+    private static int hexVal(char h) {
+        if (h >= '0' && h <= '9') return h - '0';
+        if (h >= 'a' && h <= 'f') return 10 + (h - 'a');
+        if (h >= 'A' && h <= 'F') return 10 + (h - 'A');
+        return -1;
+    }
+
+    private static boolean isDigit(char c) {return c >= '0' && c <= '9';}
+
     public static void parse(String string, JsonWriter jsonWriter) {
         new JsonParser(string, jsonWriter).parseValue();
+    }
+
+    public static @Nullable IJsonValue parse(String jsonString) {
+        Json2JsonValueWriter jsonWriter = new Json2JsonValueWriter(IJsonFactory.INSTANCE);
+        parse(jsonString, jsonWriter);
+        return jsonWriter.resultJsonRootObject();
     }
 
     @Override
@@ -80,6 +98,7 @@ public final class JsonParser implements Locator {
 
     /**
      * Eat the expected characters or fail
+     *
      * @param characters expected characters
      */
     private void expect(String characters) {
@@ -89,15 +108,6 @@ public final class JsonParser implements Locator {
         }
         pos = end;
     }
-
-    private static int hexVal(char h) {
-        if (h >= '0' && h <= '9') return h - '0';
-        if (h >= 'a' && h <= 'f') return 10 + (h - 'a');
-        if (h >= 'A' && h <= 'F') return 10 + (h - 'A');
-        return -1;
-    }
-
-    private static boolean isDigit(char c) {return c >= '0' && c <= '9';}
 
     private List<Object> parseArray() {
         if (s.charAt(pos) != '[') throw error("Expected [");
@@ -170,11 +180,15 @@ public final class JsonParser implements Locator {
                     w.onBigDecimal(bigDecimal);
                     return bigDecimal;
                 }
+                w.onDouble(d);
                 return d;
             } else {
                 // integer path: prefer Integer, then Long, else BigDecimal
                 long l = Long.parseLong(num);
-                if (l >= Integer.MIN_VALUE && l <= Integer.MAX_VALUE) return (int) l;
+                if (l >= Integer.MIN_VALUE && l <= Integer.MAX_VALUE) {
+                    w.onInteger((int) l);
+                    return (int) l;
+                }
                 w.onLong(l);
                 return l;
             }
@@ -281,7 +295,7 @@ public final class JsonParser implements Locator {
         }
         if (!closed) throw error("Unterminated string");
         String string = sb.toString();
-        if(emit) {
+        if (emit) {
             w.onString(string);
         }
         return string;

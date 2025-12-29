@@ -1,5 +1,7 @@
 package com.graphinout.foundation.pure.json.document;
 
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -39,6 +41,33 @@ public interface IJsonArrayMutable extends IJsonArrayAppendable, IJsonValueMutab
         for (T v : values) {
             add(mapFun.apply(v));
         }
+        return this;
+    }
+
+    default IJsonArrayMutable addAllFromJaJson(List<Object> jaJson) {
+        jaJson.forEach(v->{
+            if(v == null) {
+                add(factory().createNull());
+            } else if(v instanceof String) {
+                add((String)v);
+            } else if (v instanceof Number) {
+                add((Number)v);
+            } else if (v instanceof Boolean) {
+                add((Boolean)v);
+            } else if (v instanceof Map) {
+                addObject(sub->{
+                    //noinspection unchecked
+                    sub.addAllFromJaJson((Map<String, Object>) v);
+                });
+            } else if (v instanceof List) {
+                addArray(sub->{
+                    //noinspection unchecked
+                    sub.addAllFromJaJson((List<Object>) v);
+                });
+            } else {
+                throw new IllegalArgumentException("Unknown type " + v.getClass().getName());
+            }
+        });
         return this;
     }
 

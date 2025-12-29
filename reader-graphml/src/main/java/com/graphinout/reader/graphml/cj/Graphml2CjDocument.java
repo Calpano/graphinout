@@ -109,7 +109,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
 
         // the <data> element itself might have an id-attribute; we store it
         ifPresentAccept(graphmlData.id(), id -> //
-                cjHasData.dataMutable(m -> m.addProperty(DataId.cjPropertyKey, id)));
+                cjHasData.dataMutable(m -> m.add(DataId.cjPropertyKey, id)));
 
         String graphmlKey = graphmlData.key();
         assert graphmlKey != null;
@@ -158,7 +158,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             // add a marker in the CJ node, so we can strip the node out once the full document is constructed
             assert cjHasData instanceof ICjNodeMutable : "cjData is " + cjHasData.getClass() + " but the marker should only go into nodes";
             cjHasData.dataMutable(m -> //
-                    m.addProperty(SyntheticNode.cjPropertyKey, m.factory().createBoolean(true)));
+                    m.add(SyntheticNode.cjPropertyKey, m.factory().createBoolean(true)));
         } else {// other, generic GraphML <data> tags
             copyData(graphmlData, key, cjHasData);
         }
@@ -228,7 +228,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             if (edgeDefault != IGraphmlGraph.EdgeDefault.DEFAULT_EDGE_DEFAULT) {
                 // add to "data"
                 cjGraph.dataMutable(m -> //
-                        m.addProperty(EdgeDefault.cjPropertyKey, edgeDefault.graphmlString()));
+                        m.add(EdgeDefault.cjPropertyKey, edgeDefault.graphmlString()));
             }
 
             if (graphmlGraph.locator() != null) {
@@ -287,7 +287,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
                 GraphmlDataType type = GraphmlDataType.fromString(key.attrType());
                 JsonType desiredType = type.jsonType();
                 IJsonPrimitive jsonValue = m.factory().createPrimitiveFromString(desiredType, defaultValue.rawXml(), defaultValue.xmlSpace() == XML.XmlSpace.preserve);
-                m.addProperty(key.attrName(), jsonValue);
+                m.add(key.attrName(), jsonValue);
             }
         });
     }
@@ -339,7 +339,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
 
         cjHasData.dataMutable(m -> {
             IJsonPrimitive jsonPrimitive = CjGraphmlMapping.toJsonPrimitive(m.factory(), declaredGraphmlDataType, graphmlData.xmlValue());
-            m.addProperty(propertyKey, jsonPrimitive);
+            m.add(propertyKey, jsonPrimitive);
         });
     }
 
@@ -363,7 +363,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             graphmlSchema.removeKeyById(GraphmlDataElement.SyntheticNode.toGraphmlKey().id());
             if (graphmlSchema.isEmpty()) return;
             graphmlSchema.toJson(o);
-            m.addProperty(Keys.cjPropertyKey, o);
+            m.add(Keys.cjPropertyKey, o);
         });
 
         // == Remove synthetic nodes and put their graph as direct child of parent graph

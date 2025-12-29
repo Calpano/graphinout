@@ -3,6 +3,7 @@ package com.graphinout.foundation.pure.collections.jajson;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,14 @@ public class JaJson {
             throw new IllegalArgumentException("Trailing characters after JSON value at position " + p.pos());
         }
         return value;
+    }
+
+    public static BigDecimal toBigDecimal(@Nullable Object raw, BigDecimal defaultValue) {
+        if (raw == null) return defaultValue;
+        if (raw instanceof BigDecimal) return (BigDecimal) raw;
+        if (raw instanceof Number) return new BigDecimal(((Number) raw).doubleValue());
+        if (raw instanceof String) return new BigDecimal((String) raw);
+        throw new IllegalArgumentException("Cannot convert " + raw + " to BigDecimal");
     }
 
     public static @NonNull String toJsonString(Object o) {

@@ -168,21 +168,8 @@ public class Nullables {
         return input -> input == null || testNonNull.test(input);
     }
 
-    public static <T, R> R mapOrDefault(@Nullable T input, Function<T, R> mapFun, R defaultValue) {
+    public static <T, R> R mapOrDefault(@Nullable T input, Function<@NonNull T, @Nullable R> mapFun, R defaultValue) {
         return Optional.ofNullable(input).map(mapFun).orElse(defaultValue);
-    }
-
-    /**
-     *
-     * @param input if null, the defaultValueSupplier is called
-     * @param mapFun if it returns null, ALSO the defaultValueSupplier is called
-     * @param defaultValueSupplier
-     * @return
-     * @param <T>
-     * @param <R>
-     */
-    public static <T, R> R mapOrGetDefault(@Nullable T input, Function<@NonNull T, @Nullable R> mapFun, Supplier<@NonNull R> defaultValueSupplier) {
-        return Optional.ofNullable(input).map(mapFun).orElse(defaultValueSupplier.get());
     }
 
     public static <T, S, R> R mapOrDefault(@Nullable T input, Function<@NonNull T, @Nullable S> mapFun1, Function<@NonNull S, @Nullable R> mapFun2, R defaultValue) {
@@ -209,7 +196,20 @@ public class Nullables {
         return input != null && mapFun.test(input);
     }
 
-    public static <T, S, R> R mapOrNull(@Nullable T input, Function<T, S> mapFun1, Function<S, R> mapFun2) {
+    /**
+     *
+     * @param input                if null, the defaultValueSupplier is called
+     * @param mapFun               if it returns null, ALSO the defaultValueSupplier is called
+     * @param defaultValueSupplier
+     * @param <T>
+     * @param <R>
+     * @return
+     */
+    public static <T, R> R mapOrGetDefault(@Nullable T input, Function<@NonNull T, @Nullable R> mapFun, Supplier<@NonNull R> defaultValueSupplier) {
+        return Optional.ofNullable(input).map(mapFun).orElse(defaultValueSupplier.get());
+    }
+
+    public static <T, S, R> R mapOrNull(@Nullable T input, Function<@NonNull T, S> mapFun1, Function<@NonNull S, R> mapFun2) {
         return mapOrDefault(input, mapFun1, mapFun2, null);
     }
 
@@ -229,7 +229,7 @@ public class Nullables {
     }
 
     /** Does this work in J2CL? */
-    public static <T, R,E extends Throwable> R mapOrThrow(@Nullable T input, Function<@NonNull T, R> mapFun, Supplier<E> exceptionSupplier) throws E {
+    public static <T, R, E extends Throwable> R mapOrThrow(@Nullable T input, Function<@NonNull T, R> mapFun, Supplier<E> exceptionSupplier) throws E {
         if (input == null) throw exceptionSupplier.get();
         return mapFun.apply(input);
     }

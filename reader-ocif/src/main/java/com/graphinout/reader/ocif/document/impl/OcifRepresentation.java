@@ -4,7 +4,9 @@ import com.graphinout.reader.ocif.document.IOcifRepresentation;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public class OcifRepresentation implements IOcifRepresentation {
+import java.util.Set;
+
+public class OcifRepresentation extends OcifExtensibleEntity implements IOcifRepresentation {
 
     private final String location;
     private final String mimeType;
@@ -22,6 +24,11 @@ public class OcifRepresentation implements IOcifRepresentation {
 
     @Override
     public String content() {return content;}
+
+    @Override
+    public Set<String> definedKeys() {
+        return Set.of("content", "location", "mimeType");
+    }
 
     @Override
     public String location() {return location;}

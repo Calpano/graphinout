@@ -15,7 +15,6 @@ import java.util.TreeMap;
  *
  * @see JsonFormatting Formatting invalid JSON
  */
-@SuppressWarnings({"PatternVariableCanBeUsed", "IfCanBeSwitch", "ClassCanBeRecord"})
 public class JsonCompactFormatter {
 
     public static final String COMMA = ",";

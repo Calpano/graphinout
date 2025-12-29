@@ -136,13 +136,13 @@ public class GmlReaderHandler implements IGmlHandler {
                     assert lastKey != null;
                     ICjDocumentChunkMutable doc = (ICjDocumentChunkMutable) chunk;
                     final IJsonValue jsonVal = toJsonValue(writer.jsonFactory(), value);
-                    doc.dataMutable(d -> d.addProperty(lastKey, jsonVal));
+                    doc.dataMutable(d -> d.add(lastKey, jsonVal));
                 }
                 case CjType.Graph -> {
                     assert lastKey != null;
                     ICjGraphChunkMutable graph = (ICjGraphChunkMutable) chunk;
                     final IJsonValue jsonVal = toJsonValue(writer.jsonFactory(), value);
-                    graph.dataMutable(d -> d.addProperty(lastKey, jsonVal));
+                    graph.dataMutable(d -> d.add(lastKey, jsonVal));
                 }
                 case CjType.Node -> {
                     assert lastKey != null;
@@ -153,7 +153,7 @@ public class GmlReaderHandler implements IGmlHandler {
                         node.addLabelWithoutLanguage(unquotedValue);
                     } else {
                         final IJsonValue jsonVal = toJsonValue(writer.jsonFactory(), value);
-                        node.dataMutable(d -> d.addProperty(lastKey, jsonVal));
+                        node.dataMutable(d -> d.add(lastKey, jsonVal));
                     }
                 }
                 case CjType.Edge -> {
@@ -167,7 +167,7 @@ public class GmlReaderHandler implements IGmlHandler {
                         edge.addLabelWithoutLanguage(unquotedValue);
                     } else {
                         final IJsonValue jsonVal = toJsonValue(writer.jsonFactory(), value);
-                        edge.dataMutable(d -> d.addProperty(lastKey, jsonVal));
+                        edge.dataMutable(d -> d.add(lastKey, jsonVal));
                     }
                 }
                 default -> throw new IllegalStateException();

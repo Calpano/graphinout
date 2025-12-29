@@ -24,7 +24,7 @@ public interface ICjHasDataMutable extends ICjHasData {
      * @param value
      */
     default void addProperty( String key, String value) {
-        dataMutable(data-> data.addProperty(key, value));
+        dataMutable(data-> data.add(key, value));
     }
 
     /**
@@ -34,8 +34,9 @@ public interface ICjHasDataMutable extends ICjHasData {
      */
     default void descriptionPlainText(IJsonFactory jsonFactory, String descriptionText) {
         dataMutable(data -> {
+            assert data != null : "data cannot be null";
             IJsonXmlString value = IJsonXmlString.ofPlainString(jsonFactory, descriptionText);
-            data.addProperty(CjDataProperty.Description.cjPropertyKey, value);
+            data.add(CjDataProperty.Description.cjPropertyKey, value);
         });
     }
 

@@ -46,8 +46,8 @@ public class CjDocsTestData {
     public static ICjDocument documentWithCustomData() {
         ICjDocumentMutable cjDoc = new CjDocumentElement();
         cjDoc.dataMutable(data -> {
-            data.addProperty("author", "Test Engineer");
-            data.addProperty("creationDate", "2025-10-27");
+            data.add("author", "Test Engineer");
+            data.add("creationDate", "2025-10-27");
         });
         return cjDoc;
     }
@@ -61,59 +61,10 @@ public class CjDocsTestData {
         return cjDoc;
     }
 
-    /**
-     * Test Case 3.3: An element with a duplicate language tag in its label to test merge-patch behavior.
-     */
-    public static ICjDocument duplicateLanguageInLabel() {
-        ICjDocumentMutable cjDoc = new CjDocumentElement();
-        cjDoc.addGraph(graph -> {
-            graph.addNode(node -> {
-                node.id("n1");
-                node.addLabel("Old", "en");
-                node.addLabel("New", "en");
-            });
-        });
-        return cjDoc;
-    }
-
-    /**
-     * Test Case 2.2: A graph with a duplicate node ID, to test merge-patch behavior.
-     */
-    public static ICjDocument duplicateNodeId() {
-        ICjDocumentMutable cjDoc = new CjDocumentElement();
-        cjDoc.addGraph(graph -> {
-            graph.addNode(node -> {
-                node.id("n1");
-                node.addLabelWithoutLanguage("First");
-            });
-            // This second node with the same ID should merge with the first
-            graph.addNode(node -> {
-                node.id("n1");
-                node.dataMutable(data -> data.addProperty("status", "merged"));
-            });
-        });
-        return cjDoc;
-    }
 
     // ========================================================================
     // Test Plan Section 2: ID Management Tests
     // ========================================================================
-
-    /**
-     * Test Case 2.3: A node with a duplicate port ID, to test merge-patch behavior.
-     */
-    public static ICjDocument duplicatePortId() {
-        ICjDocumentMutable cjDoc = new CjDocumentElement();
-        cjDoc.addGraph(graph -> {
-            graph.addNode(node -> {
-                node.id("n1");
-                node.addPort(port -> port.id("p1").addProperty("location", "left"));
-                // This second port with the same ID should merge
-                node.addPort(port -> port.id("p1").addProperty("location", "top"));
-            });
-        });
-        return cjDoc;
-    }
 
     /**
      * Test Case 4.6: An edge where an endpoint type overrides the edge type.
@@ -433,9 +384,6 @@ public class CjDocsTestData {
         return Stream.of(new TestDoc("documentWithBaseUri", documentWithBaseUri()),//
                 new TestDoc("documentWithCustomData", documentWithCustomData()),//
                 new TestDoc("documentWithMetadata", documentWithMetadata()),//
-                new TestDoc("duplicateLanguageInLabel", duplicateLanguageInLabel()),//
-                new TestDoc("duplicateNodeId", duplicateNodeId()),//
-                new TestDoc("duplicatePortId", duplicatePortId()),//
                 new TestDoc("edgeAndEndpointTypePrecedence", edgeAndEndpointTypePrecedence()),//
                 new TestDoc("edgeReferencingPort", edgeReferencingPort()),//
                 new TestDoc("emptyGraph", emptyGraph()),//

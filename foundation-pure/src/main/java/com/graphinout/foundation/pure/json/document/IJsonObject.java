@@ -90,7 +90,7 @@ public interface IJsonObject extends IJsonContainer {
         });
     }
 
-    default <F extends Throwable> Boolean getNullOrBoolean(String key, Function<IJsonValue, F> conversionErrorSupplier) throws F {
+    default <F extends Throwable> @Nullable Boolean getNullOrBoolean(String key, Function<IJsonValue, F> conversionErrorSupplier) throws F {
         IJsonValue value = get(key);
         if (value == null) {
             return null;
@@ -98,12 +98,20 @@ public interface IJsonObject extends IJsonContainer {
         return value.asBooleanOrThrow(conversionErrorSupplier);
     }
 
-    default <F extends Throwable> String getNullOrString(String key, Function<IJsonValue, F> conversionErrorSupplier) throws F {
+    default <F extends Throwable> @Nullable String getNullOrString(String key, Function<IJsonValue, F> conversionErrorSupplier) throws F {
         IJsonValue value = get(key);
         if (value == null) {
             return null;
         }
         return value.asStringOrThrow(conversionErrorSupplier);
+    }
+
+    default <F extends Throwable> @Nullable IJsonObject getObjectOrNull(String key, Function<IJsonValue, F> conversionErrorSupplier) throws F {
+        IJsonValue value = get(key);
+        if (value == null) {
+            return null;
+        }
+        return value.asObjectOrThrow(conversionErrorSupplier);
     }
 
     default @Nullable String getString(String key) {
@@ -124,6 +132,10 @@ public interface IJsonObject extends IJsonContainer {
         }
     }
 
+    default @NonNull String getString_(String key) {
+        return getString_(key, msg -> {throw new IllegalStateException(msg);});
+    }
+
     /**
      *
      * @param key          to get
@@ -131,7 +143,7 @@ public interface IJsonObject extends IJsonContainer {
      * @return the string
      * @throws IllegalStateException if the object contains nothing or something else than a String
      */
-    default @Nullable String getString_(String key, Consumer<String> errorHandler) throws IllegalStateException {
+    default @NonNull String getString_(String key, Consumer<String> errorHandler) throws IllegalStateException {
         String s = getString(key, errorHandler);
         if (s == null) {
             String msg = "['" + key + "'] missing; expected a string.";

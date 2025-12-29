@@ -28,6 +28,12 @@ public class DataExtension extends OcifExtension {
         return data;
     }
 
+    public DataExtension copy() {
+        DataExtension data = new DataExtension();
+        map().forEach(data::set);
+        return data;
+    }
+
     @Override
     public Set<String> definedKeys() {
         return Set.of();

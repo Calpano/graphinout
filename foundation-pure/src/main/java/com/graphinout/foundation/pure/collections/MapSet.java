@@ -1,6 +1,7 @@
 package com.graphinout.foundation.pure.collections;
 
 import com.graphinout.foundation.pure.bridge.Java9;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -102,7 +103,7 @@ public class MapSet<K, E> {
         return map.keySet();
     }
 
-    public Set<E> lookup(K key) {
+    public @NonNull Set<E> lookup(K key) {
         return map.getOrDefault(key, Collections.emptySet());
     }
 

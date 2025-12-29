@@ -89,7 +89,7 @@ public class EdgeListReader implements GioReader, ITextWriter {
             // parse dataString -- is it a python dict or JSON map? -> JSON object
             // single string?
             edge.dataMutable(d -> {
-                d.addProperty("data", dataString);
+                d.add("data", dataString);
             });
         }
         cjStream.edgeStart(edge);

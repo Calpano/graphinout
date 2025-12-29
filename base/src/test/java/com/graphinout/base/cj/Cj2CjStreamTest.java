@@ -20,16 +20,18 @@ public class Cj2CjStreamTest {
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("JSON<->CjWriter<->CjStream")
     void test_Json_CjWriter_CjStream_CjWriter_Json(String displayPath, Resource xmlResource) throws Exception {
+        String json_in = xmlResource.getContentAsString();
+
         Json2StringWriter json2StringWriter = new Json2StringWriter();
         Cj2JsonWriter cj2jsonWriter = new Cj2JsonWriter(json2StringWriter);
         CjStream2CjWriter cjStream2cjWriter = new CjStream2CjWriter(cj2jsonWriter);
         CjWriter2CjStream cjWriter2cjStream = new CjWriter2CjStream(cjStream2cjWriter);
         Json2CjWriter json2cjWriter = new Json2CjWriter(cjWriter2cjStream);
+
         JsonReaderImpl jsonReader = new JsonReaderImpl();
         SingleInputSourceOfString inputSource = TestFileUtil2.inputSource(xmlResource);
         jsonReader.read(inputSource, json2cjWriter);
 
-        String json_in = xmlResource.getContentAsString();
         String json_out = json2StringWriter.jsonString();
         CjAssert.xAssertThatIsSameCj(json_out, json_in, null);
     }

@@ -156,9 +156,7 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
             case ArrayOfNodes -> {
                 // good, already in nodes
             }
-            default -> {
-                throw new IllegalStateException("Cannot start nodes in " + type);
-            }
+            default -> throw new IllegalStateException("Cannot start nodes in " + type);
         }
     }
 
