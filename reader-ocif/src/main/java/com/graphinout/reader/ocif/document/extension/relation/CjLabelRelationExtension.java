@@ -2,13 +2,14 @@ package com.graphinout.reader.ocif.document.extension.relation;
 
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.document.ICjLabel;
-import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.reader.ocif.document.extension.OcifExtension;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Set;
 
-import static java.util.stream.Collectors.joining;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * TODO add to CJ docs, maybe link from OCIF docs as example
@@ -47,21 +48,19 @@ public class CjLabelRelationExtension extends OcifExtension implements IOcifRela
 
     public static final String TYPE_NAME = "@connected-json/label";
     public static final String TYPE_URI = "https://j-s-o-n.org/ocif-label/schema.json";
+    private ICjLabel label;
 
-    public CjLabelRelationExtension() {
+    public CjLabelRelationExtension(@NonNull ICjLabel cjLabel) {
         super(TYPE_URI, TYPE_NAME);
+        label(cjLabel);
     }
 
     public static @NonNull CjLabelRelationExtension of(@NonNull ICjLabel cjLabel) {
-        CjLabelRelationExtension ext = new CjLabelRelationExtension();
-        ext.label(cjLabel);
-        return ext;
+        return new CjLabelRelationExtension(cjLabel);
     }
 
     public CjLabelRelationExtension copy() {
-        CjLabelRelationExtension data = new CjLabelRelationExtension();
-        map().forEach(data::set);
-        return data;
+        return new CjLabelRelationExtension(label());
     }
 
     @Override
@@ -70,26 +69,28 @@ public class CjLabelRelationExtension extends OcifExtension implements IOcifRela
     }
 
     public boolean isEmpty() {
-        return map().isEmpty();
+        return label.toJsonValue().isEmpty();
     }
 
     public ICjLabel label() {
-        IJsonValue v = map().get(CjConstants.LABEL);
-        assert v != null : "Label value cannot be null";
-        if (v.isArray()) {
-            return ICjLabel.fromJsonValue(v.asArray());
-        } else {
-            throw new IllegalArgumentException("Label value must be an array");
-        }
+        return label;
     }
 
     public void label(@NonNull ICjLabel label) {
-        set(CjConstants.LABEL, label().toJsonValue());
+        this.label = label;
+    }
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        o.setProperty(CjConstants.LABEL, label().toJsonValue());
+        return o;
     }
 
     @Override
     public String toString() {
-        return "CjLabelNodeExtension{" + map().entrySet().stream().map(e -> e.getKey() + "='" + e.getValue() + "'").collect(joining(", ")) + "}";
+        return "CjLabelNodeExtension{" + label.toJsonValue() + "}";
     }
 
 }

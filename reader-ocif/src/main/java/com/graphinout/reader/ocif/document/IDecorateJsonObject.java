@@ -17,7 +17,6 @@ public interface IDecorateJsonObject {
         }
     }
 
-
     /** These keys are handled/interpreted */
     Set<String> definedKeys();
 

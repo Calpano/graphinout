@@ -3,10 +3,8 @@ package com.graphinout.base.cj.document;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.foundation.pure.collections.jajson.Json2JsonValueWriter;
-import com.graphinout.foundation.pure.json.document.IJsonArray;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
-import com.graphinout.foundation.pure.json.document.IJsonValue;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -57,13 +55,13 @@ public interface ICjElement {
     /** Fires this element, including start and end and its children. */
     void fire(ICjWriter cjWriter);
 
-    default IJsonArray toJsonValue() {
+    default IJsonObject toJsonValue() {
         Json2JsonValueWriter json2JsonValueWriter = new Json2JsonValueWriter(IJsonFactory.INSTANCE);
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2JsonValueWriter);
         cj2JsonWriter.objectStart();
         fire(cj2JsonWriter);
         cj2JsonWriter.objectEnd();
-        return Objects.requireNonNull(json2JsonValueWriter.resultJsonRootObject()).asArray();
+        return Objects.requireNonNull(json2JsonValueWriter.resultJsonRootObject()).asObject();
     }
 
 }

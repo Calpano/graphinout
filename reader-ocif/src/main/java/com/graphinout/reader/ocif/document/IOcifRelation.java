@@ -4,7 +4,6 @@ import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
-import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.relation.IOcifRelationExtension;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -31,7 +30,7 @@ public interface IOcifRelation extends IOcifEntity, IOcifItem {
         if (!relation.extensions().isEmpty()) {
             IJsonArrayMutable extensionsArray = factory().createArrayMutable();
             relation.extensions().forEach(extension -> //
-                    extensionsArray.add(IOcifExtension.extensionToJson(extension)));
+                    extensionsArray.add(extension.toJson()));
             relationJson.setProperty(OCIF.Common.DATA, extensionsArray);
         }
         return relationJson;

@@ -11,7 +11,7 @@ public interface ICjDocumentChunkMutable extends ICjDocumentChunk, ICjHasDataMut
 
     /** A simple setter */
     @ModificationOperation
-    void connectedJson(ICjDocumentMetaMutable meta);
+    void connectedJson(ICjDocumentMeta meta);
 
     /** Creates a new {@link ICjDocumentMetaMutable}, attaches it, and lets the consumer modify it */
     @ModificationOperation

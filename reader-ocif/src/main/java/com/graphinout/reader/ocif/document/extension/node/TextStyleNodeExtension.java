@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
@@ -9,6 +10,9 @@ import com.graphinout.reader.ocif.document.types.OcifColor;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Set;
+
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 public class TextStyleNodeExtension extends OcifExtension implements IOcifNodeExtension {
 
@@ -88,6 +92,19 @@ public class TextStyleNodeExtension extends OcifExtension implements IOcifNodeEx
     public TextStyleNodeExtension setItalic(Boolean italic) {
         this.italic = italic;
         return this;
+    }
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        ifPresentAccept(fontSizePx, v -> o.setNumber(OCIF.Common.FONT_SIZE_PX, v));
+        ifPresentAccept(fontFamily, v -> o.setString(OCIF.Common.FONT_FAMILY, v));
+        ifPresentAccept(color, v -> o.add(OCIF.Common.COLOR, v.toJson()));
+        ifPresentAccept(align, v -> o.setString(OCIF.Common.ALIGN, v));
+        o.setBoolean(OCIF.Common.BOLD, bold);
+        o.setBoolean(OCIF.Common.ITALIC, italic);
+        return o;
     }
 
 }

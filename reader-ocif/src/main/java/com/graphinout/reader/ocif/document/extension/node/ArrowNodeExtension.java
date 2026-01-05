@@ -2,6 +2,7 @@ package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.json.document.IJsonArray;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
@@ -10,6 +11,9 @@ import com.graphinout.reader.ocif.document.types.OcifColor;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Set;
+
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Arrow Node Extension.
@@ -111,5 +115,18 @@ public class ArrowNodeExtension extends OcifExtension implements IOcifNodeExtens
     public OcifColor strokeColor() {return strokeColor;}
 
     public Double strokeWidth() {return strokeWidth;}
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        ifPresentAccept(strokeWidth, v -> o.setNumber(OCIF.Common.STROKE_WIDTH, v));
+        ifPresentAccept(strokeColor, v -> o.add(OCIF.Common.STROKE_COLOR, v.toJson()));
+        ifPresentAccept(start, v -> o.add(OCIF.Common.START, v));
+        ifPresentAccept(end, v -> o.add(OCIF.Common.END, v));
+        ifPresentAccept(startMarker, v -> o.setString(OCIF.Common.START_MARKER, v));
+        ifPresentAccept(endMarker, v -> o.setString(OCIF.Common.END_MARKER, v));
+        return o;
+    }
 
 }

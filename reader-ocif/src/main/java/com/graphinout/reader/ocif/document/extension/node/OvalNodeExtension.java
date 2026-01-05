@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
@@ -9,6 +10,9 @@ import com.graphinout.reader.ocif.document.types.OcifColor;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Set;
+
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Oval Node Extension.
@@ -68,5 +72,15 @@ public class OvalNodeExtension extends OcifExtension implements IOcifNodeExtensi
     public OcifColor strokeColor() {return strokeColor;}
 
     public Double strokeWidth() {return strokeWidth;}
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        ifPresentAccept(strokeWidth, v -> o.setNumber(OCIF.Common.STROKE_WIDTH, v));
+        ifPresentAccept(strokeColor, v -> o.add(OCIF.Common.STROKE_COLOR, v.toJson()));
+        ifPresentAccept(fillColor, v -> o.add(OCIF.Common.FILL_COLOR, v.toJson()));
+        return o;
+    }
 
 }

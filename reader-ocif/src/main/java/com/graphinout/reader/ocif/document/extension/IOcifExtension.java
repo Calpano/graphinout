@@ -1,14 +1,9 @@
 package com.graphinout.reader.ocif.document.extension;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
-import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
-import com.graphinout.foundation.pure.json.document.IJsonValue;
-import com.graphinout.reader.ocif.document.IDecorateJsonObject;
 import com.graphinout.reader.ocif.document.IOcifSchema;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-
-import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Marker interface for OCIF extensions (canvas, node, and relation extensions).
@@ -24,17 +19,10 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
  * It SHOULD have a version number, as part of its TYPE_URI. It SHOULD have a proposed name and SHOULD have a JSON
  * schema.
  */
-public interface IOcifExtension extends IDecorateJsonObject {
+public interface IOcifExtension {
 
     /** type URI */
     String TYPE = "type";
-
-    static IJsonValue extensionToJson(IOcifExtension extension) {
-        IJsonObjectMutable extensionJson = factory().createObjectMutable();
-        extension.map().forEach(extensionJson::setProperty);
-        extensionJson.setProperty(TYPE, factory().createString(extension.typeUri()));
-        return extensionJson;
-    }
 
     /**
      * The JSON schema information of the extension

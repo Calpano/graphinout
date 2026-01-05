@@ -2,6 +2,7 @@ package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Ports Node Extension.
@@ -61,7 +64,17 @@ public class PortsNodeExtension extends OcifExtension implements IOcifNodeExtens
     public Map<String, Object> toMap() {
         return JaJson.createMap()//
                 .putNonNull(TYPE, typeUri())//
-                .putMaybe(PORTS, ports()).build();
+                .putMaybe(OCIF.Common.PORTS, ports()).build();
+    }
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        if (!ports.isEmpty()) {
+            o.addArray(OCIF.Common.PORTS, arr -> ports.forEach(arr::add));
+        }
+        return o;
     }
 
 }

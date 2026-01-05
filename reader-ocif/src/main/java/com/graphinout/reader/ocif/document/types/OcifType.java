@@ -4,6 +4,6 @@ import com.graphinout.foundation.pure.json.document.IJsonValue;
 
 public abstract class OcifType {
 
-    abstract IJsonValue toJson();
+    public abstract IJsonValue toJson();
 
 }

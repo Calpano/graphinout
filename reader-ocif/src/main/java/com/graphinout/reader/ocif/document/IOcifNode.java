@@ -3,7 +3,6 @@ package com.graphinout.reader.ocif.document;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
-import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.node.IOcifNodeExtension;
 import com.graphinout.reader.ocif.document.types.OcifAngle;
 import com.graphinout.reader.ocif.document.types.OcifVector23D;
@@ -47,7 +46,7 @@ public interface IOcifNode extends IOcifItem {
         ifPresentAccept(ocifNode.relation(), r -> nodeJson.setString(OCIF.Node.RELATION, r));
         ifPresentAccept(ocifNode.extensions(), exts -> //
                 nodeJson.setArray(OCIF.Common.DATA, array -> exts.forEach(ext -> //
-                        array.add(IOcifExtension.extensionToJson(ext)))));
+                        array.add(ext.toJson()))));
         return nodeJson;
     }
 

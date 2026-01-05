@@ -22,7 +22,7 @@ public class OcifUri extends OcifType {
     }
 
     @Override
-    IJsonValue toJson() {
+    public IJsonValue toJson() {
         return IJsonFactory.INSTANCE.createString(value.toString());
     }
 

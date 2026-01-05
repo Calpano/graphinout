@@ -2,6 +2,7 @@ package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
@@ -13,9 +14,11 @@ import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.Set;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static com.graphinout.reader.ocif.OCIF.Common.FILL_COLOR;
 import static com.graphinout.reader.ocif.OCIF.Common.STROKE_COLOR;
 import static com.graphinout.reader.ocif.OCIF.Common.STROKE_WIDTH;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Rectangle Node Extension.
@@ -83,6 +86,16 @@ public class RectangleNodeExtension extends OcifExtension implements IOcifNodeEx
                 .putMaybe(STROKE_WIDTH, strokeWidth())//
                 .putMaybe(STROKE_COLOR, strokeColor())//
                 .putMaybe(FILL_COLOR, fillColor()).build();
+    }
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        ifPresentAccept(strokeWidth, v -> o.setNumber(STROKE_WIDTH, v));
+        ifPresentAccept(strokeColor, v -> o.setString(STROKE_COLOR, v.value()));
+        ifPresentAccept(fillColor, v -> o.setString(FILL_COLOR, v.value()));
+        return o;
     }
 
 }

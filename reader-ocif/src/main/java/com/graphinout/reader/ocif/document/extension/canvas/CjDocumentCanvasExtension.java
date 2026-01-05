@@ -11,10 +11,11 @@ import com.graphinout.reader.ocif.document.extension.OcifExtension;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
-import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
 import static com.graphinout.reader.ocif.Ocifs.factory;
 import static java.util.stream.Collectors.joining;
 
@@ -30,6 +31,9 @@ public class CjDocumentCanvasExtension extends OcifExtension implements IOcifCan
     public static final String TYPE_URI = "https://j-s-o-n.org/ocif-doc/schema.json";
     public static final String BASE_URI = "baseUri";
     private static final String CONNECTED_JSON = "connectedJson";
+    private @Nullable String baseUri;
+    private @Nullable ICjDocumentMeta connectedJson;
+
 
     public CjDocumentCanvasExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -37,30 +41,31 @@ public class CjDocumentCanvasExtension extends OcifExtension implements IOcifCan
 
     public static @NonNull IOcifExtension of(@NonNull IJsonObject obj) {
         CjDocumentCanvasExtension canvasExtension = new CjDocumentCanvasExtension();
-        obj.forEach(canvasExtension::set);
+        ifPresentAccept(obj.get(BASE_URI), IJsonValue::asString, canvasExtension::baseUri);
+        ifPresentAccept(obj.get(CONNECTED_JSON), ICjDocumentMetaMutable::of, canvasExtension::connectedJson);
         return canvasExtension;
     }
 
     public void baseUri(@NonNull String baseUri) {
-        set(BASE_URI, baseUri);
+        this.baseUri = baseUri;
     }
 
     public @Nullable String baseUri() {
-        return mapOrNull(map(), m -> m.get(BASE_URI), IJsonValue::asString);
+        return baseUri;
     }
 
-    public ICjDocumentMetaMutable connectedJson() {
-        return mapOrNull(map(), m -> m.get(CONNECTED_JSON), ICjDocumentMetaMutable::of);
+    public ICjDocumentMeta connectedJson() {
+        return connectedJson;
     }
 
     public void connectedJson(@NonNull ICjDocumentMeta cjDocumentMeta) {
-        assert cjDocumentMeta != null : "cjDocumentMeta cannot be null";
-        set(CONNECTED_JSON, cjDocumentMeta.toJsonValue());
+        this.connectedJson = cjDocumentMeta;
     }
 
     public CjDocumentCanvasExtension copy() {
         CjDocumentCanvasExtension data = new CjDocumentCanvasExtension();
-        map().forEach(data::set);
+        ifPresentAccept(baseUri(), data::baseUri);
+        ifPresentAccept(connectedJson(), data::connectedJson);
         return data;
     }
 
@@ -73,12 +78,20 @@ public class CjDocumentCanvasExtension extends OcifExtension implements IOcifCan
         return map().isEmpty();
     }
 
+    /** Immutable copy */
+    public Map<String, Object> map() {
+        Map<String, Object> map = new TreeMap<>();
+        ifPresentAccept(baseUri(), v -> map.put(BASE_URI, v));
+        ifPresentAccept(connectedJson(), ICjDocumentMeta::toJaJsonMap, v -> map.put(CONNECTED_JSON, v));
+        return map;
+    }
+
     @Override
     public @NonNull IJsonObject toJson() {
         IJsonObjectMutable o = factory().createObjectMutable();
-        o.setString(TYPE,TYPE_NAME);
-        ifPresentAccept(connectedJson(), ICjElement::toJsonValue, v->o.add(CONNECTED_JSON, v));
-        ifPresentAccept(baseUri(),v->o.add(BASE_URI, v));
+        o.setString(TYPE, TYPE_NAME);
+        ifPresentAccept(connectedJson(), ICjElement::toJsonValue, v -> o.add(CONNECTED_JSON, v));
+        ifPresentAccept(baseUri(), v -> o.add(BASE_URI, v));
         return o;
     }
 

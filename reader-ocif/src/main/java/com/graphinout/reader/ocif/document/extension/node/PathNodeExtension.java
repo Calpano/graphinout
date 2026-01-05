@@ -2,6 +2,7 @@ package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
@@ -11,6 +12,9 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 import java.util.Set;
+
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Path Node Extension.
@@ -99,6 +103,17 @@ public class PathNodeExtension extends OcifExtension implements IOcifNodeExtensi
                 .putMaybe(STROKE_COLOR, strokeColor())//
                 .putMaybe(FILL_COLOR, fillColor())//
                 .putMaybe(PATH, path()).build();
+    }
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        ifPresentAccept(strokeWidth, v -> o.setNumber(OCIF.Common.STROKE_WIDTH, v));
+        ifPresentAccept(strokeColor, v -> o.add(OCIF.Common.STROKE_COLOR, v.toJson()));
+        ifPresentAccept(fillColor, v -> o.add(OCIF.Common.FILL_COLOR, v.toJson()));
+        ifPresentAccept(path, v -> o.setString(OCIF.Common.PATH, v));
+        return o;
     }
 
 }

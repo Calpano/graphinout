@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.canvas;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.OcifExtension;
@@ -8,6 +9,9 @@ import com.graphinout.reader.ocif.document.types.OcifVector23D;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Set;
+
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Canvas Viewport extension.
@@ -56,5 +60,13 @@ public class CanvasViewportExtension extends OcifExtension implements IOcifCanva
 
     public OcifVector23D size() {return size;}
 
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        ifPresentAccept(position, v -> o.add(OCIF.Node.POSITION, v.toJson()));
+        ifPresentAccept(size, v -> o.add(OCIF.Node.SIZE, v.toJson()));
+        return o;
+    }
 
 }

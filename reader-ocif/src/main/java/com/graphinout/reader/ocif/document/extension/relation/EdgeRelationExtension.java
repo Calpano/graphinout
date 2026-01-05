@@ -1,15 +1,18 @@
 package com.graphinout.reader.ocif.document.extension.relation;
 
-import com.graphinout.foundation.pure.functional.Nullables;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.OcifExtension;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static com.graphinout.foundation.pure.functional.Nullables.nonNull;
 import static com.graphinout.foundation.pure.input.ContentErrorException.contentError;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Edge Relation Extension.
@@ -45,6 +48,7 @@ public class EdgeRelationExtension extends OcifExtension implements IOcifRelatio
 
     /**
      * Must have 'start' and 'end' properties.
+     *
      * @param o
      * @return
      */
@@ -72,12 +76,48 @@ public class EdgeRelationExtension extends OcifExtension implements IOcifRelatio
 
     public boolean directed() {return directed;}
 
+    public void directed(boolean directed) {
+        this.directed = directed;
+    }
+
     public String end() {return end;}
+
+    public EdgeRelationExtension end(String end) {
+        this.end = end;
+        return this;
+    }
 
     public @Nullable String node() {return node;}
 
+    public EdgeRelationExtension node(String node) {
+        this.node = node;
+        return this;
+    }
+
     public @Nullable String rel() {return rel;}
 
+    public EdgeRelationExtension rel(String rel) {
+        this.rel = rel;
+        return this;
+    }
+
     public String start() {return start;}
+
+    public EdgeRelationExtension start(String start) {
+        this.start = start;
+        return this;
+    }
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        o.setString(OCIF.Common.START, start);
+        o.setString(OCIF.Common.END, end);
+        o.setBoolean(OCIF.Common.DIRECTED, directed);
+        ifPresentAccept(rel, v -> o.setString(OCIF.Common.REL, v));
+        ifPresentAccept(node, v -> o.setString(OCIF.Common.NODE, v));
+        return o;
+    }
 
 }

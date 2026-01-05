@@ -2,6 +2,7 @@ package com.graphinout.reader.ocif.document.extension.relation;
 
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.OcifExtension;
@@ -14,6 +15,7 @@ import static com.graphinout.reader.ocif.OCIF.Common.CASCADE_DELETE;
 import static com.graphinout.reader.ocif.OCIF.Common.CHILD;
 import static com.graphinout.reader.ocif.OCIF.Common.INHERIT;
 import static com.graphinout.reader.ocif.OCIF.Common.PARENT;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Parent-Child Relation Extension.
@@ -86,5 +88,15 @@ public class ParentChildRelationExtension extends OcifExtension implements IOcif
                 .build();
     }
 
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        o.addMaybe(PARENT, parent);
+        o.addMaybe(CHILD, child);
+        o.setBoolean(INHERIT, inherit);
+        o.setBoolean(CASCADE_DELETE, cascadeDelete);
+        return o;
+    }
 
 }

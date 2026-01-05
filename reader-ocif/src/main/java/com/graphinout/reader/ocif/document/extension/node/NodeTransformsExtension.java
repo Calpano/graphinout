@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
@@ -10,6 +11,9 @@ import com.graphinout.reader.ocif.document.types.OcifVector23D;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Set;
+
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Node Transforms Extension.
@@ -93,6 +97,17 @@ public class NodeTransformsExtension extends OcifExtension implements IOcifNodeE
     public NodeTransformsExtension setScale(OcifVector23D scale) {
         this.scale = scale;
         return this;
+    }
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        ifPresentAccept(scale, v -> o.add(OCIF.Common.SCALE, v.toJson()));
+        ifPresentAccept(rotation, v -> o.add(OCIF.Node.ROTATION, v.toJson()));
+        ifPresentAccept(rotationAxis, v -> o.add(OCIF.Common.ROTATION_AXIS, v.toJson()));
+        ifPresentAccept(offset, v -> o.add(OCIF.Common.OFFSET, v.toJson()));
+        return o;
     }
 
 }

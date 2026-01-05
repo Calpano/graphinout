@@ -2,6 +2,7 @@ package com.graphinout.reader.ocif.document.extension.relation;
 
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
@@ -11,6 +12,9 @@ import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Hyperedge Relation Extension.
@@ -137,5 +141,25 @@ public class HyperedgeRelationExtension extends OcifExtension implements IOcifRe
     }
 
     public Double weight() {return weight;}
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        if (!endpoints.isEmpty()) {
+            o.addArray(OCIF.Common.ENDPOINTS, arr -> {
+                for (Endpoint ep : endpoints) {
+                    arr.addObject(eo -> {
+                        eo.addMaybe(OCIF.Common.ID, ep.id());
+                        eo.addMaybe(OCIF.Common.DIRECTION, ep.direction());
+                        eo.addMaybe(OCIF.Common.WEIGHT, ep.weight());
+                    });
+                }
+            });
+        }
+        ifPresentAccept(weight, v -> o.setNumber(OCIF.Common.WEIGHT, v));
+        ifPresentAccept(rel, v -> o.setString(OCIF.Common.REL, v));
+        return o;
+    }
 
 }

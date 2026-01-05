@@ -164,10 +164,10 @@ public class CjDoc2OcifDoc {
     }
 
     private static HyperedgeRelationExtension toOcifHyperEdgeRelationExtension(ICjEdge cjEdge) {
-        var endpointsList = cjEdge.endpoints().toList();
+        var cjEndpointsList = cjEdge.endpoints().toList();
         var hyper = new HyperedgeRelationExtension();
         var arr = factory().createArrayMutable();
-        for (var ep : endpointsList) {
+        for (var ep : cjEndpointsList) {
             String id = encodeEndpoint(ep);
             String dir = HyperedgeRelationExtension.Endpoint.ocifDirection(ep.direction());
             var epObj = factory().createObjectMutable();
@@ -177,11 +177,7 @@ public class CjDoc2OcifDoc {
             // also set typed field
             hyper.addEndpoint(new HyperedgeRelationExtension.Endpoint().id(id).direction(dir));
         }
-        ifPresentAccept(cjEdge.edgeType(), ICjEdgeType::type, type -> {
-            hyper.setRel(type);
-            hyper.set(OCIF.Common.REL, type);
-        });
-        hyper.set(OCIF.Common.ENDPOINTS, arr);
+        ifPresentAccept(cjEdge.edgeType(), ICjEdgeType::type, hyper::setRel);
         return hyper;
     }
 
@@ -285,10 +281,10 @@ public class CjDoc2OcifDoc {
 
         // Restore preserved OCIF extensions
         ifPresentAccept(cjEdge.data(), ICjData::jsonValue, jsonValue -> {
-            if(jsonValue.isObject()) {
+            if (jsonValue.isObject()) {
                 IJsonObject o = jsonValue.asObject();
                 DataExtension unknownProperties = new DataExtension();
-                o.forEach( (k,v)->{
+                o.forEach((k, v) -> {
                     switch (k) {
                         case OcifInCj.OCIF_EXTENSIONS -> {
                             if (v.isArray()) {
@@ -304,10 +300,10 @@ public class CjDoc2OcifDoc {
                             ifPresentAccept(ocifRelationData.node(), ocifRelation::node);
                         }
                         default -> // Export CJ->OCIF: edge-level custom data as edge-level DataExtension
-                                unknownProperties.set(k,v);
+                                unknownProperties.set(k, v);
                     }
                 });
-                if(!unknownProperties.isEmpty()) {
+                if (!unknownProperties.isEmpty()) {
                     ocifRelation.addExtension(unknownProperties);
                 }
             } else {
@@ -360,19 +356,16 @@ public class CjDoc2OcifDoc {
             extObj.setString(OCIF.Common.END, end);
             extObj.setBoolean(OCIF.Common.DIRECTED, directed);
 
-            ifPresentAccept(cjEdge.edgeType(), ICjEdgeType::type, type -> {
-                extObj.setString(OCIF.Common.REL, type);
-            });
+            ifPresentAccept(cjEdge.edgeType(), ICjEdgeType::type, type -> //
+                    extObj.setString(OCIF.Common.REL, type));
             // create typed extension instance and populate map so it serializes
             EdgeRelationExtension edgeExt = EdgeRelationExtension.of(extObj);
-            edgeExt.set(OCIF.Common.START, start);
-            edgeExt.set(OCIF.Common.END, end);
-            edgeExt.set(OCIF.Common.DIRECTED, directed);
+            edgeExt.start(start);
+            edgeExt.end(end);
+            edgeExt.directed(directed);
 
-            ifPresentAccept(cjEdge.edgeType(), ICjEdgeType::type, type -> {
-                edgeExt.set(OCIF.Common.REL, type);
-                extObj.setString(OCIF.Common.REL, type);
-            });
+
+            ifPresentAccept(cjEdge.edgeType(), ICjEdgeType::type, edgeExt::rel);
             ocifRelation.addExtension(edgeExt);
         }
 

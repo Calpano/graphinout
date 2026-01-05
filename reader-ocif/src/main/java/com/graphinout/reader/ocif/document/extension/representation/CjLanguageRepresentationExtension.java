@@ -1,17 +1,17 @@
 package com.graphinout.reader.ocif.document.extension.representation;
 
+import com.graphinout.base.cj.CjConstants;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
-import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.OcifExtension;
 import com.graphinout.reader.ocif.document.extension.canvas.IOcifCanvasExtension;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 
-import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
-import static java.util.stream.Collectors.joining;
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * TODO add to CJ docs, maybe link from OCIF docs as example
@@ -23,44 +23,49 @@ public class CjLanguageRepresentationExtension extends OcifExtension implements 
 
     public static final String TYPE_NAME = "@connected-json/language";
     public static final String TYPE_URI = "https://j-s-o-n.org/ocif-language/schema.json";
-    public static final String LANGUAGE = "language";
+    private @NonNull String language;
 
-    public CjLanguageRepresentationExtension() {
+    public CjLanguageRepresentationExtension(@NonNull String language) {
         super(TYPE_URI, TYPE_NAME);
+        this.language = language;
     }
 
     public static @NonNull IOcifExtension of(@NonNull IJsonObject obj) {
-        CjLanguageRepresentationExtension data = new CjLanguageRepresentationExtension();
-        obj.forEach(data::set);
-        return data;
+        return new CjLanguageRepresentationExtension(obj.getString(CjConstants.LANGUAGE));
     }
 
     public CjLanguageRepresentationExtension copy() {
-        CjLanguageRepresentationExtension data = new CjLanguageRepresentationExtension();
-        map().forEach(data::set);
-        return data;
+        return new CjLanguageRepresentationExtension(language());
     }
 
     @Override
     public Set<String> definedKeys() {
-        return Set.of(LANGUAGE);
+        return Set.of(CjConstants.LANGUAGE);
     }
 
     public boolean isEmpty() {
-        return map().isEmpty();
+        return false;
     }
 
     public void language(@NonNull String language) {
-        set(LANGUAGE, language);
+        this.language = language;
     }
 
-    public @Nullable String language() {
-        return mapOrNull(map(), m -> m.get(LANGUAGE), IJsonValue::asString);
+    public @NonNull String language() {
+        return language;
+    }
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        ifPresentAccept(language(), v -> o.setString(CjConstants.LANGUAGE, v));
+        return o;
     }
 
     @Override
     public String toString() {
-        return "CjLanguageRepresentationExtension{" + map().entrySet().stream().map(e -> e.getKey() + "='" + e.getValue() + "'").collect(joining(", ")) + "}";
+        return "CjLanguageRepresentationExtension{" + language() + "}";
     }
 
 }

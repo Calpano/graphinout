@@ -3,6 +3,7 @@ package com.graphinout.reader.ocif.document.extension.relation;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.document.IJsonArray;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.OcifExtension;
@@ -13,8 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static com.graphinout.reader.ocif.OCIF.Common.CASCADE_DELETE;
 import static com.graphinout.reader.ocif.OCIF.Common.MEMBERS;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Group Relation Extension.
@@ -67,5 +70,15 @@ public class GroupRelationExtension extends OcifExtension implements IOcifRelati
         return JaJson.createMap().putNonNull(TYPE, typeUri()).putMaybe(MEMBERS, members()).putNonNull(CASCADE_DELETE, cascadeDelete()).build();
     }
 
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        if (!members.isEmpty()) {
+            o.addArray(MEMBERS, arr -> members.forEach(arr::add));
+        }
+        ifPresentAccept(cascadeDelete, v -> o.setBoolean(CASCADE_DELETE, v));
+        return o;
+    }
 
 }

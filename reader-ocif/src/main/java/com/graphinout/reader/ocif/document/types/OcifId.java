@@ -26,7 +26,7 @@ public class OcifId extends OcifType {
     }
 
     @Override
-    IJsonValue toJson() {
+    public IJsonValue toJson() {
         return IJsonFactory.INSTANCE.createString(value);
     }
 

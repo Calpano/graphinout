@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+
 /**
  * A CJ document
  */
@@ -25,7 +27,7 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     /** All directed graphs in this document */
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private @Nullable String baseUri;
-    private @Nullable ICjDocumentMetaMutable connectedJson;
+    private @Nullable ICjDocumentMeta connectedJson;
 
     @Override
     public void addGraph(Consumer<ICjGraphMutable> graph) {
@@ -46,7 +48,7 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     }
 
     @Override
-    public void connectedJson(ICjDocumentMetaMutable meta) {
+    public void connectedJson(ICjDocumentMeta meta) {
         if(connectedJson !=null)
             throw new IllegalStateException("Meta already set");
         this.connectedJson = meta;
@@ -59,10 +61,22 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
 
     @Override
     public void connectedJson(Consumer<ICjDocumentMetaMutable> consumer) {
+        CjDocumentMetaElement meta = new CjDocumentMetaElement();
+        consumer.accept(meta);
+
         if (this.connectedJson == null) {
-            this.connectedJson = new CjDocumentMetaElement();
+            this.connectedJson = meta;
+        } else {
+            // copy state
+            CjDocumentMetaElement metaUnion = new CjDocumentMetaElement();
+            ifPresentAccept( connectedJson.canonical(), metaUnion::canonical);
+            ifPresentAccept( connectedJson.versionDate(), metaUnion::versionDate);
+            ifPresentAccept( connectedJson.versionNumber(), metaUnion::versionNumber);
+            ifPresentAccept( meta.canonical(), metaUnion::canonical);
+            ifPresentAccept( meta.versionDate(), metaUnion::versionDate);
+            ifPresentAccept( meta.versionNumber(), metaUnion::versionNumber);
+            this.connectedJson = metaUnion;
         }
-        consumer.accept(connectedJson);
     }
 
     @Override

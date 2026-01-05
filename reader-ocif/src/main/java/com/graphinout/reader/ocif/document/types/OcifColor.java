@@ -11,9 +11,14 @@ public class OcifColor extends OcifType {
 
     final String value;
 
+    public String value() {
+        return value;
+    }
+
     public OcifColor(String value) {
         if (!HEX_COLOR_PATTERN.matcher(value).matches()) {
-            throw new IllegalArgumentException("Invalid hex color format. Expected #RGB, #RGBA, #RRGGBB, or #RRGGBBAA.");
+            throw new IllegalArgumentException("Invalid hex color format: '" + value +
+                    "'. Expected #RGB, #RGBA, #RRGGBB, or #RRGGBBAA.");
         }
         this.value = value;
     }
@@ -23,7 +28,7 @@ public class OcifColor extends OcifType {
     }
 
     @Override
-    IJsonValue toJson() {
+    public IJsonValue toJson() {
         return IJsonFactory.INSTANCE.createString(value);
     }
 

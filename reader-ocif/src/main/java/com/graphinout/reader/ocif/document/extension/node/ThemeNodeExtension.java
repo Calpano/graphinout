@@ -2,6 +2,7 @@ package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.OcifExtension;
@@ -11,8 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static com.graphinout.reader.ocif.OCIF.Common.SELECT_THEME;
 import static com.graphinout.reader.ocif.OCIF.Common.THEMES;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Theme Node Extension.
@@ -72,5 +75,15 @@ public class ThemeNodeExtension extends OcifExtension implements IOcifNodeExtens
                 .putMaybe(THEMES, themes()).build();
     }
 
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        ifPresentAccept(selectTheme, v -> o.setString(SELECT_THEME, v));
+        if (!themes.isEmpty()) {
+            o.addObject(THEMES, themesObj -> themesObj.addAllFromJaJson(themes));
+        }
+        return o;
+    }
 
 }

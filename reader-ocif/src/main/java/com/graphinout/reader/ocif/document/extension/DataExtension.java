@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.cj.OcifCj;
 import com.graphinout.reader.ocif.document.extension.canvas.IOcifCanvasExtension;
@@ -10,8 +11,11 @@ import com.graphinout.reader.ocif.document.extension.representation.IOcifReprese
 import com.graphinout.reader.ocif.document.extension.resource.IOcifResourceExtension;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
+import static com.graphinout.reader.ocif.Ocifs.factory;
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -24,13 +28,15 @@ public class DataExtension extends OcifExtension implements IOcifCanvasExtension
     public static final String TYPE_NAME = "@ocif/data";
     public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/data.json";
 
+    private Map<String, IJsonValue> map = new TreeMap<>();
+
     public DataExtension() {
         super(TYPE_URI, TYPE_NAME);
     }
 
     public static @NonNull DataExtension of(@NonNull IJsonObject obj) {
         DataExtension data = new DataExtension();
-        obj.forEach(data::set);
+        obj.forEach(data.map::put);
         return data;
     }
 
@@ -45,14 +51,14 @@ public class DataExtension extends OcifExtension implements IOcifCanvasExtension
             return of(jsonValue.asObject());
         } else {
             DataExtension ocifData = new DataExtension();
-            ocifData.map().put(OcifCj.CjInOcifData.DATA_NON_OBJECT, jsonValue);
+            ocifData.map.put(OcifCj.CjInOcifData.DATA_NON_OBJECT, jsonValue);
             return ocifData;
         }
     }
 
     public DataExtension copy() {
         DataExtension data = new DataExtension();
-        map().forEach(data::set);
+        data.map.putAll(map);
         return data;
     }
 
@@ -62,12 +68,28 @@ public class DataExtension extends OcifExtension implements IOcifCanvasExtension
     }
 
     public boolean isEmpty() {
-        return map().isEmpty();
+        return map.isEmpty();
+    }
+
+    public void set(String key, IJsonValue jsonValue) {
+        map.put(key, jsonValue);
+    }
+
+    public void set(String key, String value) {
+        map.put(key, factory().createString(value));
+    }
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        map.forEach(o::setProperty);
+        return o;
     }
 
     @Override
     public String toString() {
-        return "DataExtension{" + map().entrySet().stream().map(e -> e.getKey() + "='" + e.getValue() + "'").collect(joining(", ")) + "}";
+        return "DataExtension{" + map.entrySet().stream().map(e -> e.getKey() + "='" + e.getValue() + "'").collect(joining(", ")) + "}";
     }
 
 }

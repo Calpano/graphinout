@@ -4,7 +4,6 @@ import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
-import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.canvas.IOcifCanvasExtension;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -23,7 +22,7 @@ public interface IOcifDocument {
 
         if (!ocifDocument.canvasExtensions().isEmpty()) {
             IJsonArrayMutable extensionsArray = factory().createArrayMutable();
-            ocifDocument.canvasExtensions().forEach(extension -> extensionsArray.add(IOcifExtension.extensionToJson(extension)));
+            ocifDocument.canvasExtensions().forEach(extension -> extensionsArray.add(extension.toJson()));
             root.setProperty(OCIF.Common.DATA, extensionsArray);
         }
 

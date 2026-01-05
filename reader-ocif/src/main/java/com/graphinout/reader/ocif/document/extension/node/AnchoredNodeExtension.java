@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
@@ -9,6 +10,9 @@ import com.graphinout.reader.ocif.document.types.OcifVector23D;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Set;
+
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.reader.ocif.Ocifs.factory;
 
 /**
  * Anchored Node Extension.
@@ -81,5 +85,16 @@ public class AnchoredNodeExtension extends OcifExtension implements IOcifNodeExt
     public OcifVector23D topLeftAnchor() {return topLeftAnchor;}
 
     public OcifVector23D topLeftOffset() {return topLeftOffset;}
+
+    @Override
+    public @NonNull IJsonObject toJson() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        o.setString(TYPE, TYPE_NAME);
+        ifPresentAccept(topLeftAnchor, v -> o.add(OCIF.Common.TOP_LEFT_ANCHOR, v.toJson()));
+        ifPresentAccept(bottomRightAnchor, v -> o.add(OCIF.Common.BOTTOM_RIGHT_ANCHOR, v.toJson()));
+        ifPresentAccept(topLeftOffset, v -> o.add(OCIF.Common.TOP_LEFT_OFFSET, v.toJson()));
+        ifPresentAccept(bottomRightOffset, v -> o.add(OCIF.Common.BOTTOM_RIGHT_OFFSET, v.toJson()));
+        return o;
+    }
 
 }

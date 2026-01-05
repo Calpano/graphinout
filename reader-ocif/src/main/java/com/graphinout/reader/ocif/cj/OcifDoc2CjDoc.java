@@ -1,6 +1,5 @@
 package com.graphinout.reader.ocif.cj;
 
-import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.CjEdgeTypeSource;
 import com.graphinout.base.cj.document.ICjDocument;
@@ -14,7 +13,6 @@ import com.graphinout.base.cj.document.ICjNodeMutable;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
-import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.value.java.JavaJsonFactory;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.cj.OcifCj.OcifInCj;
@@ -22,8 +20,6 @@ import com.graphinout.reader.ocif.document.IOcifNode;
 import com.graphinout.reader.ocif.document.IOcifRelation;
 import com.graphinout.reader.ocif.document.IOcifRepresentation;
 import com.graphinout.reader.ocif.document.IOcifResource;
-import com.graphinout.reader.ocif.document.extension.relation.CjLabelRelationExtension;
-import com.graphinout.reader.ocif.document.extension.representation.CjLanguageRepresentationExtension;
 import com.graphinout.reader.ocif.document.extension.DataExtension;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.canvas.CjDocumentCanvasExtension;
@@ -31,8 +27,10 @@ import com.graphinout.reader.ocif.document.extension.canvas.IOcifCanvasExtension
 import com.graphinout.reader.ocif.document.extension.node.IOcifNodeExtension;
 import com.graphinout.reader.ocif.document.extension.node.PortsNodeExtension;
 import com.graphinout.reader.ocif.document.extension.node.TextStyleNodeExtension;
+import com.graphinout.reader.ocif.document.extension.relation.CjLabelRelationExtension;
 import com.graphinout.reader.ocif.document.extension.relation.EdgeRelationExtension;
 import com.graphinout.reader.ocif.document.extension.relation.HyperedgeRelationExtension;
+import com.graphinout.reader.ocif.document.extension.representation.CjLanguageRepresentationExtension;
 import com.graphinout.reader.ocif.document.impl.OcifDocument;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
@@ -113,9 +111,9 @@ public class OcifDoc2CjDoc {
                 ifPresentAccept(cjDocumentCanvasExt.connectedJson(), cjDocument::connectedJson);
             } else if (ext instanceof DataExtension dataExt) {
                 // Import OCIF document-level custom data as CJ data
-                cjDocument.dataMutable(d -> dataExt.map().forEach(d::add));
+                cjDocument.dataMutable(d -> d.setJsonValue(dataExt.toJson()));
             } else {
-                unknownExt.add(IOcifExtension.extensionToJson(ext));
+                unknownExt.add(ext.toJson());
             }
         }
         if (!unknownExt.isEmpty()) {
@@ -161,18 +159,19 @@ public class OcifDoc2CjDoc {
                     // TODO handle known node extensions
                     // ifPresentAccept(portsNodeExtension.ports(), cjNode::ports);
                     // importPortsRecursive(cjNode, v.asArray());
-                        unknownExts.add(IOcifExtension.extensionToJson(ext));
+                        unknownExts.add(ext.toJson());
                 case TextStyleNodeExtension textStyleNodeExtension ->
                     // TODO handle known node extensions
                     // textStyleNodeExtension.color();
-                        unknownExts.add(IOcifExtension.extensionToJson(ext));
+                        unknownExts.add(ext.toJson());
                 case DataExtension dataExt ->
                     // Import OCIF node-level custom data as CJ data
-                        cjNode.dataMutable(d -> dataExt.map().forEach(d::add));
+                        cjNode.dataMutable(d ->
+                                d.setJsonValue(dataExt.toJson()));
                 case null -> {
                     log.warn("null in extensions data array");
                 }
-                default -> unknownExts.add(IOcifExtension.extensionToJson(ext));
+                default -> unknownExts.add(ext.toJson());
             }
         }
         if (!unknownExts.isEmpty()) {
@@ -214,8 +213,9 @@ public class OcifDoc2CjDoc {
         var unknownExtensions = IJsonFactory.INSTANCE.createArrayMutable();
         for (IOcifExtension ext : ocifRelation.extensions()) {
             switch (ext) {
-                case DataExtension ocifData -> cjEdge.dataMutable(cjData-> ocifData.map().forEach(cjData::add));
-                case CjLabelRelationExtension cjLabelRelation-> //
+                case DataExtension ocifData -> cjEdge.dataMutable(cjData ->
+                        cjData.setJsonValue(ocifData.toJson()));
+                case CjLabelRelationExtension cjLabelRelation -> //
                         cjLabelRelation.label().entries().forEach(cjEntry -> //
                                 cjEdge.addLabel(cjEntry.value(), cjEntry.language()));
                 case EdgeRelationExtension edge -> {
@@ -273,7 +273,7 @@ public class OcifDoc2CjDoc {
                         cjEdge.edgeType(ICjEdgeType.of(CjEdgeTypeSource.String, hex.rel()));
                     }
                 }
-                default -> unknownExtensions.add(IOcifExtension.extensionToJson(ext));
+                default -> unknownExtensions.add(ext.toJson());
             }
         }
         if (!unknownExtensions.isEmpty()) {
