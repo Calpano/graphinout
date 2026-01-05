@@ -19,11 +19,11 @@ public abstract class CjHasDataElement implements ICjHasDataMutable {
 
     @Override
     public void dataMutable(Consumer<ICjDataMutable> consumer) {
-        boolean dataPresent = dataElement != null;
-        CjDataElement data = dataPresent ? dataElement : new CjDataElement();
+        boolean dataWasPresent = dataElement != null;
+        CjDataElement data = dataWasPresent ? dataElement : new CjDataElement();
         consumer.accept(data);
-        
-        if (!dataPresent) {
+
+        if (!dataWasPresent && !data.isEmpty()) {
             this.dataElement = data;
         }
     }

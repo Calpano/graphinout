@@ -18,5 +18,4 @@ public interface ICjNodeChunk extends ICjHasId, ICjHasData, ICjHasLabel, ICjHasP
         fireDataMaybe(cjWriter);
     }
 
-
 }

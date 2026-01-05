@@ -8,26 +8,19 @@ import java.util.stream.Stream;
 
 public interface ICjDocumentMeta extends ICjElement {
 
-    @Nullable
-    Boolean canonical();
+    @Nullable Boolean canonical();
 
     @Override
     default Stream<ICjElement> directChildren() {
         return Stream.empty();
     }
 
-    @Nullable
-    String versionDate();
-
-    @Nullable
-    String versionNumber();
-
-    default Map<String,Object> toJaJsonMap() {
-        return JaJson.createMap()
-                .putMaybe("canonical", canonical())
-                .putMaybe("versionDate", versionDate())
-                .putMaybe("versionNumber", versionNumber())
-                .build();
+    default Map<String, Object> toJaJsonMap() {
+        return JaJson.createMap().putMaybe("canonical", canonical()).putMaybe("versionDate", versionDate()).putMaybe("versionNumber", versionNumber()).build();
     }
+
+    @Nullable String versionDate();
+
+    @Nullable String versionNumber();
 
 }

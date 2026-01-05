@@ -1,9 +1,13 @@
 package com.graphinout.base.cj.document;
 
+import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.document.impl.CjLabelElement;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.base.json.JsonReaderImpl;
+import com.graphinout.foundation.pure.json.document.IJsonArray;
+import com.graphinout.foundation.pure.json.document.IJsonFactory;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
@@ -14,12 +18,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public interface ICjLabel extends ICjElement {
 
     Logger _log = getLogger(ICjLabel.class);
+
+    static ICjLabel fromJsonValue(IJsonValue jsonValue) {
+        CjLabelElement cjLabelElement = new CjLabelElement();
+        jsonValue.asArray().forEach(jsonEntry -> cjLabelElement.addEntry(cjEntry -> {
+            IJsonObject jo = jsonEntry.asObject();
+            ifPresentAccept(jo.get(CjConstants.VALUE), IJsonValue::asString, cjEntry::value);
+            ifPresentAccept(jo.get(CjConstants.LANGUAGE), IJsonValue::asString, cjEntry::language);
+        }));
+        return cjLabelElement;
+    }
 
     static ICjLabel fromPlainTextOrJson(String plainTextOrJson) {
         CjLabelElement cjLabelElement = new CjLabelElement();
@@ -41,6 +56,12 @@ public interface ICjLabel extends ICjElement {
             });
         }
         return cjLabelElement;
+    }
+
+    static IJsonArray toJsonValue(ICjLabel cjLabel) {
+        return cjLabel.entries()
+                .map(ICjLabelEntry::toJsonValue)
+                .collect(IJsonFactory.INSTANCE.arrayCollector());
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.graphinout.base.cj.document;
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.JsonConstants;
+import com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter;
 import com.graphinout.foundation.pure.stream.PowerStreams;
 import org.jspecify.annotations.Nullable;
 
@@ -22,8 +23,7 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk {
     }
 
     default @Nullable ICjNode findNode(String id) throws IllegalStateException {
-        return PowerStreams.findOneOrNull(
-                graphs().flatMap(ICjGraph::nodes).filter(n -> Objects.equals(n.id(), id)));
+        return PowerStreams.findOneOrNull(graphs().flatMap(ICjGraph::nodes).filter(n -> Objects.equals(n.id(), id)));
     }
 
     /**
@@ -39,12 +39,17 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk {
 
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap() //
-                .putNonNull(JsonConstants.DOLLAR_SCHEMA, CjConstants.CJ_SCHEMA_LOCATION)
-                .putNonNull(JsonConstants.DOLLAR_ID, CjConstants.CJ_SCHEMA_ID)
-                .putMaybe(CjConstants.ROOT__BASE_URI, baseUri())
-                .putMaybe(CjConstants.ROOT__CONNECTED_JSON, connectedJson(), ICjDocumentMeta::toJaJsonMap)
-                .putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap)
-                .build();
+                .putNonNull(JsonConstants.DOLLAR_SCHEMA, CjConstants.CJ_SCHEMA_LOCATION).putNonNull(JsonConstants.DOLLAR_ID, CjConstants.CJ_SCHEMA_ID).putMaybe(CjConstants.ROOT__BASE_URI, baseUri()).putMaybe(CjConstants.ROOT__CONNECTED_JSON, connectedJson(), ICjDocumentMeta::toJaJsonMap).putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
+    }
+
+    default String toJson() {
+        return CjDocuments.toJsonString(this);
+    }
+
+    default String toJsonFormatted() {
+        String json = toJson();
+        Object jaJson = JaJson.parse(json);
+        return JsonCompactFormatter.formatCompact(jaJson);
     }
 
 }

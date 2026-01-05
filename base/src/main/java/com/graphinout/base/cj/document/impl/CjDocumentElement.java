@@ -25,7 +25,7 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     /** All directed graphs in this document */
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private @Nullable String baseUri;
-    private @Nullable CjDocumentMetaElement connectedJson;
+    private @Nullable ICjDocumentMetaMutable connectedJson;
 
     @Override
     public void addGraph(Consumer<ICjGraphMutable> graph) {
@@ -43,6 +43,13 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     @Override
     public void baseUri(String baseUri) {
         this.baseUri = baseUri;
+    }
+
+    @Override
+    public void connectedJson(ICjDocumentMetaMutable meta) {
+        if(connectedJson !=null)
+            throw new IllegalStateException("Meta already set");
+        this.connectedJson = meta;
     }
 
     @Override
@@ -71,12 +78,11 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
         cjWriter.documentEnd();
     }
 
-
     @Override
     public Stream<ICjGraph> graphs() {
+        //noinspection RedundantCast
         return graphs.stream().map(x -> (ICjGraph) x);
     }
-
 
     public String toCjJsonString() {
         Json2StringWriter json2StringWriter = new Json2StringWriter();
