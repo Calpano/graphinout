@@ -24,16 +24,16 @@ import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.cj.document.impl.CjGraphElement;
 import com.graphinout.base.cj.document.impl.CjNodeElement;
 import com.graphinout.base.json.JsonReaderImpl;
+import com.graphinout.foundation.jvm.kpath.KPaths;
+import com.graphinout.foundation.jvm.kpath.PathResolver;
+import com.graphinout.foundation.jvm.kpath.Result;
 import com.graphinout.foundation.pure.collections.IMapLike;
+import com.graphinout.foundation.pure.collections.PowerStackOnClasses;
 import com.graphinout.foundation.pure.input.BaseOutput;
 import com.graphinout.foundation.pure.json.JsonType;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonPrimitive;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-import com.graphinout.foundation.pure.collections.PowerStackOnClasses;
-import com.graphinout.foundation.jvm.kpath.KPaths;
-import com.graphinout.foundation.jvm.kpath.PathResolver;
-import com.graphinout.foundation.jvm.kpath.Result;
 import com.graphinout.foundation.pure.xml.XML;
 import com.graphinout.foundation.pure.xml.XmlFragmentString;
 import com.graphinout.reader.graphml.IGraphmlWriter;
@@ -69,10 +69,10 @@ import static com.graphinout.base.cj.data.CjDataProperty.SyntheticNode;
 import static com.graphinout.base.cj.document.CjDirection.IN;
 import static com.graphinout.base.cj.document.CjDirection.OUT;
 import static com.graphinout.base.cj.document.CjDirection.UNDIR;
-import static com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep.pathOf;
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
-import static com.graphinout.foundation.pure.functional.Nullables.mapOrDefault;
-import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
+import static com.graphinout.foundation.pure.functional.Nullables.mapNonNull;
+import static com.graphinout.foundation.pure.functional.Nullables.nonNull;
+import static com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep.pathOf;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -192,11 +192,18 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             copyCustomAttributes(graphmlEdge, cjEdge);
             copyDesc(graphmlEdge, cjEdge);
 
-            boolean edgeDirected = nonNullOrDefault(graphmlEdge.directed(), //
+            boolean edgeDirected = nonNull(
+
+                    graphmlEdge.directed(), //
+
                     // look up graphs EdgeDefault to compute edge direction
-                    mapOrDefault(stack.peekSearch(ICjGraphChunkMutable.class).jsonValue(), j -> //
-                                    j.resolve(EdgeDefault.cjPropertyKey), //
-                            edgeDefault -> IGraphmlGraph.EdgeDefault.valueOf(edgeDefault.asString()) == IGraphmlGraph.EdgeDefault.directed, true));
+                    mapNonNull(stack.peekSearch(ICjGraphChunkMutable.class).jsonValue(),
+
+                            j -> j.resolve(EdgeDefault.cjPropertyKey), //
+
+                            edgeDefault -> IGraphmlGraph.EdgeDefault.valueOf(edgeDefault.asString()) == IGraphmlGraph.EdgeDefault.directed,
+
+                            true));
 
             cjEdge.addEndpoint(cjEndpoint -> {
                 cjEndpoint.node(graphmlEdge.source());

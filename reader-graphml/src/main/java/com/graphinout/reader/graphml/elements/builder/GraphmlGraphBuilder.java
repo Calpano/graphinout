@@ -6,7 +6,8 @@ import com.graphinout.reader.graphml.elements.impl.GraphmlGraph;
 
 import org.jspecify.annotations.Nullable;
 
-import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
+import static com.graphinout.foundation.pure.functional.Nullables.nonNull;
+
 
 @SuppressWarnings("UnusedReturnValue")
 public class GraphmlGraphBuilder extends GraphmlElementWithDescAndIdBuilder<GraphmlGraphBuilder> implements ILocatorBuilder {
@@ -27,7 +28,7 @@ public class GraphmlGraphBuilder extends GraphmlElementWithDescAndIdBuilder<Grap
     }
 
     public IGraphmlGraph.EdgeDefault edgeDefault() {
-        return nonNullOrDefault( edgedefault, IGraphmlGraph.EdgeDefault.DEFAULT_EDGE_DEFAULT);
+        return nonNull( edgedefault, IGraphmlGraph.EdgeDefault.DEFAULT_EDGE_DEFAULT);
     }
 
 

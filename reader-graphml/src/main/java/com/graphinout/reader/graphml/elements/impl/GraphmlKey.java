@@ -12,7 +12,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.graphinout.foundation.pure.functional.Nullables.nonNull;
 import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
+
 
 /**
  * @author rbaba
@@ -69,12 +71,12 @@ public class GraphmlKey extends GraphmlElementWithDescAndId implements IGraphmlK
      * @param forType      if not defined, defaults to 'all'
      * @param defaultValue optional
      */
-    public GraphmlKey(@Nullable Map<String, String> extraAttrib, String id, IGraphmlDescription desc, //
+    public GraphmlKey(@Nullable Map<String, String> extraAttrib, @Nullable String id, IGraphmlDescription desc, //
                       @Nullable String attrName, @Nullable String attrType, @Nullable GraphmlKeyForType forType, @Nullable IGraphmlDefault defaultValue) {
         super(extraAttrib, id, desc);
         this.attrName = nonNullOrDefault(attrName, id);
-        this.attrType = nonNullOrDefault(attrType, GraphmlDataType.typeString.graphmlName);
-        this.forType = nonNullOrDefault(forType, GraphmlKeyForType.All);
+        this.attrType = nonNull(attrType, GraphmlDataType.typeString.graphmlName);
+        this.forType = nonNull(forType, GraphmlKeyForType.All);
         this.defaultValue = defaultValue;
     }
 

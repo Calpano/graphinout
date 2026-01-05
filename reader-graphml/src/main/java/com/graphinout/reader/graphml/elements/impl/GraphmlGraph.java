@@ -5,12 +5,12 @@ import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.reader.graphml.elements.IGraphmlElementWithDescAndId;
 import com.graphinout.reader.graphml.elements.IGraphmlGraph;
 import com.graphinout.reader.graphml.elements.IGraphmlLocator;
-
 import org.jspecify.annotations.Nullable;
+
 import java.util.Map;
 import java.util.Objects;
 
-import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
+import static com.graphinout.foundation.pure.functional.Nullables.nonNull;
 
 
 /**
@@ -44,7 +44,7 @@ public class GraphmlGraph extends GraphmlElementWithDescAndId implements IGraphm
     }
 
     public EdgeDefault edgeDefault() {
-        return nonNullOrDefault(edgedefault, EdgeDefault.DEFAULT_EDGE_DEFAULT);
+        return nonNull(edgedefault, EdgeDefault.DEFAULT_EDGE_DEFAULT);
     }
 
     @Override
