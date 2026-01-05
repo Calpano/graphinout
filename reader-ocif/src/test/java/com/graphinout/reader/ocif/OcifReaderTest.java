@@ -47,12 +47,6 @@ class OcifReaderTest extends AbstractReaderTest {
     @MethodSource("com.graphinout.base.cj.CjDocsTestData#cjTestDocs")
     @Description("Test CJ doc->OCIF doc->CJ doc->OCIF doc (all)")
     void cjDoc_ocifDoc_CjDoc_ocifDoc(String displayName, ICjDocument cjDoc) throws IOException {
-        // those dont work in OCIF
-        assertThat(displayName).isNotEqualTo("emptyGraph");
-        assertThat(displayName).isNotEqualTo("graphInGraph");
-        assertThat(displayName).isNotEqualTo("graphInNode");
-        assertThat(displayName).isNotEqualTo("graphWithLabel");
-
         OcifDocument ocifDoc = CjDoc2OcifDoc.toOcifDocument(cjDoc, createErrorHandlerOnLog(log));
         assertThat(ocifDoc).isNotNull();
         String ocifJson = OcifDoc2Json.toJsonString(ocifDoc);
@@ -63,7 +57,7 @@ class OcifReaderTest extends AbstractReaderTest {
 
         OcifAssert.xAssertThatIsSameOcif(ocifJson2, ocifJson, () -> {
             log.info("CJ in:\n" + cjDoc.toJsonFormatted());
-            log.info("OCIF in:\n" + IOcifDocument.toJsonValue( ocifDoc).toJsonFormatted());
+            log.info("OCIF in:\n" + IOcifDocument.toJsonValue(ocifDoc).toJsonFormatted());
             log.info("CJ out:\n" + cjDoc_out.toJsonFormatted());
         });
     }
@@ -72,7 +66,7 @@ class OcifReaderTest extends AbstractReaderTest {
     @MethodSource("ocifResources")
     @Description("Test OCIF/json->OCIF/doc->CJ/doc->OCIF/doc->OCIF/json")
     void ocif_Cj_Ocif(String displayName, Resource resource) throws IOException {
-        if(TestFileUtil.isExpected(resource))
+        if (TestFileUtil.isExpected(resource))
             return;
         String ocifJson_in = resource.getContentAsString();
         IJsonValue ocifJsonValue = JavaJsons.ofJsonString(ocifJson_in);
@@ -84,17 +78,17 @@ class OcifReaderTest extends AbstractReaderTest {
         String ocifJson_out = OcifDoc2Json.toJsonString(ocifDoc_out);
 
         Resource expectedCj = TestFileUtil.expectedResource(resource, "ocif2cj");
-        if(expectedCj!=null) {
+        if (expectedCj != null) {
             String cjDoc_in = expectedCj.getContentAsString();
             String cjJson_out = CjDocuments.toJsonString(cjDoc);
-            CjAssert.xAssertThatIsSameCj(cjJson_out, cjDoc_in,null);
+            CjAssert.xAssertThatIsSameCj(cjJson_out, cjDoc_in, null);
         }
 
         OcifAssert.xAssertThatIsSameOcif(ocifJson_out, ocifJson_in, () -> {
             log.info("CJ:\n" + cjDoc.toJsonFormatted());
         });
 
-        assertThat(contentErrors.stream().filter(ce->ce.level==ContentError.ErrorLevel.Error)).isEmpty();
+        assertThat(contentErrors.stream().filter(ce -> ce.level == ContentError.ErrorLevel.Error)).isEmpty();
 
         // TODO test with actual reader
 //
@@ -146,7 +140,7 @@ class OcifReaderTest extends AbstractReaderTest {
         OcifDocument ocifDoc = Json2OcifDoc.toOcifDocument(jsonValue, createErrorHandlerOnLog(log));
         String ocifJson_out = OcifDoc2Json.toJsonString(ocifDoc);
 
-        OcifAssert.xAssertThatIsSameOcif(ocifJson_out,ocifJson_in, null);
+        OcifAssert.xAssertThatIsSameOcif(ocifJson_out, ocifJson_in, null);
     }
 
 }

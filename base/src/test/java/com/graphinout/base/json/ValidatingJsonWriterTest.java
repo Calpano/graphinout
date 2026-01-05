@@ -29,7 +29,8 @@ class ValidatingJsonWriterTest {
     @DisplayName("Test JSON-Validation - all files together")
     void test_json_Validate(String displayPath, Resource resource) throws Exception {
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-        ValidatingJsonWriter w = new ValidatingJsonWriter();
+        // allow duplicate keys here
+        ValidatingJsonWriter w = new ValidatingJsonWriter(true);
         String string = resource.getContentAsString();
         jsonReader.readStandardJsonString(string, w);
     }

@@ -19,8 +19,8 @@ public class Cj2CjStreamTest {
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("JSON<->CjWriter<->CjStream")
-    void test_Json_CjWriter_CjStream_CjWriter_Json(String displayPath, Resource xmlResource) throws Exception {
-        String json_in = xmlResource.getContentAsString();
+    void test_Json_CjWriter_CjStream_CjWriter_Json(String displayPath, Resource cjJsonResource) throws Exception {
+        String json_in = cjJsonResource.getContentAsString();
 
         Json2StringWriter json2StringWriter = new Json2StringWriter();
         Cj2JsonWriter cj2jsonWriter = new Cj2JsonWriter(json2StringWriter);
@@ -29,7 +29,7 @@ public class Cj2CjStreamTest {
         Json2CjWriter json2cjWriter = new Json2CjWriter(cjWriter2cjStream);
 
         JsonReaderImpl jsonReader = new JsonReaderImpl();
-        SingleInputSourceOfString inputSource = TestFileUtil2.inputSource(xmlResource);
+        SingleInputSourceOfString inputSource = TestFileUtil2.inputSource(cjJsonResource);
         jsonReader.read(inputSource, json2cjWriter);
 
         String json_out = json2StringWriter.jsonString();

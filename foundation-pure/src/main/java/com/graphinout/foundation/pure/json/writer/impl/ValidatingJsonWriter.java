@@ -13,6 +13,16 @@ import java.util.stream.Collectors;
 
 public class ValidatingJsonWriter extends BaseOutput implements JsonWriter {
 
+    private final boolean allowDuplicateKeys;
+
+    public ValidatingJsonWriter() {
+        this(false);
+    }
+
+    public ValidatingJsonWriter(boolean allowDuplicateKeys) {
+        this.allowDuplicateKeys = allowDuplicateKeys;
+    }
+
     enum ContainerType {Document, Array, Object, Property, String}
 
     interface Container {
@@ -144,7 +154,7 @@ public class ValidatingJsonWriter extends BaseOutput implements JsonWriter {
         }
         // verify key is not used yet
         ValObject valObject = (ValObject) top;
-        if (valObject.usedKeys.contains(key)) {
+        if (!allowDuplicateKeys && valObject.usedKeys.contains(key)) {
             throw new IllegalStateException("Validation: Key '" + key + "' already used");
         }
         valObject.usedKeys.add(key);

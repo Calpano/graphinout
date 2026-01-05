@@ -46,7 +46,9 @@ import com.graphinout.reader.ocif.document.impl.OcifResource;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
@@ -144,9 +146,7 @@ public class CjDoc2OcifDoc {
         // Export CJ->OCIF: document-level baseUri as canvas extension
         CjDocumentCanvasExtension cjDocumentCanvasExtension = new CjDocumentCanvasExtension();
         ifPresentAccept(cjDoc.baseUri(), cjDocumentCanvasExtension::baseUri);
-        ifPresentAccept(cjDoc.connectedJson(), ICjElement::toJsonValue,
-                ICjDocumentMetaMutable::of,
-                cjDocumentCanvasExtension::connectedJson);
+        ifPresentAccept(cjDoc.connectedJson(), ICjElement::toJsonValue, ICjDocumentMetaMutable::of, cjDocumentCanvasExtension::connectedJson);
         if (!cjDocumentCanvasExtension.isEmpty()) {
             ocifDocument.addCanvasExtension(cjDocumentCanvasExtension);
         }
@@ -257,15 +257,22 @@ public class CjDoc2OcifDoc {
         return ocifNode;
     }
 
+    /**
+     * CJ supports hierarchically nested ports.
+     * <p>
+     * OCIF has a flat list.
+     * <p>
+     * We map ports into a flat "a.b.c" syntax.
+     *
+     * @param cjNode
+     * @return
+     */
     private static PortsNodeExtension toOcifPortExtension(ICjNode cjNode) {
         assert cjNode.hasPorts();
         PortsNodeExtension portsNodeExtension = new PortsNodeExtension();
 
-        var portsArray = factory().createArrayMutable();
-        cjNode.ports().forEach(p -> portsArray.add(portToJsonRecursive(p)));
-        assert portsArray.size() == cjNode.ports().count();
-
-        portsNodeExtension.ports(portsArray.asListOfStrings());
+        List<String> portIds = toPortIds("", cjNode.ports());
+        portsNodeExtension.ports(portIds);
         return portsNodeExtension;
     }
 
@@ -391,6 +398,18 @@ public class CjDoc2OcifDoc {
             ocifResource.addRepresentation(ocifRep);
         });
         return ocifResource;
+    }
+
+    private static List<String> toPortIds(@NonNull String prefix, Stream<ICjPort> ports) {
+        return ports.flatMap(p -> {
+            String portId = prefix.isEmpty() ? p.id() : prefix + p.id();
+            // union of this port, mapped and all sub-ports prefixed
+            if (p.ports().findAny().isPresent()) {
+                return Stream.concat(Stream.of(portId), toPortIds(portId + ".", p.ports()).stream());
+            } else {
+                return Stream.of(portId);
+            }
+        }).toList();
     }
 
 }

@@ -23,7 +23,10 @@ public class JsonReaderImpl implements JsonReader {
     private static final JsonFactory JSON_FACTORY = new JsonFactory();
 
     static {
-        JSON_FACTORY.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature());
+        JSON_FACTORY //
+                .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature())
+                //.enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION.mappedFeature())
+        ;
     }
 
     final boolean useBigDecimals;
@@ -83,9 +86,9 @@ public class JsonReaderImpl implements JsonReader {
             }
         } catch (Throwable t) {
             StringBuilder msg = new StringBuilder();
-            msg.append("Failed reading JSON.");
+            msg.append("Failed reading JSON. '"+t.getMessage()+"'");
             if(preprocessedContent.length() < 8 * 1024) {
-                msg.append("Failed on\n----\n").append(preprocessedContent).append("\n----");
+                msg.append(" Failed on\n----\n").append(preprocessedContent).append("\n----");
             }
             throw new RuntimeException(msg.toString(), t);
         } finally {
