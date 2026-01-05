@@ -380,7 +380,7 @@ public class CjDocsTestData {
         return cjDoc;
     }
 
-    public static Stream<TestDoc> testDocs() {
+    public static Stream<TestDoc> cjTestDocs() {
         return Stream.of(new TestDoc("documentWithBaseUri", documentWithBaseUri()),//
                 new TestDoc("documentWithCustomData", documentWithCustomData()),//
                 new TestDoc("documentWithMetadata", documentWithMetadata()),//
