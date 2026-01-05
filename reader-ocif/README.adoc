@@ -1,0 +1,13 @@
+= Java OCIF
+
+A Java-based parser and document model for OCIF.
+
+OCIF is the Open Canvas Interchange Format (OCIF).
+
+The full spec is here:
+https://raw.githubusercontent.com/ocwg/spec/refs/heads/main/spec/v0.6/spec.md
+A copy has been placed in link:src/main/doc/ocif-spec.md[]
+
+== Coding guidelines
+
+See link:.junie/guidelines.md[]
