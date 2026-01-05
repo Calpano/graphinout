@@ -1,14 +1,14 @@
 package com.graphinout.reader.ocif.document.extension;
 
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-import com.graphinout.reader.ocif.document.impl.OcifExtensibleEntity;
+import com.graphinout.reader.ocif.document.impl.DecoratedJsonObject;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Wraps a {@link IJsonValue} from a {@code data[]} array.
  */
-public abstract class OcifExtension extends OcifExtensibleEntity implements IOcifExtension {
+public abstract class OcifExtension extends DecoratedJsonObject implements IOcifExtension {
 
     private final @NonNull String typeUri;
     private final @Nullable String typeName;

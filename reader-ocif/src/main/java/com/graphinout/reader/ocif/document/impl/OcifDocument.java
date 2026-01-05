@@ -3,13 +3,12 @@ package com.graphinout.reader.ocif.document.impl;
 import com.graphinout.foundation.pure.collections.IdFactory;
 import com.graphinout.reader.ocif.document.IOcifDocumentMutable;
 import com.graphinout.reader.ocif.document.IOcifNode;
-import com.graphinout.reader.ocif.document.IOcifNodeMutable;
 import com.graphinout.reader.ocif.document.IOcifRelation;
 import com.graphinout.reader.ocif.document.IOcifRepresentation;
 import com.graphinout.reader.ocif.document.IOcifResource;
 import com.graphinout.reader.ocif.document.IOcifResourceMutable;
 import com.graphinout.reader.ocif.document.IOcifSchema;
-import com.graphinout.reader.ocif.document.extension.IOcifExtension;
+import com.graphinout.reader.ocif.document.extension.canvas.IOcifCanvasExtension;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -34,18 +33,18 @@ public class OcifDocument implements IOcifDocumentMutable {
     private final List<IOcifRelation> relations = new ArrayList<>();
     private final List<IOcifResource> resources = new ArrayList<>();
     private final List<IOcifSchema> schemas = new ArrayList<>();
-    private final List<IOcifExtension> canvasExtensions = new ArrayList<>();
+    private final List<IOcifCanvasExtension> canvasExtensions = new ArrayList<>();
     private String ocifSchemaURI;
-    private @Nullable IOcifNodeMutable rootNode;
+    private @Nullable String rootNodeId;
 
     public OcifDocument() {}
 
-    public OcifDocument(String ocifSchemaURI) {
+    public OcifDocument(@NonNull String ocifSchemaURI) {
         this.ocifSchemaURI = ocifSchemaURI;
     }
 
     @Override
-    public IOcifDocumentMutable addCanvasExtension(IOcifExtension extension) {
+    public IOcifDocumentMutable addCanvasExtension(IOcifCanvasExtension extension) {
         canvasExtensions.add(Objects.requireNonNull(extension));
         return this;
     }
@@ -74,6 +73,11 @@ public class OcifDocument implements IOcifDocumentMutable {
         return this;
     }
 
+    @Override
+    public void rootNodeId(@NonNull String rootNodeId) {
+        this.rootNodeId = rootNodeId;
+    }
+
     public String createId() {
         return idFactory.createId();
     }
@@ -85,7 +89,7 @@ public class OcifDocument implements IOcifDocumentMutable {
     }
 
     @Override
-    public List<IOcifExtension> canvasExtensions() {return canvasExtensions;}
+    public List<IOcifCanvasExtension> canvasExtensions() {return canvasExtensions;}
 
     @Override
     public @NonNull String ocifSchemaURI() {
@@ -93,8 +97,13 @@ public class OcifDocument implements IOcifDocumentMutable {
     }
 
     @Override
-    public @Nullable IOcifNodeMutable rootNode() {
-        return rootNode;
+    public @Nullable IOcifNode rootNode() {
+        if(rootNodeId == null)
+            return null;
+        return nodes.stream()
+                .filter(node -> node.id().equals(rootNodeId))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -160,7 +169,7 @@ public class OcifDocument implements IOcifDocumentMutable {
     }
 
     @Override
-    public void setOcifSchemaURI(String uri) {
+    public void ocifSchemaURI(String uri) {
         this.ocifSchemaURI = uri;
     }
 

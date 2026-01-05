@@ -14,6 +14,7 @@ import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.input.ContentErrorException;
 import com.graphinout.foundation.pure.input.ContentErrors;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.reader.ocif.cj.OcifDoc2CjDoc;
 import com.graphinout.reader.ocif.document.impl.OcifDocument;
 import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.NonNull;

@@ -20,7 +20,11 @@ public class OcifMimeType extends OcifType {
     }
 
     public static OcifMimeType of(IJsonValue jsonValue) throws IllegalStateException {
-        return new OcifMimeType(jsonValue.asString());
+        return of(jsonValue.asString());
+    }
+
+    public static OcifMimeType of(String mimeType) throws IllegalStateException {
+        return new OcifMimeType(mimeType);
     }
 
     @Override

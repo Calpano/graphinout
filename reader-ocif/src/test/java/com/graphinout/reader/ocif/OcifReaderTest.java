@@ -2,27 +2,26 @@ package com.graphinout.reader.ocif;
 
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.cj.CjAssert;
+import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
-import com.graphinout.base.cj.stream.CjStream2CjWriter;
-import com.graphinout.base.cj.stream.ICjStream;
-import com.graphinout.base.cj.writer.Cj2JsonWriter;
-import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.json.JavaJsons;
-import com.graphinout.foundation.pure.collections.jajson.JaJson;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-import com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter;
-import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
+import com.graphinout.reader.ocif.cj.CjDoc2OcifDoc;
+import com.graphinout.reader.ocif.cj.OcifDoc2CjDoc;
+import com.graphinout.reader.ocif.document.IOcifDocument;
 import com.graphinout.reader.ocif.document.impl.OcifDocument;
 import com.graphinout.testdata.TestFileProvider;
+import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
 import jdk.jfr.Description;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -45,51 +44,87 @@ class OcifReaderTest extends AbstractReaderTest {
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @MethodSource("com.graphinout.base.cj.CjDocsTestData#testDocs")
-    @Description("Test OCIF doc<->CJ doc (all)")
-    void ocifDoc_CjDoc_ocifDoc(String displayName, ICjDocument cjDoc) throws IOException {
-        Assumptions.assumeFalse(displayName.equals("emptyGraph"));
-        Assumptions.assumeFalse(displayName.equals("graphInGraph"));
-        Assumptions.assumeFalse(displayName.equals("graphInNode"));
-        Assumptions.assumeFalse(displayName.equals("graphWithLabel"));
+    @MethodSource("com.graphinout.base.cj.CjDocsTestData#cjTestDocs")
+    @Description("Test CJ doc->OCIF doc->CJ doc->OCIF doc (all)")
+    void cjDoc_ocifDoc_CjDoc_ocifDoc(String displayName, ICjDocument cjDoc) throws IOException {
+        // those dont work in OCIF
+        assertThat(displayName).isNotEqualTo("emptyGraph");
+        assertThat(displayName).isNotEqualTo("graphInGraph");
+        assertThat(displayName).isNotEqualTo("graphInNode");
+        assertThat(displayName).isNotEqualTo("graphWithLabel");
 
         OcifDocument ocifDoc = CjDoc2OcifDoc.toOcifDocument(cjDoc, createErrorHandlerOnLog(log));
         assertThat(ocifDoc).isNotNull();
+        String ocifJson = OcifDoc2Json.toJsonString(ocifDoc);
+
         ICjDocument cjDoc_out = OcifDoc2CjDoc.toCjDocument(ocifDoc);
-        CjAssert.xAssertThatIsSameCj(cjDoc_out, cjDoc, ()->{
-            String ocif = OcifDoc2Json.toJsonString(ocifDoc);
-            log.info("OCIF result:\n" + ocif);
+        OcifDocument ocifDoc_out = CjDoc2OcifDoc.toOcifDocument(cjDoc_out, createErrorHandlerOnLog(log));
+        String ocifJson2 = OcifDoc2Json.toJsonString(ocifDoc_out);
+
+        OcifAssert.xAssertThatIsSameOcif(ocifJson2, ocifJson, () -> {
+            log.info("CJ in:\n" + cjDoc.toJsonFormatted());
+            log.info("OCIF in:\n" + IOcifDocument.toJsonValue( ocifDoc).toJsonFormatted());
+            log.info("CJ out:\n" + cjDoc_out.toJsonFormatted());
         });
     }
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("ocifResources")
-    @Description("Test JSON->OCIF (all)")
+    @Description("Test OCIF/json->OCIF/doc->CJ/doc->OCIF/doc->OCIF/json")
     void ocif_Cj_Ocif(String displayName, Resource resource) throws IOException {
-        String json = resource.getContentAsString();
-        CjWriter2CjDocumentWriter cjWriter2CjDocumentWriter = new CjWriter2CjDocumentWriter(cjDoc -> {
-            OcifDocument ocifDoc = CjDoc2OcifDoc.toOcifDocument(cjDoc, createErrorHandlerOnLog(log));
-            String ocif = OcifDoc2Json.toJsonString(ocifDoc);
-            OcifAssert.xAssertThatIsSameOcif(ocif, json, () -> {
+        if(TestFileUtil.isExpected(resource))
+            return;
+        String ocifJson_in = resource.getContentAsString();
+        IJsonValue ocifJsonValue = JavaJsons.ofJsonString(ocifJson_in);
 
-                Json2StringWriter json2StringWriter = new Json2StringWriter();
-                Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
-                ICjStream cjStream = new CjStream2CjWriter(cj2JsonWriter);
-                try {
-                    OcifReader.readOcif("test", json, cjStream, createErrorHandlerOnLog(log));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                String cj = json2StringWriter.jsonString();
-                log.info("CJ result:\n" + cj);
+        List<ContentError> contentErrors = new ArrayList<>();
+        OcifDocument ocifDoc = Json2OcifDoc.toOcifDocument(ocifJsonValue, contentErrors::add);
+        ICjDocument cjDoc = OcifDoc2CjDoc.toCjDocument(ocifDoc);
+        OcifDocument ocifDoc_out = CjDoc2OcifDoc.toOcifDocument(cjDoc, contentErrors::add);
+        String ocifJson_out = OcifDoc2Json.toJsonString(ocifDoc_out);
 
-                Object jaJson = JaJson.parse(ocif);
-                String prettyOcif = JsonCompactFormatter.formatCompact(jaJson);
-                log.info("OCIF result:\n" + prettyOcif);
-            });
+        Resource expectedCj = TestFileUtil.expectedResource(resource, "ocif2cj");
+        if(expectedCj!=null) {
+            String cjDoc_in = expectedCj.getContentAsString();
+            String cjJson_out = CjDocuments.toJsonString(cjDoc);
+            CjAssert.xAssertThatIsSameCj(cjJson_out, cjDoc_in,null);
+        }
+
+        OcifAssert.xAssertThatIsSameOcif(ocifJson_out, ocifJson_in, () -> {
+            log.info("CJ:\n" + cjDoc.toJsonFormatted());
         });
-        ICjStream cjStream = new CjStream2CjWriter(cjWriter2CjDocumentWriter);
-        OcifReader.readOcif("test", json, cjStream, createErrorHandlerOnLog(log));
+
+        assertThat(contentErrors.stream().filter(ce->ce.level==ContentError.ErrorLevel.Error)).isEmpty();
+
+        // TODO test with actual reader
+//
+//        CjWriter2CjDocumentWriter cjWriter2CjDocumentWriter = new CjWriter2CjDocumentWriter(cjDoc -> {
+//            OcifDocument ocifDoc = CjDoc2OcifDoc.cjDocumentToOcifDocument(cjDoc, createErrorHandlerOnLog(log));
+//            String ocifJson_out = OcifDoc2Json.toJsonString(ocifDoc);
+//
+//            String actualWrapped = OcifAssert.normalize(ocifJson_out, 60);
+//            String expectedWrapped = OcifAssert.normalize(ocifJson_in, 60);
+//
+//            if (!actualWrapped.equals(expectedWrapped)) {
+//                Json2StringWriter json2StringWriter = new Json2StringWriter();
+//                Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
+//                ICjStream cjStream = new CjStream2CjWriter(cj2JsonWriter);
+//                try {
+//                    OcifReader.readOcif("test", ocifJson_in, cjStream, createErrorHandlerOnLog(log));
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                String cj = json2StringWriter.jsonString();
+//                log.info("CJ result:\n" + cj);
+//
+//                Object jaJson = JaJson.parse(ocifJson_out);
+//                String prettyOcif = JsonCompactFormatter.formatCompact(jaJson);
+//                log.info("OCIF result:\n" + prettyOcif);
+//            }
+//            assertThat(actualWrapped).isEqualTo(expectedWrapped);
+//        });
+//        ICjStream cjStream = new CjStream2CjWriter(cjWriter2CjDocumentWriter);
+//        OcifReader.readOcif("test", ocifJson_in, cjStream, createErrorHandlerOnLog(log));
     }
 
     @ParameterizedTest(name = "{index}: {0}")
@@ -110,7 +145,8 @@ class OcifReaderTest extends AbstractReaderTest {
         IJsonValue jsonValue = JavaJsons.ofJsonString(ocifJson_in);
         OcifDocument ocifDoc = Json2OcifDoc.toOcifDocument(jsonValue, createErrorHandlerOnLog(log));
         String ocifJson_out = OcifDoc2Json.toJsonString(ocifDoc);
-        OcifAssert.xAssertThatIsSameOcif(ocifJson_out, ocifJson_in, null);
+
+        OcifAssert.xAssertThatIsSameOcif(ocifJson_out,ocifJson_in, null);
     }
 
 }

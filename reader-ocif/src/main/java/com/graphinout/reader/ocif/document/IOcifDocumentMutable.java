@@ -1,6 +1,6 @@
 package com.graphinout.reader.ocif.document;
 
-import com.graphinout.reader.ocif.document.extension.IOcifExtension;
+import com.graphinout.reader.ocif.document.extension.canvas.IOcifCanvasExtension;
 
 /**
  * OCIF Document API (object model).
@@ -15,7 +15,7 @@ import com.graphinout.reader.ocif.document.extension.IOcifExtension;
  */
 public interface IOcifDocumentMutable extends IOcifDocument {
 
-    IOcifDocumentMutable addCanvasExtension(IOcifExtension extension);
+    IOcifDocumentMutable addCanvasExtension(IOcifCanvasExtension extension);
 
     IOcifDocumentMutable addNode(IOcifNode node);
 
@@ -25,6 +25,7 @@ public interface IOcifDocumentMutable extends IOcifDocument {
 
     IOcifDocumentMutable addSchema(IOcifSchema schema);
 
+    void rootNodeId(String rootNodeId);
 
     boolean removeNodeById(String id);
 
@@ -32,6 +33,6 @@ public interface IOcifDocumentMutable extends IOcifDocument {
 
     boolean removeResourceById(String id);
 
-    void setOcifSchemaURI(String uri);
+    void ocifSchemaURI(String uri);
 
 }

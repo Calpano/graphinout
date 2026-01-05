@@ -1,8 +1,7 @@
 package com.graphinout.reader.ocif;
 
 /**
- * OCIF constant strings used across parsing and mapping.
- * This centralizes JSON property names to avoid magic strings
+ * OCIF constant strings used across parsing and mapping. This centralizes JSON property names to avoid magic strings
  * and helps keep parser and writers consistent with the spec.
  */
 public final class OCIF {
@@ -13,8 +12,6 @@ public final class OCIF {
 
     }
 
-    private OCIF() {}
-
     public static final class Type {
 
         public static final String OCIF_REL_EDGE = "@ocif/rel/edge";
@@ -23,9 +20,9 @@ public final class OCIF {
 
     }
 
-
     /** Root-level properties of an OCIF document. */
     public static final class Root {
+
         public static final String OCIF_SCHEMA_URI = "ocif";
         public static final String NODES = "nodes";
         public static final String RELATIONS = "relations";
@@ -37,6 +34,9 @@ public final class OCIF {
         public static final String FLAGS = "flags";
         /** TODO is this OCIF ? */
         public static final String HAS_RELATIONS_PROPERTY = "hasRelationsProperty";
+
+        public static final String ROOT_NODE = "rootNode";
+
     }
 
     public static final class Node {
@@ -52,11 +52,12 @@ public final class OCIF {
 
     }
 
-
     /** Common property names used across elements and extensions. */
     public static final class Common {
+
         public static final String ID = "id";
         public static final String TYPE = "type";
+        public static final String COMMENT = "comment";
         public static final String DATA = "data";
         public static final String NODE = "node";
         public static final String REL = "rel";
@@ -101,21 +102,39 @@ public final class OCIF {
         public static final String PAGE_NUMBER = "pageNumber";
         public static final String LABEL = "label";
         public static final String ENDPOINTS = "endpoints";
+
     }
 
     /** Resource representation property names. */
     public static final class Resource {
+
         public static final String REPRESENTATIONS = "representations";
         public static final String LOCATION = "location";
         public static final String MIME_TYPE = "mimeType";
         public static final String CONTENT = "content";
+
     }
 
     /** Schema declaration property names. */
     public static final class Schema {
+
         public static final String URI = "uri";
         public static final String SCHEMA = "schema";
         public static final String LOCATION = "location";
         public static final String NAME = "name";
+
     }
+
+    public static class Relation {
+
+        public static final String NODE = "node";
+
+    }
+
+    public static final String V_0_6 = "v0.6";
+    /** document-level for schema uri */
+    public static final String _OCIF_ = "ocif";
+
+    private OCIF() {}
+
 }

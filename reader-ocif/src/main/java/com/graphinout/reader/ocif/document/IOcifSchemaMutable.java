@@ -4,12 +4,12 @@ import com.graphinout.foundation.pure.json.document.IJsonObject;
 
 public interface IOcifSchemaMutable extends IOcifSchema {
 
-    IOcifSchema setLocation(String location);
+    IOcifSchema location(String location);
 
-    IOcifSchema setName(String name);
+    IOcifSchema name(String name);
 
-    IOcifSchema setSchema(IJsonObject schema);
+    IOcifSchema schema(IJsonObject schema);
 
-    IOcifSchema setUri(String uri);
+    IOcifSchema uri(String uri);
 
 }

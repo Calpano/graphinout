@@ -1,26 +1,26 @@
 package com.graphinout.reader.ocif.document;
 
-import com.graphinout.foundation.pure.json.document.IJsonArray;
-import com.graphinout.foundation.pure.json.document.IJsonObject;
-import com.graphinout.reader.ocif.document.extension.IOcifExtension;
+import com.graphinout.reader.ocif.document.extension.node.IOcifNodeExtension;
+import com.graphinout.reader.ocif.document.types.OcifAngle;
 import com.graphinout.reader.ocif.document.types.OcifVector23D;
 
-public interface IOcifNodeMutable extends IOcifNode {
+public interface IOcifNodeMutable extends IOcifNode, IOcifItemMutable {
 
-    IOcifNodeMutable addExtension(IOcifExtension ext);
+    IOcifNodeMutable addNodeExtension(IOcifNodeExtension ext);
 
-    IOcifNodeMutable setId(String id);
+    @Override
+    IOcifNodeMutable id(String id);
 
-    IOcifNodeMutable setPosition(OcifVector23D position);
+    IOcifNodeMutable position(OcifVector23D position);
 
-    IOcifNodeMutable setRelation(String relation);
+    IOcifNodeMutable relation(String relation);
 
-    IOcifNodeMutable setResource(String resource);
+    IOcifNodeMutable resource(String resource);
 
-    IOcifNodeMutable setResourceFit(ResourceFit resourceFit);
+    IOcifNodeMutable resourceFit(ResourceFit resourceFit);
 
-    IOcifNodeMutable setRotation(Double rotation);
+    IOcifNodeMutable rotation(OcifAngle rotation);
 
-    IOcifNodeMutable setSize(OcifVector23D size);
+    IOcifNodeMutable size(OcifVector23D size);
 
 }

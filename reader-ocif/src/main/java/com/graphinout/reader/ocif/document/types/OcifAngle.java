@@ -14,12 +14,16 @@ public class OcifAngle extends OcifType {
         this.value = value;
     }
 
+    public static OcifAngle of(double d) {
+        return new OcifAngle(d);
+    }
+
     public static OcifAngle of(IJsonValue jsonValue) throws IllegalStateException {
         return new OcifAngle(jsonValue.asNumber().doubleValue());
     }
 
     @Override
-    IJsonValue toJson() {
+    public IJsonValue toJson() {
         return IJsonFactory.INSTANCE.createNumber(value);
     }
 
