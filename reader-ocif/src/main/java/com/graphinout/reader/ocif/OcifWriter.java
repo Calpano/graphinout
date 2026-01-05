@@ -1,4 +1,4 @@
-package com.graphinout.reader.graphml;
+package com.graphinout.reader.ocif;
 
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
@@ -7,17 +7,15 @@ import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.output.OutputSink;
-import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
-import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.reader.ocif.cj.CjDoc2OcifDoc;
+import com.graphinout.reader.ocif.document.impl.OcifDocument;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class GraphmlWriter implements GioWriter {
-
-    @Override
-    public GioFileFormat fileFormat() {
-        return GraphmlReader.FORMAT;
-    }
+public class OcifWriter implements GioWriter {
 
     @Override
     public ICjStream createCjStream(OutputSink outputSink) {
@@ -32,12 +30,17 @@ public class GraphmlWriter implements GioWriter {
         return new CjStream2CjWriter(cjWriter2CjDocumentWriter);
     }
 
+    @Override
+    public GioFileFormat fileFormat() {
+        return OcifReader.FORMAT;
+    }
+
     private void write(ICjDocument cjDoc, OutputSink outputSink) throws IOException {
-        Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        IGraphmlWriter gw = new Graphml2XmlWriter(xmlWriter);
-        CjDocument2Graphml.writeToGraphml(cjDoc, gw);
-        String graphml = xmlWriter.resultString();
-        outputSink.write(graphml);
+        // TODO where to send these errors
+        List<ContentError> contentErrors = new ArrayList<>();
+        OcifDocument ocifDocument = CjDoc2OcifDoc.toOcifDocument(cjDoc, contentErrors::add);
+        String ocifJson = OcifDoc2Json.toJsonString(ocifDocument);
+        outputSink.write(ocifJson);
     }
 
 }
