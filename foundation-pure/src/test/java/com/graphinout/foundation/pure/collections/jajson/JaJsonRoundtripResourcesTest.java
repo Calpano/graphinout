@@ -24,7 +24,7 @@ public class JaJsonRoundtripResourcesTest {
         return TestFileProvider.jsonResources().filter(res ->
                 // this one uses '50000000.75' but later has '5.000000075e7'
                 !res.asPath().endsWith("complex-full.json")
-        );
+        ).filter(res -> !res.asPath().contains("/no_roundtrip/"));
     }
 
     @ParameterizedTest(name = "roundtrip {0}")
