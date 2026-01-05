@@ -2,6 +2,7 @@ package com.graphinout.foundation.pure.json.document;
 
 import com.graphinout.foundation.pure.bridge.Java9;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -31,10 +32,64 @@ public interface IJsonObjectMutable extends IJsonObjectAppendable, IJsonValueMut
         return this;
     }
 
+    default IJsonObjectMutable addAllFromJaJson(@NonNull Map<String, Object> map) {
+        map.forEach((k, v) -> {
+            if (v == null) {
+                add(k, factory().createNull());
+            } else if (v instanceof String) {
+                add(k, (String) v);
+            } else if (v instanceof Number) {
+                add(k, (Number) v);
+            } else if (v instanceof Boolean) {
+                add(k, (Boolean) v);
+            } else if (v instanceof Map) {
+                addObject(k, sub -> {
+                    //noinspection unchecked
+                    sub.addAllFromJaJson((Map<String, Object>) v);
+                });
+            } else if (v instanceof List) {
+                addArray(k, sub -> {
+                    //noinspection unchecked
+                    sub.addAllFromJaJson((List<Object>) v);
+                });
+            } else {
+                throw new IllegalArgumentException("Unknown type " + v.getClass().getName());
+            }
+        });
+        return this;
+    }
+
     default void addArray(String key, Consumer<IJsonArrayMutable> arrayMutable) {
         IJsonArrayMutable a = factory().createArrayMutable();
         arrayMutable.accept(a);
         addProperty(key, a);
+    }
+
+    /**
+     * Add value if value is not null
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    default IJsonObjectMutable addMaybe(String key, @Nullable String value) {
+        if (value != null) add(key, value);
+        return this;
+    }
+
+    default IJsonObjectMutable addMaybe(String key, @Nullable IJsonValue value) {
+        if (value != null) add(key, value);
+        return this;
+    }
+
+    default IJsonObjectMutable addMaybe(String key, @Nullable Number value) {
+        if (value != null) add(key, value);
+        return this;
+    }
+
+    default IJsonObjectMutable addMaybe(String key, @Nullable Boolean value) {
+        if (value != null) add(key, value);
+        return this;
     }
 
     default IJsonObjectMutable addNull(String key) {
@@ -101,33 +156,6 @@ public interface IJsonObjectMutable extends IJsonObjectAppendable, IJsonValueMut
 
     default void setString(String key, String value) {
         setProperty(key, factory().createString(value));
-    }
-
-    default IJsonObjectMutable addAllFromJaJson(@NonNull Map<String, Object> map) {
-        map.forEach((k,v)->{
-            if(v == null) {
-                add(k, factory().createNull());
-            } else if(v instanceof String) {
-                add(k, (String)v);
-            } else if (v instanceof Number) {
-                add(k, (Number)v);
-            } else if (v instanceof Boolean) {
-                add(k, (Boolean)v);
-            } else if (v instanceof Map) {
-                addObject(k,sub->{
-                    //noinspection unchecked
-                    sub.addAllFromJaJson((Map<String, Object>) v);
-                });
-            } else if (v instanceof List) {
-                addArray(k, sub->{
-                    //noinspection unchecked
-                    sub.addAllFromJaJson((List<Object>) v);
-                });
-            } else {
-                throw new IllegalArgumentException("Unknown type " + v.getClass().getName());
-            }
-        });
-        return this;
     }
 
 }

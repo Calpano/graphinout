@@ -1,5 +1,6 @@
 package com.graphinout.foundation.pure.json.util;
 
+import com.graphinout.foundation.pure.collections.jajson.JaJsonMapBuilder;
 import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
@@ -10,6 +11,7 @@ import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.pure.json.path.IJsonObjectNavigationStep;
 import org.jspecify.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**

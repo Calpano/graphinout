@@ -1,11 +1,21 @@
 package com.graphinout.foundation.pure.text;
 
 import com.graphinout.foundation.pure.bridge.Java9;
+import com.graphinout.foundation.pure.collections.jajson.JaJson;
+import com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter;
 
 /**
  * A string-to-string formatter which also works with invalid JSON input.
  */
 public class JsonFormatting {
+
+    /**
+     * @param json must be valid JSON
+     */
+    public static String formatCompact(String json) {
+        Object o = JaJson.parse(json);
+        return JsonCompactFormatter.formatCompact(o);
+    }
 
     /**
      * Wrap valid or invalid JSON into multiple lines for easier debugging. Each line has a max length of 60 characters.
@@ -45,23 +55,23 @@ public class JsonFormatting {
                 quotedString.append(c);
             } else //noinspection StatementWithEmptyBody
                 if (Character.isWhitespace(c)) {
-                // Ignore whitespace outside of strings
-            } else
-                // Check if adding the current character would exceed the max line length
-                // and if it's not the very beginning of a line
-                if (! Java9.String.isEmpty( line) && line.length() + 1 > maxLineLength) {
-                    wrapped.append(line).append("\n");
-                    line = new StringBuilder();
-                    line.append(c);
-                } else {
-                    // just append
-                    line.append(c);
-                    if (c == ':') {
-                        line.append("\n");
-                        wrapped.append(line);
+                    // Ignore whitespace outside of strings
+                } else
+                    // Check if adding the current character would exceed the max line length
+                    // and if it's not the very beginning of a line
+                    if (!Java9.String.isEmpty(line) && line.length() + 1 > maxLineLength) {
+                        wrapped.append(line).append("\n");
                         line = new StringBuilder();
+                        line.append(c);
+                    } else {
+                        // just append
+                        line.append(c);
+                        if (c == ':') {
+                            line.append("\n");
+                            wrapped.append(line);
+                            line = new StringBuilder();
+                        }
                     }
-                }
             sourcePos++;
         }
         wrapped.append(line);
@@ -69,8 +79,8 @@ public class JsonFormatting {
     }
 
     /**
-     * Removes all JSON whitespace (space, tab, CR, LF) that is outside string literals.
-     * This produces a canonical compact form suitable for comparing in tests.
+     * Removes all JSON whitespace (space, tab, CR, LF) that is outside string literals. This produces a canonical
+     * compact form suitable for comparing in tests.
      */
     public static String normalizeJsonWhitespace(String json) {
         StringBuilder sb = new StringBuilder(json.length());
@@ -94,10 +104,10 @@ public class JsonFormatting {
                     sb.append(c);
                 } else //noinspection StatementWithEmptyBody
                     if (c == ' ' || c == '\n' || c == '\r' || c == '\t') {
-                    // drop insignificant whitespace outside strings
-                } else {
-                    sb.append(c);
-                }
+                        // drop insignificant whitespace outside strings
+                    } else {
+                        sb.append(c);
+                    }
             }
         }
         return sb.toString();

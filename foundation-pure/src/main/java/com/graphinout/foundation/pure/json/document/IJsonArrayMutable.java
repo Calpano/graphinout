@@ -23,6 +23,11 @@ public interface IJsonArrayMutable extends IJsonArrayAppendable, IJsonValueMutab
         return this;
     }
 
+    default IJsonArrayMutable addAll(IJsonArray jsonArray) {
+        jsonArray.forEach(this::add);
+        return this;
+    }
+
     default IJsonArrayMutable addAll(double[] values) {
         for (double v : values) {
             add(factory().createDouble(v));
@@ -30,14 +35,14 @@ public interface IJsonArrayMutable extends IJsonArrayAppendable, IJsonValueMutab
         return this;
     }
 
-    default <T> IJsonArrayMutable addAll(Iterable<T> values, Function<T,IJsonValue> mapFun) {
+    default <T> IJsonArrayMutable addAll(Iterable<T> values, Function<T, IJsonValue> mapFun) {
         for (T v : values) {
             add(mapFun.apply(v));
         }
         return this;
     }
 
-    default <T> IJsonArrayMutable addAllAsString(Iterable<T> values, Function<T,String> mapFun) {
+    default <T> IJsonArrayMutable addAllAsString(Iterable<T> values, Function<T, String> mapFun) {
         for (T v : values) {
             add(mapFun.apply(v));
         }
@@ -45,22 +50,22 @@ public interface IJsonArrayMutable extends IJsonArrayAppendable, IJsonValueMutab
     }
 
     default IJsonArrayMutable addAllFromJaJson(List<Object> jaJson) {
-        jaJson.forEach(v->{
-            if(v == null) {
+        jaJson.forEach(v -> {
+            if (v == null) {
                 add(factory().createNull());
-            } else if(v instanceof String) {
-                add((String)v);
+            } else if (v instanceof String) {
+                add((String) v);
             } else if (v instanceof Number) {
-                add((Number)v);
+                add((Number) v);
             } else if (v instanceof Boolean) {
-                add((Boolean)v);
+                add((Boolean) v);
             } else if (v instanceof Map) {
-                addObject(sub->{
+                addObject(sub -> {
                     //noinspection unchecked
                     sub.addAllFromJaJson((Map<String, Object>) v);
                 });
             } else if (v instanceof List) {
-                addArray(sub->{
+                addArray(sub -> {
                     //noinspection unchecked
                     sub.addAllFromJaJson((List<Object>) v);
                 });

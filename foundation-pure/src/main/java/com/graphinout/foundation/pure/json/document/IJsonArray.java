@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.ObjIntConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -26,9 +27,18 @@ public interface IJsonArray extends IJsonContainer {
     default double[] asDoubles() {
         double[] values = new double[size()];
         for (int i = 0; i < size(); i++) {
-            values[i] = get_(i).asPrimitive().asDouble();
+            IJsonValue jsonValue = get_(i);
+            values[i] = jsonValue.asPrimitive().asDouble();
         }
         return values;
+    }
+
+    /**
+     * @return immutable list of strings
+     * @throws ClassCastException if a member could not be cast to String
+     */
+    default @NonNull List<@NonNull String> asListOfStrings() throws ClassCastException {
+        return stream().map(IJsonValue::asString).collect(Collectors.toList());
     }
 
     default void fire(JsonWriter jsonWriter) {
@@ -89,6 +99,22 @@ public interface IJsonArray extends IJsonContainer {
 
     default JsonType jsonType() {
         return JsonType.Array;
+    }
+
+    /** Deep copy */
+    default IJsonArrayMutable mutableCopy() {
+        IJsonArrayMutable a =
+                factory().createArrayMutable();
+        forEach(v -> {
+            if (v.isObject()) {
+                a.add(v.asObject().mutableCopy());
+            } else if (v.isArray()) {
+                a.add(v.asArray().mutableCopy());
+            } else {
+                a.add(v);
+            }
+        });
+        return a;
     }
 
     default Stream<IJsonValue> stream() {

@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
+import static com.graphinout.foundation.pure.functional.Nullables.nonNull;
 
 public interface IJsonObject extends IJsonContainer {
 
@@ -34,7 +34,7 @@ public interface IJsonObject extends IJsonContainer {
     }
 
     default void forEach(BiConsumer<String, IJsonValue> key_value) {
-        keys().forEach(key -> key_value.accept(key, nonNullOrDefault(get(key), factory()::createNull)));
+        keys().forEach(key -> key_value.accept(key, nonNull(get(key), factory()::createNull)));
     }
 
     default void forEachLeaf(IJsonNavigationPath prefix, BiConsumer<IJsonNavigationPath, IJsonPrimitive> path_primitive) {
@@ -59,6 +59,24 @@ public interface IJsonObject extends IJsonContainer {
             throw ifNullExceptionSupplier.apply(this);
         }
         return value.asStringOrThrow(conversionErrorSupplier);
+    }
+
+    default @Nullable Boolean getBoolean(String key) {
+        return getBoolean(key, msg -> {});
+    }
+
+    default @Nullable Boolean getBoolean(String key, Consumer<String> errorHandler) throws IllegalStateException {
+        IJsonValue v = get(key);
+        if (v == null || v.isNull()) {
+            return null;
+        }
+        if (v.isBoolean()) {
+            return v.asBoolean();
+        } else {
+            String msg = "['" + key + "'] is not a boolean but " + v.jsonType();
+            errorHandler.accept(v.asString());
+            throw new IllegalStateException(msg);
+        }
     }
 
     default void getIfString(String key, Consumer<String> stringConsumer) {
@@ -86,6 +104,16 @@ public interface IJsonObject extends IJsonContainer {
             T value = mapFun.apply(jsonValue);
             if (value != null) {
                 typedValueConsumer.accept(value);
+            }
+        });
+    }
+
+    default <T, U> void getMaybeAs(String propertyKey, Function<IJsonValue, U> mapFun1, Function<U, T> mapFun2, Consumer<T> typedValueConsumer) {
+        getMaybe(propertyKey, jsonValue -> {
+            U value = mapFun1.apply(jsonValue);
+            T value2 = mapFun2.apply(value);
+            if (value != null) {
+                typedValueConsumer.accept(value2);
             }
         });
     }
@@ -226,6 +254,21 @@ public interface IJsonObject extends IJsonContainer {
 
     Set<String> keys();
 
+    /** Deep copy */
+    default IJsonObjectMutable mutableCopy() {
+        IJsonObjectMutable o = factory().createObjectMutable();
+        forEach((k, v) -> {
+            if (v.isObject()) {
+                o.add(k, v.asObject().mutableCopy());
+            } else if (v.isArray()) {
+                o.add(k, v.asArray().mutableCopy());
+            } else {
+                o.add(k, v);
+            }
+        });
+        return o;
+    }
+
     default Stream<Map.Entry<String, IJsonValue>> properties() {
         return keys().stream().map(key -> new AbstractMap.SimpleImmutableEntry<>(key, get_(key)));
     }
@@ -243,6 +286,16 @@ public interface IJsonObject extends IJsonContainer {
     /** includes potentially null values */
     default Stream<IJsonValue> values() {
         return keys().stream().map(this::get_);
+    }
+
+    /**
+     * Copy state into a Java Map
+     * @return
+     */
+    default Map<String, IJsonValue> asMap() {
+        Map<String, IJsonValue> map = new LinkedHashMap<>(size());
+        forEach(map::put);
+        return map;
     }
 
 }

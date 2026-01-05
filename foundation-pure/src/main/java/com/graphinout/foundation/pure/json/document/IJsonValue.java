@@ -6,6 +6,7 @@ import com.graphinout.foundation.pure.collections.IMapLike;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.JSON;
 import com.graphinout.foundation.pure.json.JsonType;
+import com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter;
 import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.pure.json.path.IJsonNavigationPath;
 import com.graphinout.foundation.pure.json.path.JsonPaths;
@@ -29,8 +30,8 @@ public interface IJsonValue {
     }
 
     default IJsonArray asArray() throws IllegalStateException {
-        if(!isArray()) {
-            throw new IllegalStateException("Not an array but "+jsonType());
+        if (!isArray()) {
+            throw new IllegalStateException("Not an array but " + jsonType());
         }
         return (IJsonArray) this;
     }
@@ -107,11 +108,11 @@ public interface IJsonValue {
      * @param <T>
      * @throws IllegalStateException if the value is not an object
      */
-   default <T>  @Nullable T asObject(Function<@Nullable IJsonObject, T> mapFun) throws IllegalStateException {
-        if(isNull()) return mapFun.apply(null);
-        if(!isObject()) throw new IllegalStateException("Not an object but "+jsonType());
+    default <T> @Nullable T asObject(Function<@Nullable IJsonObject, T> mapFun) throws IllegalStateException {
+        if (isNull()) return mapFun.apply(null);
+        if (!isObject()) throw new IllegalStateException("Not an object but " + jsonType());
         return mapFun.apply(asObject());
-   }
+    }
 
 
     /**
@@ -256,12 +257,12 @@ public interface IJsonValue {
         return (this instanceof IJsonObjectMutable || this instanceof IJsonArrayMutable);
     }
 
-    default boolean isNumber() {
-        return jsonType() == JsonType.Number;
-    }
-
     default boolean isNull() {
         return jsonType() == JsonType.Null;
+    }
+
+    default boolean isNumber() {
+        return jsonType() == JsonType.Number;
     }
 
     /** only true for a non-null JSON object */
@@ -352,6 +353,12 @@ public interface IJsonValue {
         throw new IllegalStateException("Unknown JsonType: " + jsonType());
     }
 
+    default String toJsonFormatted() {
+        String json = toJsonString();
+        Object jaJson = JaJson.parse(json);
+        return JsonCompactFormatter.formatCompact(jaJson);
+    }
+
     default String toJsonString() {
         Json2StringWriter w = new Json2StringWriter();
         fire(w);
@@ -388,7 +395,5 @@ public interface IJsonValue {
                 throw new IllegalStateException("Unexpected value to convert to XmlFragmentString: " + jsonType() + " JSON=" + this.toJsonString());
         }
     }
-
-
 
 }

@@ -11,12 +11,22 @@ import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.stream.Collector;
 
 
 public interface IJsonFactory {
 
     Logger _log = LoggerFactory.getLogger(IJsonFactory.class);
     IJsonFactory INSTANCE = new JavaJsonFactory();
+
+    default Collector<? super IJsonValue, IJsonArrayMutable, IJsonArray> arrayCollector() {
+        return Collector.of(this::createArrayMutable, //
+                IJsonArrayAppendable::add, //
+                (left, right) -> {
+                    left.addAll(right);
+                    return left;
+                }, a -> a);
+    }
 
     default IJsonArrayMutable asArrayMutable(IJsonArray array) {
         if (array instanceof IJsonArrayMutable) {
@@ -188,6 +198,5 @@ public interface IJsonFactory {
     default IJsonXmlString createXmlString(String rawXml, XML.XmlSpace xmlSpace) {
         return IJsonXmlString.of(this, rawXml, xmlSpace.toJson_XmlSpace());
     }
-
 
 }
