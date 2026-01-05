@@ -1,0 +1,109 @@
+= OCIF Entities
+
+This document describes the main entities in the Open Canvas Interchange Format (OCIF).
+
+== Overview
+
+.Overview
+[plantuml]
+....
+include::ocif-entities.puml[]
+....
+
+== File Structure
+
+The OCIF file is a JSON object with the following properties:
+
+* `ocif`: The URI of the OCIF schema. (Required)
+* `rootNode`: The ID of the root <<Node>>. (Optional)
+* `data`: Extended canvas data. (Optional)
+* `nodes`: A list of <<Nodes,Node>>. (Optional)
+* `relations`: A list of <<Relations,Relation>>. (Optional)
+* `resources`: A list of <<Resources,Resource>>. (Optional)
+* `schemas`: A list of <<Schemas,Schema>> entries. (Optional)
+
+== Nodes
+
+Nodes represent visual items on the canvas. A node is a JSON object with properties like `id`, `position`, `size`, and `resource`.
+
+Nodes can be extended with additional data. See <<Node Extensions>>.
+
+=== Node Extensions
+
+Node extensions provide additional functionality to nodes.
+
+==== Rectangle
+
+A visual extension to define the appearance of a node as a rectangle with properties like `strokeWidth`, `strokeColor`, and `fillColor`.
+
+==== Oval
+
+Similar to the Rectangle extension, but defines the appearance as an oval.
+
+==== Arrow
+
+A visual node that connects two points with a straight line, with optional markers at the start and end.
+
+==== Path
+
+A visual extension to define the appearance of a node as a path, similar to SVG paths.
+
+==== Ports
+
+Allows a node to have ports, which are other nodes that act as connection points.
+
+==== Node Transforms
+
+Customizes the local coordinate system of a node relative to its parent.
+
+==== Anchored Node
+
+Allows for relative positioning of a node within its parent.
+
+==== Text Style
+
+Sets properties for rendering text, such as `fontSize`, `fontFamily`, and `color`.
+
+==== Theme
+
+Allows defining and selecting themes for a node and its children.
+
+==== Page
+
+Marks a node as a page, with properties like `pageNumber` and `label`.
+
+== Relations
+
+Relations represent logical connections between nodes or other relations. They are generally not visible.
+
+Relations can be extended with additional data. See <<Relation Extensions>>.
+
+=== Relation Extensions
+
+Relation extensions provide additional functionality to relations.
+
+==== Group
+
+Groups nodes and other groups together.
+
+==== Edge
+
+Represents a directed or undirected edge between two elements.
+
+==== Parent-Child
+
+Models a hierarchical relationship between nodes or relations.
+
+==== Hyperedge
+
+Connects any number of nodes with defined directionality for each connection.
+
+== Resources
+
+Resources are assets displayed by nodes, such as text, images, or other media. They are stored separately to allow for reuse. A resource has one or more representations (e.g., different formats or fallbacks).
+
+Nodes themselves can be used as resources.
+
+== Schemas
+
+Schemas define the structure of extensions. They are JSON Schemas and can be stored inline, externally, or remotely. OCIF provides a set of built-in schema mappings for common extensions.

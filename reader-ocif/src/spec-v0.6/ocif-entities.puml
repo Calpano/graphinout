@@ -1,0 +1,199 @@
+@startuml
+!theme vibrant
+left to right direction
+hide empty members
+title OCIF Entities - UML Class Diagram
+
+' Abstract base classes and interfaces
+abstract class OcifElement {
+  + id: String
+}
+
+interface Extension {
+  + type: String
+}
+
+interface NodeExtension extends Extension {
+}
+
+interface RelationExtension extends Extension {
+}
+
+' Main Document Class
+class OcifDocument {
+  + ocif: String
+  + rootNode: String
+  + data: List<Extension>
+  + nodes: List<Node>
+  + relations: List<Relation>
+  + resources: List<Resource>
+  + schemas: List<Schema>
+}
+
+' Core Entities
+class Node extends OcifElement {
+  + position: Vector
+  + size: Vector
+  + resource: String
+  + resourceFit: String
+  + rotation: Angle
+  + relation: String
+  + data: List<NodeExtension>
+}
+note right of Node::data
+  Contains a list of
+  NodeExtension objects.
+end note
+
+
+class Relation extends OcifElement {
+  + node: String
+  + data: List<RelationExtension>
+}
+note right of Relation::data
+  Contains a list of
+  RelationExtension objects.
+end note
+
+class Resource extends OcifElement {
+  + representations: List<Representation>
+}
+
+class Representation {
+  + mimeType: String
+  + location: URI
+  + content: String
+}
+
+class Schema {
+    + uri: URI
+    + name: String
+    + location: URI
+    + schema: Object
+}
+
+' Data Types
+class Vector
+class Angle
+class Color
+class URI
+
+' Relationships for Core Entities
+OcifDocument *-- "nodes" Node
+OcifDocument *-- "relations" Relation
+OcifDocument *-- "resources" Resource
+OcifDocument *-- "schemas" Schema
+
+Node "1" *-- "data" NodeExtension
+Relation "1" *-- "data" RelationExtension
+Resource "1" *-- "representations" Representation
+
+Node --> "resource" Resource
+Relation --> "node" Node
+
+
+' Node Extensions
+package "Node Extensions" {
+  class Rectangle implements NodeExtension {
+    + strokeWidth: double
+    + strokeColor: Color
+    + fillColor: Color
+  }
+
+  class Oval implements NodeExtension {
+    + strokeWidth: double
+    + strokeColor: Color
+    + fillColor: Color
+  }
+
+  class Arrow implements NodeExtension {
+    + strokeWidth: double
+    + strokeColor: Color
+    + start: Vector
+    + end: Vector
+    + startMarker: String
+    + endMarker: String
+  }
+
+  class Path implements NodeExtension {
+    + strokeWidth: double
+    + strokeColor: Color
+    + fillColor: Color
+    + path: String
+  }
+
+  class Ports implements NodeExtension {
+    + ports: List<String>
+  }
+
+  class NodeTransforms implements NodeExtension {
+    + scale: Vector
+    + rotation: Angle
+    + rotationAxis: Vector
+    + offset: Vector
+  }
+
+  class AnchoredNode implements NodeExtension {
+    + topLeftAnchor: Vector
+    + bottomRightAnchor: Vector
+    + topLeftOffset: Vector
+    + bottomRightOffset: Vector
+  }
+
+  class TextStyle implements NodeExtension {
+    + fontSizePx: int
+    + fontFamily: String
+    + color: Color
+    + align: String
+    + bold: boolean
+    + italic: boolean
+  }
+
+  class Theme implements NodeExtension {
+    + selectTheme: String
+    + themes: Map<String, Object>
+  }
+
+  class Page implements NodeExtension {
+    + pageNumber: int
+    + label: String
+  }
+}
+
+' Relation Extensions
+package "Relation Extensions" {
+  class Group implements RelationExtension {
+    + members: List<String>
+    + cascadeDelete: boolean
+  }
+
+  class Edge implements RelationExtension {
+    + start: String
+    + end: String
+    + directed: boolean
+    + rel: String
+  }
+
+  class ParentChild implements RelationExtension {
+    + parent: String
+    + child: String
+    + inherit: boolean
+    + cascadeDelete: boolean
+  }
+
+  class Hyperedge implements RelationExtension {
+    + endpoints: List<Endpoint>
+    + weight: double
+    + rel: String
+  }
+
+  class Endpoint {
+    + id: String
+    + direction: String
+    + weight: double
+  }
+
+  Hyperedge *-- Endpoint
+}
+
+@enduml
