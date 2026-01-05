@@ -3,18 +3,20 @@
     {"id": "n1", "resource": "r-text"},
     {"id": "n2", "resource": "r-uri"}
   ],
+
+
   "resources": [
-    {
-      "id": "r-text",
+    { "id": "r-text",
       "representations": [
         {"mimeType": "text/plain", "content": "This is inline text."},
         {"mimeType": "application/json", "content": "{\"a\": 1, \"b\": 2}"}
       ]
     },
-    {
-      "id": "r-uri",
-      "representations": [
-        {"mimeType": "image/png", "location": "https://example.org/sample.png"}
+    { "id": "r-uri",
+      "representations":
+      [ { "location": "https://example.org/sample.png",
+          "mimeType": "image/png"
+        }
       ]
     }
   ]

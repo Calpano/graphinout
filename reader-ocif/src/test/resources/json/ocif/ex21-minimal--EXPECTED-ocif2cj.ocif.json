@@ -1,0 +1,22 @@
+{ "data": {
+    "ocif:document": {
+      "ocif": "https://spec.canvasprotocol.org/v0.6"
+    }
+  },
+  "graphs": [
+    { "nodes": [
+        { "id": "node1",
+          "label":
+            [ { "value": "Minimal Example" } ],
+          "data": {
+            "ocif:node": {
+              "position": [ 10.0, 10.0 ],
+              "resource": "text-resource",
+              "size": [ 200.0, 100.0 ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
