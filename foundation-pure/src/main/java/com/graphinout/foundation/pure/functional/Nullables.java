@@ -16,6 +16,12 @@ import java.util.stream.Stream;
 import static com.graphinout.foundation.pure.functional.IOrElse.DONT_EXECUTE_ELSE;
 import static com.graphinout.foundation.pure.functional.IOrElse.EXECUTE_ELSE;
 
+/**
+ * Utility methods for handling null values and performing operations conditionally.
+ * <h3>Conventions</h3>
+ * For transforming methods, {@code I} is the first input type and {@code O} is the last output type. If only one type
+ * is used, that type is {@code T}.
+ */
 public class Nullables {
 
     /**
@@ -30,11 +36,11 @@ public class Nullables {
      * Calls the given supplier functions in order until one of them returns a non-null value, then returns that value.
      *
      * @param candidates the supplier functions to call
-     * @param <R>        the return type of the supplier functions
+     * @param <T>        the return type of the supplier functions
      * @return the first non-null value returned by the supplier functions, or null if all of them return null
      */
     @SafeVarargs
-    public static <R> @Nullable R firstNonNull(Supplier<@Nullable R>... candidates) {
+    public static <T> @Nullable T firstNonNull(Supplier<@Nullable T>... candidates) {
         return Arrays.stream(candidates).map(Supplier::get).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
@@ -42,11 +48,11 @@ public class Nullables {
      * Returns the first non-null value from the given array of values.
      *
      * @param candidates the values to check
-     * @param <R>        the type of the values
+     * @param <T>        the type of the values
      * @return the first non-null value from the given array, or null if all of them are null
      */
     @SafeVarargs
-    public static <R> @Nullable R firstNonNull(R... candidates) {
+    public static <T> @Nullable T firstNonNull(@Nullable T... candidates) {
         return Arrays.stream(candidates).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
@@ -54,16 +60,23 @@ public class Nullables {
      * If CONSUMER is present (not null), let it accept the given value (which itself may or may not be null, that is a
      * different story).
      */
-    public static <T> void ifConsumerPresentAccept(@Nullable Consumer<T> nullableConsumer, T value) {
+    public static <T> void ifConsumerPresentAccept(@Nullable Consumer<T> nullableConsumer, @Nullable T value) {
         if (nullableConsumer != null) nullableConsumer.accept(value);
     }
 
-    public static <I, O> void ifPresent(@Nullable I value, Function<I, O> mapFun, Consumer<O> consumer) {
-        if (value == null) return;
-        consumer.accept(mapFun.apply(value));
+    /**
+     * Alias for {@link #ifPresentAccept(Object, Function, Consumer)}
+     */
+    public static <I, O> void ifPresent(@Nullable I value, //
+                                        @NonNull Function<@NonNull I, @Nullable O> mapFun, //
+                                        @NonNull Consumer<@NonNull O> consumer) {
+        ifPresentAccept(value, mapFun, consumer);
     }
 
-    public static <T> void ifPresent(@Nullable T value, Consumer<@NonNull T> consumer) {
+    /**
+     * If the given value is not null, call the given consumer with it.
+     */
+    public static <T> void ifPresent(@Nullable T value, @NonNull Consumer<@NonNull T> consumer) {
         if (value == null) return;
         consumer.accept(value);
     }
@@ -72,8 +85,9 @@ public class Nullables {
      * If the given value is not null, call the given consumer with it.
      *
      * @param <T> The type of the value
+     * @return an {@link IOrElse} which is quite similar to a Java {@link Optional}.
      */
-    public static <T> IOrElse ifPresentAccept(@Nullable T value, Consumer<@NonNull T> consumer) {
+    public static <T> @NonNull IOrElse ifPresentAccept(@Nullable T value, @NonNull Consumer<@NonNull T> consumer) {
         if (value != null) {
             consumer.accept(value);
             return DONT_EXECUTE_ELSE;
@@ -82,18 +96,29 @@ public class Nullables {
         }
     }
 
-    public static <T, R> void ifPresentAccept(@Nullable T value, Function<@NonNull T, R> mapFun, Consumer<R> consumer) {
+    /**
+     * If the given value is not null, let the mapFun transform it, and if that result is also not null, call the given
+     * consumer with it.
+     */
+    public static <I, O> void ifPresentAccept(@Nullable I value, //
+                                              @NonNull Function<@NonNull I, @Nullable O> mapFun, //
+                                              @NonNull Consumer<@NonNull O> consumer) {
         if (value == null) return;
-        R r = mapFun.apply(value);
+        O r = mapFun.apply(value);
         if (r == null) return;
         consumer.accept(r);
     }
 
-    public static <T, U, R> void ifPresentAccept(@Nullable T value, Function<@NonNull T, U> mapFun1, Function<U, R> mapFun2, Consumer<R> consumer) {
+    /**
+     * If the given value is not null, let the mapFun1 transform it, and if that result is also not null, let mapFun2
+     * transform it, and if that result is also not null, call the given consumer with it.
+     */
+    public static <I, J, O> void ifPresentAccept(@Nullable I value, //
+                                                 @NonNull Function<@NonNull I, @Nullable J> mapFun1, @NonNull Function<@NonNull J, @Nullable O> mapFun2, @NonNull Consumer<@NonNull O> consumer) {
         if (value == null) return;
-        U u = mapFun1.apply(value);
+        J u = mapFun1.apply(value);
         if (u == null) return;
-        R r = mapFun2.apply(u);
+        O r = mapFun2.apply(u);
         if (r == null) return;
         consumer.accept(r);
     }
@@ -101,13 +126,18 @@ public class Nullables {
     /**
      * Map 3 times, before consuming, if non-null
      */
-    public static <T, U, R, S> void ifPresentAccept(@Nullable T value, Function<T, U> mapFun1, Function<U, R> mapFun2, Function<R, S> mapFun3, Consumer<S> consumer) {
+    public static <I, J, K, O> void ifPresentAccept(@Nullable I value, //
+                                                    @NonNull Function<@NonNull I, @Nullable J> mapFun1, //
+                                                    @NonNull Function<@NonNull J, @Nullable K> mapFun2, //
+                                                    @NonNull Function<@NonNull K, @Nullable O> mapFun3, //
+                                                    @NonNull Consumer<@NonNull O> consumer) {
         if (value == null) return;
-        U u = mapFun1.apply(value);
+        J u = mapFun1.apply(value);
         if (u == null) return;
-        R r = mapFun2.apply(u);
+        K r = mapFun2.apply(u);
         if (r == null) return;
-        S s = mapFun3.apply(r);
+        O s = mapFun3.apply(r);
+        if (s == null) return;
         consumer.accept(s);
     }
 
@@ -116,7 +146,8 @@ public class Nullables {
      *
      * @param <T> The type of the value
      */
-    public static <T, E extends Throwable> void ifPresentAcceptThrowing(@Nullable T value, ThrowingConsumer<@NonNull T, E> consumer) throws E {
+    public static <T, E extends Throwable> void ifPresentAcceptThrowing(@Nullable T value, //
+                                                                        @NonNull ThrowingConsumer<@NonNull T, E> consumer) throws E {
         if (value != null) {
             consumer.accept(value);
         }
@@ -125,9 +156,9 @@ public class Nullables {
     /**
      * If the given value is not null, apply the given function to it and return the result.
      *
-     * @param <T> The type of the value
+     * @param <I> The type of the value
      */
-    public static <T, R> @Nullable R ifPresentApply(@Nullable T value, Function<T, R> mapFun) {
+    public static <I, O> @Nullable O ifPresentApply(@Nullable I value, @NonNull Function<@NonNull I, @Nullable O> mapFun) {
         return mapOrNull(value, mapFun);
     }
 
@@ -151,10 +182,11 @@ public class Nullables {
     }
 
     @QualityUnchecked
-    public static <T, R> Predicate<@Nullable T> isNotNullAnd(Function<@NonNull T, @Nullable R> mapToNullFun, @NonNull Predicate<@NonNull R> testNonNull) {
+    public static <I, O> Predicate<@Nullable I> isNotNullAnd(Function<@NonNull I, @Nullable O> mapToNullFun, //
+                                                             @NonNull Predicate<@NonNull O> testNonNull) {
         return input -> {
             if (input == null) return false;
-            R r = mapToNullFun.apply(input);
+            O r = mapToNullFun.apply(input);
             if (r == null) return false;
             return testNonNull.test(r);
         };
@@ -168,31 +200,64 @@ public class Nullables {
         return input -> input == null || testNonNull.test(input);
     }
 
-    public static <T, R> R mapOrDefault(@Nullable T input, Function<@NonNull T, @Nullable R> mapFun, R defaultValue) {
+    /**
+     * Try to map input via mapFun1 and mapFun2, returning defaultValue if any step (input or mapFun1) fails. Like
+     * {@link #mapOrDefault(Object, Function, Function, Object)} but non-null results.
+     */
+    public static <I, J, O> @NonNull O mapNonNull(@Nullable I input, //
+                                                  @NonNull Function<@NonNull I, @Nullable J> mapFun1, //
+                                                  @NonNull Function<@NonNull J, @NonNull O> mapFun2, //
+                                                  @NonNull O defaultValue) {
+        if (input == null) return defaultValue;
+        J s = mapFun1.apply(input);
+        if (s == null) return defaultValue;
+        return mapFun2.apply(s);
+    }
+
+    /**
+     * Try to map input via mapFun1, returning defaultValue if input is null. Like
+     * {@link #mapOrDefault(Object, Function, Object)} but non-null results.
+     */
+    public static <I, J, O> @NonNull O mapNonNull(@Nullable I input, //
+                                                  @NonNull Function<@NonNull I, @NonNull O> mapFun, //
+                                                  @NonNull O defaultValue) {
+        if (input == null) return defaultValue;
+        return mapFun.apply(input);
+    }
+
+    public static <I, O> @Nullable O mapOrDefault(@Nullable I input, //
+                                                  @NonNull Function<@NonNull I, @Nullable O> mapFun, @Nullable O defaultValue) {
         return Optional.ofNullable(input).map(mapFun).orElse(defaultValue);
     }
 
-    public static <T, S, R> R mapOrDefault(@Nullable T input, Function<@NonNull T, @Nullable S> mapFun1, Function<@NonNull S, @Nullable R> mapFun2, R defaultValue) {
+    public static <I, J, O> @Nullable O mapOrDefault(@Nullable I input, //
+                                                     @NonNull Function<@NonNull I, @Nullable J> mapFun1, //
+                                                     @NonNull Function<@NonNull J, @Nullable O> mapFun2, //
+                                                     @Nullable O defaultValue) {
         if (input == null) return defaultValue;
-        S s = mapFun1.apply(input);
+        J s = mapFun1.apply(input);
         if (s == null) return defaultValue;
-        R r = mapFun2.apply(s);
+        O r = mapFun2.apply(s);
         if (r == null) return defaultValue;
         return r;
     }
 
-    public static <T, U, V, R> R mapOrDefault(@Nullable T input, Function<T, U> mapFun1, Function<U, V> mapFun2, Function<V, R> mapFun3, R defaultValue) {
+    public static <I, J, K, O> @Nullable O mapOrDefault(@Nullable I input, //
+                                                        @NonNull Function<I, J> mapFun1,//
+                                                        @NonNull Function<J, K> mapFun2, //
+                                                        @NonNull Function<K, O> mapFun3, //
+                                                        @Nullable O defaultValue) {
         if (input == null) return defaultValue;
-        U u = mapFun1.apply(input);
+        J u = mapFun1.apply(input);
         if (u == null) return defaultValue;
-        V v = mapFun2.apply(u);
+        K v = mapFun2.apply(u);
         if (v == null) return defaultValue;
-        R r = mapFun3.apply(v);
+        O r = mapFun3.apply(v);
         if (r == null) return defaultValue;
         return r;
     }
 
-    public static <T> boolean mapOrFalse(@Nullable T input, Predicate<T> mapFun) {
+    public static <T> boolean mapOrFalse(@Nullable T input, @NonNull Predicate<@NonNull T> mapFun) {
         return input != null && mapFun.test(input);
     }
 
@@ -201,64 +266,116 @@ public class Nullables {
      * @param input                if null, the defaultValueSupplier is called
      * @param mapFun               if it returns null, ALSO the defaultValueSupplier is called
      * @param defaultValueSupplier
-     * @param <T>
-     * @param <R>
+     * @param <I>
+     * @param <O>
      * @return
      */
-    public static <T, R> R mapOrGetDefault(@Nullable T input, Function<@NonNull T, @Nullable R> mapFun, Supplier<@NonNull R> defaultValueSupplier) {
+    public static <I, O> @Nullable O mapOrGetDefault(@Nullable I input, //
+                                                     @NonNull Function<@NonNull I, @Nullable O> mapFun, @NonNull Supplier<@Nullable O> defaultValueSupplier) {
         return Optional.ofNullable(input).map(mapFun).orElse(defaultValueSupplier.get());
     }
 
-    public static <T, S, R> R mapOrNull(@Nullable T input, Function<@NonNull T, S> mapFun1, Function<@NonNull S, R> mapFun2) {
+    /**
+     * Like {@link #mapOrDefault(Object, Function, Function, Object)} with a {@code null} default value.
+     */
+    public static <I, J, O> @Nullable O mapOrNull(@Nullable I input, @NonNull Function<@NonNull I, @Nullable J> mapFun1, @NonNull Function<@NonNull J, @Nullable O> mapFun2) {
         return mapOrDefault(input, mapFun1, mapFun2, null);
     }
 
     /**
-     * If given input is not null, return a mapped version. If it is null, return null.
+     * Like {@link #mapOrDefault(Object, Function, Object)} with a {@code null} default value.
      */
-    public static <T, R> @Nullable R mapOrNull(@Nullable T input, Function<@NonNull T, @Nullable R> mapFun) {
-        return Optional.ofNullable(input).map(mapFun).orElse(null);
+    public static <I, O> @Nullable O mapOrNull(@Nullable I input, @NonNull Function<@NonNull I, @Nullable O> mapFun) {
+        return mapOrDefault(input, mapFun, null);
     }
 
+
     /**
-     * Throws AssertionError if input is null. Otherwise returns mapped input.
+     * Throws AssertionError if input is null. Otherwise, returns mapped input.
+     *
+     * @throws AssertionError if input is null
      */
-    public static <T, R> R mapOrThrow(@Nullable T input, Function<T, R> mapFun) {
+    public static <I, O> @Nullable O mapOrThrow(@Nullable I input, //
+                                                @NonNull Function<@NonNull I, @Nullable O> mapFun) throws AssertionError {
         if (input == null) throw new AssertionError("Expected non-null here");
         return mapFun.apply(input);
     }
 
-    /** Does this work in J2CL? */
-    public static <T, R, E extends Throwable> R mapOrThrow(@Nullable T input, Function<@NonNull T, R> mapFun, Supplier<E> exceptionSupplier) throws E {
+
+    /** TODO Does this work in J2CL? */
+    @QualityUnchecked
+    public static <I, O, E extends Throwable> @Nullable O mapOrThrow(@Nullable I input, //
+                                                                     @NonNull Function<@NonNull I, @Nullable O> mapFun, //
+                                                                     @NonNull Supplier<@NonNull E> exceptionSupplier) throws E {
         if (input == null) throw exceptionSupplier.get();
         return mapFun.apply(input);
     }
 
-    public static <T> T nonNull(T nullable, @NonNull T defaultValue) {
+    // HERE
+
+    /**
+     * If the given input is null, return the default value. Otherwise, return the input.
+     */
+    public static <T> @NonNull T nonNull(@Nullable T nullable, @NonNull T defaultValue) {
         return nonNullOrDefault(nullable, defaultValue);
     }
 
-    public static <T, R> @NonNull R nonNull(@Nullable T nullable, Function<@NonNull T, R> mapFun, @NonNull R defaultValue) {
+    /**
+     * Like {@link #mapOrDefault(Object, Function, Object)}, but with a non-null default value.
+     */
+    public static <I, O> @NonNull O nonNull(@Nullable I nullable, @NonNull Function<@NonNull I, O> mapFun, @NonNull O defaultValue) {
         return mapOrDefault(nullable, mapFun, defaultValue);
     }
 
     /**
-     * If predicate is given, it is evaluated on the given object. If predicate is null, this method evaluates to
+     * Like {@link #nonNullOrDefault(Object, Supplier)}, but with a non-null default value.
+     *
+     * @param nullable
+     * @param defaultValueSupplier
+     * @param <T>
+     * @return
+     */
+    public static <T> @NonNull T nonNull(@Nullable T nullable, @NonNull Supplier<@NonNull T> defaultValueSupplier) {
+        return nullable != null ? nullable : defaultValueSupplier.get();
+    }
+
+    /**
+     * If a predicate is given, it is evaluated on the given object. If the predicate is null, this method evaluates to
      * false.
      */
-    public static <T> boolean nonNullAndTest(@Nullable Predicate<T> predicateOrNull, T t) {
+    public static <T> boolean nonNullAndTest(@Nullable Predicate<@Nullable T> predicateOrNull, @Nullable T t) {
         return predicateOrNull != null && predicateOrNull.test(t);
     }
 
-    public static <T, R> @NonNull R nonNullOrDefault(@Nullable T nullable, Function<T, @NonNull R> mapFun, R defaultValue) {
+
+    /**
+     * In most cases, better use {@link #nonNull(Object, Function, Object)}
+     *
+     * @param mapFun       may return null, too
+     * @param defaultValue can be null, too
+     */
+    public static <T, R> @Nullable R nonNullOrDefault(@Nullable T nullable, //
+                                                      @NonNull Function<T, @Nullable R> mapFun, //
+                                                      @Nullable R defaultValue) {
         return nullable != null ? mapFun.apply(nullable) : defaultValue;
     }
 
-    public static <T> @NonNull T nonNullOrDefault(@Nullable T nullable, T defaultValue) {
+    /**
+     * In most cases, better use {@link #nonNull(Object, Object)}
+     *
+     * @param defaultValue can be null, too
+     */
+    public static <T> @Nullable T nonNullOrDefault(@Nullable T nullable, @Nullable T defaultValue) {
         return nullable != null ? nullable : defaultValue;
     }
 
-    public static <T> @NonNull T nonNullOrDefault(@Nullable T nullable, Supplier<T> defaultValueSupplier) {
+
+    /**
+     * In most cases, better use {@link #nonNull(Object, Supplier)}
+     *
+     * @param defaultValueSupplier may return null, too
+     */
+    public static <T> @Nullable T nonNullOrDefault(@Nullable T nullable, @NonNull Supplier<@Nullable T> defaultValueSupplier) {
         return nullable != null ? nullable : defaultValueSupplier.get();
     }
 
@@ -266,27 +383,30 @@ public class Nullables {
         return nullable != null ? nullable : "";
     }
 
-    public static <T> @NonNull T nonNullOrThrow(@Nullable T nullable) {
+    public static <T> @NonNull T nonNullOrThrow(@Nullable T nullable) throws AssertionError {
         return nonNullOrThrow(nullable, () -> new AssertionError("Expected non-null here"));
     }
 
-    public static <T, E extends Throwable> @NonNull T nonNullOrThrow(@Nullable T nullable, Supplier<E> exceptionSupplier) throws E {
+    public static <T, E extends Throwable> @NonNull T nonNullOrThrow(@Nullable T nullable, //
+                                                                     @NonNull Supplier<@NonNull E> exceptionSupplier) throws E {
         if (nullable == null) throw exceptionSupplier.get();
         return nullable;
     }
 
-    public static <T> Stream<T> streamOf(@Nullable T nullable) {
+    public static <T> @NonNull Stream<@Nullable T> streamOf(@Nullable T nullable) {
         if (nullable == null) return Stream.empty();
         return Stream.of(nullable);
     }
 
     /** @return either a Stream.of(value) or an empty Stream */
-    public static <T> Stream<T> streamOfOneOrEmpty(@Nullable T value) {
+    public static <T> @NonNull Stream<@Nullable T> streamOfOneOrEmpty(@Nullable T value) {
         return value == null ? Stream.empty() : Stream.of(value);
     }
 
-    public static <I, O> Stream<O> streamOfOneOrEmpty(@Nullable I value, Function<I, O> mapFun) {
-        return streamOfOneOrEmpty(mapOrNull(value, mapFun));
+    public static <I, O> @NonNull Stream<@NonNull O> streamOfOneOrEmpty(@Nullable I value, //
+                                                                        @NonNull Function<@Nullable I, @NonNull O> mapFun) {
+        if (value == null) return Stream.empty();
+        return Stream.of(mapFun.apply(value));
     }
 
 }
