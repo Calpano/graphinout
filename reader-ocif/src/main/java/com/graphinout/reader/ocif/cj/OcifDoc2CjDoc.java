@@ -129,10 +129,6 @@ public class OcifDoc2CjDoc {
         // preserve OCIF document level data (ocif, rootNode, resources, schemas) as CJ data
         OcifDocData ocifDocLevelData = OcifDocData.ofOcifDoc(ocifDocument);
 
-        // FIXME HERE?
-        // post-process resources: remove those fully represented as labels
-        // ocifDocLevelData.removeResourcesFullyRepresentedAsLabels();
-
         if (!ocifDocLevelData.isEmpty()) {
             cjDocument.dataMutable(d -> d.add(OcifInCj.OCIF_DOCUMENT, ocifDocLevelData.jsonObject()));
         }

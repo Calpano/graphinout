@@ -160,8 +160,8 @@ public class Json2JsonValueWriter implements JsonWriter {
                 IJsonObjectMutable objectMutable = (IJsonObjectMutable) peek;
                 return v -> objectMutable.add(key, v);
             }
+            throw new IllegalStateException("Expected top={none|array|string} but was "+o.getClass().getSimpleName());
         }
-        throw new IllegalStateException();
     }
 
 }

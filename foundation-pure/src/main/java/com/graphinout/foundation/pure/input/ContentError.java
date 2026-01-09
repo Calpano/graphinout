@@ -78,6 +78,18 @@ public class ContentError {
         return Objects.hash(level, message, location);
     }
 
+    public boolean isError() {
+        return level == ErrorLevel.Error;
+    }
+
+    public boolean isInfo() {
+        return level == ErrorLevel.Info;
+    }
+
+    public boolean isWarn() {
+        return level == ErrorLevel.Warn;
+    }
+
     public Optional<Location> location() {
         return Optional.ofNullable(location);
     }

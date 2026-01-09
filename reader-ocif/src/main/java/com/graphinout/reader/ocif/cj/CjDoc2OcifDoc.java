@@ -221,7 +221,6 @@ public class CjDoc2OcifDoc {
             }
         });
 
-        // FIXME HERE ==============================================================
         ifPresentAccept(cjNode.label(), cjLabel -> {
             ContentError.try_(() -> {
                 // Does the node.resource exist in the resources array?
