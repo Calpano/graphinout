@@ -18,12 +18,24 @@ public class CjDocument2CjStream {
         cjStream.documentEnd();
     }
 
+    private void writeEdgeToCjStream(ICjEdge cjEdge) {
+        cjStream.edgeStart(cjEdge);
+        cjEdge.graphs().forEach(this::writeGraphToCjStream);
+        cjStream.edgeEnd();
+    }
+
     private void writeGraphToCjStream(ICjGraph cjGraph) {
         cjStream.graphStart(cjGraph);
-        cjGraph.nodes().forEach(cjStream::node);
-        cjGraph.edges().forEach(cjStream::edge);
+        cjGraph.nodes().forEach(this::writeNodeToCjStream);
+        cjGraph.edges().forEach(this::writeEdgeToCjStream);
         cjGraph.graphs().forEach(this::writeGraphToCjStream);
         cjStream.graphEnd();
+    }
+
+    private void writeNodeToCjStream(ICjNode cjNode) {
+        cjStream.nodeStart(cjNode);
+        cjNode.graphs().forEach(this::writeGraphToCjStream);
+        cjStream.nodeEnd();
     }
 
 }
