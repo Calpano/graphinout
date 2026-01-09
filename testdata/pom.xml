@@ -5,7 +5,7 @@
     <parent>
         <artifactId>graphinout</artifactId>
         <groupId>com.graphinout</groupId>
-        <version>0.1.12</version>
+        <version>0.1.13-SNAPSHOT</version>
     </parent>
 
     <artifactId>testdata</artifactId>
