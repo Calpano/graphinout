@@ -9,3 +9,4 @@ tmp
 *.cache
 *.svg
 .vscode
+/.claude/
