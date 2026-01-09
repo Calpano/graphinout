@@ -150,6 +150,7 @@ public enum CjType {
 
         ArrayOfEdges.item(Edge);
         Edge.property(ID).is(Id);
+        Edge.property(GRAPHS).is(ArrayOfGraphs);
         Edge.property(LABEL).is(ArrayOfLabelEntries);
         Edge.property(EDGE_OR_ENDPOINT__TYPE).is(EdgeTypeString);
         Edge.property(EDGE_OR_ENDPOINT__TYPE_NODE).is(EdgeTypeNodeId);
