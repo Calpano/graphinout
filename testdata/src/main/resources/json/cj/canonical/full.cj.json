@@ -3,6 +3,7 @@
     "versionDate": "2025-07-14",
     "versionNumber": "5.0.0"
   },
+  "baseUri": "http://example.org/graph/",
   "graphs": [
     {
       "id": "g1",
@@ -70,7 +71,7 @@
           "id": "n3",
           "label": [
             {
-              "value": "Node 3"
+              "value": "Node 3 (Predicate)"
             }
           ]
         },
@@ -96,7 +97,12 @@
           "id": "e1",
           "label": [
             {
+              "language": "en",
               "value": "Directed Edge"
+            },
+            {
+              "language": "de",
+              "value": "Gerichtete Kante"
             }
           ],
           "data": {
@@ -240,6 +246,25 @@
             },
             {
               "node": "n5",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": "e8",
+          "label": [
+            {
+              "value": "Edge with Node Type"
+            }
+          ],
+          "typeNode": "n3",
+          "endpoints": [
+            {
+              "node": "n1",
+              "direction": "out"
+            },
+            {
+              "node": "n2",
               "direction": "in"
             }
           ]

@@ -1,0 +1,223 @@
+{
+  "baseUri": "http://example.org/graph/", "data": {
+  "graphml:keys": {
+    "edge-description": {
+      "attr.name": "description", "attr.type": "string", "for": "edge"
+    }, "edge-weight": {
+      "attr.name": "weight", "attr.type": "int", "for": "edge"
+    }, "graph-customProperty": {
+      "attr.name": "customProperty", "attr.type": "int", "for": "graph"
+    }, "graph-description": {
+      "attr.name": "description", "attr.type": "string", "for": "graph"
+    }, "node-color": {
+      "attr.name": "color", "attr.type": "string", "for": "node"
+    }, "node-description": {
+      "attr.name": "description", "attr.type": "string", "for": "node"
+    }
+  }
+}, "graphs": [
+  {
+    "data": {
+      "customProperty": 123, "description": "Attributes on Graphs"
+    }, "edges": [
+    {
+      "data": {
+        "description": "Attributes on Edges", "weight": 10
+      }, "endpoints": [
+      {
+        "direction": "out", "node": "n1"
+      }, {
+        "direction": "in", "node": "n2"
+      }
+    ], "id": "e1", "label": [
+      {
+        "language": "en", "value": "Directed Edge"
+      }, {
+        "language": "de", "value": "Gerichtete Kante"
+      }
+    ]
+    }, {
+      "endpoints": [
+        {
+          "node": "n2"
+        }, {
+          "node": "n3"
+        }
+      ], "id": "e2", "label": [
+        {
+          "value": "Undirected Edge"
+        }
+      ]
+    }, {
+      "endpoints": [
+        {
+          "direction": "out", "node": "n1"
+        }, {
+          "direction": "in", "node": "n2"
+        }, {
+          "node": "n3"
+        }
+      ], "id": "e3", "label": [
+        {
+          "value": "Mixed-directionality Hyperedge"
+        }
+      ]
+    }, {
+      "endpoints": [
+        {
+          "direction": "out", "node": "n3"
+        }, {
+          "direction": "in", "node": "n4"
+        }
+      ], "id": "e4", "label": [
+        {
+          "value": "Typed Edge"
+        }
+      ], "type": "relatedTo"
+    }, {
+      "endpoints": [
+        {
+          "direction": "out", "node": "n4"
+        }, {
+          "direction": "in", "node": "n5"
+        }
+      ], "graphs": [
+        {
+          "id": "e5-nested-graph", "label": [
+          {
+            "value": "Nested Graph in Edge"
+          }
+        ], "nodes": [
+          {
+            "id": "e5-nested-n1"
+          }
+        ]
+        }
+      ], "id": "e5", "label": [
+        {
+          "value": "Edge with Nested Graph"
+        }
+      ]
+    }, {
+      "endpoints": [
+        {
+          "direction": "out", "node": "n1"
+        }, {
+          "direction": "in", "node": "n2", "port": "p1"
+        }
+      ], "id": "e6", "label": [
+        {
+          "value": "Edge to Port"
+        }
+      ]
+    }, {
+      "endpoints": [
+        {
+          "direction": "out", "node": "n1"
+        }, {
+          "direction": "in", "node": "n5"
+        }
+      ], "id": "e7", "label": [
+        {
+          "value": "Edge with URI Type"
+        }
+      ], "typeUri": "http://example.org/relation/knows"
+    }, {
+      "endpoints": [
+        {
+          "direction": "out", "node": "n1"
+        }, {
+          "direction": "in", "node": "n2"
+        }
+      ], "id": "e8", "label": [
+        {
+          "value": "Edge with Node Type"
+        }
+      ], "typeNode": "n3"
+    }
+  ], "graphs": [
+    {
+      "id": "g1-nested-graph", "label": [
+      {
+        "value": "Nested Graph in Graph"
+      }
+    ], "nodes": [
+      {
+        "id": "g1-nested-n1"
+      }
+    ]
+    }
+  ], "id": "g1", "label": [
+    {
+      "value": "Main Graph"
+    }
+  ], "nodes": [
+    {
+      "data": {
+        "color": "blue", "description": "Attributes on Nodes"
+      }, "graphs": [
+      {
+        "id": "n1-nested-graph", "label": [
+        {
+          "value": "Nested Graph in Node"
+        }
+      ], "nodes": [
+        {
+          "id": "n1-nested-n1"
+        }
+      ]
+      }
+    ], "id": "n1", "label": [
+      {
+        "language": "en", "value": "Node 1"
+      }, {
+        "language": "de", "value": "Knoten 1"
+      }
+    ]
+    }, {
+      "id": "n2", "label": [
+        {
+          "value": "Node 2"
+        }
+      ], "ports": [
+        {
+          "id": "p1", "label": [
+          {
+            "value": "Port 1"
+          }
+        ]
+        }
+      ]
+    }, {
+      "id": "n3", "label": [
+        {
+          "value": "Node 3 (Predicate)"
+        }
+      ]
+    }, {
+      "id": "n4", "label": [
+        {
+          "value": "Node 4"
+        }
+      ]
+    }, {
+      "id": "n5", "label": [
+        {
+          "value": "Node 5"
+        }
+      ]
+    }
+  ]
+  }, {
+    "id": "g2", "label": [
+      {
+        "value": "Second Graph"
+      }
+    ], "nodes": [
+      {
+        "id": "g2-n1"
+      }
+    ]
+  }
+]
+}
