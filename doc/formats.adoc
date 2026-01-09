@@ -91,11 +91,34 @@ This document provides an overview of various graph exchange file formats, based
 See https://j-s-o-n.org
 Also, more JSON formats there
 
+[[jgf]]
+=== JGF
+https://github.com/jsongraph/json-graph-specification[]
+
+
+
+=== gravis JSON Graph Format (gJGF)
+* https://robert-haas.github.io/gravis-docs/rst/format_specification.html[]
+
+Extends <<jgf>> Version 2 (precisely: commit ce5ed40 on February 1, 2021).
+
+Used by the Python3 https://robert-haas.github.io/gravis-docs/[gravis package], Copyright 2018-2021, Robert Haas (Vienna, Austria). Its name stands for graph visualization and its purpose is to create interactive 2D and 3D plots of graphs and networks.
+
+It uses Python for preparing graph data and web technologies (HTML/CSS/JS) for rendering it, based largely on the JavaScript libraries d3.js, vis.js and 3d-force-graph.js / three.js.
+
+Two types of input data can be passed to the plotting functions: 1) a JSON string or equivalent Python dictionary that encodes a graph in a custom format called gravis JSON Graph Format (gJGF) or 2) an external graph object that is automatically translated to gJGF and may come from the following supported Python packages: graph-tool, igraph, NetworKit, NetworkX, pyntacle and SNAP.
+
+
+
+
 === VOSviewer
 * https://app.vosviewer.com/docs/file-types/json-file-type/[]
 
-== Triple-based Formats
 
+
+
+
+== Triple-based Formats
 === Turtle
 * Type: Text-based
 * Specification: https://www.w3.org/TR/turtle/[spec]
