@@ -44,10 +44,7 @@ public class Json2CjAndBackTest {
 
         String json_in = resource.getContentAsString();
         String json_out = jsonWriter_out.json();
-        String json_outNormWhitespace = removeWhitespace(json_out);
-        String json_outNormHeader = CjNormalizer.canonicalize(json_outNormWhitespace);
-        String json_outNormFormat = formatDebug(json_outNormHeader);
-        assertThat(json_outNormFormat).isEqualTo(formatDebug(CjNormalizer.canonicalize(JsonFormatting.removeWhitespace(json_in))));
+        CjAssert.xAssertThatIsSameCj(json_out, json_in,  ()->{});
     }
 
     @ParameterizedTest(name = "{index}: {0}")
