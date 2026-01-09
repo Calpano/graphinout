@@ -66,6 +66,20 @@ public class CjNormalizer {
                     o.removeProperty(CjDataProperty.CustomXmlAttributes.cjPropertyKey);
                 }
             });
+
+            // remove redundant "direction": "undir" property from an endpoint
+            if (JsonPaths.endsWith(steps,
+                    s -> s.equals(CjConstants.GRAPH__EDGES),
+                    s -> s instanceof Integer,
+                    s -> s.equals(CjConstants.EDGE__ENDPOINTS),
+                    s -> s instanceof Integer)) {
+                if (o.hasProperty(CjConstants.ENDPOINT__DIRECTION)) {
+                    IJsonValue direction = o.get(CjConstants.ENDPOINT__DIRECTION);
+                    if (direction.isString() && "undir".equals(direction.asString())) {
+                        o.removeProperty(CjConstants.ENDPOINT__DIRECTION);
+                    }
+                }
+            }
         }
     };
     private final String resultJson;
