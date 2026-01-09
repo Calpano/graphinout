@@ -511,3 +511,11 @@ note top of Data: If resource\nfully represented
 |===
 
 
+== Missing Test Cases
+
+=== OCIF to CJ
+Export using unknown extensions, e.g. a `@example/foo` extension. Schema present in file OR in a remote file.
+Does CJ round-trip the unknown extension correctly back?
+
+Can we deal with unknown extension type NAMES, which map to known extension URIs in the schemas section?
+
