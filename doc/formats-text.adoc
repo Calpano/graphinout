@@ -1,0 +1,415 @@
+= Text-based Formats
+:toc:
+
+== TGF (Trivial Graph Format)
+* Type: Text-based
+* Specification: https://en.wikipedia.org/wiki/Trivial_Graph_Format[Wikipedia]
+
+.Example Syntax
+----
+1 First node
+2 Second node
+#
+1 2 Edge between the two
+----
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- |
+| Nodes | + |
+| Undirected Edges | + | Default interpretation
+| Directed Edges | (+) | Tool-dependent interpretation
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | After node ID
+| Edge Labels | + | After edge endpoints
+| Attributes on Nodes | -- |
+| Attributes on Edges | -- |
+| Attributes on Graphs | -- |
+| Typed Edges | -- |
+|===
+
+== DOT Language
+* Type: Text-based
+* Specification: https://graphviz.org/doc/info/lang.html[spec]
+
+.Example Synax
+[source,dot]
+----
+digraph sample2 {
+ A -> B [ label = "Edge A to B" ];
+ B -> C [ label = "Edge B to C" ];
+ A [label="Node A"];
+}
+----
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- | One graph per file
+| Nodes | + |
+| Undirected Edges | + | `graph` with `--` operator
+| Directed Edges | + | `digraph` with `\->` operator
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- | Graph is either directed or undirected
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | + | Via subgraphs/clusters
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | + | Via subgraphs/clusters
+| Node Labels | + | Via `label` attribute
+| Edge Labels | + | Via `label` attribute
+| Attributes on Nodes | + | Extensive attribute system
+| Attributes on Edges | + | Extensive attribute system
+| Attributes on Graphs | + | Extensive attribute system
+| Typed Edges | -- |
+|===
+
+== Pajek
+* Type: Text-based
+* Specification: http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf[spec]
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | + | Multiple relations via `*Arcs` / `*Edges` sections
+| Nodes | + | `*Vertices` section
+| Undirected Edges | + | `*Edges` section
+| Directed Edges | + | `*Arcs` section
+| Hyperedges | -- |
+| Mixed-directionality Edges | + | Can have both `*Arcs` and `*Edges`
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | After vertex ID
+| Edge Labels | (+) | Via edge value
+| Attributes on Nodes | + | Coordinates, colors, shapes
+| Attributes on Edges | + | Weights, colors, widths
+| Attributes on Graphs | -- |
+| Typed Edges | (+) | Via multiple relation sections
+|===
+
+== Nested Network Format
+* Type: Text-based
+* Specification: No formal specification found. Primarily used by Cytoscape.
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | + |
+| Nodes | + |
+| Undirected Edges | + |
+| Directed Edges | + |
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | + | Primary feature: nodes contain sub-networks
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + |
+| Edge Labels | + |
+| Attributes on Nodes | + |
+| Attributes on Edges | + |
+| Attributes on Graphs | -- |
+| Typed Edges | (+) | Via interaction type
+|===
+
+== BioGRID Tab 3.0 Format
+* Type: Text-based
+* Specification: https://wiki.thebiogrid.org/doku.php/biogrid_tab_version_3.0[spec]
+
+Domain-specific format for protein/genetic interactions.
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- |
+| Nodes | + | Interactors A and B
+| Undirected Edges | + | Interactions are symmetric
+| Directed Edges | -- |
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | Gene symbols, systematic names
+| Edge Labels | -- |
+| Attributes on Nodes | + | Taxonomy, accessions, synonyms
+| Attributes on Edges | + | Experimental system, throughput, scores
+| Attributes on Graphs | -- |
+| Typed Edges | + | Physical vs genetic interaction type
+|===
+
+== PSI-MI Tab Version 2.5 Format
+* Type: Text-based
+* Specification: https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-5-44[spec]
+
+Domain-specific format for molecular interactions (HUPO PSI standard).
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- |
+| Nodes | + | Interactors
+| Undirected Edges | + | Default
+| Directed Edges | (+) | Some interaction types imply direction
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | Gene names, aliases
+| Edge Labels | -- |
+| Attributes on Nodes | + | Database refs, taxonomy, features
+| Attributes on Edges | + | Detection method, interaction type, confidence
+| Attributes on Graphs | -- |
+| Typed Edges | + | Interaction type ontology
+|===
+
+== Matrix Market
+* Type: Text-based
+* Specification: https://math.nist.gov/MatrixMarket/formats.html#MMformat[spec]
+
+Matrix exchange format. Graphs represented as sparse matrices.
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- |
+| Nodes | (+) | Implicit as matrix rows/columns
+| Undirected Edges | + | Via symmetric matrix
+| Directed Edges | + | Via general matrix
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | -- |
+| Edge Labels | -- |
+| Attributes on Nodes | -- |
+| Attributes on Edges | + | Edge weights (real, complex, integer, pattern)
+| Attributes on Graphs | (+) | Header metadata
+| Typed Edges | -- |
+|===
+
+== Adjacency Matrix/List
+* Type: Text-based
+* Specification: No formal specification. It's a general representation method.
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- |
+| Nodes | (+) | Implicit as indices
+| Undirected Edges | + | Symmetric matrix or bidirectional list
+| Directed Edges | + | Asymmetric matrix or unidirectional list
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | -- |
+| Edge Labels | -- |
+| Attributes on Nodes | -- |
+| Attributes on Edges | (+) | Weights possible in some variants
+| Attributes on Graphs | -- |
+| Typed Edges | -- |
+|===
+
+== Chaco
+* Type: Text-based
+* Specification: No formal specification found.
+
+Graph partitioning format used by Chaco software.
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- |
+| Nodes | + |
+| Undirected Edges | + |
+| Directed Edges | -- |
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | -- |
+| Edge Labels | -- |
+| Attributes on Nodes | (+) | Vertex weights
+| Attributes on Edges | (+) | Edge weights
+| Attributes on Graphs | -- |
+| Typed Edges | -- |
+|===
+
+== Edge List
+* Type: Text-based
+* Specification: No formal specification. It's a general representation method.
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- |
+| Nodes | (+) | Implicit from edges
+| Undirected Edges | + | Interpretation-dependent
+| Directed Edges | + | Interpretation-dependent
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | -- |
+| Edge Labels | -- |
+| Attributes on Nodes | -- |
+| Attributes on Edges | (+) | Weights in some variants
+| Attributes on Graphs | -- |
+| Typed Edges | -- |
+|===
+
+== GDF (Graph Data Format or Graph Description Format)
+Used by http://graphexploration.cond.org/[GUESS]. Last news in 2007.
+
+* Type: Text-based
+* Specification: No formal specification found.
+* https://docs.gephi.org/desktop/User_Manual/Import/GDF_File_Format[]
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- |
+| Nodes | + | `nodedef>` section
+| Undirected Edges | + | Default
+| Directed Edges | + | Via `directed` BOOLEAN attribute
+| Hyperedges | -- |
+| Mixed-directionality Edges | + | Per-edge `directed` attribute
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | Via `label` VARCHAR attribute
+| Edge Labels | + | Via custom attribute
+| Attributes on Nodes | + | VARCHAR, DOUBLE, BOOLEAN types
+| Attributes on Edges | + | VARCHAR, DOUBLE, BOOLEAN types
+| Attributes on Graphs | -- |
+| Typed Edges | (+) | Via custom attribute
+|===
+
+== DL
+UCINET DL
+
+* Type: Text-based
+* Specification: No formal specification found.
+* https://docs.gephi.org/desktop/User_Manual/Import/UCINET_DL_Format/[]
+* Gephi supports the fullmatrix and edgelist1 sub-formats.
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- |
+| Nodes | + |
+| Undirected Edges | + |
+| Directed Edges | + |
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | Via `labels:` declaration
+| Edge Labels | -- |
+| Attributes on Nodes | -- |
+| Attributes on Edges | + | Numeric weights
+| Attributes on Graphs | (+) | Header metadata (N, format)
+| Typed Edges | -- |
+|===
+
+== Graph6
+* Type: Text-based
+* Specification: No formal specification found.
+
+Compact ASCII encoding for undirected graphs.
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | + | One graph per line
+| Nodes | (+) | Implicit (numbered 0 to n-1)
+| Undirected Edges | + |
+| Directed Edges | -- | Use Digraph6 variant for directed
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | -- |
+| Edge Labels | -- |
+| Attributes on Nodes | -- |
+| Attributes on Edges | -- |
+| Attributes on Graphs | -- |
+| Typed Edges | -- |
+|===
+
+== GML (Graph Modelling Language)
+* Type: Text-based
+* Specification: https://en.wikipedia.org/wiki/Graph_Modelling_Language[Wikipedia]; http://www.graphviewer.nl/misc/gmllanguage/gml-technical-report.pdf[spec 1997]
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | + |
+| Nodes | + |
+| Undirected Edges | + |
+| Directed Edges | + | Via `directed 1` on graph
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | + | Via nested graph elements
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | + | Hierarchical structure
+| Node Labels | + | Via `label` key
+| Edge Labels | + | Via `label` key
+| Attributes on Nodes | + | Arbitrary key-value pairs
+| Attributes on Edges | + | Arbitrary key-value pairs
+| Attributes on Graphs | + | Arbitrary key-value pairs
+| Typed Edges | (+) | Via custom attribute
+|===
+
+== Netdraw VNA
+Similar to <<Pajek>>.
+
+* Type: Text-based
+* Specification: https://faculty.ucr.edu/~hanneman/nettext/C4_netdraw.html[]
+* https://docs.gephi.org/desktop/User_Manual/Import/Netdraw_VNA_Format/[]
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- |
+| Nodes | + | `*Node data` section
+| Undirected Edges | + |
+| Directed Edges | + |
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + |
+| Edge Labels | -- |
+| Attributes on Nodes | + | `*Node properties` section
+| Attributes on Edges | + | `*Tie data` section
+| Attributes on Graphs | -- |
+| Typed Edges | -- |
+|===

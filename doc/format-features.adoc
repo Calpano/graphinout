@@ -1,0 +1,32 @@
+= Format/Model Features
+
+The following features might or might now be available in a graph format or graph model.
+
+.Document
+Multiple Graphs per Document:: Can a single document contain multiple, unrelated graphs?
+
+.Structure
+Nodes:: Can this format represent nodes without requiring them to be part of edges?
+
+Undirected Edges:: Can this format represent undirected bi-edges?
+Directed Edges:: Can this format represent directed bi-edges?
+Hyperedges:: Can this format represent hyperedges? I.e., edges with more than 2 endpoints? Or just 1 endpoint?
+Mixed-directionality Edges:: Can this format express and edge with a mix of directed an undirected endpoints?
+Edges on Edges:: Can an edge endpoint point to another edge?
+
+.Nesting
+Nested Graphs in Nodes:: Can a node contain sub-graphs?
+Nested Graphs in Edges:: Can an edge contain sub-graphs?
+Nested Graphs in Graphs:: Can a graph contain sub-graphs?
+
+.Labeling
+Node Labels:: Are node labels supported? Can they be multi-lingual?
+Edge Labels:: Are edge labels supported? Can they be multi-lingual?
+
+.Data
+Attributes on Nodes:: Can nodes be annotated with data?
+Attributes on Edges:: Can edges be annotated with data?
+Attributes on Graphs:: Can graphs be annotated with data?
+
+.Semantics
+Typed Edges:: Can an edge have a define edge type?

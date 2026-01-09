@@ -1,10 +1,12 @@
-# Coding Guidelines
-
-## Where to Read
+# Where to Read
 - Read source code only from files in /src/main and /src/test. 
 - Don't read from /target/ directories.
 - All .adoc files may contain relevant docs.
 
+# Tool Usage
+For fetching URLs from Wikipedia, use curl.
+
+# Coding Guidelines
 ## Accessors (Record-style)
 - **Getters**: Use `fieldName()` (not `getFieldName()`).
 - **Setters (Mutable)**: Use `fieldName(T value)` returning `this` (fluent).

@@ -1,144 +1,20 @@
 = Graph Exchange File Formats
 :toc:
+:toclevels: 3
+:doctype: book
 
 This document provides an overview of various graph exchange file formats, based on the paper "Unravelling Graph-Exchange File Formats" by Roughan and Tuke (2015).
 
-== Text-based Formats
+[chapter]
+include::format-features.adoc[leveloffset+=1]
 
-=== TGF (Trivial Graph Format)
-* Type: Text-based
-* Specification: https://en.wikipedia.org/wiki/Trivial_Graph_Format[Wikipedia]
+include::formats-text.adoc[leveloffset+=1]
 
-=== DOT Language
-* Type: Text-based
-* Specification: https://graphviz.org/doc/info/lang.html[spec]
+include::formats-xml.adoc[leveloffset+=1]
 
-=== Pajek
-* Type: Text-based
-* Specification: http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/pajekman.pdf[spec]
+include::formats-json.adoc[leveloffset+=1]
 
-=== Nested Network Format
-* Type: Text-based
-* Specification: No formal specification found. Primarily used by Cytoscape.
-
-=== BioGRID Tab 3.0 Format
-* Type: Text-based
-* Specification: https://wiki.thebiogrid.org/doku.php/biogrid_tab_version_3.0[spec]
-
-=== PSI-MI Tab Version 2.5 Format
-* Type: Text-based
-* Specification: https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-5-44[spec]
-
-=== Matrix Market
-* Type: Text-based
-* Specification: https://math.nist.gov/MatrixMarket/formats.html#MMformat[spec]
-
-=== Adjacency Matrix/List
-* Type: Text-based
-* Specification: No formal specification. It's a general representation method.
-
-=== Chaco
-* Type: Text-based
-* Specification: No formal specification found.
-
-=== Edge List
-* Type: Text-based
-* Specification: No formal specification. It's a general representation method.
-
-=== GDF (Graph Data Format)
-* Type: Text-based
-* Specification: No formal specification found.
-
-=== DL
-* Type: Text-based
-* Specification: No formal specification found.
-
-=== Graph6
-* Type: Text-based
-* Specification: No formal specification found.
-
-=== GML (Graph Modelling Language)
-* Type: Text-based
-* Specification: https://en.wikipedia.org/wiki/Graph_Modelling_Language[Wikipedia]; http://www.graphviewer.nl/misc/gmllanguage/gml-technical-report.pdf[spec 1997]
-
-== XML-based Formats
-
-=== GraphML
-* Type: XML-based
-* Specification: http://graphml.graphdrawing.org/specification.html[GraphML Specification]
-
-=== GEXF (Graph Exchange XML Format)
-* Type: XML-based
-* Specification: http://gexf.net/schema.html[specification], http://gexf.net/basic.html[examples]
-
-=== GXL (Graph eXchange Language)
-* Type: XML-based
-* Specification: https://en.wikipedia.org/wiki/GXL[Wikipedia]
-
-=== XGMML
-* Type: XML-based
-* Specification: https://en.wikipedia.org/wiki/XGMML[spec]
-
-=== SBML (Systems Biology Markup Language)
-* Type: XML-based
-* Specification: http://sbml.org/documents/[spec]
+include::formats-triple.adoc[leveloffset+=1]
 
 
 
-== JSON-based Formats
-
-=== Connected JSON (CJ)
-See https://j-s-o-n.org
-Also, more JSON formats there
-
-[[jgf]]
-=== JGF
-https://github.com/jsongraph/json-graph-specification[]
-
-
-
-=== gravis JSON Graph Format (gJGF)
-* https://robert-haas.github.io/gravis-docs/rst/format_specification.html[]
-
-Extends <<jgf>> Version 2 (precisely: commit ce5ed40 on February 1, 2021).
-
-Used by the Python3 https://robert-haas.github.io/gravis-docs/[gravis package], Copyright 2018-2021, Robert Haas (Vienna, Austria). Its name stands for graph visualization and its purpose is to create interactive 2D and 3D plots of graphs and networks.
-
-It uses Python for preparing graph data and web technologies (HTML/CSS/JS) for rendering it, based largely on the JavaScript libraries d3.js, vis.js and 3d-force-graph.js / three.js.
-
-Two types of input data can be passed to the plotting functions: 1) a JSON string or equivalent Python dictionary that encodes a graph in a custom format called gravis JSON Graph Format (gJGF) or 2) an external graph object that is automatically translated to gJGF and may come from the following supported Python packages: graph-tool, igraph, NetworKit, NetworkX, pyntacle and SNAP.
-
-
-
-
-=== VOSviewer
-* https://app.vosviewer.com/docs/file-types/json-file-type/[]
-
-
-
-
-
-== Triple-based Formats
-=== Turtle
-* Type: Text-based
-* Specification: https://www.w3.org/TR/turtle/[spec]
-
-=== RDF/XML
-* Type: XML-based
-* Specification: https://www.w3.org/TR/rdf-syntax-grammar/[spec]
-
-=== N3
-* Type: Text-based
-* Specification: https://www.w3.org/TeamSubmission/n3/[spec]
-
-=== N-Triples
-* Type: Text-based
-* Specification: https://www.w3.org/TR/n-triples/[spec]
-
-=== Web Ontology Language (OWL)
-* Type: XML-based
-* Specification: https://www.w3.org/TR/owl2-overview/[spec]
-
-=== BioPAX (Biological PAthways eXchange) Format
-* Type: OWL-based
-* Specification: http://www.biopax.org/[spec]

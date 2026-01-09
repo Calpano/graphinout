@@ -1,0 +1,439 @@
+= JSON-based Formats
+:toc:
+
+== Connected JSON (CJ)
+See https://j-s-o-n.org
+Also, more JSON formats there
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | + | Via `graphs` array
+| Nodes | + |
+| Undirected Edges | + | Via `undir` endpoint direction
+| Directed Edges | + | Via `in`/`out` endpoint directions
+| Hyperedges | + | N-ary endpoints
+| Mixed-directionality Edges | + | Each endpoint specifies own direction
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | + | Via `graphs` property (compound nodes)
+| Nested Graphs in Edges | + | Via `graphs` property (compound edges)
+| Nested Graphs in Graphs | + |
+| Node Labels | + | Multilingual support
+| Edge Labels | + | Multilingual support
+| Attributes on Nodes | + | Via `data` property
+| Attributes on Edges | + | Via `data` property
+| Attributes on Graphs | + | Via `data` property
+| Typed Edges | + | Via `type`, `typeUri`, `typeNode`
+|===
+
+[[jgf]]
+== JGF
+https://github.com/jsongraph/json-graph-specification[]
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | + | Via `graphs` array
+| Nodes | + | Stored as map with ID as key
+| Undirected Edges | + | Via `directed: false`
+| Directed Edges | + | Via `directed: true`
+| Hyperedges | + | Both directed and undirected
+| Mixed-directionality Edges | -- | Graph uses one edge type only
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | Via `label` field
+| Edge Labels | + | Via `label` field
+| Attributes on Nodes | + | Via `metadata` object
+| Attributes on Edges | + | Via `metadata` object
+| Attributes on Graphs | + | Via `metadata` object
+| Typed Edges | + | Via `relation` field
+|===
+
+== CytoScape JSON
+https://js.cytoscape.org/#notation/elements-json[]
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- | Single graph per instance
+| Nodes | + |
+| Undirected Edges | + | Supports directed, undirected, and mixed graphs
+| Directed Edges | + | Via source/target properties
+| Hyperedges | -- | Edges connect exactly 2 nodes
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- | Edges only connect nodes
+| Nested Graphs in Nodes | + | Via compound nodes (parent property)
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | Via data field and styling
+| Edge Labels | + | Via data field and styling
+| Attributes on Nodes | + | Via data field (JSON-serializable)
+| Attributes on Edges | + | Via data field (JSON-serializable)
+| Attributes on Graphs | + | Via graph data property
+| Typed Edges | (+) | No formal types, but can use data field
+|===
+
+
+[[gJGF]]
+== gravis JSON Graph Format (gJGF)
+* https://robert-haas.github.io/gravis-docs/rst/format_specification.html[]
+
+Extends <<jgf>> Version 2 (precisely: commit ce5ed40 on February 1, 2021).
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | + | Via `graphs` structure
+| Nodes | + |
+| Undirected Edges | + | Via `directed` property (graph or edge level)
+| Directed Edges | + | Via `directed` property (graph or edge level)
+| Hyperedges | (+) | Defined in spec but ignored by gravis tooling
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | Via `label` field
+| Edge Labels | + | Via `label` field
+| Attributes on Nodes | + | Via metadata object
+| Attributes on Edges | + | Via metadata object
+| Attributes on Graphs | + | Inherited from JGF
+| Typed Edges | (+) | Via `relation` field (ignored by gravis tooling)
+|===
+
+Used by the Python3 https://robert-haas.github.io/gravis-docs/[gravis package], Copyright 2018-2021, Robert Haas (Vienna, Austria). Its name stands for graph visualization and its purpose is to create interactive 2D and 3D plots of graphs and networks.
+
+It uses Python for preparing graph data and web technologies (HTML/CSS/JS) for rendering it, based largely on the JavaScript libraries d3.js, vis.js and 3d-force-graph.js / three.js.
+
+Two types of input data can be passed to the plotting functions: 1) a JSON string or equivalent Python dictionary that encodes a graph in a custom format called <<gJGF, gravis JSON Graph Format (gJGF)>> or 2) an external graph object that is automatically translated to gJGF and may come from the following supported Python packages: graph-tool, igraph, NetworKit, NetworkX, pyntacle and SNAP.
+
+
+
+
+== VOSviewer
+* https://app.vosviewer.com/docs/file-types/json-file-type/[]
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- | Single `network` object
+| Nodes | + | Called `items`
+| Undirected Edges | + | Called `links` with `strength`
+| Directed Edges | -- | Links are undirected
+| Hyperedges | -- | Links connect exactly 2 items
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | Via `label` field
+| Edge Labels | -- |
+| Attributes on Nodes | + | Via `weights`, `scores`, `cluster`, `description`, `url`
+| Attributes on Edges | (+) | Only `strength`
+| Attributes on Graphs | -- |
+| Typed Edges | -- |
+|===
+
+[source,json]
+----
+{
+    "network": {
+        "items": [
+            {
+                "id": 1,
+                "label": "James",
+                "x": 1.0551,
+                "y": -0.2935,
+                "cluster": 2,
+                "weights": {
+                    "Documents": 88,
+                    "Citations": 4221,
+                    "Norm. citations": 109.3879
+                },
+                "scores": {
+                    "Avg. pub. year": 1996.8409,
+                    "Avg. citations": 47.9659,
+                    "Avg. norm. citations": 1.243
+                }
+            },
+            {
+                "id": 2,
+                "label": "Mary",
+                "x": 0.7492,
+                "y": 0.2841,
+                "cluster": 2,
+                "weights": {
+                    "Documents": 91,
+                    "Citations": 1994,
+                    "Norm. citations": 55.0416
+                },
+                "scores": {
+                    "Avg. pub. year": 2011.7363,
+                    "Avg. citations": 21.9121,
+                    "Avg. norm. citations": 0.6049
+                }
+            },
+            {
+                "id": 3,
+                "label": "John",
+                "x": -0.6243,
+                "y": -0.7247,
+                "cluster": 1,
+                "weights": {
+                    "Documents": 89,
+                    "Citations": 3178,
+                    "Norm. citations": 143.3831
+                },
+                "scores": {
+                    "Avg. pub. year": 2017.1461,
+                    "Avg. citations": 35.7079,
+                    "Avg. norm. citations": 1.611
+                }
+            },
+            {
+                "id": 4,
+                "label": "Linda",
+                "x": -0.0722,
+                "y": 0.0248,
+                "cluster": 3,
+                "weights": {
+                    "Documents": 261,
+                    "Citations": 7177,
+                    "Norm. citations": 209.8957
+                },
+                "scores": {
+                    "Avg. pub. year": 2010.2146,
+                    "Avg. citations": 27.4981,
+                    "Avg. norm. citations": 0.8042
+                }
+            },
+            {
+                "id": 5,
+                "label": "David",
+                "x": 0.1026,
+                "y": 0.4626,
+                "cluster": 3,
+                "weights": {
+                    "Documents": 124,
+                    "Citations": 5843,
+                    "Norm. citations": 199.8492
+                },
+                "scores": {
+                    "Avg. pub. year": 2010.7581,
+                    "Avg. citations": 47.121,
+                    "Avg. norm. citations": 1.6117
+                }
+            },
+            {
+                "id": 6,
+                "label": "Sarah",
+                "x": -0.5883,
+                "y": 0.3511,
+                "cluster": 4,
+                "weights": {
+                    "Documents": 228,
+                    "Citations": 12930,
+                    "Norm. citations": 436.0204
+                },
+                "scores": {
+                    "Avg. pub. year": 2013.1798,
+                    "Avg. citations": 56.7105,
+                    "Avg. norm. citations": 1.9124
+                }
+            },
+            {
+                "id": 7,
+                "label": "Paul",
+                "x": -0.3409,
+                "y": 0.7997,
+                "cluster": 4,
+                "weights": {
+                    "Documents": 168,
+                    "Citations": 9850,
+                    "Norm. citations": 294.1641
+                },
+                "scores": {
+                    "Avg. pub. year": 2012.6071,
+                    "Avg. citations": 58.631,
+                    "Avg. norm. citations": 1.751
+                }
+            },
+            {
+                "id": 8,
+                "label": "Karen",
+                "x": -0.6236,
+                "y": -0.1752,
+                "cluster": 1,
+                "weights": {
+                    "Documents": 181,
+                    "Citations": 3733,
+                    "Norm. citations": 173.188
+                },
+                "scores": {
+                    "Avg. pub. year": 2016.3149,
+                    "Avg. citations": 20.6243,
+                    "Avg. norm. citations": 0.9568
+                }
+            },
+            {
+                "id": 9,
+                "label": "Daniel",
+                "x": -0.1581,
+                "y": -0.5063,
+                "cluster": 1,
+                "weights": {
+                    "Documents": 395,
+                    "Citations": 9382,
+                    "Norm. citations": 344.7116
+                },
+                "scores": {
+                    "Avg. pub. year": 2014.1013,
+                    "Avg. citations": 23.7519,
+                    "Avg. norm. citations": 0.8727
+                }
+            },
+            {
+                "id": 10,
+                "label": "Emily",
+                "x": 0.5004,
+                "y": -0.2224,
+                "cluster": 2,
+                "weights": {
+                    "Documents": 431,
+                    "Citations": 13528,
+                    "Norm. citations": 371.2338
+                },
+                "scores": {
+                    "Avg. pub. year": 2006.7889,
+                    "Avg. citations": 31.3875,
+                    "Avg. norm. citations": 0.8613
+                }
+            }
+        ],
+        "links": [
+            {
+                "source_id": 1,
+                "target_id": 2,
+                "strength": 10
+            },
+            {
+                "source_id": 1,
+                "target_id": 10,
+                "strength": 88
+            },
+            {
+                "source_id": 2,
+                "target_id": 5,
+                "strength": 1
+            },
+            {
+                "source_id": 2,
+                "target_id": 7,
+                "strength": 1
+            },
+            {
+                "source_id": 2,
+                "target_id": 10,
+                "strength": 91
+            },
+            {
+                "source_id": 3,
+                "target_id": 6,
+                "strength": 3
+            },
+            {
+                "source_id": 3,
+                "target_id": 8,
+                "strength": 14
+            },
+            {
+                "source_id": 3,
+                "target_id": 9,
+                "strength": 82
+            },
+            {
+                "source_id": 3,
+                "target_id": 10,
+                "strength": 2
+            },
+            {
+                "source_id": 4,
+                "target_id": 5,
+                "strength": 13
+            },
+            {
+                "source_id": 4,
+                "target_id": 6,
+                "strength": 2
+            },
+            {
+                "source_id": 4,
+                "target_id": 8,
+                "strength": 2
+            },
+            {
+                "source_id": 4,
+                "target_id": 9,
+                "strength": 3
+            },
+            {
+                "source_id": 4,
+                "target_id": 10,
+                "strength": 2
+            },
+            {
+                "source_id": 5,
+                "target_id": 6,
+                "strength": 9
+            },
+            {
+                "source_id": 5,
+                "target_id": 7,
+                "strength": 10
+            },
+            {
+                "source_id": 5,
+                "target_id": 9,
+                "strength": 1
+            },
+            {
+                "source_id": 5,
+                "target_id": 10,
+                "strength": 1
+            },
+            {
+                "source_id": 6,
+                "target_id": 7,
+                "strength": 140
+            },
+            {
+                "source_id": 6,
+                "target_id": 8,
+                "strength": 5
+            },
+            {
+                "source_id": 6,
+                "target_id": 9,
+                "strength": 4
+            },
+            {
+                "source_id": 7,
+                "target_id": 8,
+                "strength": 3
+            },
+            {
+                "source_id": 7,
+                "target_id": 10,
+                "strength": 1
+            },
+            {
+                "source_id": 8,
+                "target_id": 9,
+                "strength": 19
+            }
+        ]
+    }
+}
+----

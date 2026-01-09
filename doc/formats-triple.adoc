@@ -1,0 +1,26 @@
+= Triple-based Formats
+
+== Turtle
+* Type: Text-based
+* Specification: https://www.w3.org/TR/turtle/[spec]
+
+[[rdf_xml]]
+== RDF/XML
+* Type: XML-based
+* Specification: https://www.w3.org/TR/rdf-syntax-grammar/[spec]
+
+== N3
+* Type: Text-based
+* Specification: https://www.w3.org/TeamSubmission/n3/[spec]
+
+== N-Triples
+* Type: Text-based
+* Specification: https://www.w3.org/TR/n-triples/[spec]
+
+== Web Ontology Language (OWL)
+* Type: XML-based
+* Specification: https://www.w3.org/TR/owl2-overview/[spec]
+
+== BioPAX (Biological PAthways eXchange) Format
+* Type: OWL-based
+* Specification: http://www.biopax.org/[spec]

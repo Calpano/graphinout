@@ -1,0 +1,131 @@
+= XML-based Formats
+:toc:
+
+See also: link:formats-triple.adoc#rdf_xml[RDF/XML].
+
+== GraphML
+* Type: XML-based
+* Specification: http://graphml.graphdrawing.org/specification.html[GraphML Specification]
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | + |
+| Nodes | + |
+| Undirected Edges | + | Via `edgedefault="undirected"`
+| Directed Edges | + | Via `edgedefault="directed"`
+| Hyperedges | + | Via `<hyperedge>` with `<endpoint>` elements
+| Mixed-directionality Edges | + | Per-edge `directed` attribute
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | + | `<node>` can contain `<graph>`
+| Nested Graphs in Edges | + | `<edge>` can contain `<graph>`
+| Nested Graphs in Graphs | + |
+| Node Labels | (+) | Via custom attributes
+| Edge Labels | (+) | Via custom attributes
+| Attributes on Nodes | + | Via `<data>` elements
+| Attributes on Edges | + | Via `<data>` elements
+| Attributes on Graphs | + | Via `<data>` elements
+| Typed Edges | (+) | Via custom attributes
+|===
+
+== GEXF (Graph Exchange XML Format)
+* Type: XML-based
+* Specification: http://gexf.net/schema.html[specification], http://gexf.net/basic.html[examples]
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- | One graph per file
+| Nodes | + |
+| Undirected Edges | + | Via `defaultedgetype="undirected"`
+| Directed Edges | + | Via `defaultedgetype="directed"`
+| Hyperedges | -- |
+| Mixed-directionality Edges | + | Per-edge `type` attribute overrides default
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | + | Hierarchy module (compound nodes)
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | Via `label` attribute
+| Edge Labels | + | Via `label` attribute
+| Attributes on Nodes | + | Via `<attvalues>`
+| Attributes on Edges | + | Via `<attvalues>`
+| Attributes on Graphs | + | Via `<attributes>`
+| Typed Edges | + | Via `kind` attribute (GEXF 1.3)
+|===
+
+== GXL (Graph eXchange Language)
+* Type: XML-based
+* Specification: https://en.wikipedia.org/wiki/GXL[Wikipedia]
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | + |
+| Nodes | + |
+| Undirected Edges | + |
+| Directed Edges | + |
+| Hyperedges | + |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | + | Hierarchical graphs
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | + | Hierarchical graphs
+| Node Labels | + |
+| Edge Labels | + |
+| Attributes on Nodes | + |
+| Attributes on Edges | + |
+| Attributes on Graphs | + |
+| Typed Edges | + | User-defined edge types
+|===
+
+== XGMML
+* Type: XML-based
+* Specification: https://en.wikipedia.org/wiki/XGMML[spec]
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | -- |
+| Nodes | + |
+| Undirected Edges | + | Default (`directed="0"`)
+| Directed Edges | + | Via `directed="1"` on graph
+| Hyperedges | -- |
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | -- |
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | -- |
+| Node Labels | + | Via `label` attribute
+| Edge Labels | + | Via `label` attribute
+| Attributes on Nodes | + | Via `<att>` elements
+| Attributes on Edges | + | Via `<att>` elements
+| Attributes on Graphs | + | Via `<att>` elements
+| Typed Edges | -- |
+|===
+
+== SBML (Systems Biology Markup Language)
+* Type: XML-based
+* Specification: http://sbml.org/documents/[spec]
+
+Domain-specific format for biological/biochemical models. Nodes are species, edges are reactions.
+
+[cols='3d,^1d,2d']
+|===
+| Feature | Present? | Notes
+| Multiple Graphs per Document | + | Via comp package (hierarchical model composition)
+| Nodes | + | Species in compartments
+| Undirected Edges | -- | Reactions are directional
+| Directed Edges | + | Reactions (reactants → products)
+| Hyperedges | + | Reactions with multiple reactants/products
+| Mixed-directionality Edges | -- |
+| Edges on Edges | -- |
+| Nested Graphs in Nodes | + | Compartments can be nested
+| Nested Graphs in Edges | -- |
+| Nested Graphs in Graphs | + | Via comp package
+| Node Labels | + | Via `name` attribute
+| Edge Labels | + | Via `name` attribute on reactions
+| Attributes on Nodes | + | Extensive annotations (RDF-based)
+| Attributes on Edges | + | Kinetic laws, modifiers
+| Attributes on Graphs | + | Model metadata
+| Typed Edges | (+) | Implicit via reaction structure
+|===
