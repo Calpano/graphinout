@@ -1,0 +1,19 @@
+# Coding Guidelines
+
+## Where to Read
+- Read source code only from files in /src/main and /src/test. 
+- Don't read from /target/ directories.
+- All .adoc files may contain relevant docs.
+
+## Accessors (Record-style)
+- **Getters**: Use `fieldName()` (not `getFieldName()`).
+- **Setters (Mutable)**: Use `fieldName(T value)` returning `this` (fluent).
+- **Immutable**: Use Java records or `withFieldName(T value)` returning new instance.
+- **No new** `get*`/`set*` methods.
+
+## Style
+- **Imports**: Use imports, avoid fully qualified names.
+- **Comments**: Use JavaDoc (`/** ... */`), prefer compact one-liners. No end-of-line `//`.
+
+## Frameworks
+- Configure JSON libs for field/record access or use `@JsonProperty`.
