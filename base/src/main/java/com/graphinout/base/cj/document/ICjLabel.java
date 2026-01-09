@@ -6,6 +6,7 @@ import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.base.json.JsonReaderImpl;
 import com.graphinout.foundation.pure.json.document.IJsonArray;
+import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
@@ -92,6 +93,12 @@ public interface ICjLabel extends ICjElement {
         return entries().map(ICjLabelEntry::toJaJsonMap).collect(Collectors.toList());
     }
 
+    default IJsonArray toJsonArrayOfEntries() {
+        IJsonArrayMutable a = IJsonFactory.INSTANCE.createArrayMutable();
+        entries().forEach(x -> a.add(x.toJsonValue()));
+        return a;
+    }
+
     default String toJsonString() {
         Json2StringWriter w = new Json2StringWriter();
         Cj2JsonWriter cjWriter = new Cj2JsonWriter(w);
@@ -100,5 +107,6 @@ public interface ICjLabel extends ICjElement {
         cjWriter.arrayEnd();
         return w.jsonString();
     }
+
 
 }

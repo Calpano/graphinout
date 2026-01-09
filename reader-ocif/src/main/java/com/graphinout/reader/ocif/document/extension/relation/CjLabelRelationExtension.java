@@ -84,7 +84,7 @@ public class CjLabelRelationExtension extends OcifExtension implements IOcifRela
     public @NonNull IJsonObject toJson() {
         IJsonObjectMutable o = factory().createObjectMutable();
         o.setString(TYPE, TYPE_NAME);
-        o.setProperty(CjConstants.LABEL, label().toJsonValue());
+        o.setProperty(CjConstants.LABEL, label().toJsonArrayOfEntries());
         return o;
     }
 
