@@ -42,58 +42,71 @@ public class TgfOutput {
     }
 
     public String toTgf() {
+        StringBuilder nodeSection = new StringBuilder();
+        StringBuilder edgeSection = new StringBuilder();
+
+        // Collect all nodes and edges from all graphs (flattened)
+        collectFromGraphs(cjDoc.graphs(), nodeSection, edgeSection);
+
+        // Build final TGF output
         StringBuilder b = new StringBuilder();
-        List<ICjGraph> graphs = cjDoc.graphs().toList();
-        for (int gi = 0; gi < graphs.size(); gi++) {
-            ICjGraph g = graphs.get(gi);
-            // Nodes section
-            g.nodes().forEach(n -> {
-                String id = n.id();
-                if (id == null) return; // skip nodes without id
-                b.append(id);
+        b.append(nodeSection);
+        b.append('#').append('\n');
+        b.append(edgeSection);
+        return b.toString();
+    }
+
+    private void collectFromGraphs(java.util.stream.Stream<ICjGraph> graphs, StringBuilder nodeSection, StringBuilder edgeSection) {
+        graphs.forEach(g -> collectFromGraph(g, nodeSection, edgeSection));
+    }
+
+    private void collectFromGraph(ICjGraph g, StringBuilder nodeSection, StringBuilder edgeSection) {
+        // Collect nodes (and recursively their nested graphs)
+        g.nodes().forEach(n -> {
+            String id = n.id();
+            if (id != null) {
+                nodeSection.append(id);
                 String text = firstLabelOrDesc(n, n.labelEntries());
                 if (text != null && !text.isEmpty()) {
-                    b.append(" ").append(text);
+                    nodeSection.append(" ").append(text);
                 }
-                b.append('\n');
-            });
-            // Separator between nodes and edges
-            b.append('#').append('\n');
-            // Edges section
-            g.edges().forEach(e -> {
-                // edge from subject to object is: subject=IN, object=OUT
-                ICjEndpoint inEp = e.endpoints().filter(ep -> ep.direction() == CjDirection.IN).findFirst().orElse(null);
-                ICjEndpoint outEp = e.endpoints().filter(ep -> ep.direction() == CjDirection.OUT).findFirst().orElse(null);
-                String n1 = null, n2 = null;
-                if (outEp != null && inEp != null) {
-                    // directed edge
-                    n1 = inEp.node();
-                    n2 = outEp.node();
-                } else {
-                    // undirected edge or hyper-edge
-                    List<ICjEndpoint> eps = e.endpoints().toList();
-                    if (eps.size() == 2) {
-                        n1 = eps.get(0).node();
-                        n2 = eps.get(1).node();
-                    } else {
-                        log.warn("Cannot represent hyper-edge in TGF");
-                    }
-                }
-                if (n1 != null && n2 != null) {
-                    b.append(n1).append(' ').append(n2);
-                    String text = firstLabelOrDesc(e, e.labelEntries());
-                    if (text != null && !text.isEmpty()) {
-                        b.append(' ').append(text);
-                    }
-                    b.append('\n');
-                }
-            });
-            // Separate graphs with an empty line (only if more than one graph)
-            if (gi < graphs.size() - 1) {
-                b.append('\n');
+                nodeSection.append('\n');
             }
-        }
-        return b.toString();
+            // Collect from nested graphs in nodes
+            n.graphs().forEach(ng -> collectFromGraph(ng, nodeSection, edgeSection));
+        });
+
+        // Collect edges (and recursively their nested graphs)
+        g.edges().forEach(e -> {
+            ICjEndpoint inEp = e.endpoints().filter(ep -> ep.direction() == CjDirection.IN).findFirst().orElse(null);
+            ICjEndpoint outEp = e.endpoints().filter(ep -> ep.direction() == CjDirection.OUT).findFirst().orElse(null);
+            String n1 = null, n2 = null;
+            if (outEp != null && inEp != null) {
+                n1 = inEp.node();
+                n2 = outEp.node();
+            } else {
+                List<ICjEndpoint> eps = e.endpoints().toList();
+                if (eps.size() == 2) {
+                    n1 = eps.get(0).node();
+                    n2 = eps.get(1).node();
+                } else {
+                    log.warn("Cannot represent hyper-edge in TGF");
+                }
+            }
+            if (n1 != null && n2 != null) {
+                edgeSection.append(n1).append(' ').append(n2);
+                String text = firstLabelOrDesc(e, e.labelEntries());
+                if (text != null && !text.isEmpty()) {
+                    edgeSection.append(' ').append(text);
+                }
+                edgeSection.append('\n');
+            }
+            // Collect from nested graphs in edges
+            e.graphs().forEach(ng -> collectFromGraph(ng, nodeSection, edgeSection));
+        });
+
+        // Collect from nested graphs in this graph
+        g.graphs().forEach(ng -> collectFromGraph(ng, nodeSection, edgeSection));
     }
 
 }
