@@ -390,32 +390,55 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
     private ICjHasIdMutable<?> currentHasId() {
         ICjPortMutable port = safePeekPort();
         if (port != null) return port;
-        // Prefer an in-progress graph (subgraph) over node/edge when a StartGraph is present but not started
+        // Prefer in-progress (not yet started) elements in order: node > edge > graph
+        // This ensures that nested structures get their IDs correctly assigned
+        StartNode sn = stack.peekOrNull(StartNode.class);
+        if (sn != null && !sn.started) {
+            ICjNodeChunkMutable n = currentNode();
+            if (n != null) return n;
+        }
+        StartEdge se = stack.peekOrNull(StartEdge.class);
+        if (se != null && !se.started) {
+            ICjEdgeChunkMutable e = currentEdge();
+            if (e != null) return e;
+        }
         StartGraph sg = stack.peekOrNull(StartGraph.class);
         if (sg != null && !sg.started) {
             ICjGraphChunkMutable g = currentGraph();
             if (g != null) return g;
         }
-        ICjHasIdMutable<?> hasId = stack.peekSearchOrNull(ICjEdgeChunkMutable.class);
+        // Fallback: search for any matching element on the stack
+        ICjHasIdMutable<?> hasId = stack.peekSearchOrNull(ICjNodeChunkMutable.class);
         if (hasId != null) return hasId;
-        hasId = stack.peekSearchOrNull(ICjNodeChunkMutable.class);
+        hasId = stack.peekSearchOrNull(ICjEdgeChunkMutable.class);
         if (hasId != null) return hasId;
         return stack.peekSearchOrNull(ICjGraphChunkMutable.class);
     }
 
     private ICjHasLabelMutable currentHasLabel() {
-        // Prefer most nested element: port > edge > node > graph
+        // Prefer most nested element: port > node > edge > graph
         ICjPortMutable port = safePeekPort();
         if (port instanceof ICjHasLabelMutable lh) return lh;
-        // If a subgraph is currently being built (StartGraph present and not started), prefer it over node/edge
+        // Prefer in-progress (not yet started) elements in order: node > edge > graph
+        StartNode sn = stack.peekOrNull(StartNode.class);
+        if (sn != null && !sn.started) {
+            ICjNodeChunkMutable n = currentNode();
+            if (n instanceof ICjHasLabelMutable nl) return nl;
+        }
+        StartEdge se = stack.peekOrNull(StartEdge.class);
+        if (se != null && !se.started) {
+            ICjEdgeChunkMutable e = currentEdge();
+            if (e instanceof ICjHasLabelMutable el) return el;
+        }
         StartGraph sg = stack.peekOrNull(StartGraph.class);
         if (sg != null && !sg.started) {
             ICjGraphChunkMutable g = currentGraph();
             if (g instanceof ICjHasLabelMutable gl) return gl;
         }
-        ICjHasLabelMutable has = stack.peekSearchOrNull(ICjEdgeChunkMutable.class);
+        // Fallback: search for any matching element on the stack
+        ICjHasLabelMutable has = stack.peekSearchOrNull(ICjNodeChunkMutable.class);
         if (has != null) return has;
-        has = stack.peekSearchOrNull(ICjNodeChunkMutable.class);
+        has = stack.peekSearchOrNull(ICjEdgeChunkMutable.class);
         if (has != null) return has;
         return stack.peekSearchOrNull(ICjGraphChunkMutable.class);
     }
