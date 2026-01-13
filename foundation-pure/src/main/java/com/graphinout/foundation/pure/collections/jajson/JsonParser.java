@@ -37,7 +37,9 @@ public final class JsonParser implements Locator {
     private static boolean isDigit(char c) {return c >= '0' && c <= '9';}
 
     public static void parse(String string, JsonWriter jsonWriter) throws ContentErrorException {
+        jsonWriter.documentStart();
         new JsonParser(string, jsonWriter).parseValue();
+        jsonWriter.documentEnd();
     }
 
     public static @Nullable IJsonValue parse(String jsonString) {
