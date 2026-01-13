@@ -13,6 +13,9 @@ For fetching URLs from Wikipedia, use curl.
 - **Immutable**: Use Java records or `withFieldName(T value)` returning new instance.
 - **No new** `get*`/`set*` methods.
 
+## Imports
+Prefer class-level imports over inline fully qualified names.
+
 ## Style
 - **Imports**: Use imports, avoid fully qualified names.
 - **Comments**: Use JavaDoc (`/** ... */`), prefer compact one-liners. No end-of-line `//`.
