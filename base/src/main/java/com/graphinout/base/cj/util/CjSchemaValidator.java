@@ -17,7 +17,7 @@ import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class CjValidator {
+public class CjSchemaValidator {
 
 
     /**
@@ -66,6 +66,6 @@ public class CjValidator {
 
     }
 
-    private static final Logger log = getLogger(CjValidator.class);
+    private static final Logger log = getLogger(CjSchemaValidator.class);
 
 }

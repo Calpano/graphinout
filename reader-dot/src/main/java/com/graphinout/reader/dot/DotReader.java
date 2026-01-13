@@ -7,7 +7,7 @@ import com.graphinout.base.cj.writer.CjWriter2CjStream;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.gio.GioFileFormat;
-import com.graphinout.base.cj.util.CjValidator;
+import com.graphinout.base.cj.util.CjSchemaValidator;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
@@ -38,7 +38,7 @@ public class DotReader implements GioReader {
 
         String json = json2StringWriter.jsonString();
         SingleInputSourceOfString jsonInputSource = new SingleInputSourceOfString(inputSource.name() +"-parsed", json);
-        assert CjValidator.isValidCjCanonical(jsonInputSource);
+        assert CjSchemaValidator.isValidCjCanonical(jsonInputSource);
         return json;
     }
 

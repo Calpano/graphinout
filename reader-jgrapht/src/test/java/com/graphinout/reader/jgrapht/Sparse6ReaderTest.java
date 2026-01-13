@@ -3,7 +3,7 @@ package com.graphinout.reader.jgrapht;
 import com.graphinout.base.AbstractReaderTest;
 import com.graphinout.base.ReaderTests;
 import com.graphinout.base.gio.GioReader;
-import com.graphinout.base.cj.util.CjValidator;
+import com.graphinout.base.cj.util.CjSchemaValidator;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.output.InMemoryOutputSink;
 import com.graphinout.base.output.OutputSink;
@@ -34,7 +34,7 @@ class Sparse6ReaderTest extends AbstractReaderTest {
             try {
                 ReaderTests.readResourceToSink(gioReader, resourcePath, outputSink);
                 String s = outputSink.getBufferAsUtf8String();
-                CjValidator.isValidCjCanonical(SingleInputSource.of("parsed", s));
+                CjSchemaValidator.isValidCjCanonical(SingleInputSource.of("parsed", s));
                 log.info("Read:\n" + s);
             } catch (IOException e) {
                 throw new RuntimeException(e);

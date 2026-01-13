@@ -1,6 +1,6 @@
 package com.graphinout.base.cj;
 
-import com.graphinout.base.cj.util.CjValidator;
+import com.graphinout.base.cj.util.CjSchemaValidator;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import org.junit.jupiter.api.Test;
 
@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 
-public class CjValidatorTest {
+public class CjSchemaValidatorTest {
 
     @Test
     void test() throws IOException {
@@ -47,7 +47,7 @@ public class CjValidatorTest {
                   ]
                 }""");
 
-        boolean isValidCj = CjValidator.isValidCjCanonical(is);
+        boolean isValidCj = CjSchemaValidator.isValidCjCanonical(is);
         assertThat(isValidCj).isTrue();
     }
 
