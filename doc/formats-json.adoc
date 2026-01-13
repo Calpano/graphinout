@@ -27,8 +27,9 @@ Also, more JSON formats there
 |===
 
 [[jgf]]
-== JGF
+== JSON Graph Format (JGF)
 https://github.com/jsongraph/json-graph-specification[]
+https://jsongraphformat.info/[]
 
 [cols='3d,^1d,2d']
 |===
@@ -435,5 +436,24 @@ Two types of input data can be passed to the plotting functions: 1) a JSON strin
             }
         ]
     }
+}
+----
+
+
+== Eclipse Layout Kernel (ELK) JSON Format
+https://eclipse.dev/elk/documentation/tooldevelopers/graphdatastructure/jsonformat.html[]
+
+.Syntax Example
+----
+{
+  id: "root",
+  layoutOptions: { "elk.direction": "RIGHT" },
+  children: [
+    { id: "n1", width: 10, height: 10 },
+    { id: "n2", width: 10, height: 10 }
+  ],
+  edges: [{
+    id: "e1", sources: [ "n1" ], targets: [ "n2" ]
+  }]
 }
 ----
