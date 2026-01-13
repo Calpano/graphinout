@@ -7,6 +7,8 @@ import com.graphinout.base.cj.document.ICjEdgeType;
 import com.graphinout.foundation.pure.input.IHandleContentErrors;
 import com.graphinout.foundation.pure.json.writer.IJsonXmlStringWriter;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -171,7 +173,7 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
     /** TODO doc */
     void listStart(CjType cjType);
 
-    default <T> void maybe(T object, Consumer<T> consumer) {
+    default <T> void maybe(@Nullable T object, Consumer<@NonNull T> consumer) {
         if (object != null) {
             consumer.accept(object);
         }

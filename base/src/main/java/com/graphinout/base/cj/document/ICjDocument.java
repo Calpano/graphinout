@@ -22,8 +22,22 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk {
         return Stream.concat(Stream.concat(Stream.of(data()), Stream.of(connectedJson())).filter(Objects::nonNull), graphs());
     }
 
+    /**
+     * @return All edges in the document, from all graphs and subgraphs.
+     */
+    default Stream<ICjEdge> edges() {
+        return graphs().flatMap(ICjGraph::edges);
+    }
+
     default @Nullable ICjNode findNode(String id) throws IllegalStateException {
         return PowerStreams.findOneOrNull(graphs().flatMap(ICjGraph::nodes).filter(n -> Objects.equals(n.id(), id)));
+    }
+
+    /**
+     * @return All nodes in the document, from all graphs and subgraphs.
+     */
+    default Stream<ICjNode> nodes() {
+        return graphs().flatMap(ICjGraph::nodes);
     }
 
     /**

@@ -36,7 +36,7 @@ public final class JsonParser implements Locator {
 
     private static boolean isDigit(char c) {return c >= '0' && c <= '9';}
 
-    public static void parse(String string, JsonWriter jsonWriter) {
+    public static void parse(String string, JsonWriter jsonWriter) throws ContentErrorException {
         new JsonParser(string, jsonWriter).parseValue();
     }
 
@@ -58,7 +58,7 @@ public final class JsonParser implements Locator {
 
     boolean isEOF() {return pos >= s.length();}
 
-    Object parseValue() {
+    Object parseValue() throws ContentErrorException {
         skipWs();
         if (isEOF()) throw error("Unexpected end of input");
         char c = s.charAt(pos);

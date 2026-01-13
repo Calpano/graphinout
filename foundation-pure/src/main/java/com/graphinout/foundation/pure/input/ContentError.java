@@ -90,8 +90,16 @@ public class ContentError {
         return level == ErrorLevel.Warn;
     }
 
+    public ErrorLevel level() {
+        return level;
+    }
+
     public Optional<Location> location() {
         return Optional.ofNullable(location);
+    }
+
+    public String message() {
+        return message;
     }
 
     @Override
