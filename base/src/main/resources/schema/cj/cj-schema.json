@@ -201,34 +201,6 @@
         "endpoints"
       ]
     },
-    "graphMetadata": {
-      "description": "Metadata about a graph, useful for streaming and processing.",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "canonical": {
-          "description": "If true, indicates the graph follows Canonical CJ ordering and formatting.",
-          "type": "boolean",
-          "default": false
-        },
-        "nodeCountTotal": {
-          "description": "Total number of nodes in this graph and all its subgraphs.",
-          "type": "integer"
-        },
-        "edgeCountTotal": {
-          "description": "Total number of edges in this graph and all its subgraphs.",
-          "type": "integer"
-        },
-        "nodeCountInGraph": {
-          "description": "Number of nodes directly within this graph (excluding subgraphs).",
-          "type": "integer"
-        },
-        "edgeCountInGraph": {
-          "description": "Number of edges directly within this graph (excluding subgraphs).",
-          "type": "integer"
-        }
-      }
-    },
     "graph": {
       "description": "The main container for nodes and edges. Can be nested to create subgraphs.",
       "type": "object",
@@ -237,10 +209,6 @@
         "id": {
           "description": "An optional identifier for the graph, unique within the document if at the top level.",
           "$ref": "#/definitions/id"
-        },
-        "meta": {
-          "description": "Optional metadata for the graph.",
-          "$ref": "#/definitions/graphMetadata"
         },
         "label": {
           "description": "An optional label for the graph.",
