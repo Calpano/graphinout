@@ -1,5 +1,7 @@
 package com.graphinout.base.json;
 
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.input.Location;
 import com.networknt.schema.InputFormat;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
@@ -8,11 +10,13 @@ import com.networknt.schema.SchemaValidatorsConfig;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 import com.networknt.schema.regex.JoniRegularExpressionFactory;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
-import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -25,11 +29,7 @@ public class JsonSchemaValidator {
     public static final JsonSchemaDef OCIF_06 = new JsonSchemaDef("https://json-schema.org/draft/2020-12/schema", "/ocif-schema-v0.6.json", "https://json-schema.org/draft/2020-12/schema", "https://raw.githubusercontent.com/ocwg/spec/refs/heads/main/spec/v0.6/schema.json");
     private static final Logger log = getLogger(JsonSchemaValidator.class);
 
-    public static boolean isValidOCif(String ocifJson) {
-        return isValid(ocifJson, OCIF_06);
-    }
-
-    public static boolean isValid(String json, JsonSchemaDef schemaDef) {
+    public static boolean isValid(String json, JsonSchemaDef schemaDef, @Nullable Consumer<ContentError> errorConsumer) {
         // This creates a schema factory that will use Draft 2020-12 as the default if $schema is not specified
         // in the schema data. If $schema is specified in the schema data then that schema dialect will be used
         // instead and this version is ignored.
@@ -59,9 +59,25 @@ public class JsonSchemaValidator {
                 executionContext.getExecutionConfig().setFormatAssertionsEnabled(true);
             });
             if (!assertions.isEmpty()) {
-                log.warn("Failed to validate:\n----\n" + json + "\n----\n");
-                for (ValidationMessage assertion : assertions) {
-                    System.err.println(assertion);
+                if (errorConsumer != null) {
+                    assertions.stream().map(a -> {
+// {
+//      "valid": false,
+//      "evaluationPath": "/properties/foo/allOf/0",
+//      "schemaLocation": "https://json-schema.org/schemas/example#/properties/foo/allOf/0",
+//      "instanceLocation": "/foo",
+//      "errors": {
+//        "required": "Required properties [\"unspecified-prop\"] were not present"
+//      }
+                        String msg = a.getMessage() + " in path '" + a.getEvaluationPath().toString() + "'";
+                        return ContentError.of(ContentError.ErrorLevel.Error, msg, Location.UNAVAILABLE);
+                    }).forEach(errorConsumer);
+                } else {
+                    // FIXME too verbose & insecure?
+                    log.warn("Failed to validate:\n----\n" + json + "\n----\n");
+                    for (ValidationMessage assertion : assertions) {
+                        System.err.println(assertion);
+                    }
                 }
             }
 
@@ -70,6 +86,18 @@ public class JsonSchemaValidator {
             throw new RuntimeException("while validating JSON", t);
         }
 
+    }
+
+    public static boolean isValidCj(String cjJson) {
+        return isValid(cjJson, CJ, null);
+    }
+
+    public static boolean isValidCj(String cjJson, @NonNull Consumer<ContentError> errorConsumer) {
+        return isValid(cjJson, CJ, errorConsumer);
+    }
+
+    public static boolean isValidOCif(String ocifJson) {
+        return isValid(ocifJson, OCIF_06, null);
     }
 
 }
