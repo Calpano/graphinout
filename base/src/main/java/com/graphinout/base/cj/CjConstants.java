@@ -19,6 +19,7 @@ public class CjConstants {
     public static final String ID = "id";
     /** Node, Edge, Graph, Port */
     public static final String LABEL = "label";
+    public static final String LABEL_ENTRIES = "entries";
     /** Label */
     public static final String LANGUAGE = "language";
     /** Graph */
@@ -44,8 +45,8 @@ public class CjConstants {
     public static final String CONNECTED_JSON__VERSION_NUMBER = "versionNumber";
     public static final String CONNECTED_JSON__CANONICAL = "canonical";
     public static final String ROOT__CONNECTED_JSON = "connectedJson";
-    public static final String CJ_SCHEMA_LOCATION = "https://calpano.github.io/connected-json/_attachments/cj-schema.json";
-    public static final String CJ_SCHEMA_ID = "https://j-s-o-n.org/schema/connected-json/5.0.0";
+    public static final String CJ_SCHEMA_LOCATION = "https://j-s-o-n.org/schema/cj-7.0.0.json";
+    public static final String CJ_SCHEMA_ID = "https://j-s-o-n.org/schema/cj-7.0.0.json";
 
     private CjConstants() {
         // hidden constructor

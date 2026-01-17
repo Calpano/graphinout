@@ -140,22 +140,20 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
     void jsonDataStart();
 
     /**
-     * Convenience method to end an array of label entries
+     * End a label object.
+     * Implementations should close the label object structure.
      */
-    default void labelEnd() {
-        listEnd(CjType.ArrayOfLabelEntries);
-    }
+    void labelEnd();
 
     void labelEntryEnd();
 
     void labelEntryStart();
 
     /**
-     * Convenience method to start an array of label entries
+     * Start a label object.
+     * Implementations should write the "label" key and start the object structure.
      */
-    default void labelStart() {
-        listStart(CjType.ArrayOfLabelEntries);
-    }
+    void labelStart();
 
     void language(String language);
 

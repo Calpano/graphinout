@@ -20,6 +20,7 @@ import static com.graphinout.base.cj.CjConstants.EDGE__ENDPOINTS;
 import static com.graphinout.base.cj.CjConstants.ENDPOINT__DIRECTION;
 import static com.graphinout.base.cj.CjConstants.ENDPOINT__NODE;
 import static com.graphinout.base.cj.CjConstants.ENDPOINT__PORT;
+import static com.graphinout.base.cj.CjConstants.LABEL_ENTRIES;
 import static com.graphinout.base.cj.CjConstants.GRAPHS;
 import static com.graphinout.base.cj.CjConstants.GRAPH__EDGES;
 import static com.graphinout.base.cj.CjConstants.GRAPH__META;
@@ -47,7 +48,7 @@ public enum CjType {
     ConnectedJson__Canonical(JsonType.Boolean),//
     BaseUri(JsonType.String),//
 
-    /* This type is a Label. A Label really *is* an array or label entries. */
+    Label(JsonType.Object),
     ArrayOfLabelEntries(JsonType.Array),//
     LabelEntry(JsonType.Object),//
     Language(JsonType.String), Value(JsonType.String), /* Id */
@@ -127,7 +128,7 @@ public enum CjType {
 
         ArrayOfGraphs.item(Graph);
         Graph.property(ID).is(Id);
-        Graph.property(LABEL).is(ArrayOfLabelEntries);
+        Graph.property(LABEL).is(Label);
         Graph.property(GRAPH__META).is(Meta);
         Graph.property(DATA).is(Data);
         Graph.property(GRAPH__NODES).is(ArrayOfNodes);
@@ -138,20 +139,20 @@ public enum CjType {
         Node.property(ID).is(Id);
         Node.property(PORTS).is(ArrayOfPorts);
         Node.property(GRAPHS).is(ArrayOfGraphs);
-        Node.property(LABEL).is(ArrayOfLabelEntries);
+        Node.property(LABEL).is(Label);
         Node.property(DATA).is(Data);
         Node.property(GRAPHS).is(ArrayOfGraphs);
 
         ArrayOfPorts.item(Port);
         Port.property(ID).is(Id);
         Port.property(PORTS).is(ArrayOfPorts);
-        Port.property(LABEL).is(ArrayOfLabelEntries);
+        Port.property(LABEL).is(Label);
         Port.property(DATA).is(Data);
 
         ArrayOfEdges.item(Edge);
         Edge.property(ID).is(Id);
         Edge.property(GRAPHS).is(ArrayOfGraphs);
-        Edge.property(LABEL).is(ArrayOfLabelEntries);
+        Edge.property(LABEL).is(Label);
         Edge.property(EDGE_OR_ENDPOINT__TYPE).is(EdgeTypeString);
         Edge.property(EDGE_OR_ENDPOINT__TYPE_NODE).is(EdgeTypeNodeId);
         Edge.property(EDGE_OR_ENDPOINT__TYPE_URI).is(EdgeTypeUri);
@@ -167,9 +168,12 @@ public enum CjType {
         Endpoint.property(EDGE_OR_ENDPOINT__TYPE_URI).is(EdgeTypeUri);
         Endpoint.property(DATA).is(Data);
 
+        Label.property(LABEL_ENTRIES).is(ArrayOfLabelEntries);
+        Label.property(DATA).is(Data);
         ArrayOfLabelEntries.item(LabelEntry);
         LabelEntry.property(VALUE).is(Value);
         LabelEntry.property(LANGUAGE).is(Language);
+        LabelEntry.property(DATA).is(Data);
     }
 
     /** which properties are allowed in this type (if it is an object) */

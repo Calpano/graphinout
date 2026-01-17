@@ -161,12 +161,12 @@ public class TestFileProvider {
             NamedString.of("whitespace", "{\t\"foo\"\t:\t42\t}\n"));
 
     public static Stream<TestResource> cjResourcesCanonical() {
-        return resources("json/cj/canonical", EXTENSIONS_CJ_JSON);
+        return resources("json/cj_7_0_0", EXTENSIONS_CJ_JSON);
     }
 
     /** Only extended */
     public static Stream<TestResource> cjResourcesExtended() {
-        return resources("json/cj/canonical", EXTENSIONS_CJ_JSON);
+        return resources("json/cj_7_0_0", EXTENSIONS_CJ_JSON);
     }
 
     /**

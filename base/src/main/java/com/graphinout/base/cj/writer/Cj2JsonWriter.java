@@ -18,8 +18,8 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     enum Mode {Json, Cj}
 
     /** the version of CJ that this writer writes */
-    private static final String CJ_VERSION_NUMBER = "5.0.0";
-    private static final String CJ_VERSION_DATA = "2025-07-14";
+    private static final String CJ_VERSION_NUMBER = "7.0.0";
+    private static final String CJ_VERSION_DATA = "2026-01-15";
     private final Stack<Object> stack = new Stack<>();
     private Mode mode = Mode.Cj;
 
@@ -183,6 +183,12 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     }
 
     @Override
+    public void labelEnd() {
+        super.objectEnd();
+        pop(CjType.Label);
+    }
+
+    @Override
     public void labelEntryEnd() {
         super.objectEnd();
         pop(CjType.LabelEntry);
@@ -191,6 +197,13 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     @Override
     public void labelEntryStart() {
         push(CjType.LabelEntry);
+        super.objectStart();
+    }
+
+    @Override
+    public void labelStart() {
+        push(CjType.Label);
+        super.onKey(CjConstants.LABEL);
         super.objectStart();
     }
 
@@ -215,7 +228,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
             case ArrayOfGraphs -> super.onKey(CjConstants.GRAPHS);
             case ArrayOfPorts -> super.onKey(CjConstants.PORTS);
             case ArrayOfEndpoints -> super.onKey(CjConstants.EDGE__ENDPOINTS);
-            case ArrayOfLabelEntries -> super.onKey(CjConstants.LABEL);
+            case ArrayOfLabelEntries -> super.onKey(CjConstants.LABEL_ENTRIES);
             default -> throw new IllegalStateException("Unknown cjArrayType " + cjArrayType);
         }
         super.arrayStart();

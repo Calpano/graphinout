@@ -4,6 +4,9 @@ import com.graphinout.base.ReaderTests;
 import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.document.ICjGraphChunk;
+import com.graphinout.base.cj.document.ICjNode;
+import com.graphinout.base.cj.document.ICjNodeChunkMutable;
+import com.graphinout.base.cj.document.ICjNodeMutable;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.output.InMemoryOutputSink;
 import com.graphinout.base.output.OutputSink;
@@ -26,7 +29,9 @@ public class SyntheticCjTest {
         ICjGraphChunk graph = cjStream.createGraphChunk();
         cjStream.graphStart(graph);
 
-        cjStream.node(cjStream.createNodeChunkWithId("node1"));
+        ICjNodeChunkMutable node1 = cjStream.createNodeChunkWithId("node1");
+        node1.labelMutable(l -> l.addEntry(e -> e.value("Hello")));
+        cjStream.node(node1);
         cjStream.node(cjStream.createNodeChunkWithId("node2"));
 
         ICjEdgeChunkMutable edge = cjStream.createEdgeChunk();

@@ -16,7 +16,7 @@ import java.util.Set;
 public class ValidatingCjWriter extends ValidatingJsonWriter implements ICjWriter {
 
     private enum Context {
-        GRAPH, NODE, EDGE, PORT, ENDPOINT, LABEL_ENTRY, CONNECTED_JSON
+        GRAPH, NODE, EDGE, PORT, ENDPOINT, LABEL, LABEL_ENTRY, CONNECTED_JSON
     }
 
     private final Deque<Context> contextStack = new ArrayDeque<>();
@@ -148,6 +148,11 @@ public class ValidatingCjWriter extends ValidatingJsonWriter implements ICjWrite
     }
 
     @Override
+    public void labelEnd() {
+        contextStack.pop();
+    }
+
+    @Override
     public void labelEntryStart() {
         contextStack.push(Context.LABEL_ENTRY);
     }
@@ -155,6 +160,11 @@ public class ValidatingCjWriter extends ValidatingJsonWriter implements ICjWrite
     @Override
     public void labelEntryEnd() {
         contextStack.pop();
+    }
+
+    @Override
+    public void labelStart() {
+        contextStack.push(Context.LABEL);
     }
 
     @Override

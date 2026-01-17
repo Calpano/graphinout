@@ -20,23 +20,23 @@ public class CjSchemaValidatorTest {
                   "graphs": [
                     {
                       "id": "g1",
-                      "label": [
+                      "label": { "entries": [
                         { "value": "Simple Social Network" }
-                      ],
+                      ] },
                       "nodes": [
                         {
                           "id": "n1",
-                          "label": [ { "value": "Alice" } ]
+                          "label": { "entries": [ { "value": "Alice" } ] }
                         },
                         {
                           "id": "n2",
-                          "label": [ { "value": "Bob" } ]
+                          "label": { "entries": [ { "value": "Bob" } ] }
                         }
                       ],
                       "edges": [
                         {
                           "id": "e1",
-                          "label": [ { "value": "knows" } ],
+                          "label": { "entries": [ { "value": "knows" } ] },
                           "endpoints": [
                             { "node": "n1", "direction": "out" },
                             { "node": "n2", "direction": "in" }

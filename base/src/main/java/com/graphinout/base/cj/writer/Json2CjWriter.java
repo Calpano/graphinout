@@ -171,7 +171,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
                 case Port -> cjWriter.portEnd();
                 case Graph -> cjWriter.graphEnd();
                 case ConnectedJson -> cjWriter.connectedJsonEnd();
-                case ArrayOfLabelEntries -> cjWriter.labelEnd();
+                case Label -> cjWriter.labelEnd();
                 case LabelEntry -> cjWriter.labelEntryEnd();
                 case RootObject -> {
                     // do nothing
@@ -200,7 +200,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
                 case Port -> cjWriter.portStart();
                 case Edge -> cjWriter.edgeStart();
                 case Endpoint -> cjWriter.endpointStart();
-                case ArrayOfLabelEntries -> cjWriter.labelStart();
+                case Label -> cjWriter.labelStart();
                 case LabelEntry -> cjWriter.labelEntryStart();
                 case ConnectedJson -> cjWriter.connectedJsonStart();
                 case RootObject, Data -> {

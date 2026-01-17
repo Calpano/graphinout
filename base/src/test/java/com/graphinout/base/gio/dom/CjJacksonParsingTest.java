@@ -28,7 +28,7 @@ public class CjJacksonParsingTest {
 
         // load resource "sample-1.cj.json"
         // Use ClassLoader to get the resource URL
-        String jsonIn = TestFileUtil.resource("json/cj/extended/sample-1.cj.json").getContentAsString();
+        String jsonIn = TestFileUtil.resource("json/graph-entry/sample-1.cj.json").getContentAsString();
         CjJacksonDocument doc = objectMapper.readValue(jsonIn, CjJacksonDocument.class);
 
         // Test document-level nodes and edges

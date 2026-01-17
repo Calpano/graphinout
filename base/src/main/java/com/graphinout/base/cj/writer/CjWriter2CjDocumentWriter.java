@@ -18,6 +18,7 @@ import com.graphinout.base.cj.document.ICjHasIdMutable;
 import com.graphinout.base.cj.document.ICjHasLabelMutable;
 import com.graphinout.base.cj.document.ICjHasPortsMutable;
 import com.graphinout.base.cj.document.ICjLabelEntryMutable;
+import com.graphinout.base.cj.document.ICjLabelMutable;
 import com.graphinout.base.cj.document.ICjNodeMutable;
 import com.graphinout.base.cj.document.ICjPortMutable;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
@@ -155,14 +156,25 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
     }
 
     @Override
+    public void labelEnd() {
+        stack.pop(ICjLabelMutable.class);
+    }
+
+    @Override
     public void labelEntryEnd() {
         stack.pop(ICjLabelEntryMutable.class);
     }
 
     @Override
     public void labelEntryStart() {
+        ICjLabelMutable labelMutable = stack.peek(ICjLabelMutable.class);
+        labelMutable.addEntry(stack::push);
+    }
+
+    @Override
+    public void labelStart() {
         ICjHasLabelMutable hasLabelMutable = stack.peek(ICjHasLabelMutable.class);
-        hasLabelMutable.labelMutable().addEntry(stack::push);
+        hasLabelMutable.setLabel(stack::push);
     }
 
     @Override

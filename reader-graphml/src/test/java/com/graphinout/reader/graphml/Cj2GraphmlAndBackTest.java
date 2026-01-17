@@ -47,7 +47,7 @@ public class Cj2GraphmlAndBackTest {
 
     @Test
     void testNestedGraphs() throws IOException {
-        Resource resource = TestFileUtil.resource("json/cj/canonical/nested-graphs.cj.json");
+        Resource resource = TestFileUtil.resource("json/cj_7_0_0/nested-graphs.cj.json");
         assertThat(resource).isNotNull();
         String jsonIn = resource.getContentAsString();
         SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", jsonIn);

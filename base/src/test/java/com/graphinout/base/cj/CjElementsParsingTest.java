@@ -50,11 +50,11 @@ public class CjElementsParsingTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"json/cj/canonical/sample-3.cj.canonical.json",
-            "json/cj/canonical/sample-2.cj.canonical.json",
-            "json/cj/canonical/sample-2b.cj.canonical.json",
-            "json/cj/canonical/sample-1b.cj.canonical.json",
-            "json/cj/canonical/sample-1.cj.canonical.json"
+    @ValueSource(strings = {"json/cj_7_0_0/sample-3.cj.canonical.json",
+            "json/cj_7_0_0/sample-2.cj.canonical.json",
+            "json/cj_7_0_0/sample-2b.cj.canonical.json",
+            "json/cj_7_0_0/sample-1b.cj.canonical.json",
+            "json/cj_7_0_0/sample-1.cj.canonical.json"
     })
     public void testParse(String resourceName) throws IOException {
         ICjDocument doc = toCjDoc(resourceName);
@@ -63,7 +63,7 @@ public class CjElementsParsingTest {
 
     @Test
     public void testParseConnectedJsonDocument() throws IOException {
-        ICjDocument doc = toCjDoc("json/cj/canonical/sample-1.cj.canonical.json");
+        ICjDocument doc = toCjDoc("json/cj_7_0_0/sample-1.cj.canonical.json");
         // Test document-level nodes and edges
         ICjGraph graph_0 = doc.graphs().findFirst().orElseThrow();
 

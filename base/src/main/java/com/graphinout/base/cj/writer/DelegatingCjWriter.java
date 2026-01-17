@@ -129,6 +129,11 @@ public class DelegatingCjWriter extends DelegatingJsonWriter implements ICjWrite
     }
 
     @Override
+    public void labelStart() {
+        forEachWriter(ICjWriter::labelStart);
+    }
+
+    @Override
     public void language(String language) {
         forEachWriter(cjWriter -> cjWriter.language(language));
     }
