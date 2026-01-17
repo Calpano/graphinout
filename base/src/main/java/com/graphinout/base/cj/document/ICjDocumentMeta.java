@@ -1,5 +1,6 @@
 package com.graphinout.base.cj.document;
 
+import com.graphinout.base.cj.document.impl.CjDocumentMetaElement;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.jspecify.annotations.NonNull;
@@ -15,6 +16,14 @@ public interface ICjDocumentMeta extends ICjElement {
     }
 
     @Nullable Boolean canonical();
+
+    default ICjDocumentMetaMutable copyMutable() {
+        ICjDocumentMetaMutable copy = new CjDocumentMetaElement();
+        copy.canonical(canonical());
+        copy.versionDate(versionDate());
+        copy.versionNumber(versionNumber());
+        return copy;
+    }
 
     @Override
     default Stream<ICjElement> directChildren() {

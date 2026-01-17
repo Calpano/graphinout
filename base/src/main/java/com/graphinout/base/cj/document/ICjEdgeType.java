@@ -5,6 +5,9 @@ import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public interface ICjEdgeType {
 
     static ICjEdgeType fromJsonString( String json ) {

@@ -17,4 +17,5 @@ public interface ICjDocumentChunkMutable extends ICjDocumentChunk, ICjHasDataMut
     @ModificationOperation
     void connectedJson(Consumer<ICjDocumentMetaMutable> meta);
 
+
 }

@@ -60,10 +60,19 @@ public interface ICjLabel extends ICjElement {
     }
 
     static IJsonArray toJsonValue(ICjLabel cjLabel) {
-        return cjLabel.entries()
-                .map(ICjLabelEntry::toJsonValue)
-                .collect(IJsonFactory.INSTANCE.arrayCollector());
+        return cjLabel.entries().map(ICjLabelEntry::toJsonValue).collect(IJsonFactory.INSTANCE.arrayCollector());
     }
+
+    default ICjLabelMutable copyMutable() {
+        CjLabelElement copy = new CjLabelElement();
+        copyTo(copy);
+        return copy;
+    }
+
+    default void copyTo(ICjLabelMutable label) {
+        entries().forEach(entry -> label.addEntry(entry::copyTo));
+    }
+
 
     @Override
     default Stream<ICjElement> directChildren() {

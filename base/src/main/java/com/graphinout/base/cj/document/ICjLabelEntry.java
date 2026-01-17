@@ -1,6 +1,7 @@
 package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.CjConstants;
+import com.graphinout.base.cj.document.impl.CjLabelEntryElement;
 import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.collections.jajson.Json2JsonValueWriter;
@@ -12,7 +13,22 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+
 public interface ICjLabelEntry extends ICjHasData {
+
+    default ICjLabelEntryMutable copyMutable() {
+        CjLabelEntryElement copy = new CjLabelEntryElement();
+        copyTo(copy);
+        return copy;
+    }
+
+    default void copyTo(ICjLabelEntryMutable entry) {
+        entry.value(value());
+        ifPresentAccept(language(), entry::language);
+        ifPresentAccept(data(), data -> entry.dataMutable(d -> d.setJsonValue(data.jsonValue())));
+    }
+
 
     @Nullable
     ICjData data();
@@ -25,8 +41,6 @@ public interface ICjLabelEntry extends ICjHasData {
     @Nullable
     String language();
 
-    String value();
-
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap()
                 .putMaybe(CjConstants.LANGUAGE, language())
@@ -36,7 +50,6 @@ public interface ICjLabelEntry extends ICjHasData {
 
     /**
      * Override to avoid double object wrapper
-     * @return
      */
     @Override
     default IJsonObject toJsonValue() {
@@ -45,6 +58,8 @@ public interface ICjLabelEntry extends ICjHasData {
         fire(cj2JsonWriter);
         return Objects.requireNonNull(json2JsonValueWriter.resultJsonRootObject()).asObject();
     }
+
+    String value();
 
 
 }

@@ -1,8 +1,10 @@
 package com.graphinout.base.cj.document;
 
+import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.cj.writer.ICjWriter;
 import org.jspecify.annotations.Nullable;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
 
 
@@ -12,11 +14,20 @@ import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefau
  */
 public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
 
-    @Nullable
-    String baseUri();
+    @Nullable String baseUri();
 
-    @Nullable
-    ICjDocumentMeta connectedJson();
+    @Nullable ICjDocumentMeta connectedJson();
+
+    default ICjDocumentChunkMutable copyMutable() {
+        CjDocumentElement copy = new CjDocumentElement();
+        copyTo(copy);
+        return copy;
+    }
+
+    default void copyTo(ICjDocumentChunkMutable doc) {
+        doc.baseUri(baseUri());
+        ifPresentAccept(connectedJson(), ICjDocumentMeta::copyMutable, doc::connectedJson);
+    }
 
     default void fireStartChunk(ICjWriter cjWriter) {
         cjWriter.documentStart();
@@ -31,8 +42,8 @@ public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
      * <p>
      * TODO add this to CJ spec
      *
-     * @param localName
-     * @return
+     * @param localName the local name, should not start with slash or hash mark, but an alpha numeric
+     * @return a URI composed of baseUri and localName
      */
     default String uri(String localName) {
         String base = nonNullOrDefault(baseUri(), "");

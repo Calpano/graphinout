@@ -3,11 +3,24 @@ package com.graphinout.base.cj.document;
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import org.jspecify.annotations.Nullable;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+
 public interface ICjEndpoint extends ICjHasData {
+
+    default void copyTo(ICjEndpointMutable endpoint) {
+        endpoint.node(node());
+        endpoint.direction(direction());
+        ifPresentAccept(port(), endpoint::port);
+        ifPresentAccept(type(), endpoint::type);
+        ifPresentAccept(typeUri(), endpoint::typeUri);
+        ifPresentAccept(typeNode(), endpoint::typeNode);
+        ifPresentAccept(data(), ICjData::jsonValue, jsonValue -> endpoint.dataMutable(d -> d.setJsonValue(jsonValue)));
+    }
 
     @Override
     default Stream<ICjElement> directChildren() {
@@ -36,23 +49,16 @@ public interface ICjEndpoint extends ICjHasData {
 
     String node();
 
-    @Nullable
-    String port();
-
-    @Nullable
-    String type();
-
-    @Nullable
-    String typeNode();
-
-    @Nullable
-    String typeUri();
+    @Nullable String port();
 
     default Map<String, Object> toJaJsonMap() {
-        return JaJson.createMap()
-                .putMaybe(CjConstants.ENDPOINT__NODE, node())
-                .putMaybe(CjConstants.ENDPOINT__PORT, port())
-                .build();
+        return JaJson.createMap().putMaybe(CjConstants.ENDPOINT__NODE, node()).putMaybe(CjConstants.ENDPOINT__PORT, port()).build();
     }
+
+    @Nullable String type();
+
+    @Nullable String typeNode();
+
+    @Nullable String typeUri();
 
 }

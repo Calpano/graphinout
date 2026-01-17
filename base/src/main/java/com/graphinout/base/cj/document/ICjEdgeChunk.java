@@ -1,11 +1,13 @@
 package com.graphinout.base.cj.document;
 
+import com.graphinout.base.cj.document.impl.CjEdgeElement;
 import com.graphinout.base.cj.writer.ICjWriter;
-
 import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static java.util.Optional.ofNullable;
 
 /**
@@ -14,8 +16,24 @@ import static java.util.Optional.ofNullable;
  */
 public interface ICjEdgeChunk extends ICjHasData, ICjHasId, ICjHasLabel {
 
-    @Nullable
-    ICjEdgeType edgeType();
+    default ICjEdgeChunkMutable copyMutable() {
+        CjEdgeElement copy = new CjEdgeElement();
+        copyTo(copy);
+        return copy;
+    }
+
+    default void copyTo(ICjEdgeChunkMutable edge) {
+        edge.id(id());
+        ifPresentAccept(label(), l -> edge.labelMutable(l::copyTo));
+
+        ifPresentAccept(edgeType(), edge::edgeType);
+        endpoints().forEach(endpoint -> edge.addEndpoint(endpoint::copyTo));
+
+        ifPresentAccept(data(), ICjData::jsonValue, jsonValue -> edge.dataMutable(d -> d.setJsonValue(jsonValue)));
+
+    }
+
+    @Nullable ICjEdgeType edgeType();
 
     Stream<ICjEndpoint> endpoints();
 
