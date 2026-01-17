@@ -26,23 +26,26 @@
 "london"},{"node":
 "tokyo"}],"id":
 "flight_lhr_hnd"}],"id":
-"g_data","label":
+"g_data","label":{
+"entries":
 [{"value":
-"Cities with Custom Data"}],"nodes":
+"Cities with Custom Data"}]},"nodes":
 [{"data":
 {"coordinates":
 {"lat":
 51.5072,"lon":
 -0.1276},"population":
 8982000},"id":
-"london","label":
+"london","label":{
+"entries":
 [{"value":
-"London"}]},{"data":
+"London"}]}},{"data":
 {"coordinates":
 {"lat":
 35.6895,"lon":
 139.6917},"population":
 13960000},"id":
-"tokyo","label":
+"tokyo","label":{
+"entries":
 [{"value":
-"Tokyo"}]}]}]}
+"Tokyo"}]}}]}]}

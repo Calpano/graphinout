@@ -4,23 +4,26 @@
 [{"node":
 "city_berlin"},{"node":
 "city_paris"}],"id":
-"e_train","label":
+"e_train","label":{
+"entries":
 [{"language":
 "fr","value":
 "Ligne de train"},{"language":
 "en","value":
-"Train line"}]}],"id":
+"Train line"}]}}],"id":
 "g_multi_lang","nodes":
 [{"id":
-"city_berlin","label":
+"city_berlin","label":{
+"entries":
 [{"language":
 "en","value":
 "Berlin"},{"language":
 "de","value":
-"Bär-lin"}]},{"id":
-"city_paris","label":
+"Bär-lin"}]}},{"id":
+"city_paris","label":{
+"entries":
 [{"language":
 "en","value":
 "Paris"},{"language":
 "fr","value":
-"Paris"}]}]}]}
+"Paris"}]}}]}]}

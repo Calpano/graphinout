@@ -7,24 +7,28 @@
 "ic1","port":
 "pin1"}],"id":
 "e_logic"}],"id":
-"g_ports","label":
+"g_ports","label":{
+"entries":
 [{"value":
-"Circuit Diagram with Ports"}],"nodes":
+"Circuit Diagram with Ports"}]},"nodes":
 [{"id":
-"and_gate","label":
+"and_gate","label":{
+"entries":
 [{"value":
-"AND Gate"}],"ports":
+"AND Gate"}]},"ports":
 [{"id":
 "in1"},{"id":
 "in2"},{"id":
 "out"}]},{"id":
-"ic1","label":
+"ic1","label":{
+"entries":
 [{"value":
-"Microcontroller"}],"ports":
+"Microcontroller"}]},"ports":
 [{"id":
-"gpio","label":
+"gpio","label":{
+"entries":
 [{"value":
-"GPIO Bank"}],"ports":
+"GPIO Bank"}]},"ports":
 [{"id":
 "pin1"},{"id":
 "pin2"}]}]}]}]}

@@ -1,37 +1,53 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Connected JSON (5.0.2)",
-  "description": "`$schema` for instances: `https://j-s-o-n.org/schema/connected-json/5.0.2`. A JSON schema for Connected JSON v5.0.0. Connected JSON is a format for exchanging connected data like graphs and networks. See https://j-s-o-n.org for spec.",
+  "$id": "https://j-s-o-n.org/schema/cj-7.0.0.json",
+  "title": "Connected JSON (7.0.0)",
+  "description": "A JSON schema for Connected JSON v7.0.0. Connected JSON is a format for exchanging connected data like graphs and networks. URI: 'https://j-s-o-n.org/schema/connected-json/7.0.0'",
   "type": "object",
   "additionalProperties": false,
   "definitions": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
     "id": {
       "description": "A unique identifier. Its scope of uniqueness depends on the element it identifies (e.g., document, graph, or node).",
       "type": "string"
     },
     "label": {
-      "description": "A multilingual label, represented as an array of language-value pairs.",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "language": {
-            "description": "An optional language tag, typically following BCP 47.",
-            "type": "string"
-          },
-          "value": {
-            "description": "The required string value of the label.",
-            "type": "string"
-          },
-          "data": {
-            "description": "Optional user-defined data attached to the label.",
-            "$ref": "#/definitions/data"
+      "description": "A multilingual label, represented as an object with an entries array.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entries": {
+          "description": "An array of language-value pairs.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "language": {
+                "description": "An optional language tag, typically following BCP 47.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The required string value of the label.",
+                "type": "string"
+              },
+              "data": {
+                "description": "Optional user-defined data attached to the label entry.",
+                "$ref": "#/definitions/data"
+              }
+            },
+            "required": [
+              "value"
+            ]
           }
         },
-        "required": [
-          "value"
-        ]
+        "data": {
+          "description": "Optional user-defined data attached to the label.",
+          "$ref": "#/definitions/data"
+        }
       }
     },
     "data": {
@@ -90,17 +106,8 @@
           "default": "undir"
         },
         "type": {
-          "description": "A string defining the relation type. Overridden by typeUri or typeNode.",
+          "description": "A string defining the relation type.",
           "type": "string"
-        },
-        "typeUri": {
-          "description": "A URI defining the relation type. Has precedence over type and typeNode.",
-          "type": "string",
-          "format": "uri"
-        },
-        "typeNode": {
-          "description": "A node ID that defines the relation type. Has precedence over type.",
-          "$ref": "#/definitions/id"
         },
         "data": {
           "description": "Optional user-defined data attached to the endpoint.",
@@ -131,6 +138,13 @@
             "$ref": "#/definitions/port"
           },
           "default": []
+        },
+        "types": {
+          "description": "Optional types of this node, each given as a node id or node URI.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "data": {
           "description": "Optional user-defined data attached to the node.",
@@ -166,15 +180,6 @@
           "description": "A string defining the default relation type for all endpoints.",
           "type": "string"
         },
-        "typeUri": {
-          "description": "A URI defining the default relation type for all endpoints.",
-          "type": "string",
-          "format": "uri"
-        },
-        "typeNode": {
-          "description": "A node ID defining the default relation type for all endpoints.",
-          "$ref": "#/definitions/id"
-        },
         "endpoints": {
           "description": "A required array of endpoints defining the nodes this edge connects.",
           "type": "array",
@@ -208,6 +213,11 @@
         "id": {
           "description": "An optional identifier for the graph, unique within the document if at the top level.",
           "$ref": "#/definitions/id"
+        },
+        "baseUri": {
+          "description": "An optional base URI for interpreting relative URIs.",
+          "type": "string",
+          "format": "uri"
         },
         "label": {
           "description": "An optional label for the graph.",
@@ -249,11 +259,11 @@
       "additionalProperties": false,
       "properties": {
         "versionDate": {
-          "description": "The specification version date used by the document, e.g., '2025-07-14'.",
+          "description": "The specification version date used by the document, e.g., '2026-01-15'.",
           "type": "string"
         },
         "versionNumber": {
-          "description": "The specification version number used by the document, e.g., '5.0.0'.",
+          "description": "The specification version number used by the document, e.g., '7.0.0'.",
           "type": "string"
         },
         "canonical": {
@@ -266,9 +276,7 @@
   },
   "properties": {
     "$schema": {
-      "type": "string",
-      "format": "uri",
-      "description": "The URI of the schema that validates this document. State the exact CJ version used, by using the CJ JSON schema URI."
+      "$ref": "#/definitions/$schema"
     },
     "connectedJson": {
       "description": "Optional metadata about the Connected JSON document.",

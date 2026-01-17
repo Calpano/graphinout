@@ -1,8 +1,8 @@
 {
   "graphs": [
     { "nodes": [
-        { "id": "node1", "label": [ { "value": "First Node" } ] },
-        { "id": "node2", "label": [ { "value": "Second Node" } ] }
+        { "id": "node1", "label": { "entries": [ { "value": "First Node" } ] } },
+        { "id": "node2", "label": { "entries": [ { "value": "Second Node" } ] } }
       ],
       "edges": [
         { "endpoints": [

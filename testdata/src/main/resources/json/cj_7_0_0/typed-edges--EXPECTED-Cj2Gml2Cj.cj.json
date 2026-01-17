@@ -7,23 +7,26 @@
 "person_einstein"},{"direction":
 "in","node":
 "place_ulm"}],"id":
-"e_birthPlace","typeUri":
+"e_birthPlace","type":
 "birthPlace"},{"endpoints":
 [{"direction":
 "in","node":
 "concept_relativity"},{"direction":
 "out","node":
 "person_einstein"}],"id":
-"e_knowsAbout","typeUri":
+"e_knowsAbout","type":
 "knowsAbout"}],"id":
 "g_knowledge","nodes":
 [{"id":
-"concept_relativity","label":
+"concept_relativity","label":{
+"entries":
 [{"value":
-"Theory of Relativity"}]},{"id":
-"person_einstein","label":
+"Theory of Relativity"}]}},{"id":
+"person_einstein","label":{
+"entries":
 [{"value":
-"Albert Einstein"}]},{"id":
-"place_ulm","label":
+"Albert Einstein"}]}},{"id":
+"place_ulm","label":{
+"entries":
 [{"value":
-"Ulm"}]}]}]}
+"Ulm"}]}}]}]}

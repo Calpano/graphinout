@@ -1,6 +1,6 @@
 {
-  "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
-  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+  "$schema": "https://j-s-o-n.org/schema/cj-7.0.0.json",
+
   "connectedJson": {
     "versionDate": "2025-07-14",
     "versionNumber": "5.0.0"
@@ -12,26 +12,26 @@
       "nodes": [
         {
           "id": "city_berlin",
-          "label": [
+          "label": { "entries": [
             { "language": "en", "value": "Berlin" },
             { "language": "de", "value": "Bär-lin" }
-           ]
+           ] }
         },
         {
           "id": "city_paris",
-          "label": [
+          "label": { "entries": [
             { "language": "en", "value": "Paris" },
             { "language": "fr", "value": "Paris" }
-          ]
+          ] }
         }
       ],
       "edges": [
         {
           "id": "e_train",
-          "label": [
+          "label": { "entries": [
             { "language": "fr", "value": "Ligne de train" },
             { "language": "en", "value": "Train line" }
-          ],
+          ] },
           "endpoints": [
             { "node": "city_berlin" },
             { "node": "city_paris" }

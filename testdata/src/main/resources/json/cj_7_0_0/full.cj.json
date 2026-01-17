@@ -7,11 +7,11 @@
   "graphs": [
     {
       "id": "g1",
-      "label": [
+      "label": { "entries": [
         {
           "value": "Main Graph"
         }
-      ],
+      ] },
       "data": {
         "description": "Attributes on Graphs",
         "customProperty": 123
@@ -19,7 +19,7 @@
       "nodes": [
         {
           "id": "n1",
-          "label": [
+          "label": { "entries": [
             {
               "language": "en",
               "value": "Node 1"
@@ -28,7 +28,7 @@
               "language": "de",
               "value": "Knoten 1"
             }
-          ],
+          ] },
           "data": {
             "description": "Attributes on Nodes",
             "color": "blue"
@@ -36,11 +36,11 @@
           "graphs": [
             {
               "id": "n1-nested-graph",
-              "label": [
+              "label": { "entries": [
                 {
                   "value": "Nested Graph in Node"
                 }
-              ],
+              ] },
               "nodes": [
                 {
                   "id": "n1-nested-n1"
@@ -51,51 +51,51 @@
         },
         {
           "id": "n2",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Node 2"
             }
-          ],
+          ] },
           "ports": [
             {
               "id": "p1",
-              "label": [
+              "label": { "entries": [
                 {
                   "value": "Port 1"
                 }
-              ]
+              ] }
             }
           ]
         },
         {
           "id": "n3",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Node 3 (Predicate)"
             }
-          ]
+          ] }
         },
         {
           "id": "n4",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Node 4"
             }
-          ]
+          ] }
         },
         {
           "id": "n5",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Node 5"
             }
-          ]
+          ] }
         }
       ],
       "edges": [
         {
           "id": "e1",
-          "label": [
+          "label": { "entries": [
             {
               "language": "en",
               "value": "Directed Edge"
@@ -104,7 +104,7 @@
               "language": "de",
               "value": "Gerichtete Kante"
             }
-          ],
+          ] },
           "data": {
             "description": "Attributes on Edges",
             "weight": 10
@@ -122,11 +122,11 @@
         },
         {
           "id": "e2",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Undirected Edge"
             }
-          ],
+          ] },
           "endpoints": [
             {
               "node": "n2",
@@ -140,11 +140,11 @@
         },
         {
           "id": "e3",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Mixed-directionality Hyperedge"
             }
-          ],
+          ] },
           "endpoints": [
             {
               "node": "n1",
@@ -162,11 +162,11 @@
         },
         {
           "id": "e4",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Typed Edge"
             }
-          ],
+          ] },
           "type": "relatedTo",
           "endpoints": [
             {
@@ -181,11 +181,11 @@
         },
         {
           "id": "e5",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Edge with Nested Graph"
             }
-          ],
+          ] },
           "endpoints": [
             {
               "node": "n4",
@@ -199,11 +199,11 @@
           "graphs": [
             {
               "id": "e5-nested-graph",
-              "label": [
+              "label": { "entries": [
                 {
                   "value": "Nested Graph in Edge"
                 }
-              ],
+              ] },
               "nodes": [
                 {
                   "id": "e5-nested-n1"
@@ -214,11 +214,11 @@
         },
         {
           "id": "e6",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Edge to Port"
             }
-          ],
+          ] },
           "endpoints": [
             {
               "node": "n1",
@@ -233,12 +233,12 @@
         },
         {
           "id": "e7",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Edge with URI Type"
             }
-          ],
-          "typeUri": "http://example.org/relation/knows",
+          ] },
+          "type": "http://example.org/relation/knows",
           "endpoints": [
             {
               "node": "n1",
@@ -252,12 +252,12 @@
         },
         {
           "id": "e8",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Edge with Node Type"
             }
-          ],
-          "typeNode": "n3",
+          ] },
+          "type": "n3",
           "endpoints": [
             {
               "node": "n1",
@@ -273,11 +273,11 @@
       "graphs": [
         {
           "id": "g1-nested-graph",
-          "label": [
+          "label": { "entries": [
             {
               "value": "Nested Graph in Graph"
             }
-          ],
+          ] },
           "nodes": [
             {
               "id": "g1-nested-n1"
@@ -288,11 +288,11 @@
     },
     {
       "id": "g2",
-      "label": [
+      "label": { "entries": [
         {
           "value": "Second Graph"
         }
-      ],
+      ] },
       "nodes": [
         {
           "id": "g2-n1"

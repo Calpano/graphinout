@@ -15,9 +15,10 @@
 "germany"},{"node":
 "usa"}],"id":
 "trade_transatlantic"}],"id":
-"europe","label":
+"europe","label":{
+"entries":
 [{"value":
-"European Partition"}],"nodes":
+"European Partition"}]},"nodes":
 [{"id":
 "france"},{"id":
 "germany"}]}],"id":
