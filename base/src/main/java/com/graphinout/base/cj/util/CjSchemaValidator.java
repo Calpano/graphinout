@@ -31,7 +31,10 @@ public class CjSchemaValidator {
         // instead and this version is ignored.
         JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012, builder ->
                 // This creates a mapping from $id which starts with https://www.example.org/ to the retrieval URI classpath:schema/
-                builder.schemaMappers(schemaMappers -> schemaMappers.mapPrefix(Cj.SCHEMA_ID, "classpath:" + Cj.SCHEMA_RESOURCE)));
+                builder.schemaMappers(schemaMappers -> {
+                    schemaMappers.mapPrefix(Cj.SCHEMA_ID, "classpath:" + Cj.SCHEMA_RESOURCE);
+                    schemaMappers.mapPrefix(Cj.SCHEMA_URL, "classpath:" + Cj.SCHEMA_RESOURCE);
+                }));
 
         SchemaValidatorsConfig.Builder builder = SchemaValidatorsConfig.builder();
         // By default the JDK regular expression implementation which is not ECMA 262 compliant is used

@@ -37,8 +37,10 @@ public class JsonSchemaValidator {
                 // This creates a mapping from $id which starts with https://www.example.org/ to the retrieval URI classpath:schema/
                 builder.schemaMappers(schemaMappers -> {
                     for (JsonSchemaDef jsonSchema : List.of(CJ, OCIF_06)) {
-                        if (jsonSchema.resourcePath != null)
+                        if (jsonSchema.resourcePath != null) {
                             schemaMappers.mapPrefix(jsonSchema.id, "classpath:" + jsonSchema.resourcePath);
+                            schemaMappers.mapPrefix(jsonSchema.url, "classpath:" + jsonSchema.resourcePath);
+                        }
                     }
                 }));
 
@@ -69,7 +71,10 @@ public class JsonSchemaValidator {
 //      "errors": {
 //        "required": "Required properties [\"unspecified-prop\"] were not present"
 //      }
-                        String msg = a.getMessage() + " in path '" + a.getEvaluationPath().toString() + "'";
+                        String msg = a.getMessage() + "." +
+                                " PATH='" + a.getEvaluationPath().toString() + "'" +
+                                " SCHEMA.fetchUrl='" + schemaDef.fetchUrl + "'"
+                                ;
                         return ContentError.of(ContentError.ErrorLevel.Error, msg, Location.UNAVAILABLE);
                     }).forEach(errorConsumer);
                 } else {

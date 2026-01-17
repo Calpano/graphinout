@@ -1,20 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
-  "title": "Connected JSON (5.0.0)",
-  "description": "A JSON schema for Connected JSON v5.0.0. Connected JSON is a format for exchanging connected data like graphs and networks.",
+  "title": "Connected JSON (5.0.2)",
+  "description": "`$schema` for instances: `https://j-s-o-n.org/schema/connected-json/5.0.2`. A JSON schema for Connected JSON v5.0.0. Connected JSON is a format for exchanging connected data like graphs and networks. See https://j-s-o-n.org for spec.",
   "type": "object",
   "additionalProperties": false,
   "definitions": {
-    "$schema": {
-      "type": "string",
-      "const": "http://json-schema.org/draft-07/schema#"
-    },
-    "$id": {
-      "type": "string",
-      "format": "uri",
-      "description": "State the exact CJ version used, by using the CJ JSON schema uri."
-    },
     "id": {
       "description": "A unique identifier. Its scope of uniqueness depends on the element it identifies (e.g., document, graph, or node).",
       "type": "string"
@@ -275,6 +265,11 @@
     }
   },
   "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri",
+      "description": "The URI of the schema that validates this document. State the exact CJ version used, by using the CJ JSON schema URI."
+    },
     "connectedJson": {
       "description": "Optional metadata about the Connected JSON document.",
       "$ref": "#/definitions/documentMetadata"
