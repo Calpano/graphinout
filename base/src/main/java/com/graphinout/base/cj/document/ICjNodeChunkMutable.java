@@ -13,6 +13,11 @@ public interface ICjNodeChunkMutable extends //
         ICjHasPortsMutable // mutable ports
 {
 
+    /**
+     * Add a type to this node. Node types are exactly like edge types.
+     */
+    void addType(ICjEdgeType type);
+
 }
 
 

@@ -141,9 +141,16 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     @Override
     public void edgeType(ICjEdgeType edgeType) {
+        // This method is called for edge types, endpoint types, and node types
         ICjEdgeChunkMutable edge = currentEdge();
         if (edge != null) {
             edge.edgeType(edgeType);
+            return;
+        }
+        // If not in an edge, check if we're in a node (for node types array)
+        ICjNodeChunkMutable node = currentNode();
+        if (node != null) {
+            node.addType(edgeType);
         }
     }
 

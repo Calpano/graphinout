@@ -221,6 +221,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
         switch (cjArrayType) {
             case ArrayOfEdges -> super.onKey(CjConstants.GRAPH__EDGES);
             case ArrayOfNodes -> super.onKey(CjConstants.GRAPH__NODES);
+            case ArrayOfNodeTypes -> super.onKey(CjConstants.NODE_TYPES);
             case ArrayOfGraphs -> super.onKey(CjConstants.GRAPHS);
             case ArrayOfPorts -> super.onKey(CjConstants.PORTS);
             case ArrayOfEndpoints -> super.onKey(CjConstants.EDGE__ENDPOINTS);

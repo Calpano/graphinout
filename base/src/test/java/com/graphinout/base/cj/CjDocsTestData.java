@@ -402,7 +402,8 @@ public class CjDocsTestData {
                 new TestDoc("oneNodeWithLabelWithoutLanguage", oneNodeWithLabelWithoutLanguage()),//
                 new TestDoc("selfLoopEdge", selfLoopEdge()),//
                 new TestDoc("twoEdgesSameNodes", twoEdgesSameNodes()),//
-                new TestDoc("twoNodesNoEdge", twoNodesNoEdge())//
+                new TestDoc("twoNodesNoEdge", twoNodesNoEdge()),//
+                new TestDoc("nodeWithTypes", nodeWithTypes())//
         );
     }
 
@@ -434,6 +435,21 @@ public class CjDocsTestData {
         cjDoc.addGraph(graph -> {
             graph.addNode(n -> n.id("n1"));
             graph.addNode(n -> n.id("n2"));
+        });
+        return cjDoc;
+    }
+
+    /**
+     * Test Case: A node with types. Node types are exactly like edge types.
+     */
+    public static ICjDocument nodeWithTypes() {
+        ICjDocumentMutable cjDoc = new CjDocumentElement();
+        cjDoc.addGraph(graph -> {
+            graph.addNode(node -> {
+                node.id("n1");
+                node.addType(ICjEdgeType.of("Person"));
+                node.addType(ICjEdgeType.of("Employee"));
+            });
         });
         return cjDoc;
     }

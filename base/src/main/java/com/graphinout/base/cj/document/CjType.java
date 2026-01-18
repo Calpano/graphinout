@@ -59,6 +59,7 @@ public enum CjType {
 
     ArrayOfNodes(JsonType.Array),//
     Node(JsonType.Object),//
+    ArrayOfNodeTypes(JsonType.Array),//
 
     ArrayOfEdges(JsonType.Array), //
     Edge(JsonType.Object),//
@@ -135,10 +136,13 @@ public enum CjType {
         ArrayOfNodes.item(Node);
         Node.property(ID).is(Id);
         Node.property(PORTS).is(ArrayOfPorts);
+        Node.property(CjConstants.NODE_TYPES).is(ArrayOfNodeTypes);
         Node.property(GRAPHS).is(ArrayOfGraphs);
         Node.property(LABEL).is(Label);
         Node.property(DATA).is(Data);
         Node.property(GRAPHS).is(ArrayOfGraphs);
+
+        ArrayOfNodeTypes.item(EdgeType);
 
         ArrayOfPorts.item(Port);
         Port.property(ID).is(Id);
