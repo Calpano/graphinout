@@ -1,0 +1,4 @@
+@prefix ex: <https://example.com/> .
+
+ex:Alice ex:knows ex:Bob .
+ex:Bob ex:knows ex:Charlie .

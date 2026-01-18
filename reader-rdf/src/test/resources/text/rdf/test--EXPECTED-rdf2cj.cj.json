@@ -1,0 +1,11 @@
+{
+  "baseUri": "https://example.com/",
+  "connectedJson": { "canonical": false, "versionDate": "2026-01-15", "versionNumber": "7.0.0" }, "graphs": [
+  {
+    "edges": [
+      { "type": "knows", "endpoints": [ { "node": "Alice", "direction": "in" }, { "node": "Bob", "direction": "out" } ] },
+      { "type": "knows", "endpoints": [ { "node": "Charlie", "direction": "out" }, { "node": "Bob", "direction": "in" } ] }
+    ]
+  }
+]
+}
