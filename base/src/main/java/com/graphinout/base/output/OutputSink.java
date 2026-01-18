@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Create one as InMemoryOutputSink
+ */
 public interface OutputSink extends AutoCloseable {
 
     static InMemoryOutputSink createInMemory() {
