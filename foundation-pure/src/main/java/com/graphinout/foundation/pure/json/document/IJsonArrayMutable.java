@@ -1,5 +1,8 @@
 package com.graphinout.foundation.pure.json.document;
 
+import com.graphinout.foundation.pure.bridge.Java9;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -95,6 +98,18 @@ public interface IJsonArrayMutable extends IJsonArrayAppendable, IJsonValueMutab
 
     void remove(int index) throws ArrayIndexOutOfBoundsException;
 
+    default void removeAll() {
+        while (!isEmpty()) {
+            remove(0);
+        }
+    }
+
     void set(int index, IJsonValue jsonValue) throws ArrayIndexOutOfBoundsException;
+
+    default void sort(Comparator<IJsonValue> comparator) {
+        List<IJsonValue> list = Java9.Stream.toList(stream().sorted(comparator));
+        removeAll();
+        list.forEach(this::add);
+    }
 
 }
