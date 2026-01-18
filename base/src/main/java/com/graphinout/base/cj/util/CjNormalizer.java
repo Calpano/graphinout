@@ -2,15 +2,15 @@ package com.graphinout.base.cj.util;
 
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.data.CjDataProperty;
+import com.graphinout.base.json.JavaJsons;
 import com.graphinout.foundation.pure.json.JsonConstants;
 import com.graphinout.foundation.pure.json.JsonTransformer;
-import com.graphinout.base.json.JavaJsons;
-import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
 import com.graphinout.foundation.pure.json.document.IJsonContainer;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.path.JsonPaths;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 
 import java.util.List;
 
@@ -19,8 +19,21 @@ import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccep
 public class CjNormalizer {
 
     private static final JsonTransformer.IJsonTransformHandler HANDLER = new JsonTransformer.IJsonTransformHandler() {
-        public void transformArrayPost(List<Object> steps, IJsonArrayMutable arrayValue) {
 
+        @Override
+        public void transformArrayPost(List<Object> steps, IJsonArrayMutable arrayValue) {
+            // sort edge endpoints by nodeId
+            if (JsonPaths.endsWith(steps,
+                    s -> s.equals(CjConstants.GRAPH__EDGES),
+                    s -> s instanceof Integer,
+                    s -> s.equals(CjConstants.EDGE__ENDPOINTS))) {
+                arrayValue.sort((a, b) -> {
+                    String nodeIdA = a.asObject().getString(CjConstants.ENDPOINT__NODE);
+                    String nodeIdB = b.asObject().getString(CjConstants.ENDPOINT__NODE);
+                    return nodeIdA.compareTo(nodeIdB);
+                });
+
+            }
         }
 
         public void transformArrayPre(List<Object> steps, IJsonArrayMutable arrayValue) {
@@ -81,7 +94,9 @@ public class CjNormalizer {
                 }
             }
         }
+
     };
+
     private final String resultJson;
 
     public CjNormalizer(String cjJson) {
