@@ -14,6 +14,32 @@ import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefau
  */
 public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
 
+    default @Nullable String asId(@Nullable String uri) {
+        if (uri == null) {
+            return null;
+        }
+        String baseUri = baseUri();
+        if (baseUri == null) {
+            return uri;
+        }
+        int index = uri.indexOf(baseUri);
+        if (index == -1) {
+            return uri;
+        }
+        return uri.substring(index+baseUri.length());
+    }
+
+    default @Nullable String asUri(@Nullable String id) {
+        if (id == null) {
+            return null;
+        }
+        if (id.contains(":")) {
+            return id;
+        } else {
+            return uri(id);
+        }
+    }
+
     @Nullable String baseUri();
 
     @Nullable ICjDocumentMeta connectedJson();

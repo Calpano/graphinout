@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
 import static java.util.Optional.ofNullable;
 
 /**
@@ -71,6 +72,10 @@ public interface ICjEdgeChunk extends ICjHasData, ICjHasId, ICjHasLabel {
         } else {
             throw new IllegalStateException("Edge has more than one target: " + this);
         }
+    }
+
+    default @Nullable String type() {
+        return mapOrNull(edgeType(), ICjElementType::type);
     }
 
 }

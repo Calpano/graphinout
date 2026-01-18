@@ -1,5 +1,7 @@
 package com.graphinout.base.cj.document;
 
+import com.graphinout.foundation.pure.value.ObjectRef;
+
 import java.util.function.Consumer;
 
 public interface ICjGraphMutable extends ICjGraph, ICjHasGraphsMutable, ICjGraphChunkMutable, ICjHasLabelMutable {
@@ -9,12 +11,16 @@ public interface ICjGraphMutable extends ICjGraph, ICjHasGraphsMutable, ICjGraph
      *
      * @param sourceNodeId incoming
      * @param targetNodeId outgoing
+     * @return the created edge as a mutable variant for further modification
      */
-    default void addBiEdge(String sourceNodeId, String targetNodeId) {
+    default ICjEdgeMutable addBiEdge(String sourceNodeId, String targetNodeId) {
+        ObjectRef<ICjEdgeMutable> edgeMutableRef = ObjectRef.createNull();
         addEdge(edge -> {
+            edgeMutableRef.set(edge);
             edge.addEndpointIncoming(sourceNodeId);
             edge.addEndpointOutgoing(targetNodeId);
         });
+        return edgeMutableRef.get();
     }
 
     void addEdge(Consumer<ICjEdgeMutable> edge);

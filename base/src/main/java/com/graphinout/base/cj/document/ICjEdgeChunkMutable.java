@@ -29,4 +29,8 @@ public interface ICjEdgeChunkMutable extends ICjChunkMutable, ICjEdgeChunk, ICjH
 
     ICjEdgeChunkMutable edgeType(ICjElementType edgeType);
 
+    default void edgeType(String typeId) {
+        edgeType(ICjElementType.of(typeId));
+    }
+
 }
