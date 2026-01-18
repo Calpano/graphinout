@@ -15,8 +15,6 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
     private @Nullable String port;
     private @Nullable CjDirection direction;
     private @Nullable String type;
-    private @Nullable String typeUri;
-    private @Nullable String typeNode;
 
     @Override
     public CjType cjType() {
@@ -77,30 +75,6 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
     @Override
     public String type() {
         return type;
-    }
-
-    @Override
-    public ICjEndpointMutable typeNode(@Nullable String typeNode) {
-        this.typeNode = typeNode;
-        return this;
-    }
-
-    @Nullable
-    @Override
-    public String typeNode() {
-        return typeNode;
-    }
-
-    @Override
-    public ICjEndpointMutable typeUri(@Nullable String typeUri) {
-        this.typeUri = typeUri;
-        return this;
-    }
-
-    @Nullable
-    @Override
-    public String typeUri() {
-        return typeUri;
     }
 
 }

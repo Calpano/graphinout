@@ -2,7 +2,6 @@ package com.graphinout.reader.tripletext;
 
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.cj.document.CjDirection;
-import com.graphinout.base.cj.document.CjEdgeTypeSource;
 import com.graphinout.base.cj.document.ICjEdgeType;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
@@ -96,7 +95,7 @@ public class TripleTextReader implements GioReader {
                 ep.node(o);
                 ep.direction(CjDirection.OUT);
             });
-            edgeChunk.edgeType(ICjEdgeType.of(CjEdgeTypeSource.String, p));
+            edgeChunk.edgeType(ICjEdgeType.of(p));
 
             // TripleText edge meta
             if (meta != null && !meta.isBlank()) {

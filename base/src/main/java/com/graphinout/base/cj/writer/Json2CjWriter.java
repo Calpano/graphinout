@@ -2,7 +2,6 @@ package com.graphinout.base.cj.writer;
 
 import com.graphinout.foundation.pure.input.BaseOutput;
 import com.graphinout.base.cj.document.CjDirection;
-import com.graphinout.base.cj.document.CjEdgeTypeSource;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjEdgeType;
 import com.graphinout.foundation.pure.json.JsonException;
@@ -355,9 +354,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
                     case PortId -> cjWriter.portId(s);
                     // edge, endpoint
                     case Direction -> cjWriter.direction(CjDirection.of(s));
-                    case EdgeTypeNodeId -> cjWriter.edgeType(ICjEdgeType.of(CjEdgeTypeSource.Node, s));
-                    case EdgeTypeString -> cjWriter.edgeType(ICjEdgeType.of(CjEdgeTypeSource.String, s));
-                    case EdgeTypeUri -> cjWriter.edgeType(ICjEdgeType.of(CjEdgeTypeSource.URI, s));
+                    case EdgeType -> cjWriter.edgeType(ICjEdgeType.of(s));
                     default ->
                             throw new UnsupportedOperationException("TODO implement string interpretation for " + expect + " in CJ.");
                 }

@@ -72,8 +72,8 @@ public class CjValidator {
 
     /**
      * Is it valid CJ: All endpoint.node ids resolve to existing nodes in same document? All URIs in the document
-     * (baseUri, edge.typeUri, node.typeUri) are valid URIs? Also the implied URIs (baseUri + edge.type, baseUri +
-     * edge.typeNode.id) ? Edge with 0 or 1 endpoint: warn Empty graph: warn
+     * (baseUri) are valid URIs? Also the implied URIs (baseUri + edge.type, baseUri +
+     * node.types) ? Edge with 0 or 1 endpoint: warn Empty graph: warn
      *
      * @param cjJson
      * @param errors
@@ -98,36 +98,15 @@ public class CjValidator {
                     errors.add(ContentError.error("URI Error: Base URI '" + baseUri + "' is not a valid URI"));
                 }
             });
-            // - edge.typeUri, (TODO node.typeUri)
             // Implied URIs:
             // - baseUri + edge.type,
-            // - baseUri + edge.typeNode.id
+            // - TODO baseUri + node.types
             cjDoc.edges().forEach(edge -> {
                 ifPresentAccept(edge.edgeType(), edgeType -> {
-                    switch (edgeType.source()) {
-                        case URI -> {
-                            if (!isValidUri(edgeType.type())) {
-                                errors.add(ContentError.error("URI Error: Edge type URI '" + edgeType.type() + "' is not a valid URI"));
-                            }
-                        }
-                        case Node -> {
-                            // we have a node id given -- does node exist?
-                            if (cjDoc.findNode(edgeType.type()) == null) {
-                                errors.add(ContentError.error("Reference Error: Edge type references non-existent node with ID '" + edgeType.type() + "'"));
-                            }
-                            //  define combined URI (baseURI + nodeId) and validate URI
-                            String uri = cjDoc.uri(edgeType.type());
-                            if (!isValidUri(uri)) {
-                                errors.add(ContentError.error("URI Error: Edge type URI from NodeId '" + uri + "' is not a valid URI"));
-                            }
-                        }
-                        case String -> {
-                            //  define combined URI (baseURI + edgeType string) and validate URI
-                            String uri = cjDoc.uri(edgeType.type());
-                            if (!isValidUri(uri)) {
-                                errors.add(ContentError.error("URI Error: Edge type URI from String '" + uri + "' is not a valid URI"));
-                            }
-                        }
+                    //  define combined URI (baseURI + edgeType string) and validate URI
+                    String uri = cjDoc.uri(edgeType.type());
+                    if (!isValidUri(uri)) {
+                        errors.add(ContentError.error("URI Error: Edge type URI from String '" + uri + "' is not a valid URI"));
                     }
                 });
             });

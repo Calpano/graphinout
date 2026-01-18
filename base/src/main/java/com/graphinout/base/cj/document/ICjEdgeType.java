@@ -1,49 +1,28 @@
 package com.graphinout.base.cj.document;
 
 import com.graphinout.base.json.JsonReaderImpl;
-import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
-import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public interface ICjEdgeType {
 
-    static ICjEdgeType fromJsonString( String json ) {
+    static ICjEdgeType fromJsonString(String json) {
         IJsonValue value = JsonReaderImpl.readToJsonValue(json);
-        IJsonObject object = value.asObject();
-        CjEdgeTypeSource source = CjEdgeTypeSource.valueOf(object.get("source").asString());
-        String type = object.get("type").asString();
-        return ICjEdgeType.of(source, type);
+        return ICjEdgeType.of(value.asString());
+    }
+
+    static ICjEdgeType of(String type) {
+        return () -> type;
     }
 
     static String toJsonString(ICjEdgeType edgeType) {
         Json2StringWriter w = new Json2StringWriter();
-        w.objectStart();
-        w.onKey( "source");
-        w.onString( edgeType.source().name());
-        w.onKey("type");
         w.onString(edgeType.type());
-        w.objectEnd();
         return w.jsonString();
     }
-
-    static ICjEdgeType of(CjEdgeTypeSource source, String type) {
-        return new ICjEdgeType() {
-            @Override
-            public CjEdgeTypeSource source() {
-                return source;
-            }
-
-            @Override
-            public String type() {
-                return type;
-            }
-        };
-    }
-
-    CjEdgeTypeSource source();
 
     String type();
 

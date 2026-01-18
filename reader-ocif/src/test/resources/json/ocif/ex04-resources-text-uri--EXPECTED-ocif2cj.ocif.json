@@ -31,7 +31,7 @@
       "nodes": [
         {
           "id": "n1",
-          "label": [ { "value": "This is inline text." } ],
+          "label": { "entries": [ { "value": "This is inline text." } ] },
           "data": { "ocif:node": { "resource": "r-text" } }
         },
         { "id": "n2",

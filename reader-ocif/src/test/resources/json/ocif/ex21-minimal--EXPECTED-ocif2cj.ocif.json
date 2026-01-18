@@ -6,8 +6,7 @@
   "graphs": [
     { "nodes": [
         { "id": "node1",
-          "label":
-            [ { "value": "Minimal Example" } ],
+          "label": { "entries": [ { "value": "Minimal Example" } ] },
           "data": {
             "ocif:node": {
               "position": [ 10.0, 10.0 ],

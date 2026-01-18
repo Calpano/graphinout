@@ -1,7 +1,6 @@
 package com.graphinout.base.cj;
 
 import com.graphinout.base.cj.document.CjDirection;
-import com.graphinout.base.cj.document.CjEdgeTypeSource;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentMutable;
 import com.graphinout.base.cj.document.ICjEdgeType;
@@ -77,7 +76,7 @@ public class CjDocsTestData {
             graph.addEdge(edge -> {
                 edge.id("e-type");
                 // TODO ensure we test all 3 edge type sources
-                edge.edgeType(ICjEdgeType.of(CjEdgeTypeSource.String, "related"));
+                edge.edgeType(ICjEdgeType.of("related"));
                 edge.addEndpoint(ep -> ep.node("n1"));
                 edge.addEndpoint(ep -> ep.node("n2").type("works for"));
             });
@@ -123,7 +122,7 @@ public class CjDocsTestData {
     // ========================================================================
 
     /**
-     * Test Case 4.7: An endpoint with `type`, `typeNode`, and `typeUri` to test precedence.
+     * Test Case 4.7: An endpoint with `type`.
      */
     public static ICjDocument endpointTypePropertyPrecedence() {
         ICjDocumentMutable cjDoc = new CjDocumentElement();
@@ -131,13 +130,12 @@ public class CjDocsTestData {
             graph.addNode(n -> n.id("n1"));
             graph.addNode(n -> n.id("n2"));
             graph.addNode(n -> n.id("t-node"));
+            // TODO add node type
             graph.addEdge(edge -> {
                 edge.id("e-type-prec");
                 edge.addEndpoint(ep -> {
                     ep.node("n1");
                     ep.type("a");
-                    ep.typeNode("t-node");
-                    ep.typeUri("http://example.org/type");
                 });
                 edge.addEndpoint(ep -> ep.node("n2"));
             });

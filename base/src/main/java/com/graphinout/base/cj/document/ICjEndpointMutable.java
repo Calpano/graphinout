@@ -12,8 +12,4 @@ public interface ICjEndpointMutable extends ICjElement, ICjEndpoint, ICjHasDataM
 
     ICjEndpointMutable type(@Nullable String type);
 
-    ICjEndpointMutable typeNode(@Nullable String typeNode);
-
-    ICjEndpointMutable typeUri(@Nullable String typeUri);
-
 }

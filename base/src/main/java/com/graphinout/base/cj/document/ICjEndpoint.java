@@ -17,8 +17,6 @@ public interface ICjEndpoint extends ICjHasData {
         endpoint.direction(direction());
         ifPresentAccept(port(), endpoint::port);
         ifPresentAccept(type(), endpoint::type);
-        ifPresentAccept(typeUri(), endpoint::typeUri);
-        ifPresentAccept(typeNode(), endpoint::typeNode);
         ifPresentAccept(data(), ICjData::jsonValue, jsonValue -> endpoint.dataMutable(d -> d.setJsonValue(jsonValue)));
     }
 
@@ -56,9 +54,5 @@ public interface ICjEndpoint extends ICjHasData {
     }
 
     @Nullable String type();
-
-    @Nullable String typeNode();
-
-    @Nullable String typeUri();
 
 }

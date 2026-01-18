@@ -127,12 +127,8 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
 
     @Override
     public void edgeType(ICjEdgeType edgeType) {
-        switch (edgeType.source()) {
-            case URI -> super.onKey(CjConstants.EDGE_OR_ENDPOINT__TYPE_URI);
-            case Node -> super.onKey(CjConstants.EDGE_OR_ENDPOINT__TYPE_NODE);
-            case String -> super.onKey(CjConstants.EDGE_OR_ENDPOINT__TYPE);
-            default -> throw new IllegalStateException("Unexpected value: " + edgeType.source());
-        }
+        // In v7.0.0, always use "type" key regardless of source
+        super.onKey(CjConstants.EDGE_OR_ENDPOINT__TYPE);
         onString(edgeType.type());
     }
 

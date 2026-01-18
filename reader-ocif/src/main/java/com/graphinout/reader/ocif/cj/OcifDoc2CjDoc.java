@@ -1,7 +1,6 @@
 package com.graphinout.reader.ocif.cj;
 
 import com.graphinout.base.cj.document.CjDirection;
-import com.graphinout.base.cj.document.CjEdgeTypeSource;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
@@ -245,7 +244,7 @@ public class OcifDoc2CjDoc {
                     }
                     ifPresentAccept(edge.rel(), rel -> {
                         // TODO rel might be a TYPE_URI
-                        cjEdge.edgeType(ICjEdgeType.of(CjEdgeTypeSource.String, rel));
+                        cjEdge.edgeType(ICjEdgeType.of(rel));
                     });
                     ifPresentAccept(edge.node(), nodeId -> //
                             cjEdge.dataMutable(data -> data.add(OCIF.Common.NODE, nodeId)));
@@ -266,7 +265,7 @@ public class OcifDoc2CjDoc {
                         });
                     }
                     if (hex.rel() != null) {
-                        cjEdge.edgeType(ICjEdgeType.of(CjEdgeTypeSource.String, hex.rel()));
+                        cjEdge.edgeType(ICjEdgeType.of(hex.rel()));
                     }
                 }
                 default -> unknownExtensions.add(ext.toJson());
@@ -283,20 +282,25 @@ public class OcifDoc2CjDoc {
             throw new IllegalStateException("OCIF resource '" + resource.id() + "' has no representations.");
         }
 
-        // transform each text/plain resource representation into a CJ label entry, possibly respecting a CjLanguageExtension
-        cjEntity.labelMutable(cjLabel -> {
-            repList.stream().filter(rep -> rep.matchesMimeType(IOcifResource.TEXT_PLAIN)).forEach(rep -> {
-                assert rep.content() != null;
-                assert rep.mimeType() != null;
-                assert rep.mimeType().equals(IOcifResource.TEXT_PLAIN);
-                cjLabel.addEntry(labelEntry -> {
-                    labelEntry.value(rep.content());
-                    // language of representation is in OCIF-CJ Label Node Extension of that representation
-                    filterMap(rep.extensions().stream(), CjLanguageRepresentationExtension.class).findFirst() //
-                            .ifPresent(langExt -> labelEntry.language(langExt.language()));
+        // Check if there are any TEXT_PLAIN representations before creating a label
+        boolean hasTextPlainReps = repList.stream().anyMatch(rep -> rep.matchesMimeType(IOcifResource.TEXT_PLAIN));
+
+        if (hasTextPlainReps) {
+            // transform each text/plain resource representation into a CJ label entry, possibly respecting a CjLanguageExtension
+            cjEntity.labelMutable(cjLabel -> {
+                repList.stream().filter(rep -> rep.matchesMimeType(IOcifResource.TEXT_PLAIN)).forEach(rep -> {
+                    assert rep.content() != null;
+                    assert rep.mimeType() != null;
+                    assert rep.mimeType().equals(IOcifResource.TEXT_PLAIN);
+                    cjLabel.addEntry(labelEntry -> {
+                        labelEntry.value(rep.content());
+                        // language of representation is in OCIF-CJ Label Node Extension of that representation
+                        filterMap(rep.extensions().stream(), CjLanguageRepresentationExtension.class).findFirst() //
+                                .ifPresent(langExt -> labelEntry.language(langExt.language()));
+                    });
                 });
             });
-        });
+        }
 
         // if we can fully represent the resource as a CJ label, remove it from doc/resources
         return resource.isAllRepresentationsAreTextPlain();

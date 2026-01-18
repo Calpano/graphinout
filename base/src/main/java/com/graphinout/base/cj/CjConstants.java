@@ -34,10 +34,8 @@ public class CjConstants {
     public static final String PORTS = "ports";
     /** Edge, Edge Endpoint */
     public static final String EDGE_OR_ENDPOINT__TYPE = "type";
-    /** Edge, Edge Endpoint */
-    public static final String EDGE_OR_ENDPOINT__TYPE_NODE = "typeNode";
-    /** Edge, Edge Endpoint */
-    public static final String EDGE_OR_ENDPOINT__TYPE_URI = "typeUri";
+    /** Node */
+    public static final String NODE_TYPES = "types";
     /** Label */
     public static final String VALUE = "value";
 
@@ -45,8 +43,10 @@ public class CjConstants {
     public static final String CONNECTED_JSON__VERSION_NUMBER = "versionNumber";
     public static final String CONNECTED_JSON__CANONICAL = "canonical";
     public static final String ROOT__CONNECTED_JSON = "connectedJson";
-    public static final String CJ_SCHEMA_LOCATION = "https://j-s-o-n.org/schema/cj-7.0.0.json";
+    public static final String CJ_SCHEMA_URL = "https://j-s-o-n.org/schema/cj-7.0.0.json";
     public static final String CJ_SCHEMA_ID = "https://j-s-o-n.org/schema/cj-7.0.0.json";
+    public static final String SCHEMA_RESOURCE = "/schema/cj/cj-schema.json";
+    public static final String SCHEMA_GIT_URL = "https://github.com/Calpano/connected-json/blob/main/modules/ROOT/attachments/cj-schema.json";
 
     private CjConstants() {
         // hidden constructor

@@ -3,6 +3,7 @@ package com.graphinout.base.cj.document;
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.foundation.pure.json.JsonConstants;
 import com.graphinout.foundation.pure.json.JsonType;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.EnumSet;
@@ -14,8 +15,6 @@ import java.util.Set;
 
 import static com.graphinout.base.cj.CjConstants.DATA;
 import static com.graphinout.base.cj.CjConstants.EDGE_OR_ENDPOINT__TYPE;
-import static com.graphinout.base.cj.CjConstants.EDGE_OR_ENDPOINT__TYPE_NODE;
-import static com.graphinout.base.cj.CjConstants.EDGE_OR_ENDPOINT__TYPE_URI;
 import static com.graphinout.base.cj.CjConstants.EDGE__ENDPOINTS;
 import static com.graphinout.base.cj.CjConstants.ENDPOINT__DIRECTION;
 import static com.graphinout.base.cj.CjConstants.ENDPOINT__NODE;
@@ -72,9 +71,7 @@ public enum CjType {
     Direction(JsonType.String), //
     NodeId(JsonType.String), //
     PortId(JsonType.String), //
-    EdgeTypeUri(JsonType.String), //
-    EdgeTypeNodeId(JsonType.String), //
-    EdgeTypeString(JsonType.String), //
+    EdgeType(JsonType.String), //
 
     Data(JsonType.Object, JsonType.Null, JsonType.Number, JsonType.String, JsonType.Boolean, JsonType.Array),
     ;
@@ -153,9 +150,8 @@ public enum CjType {
         Edge.property(ID).is(Id);
         Edge.property(GRAPHS).is(ArrayOfGraphs);
         Edge.property(LABEL).is(Label);
-        Edge.property(EDGE_OR_ENDPOINT__TYPE).is(EdgeTypeString);
-        Edge.property(EDGE_OR_ENDPOINT__TYPE_NODE).is(EdgeTypeNodeId);
-        Edge.property(EDGE_OR_ENDPOINT__TYPE_URI).is(EdgeTypeUri);
+        // In v7.0.0, unified "type" key - treated as string (semantic distinction between String/Node/URI is handled at application level)
+        Edge.property(EDGE_OR_ENDPOINT__TYPE).is(EdgeType);
         Edge.property(EDGE__ENDPOINTS).is(ArrayOfEndpoints);
         Edge.property(DATA).is(Data);
 
@@ -163,9 +159,8 @@ public enum CjType {
         Endpoint.property(ENDPOINT__NODE).is(NodeId);
         Endpoint.property(ENDPOINT__PORT).is(PortId);
         Endpoint.property(ENDPOINT__DIRECTION).is(Direction);
-        Endpoint.property(EDGE_OR_ENDPOINT__TYPE).is(EdgeTypeString);
-        Endpoint.property(EDGE_OR_ENDPOINT__TYPE_NODE).is(EdgeTypeNodeId);
-        Endpoint.property(EDGE_OR_ENDPOINT__TYPE_URI).is(EdgeTypeUri);
+        // In v7.0.0, unified "type" key - treated as string (semantic distinction between String/Node/URI is handled at application level)
+        Endpoint.property(EDGE_OR_ENDPOINT__TYPE).is(EdgeType);
         Endpoint.property(DATA).is(Data);
 
         Label.property(LABEL_ENTRIES).is(ArrayOfLabelEntries);
@@ -179,8 +174,8 @@ public enum CjType {
     /** which properties are allowed in this type (if it is an object) */
     public final Map<String, CjProperty> properties = new HashMap<>();
     public final JsonType[] jsonTypes;
-    /** which types are allowed in this type (if it is an array) */
-    public @Nullable CjType[] itemTypes;
+    /** which types are allowed in this type (if it is an array). The array itself may be null, but its members may not. */
+    public @Nullable CjType @NonNull [] itemTypes;
 
     CjType(JsonType... jsonTypes) {
         this.jsonTypes = jsonTypes;
