@@ -50,6 +50,14 @@ public class TestFileUtil {
         return new File(targetTestClasses.getAbsolutePath().replace(TARGET_TEST_CLASSES, "src/test/resources"));
     }
 
+    public static void assertExpectedResource(Resource resource, String testId) {
+        String tag = expectedTag(testId);
+        String taggedPath = tagResourcePath(resource.getPath(), tag);
+        if (expectedResource(resource, testId) == null) {
+            throw new AssertionError("Expected resource " + taggedPath + " not found");
+        }
+    }
+
     /**
      * @throws IllegalArgumentException if resource came from a JAR
      */
@@ -80,6 +88,24 @@ public class TestFileUtil {
     public static @Nullable Resource expectedResource(Resource resource, String testId) {
         String tag = expectedTag(testId);
         return tagResource(resource, tag);
+    }
+
+    /**
+     * @param resource
+     * @param testId
+     * @param extension replaces all extensions of the file, e.g. '.graphml.xml'. Value should include the dot.
+     * @return
+     */
+    public static @Nullable Resource expectedResourceWithExtension(Resource resource, String testId, String extension) {
+        //tweak extension: strip any current extension, anything after '.'
+        String p = resource.getPath();
+        int dot = p.lastIndexOf('.');
+        if (dot != -1) {
+            p = p.substring(0, dot);
+        }
+        p = p + extension;
+        String tag = expectedTag(testId);
+        return tagResource(p, tag);
     }
 
     private static String expectedTag(String testId) {
@@ -206,7 +232,11 @@ public class TestFileUtil {
      */
     public static @Nullable Resource tagResource(Resource resource, String tag) {
         String path = resource.getPath();
-        String taggedPath = tagResourcePath(path, tag);
+        return tagResource(path, tag);
+    }
+
+    public static @Nullable Resource tagResource(String resourcePath, String tag) {
+        String taggedPath = tagResourcePath(resourcePath, tag);
         return resource(taggedPath);
     }
 
