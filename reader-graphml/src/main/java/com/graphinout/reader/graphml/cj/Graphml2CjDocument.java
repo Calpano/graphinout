@@ -6,7 +6,7 @@ import com.graphinout.base.cj.document.ICjDataMutable;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjElement;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjGraphChunkMutable;
@@ -138,7 +138,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
                 entry.value(cjEntry.value());
             })));
         } else if (key.is(GraphmlDataElement.EdgeType)) {// map back to json
-            ICjEdgeType edgeType = ICjEdgeType.fromJsonString(graphmlDataValue);
+            ICjElementType edgeType = ICjElementType.fromJsonString(graphmlDataValue);
             assert cjHasData instanceof ICjEdgeMutable;
             ((ICjEdgeMutable) cjHasData).edgeType(edgeType);
         } else if (key.is(GraphmlDataElement.CjJsonData)) {// map back to json

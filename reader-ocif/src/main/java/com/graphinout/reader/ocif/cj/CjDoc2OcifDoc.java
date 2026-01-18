@@ -5,7 +5,7 @@ import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentMetaMutable;
 import com.graphinout.base.cj.document.ICjEdge;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjElement;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
@@ -177,7 +177,7 @@ public class CjDoc2OcifDoc {
             // also set typed field
             hyper.addEndpoint(new HyperedgeRelationExtension.Endpoint().id(id).direction(dir));
         }
-        ifPresentAccept(cjEdge.edgeType(), ICjEdgeType::type, hyper::setRel);
+        ifPresentAccept(cjEdge.edgeType(), ICjElementType::type, hyper::setRel);
         return hyper;
     }
 
@@ -362,7 +362,7 @@ public class CjDoc2OcifDoc {
             extObj.setString(OCIF.Common.END, end);
             extObj.setBoolean(OCIF.Common.DIRECTED, directed);
 
-            ifPresentAccept(cjEdge.edgeType(), ICjEdgeType::type, type -> //
+            ifPresentAccept(cjEdge.edgeType(), ICjElementType::type, type -> //
                     extObj.setString(OCIF.Common.REL, type));
             // create typed extension instance and populate map so it serializes
             EdgeRelationExtension edgeExt = EdgeRelationExtension.of(extObj);
@@ -371,7 +371,7 @@ public class CjDoc2OcifDoc {
             edgeExt.directed(directed);
 
 
-            ifPresentAccept(cjEdge.edgeType(), ICjEdgeType::type, edgeExt::rel);
+            ifPresentAccept(cjEdge.edgeType(), ICjElementType::type, edgeExt::rel);
             ocifRelation.addExtension(edgeExt);
         }
 

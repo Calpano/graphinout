@@ -3,7 +3,7 @@ package com.graphinout.base.cj;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentMutable;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import org.junit.jupiter.params.provider.Arguments;
@@ -76,7 +76,7 @@ public class CjDocsTestData {
             graph.addEdge(edge -> {
                 edge.id("e-type");
                 // TODO ensure we test all 3 edge type sources
-                edge.edgeType(ICjEdgeType.of("related"));
+                edge.edgeType(ICjElementType.of("related"));
                 edge.addEndpoint(ep -> ep.node("n1"));
                 edge.addEndpoint(ep -> ep.node("n2").type("works for"));
             });
@@ -447,8 +447,8 @@ public class CjDocsTestData {
         cjDoc.addGraph(graph -> {
             graph.addNode(node -> {
                 node.id("n1");
-                node.addType(ICjEdgeType.of("Person"));
-                node.addType(ICjEdgeType.of("Employee"));
+                node.addType(ICjElementType.of("Person"));
+                node.addType(ICjElementType.of("Employee"));
             });
         });
         return cjDoc;

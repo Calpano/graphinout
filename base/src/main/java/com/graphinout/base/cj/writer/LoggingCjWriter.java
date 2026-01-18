@@ -3,7 +3,7 @@ package com.graphinout.base.cj.writer;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.foundation.pure.json.JsonException;
 import com.graphinout.foundation.pure.json.writer.impl.LoggingJsonWriter;
 import org.jspecify.annotations.Nullable;
@@ -116,7 +116,7 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
     }
 
     @Override
-    public void edgeType(ICjEdgeType edgeType) {
+    public void edgeType(ICjElementType edgeType) {
         onCj(CjEvent.EdgeType, edgeType);
     }
 

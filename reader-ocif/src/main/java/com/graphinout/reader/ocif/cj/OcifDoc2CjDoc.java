@@ -4,7 +4,7 @@ import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.document.ICjHasDataMutable;
 import com.graphinout.base.cj.document.ICjHasLabelMutable;
@@ -244,7 +244,7 @@ public class OcifDoc2CjDoc {
                     }
                     ifPresentAccept(edge.rel(), rel -> {
                         // TODO rel might be a TYPE_URI
-                        cjEdge.edgeType(ICjEdgeType.of(rel));
+                        cjEdge.edgeType(ICjElementType.of(rel));
                     });
                     ifPresentAccept(edge.node(), nodeId -> //
                             cjEdge.dataMutable(data -> data.add(OCIF.Common.NODE, nodeId)));
@@ -265,7 +265,7 @@ public class OcifDoc2CjDoc {
                         });
                     }
                     if (hex.rel() != null) {
-                        cjEdge.edgeType(ICjEdgeType.of(hex.rel()));
+                        cjEdge.edgeType(ICjElementType.of(hex.rel()));
                     }
                 }
                 default -> unknownExtensions.add(ext.toJson());

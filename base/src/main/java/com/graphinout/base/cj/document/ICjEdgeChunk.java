@@ -33,7 +33,7 @@ public interface ICjEdgeChunk extends ICjHasData, ICjHasId, ICjHasLabel {
 
     }
 
-    @Nullable ICjEdgeType edgeType();
+    @Nullable ICjElementType edgeType();
 
     Stream<ICjEndpoint> endpoints();
 

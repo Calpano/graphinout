@@ -4,7 +4,7 @@ import com.graphinout.base.cj.factory.BaseCjOutput;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.document.ICjDataMutable;
 import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
@@ -140,7 +140,7 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
     }
 
     @Override
-    public void edgeType(ICjEdgeType edgeType) {
+    public void edgeType(ICjElementType edgeType) {
         // This method is called for edge types, endpoint types, and node types
         ICjEdgeChunkMutable edge = currentEdge();
         if (edge != null) {

@@ -333,7 +333,6 @@ Provides support for the CJ (Compact JSON) graph format, a lightweight JSON-base
 .Key Classes
 * `ICjWriter` - Interface for writing CJ format
 * `CjDirection` - Enumeration for edge directions
-* `ICjEdgeType` - Enumeration for edge types
 * `CjConstants` - Constants for CJ format
 
 .Implementation Package (`impl`)

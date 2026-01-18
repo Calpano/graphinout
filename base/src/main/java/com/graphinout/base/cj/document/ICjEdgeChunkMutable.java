@@ -27,6 +27,6 @@ public interface ICjEdgeChunkMutable extends ICjChunkMutable, ICjEdgeChunk, ICjH
     /** Create a not-yet attached endpoint */
     void createEndpoint(Consumer<ICjEndpointMutable> endpoint);
 
-    ICjEdgeChunkMutable edgeType(ICjEdgeType edgeType);
+    ICjEdgeChunkMutable edgeType(ICjElementType edgeType);
 
 }

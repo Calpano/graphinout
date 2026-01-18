@@ -2,7 +2,7 @@ package com.graphinout.base.cj.writer;
 
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.foundation.pure.json.writer.impl.DelegatingJsonWriter;
 
 import java.util.function.Consumer;
@@ -74,7 +74,7 @@ public class DelegatingCjWriter extends DelegatingJsonWriter implements ICjWrite
     }
 
     @Override
-    public void edgeType(ICjEdgeType edgeType) {
+    public void edgeType(ICjElementType edgeType) {
         forEachWriter(cjWriter -> cjWriter.edgeType(edgeType));
     }
 

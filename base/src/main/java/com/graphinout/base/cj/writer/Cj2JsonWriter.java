@@ -4,7 +4,7 @@ import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.foundation.pure.json.JsonException;
 import com.graphinout.foundation.pure.json.JsonType;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
@@ -126,7 +126,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     }
 
     @Override
-    public void edgeType(ICjEdgeType edgeType) {
+    public void edgeType(ICjElementType edgeType) {
         // In v7.0.0, always use "type" key regardless of source
         super.onKey(CjConstants.EDGE_OR_ENDPOINT__TYPE);
         onString(edgeType.type());

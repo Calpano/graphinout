@@ -3,7 +3,7 @@ package com.graphinout.base.cj.document.impl;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjEndpointMutable;
 import com.graphinout.base.cj.document.ICjGraph;
@@ -22,7 +22,7 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
     private final List<ICjEndpoint> endpoints = new ArrayList<>();
     private final List<CjGraphElement> graphs = new ArrayList<>();
     private @Nullable String id;
-    private ICjEdgeType edgeType;
+    private ICjElementType edgeType;
 
     @Override
     public CjEdgeElement addEndpoint(Consumer<ICjEndpointMutable> endpoint) {
@@ -58,12 +58,12 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
     }
 
     @Override
-    public ICjEdgeType edgeType() {
+    public ICjElementType edgeType() {
         return edgeType;
     }
 
     @Override
-    public ICjEdgeChunkMutable edgeType(ICjEdgeType edgeType) {
+    public ICjEdgeChunkMutable edgeType(ICjElementType edgeType) {
         this.edgeType = edgeType;
         return this;
     }

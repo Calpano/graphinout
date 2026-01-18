@@ -3,7 +3,7 @@ package com.graphinout.base.cj.writer;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.input.Locator;
 import com.graphinout.foundation.pure.json.writer.impl.NoopJsonWriter;
@@ -47,7 +47,7 @@ public class NoopCjWriter extends NoopJsonWriter implements ICjWriter {
     public void edgeStart() {}
 
     @Override
-    public void edgeType(ICjEdgeType edgeType) {}
+    public void edgeType(ICjElementType edgeType) {}
 
     @Override
     public void endpointEnd() {}

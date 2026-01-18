@@ -1,7 +1,7 @@
 package com.graphinout.reader.tripletext;
 
 import com.graphinout.base.cj.document.CjDirection;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
 import com.graphinout.base.cj.document.ICjEndpoint;
@@ -64,7 +64,7 @@ public class TripleTextOutput {
             o = eps.get(0);
         }
         boolean isDirected = s.isDirected() || o.isDirected();
-        String predicate = Nullables.mapOrDefault(e.edgeType(), ICjEdgeType::type, "related");
+        String predicate = Nullables.mapOrDefault(e.edgeType(), ICjElementType::type, "related");
         appendTripleLine(b, s.node(), predicate, isDirected, o.node(), null);
     }
 

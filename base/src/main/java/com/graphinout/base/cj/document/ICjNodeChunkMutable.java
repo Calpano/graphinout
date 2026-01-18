@@ -16,7 +16,7 @@ public interface ICjNodeChunkMutable extends //
     /**
      * Add a type to this node. Node types are exactly like edge types.
      */
-    void addType(ICjEdgeType type);
+    void addType(ICjElementType type);
 
 }
 

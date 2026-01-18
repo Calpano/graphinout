@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.foundation.pure.json.writer.impl.ValidatingJsonWriter;
 
 import java.net.URISyntaxException;
@@ -184,7 +184,7 @@ public class ValidatingCjWriter extends ValidatingJsonWriter implements ICjWrite
     }
 
     @Override
-    public void edgeType(ICjEdgeType edgeType) {
+    public void edgeType(ICjElementType edgeType) {
     }
 
     @Override

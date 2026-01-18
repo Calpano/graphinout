@@ -3,7 +3,7 @@ package com.graphinout.base.cj.writer;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjDataMutable;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentMetaMutable;
@@ -107,7 +107,7 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
     }
 
     @Override
-    public void edgeType(ICjEdgeType edgeType) {
+    public void edgeType(ICjElementType edgeType) {
         stack.peek(ICjEdgeMutable.class).edgeType(edgeType);
     }
 

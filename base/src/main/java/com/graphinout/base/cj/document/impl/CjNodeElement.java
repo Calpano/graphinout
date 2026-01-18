@@ -1,7 +1,7 @@
 package com.graphinout.base.cj.document.impl;
 
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.document.ICjNodeMutable;
@@ -18,7 +18,7 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
 
     private final List<CjPortElement> ports = new java.util.ArrayList<>();
     private final List<CjGraphElement> graphs = new java.util.ArrayList<>();
-    private final List<ICjEdgeType> types = new java.util.ArrayList<>();
+    private final List<ICjElementType> types = new java.util.ArrayList<>();
     private String id;
 
     public void addGraph(Consumer<ICjGraphMutable> graph) {
@@ -35,7 +35,7 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
     }
 
     @Override
-    public void addType(ICjEdgeType type) {
+    public void addType(ICjElementType type) {
         types.add(type);
     }
 
@@ -45,7 +45,7 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
     }
 
     @Override
-    public Stream<ICjEdgeType> types() {
+    public Stream<ICjElementType> types() {
         return types.stream();
     }
 

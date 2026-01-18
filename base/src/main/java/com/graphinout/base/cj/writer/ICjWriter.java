@@ -3,7 +3,7 @@ package com.graphinout.base.cj.writer;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.foundation.pure.input.IHandleContentErrors;
 import com.graphinout.foundation.pure.json.writer.IJsonXmlStringWriter;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
@@ -101,7 +101,7 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
     void edgeStart();
 
     /** edge.type / endpoint.type */
-    void edgeType(ICjEdgeType edgeType);
+    void edgeType(ICjElementType edgeType);
 
     /**
      * CJ Endpoint end event.

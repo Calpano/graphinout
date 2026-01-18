@@ -5,7 +5,7 @@ import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
-import com.graphinout.base.cj.document.ICjEdgeType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjHasData;
@@ -15,7 +15,6 @@ import com.graphinout.base.cj.document.ICjPort;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.value.java.JavaJsonObject;
-import com.graphinout.foundation.pure.functional.Nullables;
 import com.graphinout.foundation.pure.functional.Nullables;
 import com.graphinout.foundation.pure.functional.ThrowingConsumer;
 import com.graphinout.foundation.pure.stream.PowerStreams;
@@ -224,7 +223,7 @@ public class CjDocument2Graphml {
         // CJ edge type encoded as Graphml:DATA
         ifPresentAccept(cjEdge.edgeType(), edgeType -> {
             try {
-                String json = ICjEdgeType.toJsonString(edgeType);
+                String json = ICjElementType.toJsonString(edgeType);
                 graphmlWriter.data(GraphmlDataElement.EdgeType.toGraphmlData(json));
             } catch (IOException e) {
                 throw new RuntimeException(e);

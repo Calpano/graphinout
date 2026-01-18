@@ -8,18 +8,18 @@ import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public interface ICjEdgeType {
+public interface ICjElementType {
 
-    static ICjEdgeType fromJsonString(String json) {
+    static ICjElementType fromJsonString(String json) {
         IJsonValue value = JsonReaderImpl.readToJsonValue(json);
-        return ICjEdgeType.of(value.asString());
+        return ICjElementType.of(value.asString());
     }
 
-    static ICjEdgeType of(String type) {
+    static ICjElementType of(String type) {
         return () -> type;
     }
 
-    static String toJsonString(ICjEdgeType edgeType) {
+    static String toJsonString(ICjElementType edgeType) {
         Json2StringWriter w = new Json2StringWriter();
         w.onString(edgeType.type());
         return w.jsonString();
