@@ -1,0 +1,51 @@
+{
+  "$schema": "https://j-s-o-n.org/connected-json/7.0.0/schema",
+
+  "graphs":[
+    {
+      "baseUri": "https://example.org/",
+      "nodes": [
+        {
+          "id": "https://example.org/Alice",
+          "types": ["http://xmlns.com/foaf/0.1/Person"],
+          "data": {
+            "foo": { "bar":  "baz"}
+          }
+        },
+        {
+          "id": "Bob",
+          "types": ["http://xmlns.com/foaf/0.1/Person"],
+          "data": "just a string"
+        },
+        {
+          "id": "_:b1",
+          "label": { "entries": [
+            { "value": "Milano", "language": "it"},
+            { "value": "Milan"},
+            { "value": "Mailand", "language": "de"}
+          ]}
+        }
+      ],
+      "edges": [
+        {
+          "type": "http://xmlns.com/foaf/0.1/knows",
+          "endpoints": [
+            { "node": "Alice", "direction": "in" },
+            { "node": "Bob", "direction": "out" }
+          ]
+        },
+        {
+          "type": "http://example.org/livesIn",
+          "endpoints": [
+            { "node": "http://example.org/Alice", "direction": "in", "type": "http://example.org/aaa", "data": 1234 },
+            { "node": "http://example.org/Bob", "direction": "in", "type": "http://example.org/bbb" },
+            { "node": "_:b1", "direction": "out" }
+          ],
+          "data": {
+            "since": 2001
+          }
+        }
+      ]
+    }
+  ]
+}
