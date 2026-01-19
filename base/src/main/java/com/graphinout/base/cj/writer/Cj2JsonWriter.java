@@ -43,7 +43,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     @Override
     public void baseUri(String baseUri) {
         assert baseUri != null;
-        super.onKey(CjConstants.ROOT__BASE_URI);
+        super.onKey(CjConstants.BASE_URI);
         onString(baseUri);
     }
 

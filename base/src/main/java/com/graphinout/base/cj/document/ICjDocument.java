@@ -53,7 +53,7 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk {
 
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap() //
-                .putNonNull(JsonConstants.DOLLAR_SCHEMA, CjConstants.CJ_SCHEMA_URL).putNonNull(JsonConstants.DOLLAR_ID, CjConstants.CJ_SCHEMA_ID).putMaybe(CjConstants.ROOT__BASE_URI, baseUri()).putMaybe(CjConstants.ROOT__CONNECTED_JSON, connectedJson(), ICjDocumentMeta::toJaJsonMap).putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
+                .putNonNull(JsonConstants.DOLLAR_SCHEMA, CjConstants.CJ_SCHEMA_URL).putNonNull(JsonConstants.DOLLAR_ID, CjConstants.CJ_SCHEMA_ID).putMaybe(CjConstants.BASE_URI, baseUri()).putMaybe(CjConstants.ROOT__CONNECTED_JSON, connectedJson(), ICjDocumentMeta::toJaJsonMap).putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
     }
 
     default String toJson() {

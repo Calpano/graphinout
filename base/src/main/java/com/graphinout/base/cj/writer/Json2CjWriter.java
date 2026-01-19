@@ -354,7 +354,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
                     case PortId -> cjWriter.portId(s);
                     // edge, endpoint
                     case Direction -> cjWriter.direction(CjDirection.of(s));
-                    case EdgeType -> cjWriter.edgeType(ICjElementType.of(s));
+                    case ElementType -> cjWriter.edgeType(ICjElementType.of(s));
                     default ->
                             throw new UnsupportedOperationException("TODO implement string interpretation for " + expect + " in CJ.");
                 }

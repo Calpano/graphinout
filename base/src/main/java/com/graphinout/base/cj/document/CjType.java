@@ -27,8 +27,9 @@ import static com.graphinout.base.cj.CjConstants.GRAPH__NODES;
 import static com.graphinout.base.cj.CjConstants.ID;
 import static com.graphinout.base.cj.CjConstants.LABEL;
 import static com.graphinout.base.cj.CjConstants.LANGUAGE;
+import static com.graphinout.base.cj.CjConstants.NODE_TYPES;
 import static com.graphinout.base.cj.CjConstants.PORTS;
-import static com.graphinout.base.cj.CjConstants.ROOT__BASE_URI;
+import static com.graphinout.base.cj.CjConstants.BASE_URI;
 import static com.graphinout.base.cj.CjConstants.ROOT__CONNECTED_JSON;
 import static com.graphinout.base.cj.CjConstants.VALUE;
 
@@ -65,6 +66,7 @@ public enum CjType {
     Edge(JsonType.Object),//
 
     ArrayOfPorts(JsonType.Array),//
+    ArrayOfTypes(JsonType.String),//
     Port(JsonType.Object),//
 
     ArrayOfEndpoints(JsonType.Array),//
@@ -72,7 +74,7 @@ public enum CjType {
     Direction(JsonType.String), //
     NodeId(JsonType.String), //
     PortId(JsonType.String), //
-    EdgeType(JsonType.String), //
+    ElementType(JsonType.String), //
 
     Data(JsonType.Object, JsonType.Null, JsonType.Number, JsonType.String, JsonType.Boolean, JsonType.Array),
     ;
@@ -120,12 +122,13 @@ public enum CjType {
         ConnectedJson.property(CjConstants.CONNECTED_JSON__VERSION_NUMBER).is(ConnectedJson__VersionNumber);
         ConnectedJson.property(CjConstants.CONNECTED_JSON__VERSION_DATE).is(ConnectedJson__VersionDate);
         ConnectedJson.property(CjConstants.CONNECTED_JSON__CANONICAL).is(ConnectedJson__Canonical);
-        RootObject.property(ROOT__BASE_URI).is(BaseUri);
+        RootObject.property(BASE_URI).is(BaseUri);
         RootObject.property(GRAPHS).is(ArrayOfGraphs);
         RootObject.property(DATA).is(Data);
 
         ArrayOfGraphs.item(Graph);
         Graph.property(ID).is(Id);
+        Graph.property(BASE_URI).is(BaseUri);
         Graph.property(LABEL).is(Label);
         Graph.property(GRAPH__META).is(Meta);
         Graph.property(DATA).is(Data);
@@ -135,6 +138,7 @@ public enum CjType {
 
         ArrayOfNodes.item(Node);
         Node.property(ID).is(Id);
+        Node.property(NODE_TYPES).is(ArrayOfTypes);
         Node.property(PORTS).is(ArrayOfPorts);
         Node.property(CjConstants.NODE_TYPES).is(ArrayOfNodeTypes);
         Node.property(GRAPHS).is(ArrayOfGraphs);
@@ -142,7 +146,7 @@ public enum CjType {
         Node.property(DATA).is(Data);
         Node.property(GRAPHS).is(ArrayOfGraphs);
 
-        ArrayOfNodeTypes.item(EdgeType);
+        ArrayOfNodeTypes.item(ElementType);
 
         ArrayOfPorts.item(Port);
         Port.property(ID).is(Id);
@@ -155,7 +159,7 @@ public enum CjType {
         Edge.property(GRAPHS).is(ArrayOfGraphs);
         Edge.property(LABEL).is(Label);
         // In v7.0.0, unified "type" key - treated as string (semantic distinction between String/Node/URI is handled at application level)
-        Edge.property(EDGE_OR_ENDPOINT__TYPE).is(EdgeType);
+        Edge.property(EDGE_OR_ENDPOINT__TYPE).is(ElementType);
         Edge.property(EDGE__ENDPOINTS).is(ArrayOfEndpoints);
         Edge.property(DATA).is(Data);
 
@@ -164,7 +168,7 @@ public enum CjType {
         Endpoint.property(ENDPOINT__PORT).is(PortId);
         Endpoint.property(ENDPOINT__DIRECTION).is(Direction);
         // In v7.0.0, unified "type" key - treated as string (semantic distinction between String/Node/URI is handled at application level)
-        Endpoint.property(EDGE_OR_ENDPOINT__TYPE).is(EdgeType);
+        Endpoint.property(EDGE_OR_ENDPOINT__TYPE).is(ElementType);
         Endpoint.property(DATA).is(Data);
 
         Label.property(LABEL_ENTRIES).is(ArrayOfLabelEntries);

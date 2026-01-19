@@ -53,9 +53,9 @@ public interface ICjEdgeChunk extends ICjHasData, ICjHasId, ICjHasLabel {
      * IllegalStateException if this edge has more than one source.
      */
     default @Nullable ICjEndpoint source() throws IllegalStateException {
-        List<ICjEndpoint> sources = endpoints().filter(ICjEndpoint::isSource).toList();
+        List<ICjEndpoint> sources = sources();
         if (sources.size() == 1) {
-            return sources.get(0);
+            return sources.getFirst();
         } else if (sources.isEmpty()) {
             return null;
         } else {
@@ -63,15 +63,27 @@ public interface ICjEdgeChunk extends ICjHasData, ICjHasId, ICjHasLabel {
         }
     }
 
+    default List<ICjEndpoint> sources() {
+        return endpoints().filter(ICjEndpoint::isSource).toList();
+    }
+
     default @Nullable ICjEndpoint target() throws IllegalStateException {
-        List<ICjEndpoint> targets = endpoints().filter(ICjEndpoint::isTarget).toList();
+        List<ICjEndpoint> targets = targets();
         if (targets.size() == 1) {
-            return targets.get(0);
+            return targets.getFirst();
         } else if (targets.isEmpty()) {
             return null;
         } else {
             throw new IllegalStateException("Edge has more than one target: " + this);
         }
+    }
+
+    default List<ICjEndpoint> targets() {
+        return endpoints().filter(ICjEndpoint::isTarget).toList();
+    }
+
+    default List<ICjEndpoint> undirectedEndpoints() {
+        return endpoints().filter(ICjEndpoint::isUndirected).toList();
     }
 
     default @Nullable String type() {

@@ -3,7 +3,7 @@ package com.graphinout.base.cj;
 public class CjConstants {
 
     /** Graph base URI for RDF interpretation */
-    public static final String ROOT__BASE_URI = "baseUri";
+    public static final String BASE_URI = "baseUri";
 
     /** Data */
     public static final String DATA = "data";
