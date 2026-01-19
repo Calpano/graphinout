@@ -1,17 +1,15 @@
 package com.graphinout.reader.rdf;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
 import org.jspecify.annotations.Nullable;
 
-class RdfLiteral {
+record RdfLiteral(IJsonObject o) {
 
     public enum Kind {
         Plain, DataTyped, LanguageTagged
     }
-
-    final IJsonObject o;
-
-    RdfLiteral(IJsonObject o) {this.o = o;}
 
     public @Nullable String datatype() {
         return o.getString("datatype");
@@ -29,6 +27,14 @@ class RdfLiteral {
 
     public @Nullable String language() {
         return o.getString("language");
+    }
+
+    public Literal toRdfLiteral(Model model) {
+        return switch (kind()) {
+            case Plain -> model.createLiteral(value());
+            case LanguageTagged -> model.createLiteral(value(), language());
+            case DataTyped -> model.createTypedLiteral(value(), datatype());
+        };
     }
 
     public @Nullable String value() {

@@ -2,21 +2,19 @@
 :toc:
 :toclevels: 3
 
-== Overview
-This document describes how RDF (Resource Description Framework) graphs are mapped to and from Connected JSON (CJ) format.
+This document describes how link:rdf-model.adoc[RDF] (Resource Description Framework) graphs are mapped to and from Connected JSON (CJ) format.
 
-RDF is based on triples: `(subject, predicate, object)`. Connected JSON represents graphs using nodes and edges with endpoints. This mapping preserves the semantic relationships while translating between these two representations.
-
-== Reference Specifications
-
-* RDF Specification: https://www.w3.org/RDF/
 * Connected JSON v7.0.0 Specification: https://j-s-o-n.org/connected-json/7.0.0/
 * CJ RDF Interpretation: https://j-s-o-n.org/connected-json/7.0.0/rdf-interpretation/
 
-== RDF to CJ Mapping
+
+== RDF Structure to CJ Mapping
+The following mapping is applied to all triples, which are not interpreted and represented in another way.
+
+=== Base URI
+The CJ document's `baseUri` field stores the base URI used for relative URI resolution. RDF has no native baseUri concept. The most frequently used URI prefix should be used as a baseUri. Some syntaxes define a base uri.
 
 === Triple Structure
-
 Each RDF triple `(subject, predicate, object)` is converted to a CJ edge with two endpoints:
 
 .RDF Triple
@@ -38,11 +36,10 @@ Each RDF triple `(subject, predicate, object)` is converted to a CJ edge with tw
 ----
 
 The endpoints don't need an additional type.
-The ids for predicate, subject and object are initially set to the RDF URIs and might be simplified in later mapping steps.
+The ids for predicate, subject, and object are initially set to the RDF URIs and might be simplified in later mapping steps.
 
 
 === URI Resources
-
 RDF URI resources are converted to CJ nodes with the full URI stored in the node's id:
 
 [source,json]
@@ -67,37 +64,55 @@ RDF blank nodes (anonymous nodes) are preserved using the `_:` prefix:
 
 RDF literals are converted to CJ node data.
 
-A triple (`aaa`,`bbb`,`L`) with `L` a Literal becomes
+A triple (`aaa`,`bbb`,`L`) with `L` a Literal is mapped depending on the literal type (`pL`, `lL`, `dL`), see link:rdf-model.adoc#literal[].
 
-.Generic Literal Mapping
+A literal without a datatype and without language is mapped to a simple JSON string.
+
+.Plain Literal (pL)
 [source,json5]
 ----
 {
   "id": "aaa",
   "data": {
     "rdf:data": {
-        "bbb": {
-            "value": "Alice Smith",
-            "language": "en",          // optional: language tag
-            "datatype": "xsd:string"   // optional: datatype URI
-        }
+        "bbb": "Alice Smith"
     }
   }
 }
 ----
 
-A literal without a datatype and without language is mapped to a simple JSON string.
+.Data-typed Literal (dL)
+[source,json5]
+----
+{ "id": "aaa",
+  "data": {
+    "rdf:data": {
+        "bbb": { "value": "Alice Smith", "datatype": "xsd:string" }
+    }
+  }
+}
+----
+
+.Language-tagged Literal (dL)
+[source,json5]
+----
+{ "id": "aaa",
+  "data": {
+    "rdf:data": {
+        "bbb": { "value": "Alice Smith", "language": "en" }
+    }
+  }
+}
+----
 
 Later, we will introduce special cases for mapping RDF labels to CJ labels.
 
+== RDF Semantics to CJ
+
 === Typed Resources
+Triple (`aaa`, `rdf:type`, `bbb`) is mapped in CJ to a CJ node `aaa` with a `types` type of `bbb`.
 
-Any RDF type statement (`rdf:type` or `a` in Turtle) is mapped in CJ to a CJ node with a `types` type.
 
-
-=== Base URI
-
-The CJ document's `baseUri` field stores the base URI used for relative URI resolution.
 
 === Namespaces
 There is currently no defined way to preserve namespaces. A pragmatic way is storing the namespace prefixes in the CJ document `data` in a property `rdf:namespaces` which contains an object with the prefix as key and the namespace URI as value.
@@ -122,17 +137,15 @@ are converted to RDF triples:
 More complex CJ edges are converted as multiple RDF triples.
 The edge being represented as an RDF resource and each endpoint linked via a triple with the endpoints type and direction to the edge-resource.
 
+If the endpoints have data attached, they also need to be reified and represented as their own resources.
 
 === Nodes to Resources
-
 CJ nodes are converted to RDF resources.
-Each `type` of a CJ node generates an RDF triple with predicate `rdf:type` and object set to the used type.
-
 The node id is inspected: If it has  a colon in it, it remains as it is.
-Otherwise it is concatenated with the baseUri.
+Otherwise, it is concatenated with the baseUri.
+
 
 ==== Blank Nodes
-
 Nodes with IDs starting with `_:` become RDF blank nodes:
 
 [source,json]
@@ -142,7 +155,7 @@ Nodes with IDs starting with `_:` become RDF blank nodes:
 
 → RDF blank node: `_:person1`
 
-=== Literal Nodes
+==== Literal Nodes
 
 Nodes identified as literals (with `value` in data become RDF literals:
 
@@ -174,8 +187,8 @@ Language-tagged literals:
 → RDF literal: `"Hello"@en`
 
 === Node Types
+Each `types` entry of a CJ node generates an RDF triple with predicate `rdf:type` and object set to the used type.
 
-CJ node `types` array is converted to RDF type statements using `rdf:type`:
 
 [source,json]
 ----
@@ -191,8 +204,15 @@ CJ node `types` array is converted to RDF type statements using `rdf:type`:
 
 Node data fields (other than special fields like  `value`, `language`, `datatype`) can optionally be converted to RDF properties using a default predicate namespace: `cj:data`. The whole JSON value is converted to a single RDF literal.
 
-== Supported RDF Formats
+.Example for a Minimal CJ with all CJ Features Used
+[source,json]
+----
+include::../test/resources/json/example-cj-with-all-features.cj.json[]
+----
 
+
+
+== Supported RDF Formats
 The reader supports multiple RDF serialization formats:
 
 * **RDF/XML** (`.rdf`) - Default format
@@ -204,6 +224,7 @@ The reader supports multiple RDF serialization formats:
 Format detection is based on file extension.
 
 The writer outputs **Turtle format** by default for better readability.
+
 
 == Implementation Notes
 
@@ -219,16 +240,14 @@ This follows the CJ convention where edges flow from "in" endpoints to "out" end
 
 
 === Limitations
-
 * Undirected CJ edges are not well-represented in RDF (which is inherently directed). They will round-trip into directed edges.
 * CJ graphs with nested subgraphs are flattened in RDF export.
 TODO Quads/named Graphs will help here later.
 * RDF reification, named graphs, and SPARQL-specific features are not currently supported
 
+
 == Example
-
-=== RDF Input (Turtle)
-
+.RDF Input (Turtle)
 [source,turtle]
 ----
 @prefix ex: <https://example.org/> .
@@ -242,8 +261,7 @@ ex:Bob a foaf:Person ;
     ex:name "Bob Jones" .
 ----
 
-=== CJ Output (JSON)
-
+.CJ Output (JSON)
 [source,json]
 ----
 {
@@ -251,14 +269,14 @@ ex:Bob a foaf:Person ;
   "baseUri": "https://example.org/",
   "graphs": [{
     "nodes": [
-      { "id": "Alice", "type": "http://xmlns.com/foaf/0.1/Person" },
-      { "id": "literal_0",
-        "data": { "value": "Alice Smith" }
-      },
-      { "id": "Bob", "type": "http://xmlns.com/foaf/0.1/Person" },
-      { "id": "literal_1",
-        "data": { "value": "Bob Jones" }
-      }
+      { "id": "Alice", "type": "http://xmlns.com/foaf/0.1/Person",
+        "data":  { "rdf:properties":  {
+          "name" : "Alice Smith"
+        }}},
+      { "id": "Bob", "type": "http://xmlns.com/foaf/0.1/Person",
+        "data":  { "rdf:properties": {
+          "name" : "Bob Jones"
+        }}}
     ],
     "edges": [
       { "type": "http://xmlns.com/foaf/0.1/knows",

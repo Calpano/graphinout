@@ -1,0 +1,33 @@
+= RDF Model
+
+https://en.wikipedia.org/wiki/Resource_Description_Framework[RDF] is an information model to represent data.
+The model consists of RDF graphs.
+An RDF graph contains RDF triples.
+And RDF triple is (subject, predicate, object).
+
+- Subject is either a URI (or more exactly: an IRI) or a blank node.
+- Predicate is a URI.
+- Object is URI, blank node or RDF literal.
+
+[#literal]
+== Literal
+There are three kinds of RDF literals:
+
+- Plain literal: Just a string.
+- Typed literal: A string with a datatype, specified by URI.
+- Language literal: A string with a language tag, specified as a string.
+
+
+== Syntaxes
+Many syntaxes serialize the RDF model:
+
+Turtle:: a compact, human-friendly format.
+TriG:: an extension of Turtle to datasets.
+N-Triples:: a very simple, easy-to-parse, line-based format that is not as compact as Turtle.
+N-Quads:: a superset of N-Triples, for serializing multiple RDF graphs.
+JSON-LD:: a JSON-based serialization.
+N3 or Notation3:: a non-standard serialization that is very similar to Turtle, but has some additional features, such as the ability to define inference rules.
+RDF/XML:: an XML-based syntax that was the first standard format for serializing RDF.
+RDF/JSON:: an alternative syntax for expressing RDF triples using a simple JSON notation.
+
+
