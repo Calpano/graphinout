@@ -50,7 +50,14 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
 
     @Override
     public void baseUri(String baseUri) {
-        stack.peek(ICjDocumentMutable.class).baseUri(baseUri);
+        // baseUri can be on document (root level) or graph (CJ 7.0.0)
+        // Try to find the most recent element that supports baseUri
+        ICjGraphMutable graph = stack.peekOrNull(ICjGraphMutable.class);
+        if (graph != null) {
+            graph.baseUri(baseUri);
+        } else {
+            stack.peek(ICjDocumentMutable.class).baseUri(baseUri);
+        }
     }
 
     @Override
@@ -108,7 +115,13 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
 
     @Override
     public void edgeType(ICjElementType edgeType) {
-        stack.peek(ICjEdgeMutable.class).edgeType(edgeType);
+        // type can be on edge or endpoint (CJ 7.0.0)
+        ICjEndpointMutable endpoint = stack.peekOrNull(ICjEndpointMutable.class);
+        if (endpoint != null) {
+            endpoint.type(edgeType.type());
+        } else {
+            stack.peek(ICjEdgeMutable.class).edgeType(edgeType);
+        }
     }
 
     @Override
@@ -205,6 +218,11 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
     @Override
     public void nodeId(String nodeId) {
         stack.peek(ICjEndpointMutable.class).node(nodeId);
+    }
+
+    @Override
+    public void nodeType(ICjElementType nodeType) {
+        stack.peek(ICjNodeMutable.class).addType(nodeType);
     }
 
     @Override

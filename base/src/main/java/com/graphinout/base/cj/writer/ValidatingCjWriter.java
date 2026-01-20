@@ -188,6 +188,10 @@ public class ValidatingCjWriter extends ValidatingJsonWriter implements ICjWrite
     }
 
     @Override
+    public void nodeType(ICjElementType nodeType) {
+    }
+
+    @Override
     public void jsonDataEnd() {
     }
 

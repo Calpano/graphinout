@@ -20,6 +20,7 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
     private final List<CjNodeElement> nodes = new ArrayList<>();
     private final List<CjEdgeElement> edges = new ArrayList<>();
     private String id;
+    private String baseUri;
 
     @Override
     public void addEdge(Consumer<ICjEdgeMutable> edge) {
@@ -82,6 +83,16 @@ public class CjGraphElement extends CjHasDataAndLabelElement implements ICjGraph
     public CjGraphElement id(String id) {
         this.id = id;
         return this;
+    }
+
+    @Override
+    public String baseUri() {
+        return baseUri;
+    }
+
+    @Override
+    public void baseUri(String baseUri) {
+        this.baseUri = baseUri;
     }
 
     @Override

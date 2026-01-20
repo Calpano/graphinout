@@ -331,9 +331,11 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
             parseStack.popJsonPropertyMaybe();
             maybeEndData();
         } else {
-            if (parseStack.expectedCjTypes.size() == 1) {
+            Set<CjType> expectedTypes = parseStack.expectedCjTypes();
+            // Filter to only types that can be strings
+            CjType expect = CjType.findExactlyOne(expectedTypes, JsonType.String);
+            if (expect != null) {
                 // we know how to interpret it
-                CjType expect = parseStack.expectedCjTypes.iterator().next();
                 switch (expect) {
                     // document level
                     case JsonSchemaLocation, JsonSchemaId -> {
@@ -354,12 +356,21 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
                     case PortId -> cjWriter.portId(s);
                     // edge, endpoint
                     case Direction -> cjWriter.direction(CjDirection.of(s));
-                    case ElementType -> cjWriter.edgeType(ICjElementType.of(s));
+                    case ElementType -> {
+                        // ElementType is used for both edge.type, endpoint.type, and node.types[]
+                        // Determine context from the parent type on the stack
+                        CjType parentType = parseStack.peekCjType();
+                        if (parentType == CjType.ArrayOfNodeTypes) {
+                            cjWriter.nodeType(ICjElementType.of(s));
+                        } else {
+                            cjWriter.edgeType(ICjElementType.of(s));
+                        }
+                    }
                     default ->
                             throw new UnsupportedOperationException("TODO implement string interpretation for " + expect + " in CJ.");
                 }
             } else {
-                throw new IllegalStateException("Ambiguous string value '" + s + "' in CJ. Expecting " + parseStack.expectedCjTypes());
+                throw new IllegalStateException("Could not determine type for string value '" + s + "' in CJ. Expecting " + expectedTypes);
             }
         }
     }

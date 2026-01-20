@@ -67,7 +67,13 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     @Override
     public void baseUri(String baseUri) {
-        stack.peekSearch(ICjDocumentChunkMutable.class).baseUri(baseUri);
+        // baseUri can be on document (root level) or graph (CJ 7.0.0)
+        ICjGraphChunkMutable graph = stack.peekSearchOrNull(ICjGraphChunkMutable.class);
+        if (graph != null) {
+            graph.baseUri(baseUri);
+        } else {
+            stack.peekSearch(ICjDocumentChunkMutable.class).baseUri(baseUri);
+        }
     }
 
     @Override
@@ -141,16 +147,24 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     @Override
     public void edgeType(ICjElementType edgeType) {
-        // This method is called for edge types, endpoint types, and node types
-        ICjEdgeChunkMutable edge = currentEdge();
-        if (edge != null) {
-            edge.edgeType(edgeType);
-            return;
+        // type can be on edge or endpoint (CJ 7.0.0)
+        ICjEndpointMutable endpoint = stack.peekOrNull(ICjEndpointMutable.class);
+        if (endpoint != null) {
+            endpoint.type(edgeType.type());
+        } else {
+            ICjEdgeChunkMutable edge = currentEdge();
+            if (edge != null) {
+                edge.edgeType(edgeType);
+            }
         }
-        // If not in an edge, check if we're in a node (for node types array)
+    }
+
+    @Override
+    public void nodeType(ICjElementType nodeType) {
+        // This method is called for node.types[] elements
         ICjNodeChunkMutable node = currentNode();
         if (node != null) {
-            node.addType(edgeType);
+            node.addType(nodeType);
         }
     }
 

@@ -159,6 +159,11 @@ public class DelegatingCjWriter extends DelegatingJsonWriter implements ICjWrite
     }
 
     @Override
+    public void nodeType(ICjElementType nodeType) {
+        forEachWriter(cjWriter -> cjWriter.nodeType(nodeType));
+    }
+
+    @Override
     public void nodeStart() {
         forEachWriter(ICjWriter::nodeStart);
     }

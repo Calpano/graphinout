@@ -185,6 +185,9 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
     /** endpoint.node */
     void nodeId(String nodeId);
 
+    /** node.types[] - node type URI/string */
+    void nodeType(ICjElementType nodeType);
+
     /**
      * CJ Node start event.
      * <p>

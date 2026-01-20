@@ -2,6 +2,7 @@ package com.graphinout.base.cj.document.impl;
 
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.CjType;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjEndpointMutable;
 import com.graphinout.base.cj.writer.ICjWriter;
 
@@ -38,6 +39,8 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
         cjWriter.nodeId(node);
         ofNullable(port).ifPresent(cjWriter::portId);
         ofNullable(direction).ifPresent(cjWriter::direction);
+        // CJ 7.0.0: endpoints can have a type
+        ofNullable(type).ifPresent(t -> cjWriter.edgeType(ICjElementType.of(t)));
         fireDataMaybe(cjWriter);
         cjWriter.endpointEnd();
     }

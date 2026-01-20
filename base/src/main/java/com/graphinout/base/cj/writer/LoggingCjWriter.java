@@ -34,7 +34,7 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
 
         ConnectedJsonStart, ConnectedJsonEnd, ConnectedJson__Canonical, ConnectedJson__VersionDate, ConnectedJson__VersionNumber,
 
-        EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, EdgeType, NodeId, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Value, DataStart, DataEnd
+        EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, EdgeType, NodeId, NodeType, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Value, DataStart, DataEnd
     }
 
     enum CommaState {First, Container, Key}
@@ -204,6 +204,11 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
     @Override
     public void nodeId(String nodeId) {
         onCj(CjEvent.NodeId, nodeId);
+    }
+
+    @Override
+    public void nodeType(ICjElementType nodeType) {
+        onCj(CjEvent.NodeType, nodeType);
     }
 
     @Override

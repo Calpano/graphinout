@@ -104,6 +104,9 @@ public class NoopCjWriter extends NoopJsonWriter implements ICjWriter {
     public void nodeId(String nodeId) {}
 
     @Override
+    public void nodeType(ICjElementType nodeType) {}
+
+    @Override
     public void nodeStart() {}
 
     @Override

@@ -16,7 +16,8 @@ public interface ICjNodeChunk extends ICjHasId, ICjHasData, ICjHasLabel, ICjHasP
         // streaming order: id, label, types, ports, data (graphs)
         cjWriter.maybe(id(), cjWriter::id);
         fireLabelMaybe(cjWriter);
-        cjWriter.list(types().toList(), CjType.ArrayOfNodeTypes, ICjElementType::fire);
+        // Note: use nodeType() not edgeType() for node types
+        cjWriter.list(types().toList(), CjType.ArrayOfNodeTypes, (type, writer) -> writer.nodeType(type));
         cjWriter.list(ports().toList(), CjType.ArrayOfPorts, ICjPort::fire);
         fireDataMaybe(cjWriter);
     }
