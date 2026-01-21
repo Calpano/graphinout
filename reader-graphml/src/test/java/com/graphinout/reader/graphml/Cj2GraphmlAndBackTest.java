@@ -1,8 +1,8 @@
 package com.graphinout.reader.graphml;
 
 
-import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.base.cj.CjAssert;
+import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
@@ -23,6 +23,7 @@ import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.graphml.cj.Graphml2CjDocument;
 import com.graphinout.reader.graphml.cj.Graphml2CjWriter;
 import com.graphinout.reader.graphml.validation.ValidatingGraphMlWriter;
+import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
 import jdk.jfr.Description;
 import org.junit.jupiter.api.DisplayName;
@@ -109,7 +110,7 @@ public class Cj2GraphmlAndBackTest {
         String jsonOut = json2StringWriter.jsonString();
         CjAssert.verifySameCjOrRecord(resource, "Cj2Gml2Cj", jsonOut, jsonInput, () -> {
             // format both pretty, then diff
-            FormatterConfig config = FormatterConfig.of(60, Set.of("nodes", "edges", "graphs"), true);
+            FormatterConfig config = FormatterConfig.of(60, Set.of(CjConstants.GRAPH__NODES, CjConstants.GRAPH__EDGES, CjConstants.GRAPHS), true);
             String compactOut = JsonCompactFormatter.formatCompact(JaJson.parse(CjAssert.normalize(jsonOut)), config);
             String compactIn = JsonCompactFormatter.formatCompact(JaJson.parse(CjAssert.normalize(jsonInput)), config);
             assertThat(compactOut).isEqualTo(compactIn);
