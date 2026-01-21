@@ -1,6 +1,5 @@
 package com.graphinout.base.cj.document.impl;
 
-import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjLabelEntry;
 import com.graphinout.base.cj.document.ICjLabelEntryMutable;
@@ -12,16 +11,12 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static com.graphinout.base.cj.CjConstants.LABEL_ENTRIES;
-
 /**
  * A CJ element, representing an ArrayOfLabelEntries.
  */
-public class CjLabelElement extends CjArrayElement implements ICjLabelMutable {
+public class CjLabelElement extends CjHasDataElement implements ICjLabelMutable {
 
-    public CjLabelElement() {
-        super(CjType.ArrayOfLabelEntries);
-    }
+    private final List<ICjLabelEntry> labelEntries = new ArrayList<>();
 
     @Override
     public void addEntry(Consumer<ICjLabelEntryMutable> labelEntryConsumer) {
@@ -29,22 +24,27 @@ public class CjLabelElement extends CjArrayElement implements ICjLabelMutable {
         // so the labelEntry might still be empty
         CjLabelEntryElement entry = new CjLabelEntryElement();
         labelEntryConsumer.accept(entry);
-        add(entry);
+        labelEntries.add(entry);
+    }
+
+    @Override
+    public CjType cjType() {
+        return CjType.Label;
     }
 
     @Override
     public Stream<ICjLabelEntry> entries() {
-        return stream().map(x -> (ICjLabelEntry) x);
+        return labelEntries.stream();
     }
 
     @Override
     public void fire(ICjWriter cjWriter) {
         // In v7.0.0, label is an object with an "entries" array
         // labelStart() will write the "label" key and start the object
-        // listStart(ArrayOfLabelEntries) will write the "entries" key
         cjWriter.labelStart();
         List<CjLabelEntryElement> list = new ArrayList<>();
         entries().forEach(e -> list.add((CjLabelEntryElement) e));
+        // listStart(ArrayOfLabelEntries) will write the "entries" key
         cjWriter.list(list, CjType.ArrayOfLabelEntries, CjLabelEntryElement::fire);
         cjWriter.labelEnd();
     }
