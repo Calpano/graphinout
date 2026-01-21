@@ -49,6 +49,10 @@ public class ContentError {
         return new ContentError(ErrorLevel.Warn, message, Location.UNAVAILABLE);
     }
 
+    public static ContentError info(String message) {
+        return new ContentError(ErrorLevel.Info, message, Location.UNAVAILABLE);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
