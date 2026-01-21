@@ -37,12 +37,20 @@ public interface CjGraphmlMapping {
     /** Represent a data element attached to a GraphML element. Needs a corresponding key element at document level. */
     enum GraphmlDataElement {
         /**
-         * CJ: document.baseUri -> Graphml: We could use <a href="https://de.wikipedia.org/wiki/XML_Base">XHTML base
-         * URI</a>, but currently simply map to GraphML data element.
+         * CJ: document.baseUri -> Graphml data element.
          * <p>
-         * {@code <key id="baseUri" for="graphml" value="http://example.org/"/>}
+         * {@code <key id="cj_baseUri" for="graphml" attr.type="string"/>}
          */
-        BaseUri("cj_baseUri", GraphmlKeyForType.Graphml, GraphmlDataType.typeString, "Connected JSON allows custom JSON properties in all objects"),
+        BaseUri("cj_baseUri", GraphmlKeyForType.Graphml, GraphmlDataType.typeString, "Connected JSON document baseUri (CJ 7.0.0)"),
+
+        /**
+         * CJ: graph.baseUri -> Graphml data element.
+         * <p>
+         * {@code <key id="cj_graph_baseUri" for="graph" attr.type="string"/>}
+         * <p>
+         * CJ 7.0.0 allows baseUri on graph level.
+         */
+        GraphBaseUri("cj_graph_baseUri", GraphmlKeyForType.Graph, GraphmlDataType.typeString, "Connected JSON graph baseUri (CJ 7.0.0)"),
 
         /** CJ edgeType as JSON (source, type) */
         EdgeType("cj_edgeType", GraphmlKeyForType.Edge, GraphmlDataType.typeString, "Connected JSON edgeType {'source'=..., 'type'=...}"),

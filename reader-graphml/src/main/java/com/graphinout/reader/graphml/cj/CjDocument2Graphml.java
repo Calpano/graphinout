@@ -256,6 +256,16 @@ public class CjDocument2Graphml {
         writeData_Description(cjGraph, graphmlBuilder);
 
         graphmlWriter.graphStart(graphmlBuilder.build());
+
+        // Write graph-level baseUri as GraphML data (CJ 7.0.0)
+        ifPresentAccept(cjGraph.baseUri(), baseUri -> {
+            try {
+                graphmlWriter.data(GraphmlDataElement.GraphBaseUri.toGraphmlData(baseUri));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         writeData_Json(cjGraph, graphmlWriter::data);
 
         writeCjLabelAsGraphmlData(cjGraph.label());
@@ -336,17 +346,23 @@ public class CjDocument2Graphml {
 
 
     private void writeData_CustomAttributes(ICjHasData cjHasData, GraphmlElementBuilder<?> graphmlElement) {
-        cjHasData.onDataValue(json -> //
-                json.resolve(CjDataProperty.CustomXmlAttributes.cjPropertyKey, xmlAttributes -> //
-                        xmlAttributes.onProperties((k, v) -> graphmlElement.attribute(k, v.asString()))));
+        cjHasData.onDataValue(json -> {
+            // Only objects can have properties to resolve
+            if (!json.isObject()) return;
+            json.resolve(CjDataProperty.CustomXmlAttributes.cjPropertyKey, xmlAttributes -> //
+                    xmlAttributes.onProperties((k, v) -> graphmlElement.attribute(k, v.asString())));
+        });
     }
 
     /** Write CJ .data.description to GraphMl {@code <desc>} in builder */
     private void writeData_Description(ICjHasData cjHasData, GraphmlElementWithDescBuilder<?> gHasDesc) {
         assert cjHasData != null;
-        cjHasData.onDataValue(json -> //
-                json.resolve(CjDataProperty.Description.cjPropertyKey, desc -> //
-                        gHasDesc.desc(IGraphmlDescription.of(desc.toXmlFragmentString()))));
+        cjHasData.onDataValue(json -> {
+            // Only objects can have properties to resolve
+            if (!json.isObject()) return;
+            json.resolve(CjDataProperty.Description.cjPropertyKey, desc -> //
+                    gHasDesc.desc(IGraphmlDescription.of(desc.toXmlFragmentString())));
+        });
     }
 
     /** Write CJ .data to GraphMl {@code <data>} */

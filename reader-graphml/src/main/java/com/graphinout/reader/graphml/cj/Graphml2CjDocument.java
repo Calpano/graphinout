@@ -145,9 +145,17 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(graphmlDataValue);
             cjHasData.dataMutable(m -> m.setJsonValue(jsonValue));
         } else if (key.is(GraphmlDataElement.BaseUri)) {
-            // map back to native CJ baseUri
+            // map back to native CJ document baseUri
             if (cjHasData instanceof ICjDocumentChunkMutable) {
                 ((ICjDocumentChunkMutable) cjHasData).baseUri(graphmlDataValue);
+            } else {
+                // treat as generic data
+                copyData(graphmlData, key, cjHasData);
+            }
+        } else if (key.is(GraphmlDataElement.GraphBaseUri)) {
+            // map back to native CJ graph baseUri (CJ 7.0.0)
+            if (cjHasData instanceof ICjGraphChunkMutable) {
+                ((ICjGraphChunkMutable) cjHasData).baseUri(graphmlDataValue);
             } else {
                 // treat as generic data
                 copyData(graphmlData, key, cjHasData);
@@ -366,6 +374,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             graphmlSchema.removeKeyById(GraphmlDataElement.Label.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.EdgeType.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.BaseUri.toGraphmlKey().id());
+            graphmlSchema.removeKeyById(GraphmlDataElement.GraphBaseUri.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.SyntheticNode.toGraphmlKey().id());
             if (graphmlSchema.isEmpty()) return;
             graphmlSchema.toJson(o);
@@ -384,7 +393,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
                 IMapLike.ofProperty("data", value::data));
         pathResolver.registerMap(ICjDataMutable.class, value -> {
             IJsonValue jsonValue = value.jsonValue();
-            if (jsonValue == null) {
+            if (jsonValue == null || !jsonValue.isObject()) {
                 return IMapLike.EMPTY;
             }
             return IMapLike.ofMap(jsonValue.asObject().toJaJsonMap());
