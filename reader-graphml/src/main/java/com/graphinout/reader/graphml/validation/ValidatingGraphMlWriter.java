@@ -1,6 +1,7 @@
 package com.graphinout.reader.graphml.validation;
 
 import com.graphinout.foundation.pure.input.BaseOutput;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.reader.graphml.IGraphmlWriter;
 import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDocument;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifConsumerPresentAccept;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class ValidatingGraphMlWriter extends BaseOutput implements IGraphmlWriter {
@@ -90,12 +92,12 @@ public class ValidatingGraphMlWriter extends BaseOutput implements IGraphmlWrite
     public void documentEnd() throws IOException {
         ensureAllowedEnd(CurrentElement.GRAPHML);
         if (!nonExistingNode.isEmpty()) {
-            nonExistingNode.forEach((s, messages) -> messages.forEach(log::warn));
-            throw new IllegalStateException(nonExistingNode.size() + " nodes used in the graph without reference.");
+            nonExistingNode.forEach((s, messages) -> messages.forEach(log::info));
+            ifConsumerPresentAccept(contentErrorHandler(), ContentError.info(nonExistingNode.size() + " nodes used in the graph without reference."));
         }
         if (!nonExistingPortNames.isEmpty()) {
-            nonExistingPortNames.forEach((s, messages) -> messages.forEach(log::warn));
-            throw new IllegalStateException(nonExistingPortNames.size() + " ports used in the graph without reference.");
+            nonExistingPortNames.forEach((s, messages) -> messages.forEach(log::info));
+            ifConsumerPresentAccept(contentErrorHandler(), ContentError.info(nonExistingPortNames.size() + " ports used in the graph without reference."));
         }
     }
 
@@ -233,7 +235,7 @@ public class ValidatingGraphMlWriter extends BaseOutput implements IGraphmlWrite
             if (portName != null) if (!existingPortNames.contains(portName)) {
                 nonExistingPortNames.computeIfAbsent(portName, key -> new ArrayList<>()) //
                         .add("Edge [" + edge + "] references to a non-existent port Name: '" + portName + "'");
-            } else nonExistingNode.remove(portName);
+            } else nonExistingPortNames.remove(portName);
         }
     }
 
@@ -242,7 +244,7 @@ public class ValidatingGraphMlWriter extends BaseOutput implements IGraphmlWrite
             if (endpoint.port() != null) if (!existingPortNames.contains(endpoint.port())) {
                 nonExistingPortNames.computeIfAbsent(endpoint.port(), key -> new ArrayList<>()) //
                         .add("Hyper Edge [" + hyperEdge + "] references to a non-existent port Name: '" + endpoint.port() + "'");
-            } else nonExistingNode.remove(endpoint.port());
+            } else nonExistingPortNames.remove(endpoint.port());
         }
     }
 

@@ -37,6 +37,10 @@ public class ContentErrorException extends RuntimeException {
         return new ContentErrorException(ContentError.ErrorLevel.Error, msg, Location.UNAVAILABLE);
     }
 
+    public static ContentErrorException contentInfo(String msg) {
+        return new ContentErrorException(ContentError.ErrorLevel.Info, msg, Location.UNAVAILABLE);
+    }
+
     public static ContentErrorException contentWarn(String msg) {
         return new ContentErrorException(ContentError.ErrorLevel.Warn, msg, Location.UNAVAILABLE);
     }
