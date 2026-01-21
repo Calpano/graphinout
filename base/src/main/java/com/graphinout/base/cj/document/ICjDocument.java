@@ -4,7 +4,7 @@ import com.graphinout.base.cj.CjConstants;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.JsonConstants;
 import com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter;
-import com.graphinout.foundation.pure.stream.PowerStreams;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -12,32 +12,44 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
+
 /**
  * Root of a CJ graph representation assembled from GIO events. It aggregates graphs and document-level metadata.
  */
-public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk {
+public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement {
+
+    String DEFAULT_BASE_URI = "#";
 
     @Override
     default Stream<ICjElement> directChildren() {
-        return Stream.concat(Stream.concat(Stream.of(data()), Stream.of(connectedJson())).filter(Objects::nonNull), graphs());
+        return Stream.concat(Stream.concat(Stream.of(data().ifNotEmpty()), Stream.of(connectedJson())).filter(Objects::nonNull), graphs());
     }
 
     /**
      * @return All edges in the document, from all graphs and subgraphs.
      */
-    default Stream<ICjEdge> edges() {
-        return graphs().flatMap(ICjGraph::edges);
+    default Stream<ICjEdge> edgesAll() {
+        return graphsAll().flatMap(ICjGraph::edges);
     }
 
-    default @Nullable ICjNode findNode(String id) throws IllegalStateException {
-        return PowerStreams.findOneOrNull(graphs().flatMap(ICjGraph::nodes).filter(n -> Objects.equals(n.id(), id)));
+    default @NonNull String effectiveBaseUri() {
+        return nonNullOrDefault(baseUri(), DEFAULT_BASE_URI);
+    }
+
+    default @Nullable ICjGraph findGraph(String id) {
+        return graphsAll().filter(g -> g.matchesId(this, id)).findFirst().orElse(null);
+    }
+
+    default @Nullable ICjNode findNode(@NonNull String id) throws IllegalStateException {
+        return nodesAll().filter(n -> n.matchesId(this, id)).findFirst().orElse(null);
     }
 
     /**
      * @return All nodes in the document, from all graphs and subgraphs.
      */
-    default Stream<ICjNode> nodes() {
-        return graphs().flatMap(ICjGraph::nodes);
+    default Stream<ICjNode> nodesAll() {
+        return graphsAll().flatMap(ICjGraph::nodes);
     }
 
     /**
@@ -65,5 +77,10 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk {
         Object jaJson = JaJson.parse(json);
         return JsonCompactFormatter.formatCompact(jaJson);
     }
+
+    default String uri(@NonNull String queryId) {
+        return CjUris.uri(effectiveBaseUri(), queryId);
+    }
+
 
 }

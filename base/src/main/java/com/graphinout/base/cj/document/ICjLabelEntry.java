@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
-public interface ICjLabelEntry extends ICjHasData {
+public interface ICjLabelEntry extends ICjHasData, ICjElement {
 
     default ICjLabelEntryMutable copyMutable() {
         CjLabelEntryElement copy = new CjLabelEntryElement();
@@ -26,26 +26,18 @@ public interface ICjLabelEntry extends ICjHasData {
     default void copyTo(ICjLabelEntryMutable entry) {
         entry.value(value());
         ifPresentAccept(language(), entry::language);
-        ifPresentAccept(data(), data -> entry.dataMutable(d -> d.setJsonValue(data.jsonValue())));
+        ifPresentAccept(data().jsonValue(), jsonValue -> entry.dataMutable(d -> d.setJsonValue(jsonValue)));
     }
-
-
-    @Nullable
-    ICjData data();
 
     @Override
     default Stream<ICjElement> directChildren() {
         return Stream.empty();
     }
 
-    @Nullable
-    String language();
+    @Nullable String language();
 
     default Map<String, Object> toJaJsonMap() {
-        return JaJson.createMap()
-                .putMaybe(CjConstants.LANGUAGE, language())
-                .putMaybe(CjConstants.VALUE, value())
-                .build();
+        return JaJson.createMap().putMaybe(CjConstants.LANGUAGE, language()).putMaybe(CjConstants.VALUE, value()).build();
     }
 
     /**

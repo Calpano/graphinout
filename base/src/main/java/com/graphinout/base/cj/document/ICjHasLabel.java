@@ -8,7 +8,7 @@ import java.util.List;
 
 import static java.util.Optional.ofNullable;
 
-public interface ICjHasLabel extends ICjElement {
+public interface ICjHasLabel {
 
     default void fireLabelMaybe(ICjWriter cjWriter) {
         ofNullable(label()).ifPresent(l -> l.fire(cjWriter));

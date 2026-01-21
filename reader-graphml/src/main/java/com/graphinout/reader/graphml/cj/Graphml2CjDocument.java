@@ -7,7 +7,6 @@ import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
 import com.graphinout.base.cj.document.ICjElementType;
-import com.graphinout.base.cj.document.ICjElement;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjGraphMutable;
@@ -82,7 +81,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
     private static final Logger log = getLogger(Graphml2CjDocument.class);
     /** doc-level */
     private final GraphmlSchema graphmlSchema = new GraphmlSchema();
-    private final PowerStackOnClasses<ICjElement> stack = PowerStackOnClasses.create();
+    private final PowerStackOnClasses<Object> stack = PowerStackOnClasses.create();
     private CjDocumentElement cjDoc;
 
     private static void copyCustomAttributes(IGraphmlElement graphmlElement, ICjHasDataMutable cj) {

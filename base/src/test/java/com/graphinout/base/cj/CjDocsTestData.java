@@ -208,6 +208,47 @@ public class CjDocsTestData {
         return cjDoc;
     }
 
+    /**
+     * All the different ways ids and uris can be mixed and matched: graph with or without baseUri,
+     * node with id/uri/blankNodeId.
+     */
+    public static ICjDocument idVsUri() {
+        ICjDocumentMutable cjDoc = new CjDocumentElement();
+        cjDoc.baseUri("doi:abc#");
+        cjDoc.addGraph(graph -> {
+            graph.id("g1-with"); // becomes https://example.com/g1-with
+            graph.baseUri("https://example.com/");
+            graph.addNode(node -> node.id("n1").addLabelWithoutLanguage("Node N1 in G1")); // becomes https://example.com/n1
+            graph.addNode(node -> node.id("https://example.com/n2").addLabelWithoutLanguage("Node N2 in G1"));
+            graph.addNode(node -> node.id("_:n3").addLabelWithoutLanguage("Node N3 in G1"));
+        });
+        cjDoc.addGraph(graph -> {
+            graph.id("g2-without");
+            graph.addNode(node -> node.id("doi:abc#n1").addLabelWithoutLanguage("Node N1 in G2")); // defaults to doi:abc-n1
+            graph.addNode(node -> node.id("n2").addLabelWithoutLanguage("Node N2 in G2"));
+            graph.addNode(node -> node.id("_:n4").addLabelWithoutLanguage("Node N4 in G2"));
+        });
+        cjDoc.addGraph(graph -> {
+            graph.id("g3-edges");
+            graph.addEdge(edge -> {
+                edge.addEndpointIncoming("n1"); // doi:abc-n1
+                edge.addEndpointOutgoing("n2"); // doi:abc-n2
+                edge.addEndpointUndirected("_:n3");
+            });
+            graph.addEdge(edge -> {
+                edge.addEndpointIncoming("https://example.com/n1"); // match
+                edge.addEndpointOutgoing("https://example.com/n2"); // match
+                edge.addEndpointUndirected("_:n4");
+            });
+            graph.addEdge(edge -> {
+                edge.addEndpointIncoming("doi:abc#n1"); // doi:abc-n1
+                edge.addEndpointOutgoing("doi:abc#n2"); // doi:abc-n2
+                edge.addEndpointUndirected("_:n5");
+            });
+        });
+        return cjDoc;
+    }
+
 
     // ========================================================================
     // Test Plan Section 5: Graph Nesting Tests
@@ -403,7 +444,8 @@ public class CjDocsTestData {
                 new TestDoc("selfLoopEdge", selfLoopEdge()),//
                 new TestDoc("twoEdgesSameNodes", twoEdgesSameNodes()),//
                 new TestDoc("twoNodesNoEdge", twoNodesNoEdge()),//
-                new TestDoc("nodeWithTypes", nodeWithTypes())//
+                new TestDoc("nodeWithTypes", nodeWithTypes()),//
+                new TestDoc("ids and uris", idVsUri())//
         );
     }
 

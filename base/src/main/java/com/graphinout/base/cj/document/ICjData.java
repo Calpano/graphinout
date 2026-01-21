@@ -78,12 +78,22 @@ public interface ICjData extends ICjElement {
         return has(IJsonContainerNavigationStep.pathOf(propertyKey));
     }
 
+    default @Nullable ICjData ifNotEmpty() {
+        if (isNotEmpty()) return this;
+        return null;
+    }
+
     /** true if null or json:NULL or empty String or empty JSON container */
     default boolean isEmpty() {
         IJsonValue v = jsonValue();
         return v == null || v.isNull() //
                 || (v.isContainer() && v.asContainer().isEmpty()) //
                 || (v.isString() && v.asString().isEmpty());
+    }
+
+    default boolean isNotEmpty() {
+        // JsonNull is different
+        return jsonValue() != null;
     }
 
     /**

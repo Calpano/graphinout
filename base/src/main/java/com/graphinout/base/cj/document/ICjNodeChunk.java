@@ -2,6 +2,7 @@ package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.writer.ICjWriter;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -9,7 +10,6 @@ import java.util.stream.Stream;
  * below 50 MB.
  */
 public interface ICjNodeChunk extends ICjHasId, ICjHasData, ICjHasLabel, ICjHasPorts {
-
 
     default void fireStartChunk(ICjWriter cjWriter) {
         cjWriter.nodeStart();
@@ -20,6 +20,10 @@ public interface ICjNodeChunk extends ICjHasId, ICjHasData, ICjHasLabel, ICjHasP
         cjWriter.list(types().toList(), CjType.ArrayOfNodeTypes, (type, writer) -> writer.nodeType(type));
         cjWriter.list(ports().toList(), CjType.ArrayOfPorts, ICjPort::fire);
         fireDataMaybe(cjWriter);
+    }
+
+    default ICjLabel label_() {
+        return Objects.requireNonNull(label());
     }
 
     /**

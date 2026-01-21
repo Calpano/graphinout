@@ -20,7 +20,9 @@ public class CjDocuments {
         CjDataSchema schema = new CjDataSchema();
         document.allElements().forEach(elem -> {
             if (elem instanceof ICjHasData hasData) {
-                ifPresentAccept(hasData.data(), data -> schema.index(elem.cjType(), data));
+                if(hasData.data().isNotEmpty()) {
+                    schema.index(elem.cjType(), hasData.data());
+                }
             }
         });
         return schema;

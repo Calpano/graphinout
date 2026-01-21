@@ -5,9 +5,9 @@ import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
-import com.graphinout.base.cj.document.impl.CjEdgeElement;
-import com.graphinout.base.cj.document.impl.CjGraphElement;
-import com.graphinout.base.cj.document.impl.CjNodeElement;
+import com.graphinout.base.cj.document.impl.CjEdgeChunk;
+import com.graphinout.base.cj.document.impl.CjGraphChunk;
+import com.graphinout.base.cj.document.impl.CjNodeChunk;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.value.java.JavaJsonFactory;
 
@@ -18,15 +18,15 @@ public class CjFactory implements ICjFactory {
     }
 
     public ICjEdgeChunkMutable createEdgeChunk() {
-        return new CjEdgeElement();
+        return new CjEdgeChunk();
     }
 
     public ICjGraphChunkMutable createGraphChunk() {
-        return new CjGraphElement();
+        return new CjGraphChunk();
     }
 
     public ICjNodeChunkMutable createNodeChunk() {
-        return new CjNodeElement();
+        return new CjNodeChunk();
     }
 
     @Override

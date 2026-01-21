@@ -43,8 +43,8 @@ class RdfReaderTest {
 
         // Verify document structure
         assertNotNull(cjDoc.theGraph());
-        assertTrue(cjDoc.nodes().count() >= 2, "Should have at least 2 nodes");
-        assertTrue(cjDoc.edges().count() >= 1, "Should have at least 1 edge");
+        assertTrue(cjDoc.nodesAll().count() >= 2, "Should have at least 2 nodes");
+        assertTrue(cjDoc.edgesAll().count() >= 1, "Should have at least 1 edge");
     }
 
     @Test
@@ -67,7 +67,7 @@ class RdfReaderTest {
         log.info("CJ JSON: " + CjDocuments.toJsonString(cjDoc));
 
         assertNotNull(cjDoc.theGraph());
-        assertTrue(cjDoc.nodes().count() >= 2, "Should have at least 2 nodes");
-        assertTrue(cjDoc.edges().count() >= 1, "Should have at least 1 edge");
+        assertTrue(cjDoc.nodesAll().count() >= 2, "Should have at least 2 nodes");
+        assertTrue(cjDoc.edgesAll().count() >= 1, "Should have at least 1 edge");
     }
 }

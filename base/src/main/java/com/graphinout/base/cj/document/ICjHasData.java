@@ -2,29 +2,37 @@ package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+
 import java.util.function.Consumer;
 
-import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
+public interface ICjHasData {
 
-public interface ICjHasData extends ICjElement {
+    /** @return this as {@link ICjElement} or throws */
+    default @NonNull ICjElement asCjElement() throws ClassCastException {
+        return (ICjElement) this;
+    }
 
     /**
      * Read existing data. To write, you need an {@link ICjHasDataMutable}.
+     *
      * @return read-only data or null
      */
-    @Nullable
+    @NonNull
     ICjData data();
 
     /**
      * @param consumer receives only if non-null
      */
     default void data(Consumer<ICjData> consumer) {
-        ICjData data = data();
-        if (data != null) {
-            consumer.accept(data);
-        }
+        consumer.accept(data());
+    }
+
+    default @Nullable ICjData dataIfNotEmpty() {
+        if (data().isEmpty())
+            return null;
+        return data();
     }
 
     default void fireDataMaybe(ICjWriter cjWriter) {
@@ -37,19 +45,16 @@ public interface ICjHasData extends ICjElement {
 
     /** @return the current data JSON contents or null */
     default @Nullable IJsonValue jsonValue() {
-        return mapOrNull(data(), ICjData::jsonValue);
+        return data().jsonValue();
     }
 
     /**
      * @param consumer is called if data is present.
      */
     default void onDataValue(Consumer<IJsonValue> consumer) {
-        ICjData data = data();
-        if (data != null) {
-            IJsonValue value = data.jsonValue();
-            if (value != null) {
-                consumer.accept(value);
-            }
+        IJsonValue value = data().jsonValue();
+        if (value != null) {
+            consumer.accept(value);
         }
     }
 

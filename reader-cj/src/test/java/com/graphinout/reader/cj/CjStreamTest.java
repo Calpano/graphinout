@@ -26,8 +26,8 @@ public class CjStreamTest {
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @Description("Test JSON->CJ->JSON (all)")
     void test_Json_Cj(String displayName, Resource resource) throws IOException {
-        String json = resource.getContentAsString();
-        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", json);
+        String json_in = resource.getContentAsString();
+        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", json_in);
 
         // JSON -> CJ doc
         CjWriter2CjDocumentWriter cj2ElementsWriter = new CjWriter2CjDocumentWriter();
@@ -44,8 +44,9 @@ public class CjStreamTest {
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
         ICjStream cjStream = new CjStream2CjWriter(cj2JsonWriter);
         CjDocument2CjStream.toCjStream(cjDoc, cjStream);
+        String json_out = json2StringWriter.jsonString();
 
-        CjAssert.xAssertThatIsSameCj(json2StringWriter.jsonString(), json, null);
+        CjAssert.xAssertThatIsSameCj(json_out, json_in, null);
     }
 
 }

@@ -1,8 +1,9 @@
 package com.graphinout.reader.rdf;
 
+import com.graphinout.base.cj.document.CjUris;
+import com.graphinout.base.cj.document.ICjCoreElement;
 import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocument;
-import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjEdge;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
@@ -17,6 +18,7 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -27,10 +29,10 @@ import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefau
 public class CjDoc2RdfModel {
 
     public static void cjDoc2Model(ICjDocument cjDoc, Model rdfModel) {
-        cjDoc.graphs().forEach(cjGraph -> cjGraph2rdfModel(cjDoc, cjGraph, rdfModel));
+        cjDoc.graphs().forEach(cjGraph -> cjGraph2rdfModel(cjGraph, rdfModel));
     }
 
-    private static void cjEdge2rdfModel(ICjDocument cjDoc, ICjEdge cjEdge, Model rdfModel) {
+    private static void cjEdge2rdfModel(String effectiveBaseUri, ICjEdge cjEdge, Model rdfModel) {
         List<ICjEndpoint> endpoints = cjEdge.endpoints().toList();
         List<ICjEndpoint> sources = cjEdge.sources();
         List<ICjEndpoint> targets = cjEdge.targets();
@@ -68,8 +70,8 @@ public class CjDoc2RdfModel {
             //   { "node": "TTT", "type": "TTT_TYPE",  "direction": "out" }
             // ] }
             // Triple: (SSS, EDGE_TYPE, TTT)
-            Resource subject = cjNodeId2rdfResource(cjDoc, sourceEndpoint.node(), rdfModel);
-            Resource object = cjNodeId2rdfResource(cjDoc, targetEndpoint.node(), rdfModel);
+            Resource subject = cjNodeId2rdfResource(effectiveBaseUri, sourceEndpoint.node(), rdfModel);
+            Resource object = cjNodeId2rdfResource(effectiveBaseUri, targetEndpoint.node(), rdfModel);
             {
                 Property property = rdfModel.getProperty(nonNullOrDefault(edgeType, RdfCj.CjInRdf.IS_RELATED));
                 rdfModel.add(subject, property, object);
@@ -88,11 +90,11 @@ public class CjDoc2RdfModel {
         } else {
             // Cases: (A.in B.in), (A.out B.out) or != 2 endpoints
             // reify edge as resource and attach endpoints to it
-            Resource edgeResource = cjNodeId2rdfResource(cjDoc, cjEdge.id(), rdfModel);
+            Resource edgeResource = cjElement2rdfResource(effectiveBaseUri, cjEdge, rdfModel);
             rdfModel.add(edgeResource, RDF.type, rdfModel.createResource(RdfCj.CjInRdf.CJ_EDGE));
             endpoints.forEach(ep -> {
                 String pUri = RdfCj.CjInRdf.directionProperty(ep.direction());
-                rdfModel.add(edgeResource, rdfModel.createProperty(pUri), cjNodeId2rdfResource(cjDoc, ep.node(), rdfModel));
+                rdfModel.add(edgeResource, rdfModel.createProperty(pUri), cjNodeId2rdfResource(effectiveBaseUri, ep.node(), rdfModel));
             });
 
             // Generating triples from induced bi-edges
@@ -115,22 +117,34 @@ public class CjDoc2RdfModel {
                     } else {
                         predicateUri = RdfCj.CjInRdf.IS_RELATED;
                     }
-                    Resource subject = cjNodeId2rdfResource(cjDoc, ep1.node(), rdfModel);
+                    Resource subject = cjNodeId2rdfResource(effectiveBaseUri, ep1.node(), rdfModel);
                     Property predicate = rdfModel.createProperty(predicateUri);
-                    Resource object = cjNodeId2rdfResource(cjDoc, ep2.node(), rdfModel);
+                    Resource object = cjNodeId2rdfResource(effectiveBaseUri, ep2.node(), rdfModel);
                     rdfModel.add(subject, predicate, object);
                 }
             }
         }
     }
 
-    public static void cjGraph2rdfModel(ICjDocument cjDoc, ICjGraph cjGraph, Model rdfModel) {
-        cjGraph.nodes().forEach(cjNode -> cjNode2rdfModel(cjDoc, cjNode, rdfModel));
-        cjGraph.edges().forEach(cjEdge -> cjEdge2rdfModel(cjDoc, cjEdge, rdfModel));
+    private static Resource cjElement2rdfResource(String baseUri, @NonNull ICjCoreElement cjCoreElement, Model rdfModel) {
+        String uri = cjCoreElement.uri();
+        if (uri.startsWith(CjUris.BLANK_NODE_PSEUDO_SCHEME)) {
+            // extract stable blank node id
+            return rdfModel.createResource(new AnonId(uri.substring(CjUris.BLANK_NODE_PSEUDO_SCHEME.length())));
+        }
+        // Regular node
+        return rdfModel.createResource(uri);
     }
 
-    private static void cjNode2rdfModel(ICjDocument cjDoc, ICjNode cjNode, Model rdfModel) {
-        Resource rdfSubject = cjNodeId2rdfResource(cjDoc, cjNode.id(), rdfModel);
+    public static void cjGraph2rdfModel(ICjGraph cjGraph, Model rdfModel) {
+        String effectiveBaseUri = cjGraph.effectiveBaseUri();
+        ;
+        cjGraph.nodes().forEach(cjNode -> cjNode2rdfModel(effectiveBaseUri, cjNode, rdfModel));
+        cjGraph.edges().forEach(cjEdge -> cjEdge2rdfModel(effectiveBaseUri, cjEdge, rdfModel));
+    }
+
+    private static void cjNode2rdfModel(String effectiveBaseUri, ICjNode cjNode, Model rdfModel) {
+        Resource rdfSubject = cjElement2rdfResource(cjNode.effectiveBaseUri(), cjNode, rdfModel);
         rdfModel.add(rdfSubject, RDF.type, RDFS.Resource);
 
         // Add node types
@@ -167,22 +181,23 @@ public class CjDoc2RdfModel {
         }
     }
 
-    private static Resource cjNodeId2rdfResource(ICjDocumentChunk cjDoc, @Nullable String cjNodeId, Model rdfModel) {
-        String uri = cjDoc.asUri(cjNodeId);
-        // Blank node
-        if (uri == null) {
+    // FIXME really nullable? no
+    private static Resource cjNodeId2rdfResource(String baseUri, @Nullable String cjNodeId, Model rdfModel) {
+        if (cjNodeId == null) {
+            // Blank node
             return rdfModel.createResource(AnonId.create());
-        } else if (uri.startsWith(RdfCj.BLANK_NODE_PSEUDO_SCHEME)) {
+        }
+        String uri = CjUris.uri(baseUri, cjNodeId);
+        if (uri.startsWith(CjUris.BLANK_NODE_PSEUDO_SCHEME)) {
             // extract stable blank node id
-            return rdfModel.createResource(new AnonId(uri.substring(RdfCj.BLANK_NODE_PSEUDO_SCHEME.length())));
+            return rdfModel.createResource(new AnonId(uri.substring(CjUris.BLANK_NODE_PSEUDO_SCHEME.length())));
         }
         // Regular node
         return rdfModel.createResource(cjNodeId);
     }
 
-
     private static ICjNode findNode(ICjDocument cjDoc, String nodeId) {
-        return cjDoc.nodes().filter(n -> nodeId.equals(n.id())).findFirst().orElse(null);
+        return cjDoc.nodesAll().filter(n -> nodeId.equals(n.id())).findFirst().orElse(null);
     }
 
     private static void jsonObject2rdfModel(Resource rdfSubject, IJsonObject dataObject, Model rdfModel) {

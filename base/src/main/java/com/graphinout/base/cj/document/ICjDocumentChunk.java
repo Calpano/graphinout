@@ -5,7 +5,6 @@ import com.graphinout.base.cj.writer.ICjWriter;
 import org.jspecify.annotations.Nullable;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
-import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
 
 
 /**
@@ -26,19 +25,9 @@ public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
         if (index == -1) {
             return uri;
         }
-        return uri.substring(index+baseUri.length());
+        return uri.substring(index + baseUri.length());
     }
 
-    default @Nullable String asUri(@Nullable String id) {
-        if (id == null) {
-            return null;
-        }
-        if (id.contains(":")) {
-            return id;
-        } else {
-            return uri(id);
-        }
-    }
 
     @Nullable String baseUri();
 
@@ -62,21 +51,5 @@ public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
         fireDataMaybe(cjWriter);
     }
 
-    /**
-     * Combine baseUri with localName to a full URI. If the baseUri ends with a slash, concatenate. Otherwise, insert a
-     * hash mark. This behavior reflects the typical RDF vocabularies.
-     * <p>
-     * TODO add this to CJ spec
-     *
-     * @param localName the local name, should not start with slash or hash mark, but an alpha numeric
-     * @return a URI composed of baseUri and localName
-     */
-    default String uri(String localName) {
-        String base = nonNullOrDefault(baseUri(), "");
-        if (!base.endsWith("/")) {
-            base += "#";
-        }
-        return base + localName;
-    }
 
 }

@@ -10,19 +10,19 @@ import java.util.stream.Stream;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
-public interface ICjEndpoint extends ICjHasData {
+public interface ICjEndpoint extends ICjHasData, ICjElement {
 
     default void copyTo(ICjEndpointMutable endpoint) {
         endpoint.node(node());
         endpoint.direction(direction());
         ifPresentAccept(port(), endpoint::port);
         ifPresentAccept(type(), endpoint::type);
-        ifPresentAccept(data(), ICjData::jsonValue, jsonValue -> endpoint.dataMutable(d -> d.setJsonValue(jsonValue)));
+        ifPresentAccept(data().jsonValue(), jsonValue -> endpoint.dataMutable(d -> d.setJsonValue(jsonValue)));
     }
 
     @Override
     default Stream<ICjElement> directChildren() {
-        return Stream.of(data()).filter(Objects::nonNull).map(x -> x);
+        return Stream.of(data()).map(x -> x);
     }
 
     CjDirection direction();

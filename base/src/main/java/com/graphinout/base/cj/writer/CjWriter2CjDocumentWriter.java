@@ -1,15 +1,14 @@
 package com.graphinout.base.cj.writer;
 
-import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
+import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjDataMutable;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentMetaMutable;
 import com.graphinout.base.cj.document.ICjDocumentMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
-import com.graphinout.base.cj.document.ICjElement;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjEndpointMutable;
 import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.document.ICjHasDataMutable;
@@ -22,13 +21,13 @@ import com.graphinout.base.cj.document.ICjLabelMutable;
 import com.graphinout.base.cj.document.ICjNodeMutable;
 import com.graphinout.base.cj.document.ICjPortMutable;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
+import com.graphinout.foundation.pure.collections.PowerStackOnClasses;
 import com.graphinout.foundation.pure.functional.Nullables;
 import com.graphinout.foundation.pure.json.JsonException;
-import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-import com.graphinout.foundation.pure.collections.PowerStackOnClasses;
-
+import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
 import org.jspecify.annotations.Nullable;
+
 import java.util.function.Consumer;
 
 /**
@@ -36,7 +35,7 @@ import java.util.function.Consumer;
  */
 public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements ICjWriter {
 
-    private final PowerStackOnClasses<ICjElement> stack = PowerStackOnClasses.create();
+    private final PowerStackOnClasses<Object> stack = PowerStackOnClasses.create();
     private final @Nullable Consumer<ICjDocument> onDone;
     private ICjDocument resultDoc;
 
@@ -191,13 +190,6 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
     }
 
     @Override
-    public void nodeStart() {
-        stack.peek(ICjGraphMutable.class).addNode(stack::push);
-    }
-
-
-
-    @Override
     public void language(String language) {
         stack.peek(ICjLabelEntryMutable.class).language(language);
     }
@@ -218,6 +210,11 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
     @Override
     public void nodeId(String nodeId) {
         stack.peek(ICjEndpointMutable.class).node(nodeId);
+    }
+
+    @Override
+    public void nodeStart() {
+        stack.peek(ICjGraphMutable.class).addNode(stack::push);
     }
 
     @Override

@@ -7,7 +7,7 @@ import org.jspecify.annotations.Nullable;
  * The part of a graph which can be sent in one go. Memory requirements for all data in this chunk are expected to be
  * below 50 MB.
  */
-public interface ICjGraphChunk extends ICjHasId, ICjHasData, ICjHasLabel {
+public interface ICjGraphChunk extends ICjHasId,  ICjHasData, ICjHasLabel {
 
     /**
      * Base URI for resolving relative URIs within this graph (CJ 7.0.0)

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://j-s-o-n.org/connected-json/7.0.0/schema",
+  "baseUri": "https://example.org/doc/",
+  "graphs": [
+    {
+      "baseUri": "https://example.org/g1/",
+      "nodes": [
+        {
+          "id": "g1-n1",
+          "graphs": [
+            {
+              "baseUri": "https://example.org/g1-n1-g1/",
+              "nodes": [
+                {
+                  "id": "g1-n1-g1-n1"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "g1-e1",
+          "endpoints": [
+            { "node": "g1-n1", "direction": "in" },
+            { "node": "g1-n1-g1-n1", "direction": "out" }
+          ],
+          "graphs": [
+            {
+              "baseUri": "https://example.org/g1-e1-g1/",
+              "nodes": [
+                {
+                  "id": "g1-e1-g1-n1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

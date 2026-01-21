@@ -1,6 +1,7 @@
 package com.graphinout.reader.rdf;
 
 import com.graphinout.base.cj.CjConstants;
+import com.graphinout.base.cj.document.CjUris;
 import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjDocumentMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
@@ -45,7 +46,7 @@ public class RdfModel2CjDoc {
         Resource subject = stmt.getSubject();
         String subjectUri;
         if (subject.isAnon()) {
-            subjectUri = RdfCj.BLANK_NODE_PSEUDO_SCHEME + subject.getId().getLabelString();
+            subjectUri = CjUris.BLANK_NODE_PSEUDO_SCHEME + subject.getId().getLabelString();
         } else {
             subjectUri = subject.getURI();
         }
@@ -61,7 +62,7 @@ public class RdfModel2CjDoc {
                 objectId = cjDoc.asId(object.asResource().getURI());
             } else {
                 assert object.isAnon();
-                objectId = RdfCj.BLANK_NODE_PSEUDO_SCHEME + object.asResource().getId().getLabelString();
+                objectId = CjUris.BLANK_NODE_PSEUDO_SCHEME + object.asResource().getId().getLabelString();
             }
             ICjEdgeMutable cjEdge = cjGraph.addBiEdge(subjectId, objectId);
             cjEdge.edgeType(predicateId);

@@ -40,6 +40,4 @@ public class RdfCj {
 
     }
 
-    public static final String BLANK_NODE_PSEUDO_SCHEME = "_:";
-
 }

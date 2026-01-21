@@ -1,76 +1,35 @@
 package com.graphinout.base.cj.document.impl;
 
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
-import com.graphinout.base.cj.document.ICjElementType;
-import com.graphinout.base.cj.document.ICjEndpoint;
-import com.graphinout.base.cj.document.ICjEndpointMutable;
+import com.graphinout.base.cj.document.ICjElement;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.writer.ICjWriter;
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMutable {
+public class CjEdgeElement extends CjEdgeChunk implements ICjEdgeMutable {
 
-    private final List<ICjEndpoint> endpoints = new ArrayList<>();
+    private final ICjGraph parent;
     private final List<CjGraphElement> graphs = new ArrayList<>();
-    private @Nullable String id;
-    private ICjElementType edgeType;
 
-    @Override
-    public CjEdgeElement addEndpoint(Consumer<ICjEndpointMutable> endpoint) {
-        CjEndpointElement endpointElement = new CjEndpointElement();
-        endpoint.accept(endpointElement);
-        assert endpointElement.node() != null : "Endpoint must have a node";
-        endpoints.add(endpointElement);
-        return this;
-    }
+    public CjEdgeElement(ICjGraph parent) {this.parent = parent;}
 
     @Override
     public void addGraph(Consumer<ICjGraphMutable> graph) {
-        CjGraphElement graphElement = new CjGraphElement();
+        CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
     }
 
     @Override
-    public void attachEndpoint(ICjEndpoint endpoint) {
-        assert endpoint.node() != null : "Endpoint must have a node";
-        endpoints.add(endpoint);
-    }
-
-    @Override
     public CjType cjType() {
         return CjType.Edge;
-    }
-
-    @Override
-    public void createEndpoint(Consumer<ICjEndpointMutable> endpoint) {
-        CjEndpointElement endpointElement = new CjEndpointElement();
-        endpoint.accept(endpointElement);
-    }
-
-    @Override
-    public ICjElementType edgeType() {
-        return edgeType;
-    }
-
-    @Override
-    public ICjEdgeChunkMutable edgeType(ICjElementType edgeType) {
-        this.edgeType = edgeType;
-        return this;
-    }
-
-    @Override
-    public Stream<ICjEndpoint> endpoints() {
-        return endpoints.stream().sorted(Comparator.comparing(ICjEndpoint::node));
     }
 
     @Override
@@ -80,21 +39,22 @@ public class CjEdgeElement extends CjHasDataAndLabelElement implements ICjEdgeMu
         cjWriter.edgeEnd();
     }
 
+    @SuppressWarnings("RedundantCast")
     @Override
     public Stream<ICjGraph> graphs() {
         return graphs.stream().map(x -> (ICjGraph) x);
     }
 
-    @Nullable
+
     @Override
-    public String id() {
-        return id;
+    public int indexOf(ICjGraph subGraph) {
+        //noinspection SuspiciousMethodCalls
+        return graphs.indexOf(subGraph);
     }
 
     @Override
-    public CjEdgeElement id(@Nullable String id) {
-        this.id = id;
-        return this;
+    public @NonNull ICjElement parent() {
+        return parent;
     }
 
 }

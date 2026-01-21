@@ -2,7 +2,7 @@ package com.graphinout.base.cj.document;
 
 import org.jspecify.annotations.Nullable;
 
-public interface ICjEndpointMutable extends ICjElement, ICjEndpoint, ICjHasDataMutable {
+public interface ICjEndpointMutable extends ICjEndpoint, ICjHasDataMutable {
 
     ICjEndpointMutable direction(CjDirection direction);
 

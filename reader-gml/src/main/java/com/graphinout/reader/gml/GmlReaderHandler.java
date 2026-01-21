@@ -1,19 +1,19 @@
 package com.graphinout.reader.gml;
 
 import com.graphinout.base.cj.document.CjDirection;
-import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjChunkMutable;
 import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
+import com.graphinout.base.cj.document.ICjGraphChunk;
 import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-
 import org.jspecify.annotations.NonNull;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.IdentityHashMap;
@@ -42,20 +42,20 @@ public class GmlReaderHandler implements IGmlHandler {
     @Override
     public void close() {
         Object closedChunk = stack.pop();
-
         if (closedChunk instanceof ICjChunkMutable chunk) {
-            switch (chunk.cjType()) {
-                case CjType.RootObject -> throw new IllegalStateException();
-                case CjType.Graph -> {
-                    ICjGraphChunkMutable graph = (ICjGraphChunkMutable) chunk;
+            switch (chunk) {
+                case ICjDocumentChunk doc -> throw new IllegalStateException();
+                case ICjGraphChunk graph -> {
                     if (startedGraphs.getOrDefault(graph, Boolean.FALSE) == Boolean.FALSE) {
                         writer.graphStart(graph);
                     }
                     writer.graphEnd();
                     startedGraphs.remove(graph);
                 }
-                case CjType.Node -> writer.node((ICjNodeChunkMutable) chunk);
-                case CjType.Edge -> writer.edge((ICjEdgeChunkMutable) chunk);
+                case ICjNodeChunkMutable node -> writer.node(node);
+                case ICjEdgeChunkMutable edge -> writer.edge(edge);
+                default -> {
+                }
             }
         } else {
             assert closedChunk instanceof IJsonObjectMutable;
@@ -131,22 +131,19 @@ public class GmlReaderHandler implements IGmlHandler {
         Object current = stack.peek();
         if (current instanceof ICjChunkMutable chunk) {
             // "key value" on doc/graph/node/edge
-            switch (chunk.cjType()) {
-                case CjType.RootObject -> {
+            switch (chunk) {
+                case ICjDocumentChunk doc -> {
                     assert lastKey != null;
-                    ICjDocumentChunkMutable doc = (ICjDocumentChunkMutable) chunk;
                     final IJsonValue jsonVal = toJsonValue(writer.jsonFactory(), value);
                     doc.dataMutable(d -> d.add(lastKey, jsonVal));
                 }
-                case CjType.Graph -> {
+                case ICjGraphChunkMutable graph -> {
                     assert lastKey != null;
-                    ICjGraphChunkMutable graph = (ICjGraphChunkMutable) chunk;
                     final IJsonValue jsonVal = toJsonValue(writer.jsonFactory(), value);
                     graph.dataMutable(d -> d.add(lastKey, jsonVal));
                 }
-                case CjType.Node -> {
+                case ICjNodeChunkMutable node -> {
                     assert lastKey != null;
-                    ICjNodeChunkMutable node = (ICjNodeChunkMutable) chunk;
                     if (ID.equalsIgnoreCase(lastKey)) {
                         node.id(unquotedValue);
                     } else if (LABEL.equalsIgnoreCase(lastKey)) {
@@ -156,9 +153,8 @@ public class GmlReaderHandler implements IGmlHandler {
                         node.dataMutable(d -> d.add(lastKey, jsonVal));
                     }
                 }
-                case CjType.Edge -> {
+                case ICjEdgeChunkMutable edge -> {
                     assert lastKey != null;
-                    ICjEdgeChunkMutable edge = (ICjEdgeChunkMutable) chunk;
                     if (Gml.SOURCE.equalsIgnoreCase(lastKey)) {
                         edge.addEndpoint(ep -> ep.node(unquotedValue).direction(CjDirection.IN));
                     } else if (Gml.TARGET.equalsIgnoreCase(lastKey)) {

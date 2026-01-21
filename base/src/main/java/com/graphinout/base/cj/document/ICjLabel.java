@@ -94,7 +94,7 @@ public interface ICjLabel extends ICjElement {
 
     default Object toJaJsonMap() {
         if (entries().count() == 1) {
-            ICjLabelEntry firstEntry = entries().findFirst().get();
+            @SuppressWarnings("OptionalGetWithoutIsPresent") ICjLabelEntry firstEntry = entries().findFirst().get();
             if (firstEntry.language() == null) {
                 return firstEntry.value();
             }

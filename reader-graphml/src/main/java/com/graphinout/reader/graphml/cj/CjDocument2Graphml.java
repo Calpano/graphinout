@@ -13,10 +13,10 @@ import com.graphinout.base.cj.document.ICjLabel;
 import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.base.cj.document.ICjPort;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
-import com.graphinout.foundation.pure.json.document.IJsonValue;
-import com.graphinout.foundation.pure.json.value.java.JavaJsonObject;
 import com.graphinout.foundation.pure.functional.Nullables;
 import com.graphinout.foundation.pure.functional.ThrowingConsumer;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.value.java.JavaJsonObject;
 import com.graphinout.foundation.pure.stream.PowerStreams;
 import com.graphinout.foundation.pure.xml.XML;
 import com.graphinout.foundation.pure.xml.XmlFragmentString;
@@ -132,7 +132,7 @@ public class CjDocument2Graphml {
         this.graphmlSchema = CjData2GraphmlKeyData.buildGraphmlSchema(cjDoc);
 
         boolean usesCjData = PowerStreams.filterMap(cjDoc.allElements(), ICjHasData.class) //
-                .map(ICjHasData::data).anyMatch(Objects::nonNull);
+                .map(ICjHasData::dataIfNotEmpty).anyMatch(Objects::nonNull);
         if (!usesCjData) {
             graphmlSchema.removeKeyById(CjGraphmlMapping.GraphmlDataElement.CjJsonData.attrName);
         }
@@ -351,9 +351,7 @@ public class CjDocument2Graphml {
 
     /** Write CJ .data to GraphMl {@code <data>} */
     private void writeData_Json(ICjHasData cjHasData, ThrowingConsumer<IGraphmlData, IOException> graphmlDataConsumer) throws IOException {
-        ICjData data = cjHasData.data();
-        if (data == null) return;
-        IJsonValue value = data.jsonValue();
+        IJsonValue value = cjHasData.data().jsonValue();
         if (value == null) return;
 
         if (value.isPrimitive() || value.isArray()) {
@@ -372,7 +370,7 @@ public class CjDocument2Graphml {
             // write as individual properties
             mutableObject.forEach((propertyKey, val) -> //
             {
-                IGraphmlKey graphmlKey = graphmlSchema.findKeyByForAndAttrName(graphmlKeyForType(cjHasData.cjType()), propertyKey);
+                IGraphmlKey graphmlKey = graphmlSchema.findKeyByForAndAttrName(graphmlKeyForType(cjHasData.asCjElement().cjType()), propertyKey);
                 assert graphmlKey != null : "no key found for " + propertyKey + " in " + graphmlSchema;
                 GraphmlData graphmlData = toGraphmlData(graphmlKey, val);
 

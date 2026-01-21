@@ -1,6 +1,6 @@
 package com.graphinout.base.cj.document;
 
-import com.graphinout.base.cj.document.impl.CjEdgeElement;
+import com.graphinout.base.cj.document.impl.CjEdgeChunk;
 import com.graphinout.base.cj.writer.ICjWriter;
 import org.jspecify.annotations.Nullable;
 
@@ -15,10 +15,10 @@ import static java.util.Optional.ofNullable;
  * The part of a CJ edge which can be sent in one go. Memory requirements for all data in this chunk are expected to be
  * below 50 MB.
  */
-public interface ICjEdgeChunk extends ICjHasData, ICjHasId, ICjHasLabel {
+public interface ICjEdgeChunk extends ICjHasId, ICjHasData, ICjHasLabel {
 
     default ICjEdgeChunkMutable copyMutable() {
-        CjEdgeElement copy = new CjEdgeElement();
+        CjEdgeChunk copy = new CjEdgeChunk();
         copyTo(copy);
         return copy;
     }
@@ -30,8 +30,7 @@ public interface ICjEdgeChunk extends ICjHasData, ICjHasId, ICjHasLabel {
         ifPresentAccept(edgeType(), edge::edgeType);
         endpoints().forEach(endpoint -> edge.addEndpoint(endpoint::copyTo));
 
-        ifPresentAccept(data(), ICjData::jsonValue, jsonValue -> edge.dataMutable(d -> d.setJsonValue(jsonValue)));
-
+        ifPresentAccept(data().jsonValue(), jsonValue -> edge.dataMutable(d -> d.setJsonValue(jsonValue)));
     }
 
     @Nullable ICjElementType edgeType();
@@ -82,12 +81,12 @@ public interface ICjEdgeChunk extends ICjHasData, ICjHasId, ICjHasLabel {
         return endpoints().filter(ICjEndpoint::isTarget).toList();
     }
 
-    default List<ICjEndpoint> undirectedEndpoints() {
-        return endpoints().filter(ICjEndpoint::isUndirected).toList();
-    }
-
     default @Nullable String type() {
         return mapOrNull(edgeType(), ICjElementType::type);
+    }
+
+    default List<ICjEndpoint> undirectedEndpoints() {
+        return endpoints().filter(ICjEndpoint::isUndirected).toList();
     }
 
 }

@@ -3,6 +3,7 @@ package com.graphinout.base.cj.document;
 import com.graphinout.base.cj.data.CjDataProperty;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonXmlString;
+import org.jspecify.annotations.NonNull;
 
 import java.util.function.Consumer;
 
@@ -19,7 +20,7 @@ public interface ICjHasDataMutable extends ICjHasData {
     }
 
     @Override
-    ICjDataMutable data();
+    @NonNull ICjDataMutable data();
 
     /**
      * If an {@link ICjDataMutable} was created (none existed) it is auto-aded to the CJ entity, if it is not empty.

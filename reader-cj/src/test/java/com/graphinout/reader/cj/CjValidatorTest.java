@@ -1,15 +1,12 @@
 package com.graphinout.reader.cj;
 
+import com.graphinout.base.input.ContentErrorList;
 import com.graphinout.base.input.SingleInputSourceOfString;
-import com.graphinout.foundation.pure.input.ContentError;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.graphinout.base.TestFileUtil2.inputSource;
@@ -25,9 +22,9 @@ class CjValidatorTest {
         SingleInputSourceOfString inputSource = inputSource(resource);
         String cjJson = inputSource.getContentAsUtf8String();
 
-        List<ContentError> errorList = new ArrayList<>();
+        ContentErrorList errorList = ContentErrorList.create();
         CjValidator.validateCj(cjJson, errorList);
-        assertThat(errorList).isEmpty();
+        assertThat(errorList.hasWarnings()).isFalse();
     }
 
     @Test

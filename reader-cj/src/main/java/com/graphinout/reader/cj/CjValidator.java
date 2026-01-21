@@ -4,6 +4,7 @@ package com.graphinout.reader.cj;
 import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
+import com.graphinout.base.input.ContentErrorList;
 import com.graphinout.base.json.JsonSchemaValidator;
 import com.graphinout.foundation.pure.collections.jajson.JsonParser;
 import com.graphinout.foundation.pure.input.ContentError;
@@ -12,8 +13,6 @@ import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import com.graphinout.foundation.pure.json.writer.impl.ValidatingJsonWriter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
@@ -58,7 +57,7 @@ public class CjValidator {
         return true;
     }
 
-    public static void validateCj(String cjJson, List<ContentError> errors) {
+    public static void validateCj(String cjJson, ContentErrorList errors) {
         validateJson(cjJson, errors);
         if (!errors.isEmpty()) return;
 
@@ -78,15 +77,15 @@ public class CjValidator {
      * @param cjJson
      * @param errors
      */
-    public static void validateCjReferences(String cjJson, List<ContentError> errors) {
+    public static void validateCjReferences(String cjJson, ContentErrorList errors) {
         try {
             ICjDocument cjDoc = CjDocuments.parseCjJsonString("validation", cjJson);
 
             // All endpoint.node ids resolve to existing nodes in same document?
-            cjDoc.edges().flatMap(ICjEdge::endpoints).forEach(endpoint -> {
+            cjDoc.edgesAll().flatMap(ICjEdge::endpoints).forEach(endpoint -> {
                 if (endpoint.node() != null) {
                     if (cjDoc.findNode(endpoint.node()) == null) {
-                        errors.add(ContentError.error("Reference Error: Endpoint references non-existent node with ID '" + endpoint.node() + "'"));
+                        errors.add(ContentError.info("Reference: Endpoint references non-defined node with ID '" + endpoint.node() + "'"));
                     }
                 }
             });
@@ -101,7 +100,7 @@ public class CjValidator {
             // Implied URIs:
             // - baseUri + edge.type,
             // - TODO baseUri + node.types
-            cjDoc.edges().forEach(edge -> {
+            cjDoc.edgesAll().forEach(edge -> {
                 ifPresentAccept(edge.edgeType(), edgeType -> {
                     //  define combined URI (baseURI + edgeType string) and validate URI
                     String uri = cjDoc.uri(edgeType.type());
@@ -117,7 +116,7 @@ public class CjValidator {
                     errors.add(ContentError.warn("Graph '" + graph.id() + "' has no nodes or edges -- legal, but maybe an error?"));
                 }
             });
-            cjDoc.edges().forEach(edge -> {
+            cjDoc.edgesAll().forEach(edge -> {
                 if (edge.endpoints().findAny().isEmpty()) {
                     errors.add(ContentError.warn("Edge '" + edge.id() + "' has no endpoints -- legal, but maybe an error?"));
                 }
@@ -127,7 +126,7 @@ public class CjValidator {
         }
     }
 
-    public static void validateJson(String json, List<ContentError> errors) {
+    public static void validateJson(String json, ContentErrorList errors) {
         if (json == null || json.isEmpty()) {
             return;
         }
@@ -161,8 +160,8 @@ public class CjValidator {
      * @param s
      * @return a list of errors, or an empty list.
      */
-    public static List<ContentError> validateUnicode(String s) {
-        List<ContentError> errors = new ArrayList<>();
+    public static ContentErrorList validateUnicode(String s) {
+        ContentErrorList errors = ContentErrorList.create();
         validateUnicode(s, errors);
         return errors;
     }
@@ -173,7 +172,7 @@ public class CjValidator {
      * @param s
      * @param consumer
      */
-    public static void validateUnicode(String s, List<ContentError> consumer) {
+    public static void validateUnicode(String s, ContentErrorList consumer) {
         if (s == null || s.isEmpty()) {
             return;
         }

@@ -1,42 +1,27 @@
 package com.graphinout.base.cj.document.impl;
 
 import com.graphinout.base.cj.document.CjType;
-import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.document.ICjNodeMutable;
-import com.graphinout.base.cj.document.ICjPort;
-import com.graphinout.base.cj.document.ICjPortMutable;
 import com.graphinout.base.cj.writer.ICjWriter;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMutable {
+public class CjNodeElement extends CjNodeChunk implements ICjNodeMutable {
 
-    private final List<CjPortElement> ports = new java.util.ArrayList<>();
+    private final ICjGraph parent;
     private final List<CjGraphElement> graphs = new java.util.ArrayList<>();
-    private final List<ICjElementType> types = new java.util.ArrayList<>();
-    private String id;
+
+    public CjNodeElement(ICjGraph parent) {this.parent = parent;}
 
     public void addGraph(Consumer<ICjGraphMutable> graph) {
-        CjGraphElement graphElement = new CjGraphElement();
+        CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
-    }
-
-    public void addPort(Consumer<ICjPortMutable> port) {
-        CjPortElement portElement = new CjPortElement();
-        port.accept(portElement);
-        // TODO validate resulting portElement
-        ports.add(portElement);
-    }
-
-    @Override
-    public void addType(ICjElementType type) {
-        types.add(type);
     }
 
     @Override
@@ -45,32 +30,15 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
     }
 
     @Override
-    public Stream<ICjElementType> types() {
-        return types.stream();
-    }
-
-    @Override
     public final boolean equals(Object o) {
         if (!(o instanceof CjNodeElement that)) return false;
-
-        return ports.equals(that.ports) && graphs.equals(that.graphs) && Objects.equals(id, that.id);
-    }
-
-    @Override
-    public String toString() {
-        return "CjNodeElement{" +
-                "ports=" + ports +
-                ", graphs=" + graphs +
-                ", id='" + id + '\'' +
-                '}';
+        return super.equals(that) && graphs.equals(that.graphs);
     }
 
     @Override
     public void fire(ICjWriter cjWriter) {
         fireStartChunk(cjWriter);
-
         cjWriter.list(graphs, CjType.ArrayOfGraphs, CjGraphElement::fire);
-
         cjWriter.nodeEnd();
     }
 
@@ -81,30 +49,26 @@ public class CjNodeElement extends CjHasDataAndLabelElement implements ICjNodeMu
 
     @Override
     public int hashCode() {
-        int result = ports.hashCode();
+        int result = super.hashCode();
         result = 31 * result + graphs.hashCode();
-        result = 31 * result + Objects.hashCode(id);
         return result;
     }
 
     @Override
-    public String id() {
-        return id;
+    public int indexOf(ICjGraph subGraph) {
+        //noinspection SuspiciousMethodCalls
+        return graphs.indexOf(subGraph);
     }
 
     @Override
-    public CjNodeElement id(String id) {
-        this.id = id;
-        return this;
+    public @NonNull ICjGraph parent() {
+        return parent;
     }
 
     @Override
-    public Stream<ICjPort> ports() {
-        return ports.stream().map(x -> (ICjPort) x);
+    public String toString() {
+        return "CjNodeElement{" + super.toString() + ", graphs=" + graphs + '}';
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
 }

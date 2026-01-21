@@ -39,6 +39,14 @@ public class ContentErrorList implements Consumer<ContentError> {
         return list.stream().anyMatch(ce -> ce.level == ContentError.ErrorLevel.Warn || ce.level == ContentError.ErrorLevel.Error);
     }
 
+    /**
+     *
+     * @return true if WARN or more critical level errors exist
+     */
+    public boolean hasWarnings() {
+        return list.stream().anyMatch(ce -> ce.level == ContentError.ErrorLevel.Warn || ce.level == ContentError.ErrorLevel.Error);
+    }
+
 
     public boolean isEmpty() {
         return list.isEmpty();

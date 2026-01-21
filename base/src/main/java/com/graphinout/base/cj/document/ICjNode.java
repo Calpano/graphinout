@@ -10,21 +10,18 @@ import java.util.stream.Stream;
 /**
  * Represents a node in the CJ model, which may have ports and embedded subgraphs, plus associated data/labels.
  */
-public interface ICjNode extends ICjNodeChunk, ICjHasGraphs {
+public interface ICjNode extends ICjNodeChunk, ICjHasGraphs, ICjCoreElement {
 
     @Override
     default Stream<ICjElement> directChildren() {
-        return Stream.concat(Stream.concat(Stream.of(data()).filter(Objects::nonNull), ports()), graphs());
+        return Stream.concat(Stream.concat(Stream.of(data().ifNotEmpty()).filter(Objects::nonNull), ports()), graphs());
     }
 
+    /** Index of subGraph in this node @return -1 if not found */
+    int indexOf(ICjGraph subGraph);
+
     default Map<String, Object> toJaJsonMap() {
-        return JaJson.createMap()
-                .putMaybe(CjConstants.ID, id())
-                .putMaybe(CjConstants.LABEL, label(), ICjLabel::toJaJsonMap)
-                .putMaybe(CjConstants.PORTS, ports(), ICjPort::toJaJsonMap)
-                .putMaybe(CjConstants.DATA, data(), ICjData::toJaJsonValue)
-                .putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap)
-                .build();
+        return JaJson.createMap().putMaybe(CjConstants.ID, id()).putMaybe(CjConstants.LABEL, label(), ICjLabel::toJaJsonMap).putMaybe(CjConstants.PORTS, ports(), ICjPort::toJaJsonMap).putMaybe(CjConstants.DATA, data(), ICjData::toJaJsonValue).putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
     }
 
 }

@@ -10,14 +10,11 @@ import java.util.stream.Stream;
 /**
  * Represents a port of a node or port in the CJ model, carrying an id and optional data and nested ports.
  */
-public interface ICjPort extends ICjHasId, ICjHasData {
-
-    @Nullable
-    ICjData data();
+public interface ICjPort extends ICjHasId, ICjHasData, ICjElement {
 
     @Override
     default Stream<ICjElement> directChildren() {
-        return Stream.concat(Stream.of(data()).filter(Objects::nonNull), ports());
+        return Stream.concat(Stream.of(data().ifNotEmpty()).filter(Objects::nonNull), ports());
     }
 
     @Nullable
