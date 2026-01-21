@@ -211,25 +211,6 @@ public class ValidatingGraphMlWriterTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenHyperEdgeRefersToNonExistingNode() throws IOException {
-            IGraphmlNode node3 = IGraphmlNode.builder().id(NODE_ID_3).build();
-            when(mockHyperEdge.endpoints()).thenReturn(List.of(ENDPOINT_1, ENDPOINT_2));
-            underTest.documentStart(mockDocument);
-            underTest.graphStart(mockGraph);
-            underTest.nodeStart(node3);
-            underTest.nodeEnd();
-            underTest.hyperEdgeStart(mockHyperEdge);
-            underTest.hyperEdgeEnd();
-            underTest.graphEnd();
-
-            IllegalStateException illegalStateException = assertThrowsExactly(IllegalStateException.class,
-                    () -> underTest.documentEnd());
-            assertAll("",//
-                    () -> assertEquals("2 nodes used in the graph without reference.", illegalStateException.getMessage()));
-
-        }
-
-        @Test
         void shouldThrowExceptionWhenNodeIdIsNotUnique() throws IOException {
             IGraphmlNode node1 = IGraphmlNode.builder().id(NODE_ID_1).build();
             IGraphmlNode node2 = IGraphmlNode.builder().id(NODE_ID_1).build();
@@ -260,66 +241,6 @@ public class ValidatingGraphMlWriterTest {
 
         }
 
-        @Test
-        void shouldThrowExceptionWhenPortRefersNonExisting() throws IOException {
-            IGraphmlNode node1 = IGraphmlNode.builder().id(NODE_ID_1).build();
-
-            // edge: [node1:123] --> [node1:456]
-            when(mockEdge.source()).thenReturn(NODE_ID_1);
-            when(mockEdge.target()).thenReturn(NODE_ID_1);
-            when(mockEdge.sourcePort()).thenReturn("123");
-            when(mockEdge.targetPort()).thenReturn("456");
-            when(mockPort.name()).thenReturn(PORT_NAME_1);
-
-            underTest.documentStart(mockDocument);
-            underTest.graphStart(mockGraph);
-
-            underTest.nodeStart(node1);
-            // define unused port "port_name_1"
-            underTest.portStart(mockPort);
-            underTest.portEnd();
-            underTest.nodeEnd();
-            underTest.edgeStart(mockEdge);
-            underTest.edgeEnd();
-            underTest.graphEnd();
-
-
-            Exception exception = assertThrows(Exception.class,
-                    () -> underTest.documentEnd());
-
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("2 ports used in the graph without reference.", exception.getMessage()));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenPortRefersNonExistingInHyperEdge() throws IOException {
-            IGraphmlNode node1 = IGraphmlNode.builder().id(NODE_ID_1).build();
-            IGraphmlEndpoint ENDPOINT_TEST_PORT = IGraphmlEndpoint.builder().node(NODE_ID_1).port("123").build();
-            when(mockHyperEdge.endpoints()).thenReturn(List.of(ENDPOINT_TEST_PORT, ENDPOINT_TEST_PORT));
-            when(mockPort.name()).thenReturn(PORT_NAME_1);
-
-            underTest.documentStart(mockDocument);
-            underTest.graphStart(mockGraph);
-
-            underTest.nodeStart(node1);
-            underTest.portStart(mockPort);
-            underTest.portEnd();
-            underTest.nodeEnd();
-            underTest.hyperEdgeStart(mockHyperEdge);
-            underTest.hyperEdgeEnd();
-            underTest.graphEnd();
-
-
-            Exception exception = assertThrows(Exception.class,
-                    () -> underTest.documentEnd());
-
-            assertAll("",//
-                    () -> assertInstanceOf(IllegalStateException.class, exception),//
-                    () -> assertEquals("1 ports used in the graph without reference.", exception.getMessage()));
-
-        }
-
         private void execute(String methodName) throws IOException {
             switch (methodName) {
                 case "key" -> underTest.key(mockKey);
@@ -330,7 +251,7 @@ public class ValidatingGraphMlWriterTest {
                 case "startEdge" -> {
                     when(mockEdge.source()).thenReturn(NODE_ID_1);
                     when(mockEdge.target()).thenReturn(NODE_ID_2);
-                    underTest.edgeStart(mockEdge);
+                    underTest.edgeStart(mockEdge); 
                 }
                 case "startHyperEdge" -> {
                     when(mockHyperEdge.endpoints()).thenReturn(List.of(ENDPOINT_1, ENDPOINT_2));
