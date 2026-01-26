@@ -4,14 +4,15 @@ import com.graphinout.base.cj.data.CjDataProperty;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEndpoint;
-import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjLabelEntry;
+import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.slf4j.Logger;
 
 import java.util.List;
 
+import static com.graphinout.foundation.pure.functional.Nullables.mapOrDefault;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class TgfOutput {
@@ -31,7 +32,7 @@ public class TgfOutput {
         }
         // fallback to CJ data description
         IJsonValue json = hasData.jsonValue();
-        if (json != null) {
+        if (json != null && json.isObject()) {
             IJsonValue desc = json.resolve(CjDataProperty.Description.cjPropertyKey);
             if (desc != null) {
                 String s = desc.toXmlFragmentString().rawXml();
@@ -42,42 +43,18 @@ public class TgfOutput {
     }
 
     public String toTgf() {
-        StringBuilder nodeSection = new StringBuilder();
-        StringBuilder edgeSection = new StringBuilder();
-
-        // Collect all nodes and edges from all graphs (flattened)
-        collectFromGraphs(cjDoc.graphs(), nodeSection, edgeSection);
-
-        // Build final TGF output
-        StringBuilder b = new StringBuilder();
-        b.append(nodeSection);
-        b.append('#').append('\n');
-        b.append(edgeSection);
-        return b.toString();
+        TgfDoc tgfDoc = new TgfDoc();
+        cjDoc2tgfDoc(cjDoc, tgfDoc);
+        return tgfDoc.toTgf();
     }
 
-    private void collectFromGraphs(java.util.stream.Stream<ICjGraph> graphs, StringBuilder nodeSection, StringBuilder edgeSection) {
-        graphs.forEach(g -> collectFromGraph(g, nodeSection, edgeSection));
-    }
-
-    private void collectFromGraph(ICjGraph g, StringBuilder nodeSection, StringBuilder edgeSection) {
-        // Collect nodes (and recursively their nested graphs)
-        g.nodes().forEach(n -> {
-            String id = n.id();
-            if (id != null) {
-                nodeSection.append(id);
-                String text = firstLabelOrDesc(n, n.labelEntries());
-                if (text != null && !text.isEmpty()) {
-                    nodeSection.append(" ").append(text);
-                }
-                nodeSection.append('\n');
-            }
-            // Collect from nested graphs in nodes
-            n.graphs().forEach(ng -> collectFromGraph(ng, nodeSection, edgeSection));
+    private void cjDoc2tgfDoc(ICjDocument cjDoc, TgfDoc tgfDoc) {
+        cjDoc.nodesAllIncludingImplied().forEach(cjNode -> {
+            String id = cjNode.uri();
+            String text = firstLabelOrDesc(cjNode, cjNode.labelEntries());
+            tgfDoc.nodes.add(new TgfDoc.TgfNode(id, text));
         });
-
-        // Collect edges (and recursively their nested graphs)
-        g.edges().forEach(e -> {
+        cjDoc.edgesAll().forEach(e -> {
             ICjEndpoint inEp = e.endpoints().filter(ep -> ep.direction() == CjDirection.IN).findFirst().orElse(null);
             ICjEndpoint outEp = e.endpoints().filter(ep -> ep.direction() == CjDirection.OUT).findFirst().orElse(null);
             String n1 = null, n2 = null;
@@ -94,19 +71,12 @@ public class TgfOutput {
                 }
             }
             if (n1 != null && n2 != null) {
-                edgeSection.append(n1).append(' ').append(n2);
-                String text = firstLabelOrDesc(e, e.labelEntries());
-                if (text != null && !text.isEmpty()) {
-                    edgeSection.append(' ').append(text);
-                }
-                edgeSection.append('\n');
+                // resolve nodes
+                String resolvedN1 = e.resolveNodeById(n1).uri();
+                String resolvedN2 = e.resolveNodeById(n2).uri();
+                tgfDoc.edges.add(new TgfDoc.TgfEdge(resolvedN1, resolvedN2, firstLabelOrDesc(e, e.labelEntries())));
             }
-            // Collect from nested graphs in edges
-            e.graphs().forEach(ng -> collectFromGraph(ng, nodeSection, edgeSection));
         });
-
-        // Collect from nested graphs in this graph
-        g.graphs().forEach(ng -> collectFromGraph(ng, nodeSection, edgeSection));
     }
 
 }

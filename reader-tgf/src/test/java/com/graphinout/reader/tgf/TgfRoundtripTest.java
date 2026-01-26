@@ -37,8 +37,8 @@ public class TgfRoundtripTest {
     @MethodSource("cjResources")
     void shouldRoundtripCjToTgfAndBackToCj(String displayPath, Resource textResource) throws IOException {
         // Parse CJ JSON to CjDocument
-        String content = textResource.getContentAsString();
-        ICjDocument cjDocument1 = CjDocuments.parseCjJsonString(displayPath, content);
+        String cjJsonIn = textResource.getContentAsString();
+        ICjDocument cjDocument1 = CjDocuments.parseCjJsonString(displayPath, cjJsonIn);
         assertThat(cjDocument1).isNotNull();
 
         // Convert CjDocument to TGF
@@ -58,6 +58,12 @@ public class TgfRoundtripTest {
         String normalizedTgf1 = normalizeTgf(tgf1);
         String normalizedTgf2 = normalizeTgf(tgf2);
 
+        if(!normalizedTgf1.equals(normalizedTgf2)) {
+            System.out.println("----\nCJ Input:\n" + cjJsonIn);
+            System.out.println("----\nTGF 1:\n" + tgf1);
+            System.out.println("----\nCJ Output:\n" + CjDocuments.toJsonString(cjDocument2));
+            System.out.println("----\nTGF 2:\n" + tgf2);
+        }
         assertThat(normalizedTgf2).isEqualTo(normalizedTgf1);
     }
 

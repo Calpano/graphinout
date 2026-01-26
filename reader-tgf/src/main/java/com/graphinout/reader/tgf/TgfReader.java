@@ -46,7 +46,7 @@ public class TgfReader implements GioReader {
     public static ICjDocument parseTgfToCjDocument(SingleInputSource inputSource) throws IOException {
         TgfReader tgfReader = new TgfReader();
         CjWriter2CjDocumentWriter cj2document = new CjWriter2CjDocumentWriter();
-        ICjStream cjStream2cj = new CjStream2CjWriter(cj2document);
+        ICjStream cjStream2cj = new CjStream2CjWriter(cj2document, true);
         tgfReader.read(inputSource, cjStream2cj);
         return cj2document.resultDoc();
     }
