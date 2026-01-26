@@ -46,6 +46,13 @@ public class GraphmlParseInfo {
     public static final ParseOrder DEFAULT_ORDER = ParseOrder.free;
 
     public static final Ids DEFAULT_IDS = Ids.canonical;
+    public static final String PARSE_NODEIDS = "parse.nodeids";
+    public static final String PARSE_EDGEIDS = "parse.edgeids";
+    public static final String PARSE_ORDER = "parse.order";
+    public static final String PARSE_NODES = "parse.nodes";
+    public static final String PARSE_EDGES = "parse.edges";
+    public static final String PARSE_MAXINDEGREE = "parse.maxindegree";
+    public static final String PARSE_MAXOUTDEGREE = "parse.maxoutdegree";
 
     final Ids nodeIds;
     final Ids edgeIds;
@@ -68,16 +75,16 @@ public class GraphmlParseInfo {
     }
 
     public void toXmlAttributes(BiConsumer<String, String> attName_attValue) {
-        attName_attValue.accept("parse.nodeids", nodeIds.name());
-        attName_attValue.accept("parse.edgeids", edgeIds.name());
-        attName_attValue.accept("parse.order", order.name());
-        attName_attValue.accept("parse.nodes", String.valueOf(nodesCount));
-        attName_attValue.accept("parse.edges", String.valueOf(edgesCount));
+        attName_attValue.accept(PARSE_NODEIDS, nodeIds.name());
+        attName_attValue.accept(PARSE_EDGEIDS, edgeIds.name());
+        attName_attValue.accept(PARSE_ORDER, order.name());
+        attName_attValue.accept(PARSE_NODES, String.valueOf(nodesCount));
+        attName_attValue.accept(PARSE_EDGES, String.valueOf(edgesCount));
         if (maxInDegree != null) {
-            attName_attValue.accept("parse.maxindegree", String.valueOf(maxInDegree));
+            attName_attValue.accept(PARSE_MAXINDEGREE, String.valueOf(maxInDegree));
         }
         if (maxOutDegree != null) {
-            attName_attValue.accept("parse.maxoutdegree", String.valueOf(maxOutDegree));
+            attName_attValue.accept(PARSE_MAXOUTDEGREE, String.valueOf(maxOutDegree));
         }
     }
 

@@ -2,7 +2,6 @@ package com.graphinout.reader.graphml;
 
 
 import com.graphinout.base.cj.CjAssert;
-import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
@@ -12,9 +11,6 @@ import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.base.cj.writer.Json2CjWriter;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.base.json.JsonReaderImpl;
-import com.graphinout.foundation.pure.collections.jajson.JaJson;
-import com.graphinout.foundation.pure.json.formatter.FormatterConfig;
-import com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import com.graphinout.foundation.pure.json.writer.impl.StringBuilderJsonWriter;
@@ -33,7 +29,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.graphinout.base.TestFileUtil2.inputSource;
@@ -87,33 +82,33 @@ public class Cj2GraphmlAndBackTest {
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @Description("Test JSON->CJ->Graphml->CjStream->CJ->JSON (all)")
     void test_Json_Cj_Graphml_CjStream_Cj_Json(String displayName, Resource resource) throws IOException {
-        String jsonInput = resource.getContentAsString();
-        SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", jsonInput);
-
         // JSON -> CJ doc
-        CjWriter2CjDocumentWriter cj2ElementsWriter = new CjWriter2CjDocumentWriter();
-        JsonWriter jsonWriter_in = Json2CjWriter.createWritingTo(cj2ElementsWriter);
-        JsonReaderImpl jsonReader = new JsonReaderImpl();
-        jsonReader.read(inputSource, jsonWriter_in);
-        ICjDocument cjDoc = cj2ElementsWriter.resultDoc();
-        if (cjDoc == null) {
-            cjDoc = new CjDocumentElement();
-        }
+        String jsonInput = resource.getContentAsString();
+        ICjDocument cjDoc = CjDocuments.parseCjJsonString(displayName, jsonInput);
 
-        // CJ doc -> GraphML -> CJ
+        // CJ doc -> GraphML -> CJ -> JSON
         Json2StringWriter json2StringWriter = new Json2StringWriter();
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
-        Graphml2CjDocument graphml2CjWriter = new Graphml2CjWriter(cj2JsonWriter);
-        CjDocument2Graphml cjDocument2Graphml = new CjDocument2Graphml(graphml2CjWriter);
-        cjDocument2Graphml.writeDocumentToGraphml(cjDoc);
 
+
+        Graphml2CjDocument graphml2CjWriter = new Graphml2CjWriter(cj2JsonWriter);
+        CjDocument2Graphml.writeToGraphml(cjDoc, graphml2CjWriter);
         String jsonOut = json2StringWriter.jsonString();
+
         CjAssert.verifySameCjOrRecord(resource, "Cj2Gml2Cj", jsonOut, jsonInput, () -> {
-            // format both pretty, then diff
-            FormatterConfig config = FormatterConfig.of(60, Set.of(CjConstants.GRAPH__NODES, CjConstants.GRAPH__EDGES, CjConstants.GRAPHS), true);
-            String compactOut = JsonCompactFormatter.formatCompact(JaJson.parse(CjAssert.normalize(jsonOut)), config);
-            String compactIn = JsonCompactFormatter.formatCompact(JaJson.parse(CjAssert.normalize(jsonInput)), config);
-            assertThat(compactOut).isEqualTo(compactIn);
+            log.info("----\nInput CJ:\n" + jsonInput);
+
+            Xml2StringWriter xmlWriter = new Xml2StringWriter();
+            Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xmlWriter);
+            try {
+                CjDocument2Graphml.writeToGraphml(cjDoc, graphml2XmlWriter);
+                log.info("----\nGraphML:\n" + xmlWriter.resultString());
+            } catch (IOException e) {
+                log.info("Failed to render intermediate GraphML");
+                throw new RuntimeException(e);
+            }
+            log.info("----\nOutput CJ:\n" + jsonOut);
+            CjAssert.xAssertThatIsSameCj(jsonOut, jsonInput, () -> {});
         });
     }
 
@@ -167,7 +162,7 @@ public class Cj2GraphmlAndBackTest {
         // CJ2 --> JSON2
         StringBuilderJsonWriter jsonWriter_out = new StringBuilderJsonWriter();
         ICjWriter cjWriter_out = new Cj2JsonWriter(jsonWriter_out);
-        cjDoc2.fire(cjWriter_out);
+        cjDoc2.fire(cjWriter_out, false);
         String json_out = jsonWriter_out.json();
 
         CjAssert.verifySameCjOrRecord(resource, TEST_ID, json_out, json_in, () -> {

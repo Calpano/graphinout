@@ -251,7 +251,7 @@ public class ValidatingGraphMlWriterTest {
                 case "startEdge" -> {
                     when(mockEdge.source()).thenReturn(NODE_ID_1);
                     when(mockEdge.target()).thenReturn(NODE_ID_2);
-                    underTest.edgeStart(mockEdge); 
+                    underTest.edgeStart(mockEdge);
                 }
                 case "startHyperEdge" -> {
                     when(mockHyperEdge.endpoints()).thenReturn(List.of(ENDPOINT_1, ENDPOINT_2));

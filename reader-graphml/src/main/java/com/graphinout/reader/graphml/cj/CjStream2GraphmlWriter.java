@@ -33,7 +33,7 @@ public class CjStream2GraphmlWriter extends BaseCjOutput implements ICjStream {
                 throw new RuntimeException(e);
             }
         });
-        this.cjStream2CjWriter = new CjStream2CjWriter(cjWriter2CjDocumentWriter);
+        this.cjStream2CjWriter = new CjStream2CjWriter(cjWriter2CjDocumentWriter, true);
     }
 
     @Override

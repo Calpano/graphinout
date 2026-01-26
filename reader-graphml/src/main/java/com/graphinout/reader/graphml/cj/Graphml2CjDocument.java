@@ -1,12 +1,15 @@
 package com.graphinout.reader.graphml.cj;
 
+import com.graphinout.base.cj.data.CjMappedProperties;
 import com.graphinout.base.cj.document.CjDirection;
+import com.graphinout.base.cj.document.ICjCoreElement;
 import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDataMutable;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
 import com.graphinout.base.cj.document.ICjElementType;
+import com.graphinout.base.cj.document.ICjEndpointMutable;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjGraphMutable;
@@ -28,6 +31,7 @@ import com.graphinout.foundation.jvm.kpath.PathResolver;
 import com.graphinout.foundation.jvm.kpath.Result;
 import com.graphinout.foundation.pure.collections.IMapLike;
 import com.graphinout.foundation.pure.collections.PowerStackOnClasses;
+import com.graphinout.foundation.pure.collections.jajson.JsonParser;
 import com.graphinout.foundation.pure.input.BaseOutput;
 import com.graphinout.foundation.pure.json.JsonType;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
@@ -140,6 +144,15 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             ICjElementType edgeType = ICjElementType.fromJsonString(graphmlDataValue);
             assert cjHasData instanceof ICjEdgeMutable;
             ((ICjEdgeMutable) cjHasData).edgeType(edgeType);
+        } else if (key.is(GraphmlDataElement.NodeTypes)) {// map back to json array
+            // Parse JSON array of types: ["type1", "type2", ...]
+            IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(graphmlDataValue);
+            assert cjHasData instanceof ICjNodeMutable;
+            ICjNodeMutable node = (ICjNodeMutable) cjHasData;
+            jsonValue.asArray().forEach(typeValue -> {
+                ICjElementType nodeType = ICjElementType.of(typeValue.asString());
+                node.addType(nodeType);
+            });
         } else if (key.is(GraphmlDataElement.CjJsonData)) {// map back to json
             //  parse JSON
             IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(graphmlDataValue);
@@ -265,13 +278,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             copyCustomAttributes(graphmlEdge, cjEdge);
             copyDesc(graphmlEdge, cjEdge);
             for (IGraphmlEndpoint graphmlEndpoint : graphmlEdge.endpoints()) {
-                cjEdge.addEndpoint(cjEndpoint -> {
-                    cjEndpoint.node(graphmlEndpoint.node());
-                    GraphmlDirection gDir = graphmlEndpoint.type();
-                    CjDirection cjDir = gDir == GraphmlDirection.In ? IN : gDir == GraphmlDirection.Out ? OUT : UNDIR;
-                    cjEndpoint.direction(cjDir);
-                    ifPresentAccept(graphmlEndpoint.port(), cjEndpoint::port);
-                });
+                cjEdge.addEndpoint(cjEndpoint -> endpoint(graphmlEndpoint, cjEndpoint));
             }
         });
     }
@@ -358,7 +365,37 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
     }
 
     private void copyId(IGraphmlElementWithId graphmlElementWithId, ICjHasIdMutable<?> cjHasId) {
-        ofNullable(graphmlElementWithId.id()).ifPresent(cjHasId::id);
+        ofNullable(graphmlElementWithId.id()).ifPresent(id -> {
+            cjHasId.id(id);
+            // can we simplify the id using the baseUri?
+            if (cjHasId instanceof ICjCoreElement cjCoreElement) {
+                String shortId = cjCoreElement.abbreviatedUri();
+                cjHasId.id(shortId);
+            }
+        });
+    }
+
+    private void endpoint(IGraphmlEndpoint graphmlEndpoint, ICjEndpointMutable cjEndpoint) {
+        cjEndpoint.node(graphmlEndpoint.node());
+
+        GraphmlDirection gDir = graphmlEndpoint.type();
+        CjDirection cjDir = gDir == GraphmlDirection.In ? IN : gDir == GraphmlDirection.Out ? OUT : UNDIR;
+        cjEndpoint.direction(cjDir);
+
+        ifPresentAccept(graphmlEndpoint.port(), cjEndpoint::port);
+
+        String cjDataInGraphml = graphmlEndpoint.customXmlAttributes().get(CjMappedProperties.CJ_DATA);
+        ifPresentAccept(cjDataInGraphml, jsonString -> {
+            IJsonValue jsonValue = JsonParser.parse(jsonString);
+            if (jsonValue != null) {
+                cjEndpoint.dataMutable(data -> {
+                    data.setJsonValue(jsonValue);
+                });
+            }
+        });
+
+        String endpointType = graphmlEndpoint.customXmlAttributes().get(CjMappedProperties.CJ_ENDPOINT_TYPE);
+        ifPresentAccept(endpointType, cjEndpoint::type);
     }
 
     /**
@@ -373,6 +410,8 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             graphmlSchema.removeKeyById(GraphmlDataElement.CjJsonData.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.Label.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.EdgeType.toGraphmlKey().id());
+            graphmlSchema.removeKeyById(GraphmlDataElement.NodeTypes.toGraphmlKey().id());
+            graphmlSchema.removeKeyById(GraphmlDataElement.EndpointType.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.BaseUri.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.GraphBaseUri.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.SyntheticNode.toGraphmlKey().id());

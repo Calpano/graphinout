@@ -56,6 +56,26 @@ public interface CjGraphmlMapping {
         EdgeType("cj_edgeType", GraphmlKeyForType.Edge, GraphmlDataType.typeString, "Connected JSON edgeType {'source'=..., 'type'=...}"),
 
         /**
+         * CJ: endpoint.type -> Graphml data element.
+         * <p>
+         * {@code <key id="cj_endpoint_type" for="endpoint" attr.type="string"/>}
+         * <p>
+         * The semantic type/role of the endpoint in the relationship (e.g., "http://example.org/aaa").
+         * Note: GraphML's endpoint type attribute is used for direction (in/out/undir).
+         */
+        EndpointType("cj_endpoint_type", GraphmlKeyForType.Endpoint, GraphmlDataType.typeString, "Connected JSON endpoint semantic type (CJ 7.0.0)"),
+
+        /**
+         * CJ: node.types -> Graphml data element.
+         * <p>
+         * {@code <key id="cj_node_types" for="node" attr.type="string"/>}
+         * <p>
+         * Node types as JSON array (e.g., ["http://xmlns.com/foaf/0.1/Person"]).
+         * Each type is an ICjElementType, same structure as edge types.
+         */
+        NodeTypes("cj_node_types", GraphmlKeyForType.Node, GraphmlDataType.typeString, "Connected JSON node types array (CJ 7.0.0)"),
+
+        /**
          * Export a CJ Label as a JSON Array [{"value":"Hallo","language":"de"}]. At import time, a plain text string is
          * accepted as label.value.
          */

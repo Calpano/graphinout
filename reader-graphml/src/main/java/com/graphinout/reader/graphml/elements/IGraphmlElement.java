@@ -1,5 +1,6 @@
 package com.graphinout.reader.graphml.elements;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,8 +42,8 @@ public interface IGraphmlElement extends IXmlElement {
      * attributes, see
      * <a href="http://graphml.graphdrawing.org/specification.html">here</a>, bottom of page
      */
-    default Map<String, String> customXmlAttributes() {
-        @Nullable Map<String, String> map = xmlAttributes();
+    default @NonNull Map<String, String> customXmlAttributes() {
+        Map<String, String> map = xmlAttributes();
         if (map == null) {
             return Collections.emptyMap();
         }

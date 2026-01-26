@@ -2,17 +2,23 @@ package com.graphinout.reader.graphml.elements.builder;
 
 import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.reader.graphml.elements.impl.GraphmlEdge;
-
 import org.jspecify.annotations.Nullable;
+
 import java.util.Map;
 
 public class GraphmlEdgeBuilder extends GraphmlElementWithDescAndIdBuilder<GraphmlEdgeBuilder> implements IIdBuilder {
 
-    private Boolean directed;
+    private @Nullable Boolean directed;
     private String sourceId;
     private String targetId;
-    private String sourcePortId;
-    private String targetPortId;
+    private @Nullable String sourcePortId;
+    private @Nullable String targetPortId;
+
+    @Override
+    public GraphmlEdgeBuilder attributes(@Nullable Map<String, String> attributes) {
+        super.attributes(attributes);
+        return this;
+    }
 
     @Override
     public GraphmlEdge build() {
@@ -27,12 +33,6 @@ public class GraphmlEdgeBuilder extends GraphmlElementWithDescAndIdBuilder<Graph
 
     public GraphmlEdgeBuilder directed(Boolean directed) {
         this.directed = directed;
-        return this;
-    }
-
-    @Override
-    public GraphmlEdgeBuilder attributes(@Nullable Map<String, String> attributes) {
-        super.attributes(attributes);
         return this;
     }
 

@@ -1,6 +1,7 @@
 package com.graphinout.reader.graphml.cj;
 
 import com.graphinout.base.cj.data.CjDataProperty;
+import com.graphinout.base.cj.data.CjMappedProperties;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocument;
@@ -15,6 +16,7 @@ import com.graphinout.base.cj.document.ICjPort;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.foundation.pure.functional.Nullables;
 import com.graphinout.foundation.pure.functional.ThrowingConsumer;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.value.java.JavaJsonObject;
 import com.graphinout.foundation.pure.stream.PowerStreams;
@@ -29,10 +31,8 @@ import com.graphinout.reader.graphml.elements.IGraphmlData;
 import com.graphinout.reader.graphml.elements.IGraphmlDefault;
 import com.graphinout.reader.graphml.elements.IGraphmlDescription;
 import com.graphinout.reader.graphml.elements.IGraphmlDocument;
-import com.graphinout.reader.graphml.elements.IGraphmlEdge;
 import com.graphinout.reader.graphml.elements.IGraphmlEndpoint;
 import com.graphinout.reader.graphml.elements.IGraphmlGraph;
-import com.graphinout.reader.graphml.elements.IGraphmlHyperEdge;
 import com.graphinout.reader.graphml.elements.IGraphmlKey;
 import com.graphinout.reader.graphml.elements.IGraphmlNode;
 import com.graphinout.reader.graphml.elements.IGraphmlPort;
@@ -47,6 +47,9 @@ import com.graphinout.reader.graphml.elements.builder.GraphmlHyperEdgeBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlNodeBuilder;
 import com.graphinout.reader.graphml.elements.builder.GraphmlPortBuilder;
 import com.graphinout.reader.graphml.elements.impl.GraphmlData;
+import com.graphinout.reader.graphml.elements.impl.GraphmlEdge;
+import com.graphinout.reader.graphml.elements.impl.GraphmlEndpoint;
+import com.graphinout.reader.graphml.elements.impl.GraphmlHyperEdge;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
@@ -166,59 +169,44 @@ public class CjDocument2Graphml {
     }
 
     public void writeEdge(ICjEdge cjEdge) throws IOException {
-        List<ICjEndpoint> cjEndpointsList = cjEdge.endpoints().toList();
-        List<ICjEndpoint> cjEps = new ArrayList<>(cjEndpointsList);
+        List<ICjEndpoint> cjEps = new ArrayList<>(cjEdge.endpoints().toList());
         cjEps.sort(Comparator.comparing(ICjEndpoint::node));
-        Boolean directed = null;
+        boolean useSimpleEdge;
         if (cjEps.size() == 2) {
             ICjEndpoint sourceEp = cjEps.get(0);
             ICjEndpoint targetEp = cjEps.get(1);
-            if (sourceEp.isSource() && targetEp.isTarget()) {
+            if (sourceEp.data().isNotEmpty() || targetEp.data().isNotEmpty()) {
+                useSimpleEdge = false;
+            } else if (sourceEp.isSource() && targetEp.isTarget()) {
                 // good, directed simple bi-edge
-                directed = true;
+                useSimpleEdge = true;
+                GraphmlEdge biEdge = startBiEdge(cjEdge, sourceEp, targetEp, true);
+                graphmlWriter.edgeStart(biEdge);
             } else if (sourceEp.isTarget() && targetEp.isSource()) {
                 // ok, just need to switch EPs
                 sourceEp = cjEps.get(1);
                 targetEp = cjEps.get(0);
-                directed = true;
+                useSimpleEdge = true;
+                GraphmlEdge biEdge = startBiEdge(cjEdge, sourceEp, targetEp, true);
+                graphmlWriter.edgeStart(biEdge);
             } else if (sourceEp.isUndirected() && targetEp.isUndirected()) {
                 // ok, undirected simple bi-edge
-                directed = false;
+                useSimpleEdge = true;
+                GraphmlEdge biEdge = startBiEdge(cjEdge, sourceEp, targetEp, false);
+                graphmlWriter.edgeStart(biEdge);
+            } else {
+                useSimpleEdge = false;
             }
-
+        } else {
+            useSimpleEdge = false;
+        }
+        if (!useSimpleEdge) {
             // else: edge can only be represented as hyper-edge
-            if (directed != null) {
-                GraphmlEdgeBuilder edgeBuilder = IGraphmlEdge.builder();
-                edgeBuilder.id(cjEdge.id());
-                edgeBuilder.directed(directed);
-                edgeBuilder.sourceId(sourceEp.node());
-                ifPresentAccept(sourceEp.port(), edgeBuilder::sourcePortId);
-                edgeBuilder.targetId(targetEp.node());
-                ifPresentAccept(targetEp.port(), edgeBuilder::targetPortId);
-
-                writeData_Description(cjEdge, edgeBuilder);
-                writeData_CustomAttributes(cjEdge, edgeBuilder);
-
-                graphmlWriter.edgeStart(edgeBuilder.build());
-            }
-        }
-        if (cjEps.size() != 2 || directed == null) {
             // default case: hyperedge
-            GraphmlHyperEdgeBuilder builder = IGraphmlHyperEdge.builder().id(cjEdge.id());
-            for (ICjEndpoint cjEp : cjEps) {
-                GraphmlEndpointBuilder graphmlEndpoint = IGraphmlEndpoint.builder();
-                graphmlEndpoint.node(cjEp.node());
-                GraphmlDirection gDir = GraphmlDirection.ofCj(cjEp.direction());
-                graphmlEndpoint.type(gDir);
-                ifPresentAccept(cjEp.port(), graphmlEndpoint::port);
-
-                writeData_Description(cjEdge, builder);
-                writeData_CustomAttributes(cjEdge, builder);
-
-                builder.addEndpoint(graphmlEndpoint.build());
-            }
-            graphmlWriter.hyperEdgeStart(builder.build());
+            GraphmlHyperEdge hyperEdge = startHyperEdge(cjEdge, cjEps);
+            graphmlWriter.hyperEdgeStart(hyperEdge);
         }
+        // == edge has been started, next elements are inside edge
 
         // CJ edge type encoded as Graphml:DATA
         ifPresentAccept(cjEdge.edgeType(), edgeType -> {
@@ -235,7 +223,7 @@ public class CjDocument2Graphml {
 
         forEach(cjEdge.graphs(), this::writeGraph);
 
-        if (cjEdge.endpoints().count() == 2) {
+        if (useSimpleEdge) {
             graphmlWriter.edgeEnd();
         } else {
             graphmlWriter.hyperEdgeEnd();
@@ -290,13 +278,31 @@ public class CjDocument2Graphml {
     }
 
     public void writeNode(ICjNode cjNode) throws IOException {
-        GraphmlNodeBuilder graphmlBuilder = IGraphmlNode.builder();
-        ifPresentAccept(cjNode.id(), graphmlBuilder::id);
-        writeData_CustomAttributes(cjNode, graphmlBuilder);
-        writeData_Description(cjNode, graphmlBuilder);
-        graphmlWriter.nodeStart(graphmlBuilder.build());
+        GraphmlNodeBuilder nodeBuilder = IGraphmlNode.builder();
+        ifPresentAccept(cjNode.uri(), nodeBuilder::id);
+        writeData_CustomAttributes(cjNode, nodeBuilder);
+        writeData_Description(cjNode, nodeBuilder);
+        graphmlWriter.nodeStart(nodeBuilder.build());
 
         writeCjLabelAsGraphmlData(cjNode.label());
+
+        // Write node types as GraphML data (JSON array)
+        List<ICjElementType> nodeTypes = cjNode.types().toList();
+        if (!nodeTypes.isEmpty()) {
+            try {
+                // Manually construct JSON array: ["type1", "type2", ...]
+                StringBuilder jsonArray = new StringBuilder("[");
+                for (int i = 0; i < nodeTypes.size(); i++) {
+                    if (i > 0) jsonArray.append(",");
+                    jsonArray.append(ICjElementType.toJsonString(nodeTypes.get(i)));
+                }
+                jsonArray.append("]");
+                graphmlWriter.data(GraphmlDataElement.NodeTypes.toGraphmlData(jsonArray.toString()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         writeData_Json(cjNode, graphmlWriter::data);
 
         forEach(cjNode.ports(), this::writePort);
@@ -331,6 +337,36 @@ public class CjDocument2Graphml {
         };
     }
 
+    private GraphmlEdge startBiEdge(ICjEdge cjEdge, ICjEndpoint sourceEp, ICjEndpoint targetEp, boolean directed) {
+        GraphmlEdgeBuilder edgeBuilder = new GraphmlEdgeBuilder();
+        ifPresentAccept(cjEdge.id(), edgeBuilder::id);
+        writeData_Description(cjEdge, edgeBuilder);
+        writeData_CustomAttributes(cjEdge, edgeBuilder);
+
+        edgeBuilder.directed(directed);
+        edgeBuilder.sourceId(cjEdge.resolveNodeById(sourceEp.node()).abbreviatedUri());
+        ifPresentAccept(sourceEp.port(), edgeBuilder::sourcePortId);
+        edgeBuilder.targetId(cjEdge.resolveNodeById(targetEp.node()).abbreviatedUri());
+        ifPresentAccept(targetEp.port(), edgeBuilder::targetPortId);
+
+        return edgeBuilder.build();
+    }
+
+    private GraphmlHyperEdge startHyperEdge(ICjEdge cjEdge, List<ICjEndpoint> cjEps) {
+        GraphmlHyperEdgeBuilder hyperEdgeBuilder = new GraphmlHyperEdgeBuilder();
+        ifPresentAccept(cjEdge.id(), hyperEdgeBuilder::id);
+
+        writeData_CustomAttributes(cjEdge, hyperEdgeBuilder);
+
+        writeData_Description(cjEdge, hyperEdgeBuilder);
+
+        for (ICjEndpoint cjEp : cjEps) {
+            GraphmlEndpoint graphmlEndpoint = toGraphmlEndpoint(cjEdge, cjEp);
+            hyperEdgeBuilder.addEndpoint(graphmlEndpoint);
+        }
+        return hyperEdgeBuilder.build();
+    }
+
     /**
      * @param key       for key id and preferred graphml type
      * @param jsonValue to use as data
@@ -344,6 +380,41 @@ public class CjDocument2Graphml {
         return builder.build();
     }
 
+    private GraphmlEndpoint toGraphmlEndpoint(ICjEdge cjEdge, ICjEndpoint cjEp) {
+        GraphmlEndpointBuilder graphmlEndpoint = IGraphmlEndpoint.builder();
+
+        ICjNode resolvedNode = cjEdge.resolveNodeById(cjEp.node());
+        graphmlEndpoint.node(resolvedNode.abbreviatedUri());
+
+        GraphmlDirection gDir = GraphmlDirection.ofCj(cjEp.direction());
+        graphmlEndpoint.type(gDir);
+
+        ifPresentAccept(cjEp.port(), graphmlEndpoint::port);
+
+        // endpoint type (not confuse with dir)
+        ifPresentAccept(cjEp.type(), cjType -> {
+            graphmlEndpoint.attribute(CjMappedProperties.CJ_ENDPOINT_TYPE, cjType);
+        });
+
+        writeData_Description(cjEp, graphmlEndpoint);
+        writeData_CustomAttributes(cjEp, graphmlEndpoint);
+
+        // NOTE: GraphML XSD 1.1 has a bug: <endpoints> may not have <data>, despite comments in same spec
+        // saying otherwise. Also <key> is allowed on <endpoint>.
+        cjEp.data(data -> {
+            IJsonValue jsonValue = data.jsonValue();
+            if (jsonValue == null)
+                return;
+            if (jsonValue.isObject()) {
+                IJsonObjectMutable o = jsonValue.asObject().mutableCopy();
+                o.removeProperty(CjDataProperty.CustomXmlAttributes.cjPropertyKey);
+                jsonValue = o;
+            }
+            // put remaining data in a single XML attribute
+            graphmlEndpoint.attribute(CjMappedProperties.CJ_DATA, jsonValue.toJsonString());
+        });
+        return graphmlEndpoint.build();
+    }
 
     private void writeData_CustomAttributes(ICjHasData cjHasData, GraphmlElementBuilder<?> graphmlElement) {
         cjHasData.onDataValue(json -> {

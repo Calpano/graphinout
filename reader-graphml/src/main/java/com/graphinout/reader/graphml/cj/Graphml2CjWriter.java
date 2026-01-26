@@ -18,7 +18,7 @@ public class Graphml2CjWriter extends Graphml2CjDocument implements IGraphmlWrit
     @Override
     public void documentEnd() {
         super.documentEnd();
-        Nullables.ifPresentAccept(resultDoc(), doc -> doc.fire(cjWriter));
+        Nullables.ifPresentAccept(resultDoc(), doc -> doc.fire(cjWriter, false));
     }
 
     @Override

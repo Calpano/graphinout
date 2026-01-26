@@ -6,6 +6,7 @@ import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
+import com.graphinout.base.cj.document.ICjEdgeChunk;
 import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjHasLabel;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
@@ -80,8 +81,11 @@ public class CjData2GraphmlKeyData {
         // if cj:baseUri is used, we need a Graphml <key> for that
         {
             ifPresentAccept(cjDoc.baseUri(), baseUri -> //
-                    // value of baseUri is not relevant here
                     graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.BaseUri.toGraphmlKey()));
+
+            if(cjDoc.graphsAll().anyMatch(g->g.baseUri()!=null)) {
+                graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.GraphBaseUri.toGraphmlKey());
+            }
 
             boolean usesCjEdgeType = PowerStreams.filterMap(cjDoc.allElements(), ICjEdge.class)
                     .map(ICjEdge::edgeType).anyMatch(Objects::nonNull);
@@ -99,7 +103,6 @@ public class CjData2GraphmlKeyData {
             // prepare <key> for CJ:data (graphml needs it pre-declared)
             boolean usesCjData = PowerStreams.filterMap(cjDoc.allElements(), ICjHasData.class) //
                     .map(ICjHasData::data)
-                    .filter(Objects::nonNull)
                     .map(ICjData::jsonValue)
                     .anyMatch(jsonValue -> {
                         if (jsonValue == null) {
@@ -118,6 +121,14 @@ public class CjData2GraphmlKeyData {
                     });
             if (usesCjData) {
                 graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.CjJsonData.toGraphmlKey());
+            }
+
+            if(cjDoc.nodesAll().anyMatch(node-> node.types().findAny().isPresent())) {
+                graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.NodeTypes.toGraphmlKey());
+            }
+
+            if(cjDoc.edgesAll().flatMap(ICjEdgeChunk::endpoints).anyMatch(ep-> ep.type()!=null)) {
+                graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.EndpointType.toGraphmlKey());
             }
 
             // are synthetic nodes used OR REQUIRED in this doc?
