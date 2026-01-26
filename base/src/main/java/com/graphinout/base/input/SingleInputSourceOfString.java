@@ -1,10 +1,16 @@
 package com.graphinout.base.input;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
-public class SingleInputSourceOfString extends ByteArrayInputSource implements SingleInputSource {
+public class SingleInputSourceOfString extends ByteArrayInputSource implements SingleInputSource, ParameterizedInputSource {
 
     public SingleInputSourceOfString(String name, String content) {
         super(name, content.getBytes(StandardCharsets.UTF_8));
@@ -31,4 +37,15 @@ public class SingleInputSourceOfString extends ByteArrayInputSource implements S
         return Optional.of(StandardCharsets.UTF_8);
     }
 
+    @Override
+    public @Nullable String getValue(String key) {
+        return keyValues.get(key);
+    }
+
+    @Override
+    public @NonNull Set<String> keys() {
+        return keyValues.keySet();
+    }
+
+    private final Map<String,String> keyValues = new HashMap<>();
 }

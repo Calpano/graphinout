@@ -10,6 +10,14 @@ public interface InputSource extends AutoCloseable {
         return (MultiInputSource) this;
     }
 
+    default ParameterizedInputSource asParameterized() throws IllegalStateException {
+        if (this instanceof ParameterizedInputSource parameterizedInputSource) {
+            return parameterizedInputSource;
+        } else {
+            throw new IllegalStateException("Not a single input source");
+        }
+    }
+
     default SingleInputSource asSingle() throws IllegalStateException {
         if (!isSingle()) throw new IllegalStateException("Not a single input source");
         return (SingleInputSource) this;
@@ -17,6 +25,10 @@ public interface InputSource extends AutoCloseable {
 
     default boolean isMulti() {
         return !isSingle();
+    }
+
+    default boolean isParameterized() {
+        return this instanceof ParameterizedInputSource;
     }
 
     boolean isSingle();
