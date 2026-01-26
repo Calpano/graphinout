@@ -2,6 +2,7 @@ package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.cj.writer.ICjWriter;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
@@ -17,6 +18,10 @@ public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
         if (uri == null) {
             return null;
         }
+        return asId_(uri);
+    }
+
+    default @NonNull String asId_(@NonNull String uri) {
         String baseUri = baseUri();
         if (baseUri == null) {
             return uri;
@@ -27,7 +32,6 @@ public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
         }
         return uri.substring(index + baseUri.length());
     }
-
 
     @Nullable String baseUri();
 
@@ -44,10 +48,10 @@ public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
         ifPresentAccept(connectedJson(), ICjDocumentMeta::copyMutable, doc::connectedJson);
     }
 
-    default void fireStartChunk(ICjWriter cjWriter) {
+    default void fireStartChunk(ICjWriter cjWriter, boolean sort) {
         cjWriter.documentStart();
         cjWriter.maybe(baseUri(), cjWriter::baseUri);
-        cjWriter.maybe(connectedJson(), cj -> cj.fire(cjWriter));
+        cjWriter.maybe(connectedJson(), cj -> cj.fire(cjWriter, sort));
         fireDataMaybe(cjWriter);
     }
 

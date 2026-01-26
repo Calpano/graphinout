@@ -36,20 +36,23 @@ public class CjNodeElement extends CjNodeChunk implements ICjNodeMutable {
     }
 
     @Override
-    public void fire(ICjWriter cjWriter) {
-        fireStartChunk(cjWriter);
-        cjWriter.list(graphs, CjType.ArrayOfGraphs, CjGraphElement::fire);
+    public void fire(ICjWriter cjWriter, boolean sort) {
+        fireStartChunk(cjWriter,sort);
+        cjWriter.list(graphs, CjType.ArrayOfGraphs, sort, (cjGraphElement, cjWriter1) -> cjGraphElement.fire(cjWriter1, sort));
         cjWriter.nodeEnd();
     }
 
     @Override
     public Stream<ICjGraph> graphs() {
+        //noinspection RedundantCast
         return graphs.stream().map(x -> (ICjGraph) x);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
+        // nodes with same local id might get different URI due to parents baseUri
+        result = 31 * result + uri().hashCode();
         result = 31 * result + graphs.hashCode();
         return result;
     }

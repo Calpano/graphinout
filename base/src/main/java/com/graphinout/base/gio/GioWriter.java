@@ -32,7 +32,9 @@ public interface GioWriter {
     default void writeCjDocument(ICjDocument cjDoc, OutputSink outputSink) throws IOException {
         ICjStream cjStream = createCjStream(outputSink);
         CjWriter2CjStream cjWriter2Stream = new CjWriter2CjStream(cjStream);
-        cjDoc.fire(cjWriter2Stream);
+        // IMPROVE get this param from outside
+        boolean sort = true;
+        cjDoc.fire(cjWriter2Stream, sort);
     }
 
 }

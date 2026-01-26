@@ -38,14 +38,14 @@ public class CjLabelElement extends CjHasDataElement implements ICjLabelMutable 
     }
 
     @Override
-    public void fire(ICjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter, boolean sort) {
         // In v7.0.0, label is an object with an "entries" array
         // labelStart() will write the "label" key and start the object
         cjWriter.labelStart();
         List<CjLabelEntryElement> list = new ArrayList<>();
         entries().forEach(e -> list.add((CjLabelEntryElement) e));
         // listStart(ArrayOfLabelEntries) will write the "entries" key
-        cjWriter.list(list, CjType.ArrayOfLabelEntries, CjLabelEntryElement::fire);
+        cjWriter.list(list, CjType.ArrayOfLabelEntries, sort, (cjLabelEntryElement, cjWriter1) -> cjLabelEntryElement.fire(cjWriter1, sort));
         cjWriter.labelEnd();
     }
 

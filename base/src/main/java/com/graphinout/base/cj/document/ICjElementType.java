@@ -8,7 +8,7 @@ import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public interface ICjElementType {
+public interface ICjElementType extends Comparable<ICjElementType> {
 
     static ICjElementType fromJsonString(String json) {
         IJsonValue value = JsonReaderImpl.readToJsonValue(json);
@@ -25,14 +25,18 @@ public interface ICjElementType {
         return w.jsonString();
     }
 
-    String type();
+    @Override
+    default int compareTo(ICjElementType other) {
+        return type().compareTo(other.type());
+    }
 
     /**
-     * Fire this edge/node type to a CJ writer.
-     * Used when types appear in arrays (e.g., node types).
+     * Fire this edge/node type to a CJ writer. Used when types appear in arrays (e.g., node types).
      */
     default void fire(ICjWriter cjWriter) {
         cjWriter.edgeType(this);
     }
+
+    String type();
 
 }

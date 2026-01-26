@@ -7,6 +7,8 @@ import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.collections.jajson.Json2JsonValueWriter;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.util.Comparables;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
@@ -15,7 +17,18 @@ import java.util.stream.Stream;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
-public interface ICjLabelEntry extends ICjHasData, ICjElement {
+public interface ICjLabelEntry extends ICjHasData, ICjElement, Comparable<ICjLabelEntry> {
+
+    /**
+     * Compare by value, language, data
+     */
+    default int compareTo(@NonNull ICjLabelEntry other) {
+        return Comparables.<ICjLabelEntry>comparing() //
+                .byKey(ICjLabelEntry::value)//
+                .byKey(ICjLabelEntry::language)//
+                .byKey(ICjHasData::data)//
+                .compare(this, other);
+    }
 
     default ICjLabelEntryMutable copyMutable() {
         CjLabelEntryElement copy = new CjLabelEntryElement();
@@ -47,7 +60,7 @@ public interface ICjLabelEntry extends ICjHasData, ICjElement {
     default IJsonObject toJsonValue() {
         Json2JsonValueWriter json2JsonValueWriter = new Json2JsonValueWriter(IJsonFactory.INSTANCE);
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2JsonValueWriter);
-        fire(cj2JsonWriter);
+        fire(cj2JsonWriter, true);
         return Objects.requireNonNull(json2JsonValueWriter.resultJsonRootObject()).asObject();
     }
 

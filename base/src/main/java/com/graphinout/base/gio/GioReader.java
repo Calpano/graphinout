@@ -41,7 +41,7 @@ public interface GioReader {
         setContentErrorHandler(eh);
         try {
             ValidatingCjWriter validatingCjWriter = new ValidatingCjWriter();
-            CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(validatingCjWriter);
+            CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(validatingCjWriter, true);
             read(singleInputSource, cjStream2CjWriter);
         } catch (Throwable t) {
             _log.warn("Invalid input in {}", singleInputSource.name(), t);
@@ -54,7 +54,7 @@ public interface GioReader {
 
     default @Nullable ICjDocument readToCjDocument(InputSource inputSource) throws IOException {
         CjWriter2CjDocumentWriter cjStream2CjDocumentWriter = new CjWriter2CjDocumentWriter();
-        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cjStream2CjDocumentWriter);
+        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cjStream2CjDocumentWriter, true);
         read(inputSource, cjStream2CjWriter);
         return cjStream2CjDocumentWriter.resultDoc();
     }

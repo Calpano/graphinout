@@ -28,6 +28,7 @@ public class CjNodeChunk extends CjHasDataAndLabelElement implements ICjNodeChun
         types.add(type);
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof CjNodeChunk that)) return false;

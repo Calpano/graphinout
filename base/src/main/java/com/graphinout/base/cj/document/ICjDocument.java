@@ -19,8 +19,6 @@ import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefau
  */
 public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement {
 
-    String DEFAULT_BASE_URI = "#";
-
     @Override
     default Stream<ICjElement> directChildren() {
         return Stream.concat(Stream.concat(Stream.of(data().ifNotEmpty()), Stream.of(connectedJson())).filter(Objects::nonNull), graphs());
@@ -34,14 +32,18 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement 
     }
 
     default @NonNull String effectiveBaseUri() {
-        return nonNullOrDefault(baseUri(), DEFAULT_BASE_URI);
+        return nonNullOrDefault(baseUri(), CjUris.BASE_URI_FALLBACK);
+    }
+
+    default @Nullable ICjEdge findEdgeById(@NonNull String edgeId) throws IllegalStateException {
+        return edgesAll().filter(e -> e.matchesId(this, edgeId)).findFirst().orElse(null);
     }
 
     default @Nullable ICjGraph findGraph(String id) {
         return graphsAll().filter(g -> g.matchesId(this, id)).findFirst().orElse(null);
     }
 
-    default @Nullable ICjNode findNode(@NonNull String id) throws IllegalStateException {
+    default @Nullable ICjNode findNodeById(@NonNull String id) throws IllegalStateException {
         return nodesAll().filter(n -> n.matchesId(this, id)).findFirst().orElse(null);
     }
 
@@ -50,6 +52,13 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement 
      */
     default Stream<ICjNode> nodesAll() {
         return graphsAll().flatMap(ICjGraph::nodes);
+    }
+
+    default Stream<ICjNode> nodesAllIncludingImplied() {
+        return Stream.concat(//
+                nodesAll(), //
+                edgesAll().flatMap(ICjEdge::nodesResolved) //
+        ).distinct().sorted();
     }
 
     /**

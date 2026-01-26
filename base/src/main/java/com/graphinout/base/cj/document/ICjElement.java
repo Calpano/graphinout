@@ -53,13 +53,13 @@ public interface ICjElement {
     Stream<ICjElement> directChildren();
 
     /** Fires this element, including start and end and its children. */
-    void fire(ICjWriter cjWriter);
+    void fire(ICjWriter cjWriter, boolean sort);
 
     default IJsonObject toJsonValue() {
         Json2JsonValueWriter json2JsonValueWriter = new Json2JsonValueWriter(IJsonFactory.INSTANCE);
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2JsonValueWriter);
         cj2JsonWriter.objectStart();
-        fire(cj2JsonWriter);
+        fire(cj2JsonWriter, true);
         cj2JsonWriter.objectEnd();
         return Objects.requireNonNull(json2JsonValueWriter.resultJsonRootObject()).asObject();
     }

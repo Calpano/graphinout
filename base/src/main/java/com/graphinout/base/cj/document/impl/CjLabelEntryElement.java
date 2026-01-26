@@ -20,7 +20,7 @@ public class CjLabelEntryElement extends CjHasDataElement implements ICjLabelEnt
     }
 
     @Override
-    public void fire(ICjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter, boolean sort) {
         cjWriter.labelEntryStart();
         // alphabetic order
         cjWriter.maybe(language, cjWriter::language);

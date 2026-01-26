@@ -7,9 +7,9 @@ import com.graphinout.base.cj.document.ICjGraphChunk;
 import com.graphinout.base.cj.document.ICjNodeChunk;
 import com.graphinout.base.cj.factory.BaseCjOutput;
 import com.graphinout.base.cj.writer.ICjWriter;
+import com.graphinout.foundation.pure.collections.PowerStackEnum;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.input.Locator;
-import com.graphinout.foundation.pure.collections.PowerStackEnum;
 
 import java.util.function.Consumer;
 
@@ -27,8 +27,12 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
     private final ICjWriter cjWriter;
     /** represent the current nesting */
     private final PowerStackEnum<CjType> protocolStack = PowerStackEnum.create();
+    private final boolean sort;
 
-    public CjStream2CjWriter(ICjWriter cjWriter) {this.cjWriter = cjWriter;}
+    public CjStream2CjWriter(ICjWriter cjWriter, boolean sort) {
+        this.cjWriter = cjWriter;
+        this.sort = sort;
+    }
 
     @Override
     public void documentEnd() {
@@ -42,7 +46,7 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
 
     @Override
     public void documentStart(ICjDocumentChunk document) {
-        document.fireStartChunk(cjWriter);
+        document.fireStartChunk(cjWriter, sort);
 
         protocolStack.push(CjType.RootObject);
     }
@@ -60,7 +64,7 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
         maybeNodesEnd();
         maybeEdgesStart();
 
-        edge.fireStartChunk(cjWriter);
+        edge.fireStartChunk(cjWriter, sort);
         protocolStack.push(CjType.Edge);
     }
 
@@ -80,7 +84,7 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
         maybeEdgesEnd();
         maybeGraphsStart();
 
-        graph.fireStartChunk(cjWriter);
+        graph.fireStartChunk(cjWriter, sort);
         protocolStack.push(CjType.Graph);
     }
 
@@ -119,7 +123,7 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
     public void maybeGraphsStart() {
         CjType type = protocolStack.peek();
         switch (type) {
-            case RootObject ->  {
+            case RootObject -> {
                 // root graph
                 cjWriter.listStart(CjType.ArrayOfGraphs);
                 protocolStack.push(CjType.ArrayOfGraphs);
@@ -174,7 +178,7 @@ public class CjStream2CjWriter extends BaseCjOutput implements ICjStream {
         // are we the first node?
         maybeNodesStart();
 
-        node.fireStartChunk(cjWriter);
+        node.fireStartChunk(cjWriter, sort);
         protocolStack.push(CjType.Node);
     }
 

@@ -74,7 +74,7 @@ public class GioEngineCore {
                     }
                 });
                 Cj2JsonWriter cj2JsonWriter2 = new Cj2JsonWriter(jsonWriter2);
-                CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2JsonWriter2);
+                CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2JsonWriter2, true);
                 return cjStream2CjWriter;
             }
             case GraphmlReader.FORMAT_ID: {
@@ -95,7 +95,7 @@ public class GioEngineCore {
                         throw new RuntimeException(e);
                     }
                 });
-                CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2ElementsWriter);
+                CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2ElementsWriter, true);
                 return cjStream2CjWriter;
             }
             case AdjListReader.FORMAT_ID:
@@ -123,7 +123,7 @@ public class GioEngineCore {
                     }
                 });
                 Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(jsonWriter);
-                return new CjStream2CjWriter(cj2JsonWriter);
+                return new CjStream2CjWriter(cj2JsonWriter, true);
             }
             case GraphmlReader.FORMAT_ID: {
                 Xml2StringWriter xml2StringWriter = new Xml2StringWriter(XML.AttributeOrderPerElement.Lexicographic, true, xml -> {

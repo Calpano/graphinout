@@ -24,7 +24,7 @@ public class Cj2CjStreamTest {
 
         Json2StringWriter json2StringWriter = new Json2StringWriter();
         Cj2JsonWriter cj2jsonWriter = new Cj2JsonWriter(json2StringWriter);
-        CjStream2CjWriter cjStream2cjWriter = new CjStream2CjWriter(cj2jsonWriter);
+        CjStream2CjWriter cjStream2cjWriter = new CjStream2CjWriter(cj2jsonWriter, true);
         CjWriter2CjStream cjWriter2cjStream = new CjWriter2CjStream(cjStream2cjWriter);
         Json2CjWriter json2cjWriter = new Json2CjWriter(cjWriter2cjStream);
 

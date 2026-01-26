@@ -20,7 +20,7 @@ public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjElement {
 
         public ParentIterator(@NonNull ICjElement start) {
             this.current = start;
-            assert current instanceof ICjGraph || current instanceof ICjDocument;
+            assert current instanceof ICjCoreElement || current instanceof ICjDocument : "got " + start.getClass().getSimpleName();
         }
 
         public boolean hasNext() {
@@ -86,6 +86,54 @@ public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjElement {
             default -> throw new AssertionError();
         }
 
+    }
+
+    /**
+     *
+     * @return an id which resolves into the same URI, but uses the current {@link #contextGraph()} with its
+     * {@link #effectiveBaseUri()}.
+     */
+    default String abbreviatedUri() {
+        String uri = uri();
+        String effectiveBaseUri = effectiveBaseUri();
+        if (uri.startsWith(effectiveBaseUri+"#")) {
+            return uri.substring(effectiveBaseUri.length()+1);
+        }
+        if (uri.startsWith(effectiveBaseUri)) {
+            return uri.substring(effectiveBaseUri.length());
+        }
+        return uri;
+    }
+
+    /**
+     * @return the graph which defined the baseUri. This is the logical parent of nodes implied by edges in this graph
+     * or subgraphs thereof. If no baseUri is set in any graph, the rootmost graph is returned.
+     */
+    default @NonNull ICjGraph contextGraph() {
+        if (this instanceof ICjGraph graph) {
+            String b = graph.baseUri();
+            if (b != null) return graph;
+        }
+        // go up
+        ICjElement parent = parent();
+        if (parent instanceof ICjDocument document) {
+            return this.asGraph();
+        } else if (parent instanceof ICjCoreElement coreElement) {
+            return coreElement.contextGraph();
+        } else {
+            throw new AssertionError();
+        }
+    }
+
+    default ICjDocument document() {
+        ICjElement parent = parent();
+        if (parent instanceof ICjDocument) {
+            return (ICjDocument) parent;
+        } else if (parent instanceof ICjCoreElement coreElement) {
+            return coreElement.document();
+        } else {
+            throw new AssertionError("Parent is " + parent.getClass().getSimpleName());
+        }
     }
 
     default @NonNull String effectiveBaseUri() {
@@ -155,7 +203,8 @@ public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjElement {
     }
 
     /**
-     * @return this elements URI, derived from this elements ID and effective baseUri from lowest parent graph/document. It may be a blank node uri '_:' + {@link #unstableId()}.
+     * @return this elements URI, derived from this elements ID and effective baseUri from lowest parent graph/document.
+     * It may be a blank node uri '_:' + {@link #unstableId()}.
      */
     @NonNull
     default String uri() {
@@ -169,6 +218,5 @@ public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjElement {
         String effectiveBaseUri = effectiveBaseUri();
         return CjUris.uri(effectiveBaseUri, id);
     }
-
 
 }

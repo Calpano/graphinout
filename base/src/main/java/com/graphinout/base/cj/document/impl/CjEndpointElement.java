@@ -34,7 +34,7 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
     }
 
     @Override
-    public void fire(ICjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter, boolean sort) {
         cjWriter.endpointStart();
         cjWriter.nodeId(node);
         ofNullable(port).ifPresent(cjWriter::portId);

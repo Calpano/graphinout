@@ -29,7 +29,7 @@ public class CjDocumentMetaElement implements ICjDocumentMetaMutable {
     }
 
     @Override
-    public void fire(ICjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter, boolean sort) {
         // alphabetic order
         cjWriter.connectedJsonStart();
         cjWriter.maybe(canonical, cjWriter::connectedJson__canonical);

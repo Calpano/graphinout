@@ -12,6 +12,8 @@ import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.util.Comparables;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -23,7 +25,7 @@ import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccep
 import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public interface ICjLabel extends ICjElement {
+public interface ICjLabel extends ICjElement, ICjHasData, Comparable<ICjLabel> {
 
     Logger _log = getLogger(ICjLabel.class);
 
@@ -61,6 +63,16 @@ public interface ICjLabel extends ICjElement {
 
     static IJsonArray toJsonValue(ICjLabel cjLabel) {
         return cjLabel.entries().map(ICjLabelEntry::toJsonValue).collect(IJsonFactory.INSTANCE.arrayCollector());
+    }
+
+    /**
+     * Compare by entries, then data
+     *
+     * @param other
+     * @return
+     */
+    default int compareTo(@NonNull ICjLabel other) {
+        return Comparables.<ICjLabel>comparing().byStream(ICjLabel::entries, ICjLabelEntry::compareTo).compare(this, other);
     }
 
     default ICjLabelMutable copyMutable() {
@@ -112,7 +124,7 @@ public interface ICjLabel extends ICjElement {
         Json2StringWriter w = new Json2StringWriter();
         Cj2JsonWriter cjWriter = new Cj2JsonWriter(w);
         cjWriter.arrayStart();
-        entries().forEach(x -> x.fire(cjWriter));
+        entries().forEach(x -> x.fire(cjWriter, true));
         cjWriter.arrayEnd();
         return w.jsonString();
     }

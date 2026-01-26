@@ -26,6 +26,7 @@ import com.graphinout.foundation.pure.functional.Nullables;
 import com.graphinout.foundation.pure.json.JsonException;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -37,7 +38,7 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
 
     private final PowerStackOnClasses<Object> stack = PowerStackOnClasses.create();
     private final @Nullable Consumer<ICjDocument> onDone;
-    private ICjDocument resultDoc;
+    private ICjDocumentMutable resultDoc;
 
     public CjWriter2CjDocumentWriter(@Nullable Consumer<ICjDocument> onDone) {
         this.onDone = onDone;
@@ -237,7 +238,7 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
         stack.peek(ICjHasPortsMutable.class).addPort(stack::push);
     }
 
-    public ICjDocument resultDoc() {
+    public @NonNull ICjDocumentMutable resultDoc() {
         return resultDoc;
     }
 

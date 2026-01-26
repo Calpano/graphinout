@@ -46,7 +46,7 @@ public class Cj2CjElementsTest {
         ICjDocument doc = cj2ElementsWriter.resultDoc();
         StringBuilderJsonWriter jsonWriter = new StringBuilderJsonWriter();
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(jsonWriter);
-        doc.fire(cj2JsonWriter);
+        doc.fire(cj2JsonWriter, addLogging);
 
         String json_in = xmlResource.getContentAsString();
         String json_out = jsonWriter.json();

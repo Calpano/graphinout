@@ -29,12 +29,12 @@ public class CjPortElement extends CjHasDataAndLabelElement implements ICjPortMu
     }
 
     @Override
-    public void fire(ICjWriter cjWriter) {
+    public void fire(ICjWriter cjWriter, boolean sort) {
         cjWriter.portStart();
         cjWriter.maybe(id, cjWriter::id);
         fireDataMaybe(cjWriter);
-        fireLabelMaybe(cjWriter);
-        cjWriter.list(ports, CjType.ArrayOfPorts, CjPortElement::fire);
+        fireLabelMaybe(cjWriter, sort);
+        cjWriter.list(ports, CjType.ArrayOfPorts, sort, (cjPortElement, cjWriter1) -> cjPortElement.fire(cjWriter1, sort));
         cjWriter.portEnd();
     }
 

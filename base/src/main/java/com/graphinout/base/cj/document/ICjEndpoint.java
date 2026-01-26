@@ -2,15 +2,25 @@ package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
+import com.graphinout.foundation.pure.util.Comparables;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
-public interface ICjEndpoint extends ICjHasData, ICjElement {
+public interface ICjEndpoint extends ICjHasData, ICjElement, Comparable<ICjEndpoint> {
+
+    @Override
+    default int compareTo(ICjEndpoint other) {
+        return Comparables.<ICjEndpoint>comparing() //
+                .byKey(ICjEndpoint::direction) //
+                .byKey(ICjEndpoint::node) //
+                .byKey(ICjEndpoint::port) //
+                .byKey(ICjEndpoint::data)
+                .compare(this, other);
+    }
 
     default void copyTo(ICjEndpointMutable endpoint) {
         endpoint.node(node());

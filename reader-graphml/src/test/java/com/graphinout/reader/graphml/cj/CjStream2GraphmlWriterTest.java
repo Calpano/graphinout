@@ -16,9 +16,9 @@ class CjStream2GraphmlWriterTest {
     static String runPipeline(ICjDocument doc) {
         Json2StringWriter jsonWriter = new Json2StringWriter();
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(jsonWriter);
-        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2JsonWriter);
+        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2JsonWriter, true);
         CjWriter2CjStream cjWriter2CjStream = new CjWriter2CjStream(cjStream2CjWriter);
-        doc.fire(cjWriter2CjStream);
+        doc.fire(cjWriter2CjStream, false);
         return jsonWriter.jsonString();
     }
 

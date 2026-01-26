@@ -51,7 +51,7 @@ public class ReaderTests {
         }
 
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(jsonWriter);
-        ICjStream cjStream = new CjStream2CjWriter(cj2JsonWriter);
+        ICjStream cjStream = new CjStream2CjWriter(cj2JsonWriter, true);
         if (validateCj) {
             cjStream = new DelegatingCjStream(new ValidatingCjStream(), cjStream);
         }

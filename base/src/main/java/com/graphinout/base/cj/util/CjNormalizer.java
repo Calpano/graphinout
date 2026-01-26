@@ -2,6 +2,11 @@ package com.graphinout.base.cj.util;
 
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.data.CjDataProperty;
+import com.graphinout.base.cj.data.CjMappedProperties;
+import com.graphinout.base.cj.document.CjDocuments;
+import com.graphinout.base.cj.document.ICjDocumentMeta;
+import com.graphinout.base.cj.document.ICjDocumentMutable;
+import com.graphinout.base.cj.document.ICjElement;
 import com.graphinout.base.json.JavaJsons;
 import com.graphinout.foundation.pure.json.JsonConstants;
 import com.graphinout.foundation.pure.json.JsonTransformer;
@@ -11,10 +16,13 @@ import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.path.JsonPaths;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
+import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class CjNormalizer {
 
@@ -32,7 +40,6 @@ public class CjNormalizer {
                     String nodeIdB = b.asObject().getString(CjConstants.ENDPOINT__NODE);
                     return nodeIdA.compareTo(nodeIdB);
                 });
-
             }
         }
 
@@ -96,16 +103,62 @@ public class CjNormalizer {
         }
 
     };
-
+    private static final Logger log = getLogger(CjNormalizer.class);
     private final String resultJson;
 
     public CjNormalizer(String cjJson) {
-        //TODO parse to CjDoc, but this requires reader-cj, which depends still on reader-graphml for the gio bridge
-        // ICjDocument cjDoc = CjDocuments.parseJsonString(cjJson);
+        String n;
+        try {
+            ICjDocumentMutable cjDoc = CjDocuments.parseCjJsonString("normalizing", cjJson);
 
+            // FIXME do the normalization here
+            cjDoc.connectedJson((ICjDocumentMeta) null);
+
+            cjDoc.dataMutable(data->{
+                // for comparing CJ, just ignore the graphml keys
+                if (data.isNotEmpty() && data.jsonValue_().isObject()) {
+                    data.remove(CjDataProperty.Keys.cjPropertyKey);
+                }
+                if (data.isEmpty()) {
+                    data.removeJsonValue();
+                }
+            });
+
+            cjDoc.graphsAll().map(ICjElement::asGraph).forEach(g -> {
+                g.dataMutable(data -> {
+                    // remove auto-added GraphML stats "data"."graphml:xmlAttributes"."parse." *
+                    IJsonValue xmlAtts = data.getProperty(CjMappedProperties.XML_ATTRIBUTES);
+                    if (xmlAtts != null && xmlAtts.isObject()) {
+                        IJsonObjectMutable x = xmlAtts.asObject().mutableCopy();
+                        x.removePropertyIf(p -> p.startsWith("parse."));
+                        data.remove(CjMappedProperties.XML_ATTRIBUTES);
+                        if (!x.isEmpty()) {
+                            data.add(CjMappedProperties.XML_ATTRIBUTES, x);
+                        }
+                    }
+                    if (data.isEmpty()) {
+                        data.removeJsonValue();
+                    }
+                });
+            });
+
+
+            n = CjDocuments.toJsonString(cjDoc);
+        } catch (IOException e) {
+            log.warn("Could not parse to CjDoc");
+            n = normalizeOnJsonLevel(cjJson);
+        }
+        this.resultJson = n;
+    }
+
+    public static String canonicalize(String cjJson) {
+        CjNormalizer normalizer = new CjNormalizer(cjJson);
+        return normalizer.resultJson;
+    }
+
+    private static String normalizeOnJsonLevel(String cjJson) {
         if (cjJson.isBlank()) {
-            this.resultJson = "";
-            return;
+            return "";
         }
 
         IJsonValue jsonValue = JavaJsons.ofJsonString(cjJson);
@@ -114,12 +167,7 @@ public class CjNormalizer {
 
         Json2StringWriter w = new Json2StringWriter();
         jsonValue.fire(w);
-        this.resultJson = w.jsonString();
-    }
-
-    public static String canonicalize(String cjJson) {
-        CjNormalizer normalizer = new CjNormalizer(cjJson);
-        return normalizer.resultJson;
+        return w.jsonString();
     }
 
 

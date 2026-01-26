@@ -1,6 +1,7 @@
 package com.graphinout.base.cj.document;
 
 import com.graphinout.foundation.pure.annotations.ModificationOperation;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -11,7 +12,7 @@ public interface ICjDocumentChunkMutable extends ICjDocumentChunk, ICjHasDataMut
 
     /** A simple setter */
     @ModificationOperation
-    void connectedJson(ICjDocumentMeta meta);
+    void connectedJson(@Nullable ICjDocumentMeta meta);
 
     /** Creates a new {@link ICjDocumentMetaMutable}, attaches it, and lets the consumer modify it */
     @ModificationOperation

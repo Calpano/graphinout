@@ -3,6 +3,8 @@ package com.graphinout.base.cj.document;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
+import com.graphinout.foundation.pure.util.Comparables;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -18,7 +20,12 @@ import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
  * This interface provides methods to access and manipulate the JSON data associated with a CJ element. It allows for
  * querying properties and navigating the JSON structure.
  */
-public interface ICjData extends ICjElement {
+public interface ICjData extends ICjElement, Comparable<ICjData> {
+
+    @Override
+    default int compareTo(@NonNull ICjData other) {
+        return Comparables.compareNullableToString(mapOrDefault(jsonValue(), IJsonValue::toJsonString, ""), mapOrDefault(other.jsonValue(), IJsonValue::toJsonString, ""));
+    }
 
     /**
      * {@inheritDoc}

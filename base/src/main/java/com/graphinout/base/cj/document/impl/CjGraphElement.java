@@ -64,12 +64,12 @@ public class CjGraphElement extends CjGraphChunk implements ICjGraphMutable {
     }
 
     @Override
-    public void fire(ICjWriter cjWriter) {
-        fireStartChunk(cjWriter);
+    public void fire(ICjWriter cjWriter, boolean sort) {
+        fireStartChunk(cjWriter,sort);
 
-        cjWriter.list(nodes, CjType.ArrayOfNodes, CjNodeElement::fire);
-        cjWriter.list(edges, CjType.ArrayOfEdges, CjEdgeElement::fire);
-        cjWriter.list(graphs, CjType.ArrayOfGraphs, CjGraphElement::fire);
+        cjWriter.list(nodes, CjType.ArrayOfNodes, sort, (cjNodeElement, cjWriter1) -> cjNodeElement.fire(cjWriter1, sort));
+        cjWriter.list(edges, CjType.ArrayOfEdges, sort, (cjEdgeElement, cjWriter1) -> cjEdgeElement.fire(cjWriter1, sort));
+        cjWriter.list(graphs, CjType.ArrayOfGraphs, sort, (cjGraphElement, cjWriter1) -> cjGraphElement.fire(cjWriter1, sort));
 
         cjWriter.graphEnd();
     }

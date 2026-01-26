@@ -4,6 +4,7 @@ import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.pure.xml.XmlFragmentString;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface ICjDataMutable extends ICjData {
      * @param path      where to add, may be empty. See {@link IJsonContainerNavigationStep#pathOf(Object...)}
      * @param jsonValue to set at the end of the path
      */
-    void add(List<IJsonContainerNavigationStep> path, IJsonValue jsonValue);
+    void add(List<IJsonContainerNavigationStep> path, @NonNull IJsonValue jsonValue);
 
     default void add(List<IJsonContainerNavigationStep> path, String javaString) {
         add(path, factory().createString(javaString));
@@ -46,14 +47,21 @@ public interface ICjDataMutable extends ICjData {
 
     void remove(String propertyKey);
 
+    default void set(String propertyKey, IJsonValue jsonValue) {
+        remove(propertyKey);
+        add(propertyKey, jsonValue);
+    }
+
     /**
      * @param jsonValue to set
      * @throws IllegalStateException if data was already set
      */
-    default void setJsonValue(IJsonValue jsonValue) throws IllegalStateException {
+    default void setJsonValue(@NonNull IJsonValue jsonValue) throws IllegalStateException {
         if (jsonValue() != null)
             throw new IllegalStateException("data already set");
         add(List.of(), jsonValue);
     }
+
+    void removeJsonValue();
 
 }

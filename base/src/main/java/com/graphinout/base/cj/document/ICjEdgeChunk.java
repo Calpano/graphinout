@@ -2,6 +2,7 @@ package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.document.impl.CjEdgeChunk;
 import com.graphinout.base.cj.writer.ICjWriter;
+import com.graphinout.foundation.pure.util.Comparables;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -16,6 +17,18 @@ import static java.util.Optional.ofNullable;
  * below 50 MB.
  */
 public interface ICjEdgeChunk extends ICjHasId, ICjHasData, ICjHasLabel {
+
+    /**
+     * compare first by id, then by label, then by endpoints, then by data
+     */
+    static int compare(ICjEdgeChunk a, ICjEdgeChunk b) {
+        return Comparables.<ICjEdgeChunk>comparing() //
+                .byKey(ICjHasId::id) //
+                .byKey(ICjEdgeChunk::label) //
+                .byStream(ICjEdgeChunk::endpoints) //
+                .byKey(ICjEdgeChunk::data) //
+                .compare(a, b);
+    }
 
     default ICjEdgeChunkMutable copyMutable() {
         CjEdgeChunk copy = new CjEdgeChunk();
@@ -37,13 +50,13 @@ public interface ICjEdgeChunk extends ICjHasId, ICjHasData, ICjHasLabel {
 
     Stream<ICjEndpoint> endpoints();
 
-    default void fireStartChunk(ICjWriter cjWriter) {
+    default void fireStartChunk(ICjWriter cjWriter, boolean sort) {
         cjWriter.edgeStart();
         // streaming order: id, label, type, endpoints, data, graphs
         cjWriter.maybe(id(), cjWriter::id);
-        fireLabelMaybe(cjWriter);
+        fireLabelMaybe(cjWriter,sort);
         ofNullable(edgeType()).ifPresent(cjWriter::edgeType);
-        cjWriter.list(endpoints().toList(), CjType.ArrayOfEndpoints, ICjEndpoint::fire);
+        cjWriter.list(endpoints().toList(), CjType.ArrayOfEndpoints, sort, (iCjEndpoint, cjWriter1) -> iCjEndpoint.fire(cjWriter1, sort));
         fireDataMaybe(cjWriter);
     }
 

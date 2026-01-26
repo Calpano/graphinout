@@ -1,7 +1,7 @@
 package com.graphinout.base.cj.writer;
 
-import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
+import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.foundation.pure.input.IHandleContentErrors;
@@ -140,8 +140,7 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
     void jsonDataStart();
 
     /**
-     * End a label object.
-     * Implementations should close the label object structure.
+     * End a label object. Implementations should close the label object structure.
      */
     void labelEnd();
 
@@ -150,17 +149,20 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
     void labelEntryStart();
 
     /**
-     * Start a label object.
-     * Implementations should write the "label" key and start the object structure.
+     * Start a label object. Implementations should write the "label" key and start the object structure.
      */
     void labelStart();
 
     void language(String language);
 
-    default <T> void list(List<T> list, CjType cjArrayType, BiConsumer<T, ICjWriter> element_writer) {
+    default <T> void list(List<T> list, CjType cjArrayType, boolean sort, BiConsumer<T, ICjWriter> element_writer) {
         if (!list.isEmpty()) {
             listStart(cjArrayType);
-            list.forEach(x -> element_writer.accept(x, this));
+            if (sort) {
+                list.stream().sorted().forEach(x -> element_writer.accept(x, this));
+            } else {
+                list.forEach(x -> element_writer.accept(x, this));
+            }
             listEnd(cjArrayType);
         }
     }
@@ -185,9 +187,6 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
     /** endpoint.node */
     void nodeId(String nodeId);
 
-    /** node.types[] - node type URI/string */
-    void nodeType(ICjElementType nodeType);
-
     /**
      * CJ Node start event.
      * <p>
@@ -198,6 +197,9 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
      * </ul>
      */
     void nodeStart();
+
+    /** node.types[] - node type URI/string */
+    void nodeType(ICjElementType nodeType);
 
     /**
      * CJ Port end event.

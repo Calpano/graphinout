@@ -53,8 +53,7 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     }
 
     @Override
-    public void connectedJson(ICjDocumentMeta meta) {
-        if (connectedJson != null) throw new IllegalStateException("Meta already set");
+    public void connectedJson(@Nullable ICjDocumentMeta meta) {
         this.connectedJson = meta;
     }
 
@@ -85,9 +84,9 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     }
 
     @Override
-    public void fire(ICjWriter cjWriter) {
-        fireStartChunk(cjWriter);
-        cjWriter.list(graphs, CjType.ArrayOfGraphs, CjGraphElement::fire);
+    public void fire(ICjWriter cjWriter, boolean sort) {
+        fireStartChunk(cjWriter,sort);
+        cjWriter.list(graphs, CjType.ArrayOfGraphs, sort, (cjGraphElement, cjWriter1) -> cjGraphElement.fire(cjWriter1, sort));
         cjWriter.documentEnd();
     }
 
@@ -106,7 +105,7 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     public String toCjJsonString() {
         Json2StringWriter json2StringWriter = new Json2StringWriter();
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
-        fire(cj2JsonWriter);
+        fire(cj2JsonWriter, true);
         return json2StringWriter.jsonString();
     }
 

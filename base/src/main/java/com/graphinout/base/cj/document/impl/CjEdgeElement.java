@@ -33,9 +33,9 @@ public class CjEdgeElement extends CjEdgeChunk implements ICjEdgeMutable {
     }
 
     @Override
-    public void fire(ICjWriter cjWriter) {
-        fireStartChunk(cjWriter);
-        cjWriter.list(graphs, CjType.ArrayOfGraphs, ICjGraph::fire);
+    public void fire(ICjWriter cjWriter, boolean sort) {
+        fireStartChunk(cjWriter, sort);
+        cjWriter.list(graphs, CjType.ArrayOfGraphs, sort, (cjGraphElement, cjWriter1) -> cjGraphElement.fire(cjWriter1, sort));
         cjWriter.edgeEnd();
     }
 
@@ -53,7 +53,7 @@ public class CjEdgeElement extends CjEdgeChunk implements ICjEdgeMutable {
     }
 
     @Override
-    public @NonNull ICjElement parent() {
+    public @NonNull ICjGraph parent() {
         return parent;
     }
 

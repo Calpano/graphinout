@@ -10,8 +10,8 @@ import static java.util.Optional.ofNullable;
 
 public interface ICjHasLabel {
 
-    default void fireLabelMaybe(ICjWriter cjWriter) {
-        ofNullable(label()).ifPresent(l -> l.fire(cjWriter));
+    default void fireLabelMaybe(ICjWriter cjWriter, boolean sort) {
+        ofNullable(label()).ifPresent(l -> l.fire(cjWriter, sort));
     }
 
     @Nullable
