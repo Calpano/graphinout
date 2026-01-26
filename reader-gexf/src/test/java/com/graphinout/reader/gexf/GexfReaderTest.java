@@ -24,7 +24,7 @@ class GexfReaderTest {
         GexfReader reader = new GexfReader();
         Json2StringWriter json2StringWriter = new Json2StringWriter();
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
-        CjStream2CjWriter stream = new CjStream2CjWriter(cj2JsonWriter);
+        CjStream2CjWriter stream = new CjStream2CjWriter(cj2JsonWriter, true);
         reader.read(inputSource, stream);
         String json = json2StringWriter.jsonString();
         assertThat(json).isEqualTo("{\"graphs\":[{\"nodes\":[{\"id\":\"0\",\"label\":[{\"value\":\"Hello\"}]},{\"id\":\"1\",\"label\":[{\"value\":\"World\"}]}],\"edges\":[{\"endpoints\":[{\"node\":\"0\"},{\"node\":\"1\"}]}]}]}");

@@ -31,7 +31,7 @@ public class TripleTextReader implements GioReader {
     public static ICjDocument parseToCjDocument(SingleInputSource input) throws IOException {
         TripleTextReader reader = new TripleTextReader();
         CjWriter2CjDocumentWriter elementsWriter = new CjWriter2CjDocumentWriter();
-        CjStream2CjWriter streamToWriter = new CjStream2CjWriter(elementsWriter);
+        CjStream2CjWriter streamToWriter = new CjStream2CjWriter(elementsWriter, true);
         reader.read(input, streamToWriter);
         return elementsWriter.resultDoc();
     }

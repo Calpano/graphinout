@@ -52,7 +52,7 @@ public class OcifReader implements GioReader {
         ICjDocument cjDocument = OcifDoc2CjDoc.toCjDocument(ocifDocument);
         // fire
         CjWriter2CjStream cjWriter2CjStream = new CjWriter2CjStream(cjStream);
-        cjDocument.fire(cjWriter2CjStream);
+        cjDocument.fire(cjWriter2CjStream, false);
     }
 
 

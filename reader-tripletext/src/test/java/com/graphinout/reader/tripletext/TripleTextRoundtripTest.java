@@ -69,7 +69,7 @@ public class TripleTextRoundtripTest {
         SingleInputSource ttInput = SingleInputSource.of(displayPath + ".tt", tripleText);
         TripleTextReader reader = new TripleTextReader();
         CjWriter2CjDocumentWriter elementsWriter2 = new CjWriter2CjDocumentWriter();
-        CjStream2CjWriter streamToWriter2 = new CjStream2CjWriter(elementsWriter2);
+        CjStream2CjWriter streamToWriter2 = new CjStream2CjWriter(elementsWriter2, true);
         reader.read(ttInput, streamToWriter2);
         ICjDocument roundtrippedCj = elementsWriter2.resultDoc();
         Assertions.assertNotNull(roundtrippedCj);

@@ -32,7 +32,7 @@ public class DotReader implements GioReader {
     public static String readToCjJson(InputSource inputSource) throws IOException {
         Json2StringWriter json2StringWriter = new Json2StringWriter();
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
-        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2JsonWriter);
+        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2JsonWriter, true);
         DotReader dotReader = new DotReader();
         dotReader.read(inputSource, cjStream2CjWriter);
 
@@ -58,7 +58,7 @@ public class DotReader implements GioReader {
         TextReader.read(content, dotLines2CjDocument);
         CjDocumentElement cjDoc = dotLines2CjDocument.resultDocument();
         CjWriter2CjStream cjWriter2CjStream = new CjWriter2CjStream(cjStream);
-        cjDoc.fire(cjWriter2CjStream);
+        cjDoc.fire(cjWriter2CjStream, false);
     }
 
     @Override

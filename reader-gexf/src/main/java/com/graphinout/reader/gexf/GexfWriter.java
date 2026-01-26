@@ -22,7 +22,7 @@ public class GexfWriter implements GioWriter {
                 throw new RuntimeException(e);
             }
         });
-        return new CjStream2CjWriter(cjWriter2CjDocumentWriter);
+        return new CjStream2CjWriter(cjWriter2CjDocumentWriter, true);
     }
 
     private void write(ICjDocument cjDoc, OutputSink outputSink) throws IOException {

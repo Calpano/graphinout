@@ -84,7 +84,7 @@ class DotTextReaderTest {
 
         Json2StringWriter json2StringWriter = new Json2StringWriter();
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
-        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2JsonWriter);
+        CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cj2JsonWriter, true);
         underTest.read(singleInputSource, cjStream2CjWriter);
         String json = json2StringWriter.jsonString();
         log.info("JSON: " + json);
