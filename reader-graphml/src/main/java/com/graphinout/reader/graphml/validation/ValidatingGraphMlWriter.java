@@ -49,7 +49,7 @@ public class ValidatingGraphMlWriter extends BaseOutput implements IGraphmlWrite
             NODE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH, LOCATOR, PORT));
             GRAPH.allowedChildren.addAll(Arrays.asList(DATA, DESC, NODE, EDGE, HYPEREDGE, LOCATOR));
             EDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, GRAPH));
-            HYPEREDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, ENDPOINT));
+            HYPEREDGE.allowedChildren.addAll(Arrays.asList(DATA, DESC, ENDPOINT, GRAPH));
             PORT.allowedChildren.addAll(Arrays.asList(DATA, PORT));
         }
 
