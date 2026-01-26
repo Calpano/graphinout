@@ -87,7 +87,7 @@ public class JsonMaker {
      * @param value   e.g. 123
      * @return root replaced with the merge of (1) root and (2) value at the given path at root
      */
-    public static IJsonValue merge(IJsonFactory factory, IJsonValue current, List<IJsonContainerNavigationStep> path, IJsonValue value) throws IllegalStateException {
+    public static IJsonValue merge(IJsonFactory factory, IJsonValue current, List<IJsonContainerNavigationStep> path, @Nullable IJsonValue value) throws IllegalStateException {
         if (path.isEmpty()) { // need to merge root and value
             switch (current.jsonType().valueType()) {
                 case Primitive: {
