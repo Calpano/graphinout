@@ -84,7 +84,7 @@ public class CjValidator {
             // All endpoint.node ids resolve to existing nodes in same document?
             cjDoc.edgesAll().flatMap(ICjEdge::endpoints).forEach(endpoint -> {
                 if (endpoint.node() != null) {
-                    if (cjDoc.findNode(endpoint.node()) == null) {
+                    if (cjDoc.findNodeById(endpoint.node()) == null) {
                         errors.add(ContentError.info("Reference: Endpoint references non-defined node with ID '" + endpoint.node() + "'"));
                     }
                 }

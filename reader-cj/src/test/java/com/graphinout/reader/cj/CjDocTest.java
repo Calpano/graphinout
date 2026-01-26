@@ -41,37 +41,37 @@ public class CjDocTest {
         assertThat(doc.edgesAll().count()).isEqualTo(3);
         {
             // is interpreted with doc-baseUri as "doi:abc#n1"
-            ICjNode node = doc.findNode("n1");
+            ICjNode node = doc.findNodeById("n1");
             assertThat(node).isNotNull();
             assertThat(labelValue(node)).isEqualTo("Node N1 in G2");
         }
         {
-            ICjNode node = doc.findNode("https://example.com/n1");
+            ICjNode node = doc.findNodeById("https://example.com/n1");
             assertThat(node).isNotNull();
             assertThat(labelValue(node)).isEqualTo("Node N1 in G1");
         }
         {
-            ICjNode node = doc.findNode("https://example.com/n2");
+            ICjNode node = doc.findNodeById("https://example.com/n2");
             assertThat(node).isNotNull();
             assertThat(labelValue(node)).isEqualTo("Node N2 in G1");
         }
         {
-            ICjNode node = doc.findNode("_:n3");
+            ICjNode node = doc.findNodeById("_:n3");
             assertThat(node).isNotNull();
             assertThat(labelValue(node)).isEqualTo("Node N3 in G1");
         }
         {
-            ICjNode node = doc.findNode("doi:abc#n1");
+            ICjNode node = doc.findNodeById("doi:abc#n1");
             assertThat(node).isNotNull();
             assertThat(labelValue(node)).isEqualTo("Node N1 in G2");
         }
         {
-            ICjNode node = doc.findNode("doi:abc#n2");
+            ICjNode node = doc.findNodeById("doi:abc#n2");
             assertThat(node).isNotNull();
             assertThat(labelValue(node)).isEqualTo("Node N2 in G2");
         }
         {
-            ICjNode node = doc.findNode("_:n4");
+            ICjNode node = doc.findNodeById("_:n4");
             assertThat(node).isNotNull();
             assertThat(labelValue(node)).isEqualTo("Node N4 in G2");
         }

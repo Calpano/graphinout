@@ -42,7 +42,7 @@ public class CjStreamTest {
         // CJ doc -> CJ
         Json2StringWriter json2StringWriter = new Json2StringWriter();
         Cj2JsonWriter cj2JsonWriter = new Cj2JsonWriter(json2StringWriter);
-        ICjStream cjStream = new CjStream2CjWriter(cj2JsonWriter);
+        ICjStream cjStream = new CjStream2CjWriter(cj2JsonWriter, true);
         CjDocument2CjStream.toCjStream(cjDoc, cjStream);
         String json_out = json2StringWriter.jsonString();
 
