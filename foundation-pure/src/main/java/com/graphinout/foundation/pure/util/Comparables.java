@@ -34,7 +34,7 @@ public class Comparables {
         default int compare(@Nullable T a, @Nullable T b) {
             K aKey = extractKey(a);
             K bKey = extractKey(b);
-            return Comparables.<K>compareNullable(aKey,bKey, this::compareKeys);
+            return Comparables.compareNullable(aKey, bKey, this::compareKeys);
         }
 
         int compareKeys(K keyA, K keyB);
@@ -47,16 +47,15 @@ public class Comparables {
 
         private final List<Comparator<T>> comparators = new ArrayList<>();
 
-        public <K> By<T> byKey(Function<T, @Nullable K> keyExtractFun, Comparator<K> keyComparator) {
-            comparators.add(IExtractKeyAndCompare.of(keyExtractFun, keyComparator));
-            return this;
-        }
-
         public By<T> byComparator(Comparator<T> compareFun) {
             comparators.add(compareFun);
             return this;
         }
 
+        public <K> By<T> byKey(Function<T, @Nullable K> keyExtractFun, Comparator<K> keyComparator) {
+            comparators.add(IExtractKeyAndCompare.of(keyExtractFun, keyComparator));
+            return this;
+        }
 
         public <K extends Comparable<K>> By<T> byKey(Function<T, @Nullable K> keyExtractFun) {
             comparators.add(IExtractKeyAndCompare.of(keyExtractFun, Comparables::compareNullable));
@@ -149,11 +148,24 @@ public class Comparables {
 
     /**
      * Uses as {@code Comparables.<YourTypeHere>comparing().by ... }
-     * @return
+     *
      * @param <T>
+     * @return
      */
     public static <T> By<T> comparing() {
         return new By<>();
+    }
+
+    /**
+     * Objects to be compared may be null. Extracted keys may not.
+     *
+     * @param keyExtractFun
+     * @param <T>
+     * @param <K>
+     * @return
+     */
+    public static <T, K extends Comparable<K>> int comparingKeys(Function<@NonNull T, K> keyExtractFun, @Nullable T a, @Nullable T b) {
+        return Comparables.<T>comparing().byKey(keyExtractFun).compare(a, b);
     }
 
 }
