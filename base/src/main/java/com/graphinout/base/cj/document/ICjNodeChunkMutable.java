@@ -1,5 +1,7 @@
 package com.graphinout.base.cj.document;
 
+import org.jspecify.annotations.NonNull;
+
 /**
  * The part of a CJ node which can be sent in one go. Memory requirements for all data in this chunk are expected to be
  * below 50 MB.
@@ -16,7 +18,7 @@ public interface ICjNodeChunkMutable extends //
     /**
      * Add a type to this node. Node types are exactly like edge types.
      */
-    void addType(ICjElementType type);
+    void addType(@NonNull ICjElementType type);
 
 }
 

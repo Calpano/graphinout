@@ -4,6 +4,9 @@ import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.base.json.JsonReaderImpl;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
+import com.graphinout.foundation.pure.util.Comparables;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -15,7 +18,7 @@ public interface ICjElementType extends Comparable<ICjElementType> {
         return ICjElementType.of(value.asString());
     }
 
-    static ICjElementType of(String type) {
+    static ICjElementType of(@NonNull String type) {
         return () -> type;
     }
 
@@ -26,8 +29,8 @@ public interface ICjElementType extends Comparable<ICjElementType> {
     }
 
     @Override
-    default int compareTo(ICjElementType other) {
-        return type().compareTo(other.type());
+    default int compareTo( @Nullable ICjElementType other) {
+        return Comparables.comparingKeys(ICjElementType::type, this, other);
     }
 
     /**

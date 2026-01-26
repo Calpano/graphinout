@@ -25,6 +25,7 @@ import com.graphinout.foundation.pure.json.JsonException;
 import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.collections.PowerStackOnClasses;
+import org.jspecify.annotations.NonNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -160,7 +161,7 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
     }
 
     @Override
-    public void nodeType(ICjElementType nodeType) {
+    public void nodeType(@NonNull ICjElementType nodeType) {
         // This method is called for node.types[] elements
         ICjNodeChunkMutable node = currentNode();
         if (node != null) {

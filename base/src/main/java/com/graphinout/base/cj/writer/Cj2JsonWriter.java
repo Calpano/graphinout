@@ -251,6 +251,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
 
     @Override
     public void nodeType(ICjElementType nodeType) {
+        assert nodeType != null;
         // Called for each type in node.types[] array
         // The array itself is managed by listStart/listEnd
         onString(nodeType.type());

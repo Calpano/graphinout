@@ -4,6 +4,7 @@ import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.document.ICjPort;
 import com.graphinout.base.cj.document.ICjPortMutable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +14,7 @@ import java.util.stream.Stream;
 public class CjNodeChunk extends CjHasDataAndLabelElement implements ICjNodeChunkMutable {
 
     private final List<CjPortElement> ports = new java.util.ArrayList<>();
-    private final List<ICjElementType> types = new java.util.ArrayList<>();
+    private final List<@NonNull ICjElementType> types = new java.util.ArrayList<>();
     private String id;
 
     public void addPort(Consumer<ICjPortMutable> port) {
@@ -24,7 +25,7 @@ public class CjNodeChunk extends CjHasDataAndLabelElement implements ICjNodeChun
     }
 
     @Override
-    public void addType(ICjElementType type) {
+    public void addType(@NonNull ICjElementType type) {
         types.add(type);
     }
 
