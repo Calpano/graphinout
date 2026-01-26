@@ -13,24 +13,20 @@ public class CjUris {
     public static final String HASH = "#";
 
     /**
-     * Combine baseUri with localName to a full URI. If the baseUri ends with a slash, concatenate. Otherwise, insert a
-     * hash mark. This behavior reflects the typical RDF vocabularies.
-     * <p>
-     * TODO add this to CJ spec
+     * Combine baseUri with localName to a full URI. This behavior reflects the typical RDF vocabularies.
      *
-     * @param baseUri   the effective baseUri to use
-     * @param localName the local name <em>which may already be a URI</em>. It should not start with slash or hash mark,
-     *                  but an alpha numeric
+     * @param baseUri        the effective baseUri to use
+     * @param localNameOrUri the local name <em>which may already be a URI</em>. It should not start with a slash or
+     *                       hash mark, but an alphanumeric character.
      * @return a URI composed of baseUri and localName
      */
-    public static @NonNull String uri(@Nullable String baseUri, @NonNull String localName) {
-        if (localName.contains(":")) return localName;
+    public static @NonNull String uri(@Nullable String baseUri, @NonNull String localNameOrUri) {
+        if (localNameOrUri.contains(":"))
+            // looks already like a URI
+            return localNameOrUri;
         String base = nonNullOrDefault(baseUri, BASE_URI_FALLBACK);
-        if (base.isEmpty()) return localName;
-        if (!base.endsWith(SLASH) && !base.endsWith(HASH)) {
-            base += HASH;
-        }
-        return base + localName;
+        if (base.isEmpty()) return localNameOrUri;
+        return base + localNameOrUri;
     }
 
 }

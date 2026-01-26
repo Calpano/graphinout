@@ -1,11 +1,11 @@
 { "$schema": "https://j-s-o-n.org/schema/cj-7.0.0.json",
-  "baseUri": "doi:doc",
+  "baseUri": "doi:doc#",
   "graphs": [
-    { "baseUri": "doi:graph-1",
+    { "baseUri": "doi:graph-1#",
       "nodes": [
         { "id": "aaa", "data": "Full URI=doi:graph-1#aaa (1)",
           "graphs": [
-            { "baseUri": "doi:nested-graph-in-node",
+            { "baseUri": "doi:nested-graph-in-node#",
               "nodes": [{ "id": "bbb", "data": "Full URI=doi:nested-graph-in-node#bbb (2)" }]
             }
           ]
@@ -18,7 +18,7 @@
             { "node": "bbb", "direction": "out", "data": "Full URI=doi:graph-1#bbb (4) => implied" }
           ],
           "graphs": [
-            { "baseUri": "doi:nested-graph-in-edge",
+            { "baseUri": "doi:nested-graph-in-edge#",
               "nodes": [{ "id": "aaa", "data": "Full URI=doi:nested-graph-in-edge#aaa (5)" }]
             }
           ]
