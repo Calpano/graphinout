@@ -4,7 +4,6 @@ import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.output.InMemoryOutputSink;
 import com.graphinout.testdata.TestFileProvider;
-import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,14 @@ class Cj2RdfTest {
 
     private static final Logger log = getLogger(Cj2RdfTest.class);
 
+    @Test
+    void test() throws Exception {
+        String path = "json/cj_7_0_0/example-cj-with-all-features.cj.json";
+        TestFileProvider.TestResource res = TestFileProvider.resourceByPath(path);
+        assertThat(res).isNotNull();
+        testCj2Rdf_AllCj(path, res.resource());
+    }
+
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test JSON-Canonical CJ-JSON - all files together")
@@ -30,22 +37,16 @@ class Cj2RdfTest {
         assertNotNull(cjDoc);
 
         // CJ to RDF
-        RdfWriter rdfWriter = new RdfWriter();
-        InMemoryOutputSink sink = InMemoryOutputSink.create();
-        rdfWriter.write(cjDoc, sink);
+        for (RdfFormats.RdfSyntax syntax : RdfFormats.RdfSyntax.values()) {
+            RdfReader rdfReader = new RdfService().rdfReaders().stream().filter(r -> r.rdfSyntax() == syntax).findFirst().orElseThrow( ()-> new IllegalArgumentException("No reader found for syntax: " + syntax));
 
-        String resultRdf = sink.getBufferAsUtf8String();
-        log.info("Result RDF:\n" + resultRdf);
+            InMemoryOutputSink sink = InMemoryOutputSink.create();
+            rdfReader.write(cjDoc, sink);
 
-        assertFalse(resultRdf.isEmpty(), "RDF output should not be empty");
-    }
-
-    @Test
-    void test() throws Exception {
-        String path = "json/cj_7_0_0/example-cj-with-all-features.cj.json";
-        TestFileProvider.TestResource res = TestFileProvider.resourceByPath(path);
-        assertThat(res).isNotNull();
-        testCj2Rdf_AllCj(path, res.resource());
+            String resultRdf = sink.getBufferAsUtf8String();
+            log.info("Result RDF (" + syntax + "):\n" + resultRdf);
+            assertFalse(resultRdf.isEmpty(), "RDF output should not be empty");
+        }
     }
 
 

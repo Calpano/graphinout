@@ -1,7 +1,6 @@
 package com.graphinout.reader.rdf;
 
 import com.graphinout.base.cj.CjConstants;
-import com.graphinout.base.cj.document.CjUris;
 import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjDocumentMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
@@ -20,6 +19,7 @@ import org.apache.jena.vocabulary.RDF;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.graphinout.base.cj.document.CjUris.BLANK_NODE_PSEUDO_SCHEME;
 import static com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep.pathOf;
 
 public class RdfModel2CjDoc {
@@ -54,7 +54,7 @@ public class RdfModel2CjDoc {
         Resource rdfSubject = stmt.getSubject();
         String subjectUri;
         if (rdfSubject.isAnon()) {
-            subjectUri = CjUris.BLANK_NODE_PSEUDO_SCHEME + rdfSubject.getId().getLabelString();
+            subjectUri = BLANK_NODE_PSEUDO_SCHEME + rdfSubject.getId().getLabelString();
         } else {
             subjectUri = rdfSubject.getURI();
         }
@@ -68,7 +68,10 @@ public class RdfModel2CjDoc {
         // Check if this is an rdf:type triple
         if (RDF.type.equals(predicate) && object.isResource()) {
             // Map (subject, rdf:type, xxx) to a CJ node with types
-            String typeId = cjDoc.asId(object.asResource().getURI());
+            String objectUri = toUri(object.asResource());
+            assert objectUri != null;
+            String typeId = cjDoc.asId(objectUri);
+            assert typeId != null;
             if (!createdNodes.contains(subjectId)) {
                 cjGraph.addNode(cjNode -> {
                     cjNode.id(subjectId);
@@ -88,7 +91,7 @@ public class RdfModel2CjDoc {
                 objectId = cjDoc.asId_(object.asResource().getURI());
             } else {
                 assert object.isAnon();
-                objectId = CjUris.BLANK_NODE_PSEUDO_SCHEME + object.asResource().getId().getLabelString();
+                objectId = BLANK_NODE_PSEUDO_SCHEME + object.asResource().getId().getLabelString();
             }
 
             // Ensure both subject and object exist as explicit nodes (only if not already created)
@@ -120,6 +123,14 @@ public class RdfModel2CjDoc {
             }
         } else {
             throw new IllegalStateException();
+        }
+    }
+
+    private static String toUri(Resource resource) {
+        if (resource.isAnon()) {
+            return BLANK_NODE_PSEUDO_SCHEME + resource.getId().getLabelString();
+        } else {
+            return resource.getURI();
         }
     }
 

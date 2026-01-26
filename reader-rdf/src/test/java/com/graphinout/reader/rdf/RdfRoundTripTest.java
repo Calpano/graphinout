@@ -32,7 +32,7 @@ class RdfRoundTripTest {
 
         // RDF to CJ
         SingleInputSource inputSource = SingleInputSource.of(res.getPath(), res.getContentAsString());
-        RdfReader reader = new RdfReader();
+        RdfReader reader = new RdfTurtleReader();
         CjWriter2CjDocumentWriter cj2document = new CjWriter2CjDocumentWriter();
         ICjStream cjStream = new CjStream2CjWriter(cj2document, true);
 
@@ -44,7 +44,7 @@ class RdfRoundTripTest {
         log.info("CJ JSON: " + cjJson);
 
         // CJ to RDF
-        RdfWriter writer = new RdfWriter();
+        RdfTurtleReader writer = new RdfTurtleReader();
         InMemoryOutputSink sink = InMemoryOutputSink.create();
 
         ICjStream cjStream_out = writer.createCjStream(sink);
