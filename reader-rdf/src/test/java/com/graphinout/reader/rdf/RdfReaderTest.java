@@ -33,7 +33,7 @@ class RdfReaderTest {
         SingleInputSource inputSource = SingleInputSource.of("test.rdf", rdfContent);
         RdfReader reader = new RdfReader();
         CjWriter2CjDocumentWriter cj2document = new CjWriter2CjDocumentWriter();
-        ICjStream cjStream = new CjStream2CjWriter(cj2document);
+        ICjStream cjStream = new CjStream2CjWriter(cj2document, true);
 
         reader.read(inputSource, cjStream);
 
@@ -58,7 +58,7 @@ class RdfReaderTest {
         SingleInputSource inputSource = SingleInputSource.of("test.ttl", turtleContent);
         RdfReader reader = new RdfReader();
         CjWriter2CjDocumentWriter cj2document = new CjWriter2CjDocumentWriter();
-        ICjStream cjStream = new CjStream2CjWriter(cj2document);
+        ICjStream cjStream = new CjStream2CjWriter(cj2document, true);
 
         reader.read(inputSource, cjStream);
 

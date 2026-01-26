@@ -34,7 +34,7 @@ public class RdfWriter implements GioWriter {
                 throw new RuntimeException(e);
             }
         });
-        return new CjStream2CjWriter(cjWriter2CjDocumentWriter);
+        return new CjStream2CjWriter(cjWriter2CjDocumentWriter, true);
     }
 
     @Override

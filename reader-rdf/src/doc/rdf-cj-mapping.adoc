@@ -265,7 +265,7 @@ ex:Bob a foaf:Person ;
 [source,json]
 ----
 {
-  "$schema": "https://j-s-o-n.org/connected-json/7.0.0/schema",
+  "$schema": "https://j-s-o-n.org/schema/cj-7.0.0.json",
   "baseUri": "https://example.org/",
   "graphs": [{
     "nodes": [

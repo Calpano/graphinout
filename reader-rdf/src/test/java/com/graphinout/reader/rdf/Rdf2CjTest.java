@@ -31,7 +31,7 @@ class Rdf2CjTest {
         SingleInputSource inputSource = SingleInputSource.of(res.getPath(), res.getContentAsString());
         RdfReader reader = new RdfReader();
         CjWriter2CjDocumentWriter cj2document = new CjWriter2CjDocumentWriter();
-        ICjStream cjStream = new CjStream2CjWriter(cj2document);
+        ICjStream cjStream = new CjStream2CjWriter(cj2document, true);
 
         reader.read(inputSource, cjStream);
 

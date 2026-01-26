@@ -42,7 +42,7 @@ class Cj2RdfTest {
 
     @Test
     void test() throws Exception {
-        String path = "json/example-cj-with-all-features.cj.json";
+        String path = "json/cj_7_0_0/example-cj-with-all-features.cj.json";
         TestFileProvider.TestResource res = TestFileProvider.resourceByPath(path);
         assertThat(res).isNotNull();
         testCj2Rdf_AllCj(path, res.resource());

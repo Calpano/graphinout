@@ -167,7 +167,7 @@ public class CjDoc2RdfModel {
         });
 
         ICjData cjData = cjNode.data();
-        if (cjData != null) {
+        if (cjData.isNotEmpty() && cjData.jsonValue_().isObject()) {
             IJsonObject dataObject = cjData.jsonValue_().asObject();
             dataObject.keys().forEach(key -> {
                 // Check for the special "rdf:data" prefix

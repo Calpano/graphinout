@@ -34,7 +34,7 @@ class RdfRoundTripTest {
         SingleInputSource inputSource = SingleInputSource.of(res.getPath(), res.getContentAsString());
         RdfReader reader = new RdfReader();
         CjWriter2CjDocumentWriter cj2document = new CjWriter2CjDocumentWriter();
-        ICjStream cjStream = new CjStream2CjWriter(cj2document);
+        ICjStream cjStream = new CjStream2CjWriter(cj2document, true);
 
         reader.read(inputSource, cjStream);
 
@@ -49,7 +49,7 @@ class RdfRoundTripTest {
 
         ICjStream cjStream_out = writer.createCjStream(sink);
         ICjWriter cjWriter = new CjWriter2CjStream(cjStream_out);
-        cjDoc.fire(cjWriter);
+        cjDoc.fire(cjWriter, false);
 
         String resultRdf = sink.getBufferAsUtf8String();
         log.info("Result RDF:\n" + resultRdf);

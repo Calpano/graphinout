@@ -64,7 +64,7 @@ public class RdfReader implements GioReader {
         CjDocumentElement cjDoc = new CjDocumentElement();
         RdfModel2CjDoc.rdfModel2cjDoc(model, cjDoc, baseUri);
         ICjWriter cjWriter = new CjWriter2CjStream(cjStream);
-        cjDoc.fire(cjWriter);
+        cjDoc.fire(cjWriter, false);
     }
 
     private String detectRdfLanguage(String path) {
