@@ -10,6 +10,7 @@ import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.testdata.TestFileProvider;
 import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
+import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -40,9 +42,7 @@ class Rdf2CjTest {
 
     @BeforeAll
     public static void setUp() {
-        new RdfService().readers()
-                .stream().map(r -> (RdfReader) r)
-                .forEach(reader -> prefix_reader.put(reader.rdfSyntax().resourcePath, reader));
+        new RdfService().readers().stream().map(r -> (RdfReader) r).forEach(reader -> prefix_reader.put(reader.rdfSyntax().resourcePath, reader));
     }
 
     @ParameterizedTest(name = "{index}: {0}")
@@ -50,7 +50,35 @@ class Rdf2CjTest {
     @DisplayName("RDF -> CJ")
     void testRdf2Cj(String displayName, Resource res) throws IOException {
         assertNotNull(res, "Resource not found");
+        rdf2cj(res);
+    }
 
+    @ParameterizedTest(name = "{index}: {0}")
+    @MethodSource("rdfResources")
+    @DisplayName("RDF <-> CJ")
+    void testRdf2Cj2Rdf(String displayName, Resource res) throws IOException {
+        assertNotNull(res, "Resource not found");
+        ICjDocument cjDoc = rdf2cj(res);
+        Model rdfModelActual = CjDoc2RdfModel.cjDoc2Model(cjDoc);
+        RdfFormats.RdfSyntax rdfSyntax = RdfModels.syntaxFromPathName(res.getPath());
+        Model rdfModelExpected = RdfModels.ofRdfSyntax(res.getContentAsString(), rdfSyntax);
+        RdfAssert.xAssertThatIsSameRdf(rdfModelActual, rdfModelExpected, () -> {
+            log.info("Resource: "+res.getURL());
+            log.info("----CJ:\n" + CjDocuments.toJsonString(cjDoc));
+        });
+    }
+
+    @ParameterizedTest(name = "{index}: {0}")
+    @MethodSource("rdfResources")
+    @DisplayName("RDF test resource parsing")
+    void testRdfResourceParsing(String displayName, Resource res) throws IOException {
+        assertNotNull(res, "Resource not found");
+        RdfFormats.RdfSyntax rdfSyntax = RdfModels.syntaxFromPathName(res.getPath());
+        assertThat(rdfSyntax).isNotNull();
+        Model rdfModelExpected = RdfModels.ofRdfSyntax(res.getContentAsString(), rdfSyntax);
+    }
+
+    private ICjDocument rdf2cj(Resource res) throws IOException {
         RdfReader reader = readerForPath(res.getPath());
 
         // RDF to CJ
@@ -69,6 +97,7 @@ class Rdf2CjTest {
             String expectedCj = expected.getContentAsString();
             CjAssert.xAssertThatIsSameCj(cjJson, expectedCj, null);
         }
+        return cjDoc;
     }
 
     private RdfReader readerForPath(String path) {

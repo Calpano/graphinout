@@ -14,6 +14,7 @@ import com.graphinout.reader.rdf.cj.RdfCj;
 import org.apache.jena.rdf.model.AnonId;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
@@ -30,6 +31,12 @@ public class CjDoc2RdfModel {
 
     public static void cjDoc2Model(ICjDocument cjDoc, Model rdfModel) {
         cjDoc.graphs().forEach(cjGraph -> cjGraph2rdfModel(cjGraph, rdfModel));
+    }
+
+    public static Model cjDoc2Model(ICjDocument cjDoc) {
+        Model model = ModelFactory.createDefaultModel();
+        CjDoc2RdfModel.cjDoc2Model(cjDoc, model);
+        return model;
     }
 
     private static void cjEdge2rdfModel(String effectiveBaseUri, ICjEdge cjEdge, Model rdfModel) {

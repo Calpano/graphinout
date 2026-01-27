@@ -100,8 +100,7 @@ public class RdfReader implements GioReader, GioWriter {
     }
 
     public void write(ICjDocument cjDoc, OutputSink outputSink) throws IOException {
-        Model model = ModelFactory.createDefaultModel();
-        CjDoc2RdfModel.cjDoc2Model(cjDoc, model);
+        Model model = CjDoc2RdfModel.cjDoc2Model(cjDoc);
 
         // add namespace declarations to model
         model.setNsPrefix("base", nonNullOrDefault(cjDoc.baseUri(), "#"));

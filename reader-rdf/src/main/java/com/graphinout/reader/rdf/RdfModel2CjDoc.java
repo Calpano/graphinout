@@ -126,6 +126,7 @@ public class RdfModel2CjDoc {
         }
     }
 
+
     private static String toUri(Resource resource) {
         if (resource.isAnon()) {
             return BLANK_NODE_PSEUDO_SCHEME + resource.getId().getLabelString();
