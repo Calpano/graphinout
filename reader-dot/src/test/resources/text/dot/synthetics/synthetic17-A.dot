@@ -1,0 +1,19 @@
+digraph G {
+  rankdir=LR;
+  node [shape=box, style=filled, fillcolor=lightgray, width=2, height=0.75, fontsize=12];
+  edge [dir=none, color=black, style=solid, weight=1, arrowsize=1.0];
+
+  A [label="Node A|{Field 1|Field 2|Field 3}|{<f0> Subfield 1|<f1> Subfield 2|<f2> Subfield 3}", fillcolor=white, fontcolor=black, penwidth=2.0, peripheries=2];
+  B [label="Node B|{Field 1|Field 2|Field 3}|{<f0> Subfield 1|<f1> Subfield 2|<f2> Subfield 3}", fillcolor=white, fontcolor=black, penwidth=2.0, peripheries=2];
+  C [label="Node C|{Field 1|Field 2|Field 3}|{<f0> Subfield 1|<f1> Subfield 2|<f2> Subfield 3}", fillcolor=white, fontcolor=black, penwidth=2.0, peripheries=2];
+  D [label="Node D|{Field 1|Field 2|Field 3}|{<f0> Subfield 1|<f1> Subfield 2|<f2> Subfield 3}", fillcolor=white, fontcolor=black, penwidth=2.0, peripheries=2];
+  E [label="Node E|{Field 1|Field 2|Field 3}|{<f0> Subfield 1|<f1> Subfield 2|<f2> Subfield 3}", fillcolor=white, fontcolor=black, penwidth=2.0, peripheries=2];
+
+  A -> B [label="Edge AB", color=red, style=dashed, weight=2, taillabel="tail", headlabel="head", arrowsize=1.5, constraint=false, decorate=true, dir=forward, arrowhead=vee, arrowtail=none];
+  A -> C [label="Edge AC", color=blue, style=solid, weight=1.5, taillabel="tail", headlabel="head", arrowsize=1.0, minlen=2, constraint=false, decorate=false, dir=forward, arrowhead=none, arrowtail=dot];
+  B -> C [label="Edge BC", color=green, style=dotted, weight=0.5, taillabel="tail", headlabel="head", arrowsize=0.5, minlen=3, constraint=false, decorate=true, dir=none, arrowhead=none, arrowtail=none];
+  B -> D [label="Edge BD", color=gray, style=bold, weight=1.0, taillabel="tail", headlabel="head", arrowsize=1.0, minlen=1, constraint=false, decorate=false, dir=both, arrowhead=none, arrowtail=tee];
+  C -> E [label="Edge CE", color=orange, style=solid, weight=2.5, taillabel="tail", headlabel="head", arrowsize=1.5, minlen=1, constraint=false, decorate=true, dir=back, arrowhead=box, arrowtail=crow, dir=back, weight=1.5, constraint=false];
+
+  D:f1 -> E:f0 [label="Edge DE", color=yellow, style=dashed, arrowsize=1.0, taillabel="tail", headlabel="head", minlen=1, decorate=false, arrowhead=dot, arrowtail=none, dir=both, weight=1.5, constraint=false];
+}

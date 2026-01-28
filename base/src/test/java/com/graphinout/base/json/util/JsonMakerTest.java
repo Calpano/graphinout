@@ -1,4 +1,4 @@
-package com.graphinout.foundation.pure.json.util;
+package com.graphinout.base.json.util;
 
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonValue;

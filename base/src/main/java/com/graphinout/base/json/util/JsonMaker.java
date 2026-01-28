@@ -1,4 +1,4 @@
-package com.graphinout.foundation.pure.json.util;
+package com.graphinout.base.json.util;
 
 import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
@@ -49,7 +49,7 @@ public class JsonMaker {
     public static IJsonValue create(IJsonFactory factory, List<IJsonContainerNavigationStep> path, IJsonValue value) {
         if (path.isEmpty()) return value;
         // create intermediate objects & arrays
-        IJsonContainerNavigationStep firstStep = path.get(0);
+        IJsonContainerNavigationStep firstStep = path.getFirst();
         List<IJsonContainerNavigationStep> lastSteps = path.subList(1, path.size());
         switch (firstStep.containerType()) {
             case Object: {
@@ -76,64 +76,47 @@ public class JsonMaker {
 
     /**
      * <h2>Merge Semantics</h2>
-     * Arrays are appended, i.e. array index is always ignored.
+     * Arrays are appended, i.e., the array index is always ignored.
      *
      * @param factory for creating new values
      * @param current to which to append
      * @param path    e.g. 'foo'/'bar'/[2]/'baz', can be empty
      * @param value   e.g. 123
-     * @return root replaced with the merge of (1) root and (2) value at the given path at root
+     * @return {@code current} replaced with the merge of (1) {@code current} and (2) value at the given path at root
      */
     public static IJsonValue merge(IJsonFactory factory, IJsonValue current, List<IJsonContainerNavigationStep> path, @Nullable IJsonValue value) throws IllegalStateException {
-        if (path.isEmpty()) { // need to merge root and value
-            switch (current.jsonType().valueType()) {
-                case Primitive: {
-                    // merge into a new array
-                    IJsonArrayMutable a = factory.createArrayMutable();
-                    a.add(current);
-                    a.add(value);
-                    return a;
-                }
-                case Array: {
-                    IJsonArrayMutable a = factory.asArrayMutable(current.asArray());
-                    a.add(value);
-                    return a;
-                }
-                case Object:
-                    // merge into a new array
-                    IJsonArrayMutable a = factory.createArrayMutable();
-                    a.add(current);
-                    a.add(value);
-                    return a;
-                //                   throw new IllegalStateException("Cannot merge a value '" + value + "' into an object '" + current + "'");
-            }
+        if (path.isEmpty()) { // need to merge current and value => Array
+            return mergeIntoArray(factory, current, value);
         } else {
-            // merge root and step 0
-            IJsonContainerNavigationStep firstStep = path.get(0);
+            // merge current and step 0
+            IJsonContainerNavigationStep firstStep = path.getFirst();
             List<IJsonContainerNavigationStep> remainingPath = path.subList(1, path.size());
             switch (firstStep.containerType()) {
                 case Object:
-                    IJsonObjectNavigationStep objectStep = (IJsonObjectNavigationStep) firstStep;
+                    IJsonObjectNavigationStep objectStep = firstStep.asObjectStep();
                     switch (current.jsonType().valueType()) {// merge 'foo' into a primitive => throw
                         case Primitive:
                             throw new IllegalStateException("Cannot merge a propertyKey into a primitive");
                         case Object:// merge 'foo' into an object
-                            IJsonObjectMutable rootAsMutableObject = factory.asObjectMutable(current.asObject());
                             String propertyKey = objectStep.propertyKey();
-                            if (rootAsMutableObject.hasProperty(propertyKey)) {
-                                merge(factory, current.asObject().get(propertyKey), remainingPath, value);
+
+                            IJsonObjectMutable currentAsMutableObject = factory.asObjectMutable(current.asObject());
+                            if (currentAsMutableObject.hasProperty(propertyKey)) {
+                                // merge current.foo
+                                IJsonValue merged = merge(factory, current.asObject().get(propertyKey), remainingPath, value);
+                                currentAsMutableObject.setProperty(propertyKey, merged);
                                 return current;
                             } else {
                                 // create it
                                 IJsonValue subValue = create(factory, remainingPath, value);
-                                rootAsMutableObject.addProperty(propertyKey, subValue);
-                                return rootAsMutableObject;
+                                currentAsMutableObject.addProperty(propertyKey, subValue);
+                                return currentAsMutableObject;
                             }
                         case Array:// merge 'foo' into an array => throw
                             throw new IllegalStateException("Cannot merge propertyKey '" + objectStep.propertyKey() + "' into an array");
                     }
                 case Array:
-                    IJsonArrayNavigationStep arrayStep = (IJsonArrayNavigationStep) firstStep;
+                    IJsonArrayNavigationStep arrayStep = firstStep.asArrayStep();
                     // index not used for merge, we simply append
                     int index = arrayStep.index();
                     switch (current.jsonType().valueType()) {
@@ -150,17 +133,28 @@ public class JsonMaker {
                         }
                         case Array: {
                             // merge [0] into array
-                            IJsonArrayMutable rootAsMutableArray = factory.asArrayMutable(current.asArray());
-
-                            rootAsMutableArray.add(create(factory, remainingPath, value));
-                            return rootAsMutableArray;
+                            IJsonArrayMutable currentAsMutableArray = factory.asArrayMutable(current.asArray());
+                            currentAsMutableArray.add(create(factory, remainingPath, value));
+                            return currentAsMutableArray;
                         }
                     }
                 default:
                     throw new AssertionError("Unexpected value: " + firstStep.containerType());
             }
         }
-        throw new AssertionError("unreachable");
+    }
+
+    private static IJsonValue mergeIntoArray(IJsonFactory factory, IJsonValue current, @Nullable IJsonValue value) {
+        IJsonArrayMutable array = switch (current.jsonType().valueType()) {
+            case Primitive, Object -> {
+                IJsonArrayMutable a = factory.createArrayMutable();
+                a.add(current);
+                yield a;
+            }
+            case Array -> factory.asArrayMutable(current.asArray());
+        };
+        array.add(value);
+        return array;
     }
 
     /**
@@ -173,8 +167,7 @@ public class JsonMaker {
     public static IJsonValue removeProperty(IJsonValue value, String propertyKey) throws IllegalStateException {
         if (!value.isObject()) throw new IllegalStateException();
         IJsonObject object = value.asObject();
-        if (object instanceof IJsonObjectMutable) {
-            IJsonObjectMutable objectMutable = (IJsonObjectMutable) object;
+        if (object instanceof IJsonObjectMutable objectMutable) {
             objectMutable.removeProperty(propertyKey);
             return object;
         } else {
