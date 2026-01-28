@@ -2,13 +2,13 @@ package com.graphinout.reader.rdf;
 
 import com.graphinout.base.cj.document.CjUris;
 import com.graphinout.base.cj.document.ICjCoreElement;
-import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.rdf.cj.RdfCj;
 import org.apache.jena.rdf.model.AnonId;
@@ -23,6 +23,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
@@ -167,25 +168,9 @@ public class CjDoc2RdfModel {
                 if (value.isObject()) {
                     IJsonObject dataObject = value.asObject();
                     jsonObject2rdfModel(rdfSubject, dataObject, rdfModel);
-                } else {
-
                 }
             }
         });
-
-        ICjData cjData = cjNode.data();
-        if (cjData.isNotEmpty() && cjData.jsonValue_().isObject()) {
-            IJsonObject dataObject = cjData.jsonValue_().asObject();
-            dataObject.keys().forEach(key -> {
-                // Check for the special "rdf:data" prefix
-                if (key.startsWith(RdfCj.RdfInCj.rdfData + "/")) {
-                    String predicateUri = key.substring(RdfCj.RdfInCj.rdfData.length() + 1);
-                    Property predicate = rdfModel.createProperty(predicateUri);
-                    Literal literal = rdfModel.createLiteral(dataObject.getString(key));
-                    rdfModel.add(rdfSubject, predicate, literal);
-                }
-            });
-        }
     }
 
     // FIXME really nullable? no
@@ -208,30 +193,60 @@ public class CjDoc2RdfModel {
     }
 
     private static void jsonObject2rdfModel(Resource rdfSubject, IJsonObject dataObject, Model rdfModel) {
-        // emit as (s, cj:data, JSON literal)
-        Property cj_rdfData = rdfModel.createProperty(RdfCj.CjInRdf.HAS_DATA);
-        Literal literal = rdfModel.createTypedLiteral(dataObject.toJsonString(), RDF.dtRDFJSON);
-        rdfModel.add(rdfSubject, cj_rdfData, literal);
-//
-//        if(dataObject.hasProperty(RdfCj.RdfInCj.rdfData)) {
-//            // map RDF data transported in CJ back to the RDF it came from
-//
-//        }
-//
-//        dataObject.keys().forEach(key -> {
-//            // Check for the special "rdf:data" prefix
-//            if (key.startsWith(RdfCj.RdfInCj.rdfData + "/")) {
-//                String predicateUri = key.substring(RdfCj.RdfInCj.rdfData.length() + 1);
-//                Property predicate = rdfModel.createProperty(predicateUri);
-//                Literal literal = rdfModel.createLiteral(dataObject.getString(key));
-//                rdfModel.add(rdfSubject, predicate, literal);
-//            } else {
-//                // emit as (s, cj:data, JSON literal)
-//                Property cj_rdfData = rdfModel.createProperty(RdfCj.CjInRdf.HAS_DATA);
-//                Literal literal = rdfModel.createTypedLiteral(dataObject.toJsonString(), RDF.dtRDFJSON);
-//                rdfModel.add(rdfSubject, cj_rdfData, literal);
-//            }
-//        });
+        boolean hasRdfData = false;
+
+        // Check if there's an "rdf:data" object containing RDF property-value pairs
+        if (dataObject.hasProperty(RdfCj.RdfInCj.rdfData)) {
+            IJsonValue rdfDataValue = dataObject.get(RdfCj.RdfInCj.rdfData);
+            if (rdfDataValue.isObject()) {
+                hasRdfData = true;
+                IJsonObject rdfDataObject = rdfDataValue.asObject();
+                // Extract and emit RDF triples from the "rdf:data" object
+                for (String predicateUri : rdfDataObject.keys()) {
+                    Property predicate = rdfModel.createProperty(predicateUri);
+                    IJsonValue value = rdfDataObject.get(predicateUri);
+
+                    toRdfLiterals(rdfModel, value, literal -> {
+                        rdfModel.add(rdfSubject, predicate, literal);
+                    });
+
+                }
+            }
+        }
+
+        // If there are no rdf:data properties, or if there are other properties besides "rdf:data", emit as JSON literal
+        if (!hasRdfData || dataObject.keys().stream().anyMatch(key -> !key.equals(RdfCj.RdfInCj.rdfData))) {
+            if (!hasRdfData) {
+                // Only emit JSON literal if there are no rdf:data properties at all
+                Property cj_rdfData = rdfModel.createProperty(RdfCj.CjInRdf.HAS_DATA);
+                Literal literal = rdfModel.createTypedLiteral(dataObject.toJsonString(), RDF.dtRDFJSON);
+                rdfModel.add(rdfSubject, cj_rdfData, literal);
+            }
+        }
+    }
+
+    private static void toRdfLiterals(Model rdfModel, IJsonValue value, Consumer<Literal> literalConsumer) {
+        switch (value.jsonType()) {
+            case String -> // Plain string literal
+                    literalConsumer.accept(rdfModel.createLiteral(value.asString()));
+            case Object -> {
+                // Literal with metadata (datatype/language)
+                IJsonObjectMutable litObj = value.asObject().mutableCopy();
+                RdfLiteral rdfLit = new RdfLiteral(litObj);
+                if (rdfLit.isLanguageTagged()) {
+                    literalConsumer.accept(rdfModel.createLiteral(rdfLit.value(), rdfLit.language()));
+                } else if (rdfLit.isDataTyped()) {
+                    literalConsumer.accept(rdfModel.createTypedLiteral(rdfLit.value(), rdfLit.datatype()));
+                } else {
+                    literalConsumer.accept(rdfModel.createLiteral(rdfLit.value()));
+                }
+            }
+            case Array -> // convert each of them
+                    value.asArray().forEach(member -> toRdfLiterals(rdfModel, member, literalConsumer));
+            default ->
+                // Fall back to string representation for other types
+                    literalConsumer.accept(rdfModel.createLiteral(value.toJsonString()));
+        }
     }
 
 }

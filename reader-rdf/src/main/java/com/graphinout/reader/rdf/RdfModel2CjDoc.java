@@ -6,6 +6,7 @@ import com.graphinout.base.cj.document.ICjDocumentMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
 import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjGraphMutable;
+import com.graphinout.base.cj.document.ICjNodeMutable;
 import com.graphinout.reader.rdf.cj.RdfCj;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -23,6 +24,16 @@ import static com.graphinout.base.cj.document.CjUris.BLANK_NODE_PSEUDO_SCHEME;
 import static com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep.pathOf;
 
 public class RdfModel2CjDoc {
+
+    private static ICjNodeMutable getOrCreateNode(ICjGraphMutable cjGraph, String nodeId, Set<String> createdNodes) {
+        if (!createdNodes.contains(nodeId)) {
+            createdNodes.add(nodeId);
+            return cjGraph.addNode(cjNode -> cjNode.id(nodeId));
+        } else {
+            // Node already exists, need to add data to existing node
+            return cjGraph.nodes().filter(n -> nodeId.equals(n.id())).findFirst().orElseThrow().asNode();
+        }
+    }
 
     private static void rdfModel2CjGraph(Model rdfModel, ICjDocumentMutable cjDoc, ICjGraphMutable cjGraph) {
         // Track which nodes have been explicitly created to avoid duplicates
@@ -110,22 +121,25 @@ public class RdfModel2CjDoc {
         } else if (object.isLiteral()) {
             // map to CJ data property
             Literal literal = object.asLiteral();
-            if (!createdNodes.contains(subjectId)) {
-                cjGraph.addNode(cjNode -> {
-                    cjNode.id(subjectId);
-                    cjNode.dataMutable(cjData -> cjData.add(pathOf(RdfCj.RdfInCj.rdfData, predicateId), literal.getLexicalForm()));
-                });
-                createdNodes.add(subjectId);
-            } else {
-                // Node already exists, need to add data to existing node
-                // TODO: This is a limitation - we can't easily add data to existing nodes
-                // For now, we skip adding the data
-            }
+            RdfLiteral rdfLit = RdfLiteral.of(literal);
+
+
+            // Store as plain string if no datatype/lang, otherwise as object with metadata
+            ICjNodeMutable cjNode = getOrCreateNode(cjGraph, subjectId, createdNodes);
+            cjNode.dataMutable(cjData -> {
+                if (rdfLit.isPlain()) {
+                    // Plain string literal
+                    String lexicalForm = literal.getLexicalForm();
+                    cjData.add(pathOf(RdfCj.RdfInCj.rdfData, predicateId), lexicalForm);
+                } else {
+                    // Literal with datatype or language - store as JSON object
+                    cjData.add(pathOf(RdfCj.RdfInCj.rdfData, predicateId), rdfLit.jsonObject());
+                }
+            });
         } else {
             throw new IllegalStateException();
         }
     }
-
 
     private static String toUri(Resource resource) {
         if (resource.isAnon()) {
