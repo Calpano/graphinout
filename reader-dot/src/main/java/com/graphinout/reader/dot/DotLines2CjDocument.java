@@ -1,18 +1,18 @@
 package com.graphinout.reader.dot;
 
-import com.graphinout.foundation.pure.input.BaseOutput;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.document.ICjHasDataMutable;
 import com.graphinout.base.cj.document.ICjHasLabelMutable;
 import com.graphinout.base.cj.document.ICjNodeMutable;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
-import com.graphinout.foundation.pure.input.Location;
-import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.text.ITextWriter;
+import com.graphinout.foundation.pure.input.BaseOutput;
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.input.Location;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
-
 import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -43,6 +43,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
 
     private record Attr(String key, String value, boolean html) {}
 
+    @SuppressWarnings("SameParameterValue")
     private static final class Parser {
 
         public static final String DIGRAPH = "digraph";
@@ -51,8 +52,6 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         private int pos = 0;
 
         Parser(String s) {this.s = s;}
-
-        int position() { return pos; }
 
         boolean consumeIf(char ch) {
             skipWs();
@@ -65,8 +64,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
 
         void consumeKeyword(String kw) {
             String got = readKeyword();
-            if (!kw.equals(got)) throw
-                    new IllegalStateException("Expected keyword '" + kw + "' but got '" + got + "'");
+            if (!kw.equals(got)) throw new IllegalStateException("Expected keyword '" + kw + "' but got '" + got + "'");
         }
 
         void consumeOptionalSemicolon() {
@@ -109,13 +107,15 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             boolean directed = switch (kind) {
                 case DIGRAPH -> true;
                 case GRAPH -> false;
-                default -> throw new IllegalStateException("Expected " + GRAPH+" or "+DIGRAPH+", got " + kind);
+                default -> throw new IllegalStateException("Expected " + GRAPH + " or " + DIGRAPH + ", got " + kind);
             };
             String id = tryReadIdOrString();
             return new TopLevel(directed, id);
         }
 
         char peek() {return s.charAt(pos);}
+
+        int position() {return pos;}
 
         String readAngleString() {
             skipWs();
@@ -134,7 +134,11 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                     pos++; // consume '<'
                     out.append('<');
                     boolean closing = false;
-                    if (!eof() && s.charAt(pos) == '/') { closing = true; out.append('/'); pos++; }
+                    if (!eof() && s.charAt(pos) == '/') {
+                        closing = true;
+                        out.append('/');
+                        pos++;
+                    }
                     // read until '>'
                     boolean selfClosing = false;
                     while (!eof()) {
@@ -171,7 +175,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 out.append(c);
                 pos++;
             }
-            if (out.length() == 0 || out.charAt(out.length()-1) != '>') {
+            if (out.isEmpty() || out.charAt(out.length() - 1) != '>') {
                 throw new IllegalStateException("Unterminated HTML-like string starting at pos " + start);
             }
             return out.toString();
@@ -256,7 +260,10 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 // optional decimal point
                 if (!eof() && s.charAt(pos) == '.') {
                     pos++;
-                    while (!eof() && Character.isDigit(s.charAt(pos))) { pos++; sawDigit = true; }
+                    while (!eof() && Character.isDigit(s.charAt(pos))) {
+                        pos++;
+                        sawDigit = true;
+                    }
                 }
                 if (!sawDigit) {
                     // we had "." but no digits around -> not a valid number
@@ -281,8 +288,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         }
 
         String readKeyword() {
-            String id = readId();
-            return id;
+            return readId();
         }
 
         String readQuotedString() {
@@ -307,7 +313,10 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             while (!eof()) {
                 char c = s.charAt(pos);
                 // whitespace
-                if (Character.isWhitespace(c)) { pos++; continue; }
+                if (Character.isWhitespace(c)) {
+                    pos++;
+                    continue;
+                }
                 // line comment //...
                 if (c == '/' && pos + 1 < s.length() && s.charAt(pos + 1) == '/') {
                     pos += 2;
@@ -330,20 +339,17 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             }
         }
 
-        @Nullable
-        String tryReadId() {
+        @Nullable String tryReadId() {
             int save = pos;
             try {
-                String id = readId();
-                return id;
+                return readId();
             } catch (Exception e) {
                 pos = save;
                 return null;
             }
         }
 
-        @Nullable
-        String tryReadIdOrString() {
+        @Nullable String tryReadIdOrString() {
             skipWs();
             if (eof()) return null;
             char c0 = s.charAt(pos);
@@ -360,20 +366,20 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
 
     }
 
-    /** "graph" or "digraph" */
-    private static final String DOT_TYPE_KEY = "dot.type";
     public static final String SUBGRAPH = "subgraph";
     public static final char CURLY_BRACE_CLOSE = '}';
     public static final char CURLY_BRACE_OPEN = '{';
     public static final String NODE = "node";
     public static final String EDGE = "edge";
+    /** "graph" or "digraph" */
+    private static final String DOT_TYPE_KEY = "dot.type";
     private final StringBuilder buf = new StringBuilder();
     private final List<Integer> lineStarts = new ArrayList<>(); // 0-based start index of each input line in buf
     private final CjDocumentElement cjDocument;
     private boolean firstLine = true;
     private Parser currentParser = null;
 
-    private int syntheticIdCounter = 1;
+    private final int syntheticIdCounter = 1;
 
     public DotLines2CjDocument(@Nullable Consumer<ContentError> contentErrorHandler) {
         super.setContentErrorHandler(contentErrorHandler);
@@ -394,7 +400,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                             o.addProperty("type", m.factory().createString("html"));
                             // strip outer << >> if present
                             String v = a.value;
-                            if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length()-2);
+                            if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length() - 2);
                             o.addProperty("value", m.factory().createString(v));
                             m.add(a.key, o);
                         });
@@ -410,7 +416,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                             IJsonObjectMutable o = m.factory().createObjectMutable();
                             o.addProperty("type", m.factory().createString("html"));
                             String v = a.value;
-                            if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length()-2);
+                            if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length() - 2);
                             o.addProperty("value", m.factory().createString(v));
                             m.add(a.key, o);
                         });
@@ -424,7 +430,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                         IJsonObjectMutable o = m.factory().createObjectMutable();
                         o.addProperty("type", m.factory().createString("html"));
                         String v = a.value;
-                        if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length()-2);
+                        if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length() - 2);
                         o.addProperty("value", m.factory().createString(v));
                         m.add(a.key, o);
                     });
@@ -490,21 +496,9 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         buf.append(line);
     }
 
-    private Location mapPosToLocation(int pos) {
-        if (lineStarts.isEmpty()) return Location.UNAVAILABLE;
-        int lineIdx = 0;
-        for (int i = 0; i < lineStarts.size(); i++) {
-            int start = lineStarts.get(i);
-            if (start <= pos) lineIdx = i; else break;
-        }
-        int start = lineStarts.get(lineIdx);
-        int col = (pos - start) + 1; // 1-based
-        int lineNo = lineIdx + 1; // 1-based
-        return new Location(lineNo, col);
-    }
-
     /**
      * This one triggers the actual parse.
+     *
      * @return
      */
     public CjDocumentElement resultDocument() {
@@ -529,8 +523,22 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         } catch (RuntimeException ex) {
             // Emit a content error with precise location
             int pos = currentParser != null ? currentParser.position() : dot.length();
-            throw sendContentError_Error("DOT parse error", ex, ()->mapPosToLocation(pos));
+            throw sendContentError_Error("DOT parse error", ex, () -> mapPosToLocation(pos));
         }
+    }
+
+    private Location mapPosToLocation(int pos) {
+        if (lineStarts.isEmpty()) return Location.UNAVAILABLE;
+        int lineIdx = 0;
+        for (int i = 0; i < lineStarts.size(); i++) {
+            int start = lineStarts.get(i);
+            if (start <= pos) lineIdx = i;
+            else break;
+        }
+        int start = lineStarts.get(lineIdx);
+        int col = (pos - start) + 1; // 1-based
+        int lineNo = lineIdx + 1; // 1-based
+        return new Location(lineNo, col);
     }
 
     private void parseStatements(Parser p, ICjGraphMutable g, boolean directed) {
@@ -539,7 +547,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             p.skipWs();
             if (p.eof() || p.peek() == CURLY_BRACE_CLOSE) break;
             // Handle possible edge starting with an anonymous subgraph/group: "{ ... } -> ..."
-            if (!p.eof() && p.peek() == CURLY_BRACE_OPEN) {
+            if (p.peek() == CURLY_BRACE_OPEN) {
                 int savePos = p.position();
                 // Look ahead to see if this is a pure node-id group followed by an edge operator
                 int i = savePos + 1; // after '{'
@@ -569,26 +577,45 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                     List<Attr> attrsAccum = new ArrayList<>();
                     while (true) {
                         p.skipWs();
-                        while (!p.eof() && p.peek() == '[') { attrsAccum.addAll(p.readAttrList(null)); p.skipWs(); }
+                        while (!p.eof() && p.peek() == '[') {
+                            attrsAccum.addAll(p.readAttrList(null));
+                            p.skipWs();
+                        }
                         if (!p.lookaheadEdgeOp()) break;
                         p.readEdgeOp();
                         List<NodeRef> nextSeg = readNodeRefOrGroup(p, g, directed, nodesById);
                         segments.add(nextSeg);
                     }
-                    while (true) { p.skipWs(); if (!p.eof() && p.peek() == '[') { attrsAccum.addAll(p.readAttrList(null)); continue; } break; }
+                    while (true) {
+                        p.skipWs();
+                        if (!p.eof() && p.peek() == '[') {
+                            attrsAccum.addAll(p.readAttrList(null));
+                            continue;
+                        }
+                        break;
+                    }
                     // Emit edges for each adjacent pair of segments
                     for (int j = 0; j + 1 < segments.size(); j++) {
                         List<NodeRef> left = segments.get(j);
                         List<NodeRef> right = segments.get(j + 1);
-                        for (NodeRef a : left) for (NodeRef b : right) {
-                            nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
-                            nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
-                            g.addEdge(e -> {
-                                e.addEndpoint(ep -> { ep.node(a.nodeId); if (a.port != null) ep.port(a.port); ep.direction(CjDirection.UNDIR); });
-                                e.addEndpoint(ep -> { ep.node(b.nodeId); if (b.port != null) ep.port(b.port); ep.direction(CjDirection.UNDIR); });
-                                applyAttrsToHasDataAndLabel(attrsAccum, e);
-                            });
-                        }
+                        for (NodeRef a : left)
+                            for (NodeRef b : right) {
+                                nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
+                                nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
+                                g.addEdge(e -> {
+                                    e.addEndpoint(ep -> {
+                                        ep.node(a.nodeId);
+                                        if (a.port != null) ep.port(a.port);
+                                        ep.direction(CjDirection.UNDIR);
+                                    });
+                                    e.addEndpoint(ep -> {
+                                        ep.node(b.nodeId);
+                                        if (b.port != null) ep.port(b.port);
+                                        ep.direction(CjDirection.UNDIR);
+                                    });
+                                    applyAttrsToHasDataAndLabel(attrsAccum, e);
+                                });
+                            }
                     }
                     p.consumeOptionalSemicolon();
                     continue;
@@ -617,13 +644,15 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                     while (i2 < p.s.length()) {
                         char c2 = p.s.charAt(i2++);
                         if (c2 == '{') depth2++;
-                        else if (c2 == '}') { depth2--; if (depth2 == 0) break; }
+                        else if (c2 == '}') {
+                            depth2--;
+                            if (depth2 == 0) break;
+                        }
                     }
                     int old = p.pos;
                     p.pos = i2;
                     p.skipWs();
                     edgeAfterBody = p.lookaheadEdgeOp();
-                    p.pos = old;
                 }
                 // reset
                 p.pos = savePos;
@@ -636,26 +665,45 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                     List<Attr> attrsAccum = new ArrayList<>();
                     while (true) {
                         p.skipWs();
-                        while (!p.eof() && p.peek() == '[') { attrsAccum.addAll(p.readAttrList(null)); p.skipWs(); }
+                        while (!p.eof() && p.peek() == '[') {
+                            attrsAccum.addAll(p.readAttrList(null));
+                            p.skipWs();
+                        }
                         if (!p.lookaheadEdgeOp()) break;
                         p.readEdgeOp();
                         List<NodeRef> nextSeg = readNodeRefOrGroup(p, g, directed, nodesById);
                         segments.add(nextSeg);
                     }
-                    while (true) { p.skipWs(); if (!p.eof() && p.peek() == '[') { attrsAccum.addAll(p.readAttrList(null)); continue; } break; }
+                    while (true) {
+                        p.skipWs();
+                        if (!p.eof() && p.peek() == '[') {
+                            attrsAccum.addAll(p.readAttrList(null));
+                            continue;
+                        }
+                        break;
+                    }
                     // Emit edges for each adjacent pair of segments
                     for (int j = 0; j + 1 < segments.size(); j++) {
                         List<NodeRef> left = segments.get(j);
                         List<NodeRef> right = segments.get(j + 1);
-                        for (NodeRef a : left) for (NodeRef b : right) {
-                            nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
-                            nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
-                            g.addEdge(e -> {
-                                e.addEndpoint(ep -> { ep.node(a.nodeId); if (a.port != null) ep.port(a.port); ep.direction(CjDirection.UNDIR); });
-                                e.addEndpoint(ep -> { ep.node(b.nodeId); if (b.port != null) ep.port(b.port); ep.direction(CjDirection.UNDIR); });
-                                applyAttrsToHasDataAndLabel(attrsAccum, e);
-                            });
-                        }
+                        for (NodeRef a : left)
+                            for (NodeRef b : right) {
+                                nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
+                                nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
+                                g.addEdge(e -> {
+                                    e.addEndpoint(ep -> {
+                                        ep.node(a.nodeId);
+                                        if (a.port != null) ep.port(a.port);
+                                        ep.direction(CjDirection.UNDIR);
+                                    });
+                                    e.addEndpoint(ep -> {
+                                        ep.node(b.nodeId);
+                                        if (b.port != null) ep.port(b.port);
+                                        ep.direction(CjDirection.UNDIR);
+                                    });
+                                    applyAttrsToHasDataAndLabel(attrsAccum, e);
+                                });
+                            }
                     }
                     p.consumeOptionalSemicolon();
                     continue;
@@ -726,7 +774,10 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             List<Attr> attrsPreEdge = new ArrayList<>();
             while (true) {
                 p.skipWs();
-                if (!p.eof() && p.peek() == '[') { attrsPreEdge.addAll(p.readAttrList(null)); continue; }
+                if (!p.eof() && p.peek() == '[') {
+                    attrsPreEdge.addAll(p.readAttrList(null));
+                    continue;
+                }
                 break;
             }
             p.skipWs();
@@ -735,7 +786,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 List<List<NodeRef>> segments = new ArrayList<>();
                 segments.add(List.of(first));
                 // accumulate attributes that may appear between segments; they apply to edges from that point forward
-                List<Attr> attrsAccum = new ArrayList<>();
+                List<Attr> attrsAccum = new ArrayList<>(attrsPreEdge);
                 while (true) {
                     p.skipWs();
                     // mid-edge attribute lists allowed here
@@ -753,7 +804,10 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 // also allow trailing attribute lists
                 while (true) {
                     p.skipWs();
-                    if (!p.eof() && p.peek() == '[') { attrsAccum.addAll(p.readAttrList(null)); continue; }
+                    if (!p.eof() && p.peek() == '[') {
+                        attrsAccum.addAll(p.readAttrList(null));
+                        continue;
+                    }
                     break;
                 }
                 // Emit edges for each adjacent pair of segments (DOT semantics)
@@ -815,9 +869,11 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         return new NodeRef(id, port);
     }
 
-    /** Read either a single nodeRef, a 'subgraph' endpoint with optional body, or a group { a, b, c }.
-     * If a 'subgraph' keyword is used as an endpoint followed by an optional id and/or body, we create that subgraph
-     * on the current graph and return a single NodeRef to a node literally named 'subgraph' to preserve DOT round-trip. */
+    /**
+     * Read either a single nodeRef, a 'subgraph' endpoint with optional body, or a group { a, b, c }. If a 'subgraph'
+     * keyword is used as an endpoint followed by an optional id and/or body, we create that subgraph on the current
+     * graph and return a single NodeRef to a node literally named 'subgraph' to preserve DOT round-trip.
+     */
     private List<NodeRef> readNodeRefOrGroup(Parser p, ICjGraphMutable g, boolean directed, Map<String, ICjNodeMutable> nodesById) {
         p.skipWs();
         // Special: 'subgraph' as endpoint in an edge chain
@@ -849,7 +905,10 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             List<NodeRef> list = new ArrayList<>();
             while (true) {
                 p.skipWs();
-                if (!p.eof() && p.peek() == CURLY_BRACE_CLOSE) { p.expect(CURLY_BRACE_CLOSE); break; }
+                if (!p.eof() && p.peek() == CURLY_BRACE_CLOSE) {
+                    p.expect(CURLY_BRACE_CLOSE);
+                    break;
+                }
                 // Allow and ignore simple assignments like rank=same inside a group
                 int savePos = p.position();
                 // Allow nested subgraph inside an endpoint group: expand to the subgraph's nodes per DOT spec
