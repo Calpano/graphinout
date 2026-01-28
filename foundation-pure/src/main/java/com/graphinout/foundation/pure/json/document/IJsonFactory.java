@@ -37,6 +37,10 @@ public interface IJsonFactory {
         return arrayMutable;
     }
 
+    /**
+     * @return if it can be casted into a mutable version, return this instanced but type-casted. Otherwise, create a
+     * mutable version and copy the properties.
+     */
     default IJsonObjectMutable asObjectMutable(IJsonObject object) {
         if (object instanceof IJsonObjectMutable) {
             return (IJsonObjectMutable) object;
