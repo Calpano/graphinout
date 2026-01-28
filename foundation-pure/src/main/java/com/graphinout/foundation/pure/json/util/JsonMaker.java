@@ -1,6 +1,5 @@
 package com.graphinout.foundation.pure.json.util;
 
-import com.graphinout.foundation.pure.collections.jajson.JaJsonMapBuilder;
 import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
@@ -11,7 +10,6 @@ import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.pure.json.path.IJsonObjectNavigationStep;
 import org.jspecify.annotations.Nullable;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -23,7 +21,6 @@ import java.util.List;
  * <p>
  * .API [ propertyKeys ]* (append|addProperty(p)) value
  */
-@SuppressWarnings({"SequencedCollectionMethodCanBeUsed", "PatternVariableCanBeUsed"})
 public class JsonMaker {
 
     /**
@@ -103,7 +100,12 @@ public class JsonMaker {
                     return a;
                 }
                 case Object:
-                    throw new IllegalStateException("Cannot merge a value '" + value + "' into an object '" + current + "'");
+                    // merge into a new array
+                    IJsonArrayMutable a = factory.createArrayMutable();
+                    a.add(current);
+                    a.add(value);
+                    return a;
+                //                   throw new IllegalStateException("Cannot merge a value '" + value + "' into an object '" + current + "'");
             }
         } else {
             // merge root and step 0
@@ -128,7 +130,7 @@ public class JsonMaker {
                                 return rootAsMutableObject;
                             }
                         case Array:// merge 'foo' into an array => throw
-                            throw new IllegalStateException("Cannot merge a propertyKey into an array");
+                            throw new IllegalStateException("Cannot merge propertyKey '" + objectStep.propertyKey() + "' into an array");
                     }
                 case Array:
                     IJsonArrayNavigationStep arrayStep = (IJsonArrayNavigationStep) firstStep;
@@ -144,8 +146,7 @@ public class JsonMaker {
                         }
                         case Object: {
                             // merge [i] into object? throw
-                            throw new IllegalStateException("Cannot merge an index ('" + index +
-                                    "') into an object");
+                            throw new IllegalStateException("Cannot merge an index ('" + index + "') into an object");
                         }
                         case Array: {
                             // merge [0] into array
