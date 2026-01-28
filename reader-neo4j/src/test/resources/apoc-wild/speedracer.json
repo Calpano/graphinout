@@ -1,0 +1,3 @@
+{"type":"node","id":"123","labels":["Movie"],"properties":{"tagline":"Speed has no limits","title":"Speed Racer","released":2008}}
+{"type":"node","id":"124","labels":["PERSON"],"properties":{}}
+{"id":"165","type":"relationship","label":"ACTED_IN","properties":{"roles":["Speed Racer"]},"start":{"id":"124","labels":["Person"]},"end":{"id":"123","labels":["Movie"]}}

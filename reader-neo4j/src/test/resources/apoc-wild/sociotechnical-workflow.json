@@ -1,0 +1,82 @@
+{"type":"node","id":"0","labels":["Step"],"properties":{"name":"Step 1"}}
+{"type":"node","id":"1","labels":["Action"],"properties":{"description":"Bring to boil"}}
+{"type":"node","id":"2","labels":["Tool"],"properties":{"size":"large","description":"Pot"}}
+{"type":"node","id":"3","labels":["Ingredient"],"properties":{"salted":"lightly","name":"Water"}}
+{"type":"node","id":"4","labels":["Ingredient"],"properties":{"name":"Water","description":"Boiling"}}
+{"type":"node","id":"5","labels":["Action"],"properties":{"min":8,"description":"Cook"}}
+{"type":"node","id":"6","labels":["Ingredient"],"properties":{"amount":"8 oz","name":"Elbow Macaroni"}}
+{"type":"node","id":"7","labels":["Action"],"properties":{"description":"Stir","frequency":"Occasionally"}}
+{"type":"node","id":"8","labels":["Tool"],"properties":{"description":"Spoon"}}
+{"type":"node","id":"9","labels":["Action"],"properties":{"description":"Drain"}}
+{"type":"node","id":"10","labels":["Ingredient"],"properties":{"name":"Elbow Macaroni","description":"Cooked through but firm to the bite"}}
+{"type":"node","id":"11","labels":["Tool"],"properties":{"description":"Colander"}}
+{"type":"node","id":"12","labels":["Step"],"properties":{"name":"Step 2"}}
+{"type":"node","id":"13","labels":["Step"],"properties":{"name":"Step 3"}}
+{"type":"node","id":"14","labels":["Action"],"properties":{"description":"Fold macaroni into cheese sauce"}}
+{"type":"node","id":"15","labels":["Action"],"properties":{"temperature":"Medium heat","description":"Melt"}}
+{"type":"node","id":"16","labels":["Tool"],"properties":{"description":"Saucepan"}}
+{"type":"node","id":"17","labels":["Ingredient"],"properties":{"amount":"1/4 cup","name":"Butter"}}
+{"type":"node","id":"18","labels":["Action"],"properties":{"min":5,"description":"Stir in seasonings until smooth"}}
+{"type":"node","id":"19","labels":["Ingredient"],"properties":{"amount":"1/4 cup","name":"Flour"}}
+{"type":"node","id":"20","labels":["Ingredient"],"properties":{"amount":"1/2 teaspoon","name":"Salt"}}
+{"type":"node","id":"21","labels":["Ingredient"],"properties":{"amount":"To taste","name":"Pepper"}}
+{"type":"node","id":"22","labels":["Action"],"properties":{"min":5,"description":"Pour into mixture and stir"}}
+{"type":"node","id":"23","labels":["Tool"],"properties":{"description":"Spoon"}}
+{"type":"node","id":"24","labels":["Ingredient"],"properties":{"amount":"2 cups","name":"Milk"}}
+{"type":"node","id":"25","labels":["Ingredient"],"properties":{"amount":"2 cups","name":"Shredded cheddar cheese"}}
+{"type":"node","id":"26","labels":["Action"],"properties":{"min":3,"description":"Add Cheddar cheese to milk mixture and stir until smooth"}}
+{"type":"node","id":"27","labels":["Ingredient"],"properties":{"name":"Cheese sauce"}}
+{"id":"0","type":"relationship","label":"START","start":{"id":"0","labels":["Step"]},"end":{"id":"1","labels":["Action"]}}
+{"id":"1","type":"relationship","label":"USES","start":{"id":"1","labels":["Action"]},"end":{"id":"2","labels":["Tool"]}}
+{"id":"2","type":"relationship","label":"USES","start":{"id":"1","labels":["Action"]},"end":{"id":"3","labels":["Ingredient"]}}
+{"id":"3","type":"relationship","label":"MAKES","start":{"id":"1","labels":["Action"]},"end":{"id":"4","labels":["Ingredient"]}}
+{"id":"4","type":"relationship","label":"IN","start":{"id":"4","labels":["Ingredient"]},"end":{"id":"2","labels":["Tool"]}}
+{"id":"5","type":"relationship","label":"AFTER","start":{"id":"5","labels":["Action"]},"end":{"id":"1","labels":["Action"]}}
+{"id":"6","type":"relationship","label":"BEFORE","start":{"id":"1","labels":["Action"]},"end":{"id":"5","labels":["Action"]}}
+{"id":"7","type":"relationship","label":"USES","start":{"id":"5","labels":["Action"]},"end":{"id":"6","labels":["Ingredient"]}}
+{"id":"8","type":"relationship","label":"USES","start":{"id":"5","labels":["Action"]},"end":{"id":"4","labels":["Ingredient"]}}
+{"id":"9","type":"relationship","label":"USES","start":{"id":"5","labels":["Action"]},"end":{"id":"2","labels":["Tool"]}}
+{"id":"10","type":"relationship","label":"WHILE","start":{"id":"7","labels":["Action"]},"end":{"id":"5","labels":["Action"]}}
+{"id":"11","type":"relationship","label":"USES","start":{"id":"7","labels":["Action"]},"end":{"id":"8","labels":["Tool"]}}
+{"id":"12","type":"relationship","label":"WHILE","start":{"id":"5","labels":["Action"]},"end":{"id":"7","labels":["Action"]}}
+{"id":"13","type":"relationship","label":"USES","start":{"id":"7","labels":["Action"]},"end":{"id":"2","labels":["Tool"]}}
+{"id":"14","type":"relationship","label":"USES","start":{"id":"7","labels":["Action"]},"end":{"id":"4","labels":["Ingredient"]}}
+{"id":"15","type":"relationship","label":"USES","start":{"id":"7","labels":["Action"]},"end":{"id":"6","labels":["Ingredient"]}}
+{"id":"16","type":"relationship","label":"BEFORE","start":{"id":"5","labels":["Action"]},"end":{"id":"9","labels":["Action"]}}
+{"id":"17","type":"relationship","label":"AFTER","start":{"id":"9","labels":["Action"]},"end":{"id":"5","labels":["Action"]}}
+{"id":"18","type":"relationship","label":"MAKES","start":{"id":"9","labels":["Action"]},"end":{"id":"10","labels":["Ingredient"]}}
+{"id":"19","type":"relationship","label":"USES","start":{"id":"9","labels":["Action"]},"end":{"id":"11","labels":["Tool"]}}
+{"id":"20","type":"relationship","label":"IN","start":{"id":"10","labels":["Ingredient"]},"end":{"id":"11","labels":["Tool"]}}
+{"id":"21","type":"relationship","label":"BEFORE","start":{"id":"0","labels":["Step"]},"end":{"id":"12","labels":["Step"]}}
+{"id":"22","type":"relationship","label":"BEFORE","start":{"id":"12","labels":["Step"]},"end":{"id":"13","labels":["Step"]}}
+{"id":"24","type":"relationship","label":"AFTER","start":{"id":"12","labels":["Step"]},"end":{"id":"0","labels":["Step"]}}
+{"id":"25","type":"relationship","label":"START","start":{"id":"13","labels":["Step"]},"end":{"id":"14","labels":["Action"]}}
+{"id":"26","type":"relationship","label":"USES","start":{"id":"14","labels":["Action"]},"end":{"id":"10","labels":["Ingredient"]}}
+{"id":"27","type":"relationship","label":"START","start":{"id":"12","labels":["Step"]},"end":{"id":"15","labels":["Action"]}}
+{"id":"28","type":"relationship","label":"USES","start":{"id":"15","labels":["Action"]},"end":{"id":"16","labels":["Tool"]}}
+{"id":"29","type":"relationship","label":"USES","start":{"id":"15","labels":["Action"]},"end":{"id":"17","labels":["Ingredient"]}}
+{"id":"30","type":"relationship","label":"BEFORE","start":{"id":"15","labels":["Action"]},"end":{"id":"18","labels":["Action"]}}
+{"id":"31","type":"relationship","label":"AFTER","start":{"id":"18","labels":["Action"]},"end":{"id":"15","labels":["Action"]}}
+{"id":"32","type":"relationship","label":"USES","start":{"id":"18","labels":["Action"]},"end":{"id":"20","labels":["Ingredient"]}}
+{"id":"33","type":"relationship","label":"USES","start":{"id":"18","labels":["Action"]},"end":{"id":"21","labels":["Ingredient"]}}
+{"id":"34","type":"relationship","label":"USES","start":{"id":"18","labels":["Action"]},"end":{"id":"19","labels":["Ingredient"]}}
+{"id":"35","type":"relationship","label":"BEFORE","start":{"id":"18","labels":["Action"]},"end":{"id":"22","labels":["Action"]}}
+{"id":"36","type":"relationship","label":"AFTER","start":{"id":"22","labels":["Action"]},"end":{"id":"18","labels":["Action"]}}
+{"id":"37","type":"relationship","label":"IN","start":{"id":"17","labels":["Ingredient"]},"end":{"id":"16","labels":["Tool"]}}
+{"id":"38","type":"relationship","label":"IN","start":{"id":"19","labels":["Ingredient"]},"end":{"id":"16","labels":["Tool"]}}
+{"id":"39","type":"relationship","label":"IN","start":{"id":"20","labels":["Ingredient"]},"end":{"id":"16","labels":["Tool"]}}
+{"id":"40","type":"relationship","label":"IN","start":{"id":"21","labels":["Ingredient"]},"end":{"id":"16","labels":["Tool"]}}
+{"id":"41","type":"relationship","label":"USES","start":{"id":"18","labels":["Action"]},"end":{"id":"16","labels":["Tool"]}}
+{"id":"42","type":"relationship","label":"USES","start":{"id":"22","labels":["Action"]},"end":{"id":"16","labels":["Tool"]}}
+{"id":"43","type":"relationship","label":"USES","start":{"id":"22","labels":["Action"]},"end":{"id":"24","labels":["Ingredient"]}}
+{"id":"44","type":"relationship","label":"IN","start":{"id":"24","labels":["Ingredient"]},"end":{"id":"16","labels":["Tool"]}}
+{"id":"45","type":"relationship","label":"USES","start":{"id":"22","labels":["Action"]},"end":{"id":"23","labels":["Tool"]}}
+{"id":"46","type":"relationship","label":"USES","start":{"id":"26","labels":["Action"]},"end":{"id":"23","labels":["Tool"]}}
+{"id":"47","type":"relationship","label":"BEFORE","start":{"id":"22","labels":["Action"]},"end":{"id":"26","labels":["Action"]}}
+{"id":"48","type":"relationship","label":"AFTER","start":{"id":"26","labels":["Action"]},"end":{"id":"22","labels":["Action"]}}
+{"id":"49","type":"relationship","label":"USES","start":{"id":"18","labels":["Action"]},"end":{"id":"23","labels":["Tool"]}}
+{"id":"50","type":"relationship","label":"USES","start":{"id":"26","labels":["Action"]},"end":{"id":"25","labels":["Ingredient"]}}
+{"id":"51","type":"relationship","label":"MAKES","start":{"id":"26","labels":["Action"]},"end":{"id":"27","labels":["Ingredient"]}}
+{"id":"52","type":"relationship","label":"USES","start":{"id":"26","labels":["Action"]},"end":{"id":"16","labels":["Tool"]}}
+{"id":"53","type":"relationship","label":"USES","start":{"id":"14","labels":["Action"]},"end":{"id":"27","labels":["Ingredient"]}}
+{"id":"54","type":"relationship","label":"AFTER","start":{"id":"13","labels":["Step"]},"end":{"id":"12","labels":["Step"]}}

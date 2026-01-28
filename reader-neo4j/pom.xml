@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.graphinout</groupId>
+        <artifactId>graphinout</artifactId>
+        <version>0.1.13-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>reader-neo4j</artifactId>
+    <name>reader-neo4j</name>
+    <description>Reader for Neo4j APOC JSON export format</description>
+
+    <dependencies>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.1.13-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.13-SNAPSHOT</version></dependency>
+        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
+        <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
+
+        <!-- Test Dependencies -->
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.1.13-SNAPSHOT</version><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.1.13-SNAPSHOT</version>
+              <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
+        </dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.13-SNAPSHOT</version>
+              <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
+        </dependency>
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
+        <!-- jackson streaming json parser -->
+        <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-core</artifactId></dependency>
+        <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency><dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId><scope>test</scope></dependency><dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId></dependency>
+    </dependencies>
+</project>

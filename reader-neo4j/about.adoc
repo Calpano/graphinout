@@ -1,0 +1,102 @@
+= Neo4j Reader
+
+== Overview
+
+The Neo4j Reader module provides support for reading graph data exported from Neo4j databases using the APOC JSON export procedures.
+
+== Supported Format
+
+This reader supports the Neo4j APOC JSON export format as documented at:
+https://neo4j.com/docs/apoc/current/export/json/
+
+=== File Extensions
+
+* `.neo4j.json`
+* `.neo4j-export.json`
+
+=== Format Specification
+
+The Neo4j APOC JSON export format uses JSON Lines (one JSON object per line) with two main object types:
+
+==== Node Format
+
+[source,json]
+----
+{
+  "type": "node",
+  "id": "0",
+  "labels": ["User"],
+  "properties": {
+    "name": "Adam",
+    "age": 42
+  }
+}
+----
+
+==== Relationship Format
+
+[source,json]
+----
+{
+  "id": "0",
+  "type": "relationship",
+  "label": "KNOWS",
+  "properties": {"since": 1993},
+  "start": {"id": "0", "labels": ["User"]},
+  "end": {"id": "1", "labels": ["User"]}
+}
+----
+
+== Usage
+
+=== Programmatic Usage
+
+[source,java]
+----
+Neo4jReader reader = new Neo4jReader();
+File inputFile = new File("export.neo4j.json");
+SingleInputSourceOfFile inputSource = new SingleInputSourceOfFile(inputFile);
+ICjDocument document = reader.readToCjDocument(inputSource);
+----
+
+== Implementation Details
+
+The reader:
+
+* Parses JSON Lines format (one JSON object per line)
+* Converts Neo4j nodes to CJ nodes with labels
+* Converts Neo4j relationships to CJ edges
+* Maps Neo4j node IDs to CJ node IDs
+* Maps Neo4j relationship labels to CJ edge labels
+* Preserves all properties on nodes and relationships
+
+== Neo4j Export Procedures
+
+To export data from Neo4j in the supported format, use APOC procedures:
+
+[source,cypher]
+----
+// Export entire database
+CALL apoc.export.json.all("export.json", {})
+
+// Export specific nodes and relationships
+MATCH (n:User)-[r:KNOWS]->(m:User)
+CALL apoc.export.json.data([n, m], [r], "export.json", {})
+
+// Export query results
+CALL apoc.export.json.query(
+  "MATCH (n:User)-[r:KNOWS]->(m:User) RETURN n, r, m",
+  "export.json",
+  {}
+)
+----
+
+== Limitations
+
+* Currently supports JSON Lines format only (not array or nested JSON formats)
+* Requires APOC plugin to be installed in Neo4j for export functionality
+
+== References
+
+* https://neo4j.com/docs/apoc/current/export/json/[Neo4j APOC JSON Export Documentation]
+* https://neo4j.com/labs/apoc/[Neo4j APOC Library]

@@ -1,0 +1,128 @@
+= PG-JSON Reader/Writer
+
+== Overview
+
+The PG-JSON Reader/Writer module provides support for reading and writing graph data in the PG-JSON (Property Graph JSON) format.
+
+== Supported Format
+
+This reader/writer supports the PG-JSON format as specified at:
+https://pg-format.github.io/specification/
+
+=== File Extensions
+
+* `.pg.json`
+* `.pgjson`
+
+=== Format Specification
+
+PG-JSON is a JSON-based format for representing property graphs. A PG-JSON document is a JSON object with two mandatory fields:
+
+==== Document Structure
+
+[source,json]
+----
+{
+  "nodes": [ /* array of node objects */ ],
+  "edges": [ /* array of edge objects */ ]
+}
+----
+
+==== Node Format
+
+[source,json]
+----
+{
+  "id": "101",
+  "labels": ["person"],
+  "properties": {
+    "name": ["Alice"],
+    "country": ["United States"]
+  }
+}
+----
+
+Node fields:
+* `id`: Mandatory, unique string identifier
+* `labels`: Mandatory, array of unique non-empty strings
+* `properties`: Mandatory, object mapping keys to arrays of scalar values
+
+==== Edge Format
+
+[source,json]
+----
+{
+  "id": "e1",
+  "from": "101",
+  "to": "102",
+  "undirected": false,
+  "labels": ["likes"],
+  "properties": {
+    "since": [2015],
+    "engaged": [false]
+  }
+}
+----
+
+Edge fields:
+* `id`: Optional, unique string identifier (can be null)
+* `from`: Mandatory, source node identifier
+* `to`: Mandatory, target node identifier
+* `undirected`: Optional, boolean indicating if edge is undirected (defaults to false)
+* `labels`: Mandatory, array of unique non-empty strings
+* `properties`: Mandatory, object mapping keys to arrays of scalar values
+
+== Usage
+
+=== Reading PG-JSON
+
+[source,java]
+----
+PgJsonReader reader = new PgJsonReader();
+File inputFile = new File("graph.pg.json");
+SingleInputSourceOfFile inputSource = new SingleInputSourceOfFile(inputFile);
+ICjDocument document = reader.readToCjDocument(inputSource);
+----
+
+=== Writing PG-JSON
+
+[source,java]
+----
+PgJsonReader writer = new PgJsonReader();
+InMemoryOutputSink sink = InMemoryOutputSink.create();
+
+ICjStream stream = writer.createCjStream(sink);
+// Write your graph data to the stream
+// ...
+
+String pgJson = sink.getBufferAsUtf8String();
+----
+
+== Implementation Details
+
+The reader/writer:
+
+* Converts PG-JSON nodes to CJ nodes with labels
+* Converts PG-JSON edges to CJ edges with proper direction handling
+* Maps PG-JSON properties (which are arrays) to CJ data properties (taking first value)
+* Supports both directed and undirected edges
+* Preserves node and edge IDs
+* Handles multiple labels on nodes and edges
+
+== Key Features
+
+* **Bidirectional conversion**: Full round-trip support between PG-JSON and CJ formats
+* **Property arrays**: PG-JSON properties are arrays of values; the reader takes the first value for CJ
+* **Direction support**: Properly handles directed and undirected edges
+* **Multiple labels**: Supports multiple labels on both nodes and edges
+
+== Limitations
+
+* When converting from CJ to PG-JSON, properties with array values will be converted to single-element arrays
+* If a node or edge has no labels in CJ, a default label ("Node" or "Edge") will be added in PG-JSON
+* If a node has no ID in CJ, an auto-generated ID will be assigned
+
+== References
+
+* https://pg-format.github.io/specification/[PG-JSON Specification]
+* https://github.com/pg-format[PG-Format GitHub Organization]

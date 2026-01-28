@@ -51,6 +51,8 @@
         <module>reader-tripletext</module>
         <module>reader-jgrapht</module>
         <module>reader-textbased</module>
+        <module>reader-neo4j</module>
+        <module>reader-pgformat</module>
         <module>engine</module>
     </modules>
 

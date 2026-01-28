@@ -1,0 +1,10 @@
+{"type":"node","id":"42","labels":["Person"],"properties":{"id":"Marie Curie"}}
+{"type":"node","id":"43","labels":["Person"],"properties":{"id":"Pierre Curie"}}
+{"type":"node","id":"44","labels":["Award"],"properties":{"id":"Nobel Prize"}}
+{"type":"node","id":"45","labels":["Concept"],"properties":{"id":"Radioactivity"}}
+{"type":"node","id":"46","labels":["Organization"],"properties":{"id":"University Of Paris"}}
+{"type":"relationship","id":"1153045749420785706","label":"WINNER_OF","start":{"id":"42","labels":["Person"],"properties":{"id":"Marie Curie"}},"end":{"id":"44","labels":["Award"],"properties":{"id":"Nobel Prize"}}}
+{"type":"relationship","id":"1153046848932413482","label":"STUDIED","start":{"id":"42","labels":["Person"],"properties":{"id":"Marie Curie"}},"end":{"id":"45","labels":["Concept"],"properties":{"id":"Radioactivity"}}}
+{"type":"relationship","id":"1153047948444041258","label":"PROFESSOR","start":{"id":"42","labels":["Person"],"properties":{"id":"Marie Curie"}},"end":{"id":"46","labels":["Organization"],"properties":{"id":"University Of Paris"}}}
+{"type":"relationship","id":"1153049047955669034","label":"MARRIED_TO","start":{"id":"42","labels":["Person"],"properties":{"id":"Marie Curie"}},"end":{"id":"43","labels":["Person"],"properties":{"id":"Pierre Curie"}}}
+{"type":"relationship","id":"1153045749420785707","label":"WINNER_OF","start":{"id":"43","labels":["Person"],"properties":{"id":"Pierre Curie"}},"end":{"id":"44","labels":["Award"],"properties":{"id":"Nobel Prize"}}}

@@ -1,0 +1,19 @@
+{"type":"node","id":"0","labels":["Exploration","TechTree"],"properties":{"uid":"E8","effect":"rate: 75","name":"Accélerateur de particules"}}
+{"type":"node","id":"1","labels":["Exploration","TechTree"],"properties":{"uid":"E6","effect":50,"name":"Catalyseur"}}
+{"type":"node","id":"2","labels":["Exploration","TechTree"],"properties":{"uid":"E4","effect":"rate: 35","name":"Recycleur"}}
+{"type":"node","id":"3","labels":["Exploration","TechTree"],"properties":{"uid":"E2","effect":"rate: 25","name":"Alambique"}}
+{"type":"node","id":"4","labels":["Exploration","TechTree"],"properties":{"uid":"E0","effect":"max : 10, rate: 10","name":"Aménagement"}}
+{"type":"node","id":"5","labels":["Exploration","TechTree"],"properties":{"uid":"E1","effect":"max: 25","name":"Bidon rouillé"}}
+{"type":"node","id":"6","labels":["Exploration","TechTree"],"properties":{"uid":"E3","effect":"max: 35","name":"Baignoire adaptée"}}
+{"type":"node","id":"7","labels":["Exploration","TechTree"],"properties":{"uid":"E5","effect":"max: 50","name":"Compresseur"}}
+{"type":"node","id":"8","labels":["Exploration","TechTree"],"properties":{"uid":"E7","effect":"max: 75","name":"Carburant quantique"}}
+{"type":"node","id":"9","labels":["Exploration","TechStart"]}
+{"id":"0","type":"relationship","label":"LEADS_TO","properties":{"challenge":"CE8"},"start":{"id":"1","labels":["Exploration","TechTree"]},"end":{"id":"0","labels":["Exploration","TechTree"]}}
+{"id":"1","type":"relationship","label":"LEADS_TO","properties":{"challenge":"CE6"},"start":{"id":"2","labels":["Exploration","TechTree"]},"end":{"id":"1","labels":["Exploration","TechTree"]}}
+{"id":"2","type":"relationship","label":"LEADS_TO","properties":{"challenge":"CE4"},"start":{"id":"3","labels":["Exploration","TechTree"]},"end":{"id":"2","labels":["Exploration","TechTree"]}}
+{"id":"3","type":"relationship","label":"LEADS_TO","properties":{"challenge":"CE2"},"start":{"id":"4","labels":["Exploration","TechTree"]},"end":{"id":"3","labels":["Exploration","TechTree"]}}
+{"id":"4","type":"relationship","label":"LEADS_TO","properties":{"challenge":"CE1"},"start":{"id":"4","labels":["Exploration","TechTree"]},"end":{"id":"5","labels":["Exploration","TechTree"]}}
+{"id":"5","type":"relationship","label":"LEADS_TO","properties":{"challenge":"CE3"},"start":{"id":"5","labels":["Exploration","TechTree"]},"end":{"id":"6","labels":["Exploration","TechTree"]}}
+{"id":"6","type":"relationship","label":"LEADS_TO","properties":{"challenge":"CE5"},"start":{"id":"6","labels":["Exploration","TechTree"]},"end":{"id":"7","labels":["Exploration","TechTree"]}}
+{"id":"7","type":"relationship","label":"LEADS_TO","properties":{"challenge":"CE7"},"start":{"id":"7","labels":["Exploration","TechTree"]},"end":{"id":"8","labels":["Exploration","TechTree"]}}
+{"id":"8","type":"relationship","label":"LEADS_TO","properties":{"challenge":"CE0"},"start":{"id":"9","labels":["Exploration","TechStart"]},"end":{"id":"4","labels":["Exploration","TechTree"]}}

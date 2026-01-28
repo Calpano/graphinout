@@ -1,0 +1,1 @@
+{"rel":{"id":"0","type":"relationship","label":"KNOWS","properties":{"since":1993},"start":{"id":"0","labels":["User"],"properties":{"name":"Adam","age":42}},"end":{"id":"1","labels":["User"],"properties":{"name":"Jim","age":42}}}}
