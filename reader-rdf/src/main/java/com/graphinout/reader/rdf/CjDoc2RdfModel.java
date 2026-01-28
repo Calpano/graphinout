@@ -161,6 +161,21 @@ public class CjDoc2RdfModel {
             rdfModel.add(rdfSubject, RDF.type, typeResource);
         });
 
+        // Add node labels
+        if (cjNode.label() != null) {
+            cjNode.label().entries().forEach(labelEntry -> {
+                String labelValue = labelEntry.value();
+                String language = labelEntry.language();
+                Literal labelLiteral;
+                if (language != null && !language.isEmpty()) {
+                    labelLiteral = rdfModel.createLiteral(labelValue, language);
+                } else {
+                    labelLiteral = rdfModel.createLiteral(labelValue);
+                }
+                rdfModel.add(rdfSubject, RDFS.label, labelLiteral);
+            });
+        }
+
         // Add node data properties
         cjNode.data(cjData -> {
             IJsonValue value = cjData.jsonValue();

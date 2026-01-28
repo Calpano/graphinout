@@ -16,6 +16,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -94,6 +95,17 @@ public class RdfModel2CjDoc {
                 cjGraph.nodes().filter(n -> subjectId.equals(n.id())).findFirst().ifPresent(cjNode -> {
                     cjNode.asNode().addType(ICjElementType.of(typeId));
                 });
+            }
+        } else if (RDFS.label.equals(predicate) && object.isLiteral()) {
+            // Map (subject, rdfs:label, literal) to a CJ node with label
+            Literal literal = object.asLiteral();
+            String labelValue = literal.getLexicalForm();
+            String language = literal.getLanguage();
+            ICjNodeMutable cjNode = getOrCreateNode(cjGraph, subjectId, createdNodes);
+            if (language != null && !language.isEmpty()) {
+                cjNode.addLabel(labelValue, language);
+            } else {
+                cjNode.addLabelWithoutLanguage(labelValue);
             }
         } else if (object.isResource()) {
             // Regular triple with resource object - create edge and explicit nodes
