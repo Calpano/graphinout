@@ -215,7 +215,7 @@ public class TestFileProvider {
     }
 
     /**
-     * @param allowedExtensions if empty, allow all
+     * @param allowedExtensions if empty, allow all. Syntax: '.json' (include dot, no stars)
      */
     public static Stream<TestResource> resources(String resourceRootPath, Set<String> allowedExtensions) {
         Path testResourcesPath = Paths.get(resourceRootPath);

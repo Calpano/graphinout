@@ -81,7 +81,10 @@ class DotCjTest {
             cjDoc2 = dotLines2CjDocument.resultDocument();
         }
 
-        CjAssert.xAssertThatIsSameCj(cjDoc2, cjDoc1, null);
+        CjAssert.xAssertThatIsSameCj(cjDoc2, cjDoc1, ()->{
+            log.info("Resource: {}", resource.getURI());
+            log.info("---CJ 1:\n----\n{}", CjDocuments.toJsonString(cjDoc1));
+        });
     }
 
 

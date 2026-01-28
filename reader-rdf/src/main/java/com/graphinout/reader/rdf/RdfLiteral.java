@@ -16,6 +16,10 @@ record RdfLiteral(IJsonObjectMutable jsonObject) {
         Plain, DataTyped, LanguageTagged
     }
 
+    public static final String LANGUAGE = "language";
+    public static final String VALUE = "value";
+    public static final String DATATYPE = "datatype";
+
     public static RdfLiteral of(Literal literal) {
         IJsonObjectMutable litObj = IJsonFactory.INSTANCE.createObjectMutable();
         RdfLiteral rdfLiteral = new RdfLiteral(litObj);
@@ -26,15 +30,13 @@ record RdfLiteral(IJsonObjectMutable jsonObject) {
     }
 
     public @Nullable String datatype() {
-        if (language() != null)
-            return RDF.langString.getURI();
-        return jsonObject.getString("datatype");
+        if (language() != null) return RDF.langString.getURI();
+        return jsonObject.getString(DATATYPE);
     }
 
     public void datatype(@Nullable String datatype) {
-        if (XSD.xstring.getURI().equals(datatype) || RDF.langString.getURI().equals(datatype))
-            return;
-        jsonObject.setString("datatype", datatype);
+        if (XSD.xstring.getURI().equals(datatype) || RDF.langString.getURI().equals(datatype)) return;
+        jsonObject.setString(DATATYPE, datatype);
     }
 
     public boolean isDataTyped() {
@@ -51,9 +53,9 @@ record RdfLiteral(IJsonObjectMutable jsonObject) {
     }
 
     public Kind kind() {
-        if (language() != null) {
+        if (isLanguageTagged()) {
             return Kind.LanguageTagged;
-        } else if (datatype() != null) {
+        } else if (isDataTyped()) {
             return Kind.DataTyped;
         } else {
             return Kind.Plain;
@@ -61,11 +63,15 @@ record RdfLiteral(IJsonObjectMutable jsonObject) {
     }
 
     public @Nullable String language() {
-        return jsonObject.getString("language");
+        return jsonObject.getString(LANGUAGE);
     }
 
     public void language(@Nullable String language) {
-        jsonObject.setString("language", language);
+        if (language == null) {
+            jsonObject.removeProperty(LANGUAGE);
+        } else if (!language.isBlank()) {
+            jsonObject.setString(LANGUAGE, language);
+        }
     }
 
     /**
@@ -81,11 +87,11 @@ record RdfLiteral(IJsonObjectMutable jsonObject) {
     }
 
     public @Nullable String value() {
-        return jsonObject.getString("value");
+        return jsonObject.getString(VALUE);
     }
 
     public void value(@Nullable String value) {
-        jsonObject.setString("value", value);
+        jsonObject.setString(VALUE, value);
     }
 
 

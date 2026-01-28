@@ -7,6 +7,7 @@ import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.foundation.pure.text.Texts;
 import com.graphinout.testdata.TestFileProvider;
 import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
@@ -37,7 +38,7 @@ class Rdf2CjTest {
     }
 
     public static Stream<TestFileProvider.TestResource> rdfResourcesWithSyntax(RdfFormats.RdfSyntax syntax) {
-        return TestFileProvider.resources(syntax.resourcePath, Set.of());
+        return TestFileProvider.resources(syntax.resourcePath, Set.of(".jsonld", ".n3", ".nq", ".nt", ".owl", ".rdf", ".rj", ".trig", ".trix", ".ttl", ".xml"));
     }
 
     @BeforeAll
@@ -58,13 +59,14 @@ class Rdf2CjTest {
     @DisplayName("RDF <-> CJ")
     void testRdf2Cj2Rdf(String displayName, Resource res) throws IOException {
         assertNotNull(res, "Resource not found");
-        ICjDocument cjDoc = rdf2cj(res);
-        Model rdfModelActual = CjDoc2RdfModel.cjDoc2Model(cjDoc);
         RdfFormats.RdfSyntax rdfSyntax = RdfModels.syntaxFromPathName(res.getPath());
         Model rdfModelExpected = RdfModels.ofRdfSyntax(res.getContentAsString(), rdfSyntax);
+
+        ICjDocument cjDoc = rdf2cj(res);
+        Model rdfModelActual = CjDoc2RdfModel.cjDoc2Model(cjDoc);
         RdfAssert.xAssertThatIsSameRdf(rdfModelActual, rdfModelExpected, () -> {
-            log.info("Resource: "+res.getURL());
-            log.info("----CJ:\n" + CjDocuments.toJsonString(cjDoc));
+            log.info("Resource: " + res.getURL());
+            log.info("----CJ:\n" + Texts.limitCharacters(CjDocuments.toJsonString(cjDoc), 2000));
         });
     }
 

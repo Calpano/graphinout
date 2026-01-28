@@ -233,13 +233,12 @@ public class CjDoc2RdfModel {
                 // Literal with metadata (datatype/language)
                 IJsonObjectMutable litObj = value.asObject().mutableCopy();
                 RdfLiteral rdfLit = new RdfLiteral(litObj);
-                if (rdfLit.isLanguageTagged()) {
-                    literalConsumer.accept(rdfModel.createLiteral(rdfLit.value(), rdfLit.language()));
-                } else if (rdfLit.isDataTyped()) {
-                    literalConsumer.accept(rdfModel.createTypedLiteral(rdfLit.value(), rdfLit.datatype()));
-                } else {
-                    literalConsumer.accept(rdfModel.createLiteral(rdfLit.value()));
-                }
+                literalConsumer.accept(
+                        switch (rdfLit.kind()) {
+                            case Plain -> rdfModel.createLiteral(rdfLit.value());
+                            case LanguageTagged -> rdfModel.createLiteral(rdfLit.value(), rdfLit.language());
+                            case DataTyped -> rdfModel.createTypedLiteral(rdfLit.value(), rdfLit.datatype());
+                        });
             }
             case Array -> // convert each of them
                     value.asArray().forEach(member -> toRdfLiterals(rdfModel, member, literalConsumer));
