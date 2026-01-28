@@ -43,6 +43,13 @@ public class Texts {
         return common;
     }
 
+    public static String limitCharacters(String s, int maxChars) {
+        if (s.length() <= maxChars) {
+            return s;
+        }
+        return s.substring(0, maxChars) + " ...[TRUNCATED after " + maxChars + " chars]";
+    }
+
     @QualitySuboptimal
     public static String renderLogMessage(String s, Object[] o) {
         // replace each %s with a value from o array
