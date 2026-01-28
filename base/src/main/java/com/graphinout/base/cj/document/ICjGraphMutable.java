@@ -27,4 +27,8 @@ public interface ICjGraphMutable extends ICjGraph, ICjHasGraphsMutable, ICjGraph
 
     ICjNodeMutable addNode(Consumer<ICjNodeMutable> node);
 
+    default ICjNodeMutable addNode() {
+        return addNode(node -> {});
+    }
+
 }
