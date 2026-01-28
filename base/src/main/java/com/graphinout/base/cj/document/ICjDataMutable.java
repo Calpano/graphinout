@@ -47,6 +47,8 @@ public interface ICjDataMutable extends ICjData {
 
     void remove(String propertyKey);
 
+    void removeJsonValue();
+
     default void set(String propertyKey, IJsonValue jsonValue) {
         remove(propertyKey);
         add(propertyKey, jsonValue);
@@ -62,6 +64,8 @@ public interface ICjDataMutable extends ICjData {
         add(List.of(), jsonValue);
     }
 
-    void removeJsonValue();
+    default void setString(String key, String value) {
+        set(key, factory().createString(value));
+    }
 
 }

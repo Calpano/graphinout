@@ -6,7 +6,7 @@ import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
-import com.graphinout.foundation.pure.json.util.JsonMaker;
+import com.graphinout.base.json.util.JsonMaker;
 import com.graphinout.foundation.pure.json.value.java.JavaJsonFactory;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
