@@ -390,7 +390,12 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         // if element supports label, set from 'label' attribute
         ICjHasLabelMutable labelTarget = (hasData instanceof ICjHasLabelMutable) ? (ICjHasLabelMutable) hasData : null;
         boolean isGraph = hasData instanceof ICjGraphMutable;
+        // Use LinkedHashMap to preserve order while ensuring last value wins for duplicate keys
+        Map<String, Attr> uniqueAttrs = new LinkedHashMap<>();
         for (Attr a : attrs) {
+            uniqueAttrs.put(a.key, a);
+        }
+        for (Attr a : uniqueAttrs.values()) {
             if ("label".equalsIgnoreCase(a.key)) {
                 if (isGraph) {
                     // For graphs, keep label as data attribute so emitter prints graph [label=...]
@@ -759,8 +764,13 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 p.skipWs();
                 if (p.consumeIf('=')) {
                     String value = p.readIdOrString();
-                    // store as graph-level data
-                    g.dataMutable(d -> d.add(maybeKey, value));
+                    // store as graph-level data (remove first to overwrite if key already exists)
+                    g.dataMutable(d -> {
+                        if (d.jsonValue() != null) {
+                            d.remove(maybeKey);
+                        }
+                        d.add(maybeKey, value);
+                    });
                     p.consumeOptionalSemicolon();
                     continue;
                 } else {
