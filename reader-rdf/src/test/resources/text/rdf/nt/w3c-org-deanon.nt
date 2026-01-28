@@ -1,0 +1,39 @@
+<http://www.w3.org/ns/org#> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> .
+<http://www.w3.org/ns/org#> <http://www.w3.org/2002/07/owl#versionInfo> "0.8" .
+<http://www.w3.org/ns/org#> <http://www.w3.org/2000/01/rdf-schema#label> "Core organization ontology"@en .
+<http://www.w3.org/ns/org#> <http://www.w3.org/2000/01/rdf-schema#label> "Ontologie des organisations"@fr .
+<http://www.w3.org/ns/org#> <http://www.w3.org/2000/01/rdf-schema#label> "Ontologia delle organizzazioni"@it .
+<http://www.w3.org/ns/org#> <http://www.w3.org/2000/01/rdf-schema#label> "Ontolog\u00EDa de organizaciones"@es .
+<http://www.w3.org/ns/org#> <http://www.w3.org/2000/01/rdf-schema#comment> "Vocabulary for describing organizational structures, specializable to a broad variety of types of organization."@en .
+<http://www.w3.org/ns/org#> <http://www.w3.org/2000/01/rdf-schema#comment> "Vocabolario per descrivere strutture organizzative, le quali possono essere specializzate in una vasta variet\u00E0 di tipi di organizzazione"@it .
+<http://www.w3.org/ns/org#> <http://www.w3.org/2000/01/rdf-schema#comment> "Vocabulario para describir organizaciones, adaptable a una amplia variedad de ellas."@es .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/created> "2010-05-28"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/modified> "2010-06-09"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/modified> "2010-10-08"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/modified> "2012-09-30"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/modified> "2012-10-06"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/modified> "2013-02-15"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/modified> "2013-12-16"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/modified> "2014-01-02"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/modified> "2014-01-25"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/modified> "2014-02-05"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/modified> "2014-04-12"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/title> "Core organization ontology"@en .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/title> "Ontologie des organisations"@fr .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/title> "Ontologia delle organizzazioni"@it .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/title> "Ontolog\u00EDa de organizaciones"@es .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/contributor> _:genid1 .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/contributor> _:genid2 .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/contributor> _:genid3 .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/contributor> _:genid4 .
+<http://www.w3.org/ns/org#> <http://purl.org/dc/terms/contributor> _:genid5 .
+_:genid1 <http://xmlns.com/foaf/0.1/mbox> "dave@epimorphics.com" .
+_:genid1 <http://xmlns.com/foaf/0.1/name> "Dave Reynolds" .
+_:genid2 <http://xmlns.com/foaf/0.1/mbox> "dguardiola@quinode.fr" .
+_:genid2 <http://xmlns.com/foaf/0.1/name> "Dominique Guardiola" .
+_:genid3 <http://xmlns.com/foaf/0.1/mbox> "antonio.maccioni@agid.gov.it" .
+_:genid3 <http://xmlns.com/foaf/0.1/name> "Antonio Maccioni" .
+_:genid4 <http://xmlns.com/foaf/0.1/mbox> "giorgia.lodi@agid.gov.it" .
+_:genid4 <http://xmlns.com/foaf/0.1/name> "Giorgia Lodi" .
+_:genid5 <http://xmlns.com/foaf/0.1/name> "Shuji Kamitsuna" .
+_:genid5 <http://xmlns.com/foaf/0.1/homepage> <http://www.asahi-net.or.jp/~ax2s-kmtn/> .

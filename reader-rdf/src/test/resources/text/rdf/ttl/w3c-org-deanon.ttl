@@ -1,0 +1,57 @@
+@prefix rdf:        <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:        <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:       <http://www.w3.org/2004/02/skos/core#> .
+@prefix foaf:       <http://xmlns.com/foaf/0.1/> .
+@prefix dct:        <http://purl.org/dc/terms/> .
+@prefix gr:         <http://purl.org/goodrelations/v1#> .
+@prefix owlTime:    <http://www.w3.org/2006/time#> .
+@prefix org:        <http://www.w3.org/ns/org#> .
+@prefix vcard:      <http://www.w3.org/2006/vcard/ns#> .
+@prefix prov:       <http://www.w3.org/ns/prov#> .
+@prefix :           <http://www.w3.org/ns/org#> .
+
+
+# -- Meta data -----------------------------------------------------------
+
+
+<http://www.w3.org/ns/org#>
+
+    a owl:Ontology;
+
+    owl:versionInfo "0.8";
+
+    rdfs:label "Core organization ontology"@en;
+    rdfs:label "Ontologie des organisations"@fr;
+    rdfs:label "Ontologia delle organizzazioni"@it;
+    rdfs:label "Ontología de organizaciones"@es;
+
+    rdfs:comment "Vocabulary for describing organizational structures, specializable to a broad variety of types of organization."@en;
+    rdfs:comment "Vocabolario per descrivere strutture organizzative, le quali possono essere specializzate in una vasta varietà di tipi di organizzazione"@it;
+    rdfs:comment "Vocabulario para describir organizaciones, adaptable a una amplia variedad de ellas."@es;
+
+    dct:created "2010-05-28"^^xsd:date;
+    dct:modified "2010-06-09"^^xsd:date;
+    dct:modified "2010-10-08"^^xsd:date;
+    dct:modified "2012-09-30"^^xsd:date;
+    dct:modified "2012-10-06"^^xsd:date;
+    dct:modified "2013-02-15"^^xsd:date;
+    dct:modified "2013-12-16"^^xsd:date;
+    dct:modified "2014-01-02"^^xsd:date; # added Italian translation, PhilA.
+    dct:modified "2014-01-25"^^xsd:date; # Erratas: http://lists.w3.org/Archives/Public/public-gld-comments/2014Jan/0000.html
+    dct:modified "2014-02-05"^^xsd:date; # added Japanese comments, PhilA.
+    dct:modified "2014-04-12"^^xsd:date; # Added Spanish translation Guadalupe Aguado, Elena Montiel, Olga Giraldo and María Poveda from Ontology Engineering Group
+
+
+    dct:title "Core organization ontology"@en;
+    dct:title "Ontologie des organisations"@fr;
+    dct:title "Ontologia delle organizzazioni"@it;
+    dct:title "Ontología de organizaciones"@es;
+
+    dct:contributor [foaf:mbox "dave@epimorphics.com"; foaf:name "Dave Reynolds"];
+
+    dct:contributor [foaf:mbox "dguardiola@quinode.fr"; foaf:name "Dominique Guardiola"],
+    [foaf:mbox "antonio.maccioni@agid.gov.it"; foaf:name "Antonio Maccioni"],
+    [foaf:mbox "giorgia.lodi@agid.gov.it"; foaf:name "Giorgia Lodi"],
+    [foaf:name "Shuji Kamitsuna"; foaf:homepage <http://www.asahi-net.or.jp/~ax2s-kmtn/>] .

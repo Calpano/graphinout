@@ -1,0 +1,6 @@
+<http://example/s><http://example/p><http://example/o>.
+<http://example/s><http://example/p>"Alice".
+<http://example/s><http://example/p>_:obj.
+_:sub<http://example/p><http://example/o>.
+_:sub<http://example/p>"Alice".
+_:sub<http://example/p>_:bnode1.
