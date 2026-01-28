@@ -207,10 +207,17 @@ Node data fields (other than special fields like  `value`, `language`, `datatype
 .Example for a Minimal CJ with all CJ Features Used
 [source,json]
 ----
-include::../test/resources/json/example-cj-with-all-features.cj.json[]
+include::example-cj-with-all-features.cj.json[]
 ----
 
+== More Mappings
+=== Labels
 
+RDF labels (`rdfs:label`) map well to CJ multi-lingual labels.
+
+
+=== Reification
+An `rdf:Statement` maps to a CJ edge, which can have an `id` property. The `rdf:subject` is mapped to the `in` endpoint, the `rdf:predicate` to the `type`, and the `rdf:object` to the `out` endpoint.
 
 == Supported RDF Formats
 The reader supports multiple RDF serialization formats:
