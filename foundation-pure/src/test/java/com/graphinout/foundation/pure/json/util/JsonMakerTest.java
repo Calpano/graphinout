@@ -157,14 +157,15 @@ class JsonMakerTest {
     }
 
     /**
-     * Root: {"key":"value"}, Merging: "new" (empty path), Expect: IllegalStateException
+     * Root: {@code {"key":"value"}}, Merging: "new" (empty path), Expect: {@code [ { "key":"value" }, "new" ] }
      */
     @Test
     void merge_object_with_empty_path_should_throw() {
         IJsonValue root = factory.createObjectMutable();
         factory.asObjectMutable(root.asObject()).addProperty("key", factory.createString("value"));
 
-        assertThrows(IllegalStateException.class, () -> JsonMaker.merge(factory, root, Collections.emptyList(), factory.createString("new")));
+        IJsonValue result = JsonMaker.merge(factory, root, Collections.emptyList(), factory.createString("new"));
+        assertEquals("[{\"key\":\"value\"},\"new\"]", result.toJsonString());
     }
 
     /**
