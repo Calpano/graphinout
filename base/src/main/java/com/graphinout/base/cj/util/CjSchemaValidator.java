@@ -1,6 +1,7 @@
 package com.graphinout.base.cj.util;
 
 import com.graphinout.base.cj.CjConstants;
+import com.graphinout.base.cj.ConnectedJson;
 import com.graphinout.base.input.InputSource;
 import com.networknt.schema.InputFormat;
 import com.networknt.schema.JsonSchema;
@@ -31,10 +32,8 @@ public class CjSchemaValidator {
         // instead and this version is ignored.
         JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012, builder ->
                 // This creates a mapping from $id which starts with https://www.example.org/ to the retrieval URI classpath:schema/
-                builder.schemaMappers(schemaMappers -> {
-                    schemaMappers.mapPrefix(CjConstants.CJ_SCHEMA_ID, "classpath:" + CjConstants.SCHEMA_RESOURCE);
-                    schemaMappers.mapPrefix(CjConstants.CJ_SCHEMA_URL, "classpath:" + CjConstants.SCHEMA_RESOURCE);
-                }));
+                builder.schemaMappers(schemaMappers -> //
+                        schemaMappers.mapPrefix(ConnectedJson.CJ_SCHEMA_URL, "classpath:" + CjConstants.SCHEMA_RESOURCE)));
 
         SchemaValidatorsConfig.Builder builder = SchemaValidatorsConfig.builder();
         // By default the JDK regular expression implementation which is not ECMA 262 compliant is used
@@ -45,7 +44,7 @@ public class CjSchemaValidator {
 
         // Due to the mapping the schema will be retrieved from the classpath at classpath:schema/example-main.json.
         // If the schema data does not specify an $id the absolute IRI of the schema location will be used as the $id.
-        JsonSchema schema = jsonSchemaFactory.getSchema(SchemaLocation.of(CjConstants.CJ_SCHEMA_URL), config);
+        JsonSchema schema = jsonSchemaFactory.getSchema(SchemaLocation.of(ConnectedJson.CJ_SCHEMA_URL), config);
 
         // read input source to string
         String json = inputSource.asSingle().getContentAsUtf8String();

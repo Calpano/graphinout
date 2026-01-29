@@ -1,6 +1,6 @@
 package com.graphinout.reader.rdf;
 
-import com.graphinout.base.cj.CjConstants;
+import com.graphinout.base.cj.ConnectedJson;
 import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjDocumentMutable;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
@@ -52,8 +52,8 @@ public class RdfModel2CjDoc {
         cjDoc.connectedJson(c -> {
             // TODO later
             c.canonical(false);
-            c.versionDate(CjConstants.CJ_LATEST_VERSION_DATE);
-            c.versionNumber(CjConstants.CJ_LATEST_VERSION_NUMBER);
+            c.versionDate(ConnectedJson.CJ_LATEST_VERSION_DATE);
+            c.versionNumber(ConnectedJson.CJ_LATEST_VERSION_NUMBER);
         });
         // TODO use it to shorten URIs
         cjDoc.baseUri(baseUri);

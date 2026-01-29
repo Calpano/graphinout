@@ -1,6 +1,7 @@
 package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.CjConstants;
+import com.graphinout.base.cj.ConnectedJson;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.JsonConstants;
 import com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter;
@@ -74,7 +75,10 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement 
 
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap() //
-                .putNonNull(JsonConstants.DOLLAR_SCHEMA, CjConstants.CJ_SCHEMA_URL).putNonNull(JsonConstants.DOLLAR_ID, CjConstants.CJ_SCHEMA_ID).putMaybe(CjConstants.BASE_URI, baseUri()).putMaybe(CjConstants.ROOT__CONNECTED_JSON, connectedJson(), ICjDocumentMeta::toJaJsonMap).putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
+                .putNonNull(JsonConstants.DOLLAR_SCHEMA, ConnectedJson.CJ_SCHEMA_URL) //
+                .putMaybe(CjConstants.BASE_URI, baseUri()) //
+                .putMaybe(CjConstants.ROOT__CONNECTED_JSON, connectedJson(), ICjDocumentMeta::toJaJsonMap) //
+                .putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
     }
 
     default String toJson() {
