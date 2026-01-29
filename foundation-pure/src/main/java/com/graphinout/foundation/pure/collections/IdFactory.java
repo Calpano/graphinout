@@ -2,16 +2,32 @@ package com.graphinout.foundation.pure.collections;
 
 public interface IdFactory {
 
-    static IdFactory createCounting(String idPrefix) {
-        return new IdFactory() {
+    class CountingIdFactory implements IdFactory {
 
-            int count = 0;
+        private final String idPrefix;
+        int count = 0;
 
-            @Override
-            public String createId() {
-                return idPrefix + count++;
-            }
-        };
+        public CountingIdFactory(String idPrefix) {this.idPrefix = idPrefix;}
+
+        @Override
+        public String createId() {
+            return idPrefix + count++;
+        }
+
+        /**
+         * Allows to (re-)set the count to avoid collisions easier.
+         *
+         * @param count to set
+         */
+        public void setCount(int count) {
+            assert count >= this.count;
+            this.count = count;
+        }
+
+    }
+
+    static CountingIdFactory createCounting(String idPrefix) {
+        return new CountingIdFactory(idPrefix);
     }
 
     /**
