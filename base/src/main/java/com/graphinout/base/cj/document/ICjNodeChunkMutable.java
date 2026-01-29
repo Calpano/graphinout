@@ -20,6 +20,8 @@ public interface ICjNodeChunkMutable extends //
      */
     void addType(@NonNull ICjElementType type);
 
+    void removeType(ICjElementType type);
+
 }
 
 

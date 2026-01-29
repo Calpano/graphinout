@@ -6,6 +6,8 @@ import com.graphinout.foundation.pure.util.Comparables;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+
 /**
  * The part of a CJ node which can be sent in one go. Memory requirements for all data in this chunk are expected to be
  * below 50 MB.
@@ -23,6 +25,13 @@ public interface ICjNodeChunk extends ICjHasId, ICjHasData, ICjHasLabel, ICjHasP
                 .byStream(ICjNodeChunk::ports) //
                 .byKey(ICjNodeChunk::data) //
                 .compare(a, b);
+    }
+
+    default void copyTo(ICjNodeMutable targetNode) {
+        ifPresentAccept(id(), targetNode::id);
+        ifPresentAccept(label(), label -> targetNode.labelMutable(label::copyTo));
+        data(data -> targetNode.dataJsonValue(data.jsonValue()));
+        ports().forEach(sourcePort -> targetNode.addPort(sourcePort::copyTo));
     }
 
     default void fireStartChunk(ICjWriter cjWriter, boolean sort) {
@@ -44,5 +53,6 @@ public interface ICjNodeChunk extends ICjHasId, ICjHasData, ICjHasLabel, ICjHasP
      * Node types, 0..n types. Each type is like an edge type.
      */
     Stream<ICjElementType> types();
+
 
 }

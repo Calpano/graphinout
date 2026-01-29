@@ -4,6 +4,8 @@ import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.foundation.pure.util.Comparables;
 import org.jspecify.annotations.Nullable;
 
+import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+
 /**
  * The part of a graph which can be sent in one go. Memory requirements for all data in this chunk are expected to be
  * below 50 MB.
@@ -23,6 +25,13 @@ public interface ICjGraphChunk extends ICjHasId, ICjHasData, ICjHasLabel {
      * Base URI for resolving relative URIs within this graph (CJ 7.0.0)
      */
     @Nullable String baseUri();
+
+    default void copyTo(ICjGraphChunkMutable target) {
+        ifPresentAccept(id(), target::id);
+        ifPresentAccept(baseUri(), target::baseUri);
+        ifPresentAccept(label(), sourceLabel -> target.labelMutable(sourceLabel::copyTo));
+        data(data -> target.dataJsonValue(data.jsonValue()));
+    }
 
     default void fireStartChunk(ICjWriter cjWriter, boolean sort) {
         cjWriter.graphStart();

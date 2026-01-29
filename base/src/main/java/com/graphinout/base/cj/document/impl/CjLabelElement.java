@@ -5,6 +5,7 @@ import com.graphinout.base.cj.document.ICjLabelEntry;
 import com.graphinout.base.cj.document.ICjLabelEntryMutable;
 import com.graphinout.base.cj.document.ICjLabelMutable;
 import com.graphinout.base.cj.writer.ICjWriter;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class CjLabelElement extends CjHasDataElement implements ICjLabelMutable 
     }
 
     @Override
-    public Stream<ICjLabelEntry> entries() {
+    public @NonNull Stream<ICjLabelEntry> entries() {
         return labelEntries.stream();
     }
 
@@ -47,6 +48,11 @@ public class CjLabelElement extends CjHasDataElement implements ICjLabelMutable 
         // listStart(ArrayOfLabelEntries) will write the "entries" key
         cjWriter.list(list, CjType.ArrayOfLabelEntries, sort, (cjLabelEntryElement, cjWriter1) -> cjLabelEntryElement.fire(cjWriter1, sort));
         cjWriter.labelEnd();
+    }
+
+    @Override
+    public void removeEntry(ICjLabelEntry entry) {
+        labelEntries.remove(entry);
     }
 
 }

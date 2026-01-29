@@ -49,9 +49,11 @@ public class CjPortElement extends CjHasDataAndLabelElement implements ICjPortMu
         return this;
     }
 
+    @SuppressWarnings("RedundantCast")
     @Override
     public Stream<ICjPort> ports() {
         return ports.stream().map(x -> (ICjPort) x);
     }
+
 
 }

@@ -31,4 +31,8 @@ public interface ICjGraphMutable extends ICjGraph, ICjHasGraphsMutable, ICjGraph
         return addNode(node -> {});
     }
 
+    void removeNode(ICjNode node);
+
+    void removeEdge(ICjEdge edge);
+
 }

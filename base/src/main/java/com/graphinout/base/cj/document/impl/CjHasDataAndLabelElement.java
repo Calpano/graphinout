@@ -2,9 +2,9 @@ package com.graphinout.base.cj.document.impl;
 
 import com.graphinout.base.cj.document.ICjHasLabelMutable;
 import com.graphinout.base.cj.document.ICjLabelMutable;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+
 import java.util.function.Consumer;
 
 /** Luckily, all CJ elements with a label also have data */
@@ -27,9 +27,13 @@ public abstract class CjHasDataAndLabelElement extends CjHasDataElement implemen
     }
 
     @Override
+    public void removeLabel() {
+        labelElement = null;
+    }
+
+    @Override
     public void setLabel(Consumer<ICjLabelMutable> label) {
         label.accept(labelMutable());
     }
-
 
 }

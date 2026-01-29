@@ -4,7 +4,6 @@ import com.graphinout.base.cj.CjConstants;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.util.Comparables;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.stream.Stream;
@@ -22,6 +21,13 @@ public interface ICjGraph extends ICjGraphChunk, ICjHasGraphs, ICjCoreElement, C
                 .byStream(ICjGraph::edges, ICjEdge::compareTo) //
                 .byStream(ICjHasGraphs::graphs) //
                 .compare(this, other);
+    }
+
+    default void copyTo(ICjGraphMutable targetGraph) {
+        ICjGraphChunk.super.copyTo(targetGraph);
+        nodes().forEach(sourceNode -> targetGraph.addNode(sourceNode::copyTo));
+        edges().forEach(sourceEdge -> targetGraph.addEdge(sourceEdge::copyTo));
+        graphs().forEach(sourceSubGraph -> targetGraph.addGraph(sourceSubGraph::copyTo));
     }
 
     /** Edge count in this graph, excluding subgraphs */
@@ -69,16 +75,14 @@ public interface ICjGraph extends ICjGraphChunk, ICjHasGraphs, ICjCoreElement, C
 
     Stream<ICjNode> nodes();
 
-    default @Nullable ICjNode findNodeById(String nodeId) {
-        // must use the effectiveUri of this graph
-        String nodeUri = CjUris.uri(effectiveBaseUri(), nodeId);
-        return document().findNodeById(nodeUri);
-    }
-
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap() //
-                .putMaybe(CjConstants.ID, id()).putMaybe(CjConstants.LABEL, label(), ICjLabel::toJaJsonMap).putMaybe(CjConstants.GRAPH__NODES, nodes(), ICjNode::toJaJsonMap).putMaybe(CjConstants.GRAPH__EDGES, edges(), ICjEdge::toJaJsonMap).putMaybe(CjConstants.DATA, data().ifNotEmpty(), ICjData::toJaJsonValue).putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
+                .putMaybe(CjConstants.ID, id()) //
+                .putMaybe(CjConstants.LABEL, label(), ICjLabel::toJaJsonMap) //
+                .putMaybe(CjConstants.GRAPH__NODES, nodes(), ICjNode::toJaJsonMap) //
+                .putMaybe(CjConstants.GRAPH__EDGES, edges(), ICjEdge::toJaJsonMap) //
+                .putMaybe(CjConstants.DATA, data().ifNotEmpty(), ICjData::toJaJsonValue) //
+                .putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
     }
-
 
 }

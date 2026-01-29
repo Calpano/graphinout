@@ -2,7 +2,6 @@ package com.graphinout.base.cj.document.impl;
 
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
-import com.graphinout.base.cj.document.ICjElement;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.writer.ICjWriter;
@@ -21,10 +20,11 @@ public class CjEdgeElement extends CjEdgeChunk implements ICjEdgeMutable {
     public CjEdgeElement(ICjGraph parent) {this.parent = parent;}
 
     @Override
-    public void addGraph(Consumer<ICjGraphMutable> graph) {
+    public CjGraphElement addGraph(Consumer<ICjGraphMutable> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
+        return graphElement;
     }
 
     @Override
@@ -45,7 +45,6 @@ public class CjEdgeElement extends CjEdgeChunk implements ICjEdgeMutable {
         return graphs.stream().map(x -> (ICjGraph) x);
     }
 
-
     @Override
     public int indexOf(ICjGraph subGraph) {
         //noinspection SuspiciousMethodCalls
@@ -55,6 +54,12 @@ public class CjEdgeElement extends CjEdgeChunk implements ICjEdgeMutable {
     @Override
     public @NonNull ICjGraph parent() {
         return parent;
+    }
+
+    @Override
+    public boolean removeGraph(ICjGraph graph) {
+        //noinspection SuspiciousMethodCalls
+        return graphs.remove(graph);
     }
 
 }

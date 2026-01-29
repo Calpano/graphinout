@@ -16,15 +16,17 @@ public interface ICjNode extends ICjNodeChunk, ICjHasGraphs, ICjCoreElement, Com
 
     /**
      * Compare first by chunk properties, then by graph arrays
-     *
-     * @param other
-     * @return
      */
     @Override
     default int compareTo(@NonNull ICjNode other) {
         return Comparables.<ICjNode>comparing() //
                 .byComparator(ICjNodeChunk::compare).byStream(ICjHasGraphs::graphs) //
                 .compare(this, other);
+    }
+
+    default void copyTo(ICjNodeMutable targetNode) {
+        ICjNodeChunk.super.copyTo(targetNode);
+        graphs().forEach(sourceGraph -> targetNode.addGraph(sourceGraph::copyTo));
     }
 
     @Override
@@ -39,7 +41,12 @@ public interface ICjNode extends ICjNodeChunk, ICjHasGraphs, ICjCoreElement, Com
     @NonNull ICjGraph parent();
 
     default Map<String, Object> toJaJsonMap() {
-        return JaJson.createMap().putMaybe(CjConstants.ID, id()).putMaybe(CjConstants.LABEL, label(), ICjLabel::toJaJsonMap).putMaybe(CjConstants.PORTS, ports(), ICjPort::toJaJsonMap).putMaybe(CjConstants.DATA, data(), ICjData::toJaJsonValue).putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
+        return JaJson.createMap() //
+                .putMaybe(CjConstants.ID, id()) //
+                .putMaybe(CjConstants.LABEL, label(), ICjLabel::toJaJsonMap) //
+                .putMaybe(CjConstants.PORTS, ports(), ICjPort::toJaJsonMap) //
+                .putMaybe(CjConstants.DATA, data(), ICjData::toJaJsonValue) //
+                .putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
     }
 
 }

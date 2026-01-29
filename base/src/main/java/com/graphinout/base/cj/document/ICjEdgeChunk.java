@@ -54,7 +54,7 @@ public interface ICjEdgeChunk extends ICjHasId, ICjHasData, ICjHasLabel {
         cjWriter.edgeStart();
         // streaming order: id, label, type, endpoints, data, graphs
         cjWriter.maybe(id(), cjWriter::id);
-        fireLabelMaybe(cjWriter,sort);
+        fireLabelMaybe(cjWriter, sort);
         ofNullable(edgeType()).ifPresent(cjWriter::edgeType);
         cjWriter.list(endpoints().toList(), CjType.ArrayOfEndpoints, sort, (iCjEndpoint, cjWriter1) -> iCjEndpoint.fire(cjWriter1, sort));
         fireDataMaybe(cjWriter);

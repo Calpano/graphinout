@@ -25,41 +25,8 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement 
         return Stream.concat(Stream.concat(Stream.of(data().ifNotEmpty()), Stream.of(connectedJson())).filter(Objects::nonNull), graphs());
     }
 
-    /**
-     * @return All edges in the document, from all graphs and subgraphs.
-     */
-    default Stream<ICjEdge> edgesAll() {
-        return graphsAll().flatMap(ICjGraph::edges);
-    }
-
     default @NonNull String effectiveBaseUri() {
         return nonNullOrDefault(baseUri(), CjUris.BASE_URI_FALLBACK);
-    }
-
-    default @Nullable ICjEdge findEdgeById(@NonNull String edgeId) throws IllegalStateException {
-        return edgesAll().filter(e -> e.matchesId(this, edgeId)).findFirst().orElse(null);
-    }
-
-    default @Nullable ICjGraph findGraph(String id) {
-        return graphsAll().filter(g -> g.matchesId(this, id)).findFirst().orElse(null);
-    }
-
-    default @Nullable ICjNode findNodeById(@NonNull String id) throws IllegalStateException {
-        return nodesAll().filter(n -> n.matchesId(this, id)).findFirst().orElse(null);
-    }
-
-    /**
-     * @return All nodes in the document, from all graphs and subgraphs.
-     */
-    default Stream<ICjNode> nodesAll() {
-        return graphsAll().flatMap(ICjGraph::nodes);
-    }
-
-    default Stream<ICjNode> nodesAllIncludingImplied() {
-        return Stream.concat(//
-                nodesAll(), //
-                edgesAll().flatMap(ICjEdge::nodesResolved) //
-        ).distinct().sorted();
     }
 
     /**

@@ -80,7 +80,7 @@ public class CjDocTest {
         // expect "https://example.com/g1-with'
         // expect "doi:abc-g2-without'
 
-        ICjGraph graph = doc.findGraph("https://example.com/g1-with");
+        ICjGraph graph = doc.findGraphById("https://example.com/g1-with");
     }
 
     @ParameterizedTest

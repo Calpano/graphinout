@@ -29,7 +29,6 @@ public class CjNodeChunk extends CjHasDataAndLabelElement implements ICjNodeChun
         types.add(type);
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof CjNodeChunk that)) return false;
@@ -58,6 +57,11 @@ public class CjNodeChunk extends CjHasDataAndLabelElement implements ICjNodeChun
     @Override
     public Stream<ICjPort> ports() {
         return ports.stream().map(x -> (ICjPort) x);
+    }
+
+    @Override
+    public void removeType(ICjElementType type) {
+        types.remove(type);
     }
 
     public void setId(String id) {

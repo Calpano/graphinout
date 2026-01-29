@@ -12,7 +12,7 @@ import static com.graphinout.base.cj.document.CjUris.BLANK_NODE_PSEUDO_SCHEME;
 /**
  * A common super-interface for {@link ICjGraph}, {@link ICjNode} and {@link ICjEdge}.
  */
-public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjElement {
+public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjHasGraphs, ICjElement {
 
     class ParentIterator implements Iterator<ICjElement> {
 
@@ -96,8 +96,8 @@ public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjElement {
     default String abbreviatedUri() {
         String uri = uri();
         String effectiveBaseUri = effectiveBaseUri();
-        if (uri.startsWith(effectiveBaseUri+"#")) {
-            return uri.substring(effectiveBaseUri.length()+1);
+        if (uri.startsWith(effectiveBaseUri + "#")) {
+            return uri.substring(effectiveBaseUri.length() + 1);
         }
         if (uri.startsWith(effectiveBaseUri)) {
             return uri.substring(effectiveBaseUri.length());
@@ -170,8 +170,7 @@ public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjElement {
      */
     default @NonNull String unstableId() {
         String thisId = id();
-        if (thisId != null)
-            return thisId;
+        if (thisId != null) return thisId;
 
         Iterator<ICjElement> it = parentIterator();
         StringBuilder sb = new StringBuilder();

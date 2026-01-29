@@ -20,30 +20,42 @@ public interface ICjElement {
         return Stream.concat(Stream.of(this), directChildren().flatMap(ICjElement::allElements));
     }
 
+    /** @throws ClassCastException if this is not a Document */
     default ICjDocumentMutable asDocument() {
         return (ICjDocumentMutable) this;
     }
 
+    /** @throws ClassCastException if this is not a Edge */
     default ICjEdgeMutable asEdge() {
         return (ICjEdgeMutable) this;
     }
 
+    /** @throws ClassCastException if this is not a Endpoint */
     default ICjEndpointMutable asEndpoint() {
         return (ICjEndpointMutable) this;
     }
 
+    /** @throws ClassCastException if this is not a Graph */
     default ICjGraphMutable asGraph() {
         return (ICjGraphMutable) this;
     }
 
+    /** @throws ClassCastException if this is not a HasGraphs */
+    default ICjHasGraphsMutable asHasGraphsMutable() {
+        return (ICjHasGraphsMutable) this;
+    }
+
+    /** @throws ClassCastException if this is not a Node */
     default ICjNodeMutable asNode() {
         return (ICjNodeMutable) this;
     }
 
+    /** @throws ClassCastException if this is not a Port */
     default ICjPortMutable asPort() {
         return (ICjPortMutable) this;
     }
 
+    /** @throws ClassCastException if this is not a HasData */
     default ICjHasDataMutable asWithData() {
         return (ICjHasDataMutable) this;
     }
@@ -63,5 +75,6 @@ public interface ICjElement {
         cj2JsonWriter.objectEnd();
         return Objects.requireNonNull(json2JsonValueWriter.resultJsonRootObject()).asObject();
     }
+
 
 }

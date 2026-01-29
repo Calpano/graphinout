@@ -91,7 +91,7 @@ public interface ICjLabel extends ICjElement, ICjHasData, Comparable<ICjLabel> {
         return entries().map(x -> x);
     }
 
-    Stream<ICjLabelEntry> entries();
+    @NonNull Stream<ICjLabelEntry> entries();
 
     /**
      * @return the single graph (or null if none).

@@ -30,10 +30,11 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     private @Nullable ICjDocumentMeta connectedJson;
 
     @Override
-    public void addGraph(Consumer<ICjGraphMutable> graph) {
+    public CjGraphElement addGraph(Consumer<ICjGraphMutable> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
+        return graphElement;
     }
 
     @Nullable
@@ -85,7 +86,7 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
 
     @Override
     public void fire(ICjWriter cjWriter, boolean sort) {
-        fireStartChunk(cjWriter,sort);
+        fireStartChunk(cjWriter, sort);
         cjWriter.list(graphs, CjType.ArrayOfGraphs, sort, (cjGraphElement, cjWriter1) -> cjGraphElement.fire(cjWriter1, sort));
         cjWriter.documentEnd();
     }
@@ -100,6 +101,12 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
     public int indexOf(ICjGraph graph) {
         //noinspection SuspiciousMethodCalls
         return graphs.indexOf(graph);
+    }
+
+    @Override
+    public boolean removeGraph(ICjGraph graph) {
+        //noinspection SuspiciousMethodCalls
+        return graphs.remove(graph);
     }
 
     public String toCjJsonString() {

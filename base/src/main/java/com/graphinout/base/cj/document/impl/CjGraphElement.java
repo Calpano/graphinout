@@ -1,6 +1,8 @@
 package com.graphinout.base.cj.document.impl;
 
 import com.graphinout.base.cj.document.CjType;
+import com.graphinout.base.cj.document.ICjCoreElement;
+import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
 import com.graphinout.base.cj.document.ICjEdgeMutable;
 import com.graphinout.base.cj.document.ICjElement;
@@ -24,7 +26,11 @@ public class CjGraphElement extends CjGraphChunk implements ICjGraphMutable {
     private final List<CjEdgeElement> edges = new ArrayList<>();
     private final @NonNull ICjElement parent;
 
+    /**
+     * @param parent must be an {@link ICjDocument} or {@link ICjCoreElement}
+     */
     public CjGraphElement(@NonNull ICjElement parent) {this.parent = parent;}
+
 
     @Override
     public void addEdge(Consumer<ICjEdgeMutable> edge) {
@@ -38,10 +44,11 @@ public class CjGraphElement extends CjGraphChunk implements ICjGraphMutable {
     }
 
     @Override
-    public void addGraph(Consumer<ICjGraphMutable> graph) {
+    public CjGraphElement addGraph(Consumer<ICjGraphMutable> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
+        return graphElement;
     }
 
     @Override
@@ -65,7 +72,7 @@ public class CjGraphElement extends CjGraphChunk implements ICjGraphMutable {
 
     @Override
     public void fire(ICjWriter cjWriter, boolean sort) {
-        fireStartChunk(cjWriter,sort);
+        fireStartChunk(cjWriter, sort);
 
         cjWriter.list(nodes, CjType.ArrayOfNodes, sort, (cjNodeElement, cjWriter1) -> cjNodeElement.fire(cjWriter1, sort));
         cjWriter.list(edges, CjType.ArrayOfEdges, sort, (cjEdgeElement, cjWriter1) -> cjEdgeElement.fire(cjWriter1, sort));
@@ -107,6 +114,24 @@ public class CjGraphElement extends CjGraphChunk implements ICjGraphMutable {
     @Override
     public @NonNull ICjElement parent() {
         return Objects.requireNonNull(parent);
+    }
+
+    @Override
+    public void removeEdge(ICjEdge edge) {
+        //noinspection SuspiciousMethodCalls
+        edges.remove(edge);
+    }
+
+    @Override
+    public boolean removeGraph(ICjGraph graph) {
+        //noinspection SuspiciousMethodCalls
+        return graphs.remove(graph);
+    }
+
+    @Override
+    public void removeNode(ICjNode node) {
+        //noinspection SuspiciousMethodCalls
+        nodes.remove(node);
     }
 
     public void removeNode(CjNodeElement node) {

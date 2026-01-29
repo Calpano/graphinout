@@ -16,9 +16,6 @@ public interface ICjEdge extends ICjEdgeChunk, ICjHasGraphs, ICjCoreElement, Com
 
     /**
      * Compare first by chunk properties, then by graph arrays
-     *
-     * @param other
-     * @return
      */
     @Override
     default int compareTo(@NonNull ICjEdge other) {
@@ -27,6 +24,12 @@ public interface ICjEdge extends ICjEdgeChunk, ICjHasGraphs, ICjCoreElement, Com
                 .byStream(ICjHasGraphs::graphs) //
                 .compare(this, other);
     }
+
+    default void copyTo(ICjEdgeMutable targetEdge) {
+        ICjEdgeChunk.super.copyTo(targetEdge);
+        graphs().forEach(sourceGraph -> targetEdge.addGraph(sourceGraph::copyTo));
+    }
+
 
     @Override
     default Stream<ICjElement> directChildren() {

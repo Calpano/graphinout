@@ -18,10 +18,11 @@ public class CjNodeElement extends CjNodeChunk implements ICjNodeMutable {
 
     public CjNodeElement(ICjGraph parent) {this.parent = parent;}
 
-    public void addGraph(Consumer<ICjGraphMutable> graph) {
+    public ICjGraphMutable addGraph(Consumer<ICjGraphMutable> graph) {
         CjGraphElement graphElement = new CjGraphElement(this);
         graph.accept(graphElement);
         graphs.add(graphElement);
+        return graphElement;
     }
 
     @Override
@@ -37,7 +38,7 @@ public class CjNodeElement extends CjNodeChunk implements ICjNodeMutable {
 
     @Override
     public void fire(ICjWriter cjWriter, boolean sort) {
-        fireStartChunk(cjWriter,sort);
+        fireStartChunk(cjWriter, sort);
         cjWriter.list(graphs, CjType.ArrayOfGraphs, sort, (cjGraphElement, cjWriter1) -> cjGraphElement.fire(cjWriter1, sort));
         cjWriter.nodeEnd();
     }
@@ -66,6 +67,12 @@ public class CjNodeElement extends CjNodeChunk implements ICjNodeMutable {
     @Override
     public @NonNull ICjGraph parent() {
         return parent;
+    }
+
+    @Override
+    public boolean removeGraph(ICjGraph graph) {
+        //noinspection SuspiciousMethodCalls
+        return graphs.remove(graph);
     }
 
     @Override
