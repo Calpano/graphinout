@@ -328,7 +328,7 @@ public class Nullables {
     }
 
     /**
-     * Like {@link #nonNullOrDefault(Object, Supplier)}, but with a non-null default value.
+     * Like {@link #nonNullOrGetDefault(Object, Supplier)}, but with a non-null default value.
      *
      * @param nullable
      * @param defaultValueSupplier
@@ -355,7 +355,7 @@ public class Nullables {
      * @param defaultValue can be null, too
      */
     public static <T, R> @Nullable R nonNullOrDefault(@Nullable T nullable, //
-                                                      @NonNull Function<T, @Nullable R> mapFun, //
+                                                      @NonNull Function<@NonNull T, @Nullable R> mapFun, //
                                                       @Nullable R defaultValue) {
         return nullable != null ? mapFun.apply(nullable) : defaultValue;
     }
@@ -374,13 +374,36 @@ public class Nullables {
      * In most cases, better use {@link #nonNull(Object, Supplier)}
      *
      * @param defaultValueSupplier may return null, too
+     * @deprecated use {@link #nonNullOrGetDefault(Object, Supplier)}
      */
+    @Deprecated
     public static <T> @Nullable T nonNullOrDefault(@Nullable T nullable, @NonNull Supplier<@Nullable T> defaultValueSupplier) {
+        return nonNullOrGetDefault(nullable, defaultValueSupplier);
+    }
+
+    /**
+     * In most cases, better use {@link #nonNull(Object, Supplier)}
+     *
+     * @param defaultValueSupplier may return null, too
+     */
+    public static <T> @Nullable T nonNullOrGetDefault(@Nullable T nullable, @NonNull Supplier<@Nullable T> defaultValueSupplier) {
         return nullable != null ? nullable : defaultValueSupplier.get();
     }
 
     public static @NonNull String nonNullOrEmpty(@Nullable String nullable) {
         return nullable != null ? nullable : "";
+    }
+
+    /**
+     * In most cases, better use {@link #nonNull(Object, Function, Object)}
+     *
+     * @param mapFun               may return null, too
+     * @param defaultValueSupplier may return null, too
+     */
+    public static <T, R> @Nullable R nonNullOrGetDefault(@Nullable T nullable, //
+                                                         @NonNull Function<@NonNull T, @Nullable R> mapFun, //
+                                                         @NonNull Supplier<@Nullable R> defaultValueSupplier) {
+        return nullable != null ? mapFun.apply(nullable) : defaultValueSupplier.get();
     }
 
     public static <T> @NonNull T nonNullOrThrow(@Nullable T nullable) throws AssertionError {
