@@ -53,4 +53,20 @@ public interface ICjPort extends ICjHasId, ICjHasLabel, ICjHasData, ICjElement, 
                 .build();
     }
 
+    /**
+     * A hash based on label, data, and nested ports. Excludes id.
+     */
+    default String structuralHash() {
+        StringBuilder sb = new StringBuilder();
+        if (label() != null) {
+            sb.append("L:").append(label().structuralHash());
+        }
+        if (data() != null && !data().isEmpty()) {
+            sb.append("|D:").append(data().hashCode());
+        }
+        sb.append("|P:");
+        ports().forEach(p -> sb.append(p.structuralHash()).append(","));
+        return Integer.toString(sb.toString().hashCode());
+    }
+
 }

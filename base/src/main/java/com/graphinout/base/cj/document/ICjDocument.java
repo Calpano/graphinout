@@ -63,4 +63,20 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement 
     }
 
 
+    /**
+     * A hash based on data, connectedJson, and graphs. Excludes context.
+     */
+    default String structuralHash() {
+        StringBuilder sb = new StringBuilder();
+        if (connectedJson() != null) {
+            sb.append("CJ:").append(connectedJson().hashCode());
+        }
+        if (data() != null && !data().isEmpty()) {
+            sb.append("|D:").append(data().hashCode());
+        }
+        sb.append("|G:");
+        graphs().forEach(g -> sb.append(g.structuralHash()).append(","));
+        return Integer.toString(sb.toString().hashCode());
+    }
+
 }

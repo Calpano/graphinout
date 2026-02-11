@@ -91,4 +91,18 @@ public interface ICjGraph extends ICjGraphChunk, ICjHasGraphs, ICjCoreElement, C
                 .putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
     }
 
+    /**
+     * A hash based on label, data, nodes, edges, and nested graphs. Excludes id.
+     */
+    default String structuralHash() {
+        StringBuilder sb = new StringBuilder(ICjGraphChunk.super.structuralHash());
+        sb.append("|N:");
+        nodes().forEach(n -> sb.append(n.structuralHash()).append(","));
+        sb.append("|E:");
+        edges().forEach(e -> sb.append(e.structuralHash()).append(","));
+        sb.append("|G:");
+        graphs().forEach(g -> sb.append(g.structuralHash()).append(","));
+        return Integer.toString(sb.toString().hashCode());
+    }
+
 }

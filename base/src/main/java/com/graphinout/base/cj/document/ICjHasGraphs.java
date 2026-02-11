@@ -57,10 +57,19 @@ public interface ICjHasGraphs {
     }
 
     default Stream<ICjNode> nodesAllIncludingImplied() {
-        return Stream.concat(//
-                nodesAll(), //
-                edgesAll().flatMap(ICjEdge::nodesResolved) //
-        ).distinct().sorted();
+        Map<String, ICjNode> seen = new LinkedHashMap<>();
+        nodesAll().forEach(n -> seen.putIfAbsent(n.id(), n));
+        edgesAll().flatMap(ICjEdge::nodesResolved).forEach(n -> seen.putIfAbsent(n.id(), n));
+        return seen.values().stream().sorted();
+    }
+
+    /**
+     * A hash based on all nested graphs.
+     */
+    default String structuralHash() {
+        StringBuilder sb = new StringBuilder("G:");
+        graphs().forEach(g -> sb.append(g.structuralHash()).append(","));
+        return Integer.toString(sb.toString().hashCode());
     }
 
 }

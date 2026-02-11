@@ -55,5 +55,18 @@ public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
         fireDataMaybe(cjWriter);
     }
 
+    /**
+     * A hash based on data and connectedJson. Excludes context.
+     */
+    default String structuralHash() {
+        StringBuilder sb = new StringBuilder();
+        if (connectedJson() != null) {
+            sb.append("CJ:").append(connectedJson().hashCode());
+        }
+        if (data() != null && !data().isEmpty()) {
+            sb.append("|D:").append(data().hashCode());
+        }
+        return Integer.toString(sb.toString().hashCode());
+    }
 
 }

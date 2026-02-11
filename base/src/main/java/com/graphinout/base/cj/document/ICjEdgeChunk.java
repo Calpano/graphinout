@@ -102,4 +102,23 @@ public interface ICjEdgeChunk extends ICjHasId, ICjHasData, ICjHasLabel {
         return endpoints().filter(ICjEndpoint::isUndirected).toList();
     }
 
+    /**
+     * A hash based on label, endpoints, and data. Excludes id.
+     */
+    default String structuralHash() {
+        StringBuilder sb = new StringBuilder();
+        if (label() != null) {
+            sb.append("L:").append(label().structuralHash());
+        }
+        if (edgeType() != null) {
+            sb.append("|T:").append(edgeType().type());
+        }
+        sb.append("|E:");
+        endpoints().forEach(ep -> sb.append(ep.structuralHash()).append(","));
+        if (data() != null && !data().isEmpty()) {
+            sb.append("|D:").append(data().hashCode());
+        }
+        return Integer.toString(sb.toString().hashCode());
+    }
+
 }

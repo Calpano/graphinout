@@ -66,5 +66,18 @@ public interface ICjLabelEntry extends ICjHasData, ICjElement, Comparable<ICjLab
 
     String value();
 
+    /**
+     * A hash based on value, language, and data.
+     */
+    default String structuralHash() {
+        StringBuilder sb = new StringBuilder("V:").append(value());
+        if (language() != null) {
+            sb.append("|L:").append(language());
+        }
+        if (data() != null && !data().isEmpty()) {
+            sb.append("|D:").append(data().hashCode());
+        }
+        return Integer.toString(sb.toString().hashCode());
+    }
 
 }

@@ -49,4 +49,14 @@ public interface ICjNode extends ICjNodeChunk, ICjHasGraphs, ICjCoreElement, Com
                 .putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
     }
 
+    /**
+     * A hash based on label, types, ports, data, and graphs. Excludes id.
+     */
+    default String structuralHash() {
+        StringBuilder sb = new StringBuilder(ICjNodeChunk.super.structuralHash());
+        sb.append("|G:");
+        graphs().forEach(g -> sb.append(g.structuralHash()).append(","));
+        return Integer.toString(sb.toString().hashCode());
+    }
+
 }

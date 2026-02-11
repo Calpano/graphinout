@@ -66,4 +66,25 @@ public interface ICjEndpoint extends ICjHasData, ICjElement, Comparable<ICjEndpo
 
     @Nullable String type();
 
+    /**
+     * A hash based on direction, node, port, type, and data.
+     */
+    default String structuralHash() {
+        StringBuilder sb = new StringBuilder();
+        if (direction() != null) {
+            sb.append("D:").append(direction());
+        }
+        sb.append("|N:").append(node());
+        if (port() != null) {
+            sb.append("|P:").append(port());
+        }
+        if (type() != null) {
+            sb.append("|T:").append(type());
+        }
+        if (data() != null && !data().isEmpty()) {
+            sb.append("|D:").append(data().hashCode());
+        }
+        return Integer.toString(sb.toString().hashCode());
+    }
+
 }

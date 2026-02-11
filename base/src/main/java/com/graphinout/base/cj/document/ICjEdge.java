@@ -60,6 +60,16 @@ public interface ICjEdge extends ICjEdgeChunk, ICjHasGraphs, ICjCoreElement, Com
         return node;
     }
 
+    /**
+     * A hash based on endpoints, ports, label, data, and graphs. So everything except the id.
+     */
+    default String structuralHash() {
+        StringBuilder sb = new StringBuilder(ICjEdgeChunk.super.structuralHash());
+        sb.append("|G:");
+        graphs().forEach(g -> sb.append(g.structuralHash()).append(","));
+        return Integer.toString(sb.toString().hashCode());
+    }
+
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap().putMaybe(CjConstants.ID, id()).putMaybe(CjConstants.LABEL, label(), ICjLabel::toJaJsonMap).putMaybe(CjConstants.EDGE__ENDPOINTS, endpoints(), ICjEndpoint::toJaJsonMap).putMaybe(CjConstants.DATA, data().ifNotEmpty(), ICjData::toJaJsonValue).putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
     }

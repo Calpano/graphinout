@@ -129,5 +129,13 @@ public interface ICjLabel extends ICjElement, ICjHasData, Comparable<ICjLabel> {
         return w.jsonString();
     }
 
+    /**
+     * A hash based on all label entries.
+     */
+    default String structuralHash() {
+        StringBuilder sb = new StringBuilder("LE:");
+        entries().forEach(e -> sb.append(e.structuralHash()).append(","));
+        return Integer.toString(sb.toString().hashCode());
+    }
 
 }
