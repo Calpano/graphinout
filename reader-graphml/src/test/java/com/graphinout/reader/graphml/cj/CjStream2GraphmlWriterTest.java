@@ -40,7 +40,7 @@ class CjStream2GraphmlWriterTest {
         });
         String json = runPipeline(doc);
         assertThat(json).isEqualTo("""
-                {"graphs":[{"id":"graph-1","nodes":[{"id":"node-1A-withGraph","graphs":[{"id":"graph-1A-1"}]},{"id":"node-1A-empty"}]}]}""");
+                {"$schema":"https://j-s-o-n.org/schema/cj-7.0.0.json","connectedJson":{"versionDate":"2026-01-15","versionNumber":"7.0.0"},"graphs":[{"id":"graph-1","nodes":[{"id":"node-1A-withGraph","graphs":[{"id":"graph-1A-1"}]},{"id":"node-1A-empty"}]}]}""");
     }
 
     @Test
@@ -54,7 +54,7 @@ class CjStream2GraphmlWriterTest {
         });
         String json = runPipeline(doc);
         assertThat(json).isEqualTo("""
-                {"graphs":[{"id":"graph-1","nodes":[{"id":"node-1A"},{"id":"node-1B"}],"edges":[{"endpoints":[{"node":"node-1A","direction":"in"},{"node":"node-1B","direction":"out"}]}]}]}""");
+                {"$schema":"https://j-s-o-n.org/schema/cj-7.0.0.json","connectedJson":{"versionDate":"2026-01-15","versionNumber":"7.0.0"},"graphs":[{"id":"graph-1","nodes":[{"id":"node-1A"},{"id":"node-1B"}],"edges":[{"endpoints":[{"node":"node-1A","direction":"in"},{"node":"node-1B","direction":"out"}]}]}]}""");
 
     }
 

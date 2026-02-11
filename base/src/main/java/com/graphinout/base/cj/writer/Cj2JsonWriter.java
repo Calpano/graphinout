@@ -1,6 +1,7 @@
 package com.graphinout.base.cj.writer;
 
 import com.graphinout.base.cj.CjConstants;
+import com.graphinout.base.cj.ConnectedJson;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.CjException;
 import com.graphinout.base.cj.document.CjType;
@@ -18,9 +19,6 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
 
     enum Mode {Json, Cj}
 
-    /** the version of CJ that this writer writes */
-    private static final String CJ_VERSION_NUMBER = "7.0.0";
-    private static final String CJ_VERSION_DATA = "2026-01-15";
     private final Stack<Object> stack = new Stack<>();
     private Mode mode = Mode.Cj;
 
@@ -103,22 +101,9 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
         super.documentStart();
         // start the CJ root object
         super.objectStart();
-
-//        //   "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
-//        //  "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
-//        super.onKey(JsonConstants.DOLLAR_SCHEMA);
-//        onString(CjConstants.CJ_SCHEMA_LOCATION);
-//        super.onKey(JsonConstants.DOLLAR_ID);
-//        onString(CjConstants.CJ_SCHEMA_ID);
-//
-//        // "connectedJson" : { ...
-//        super.onKey(CjConstants.ROOT__CONNECTED_JSON);
-//        super.objectStart();
-//        super.onKey(CjConstants.CONNECTED_JSON__VERSION_NUMBER);
-//        onString(CJ_VERSION_NUMBER);
-//        super.onKey(CjConstants.CONNECTED_JSON__VERSION_DATE);
-//        onString(CJ_VERSION_DATA);
-//        super.objectEnd();
+        // $schema
+        super.onKey("$schema");
+        onString(ConnectedJson.CJ_SCHEMA_URL);
     }
 
     public void edgeEnd() throws CjException {
