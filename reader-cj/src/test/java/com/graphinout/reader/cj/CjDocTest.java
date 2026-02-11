@@ -40,15 +40,12 @@ public class CjDocTest {
         assertThat(doc.nodesAll().count()).isEqualTo(6);
         assertThat(doc.edgesAll().count()).isEqualTo(3);
         {
-            // is interpreted with doc-baseUri as "doi:abc#n1"
-            ICjNode node = doc.findNodeById("n1");
-            assertThat(node).isNotNull();
-            assertThat(labelValue(node)).isEqualTo("Node N1 in G2");
-        }
-        {
-            ICjNode node = doc.findNodeById("https://example.com/n1");
+            // findNodeById now compares by plain ID (IDs are document-unique)
+            ICjNode node = doc.findNodeById("ex:n1");
             assertThat(node).isNotNull();
             assertThat(labelValue(node)).isEqualTo("Node N1 in G1");
+            // expanded URI via @context: ex -> https://example.com/
+            assertThat(node.uri()).isEqualTo("https://example.com/n1");
         }
         {
             ICjNode node = doc.findNodeById("https://example.com/n2");
@@ -61,26 +58,26 @@ public class CjDocTest {
             assertThat(labelValue(node)).isEqualTo("Node N3 in G1");
         }
         {
-            ICjNode node = doc.findNodeById("doi:abc#n1");
+            // id is "doi:n1", expands via context to "doi:abc#n1"
+            ICjNode node = doc.findNodeById("doi:n1");
             assertThat(node).isNotNull();
             assertThat(labelValue(node)).isEqualTo("Node N1 in G2");
+            assertThat(node.uri()).isEqualTo("doi:abc#n1");
         }
         {
-            ICjNode node = doc.findNodeById("doi:abc#n2");
+            // id is "n2", expands via @vocab to "https://example.org/n2"
+            ICjNode node = doc.findNodeById("n2");
             assertThat(node).isNotNull();
             assertThat(labelValue(node)).isEqualTo("Node N2 in G2");
+            assertThat(node.uri()).isEqualTo("https://example.org/n2");
         }
         {
             ICjNode node = doc.findNodeById("_:n4");
             assertThat(node).isNotNull();
             assertThat(labelValue(node)).isEqualTo("Node N4 in G2");
         }
-        // TODO assert graph ids as URIs
-        // expect NOT "doi:abc-g1-with'
-        // expect "https://example.com/g1-with'
-        // expect "doi:abc-g2-without'
 
-        ICjGraph graph = doc.findGraphById("https://example.com/g1-with");
+        ICjGraph graph = doc.findGraphById("g1");
     }
 
     @ParameterizedTest

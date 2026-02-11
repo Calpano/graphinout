@@ -52,8 +52,6 @@ public class CjNodeElement extends CjNodeChunk implements ICjNodeMutable {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        // nodes with same local id might get different URI due to parents baseUri
-        result = 31 * result + uri().hashCode();
         result = 31 * result + graphs.hashCode();
         return result;
     }

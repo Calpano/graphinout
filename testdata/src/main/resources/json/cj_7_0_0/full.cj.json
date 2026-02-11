@@ -3,7 +3,7 @@
     "versionDate": "2025-07-14",
     "versionNumber": "5.0.0"
   },
-  "baseUri": "http://example.org/graph/",
+  "@context": { "@vocab": "http://example.org/graph/" },
   "graphs": [
     {
       "id": "g1",

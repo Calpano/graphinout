@@ -29,7 +29,7 @@ import static com.graphinout.base.cj.CjConstants.LABEL;
 import static com.graphinout.base.cj.CjConstants.LANGUAGE;
 import static com.graphinout.base.cj.CjConstants.NODE_TYPES;
 import static com.graphinout.base.cj.CjConstants.PORTS;
-import static com.graphinout.base.cj.CjConstants.BASE_URI;
+import static com.graphinout.base.cj.CjConstants.CONTEXT;
 import static com.graphinout.base.cj.CjConstants.ROOT__CONNECTED_JSON;
 import static com.graphinout.base.cj.CjConstants.VALUE;
 
@@ -46,7 +46,7 @@ public enum CjType {
     ConnectedJson__VersionNumber(JsonType.String),//
     ConnectedJson__VersionDate(JsonType.String),//
     ConnectedJson__Canonical(JsonType.Boolean),//
-    BaseUri(JsonType.String),//
+    Context(JsonType.Object),//
 
     Label(JsonType.Object),
     ArrayOfLabelEntries(JsonType.Array),//
@@ -122,13 +122,12 @@ public enum CjType {
         ConnectedJson.property(CjConstants.CONNECTED_JSON__VERSION_NUMBER).is(ConnectedJson__VersionNumber);
         ConnectedJson.property(CjConstants.CONNECTED_JSON__VERSION_DATE).is(ConnectedJson__VersionDate);
         ConnectedJson.property(CjConstants.CONNECTED_JSON__CANONICAL).is(ConnectedJson__Canonical);
-        RootObject.property(BASE_URI).is(BaseUri);
+        RootObject.property(CONTEXT).is(Context);
         RootObject.property(GRAPHS).is(ArrayOfGraphs);
         RootObject.property(DATA).is(Data);
 
         ArrayOfGraphs.item(Graph);
         Graph.property(ID).is(Id);
-        Graph.property(BASE_URI).is(BaseUri);
         Graph.property(LABEL).is(Label);
         Graph.property(GRAPH__META).is(Meta);
         Graph.property(DATA).is(Data);

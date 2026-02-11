@@ -12,8 +12,10 @@ import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
@@ -103,6 +105,10 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
     final ICjWriter cjWriter;
     /** The current context from root: stack of Container and String (property keys). */
     private final ParseStack parseStack = new ParseStack();
+    /** Buffer for @context namespace map entries */
+    private Map<String, String> contextBuffer;
+    /** Current key being buffered inside @context */
+    private String contextKey;
 
     public Json2CjWriter(ICjWriter cjWriter) {
         this.cjWriter = cjWriter;
@@ -172,6 +178,13 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
                 case ConnectedJson -> cjWriter.connectedJsonEnd();
                 case Label -> cjWriter.labelEnd();
                 case LabelEntry -> cjWriter.labelEntryEnd();
+                case Context -> {
+                    if (contextBuffer != null && !contextBuffer.isEmpty()) {
+                        cjWriter.context(contextBuffer);
+                    }
+                    contextBuffer = null;
+                    contextKey = null;
+                }
                 case RootObject -> {
                     // do nothing
                 }
@@ -202,6 +215,10 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
                 case Label -> cjWriter.labelStart();
                 case LabelEntry -> cjWriter.labelEntryStart();
                 case ConnectedJson -> cjWriter.connectedJsonStart();
+                case Context -> {
+                    contextBuffer = new HashMap<>();
+                    contextKey = null;
+                }
                 case RootObject, Data -> {
                     // do nothing
                 }
@@ -285,6 +302,9 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
     public void onKey(String key) throws JsonException {
         if (parseStack.isInJson()) {
             cjWriter.onKey(key);
+        } else if (contextBuffer != null) {
+            // inside @context object: buffer the key
+            contextKey = key;
         } else {
             CjType cjType = parseStack.peekCjType();
             assert cjType != null;
@@ -330,6 +350,10 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
             cjWriter.onString(s);
             parseStack.popJsonPropertyMaybe();
             maybeEndData();
+        } else if (contextBuffer != null && contextKey != null) {
+            // inside @context object: buffer the value
+            contextBuffer.put(contextKey, s);
+            contextKey = null;
         } else {
             Set<CjType> expectedTypes = parseStack.expectedCjTypes();
             // Filter to only types that can be strings
@@ -341,7 +365,6 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
                     case JsonSchemaLocation, JsonSchemaId -> {
                         // TODO ...
                     }
-                    case BaseUri -> cjWriter.baseUri(s);
                     case ConnectedJson__VersionDate -> cjWriter.connectedJson__versionDate(s);
                     case ConnectedJson__VersionNumber -> cjWriter.connectedJson__versionNumber(s);
                     // look how tolerant we are

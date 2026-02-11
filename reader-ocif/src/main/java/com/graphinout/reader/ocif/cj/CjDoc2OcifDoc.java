@@ -143,9 +143,9 @@ public class CjDoc2OcifDoc {
             }
         });
 
-        // Export CJ->OCIF: document-level baseUri as canvas extension
+        // Export CJ->OCIF: document-level @context as canvas extension
         CjDocumentCanvasExtension cjDocumentCanvasExtension = new CjDocumentCanvasExtension();
-        ifPresentAccept(cjDoc.baseUri(), cjDocumentCanvasExtension::baseUri);
+        ifPresentAccept(cjDoc.context(), cjDocumentCanvasExtension::context);
         ifPresentAccept(cjDoc.connectedJson(), ICjElement::toJsonValue, ICjDocumentMetaMutable::of, cjDocumentCanvasExtension::connectedJson);
         if (!cjDocumentCanvasExtension.isEmpty()) {
             ocifDocument.addCanvasExtension(cjDocumentCanvasExtension);

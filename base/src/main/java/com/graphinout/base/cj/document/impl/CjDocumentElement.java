@@ -14,6 +14,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -26,7 +27,7 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
 
     /** All directed graphs in this document */
     private final List<CjGraphElement> graphs = new ArrayList<>();
-    private @Nullable String baseUri;
+    private @Nullable Map<String, String> context;
     private @Nullable ICjDocumentMeta connectedJson;
 
     @Override
@@ -39,13 +40,13 @@ public class CjDocumentElement extends CjHasDataElement implements ICjDocumentMu
 
     @Nullable
     @Override
-    public String baseUri() {
-        return baseUri;
+    public Map<String, String> context() {
+        return context;
     }
 
     @Override
-    public void baseUri(String baseUri) {
-        this.baseUri = baseUri;
+    public void context(Map<String, String> context) {
+        this.context = context;
     }
 
     @Override

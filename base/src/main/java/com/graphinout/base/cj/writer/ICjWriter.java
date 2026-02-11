@@ -11,6 +11,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -64,8 +65,8 @@ import java.util.function.Consumer;
  */
 public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWriter, IHandleContentErrors {
 
-    /** Document base uri */
-    void baseUri(String baseUri);
+    /** Document-level {@code @context} namespace map for URI expansion */
+    void context(Map<String, String> context);
 
     default ICjWriter cjWriter() {
         return this;

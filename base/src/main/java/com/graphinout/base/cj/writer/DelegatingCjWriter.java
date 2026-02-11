@@ -5,6 +5,7 @@ import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.foundation.pure.json.writer.impl.DelegatingJsonWriter;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class DelegatingCjWriter extends DelegatingJsonWriter implements ICjWriter {
@@ -19,8 +20,8 @@ public class DelegatingCjWriter extends DelegatingJsonWriter implements ICjWrite
     }
 
     @Override
-    public void baseUri(String baseUri) {
-        forEachWriter(cjWriter -> cjWriter.baseUri(baseUri));
+    public void context(Map<String, String> context) {
+        forEachWriter(cjWriter -> cjWriter.context(context));
     }
 
     @Override

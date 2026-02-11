@@ -42,32 +42,31 @@ public class CjTest {
 
         assertThat(doc.edgesAll().map(ICjHasId::id)).containsExactly("edge-1");
         assertThat(doc.findEdgeById("doi:doc#edge-1")).isNull();
-        assertThat(doc.findEdgeById("edge-1")).isNull();
-        ICjEdge edge1 = doc.findEdgeById("doi:graph-1#edge-1");
+        assertThat(doc.findEdgeById("doi:graph-1#edge-1")).isNull();
+        ICjEdge edge1 = doc.findEdgeById("edge-1");
         assertThat(edge1).isNotNull();
         ICjGraph graph1 = edge1.parent();
         assertThat(graph1).isNotNull();
         assertThat(edge1.resolveNodeById("aaa")).isNotNull();
-        assertThat(edge1.resolveNodeById("aaa").uri()).isEqualTo("doi:graph-1#aaa");
-        assertThat(edge1.resolveNodeById("bbb").uri()).isEqualTo("doi:graph-1#bbb");
+        assertThat(edge1.resolveNodeById("aaa").uri()).isEqualTo("doi:doc#aaa");
+        assertThat(edge1.resolveNodeById("bbb").uri()).isEqualTo("doi:doc#bbb");
 
         assertThat(doc.nodesAll().map(ICjHasUri::uri)).containsExactly( //
-                "doi:graph-1#aaa", // (1)==(3)
-                "doi:nested-graph-in-node#bbb", // (2)
-                "doi:nested-graph-in-edge#aaa" // (5)
+                "doi:doc#aaa", // (1)==(3)
+                "doi:doc#bbb", // (2)
+                "doi:doc#ccc" // (5)
         );
         assertThat(doc.nodesAll().map(ICjCoreElement::unstableId)).containsExactly( //
                 "aaa", // (1)==(3)
                 "bbb", // (2)
-                "aaa" // (5)
+                "ccc" // (5)
         );
         assertThat(doc.edgesAll().map(ICjHasId::id)).containsExactly("edge-1");
-        assertThat(edge1.nodesResolved().map(ICjHasUri::uri)).containsExactly("doi:graph-1#aaa", "doi:graph-1#bbb");
+        assertThat(edge1.nodesResolved().map(ICjHasUri::uri)).containsExactly("doi:doc#aaa", "doi:doc#bbb");
         assertThat(doc.nodesAllIncludingImplied().map(ICjHasUri::uri)).containsExactly( //
-                "doi:graph-1#aaa", // (1)==(3)
-                "doi:nested-graph-in-node#bbb", // (2)
-                "doi:graph-1#bbb", // (4)
-                "doi:nested-graph-in-edge#aaa" // (5)
+                "doi:doc#aaa", // (1)==(3)
+                "doi:doc#bbb", // (4)==(2)
+                "doi:doc#ccc" // (5)
         );
     }
 

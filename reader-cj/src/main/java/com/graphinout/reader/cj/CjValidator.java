@@ -13,6 +13,7 @@ import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import com.graphinout.foundation.pure.json.writer.impl.ValidatingJsonWriter;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
@@ -70,8 +71,8 @@ public class CjValidator {
     }
 
     /**
-     * Is it valid CJ: All endpoint.node ids resolve to existing nodes in same document? All URIs in the document
-     * (baseUri) are valid URIs? Also the implied URIs (baseUri + edge.type, baseUri +
+     * Is it valid CJ: All endpoint.node ids resolve to existing nodes in same document? All namespace URIs in
+     * {@code @context} are valid URIs? Also the expanded URIs (context + edge.type, context +
      * node.types) ? Edge with 0 or 1 endpoint: warn Empty graph: warn
      *
      * @param cjJson
@@ -90,19 +91,20 @@ public class CjValidator {
                 }
             });
 
-            // All URIs in the document are valid?
-            // - baseUri,
-            ifPresentAccept(cjDoc.baseUri(), baseUri -> {
-                if (!isValidUri(baseUri)) {
-                    errors.add(ContentError.error("URI Error: Base URI '" + baseUri + "' is not a valid URI"));
+            // All namespace URIs in @context are valid?
+            ifPresentAccept(cjDoc.context(), (Map<String, String> context) -> {
+                for (Map.Entry<String, String> entry : context.entrySet()) {
+                    if (!isValidUri(entry.getValue())) {
+                        errors.add(ContentError.error("URI Error: Namespace URI for prefix '" + entry.getKey() + "' is not a valid URI: '" + entry.getValue() + "'"));
+                    }
                 }
             });
-            // Implied URIs:
-            // - baseUri + edge.type,
-            // - TODO baseUri + node.types
+            // Expanded URIs:
+            // - context + edge.type,
+            // - TODO context + node.types
             cjDoc.edgesAll().forEach(edge -> {
                 ifPresentAccept(edge.edgeType(), edgeType -> {
-                    //  define combined URI (baseURI + edgeType string) and validate URI
+                    //  expand edge type ID via @context and validate resulting URI
                     String uri = cjDoc.uri(edgeType.type());
                     if (!isValidUri(uri)) {
                         errors.add(ContentError.error("URI Error: Edge type URI from String '" + uri + "' is not a valid URI"));

@@ -3,6 +3,8 @@ package com.graphinout.base.cj.document;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public interface ICjHasGraphs {
@@ -14,32 +16,28 @@ public interface ICjHasGraphs {
         return graphsAll().flatMap(ICjGraph::edges);
     }
 
-    @NonNull String effectiveBaseUri();
-
     default @Nullable ICjEdge findEdgeById(@NonNull String edgeId) throws IllegalStateException {
-        String queryUri = CjUris.uri(effectiveBaseUri(), edgeId);
-        return edgesAll().filter(e -> edgeId.equals(e.uri())).findFirst().orElse(null);
+        return edgesAll().filter(e -> edgeId.equals(e.id())).findFirst().orElse(null);
     }
 
     default @Nullable ICjGraph findGraphById(String graphId) {
-        String queryUri = CjUris.uri(effectiveBaseUri(), graphId);
         if (this instanceof ICjGraph graph) {
-            if (queryUri.equals(graph.uri())) {
+            if (graphId.equals(graph.id())) {
                 return graph;
             }
         }
-        return graphsAll().filter(g -> queryUri.equals(g.uri())).findFirst().orElse(null);
+        return graphsAll().filter(g -> graphId.equals(g.id())).findFirst().orElse(null);
     }
 
+
     default @Nullable ICjNode findNodeById(@NonNull String nodeId) throws IllegalStateException {
-        String queryUri = CjUris.uri(effectiveBaseUri(), nodeId);
-        return nodesAll().filter(n -> queryUri.equals(n.uri())).findFirst().orElse(null);
+        return nodesAll().filter(n -> nodeId.equals(n.id())).findFirst().orElse(null);
     }
 
     Stream<ICjGraph> graphs();
 
     /**
-     * @return All graphs in the document, including their nested subgraphs, recursively. Including graphs nested in
+     * @return All graphs in this document/graph, including this graph and their nested subgraphs, recursively. Including graphs nested in
      * nodes or edges.
      */
     default Stream<ICjGraph> graphsAll() {
@@ -56,6 +54,10 @@ public interface ICjHasGraphs {
         return graphsAll().flatMap(ICjGraph::nodes);
     }
 
+    /**
+     * All nodes from all graphs plus implied nodes (referenced by edge endpoints but not explicitly defined).
+     * Deduplicates by ID, keeping the first (explicit) occurrence.
+     */
     default Stream<ICjNode> nodesAllIncludingImplied() {
         Map<String, ICjNode> seen = new LinkedHashMap<>();
         nodesAll().forEach(n -> seen.putIfAbsent(n.id(), n));

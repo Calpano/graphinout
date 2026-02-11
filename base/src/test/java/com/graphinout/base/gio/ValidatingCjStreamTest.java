@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -26,11 +27,9 @@ class ValidatingCjStreamTest {
     }
 
     @Test
-    void shouldAcceptValidBaseUri() throws IOException {
-        String validUri = "http://example.com/valid/uri";
-
+    void shouldAcceptValidContext() throws IOException {
         ICjDocumentChunkMutable doc = underTest.createDocumentChunk();
-        doc.baseUri(validUri);
+        doc.context(Map.of("ex", "http://example.com/valid/uri#"));
         underTest.documentStart(doc);
         underTest.documentEnd();
     }
@@ -68,11 +67,9 @@ class ValidatingCjStreamTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenBaseUriIsInvalid() throws IOException {
-        String invalidUri = "invalid:///uri with spaces";
-
+    void shouldThrowExceptionWhenContextHasInvalidUri() throws IOException {
         ICjDocumentChunkMutable doc = underTest.createDocumentChunk();
-        doc.baseUri(invalidUri);
+        doc.context(Map.of("ex", "invalid:///uri with spaces"));
 
         assertThrows(IllegalStateException.class, () -> underTest.documentStart(doc));
     }

@@ -1,5 +1,5 @@
 {
-  "baseUri": "http://example.org/graph/", "data": {
+  "@context": { "@vocab": "http://example.org/graph/" }, "data": {
   "graphml:keys": {
     "edge-description": {
       "attr.name": "description", "attr.type": "string", "for": "edge"

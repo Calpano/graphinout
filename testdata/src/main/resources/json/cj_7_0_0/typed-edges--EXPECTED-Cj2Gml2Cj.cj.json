@@ -1,5 +1,5 @@
-{"baseUri":
-"https://schema.org/","graphs":
+{"@context":
+{"@vocab":"https://schema.org/"},"graphs":
 [{"edges":
 [{"endpoints":
 [{"direction":

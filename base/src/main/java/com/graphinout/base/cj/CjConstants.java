@@ -1,9 +1,23 @@
 package com.graphinout.base.cj;
 
+import com.graphinout.base.cj.document.ICjDocumentMeta;
+import com.graphinout.base.cj.document.impl.CjDocumentMetaElement;
+
 public class CjConstants {
 
-    /** Graph base URI for RDF interpretation */
-    public static final String BASE_URI = "baseUri";
+    public static final ICjDocumentMeta DEFAULT_META = defaultMeta();
+
+    private static ICjDocumentMeta defaultMeta() {
+        CjDocumentMetaElement meta = new CjDocumentMetaElement();
+        meta.versionNumber(ConnectedJson.CJ_LATEST_VERSION_NUMBER);
+        meta.versionDate(ConnectedJson.CJ_LATEST_VERSION_DATE);
+        return meta;
+    }
+
+    /** Document-level namespace map for URI expansion (JSON-LD compatible) */
+    public static final String CONTEXT = "@context";
+    /** Default namespace URI within @context */
+    public static final String VOCAB = "@vocab";
 
     /** Data */
     public static final String DATA = "data";

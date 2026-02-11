@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -96,10 +97,23 @@ public class TgfRoundtripTest {
             return "";
         }
 
-        // Split by the section separator
-        String[] parts = tgf.split("#", 2);
-        String nodeSection = parts.length > 0 ? parts[0].trim() : "";
-        String edgeSection = parts.length > 1 ? parts[1].trim() : "";
+        // Split on a line that is exactly "#" (the TGF section separator), not on '#' within URIs
+        String nodeSection = "";
+        String edgeSection = "";
+        int separatorIndex = -1;
+        List<String> allLines = tgf.lines().toList();
+        for (int idx = 0; idx < allLines.size(); idx++) {
+            if (allLines.get(idx).trim().equals("#")) {
+                separatorIndex = idx;
+                break;
+            }
+        }
+        if (separatorIndex >= 0) {
+            nodeSection = String.join("\n", allLines.subList(0, separatorIndex)).trim();
+            edgeSection = String.join("\n", allLines.subList(separatorIndex + 1, allLines.size())).trim();
+        } else {
+            nodeSection = tgf.trim();
+        }
 
         // Normalize node section (sort lines and trim)
         String normalizedNodes = nodeSection.isEmpty() ? "" : String.join("\n", nodeSection.lines().map(String::trim).filter(line -> !line.isEmpty()).sorted().toList());

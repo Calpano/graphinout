@@ -9,12 +9,13 @@ import com.graphinout.foundation.pure.input.Locator;
 import com.graphinout.foundation.pure.json.writer.impl.NoopJsonWriter;
 
 import org.jspecify.annotations.Nullable;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class NoopCjWriter extends NoopJsonWriter implements ICjWriter {
 
     @Override
-    public void baseUri(String baseUri) {}
+    public void context(Map<String, String> context) {}
 
     @Override
     public void connectedJsonEnd() {}

@@ -106,7 +106,7 @@ public class OcifDoc2CjDoc {
         IJsonArrayMutable unknownExt = factory().createArrayMutable();
         for (IOcifCanvasExtension ext : ocifDocument.canvasExtensions()) {
             if (ext instanceof CjDocumentCanvasExtension cjDocumentCanvasExt) {
-                ifPresentAccept(cjDocumentCanvasExt.baseUri(), cjDocument::baseUri);
+                ifPresentAccept(cjDocumentCanvasExt.context(), cjDocument::context);
                 ifPresentAccept(cjDocumentCanvasExt.connectedJson(), cjDocument::connectedJson);
             } else if (ext instanceof DataExtension dataExt) {
                 // Import OCIF document-level custom data as CJ data

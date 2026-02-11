@@ -78,14 +78,10 @@ public class CjData2GraphmlKeyData {
             // FIXME key names -- when are we duplicating a key here that is the same as a loaded one
         }
         // == (3) Built-in CJ KEYs to represent CJ features as Graphml data (ids are 'cj_"...)
-        // if cj:baseUri is used, we need a Graphml <key> for that
+        // if cj:@context is used, we need a Graphml <key> for that
         {
-            ifPresentAccept(cjDoc.baseUri(), baseUri -> //
-                    graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.BaseUri.toGraphmlKey()));
-
-            if(cjDoc.graphsAll().anyMatch(g->g.baseUri()!=null)) {
-                graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.GraphBaseUri.toGraphmlKey());
-            }
+            ifPresentAccept(cjDoc.context(), context -> //
+                    graphmlSchema.addKey(CjGraphmlMapping.GraphmlDataElement.Context.toGraphmlKey()));
 
             boolean usesCjEdgeType = PowerStreams.filterMap(cjDoc.allElements(), ICjEdge.class)
                     .map(ICjEdge::edgeType).anyMatch(Objects::nonNull);

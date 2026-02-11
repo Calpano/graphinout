@@ -3,12 +3,16 @@ package com.graphinout.base.cj.document;
 import com.graphinout.foundation.pure.annotations.ModificationOperation;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 public interface ICjDocumentChunkMutable extends ICjDocumentChunk, ICjHasDataMutable {
 
+    /**
+     * Set the document-level {@code @context} namespace map.
+     */
     @ModificationOperation
-    void baseUri(String baseUri);
+    void context(Map<String, String> context);
 
     /** A simple setter */
     @ModificationOperation

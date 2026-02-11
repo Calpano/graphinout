@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class ValidatingCjWriter extends ValidatingJsonWriter implements ICjWriter {
@@ -28,12 +29,17 @@ public class ValidatingCjWriter extends ValidatingJsonWriter implements ICjWrite
     private final Set<String> endpointPortIds = new HashSet<>();
 
     @Override
-    public void baseUri(String baseUri) {
-        if (baseUri != null && !baseUri.isEmpty()) {
-            try {
-                new java.net.URI(baseUri);
-            } catch (URISyntaxException e) {
-                throw new IllegalStateException("Invalid baseUri: " + baseUri, e);
+    public void context(Map<String, String> context) {
+        if (context != null) {
+            for (Map.Entry<String, String> entry : context.entrySet()) {
+                String value = entry.getValue();
+                if (value != null && !value.isEmpty()) {
+                    try {
+                        new java.net.URI(value);
+                    } catch (URISyntaxException e) {
+                        throw new IllegalStateException("Invalid namespace URI in @context for prefix '" + entry.getKey() + "': " + value, e);
+                    }
+                }
             }
         }
     }

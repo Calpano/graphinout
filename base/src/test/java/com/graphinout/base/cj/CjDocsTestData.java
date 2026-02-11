@@ -8,6 +8,7 @@ import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import org.junit.jupiter.params.provider.Arguments;
 
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -27,11 +28,11 @@ public class CjDocsTestData {
     }
 
     /**
-     * Test Case 1.3: A document with a `baseUri`.
+     * Test Case 1.3: A document with an {@code @context}.
      */
-    public static ICjDocument documentWithBaseUri() {
+    public static ICjDocument documentWithContext() {
         ICjDocumentMutable cjDoc = new CjDocumentElement();
-        cjDoc.baseUri("http://example.org/base/");
+        cjDoc.context(Map.of("@vocab", "http://example.org/base/"));
         return cjDoc;
     }
 
@@ -209,40 +210,42 @@ public class CjDocsTestData {
     }
 
     /**
-     * All the different ways ids and uris can be mixed and matched: graph with or without baseUri,
-     * node with id/uri/blankNodeId.
+     * All the different ways ids and uris can be mixed and matched using {@code @context}.
      */
     public static ICjDocument idVsUri() {
         ICjDocumentMutable cjDoc = new CjDocumentElement();
-        cjDoc.baseUri("doi:abc#");
+        cjDoc.context(Map.of(
+                "ex", "https://example.com/",
+                "doi", "doi:abc#",
+                "@vocab", "https://example.org/"
+        ));
         cjDoc.addGraph(graph -> {
-            graph.id("g1-with"); // becomes https://example.com/g1-with
-            graph.baseUri("https://example.com/");
-            graph.addNode(node -> node.id("n1").addLabelWithoutLanguage("Node N1 in G1")); // becomes https://example.com/n1
-            graph.addNode(node -> node.id("https://example.com/n2").addLabelWithoutLanguage("Node N2 in G1"));
-            graph.addNode(node -> node.id("_:n3").addLabelWithoutLanguage("Node N3 in G1"));
+            graph.id("g1");
+            graph.addNode(node -> node.id("ex:n1").addLabelWithoutLanguage("Node N1 in G1")); // expands to https://example.com/n1
+            graph.addNode(node -> node.id("https://example.com/n2").addLabelWithoutLanguage("Node N2 in G1")); // full URI
+            graph.addNode(node -> node.id("_:n3").addLabelWithoutLanguage("Node N3 in G1")); // blank node
         });
         cjDoc.addGraph(graph -> {
-            graph.id("g2-without");
-            graph.addNode(node -> node.id("doi:abc#n1").addLabelWithoutLanguage("Node N1 in G2")); // defaults to doi:abc-n1
-            graph.addNode(node -> node.id("n2").addLabelWithoutLanguage("Node N2 in G2"));
-            graph.addNode(node -> node.id("_:n4").addLabelWithoutLanguage("Node N4 in G2"));
+            graph.id("g2");
+            graph.addNode(node -> node.id("doi:n1").addLabelWithoutLanguage("Node N1 in G2")); // expands to doi:abc#n1
+            graph.addNode(node -> node.id("n2").addLabelWithoutLanguage("Node N2 in G2")); // @vocab → https://example.org/n2
+            graph.addNode(node -> node.id("_:n4").addLabelWithoutLanguage("Node N4 in G2")); // blank node
         });
         cjDoc.addGraph(graph -> {
             graph.id("g3-edges");
             graph.addEdge(edge -> {
-                edge.addEndpointIncoming("n1"); // doi:abc-n1
-                edge.addEndpointOutgoing("n2"); // doi:abc-n2
+                edge.addEndpointIncoming("n1"); // @vocab → https://example.org/n1
+                edge.addEndpointOutgoing("n2");
                 edge.addEndpointUndirected("_:n3");
             });
             graph.addEdge(edge -> {
-                edge.addEndpointIncoming("https://example.com/n1"); // match
-                edge.addEndpointOutgoing("https://example.com/n2"); // match
+                edge.addEndpointIncoming("ex:n1"); // https://example.com/n1
+                edge.addEndpointOutgoing("ex:n2");
                 edge.addEndpointUndirected("_:n4");
             });
             graph.addEdge(edge -> {
-                edge.addEndpointIncoming("doi:abc#n1"); // doi:abc-n1
-                edge.addEndpointOutgoing("doi:abc#n2"); // doi:abc-n2
+                edge.addEndpointIncoming("doi:n1"); // doi:abc#n1
+                edge.addEndpointOutgoing("doi:n2");
                 edge.addEndpointUndirected("_:n5");
             });
         });
@@ -420,7 +423,7 @@ public class CjDocsTestData {
     }
 
     public static Stream<TestDoc> cjTestDocs() {
-        return Stream.of(new TestDoc("documentWithBaseUri", documentWithBaseUri()),//
+        return Stream.of(new TestDoc("documentWithContext", documentWithContext()),//
                 new TestDoc("documentWithCustomData", documentWithCustomData()),//
                 new TestDoc("documentWithMetadata", documentWithMetadata()),//
                 new TestDoc("edgeAndEndpointTypePrecedence", edgeAndEndpointTypePrecedence()),//

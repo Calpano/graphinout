@@ -25,6 +25,12 @@ public interface ICjEdge extends ICjEdgeChunk, ICjHasGraphs, ICjCoreElement, Com
                 .compare(this, other);
     }
 
+    default boolean containsNode(ICjNode node) {
+        return endpoints().map(ICjElement::asEndpoint).anyMatch(ep -> {
+            return ep.node().equals(node.id());
+        });
+    }
+
     default void copyTo(ICjEdgeMutable targetEdge) {
         ICjEdgeChunk.super.copyTo(targetEdge);
         graphs().forEach(sourceGraph -> targetEdge.addGraph(sourceGraph::copyTo));
@@ -50,10 +56,10 @@ public interface ICjEdge extends ICjEdgeChunk, ICjHasGraphs, ICjCoreElement, Com
     @NonNull ICjGraph parent();
 
     default @NonNull ICjNode resolveNodeById(String nodeId) {
-        ICjNode node = parent().findNodeById(nodeId);
+        ICjNode node = document().findNodeById(nodeId);
         if (node == null) {
-            // return implied node with the graph set to the graph which defined the baseUri of the edge
-            ICjNodeMutable nodeMutable = new CjNodeElement(contextGraph());
+            // return implied node with the graph set to the parent graph of the edge
+            ICjNodeMutable nodeMutable = new CjNodeElement(parent());
             nodeMutable.id(nodeId);
             return nodeMutable;
         }

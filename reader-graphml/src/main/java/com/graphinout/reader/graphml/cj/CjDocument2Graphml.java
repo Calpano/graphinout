@@ -151,10 +151,20 @@ public class CjDocument2Graphml {
 
         forEach(graphmlSchema.keys(), graphmlWriter::key);
 
-        // Write <data> for CJ:baseUri (Graphml has no baseUri)
+        // Write <data> for CJ:@context (Graphml has no @context)
         List<IGraphmlData> graphmlDatas = new ArrayList<>();
-        ifPresentAccept(cjDoc.baseUri(), baseUri -> //
-                graphmlDatas.add(GraphmlDataElement.BaseUri.toGraphmlData(baseUri)));
+        ifPresentAccept(cjDoc.context(), context -> {
+            // Serialize context map as JSON string for GraphML storage
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (Map.Entry<String, String> entry : context.entrySet()) {
+                if (!first) sb.append(",");
+                sb.append("\"").append(entry.getKey()).append("\":\"").append(entry.getValue()).append("\"");
+                first = false;
+            }
+            sb.append("}");
+            graphmlDatas.add(GraphmlDataElement.Context.toGraphmlData(sb.toString()));
+        });
 
         // emit Graphml document level data
         for (IGraphmlData graphmlData : graphmlDatas) {
@@ -244,15 +254,6 @@ public class CjDocument2Graphml {
         writeData_Description(cjGraph, graphmlBuilder);
 
         graphmlWriter.graphStart(graphmlBuilder.build());
-
-        // Write graph-level baseUri as GraphML data (CJ 7.0.0)
-        ifPresentAccept(cjGraph.baseUri(), baseUri -> {
-            try {
-                graphmlWriter.data(GraphmlDataElement.GraphBaseUri.toGraphmlData(baseUri));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
 
         writeData_Json(cjGraph, graphmlWriter::data);
 

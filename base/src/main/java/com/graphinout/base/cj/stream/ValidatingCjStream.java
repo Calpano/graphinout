@@ -18,6 +18,7 @@ import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import org.jspecify.annotations.Nullable;
 import java.net.URISyntaxException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStream {
@@ -42,13 +43,18 @@ public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStrea
 
     @Override
     public void documentStart(ICjDocumentChunk document) {
-        // validate baseUri if present
-        String baseUri = document.baseUri();
-        if (baseUri != null && !baseUri.isEmpty()) {
-            try {
-                new java.net.URI(baseUri);
-            } catch (URISyntaxException e) {
-                throw new IllegalStateException("Invalid baseUri: " + baseUri, e);
+        // validate @context namespace URIs if present
+        Map<String, String> context = document.context();
+        if (context != null) {
+            for (Map.Entry<String, String> entry : context.entrySet()) {
+                String value = entry.getValue();
+                if (value != null && !value.isEmpty()) {
+                    try {
+                        new java.net.URI(value);
+                    } catch (URISyntaxException e) {
+                        throw new IllegalStateException("Invalid namespace URI in @context for prefix '" + entry.getKey() + "': " + value, e);
+                    }
+                }
             }
         }
     }

@@ -18,7 +18,10 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
+import com.graphinout.base.cj.CjConstants;
+
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static com.graphinout.base.cj.document.CjUris.BLANK_NODE_PSEUDO_SCHEME;
@@ -55,8 +58,10 @@ public class RdfModel2CjDoc {
             c.versionDate(ConnectedJson.CJ_LATEST_VERSION_DATE);
             c.versionNumber(ConnectedJson.CJ_LATEST_VERSION_NUMBER);
         });
-        // TODO use it to shorten URIs
-        cjDoc.baseUri(baseUri);
+        // Set @context with @vocab if a baseUri was provided
+        if (baseUri != null && !baseUri.isEmpty()) {
+            cjDoc.context(Map.of(CjConstants.VOCAB, baseUri));
+        }
 
         cjDoc.addGraph(cjGraph -> rdfModel2CjGraph(rdfModel, cjDoc, cjGraph));
     }

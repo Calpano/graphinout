@@ -1,5 +1,6 @@
 package com.graphinout.reader.rdf;
 
+import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
@@ -103,7 +105,9 @@ public class RdfReader implements GioReader, GioWriter {
         Model model = CjDoc2RdfModel.cjDoc2Model(cjDoc);
 
         // add namespace declarations to model
-        model.setNsPrefix("base", nonNullOrDefault(cjDoc.baseUri(), "#"));
+        Map<String, String> context = cjDoc.context();
+        String vocab = context != null ? context.get(CjConstants.VOCAB) : null;
+        model.setNsPrefix("base", nonNullOrDefault(vocab, "#"));
         model.setNsPrefix("cj", RdfCj.CjInRdf.VOC);
         model.setNsPrefix("rdf", RDF.uri);
         model.setNsPrefix("rdfs", RDFS.uri);

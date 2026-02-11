@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Stack;
 
 import static com.graphinout.base.cj.writer.LoggingCjWriter.JsonEvent.ArrayStart;
@@ -34,7 +35,7 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
 
         ConnectedJsonStart, ConnectedJsonEnd, ConnectedJson__Canonical, ConnectedJson__VersionDate, ConnectedJson__VersionNumber,
 
-        EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, BaseUri, EdgeDefault, EdgeType, NodeId, NodeType, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Value, DataStart, DataEnd
+        EdgeEnd, EdgeStart, EndpointEnd, EndpointStart, GraphEnd, GraphStart, NodeEnd, NodeStart, PortEnd, PortStart, Id, Context, EdgeDefault, EdgeType, NodeId, NodeType, PortId, Direction, DocumentStart, DocumentEnd, LabelStart, LabelEnd, Language, LabelEntryStart, LabelEntryEnd, Value, DataStart, DataEnd
     }
 
     enum CommaState {First, Container, Key}
@@ -59,8 +60,8 @@ public class LoggingCjWriter extends LoggingJsonWriter implements ICjWriter {
     }
 
     @Override
-    public void baseUri(String baseUri) {
-        onCj(CjEvent.BaseUri, baseUri);
+    public void context(Map<String, String> context) {
+        onCj(CjEvent.Context, context);
     }
 
     @Override

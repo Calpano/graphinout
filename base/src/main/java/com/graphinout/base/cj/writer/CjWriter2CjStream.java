@@ -29,6 +29,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -67,14 +68,8 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
     }
 
     @Override
-    public void baseUri(String baseUri) {
-        // baseUri can be on document (root level) or graph (CJ 7.0.0)
-        ICjGraphChunkMutable graph = stack.peekSearchOrNull(ICjGraphChunkMutable.class);
-        if (graph != null) {
-            graph.baseUri(baseUri);
-        } else {
-            stack.peekSearch(ICjDocumentChunkMutable.class).baseUri(baseUri);
-        }
+    public void context(Map<String, String> context) {
+        stack.peekSearch(ICjDocumentChunkMutable.class).context(context);
     }
 
     @Override

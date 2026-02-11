@@ -157,18 +157,16 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             //  parse JSON
             IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(graphmlDataValue);
             cjHasData.dataMutable(m -> m.setJsonValue(jsonValue));
-        } else if (key.is(GraphmlDataElement.BaseUri)) {
-            // map back to native CJ document baseUri
+        } else if (key.is(GraphmlDataElement.Context)) {
+            // map back to native CJ document @context
             if (cjHasData instanceof ICjDocumentChunkMutable) {
-                ((ICjDocumentChunkMutable) cjHasData).baseUri(graphmlDataValue);
-            } else {
-                // treat as generic data
-                copyData(graphmlData, key, cjHasData);
-            }
-        } else if (key.is(GraphmlDataElement.GraphBaseUri)) {
-            // map back to native CJ graph baseUri (CJ 7.0.0)
-            if (cjHasData instanceof ICjGraphChunkMutable) {
-                ((ICjGraphChunkMutable) cjHasData).baseUri(graphmlDataValue);
+                // Parse JSON string back to Map<String,String>
+                IJsonValue jsonValue = JsonReaderImpl.readToJsonValue(graphmlDataValue);
+                if (jsonValue.isObject()) {
+                    java.util.Map<String, String> context = new java.util.LinkedHashMap<>();
+                    jsonValue.asObject().forEach((k2, v) -> context.put(k2, v.asString()));
+                    ((ICjDocumentChunkMutable) cjHasData).context(context);
+                }
             } else {
                 // treat as generic data
                 copyData(graphmlData, key, cjHasData);
@@ -367,7 +365,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
     private void copyId(IGraphmlElementWithId graphmlElementWithId, ICjHasIdMutable<?> cjHasId) {
         ofNullable(graphmlElementWithId.id()).ifPresent(id -> {
             cjHasId.id(id);
-            // can we simplify the id using the baseUri?
+            // can we simplify the id using the @context?
             if (cjHasId instanceof ICjCoreElement cjCoreElement) {
                 String shortId = cjCoreElement.abbreviatedUri();
                 cjHasId.id(shortId);
@@ -412,8 +410,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             graphmlSchema.removeKeyById(GraphmlDataElement.EdgeType.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.NodeTypes.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.EndpointType.toGraphmlKey().id());
-            graphmlSchema.removeKeyById(GraphmlDataElement.BaseUri.toGraphmlKey().id());
-            graphmlSchema.removeKeyById(GraphmlDataElement.GraphBaseUri.toGraphmlKey().id());
+            graphmlSchema.removeKeyById(GraphmlDataElement.Context.toGraphmlKey().id());
             graphmlSchema.removeKeyById(GraphmlDataElement.SyntheticNode.toGraphmlKey().id());
             if (graphmlSchema.isEmpty()) return;
             graphmlSchema.toJson(o);

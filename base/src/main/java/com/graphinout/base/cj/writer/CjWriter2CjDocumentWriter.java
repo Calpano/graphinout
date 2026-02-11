@@ -29,6 +29,7 @@ import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -49,15 +50,8 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
     }
 
     @Override
-    public void baseUri(String baseUri) {
-        // baseUri can be on document (root level) or graph (CJ 7.0.0)
-        // Try to find the most recent element that supports baseUri
-        ICjGraphMutable graph = stack.peekOrNull(ICjGraphMutable.class);
-        if (graph != null) {
-            graph.baseUri(baseUri);
-        } else {
-            stack.peek(ICjDocumentMutable.class).baseUri(baseUri);
-        }
+    public void context(Map<String, String> context) {
+        stack.peek(ICjDocumentMutable.class).context(context);
     }
 
     @Override

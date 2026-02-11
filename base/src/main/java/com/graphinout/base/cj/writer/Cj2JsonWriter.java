@@ -11,6 +11,7 @@ import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import com.graphinout.foundation.pure.json.writer.impl.DelegatingJsonWriter;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Stack;
 
 public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
@@ -41,10 +42,15 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
     }
 
     @Override
-    public void baseUri(String baseUri) {
-        assert baseUri != null;
-        super.onKey(CjConstants.BASE_URI);
-        onString(baseUri);
+    public void context(Map<String, String> context) {
+        assert context != null;
+        super.onKey(CjConstants.CONTEXT);
+        super.objectStart();
+        for (Map.Entry<String, String> entry : context.entrySet()) {
+            super.onKey(entry.getKey());
+            onString(entry.getValue());
+        }
+        super.objectEnd();
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.graphinout.base.cj.document;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static com.graphinout.base.cj.document.CjUris.BLANK_NODE_PSEUDO_SCHEME;
@@ -89,40 +91,12 @@ public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjHasGraphs, ICjEl
     }
 
     /**
-     *
-     * @return an id which resolves into the same URI, but uses the current {@link #contextGraph()} with its
-     * {@link #effectiveBaseUri()}.
+     * @return an id which resolves into the same URI, but abbreviated using the document {@code @context}.
      */
     default String abbreviatedUri() {
         String uri = uri();
-        String effectiveBaseUri = effectiveBaseUri();
-        if (uri.startsWith(effectiveBaseUri + "#")) {
-            return uri.substring(effectiveBaseUri.length() + 1);
-        }
-        if (uri.startsWith(effectiveBaseUri)) {
-            return uri.substring(effectiveBaseUri.length());
-        }
-        return uri;
-    }
-
-    /**
-     * @return the graph which defined the baseUri. This is the logical parent of nodes implied by edges in this graph
-     * or subgraphs thereof. If no baseUri is set in any graph, the rootmost graph is returned.
-     */
-    default @NonNull ICjGraph contextGraph() {
-        if (this instanceof ICjGraph graph) {
-            String b = graph.baseUri();
-            if (b != null) return graph;
-        }
-        // go up
-        ICjElement parent = parent();
-        if (parent instanceof ICjDocument document) {
-            return this.asGraph();
-        } else if (parent instanceof ICjCoreElement coreElement) {
-            return coreElement.contextGraph();
-        } else {
-            throw new AssertionError();
-        }
+        Map<String, String> ctx = documentContext();
+        return CjUris.abbreviateUri(ctx, uri);
     }
 
     default ICjDocument document() {
@@ -136,20 +110,11 @@ public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjHasGraphs, ICjEl
         }
     }
 
-    default @NonNull String effectiveBaseUri() {
-        if (this instanceof ICjGraph graph) {
-            String b = graph.baseUri();
-            if (b != null) return b;
-        }
-        // go up
-        ICjElement parent = parent();
-        if (parent instanceof ICjDocument document) {
-            return document.effectiveBaseUri();
-        } else if (parent instanceof ICjCoreElement coreElement) {
-            return coreElement.effectiveBaseUri();
-        } else {
-            throw new AssertionError();
-        }
+    /**
+     * @return the document-level {@code @context} namespace map, or null if not set.
+     */
+    default @Nullable Map<String, String> documentContext() {
+        return document().context();
     }
 
     /**
@@ -202,7 +167,7 @@ public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjHasGraphs, ICjEl
     }
 
     /**
-     * @return this elements URI, derived from this elements ID and effective baseUri from lowest parent graph/document.
+     * @return this element's URI, derived from this element's ID and the document {@code @context}.
      * It may be a blank node uri '_:' + {@link #unstableId()}.
      */
     @NonNull
@@ -213,9 +178,7 @@ public interface ICjCoreElement extends ICjHasId, ICjHasUri, ICjHasGraphs, ICjEl
             return BLANK_NODE_PSEUDO_SCHEME + unstableId();
         }
 
-        // traverse parents until we have an active baseUri
-        String effectiveBaseUri = effectiveBaseUri();
-        return CjUris.uri(effectiveBaseUri, id);
+        return CjUris.expandId(documentContext(), id);
     }
 
 }

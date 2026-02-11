@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
-
 /**
  * Root of a CJ graph representation assembled from GIO events. It aggregates graphs and document-level metadata.
  */
@@ -23,10 +21,6 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement 
     @Override
     default Stream<ICjElement> directChildren() {
         return Stream.concat(Stream.concat(Stream.of(data().ifNotEmpty()), Stream.of(connectedJson())).filter(Objects::nonNull), graphs());
-    }
-
-    default @NonNull String effectiveBaseUri() {
-        return nonNullOrDefault(baseUri(), CjUris.BASE_URI_FALLBACK);
     }
 
     /**
@@ -43,7 +37,7 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement 
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap() //
                 .putNonNull(JsonConstants.DOLLAR_SCHEMA, ConnectedJson.CJ_SCHEMA_URL) //
-                .putMaybe(CjConstants.BASE_URI, baseUri()) //
+                .putMaybe(CjConstants.CONTEXT, context()) //
                 .putMaybe(CjConstants.ROOT__CONNECTED_JSON, connectedJson(), ICjDocumentMeta::toJaJsonMap) //
                 .putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
     }
@@ -59,7 +53,7 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement 
     }
 
     default String uri(@NonNull String queryId) {
-        return CjUris.uri(effectiveBaseUri(), queryId);
+        return CjUris.expandId(context(), queryId);
     }
 
 

@@ -214,11 +214,6 @@
           "description": "An optional identifier for the graph, unique within the document if at the top level.",
           "$ref": "#/definitions/id"
         },
-        "baseUri": {
-          "description": "An optional base URI for interpreting relative URIs.",
-          "type": "string",
-          "format": "uri"
-        },
         "label": {
           "description": "An optional label for the graph.",
           "$ref": "#/definitions/label"
@@ -282,10 +277,12 @@
       "description": "Optional metadata about the Connected JSON document.",
       "$ref": "#/definitions/documentMetadata"
     },
-    "baseUri": {
-      "description": "An optional base URI for interpreting relative URIs, particularly for RDF conversion.",
-      "type": "string",
-      "format": "uri"
+    "@context": {
+      "description": "An optional namespace map for URI expansion. Keys are prefixes, values are namespace URIs. '@vocab' key defines the default namespace.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "data": {
       "description": "Optional user-defined data attached to the document.",

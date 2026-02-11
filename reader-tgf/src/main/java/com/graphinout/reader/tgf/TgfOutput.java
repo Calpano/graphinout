@@ -2,17 +2,18 @@ package com.graphinout.reader.tgf;
 
 import com.graphinout.base.cj.data.CjDataProperty;
 import com.graphinout.base.cj.document.CjDirection;
+import com.graphinout.base.cj.document.CjUris;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjLabelEntry;
-import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.List;
+import java.util.Map;
 
-import static com.graphinout.foundation.pure.functional.Nullables.mapOrDefault;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class TgfOutput {
@@ -49,8 +50,10 @@ public class TgfOutput {
     }
 
     private void cjDoc2tgfDoc(ICjDocument cjDoc, TgfDoc tgfDoc) {
+        @Nullable Map<String, String> context = cjDoc.context();
+        boolean hasContext = context != null && !context.isEmpty();
         cjDoc.nodesAllIncludingImplied().forEach(cjNode -> {
-            String id = cjNode.uri();
+            String id = hasContext ? cjNode.uri() : cjNode.id();
             String text = firstLabelOrDesc(cjNode, cjNode.labelEntries());
             tgfDoc.nodes.add(new TgfDoc.TgfNode(id, text));
         });
@@ -71,10 +74,11 @@ public class TgfOutput {
                 }
             }
             if (n1 != null && n2 != null) {
-                // resolve nodes
-                String resolvedN1 = e.resolveNodeById(n1).uri();
-                String resolvedN2 = e.resolveNodeById(n2).uri();
-                tgfDoc.edges.add(new TgfDoc.TgfEdge(resolvedN1, resolvedN2, firstLabelOrDesc(e, e.labelEntries())));
+                if (hasContext) {
+                    n1 = CjUris.expandId(context, n1);
+                    n2 = CjUris.expandId(context, n2);
+                }
+                tgfDoc.edges.add(new TgfDoc.TgfEdge(n1, n2, firstLabelOrDesc(e, e.labelEntries())));
             }
         });
     }

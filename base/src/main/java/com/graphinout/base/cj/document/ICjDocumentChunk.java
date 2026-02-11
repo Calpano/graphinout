@@ -1,11 +1,15 @@
 package com.graphinout.base.cj.document;
 
+import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.cj.writer.ICjWriter;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Map;
+
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
+import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
 
 
 /**
@@ -14,6 +18,9 @@ import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccep
  */
 public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
 
+    /**
+     * Abbreviate a URI to a prefixed ID using the document {@code @context}.
+     */
     default @Nullable String asId(@Nullable String uri) {
         if (uri == null) {
             return null;
@@ -22,20 +29,16 @@ public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
     }
 
     default @NonNull String asId_(@NonNull String uri) {
-        String baseUri = baseUri();
-        if (baseUri == null) {
-            return uri;
-        }
-        int index = uri.indexOf(baseUri);
-        if (index == -1) {
-            return uri;
-        }
-        return uri.substring(index + baseUri.length());
+        Map<String, String> ctx = context();
+        return CjUris.abbreviateUri(ctx, uri);
     }
 
-    @Nullable String baseUri();
-
     @Nullable ICjDocumentMeta connectedJson();
+
+    /**
+     * The document-level {@code @context} namespace map for URI expansion.
+     */
+    @Nullable Map<String, String> context();
 
     default ICjDocumentChunkMutable copyMutable() {
         CjDocumentElement copy = new CjDocumentElement();
@@ -44,14 +47,15 @@ public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
     }
 
     default void copyTo(ICjDocumentChunkMutable doc) {
-        doc.baseUri(baseUri());
+        ifPresentAccept(context(), doc::context);
         ifPresentAccept(connectedJson(), ICjDocumentMeta::copyMutable, doc::connectedJson);
     }
 
     default void fireStartChunk(ICjWriter cjWriter, boolean sort) {
         cjWriter.documentStart();
-        cjWriter.maybe(baseUri(), cjWriter::baseUri);
-        cjWriter.maybe(connectedJson(), cj -> cj.fire(cjWriter, sort));
+        cjWriter.maybe(context(), cjWriter::context);
+        ICjDocumentMeta connectedJson = nonNullOrDefault(connectedJson(), CjConstants.DEFAULT_META);
+        cjWriter.maybe(connectedJson, cj -> cj.fire(cjWriter, sort));
         fireDataMaybe(cjWriter);
     }
 
