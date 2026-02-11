@@ -26,7 +26,11 @@ public interface ICjGraphMutable extends ICjGraph, ICjHasGraphsMutable, ICjGraph
         return edgeMutableRef.get();
     }
 
-    void addEdge(Consumer<ICjEdgeMutable> edge);
+    ICjEdgeMutable addEdge(Consumer<ICjEdgeMutable> edge);
+
+    default ICjEdgeMutable addEdge() {
+        return addEdge(edge -> {});
+    }
 
     ICjNodeMutable addNode(Consumer<ICjNodeMutable> node);
 

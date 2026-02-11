@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 
 public class CjEdgeElement extends CjEdgeChunk implements ICjEdgeMutable {
 
-    private final ICjGraph parent;
+    private final ICjGraphMutable parent;
     private final List<CjGraphElement> graphs = new ArrayList<>();
 
-    public CjEdgeElement(ICjGraph parent) {this.parent = parent;}
+    public CjEdgeElement(ICjGraphMutable parent) {this.parent = parent;}
 
     @Override
     public CjGraphElement addGraph(Consumer<ICjGraphMutable> graph) {
@@ -52,7 +52,7 @@ public class CjEdgeElement extends CjEdgeChunk implements ICjEdgeMutable {
     }
 
     @Override
-    public @NonNull ICjGraph parent() {
+    public @NonNull ICjGraphMutable parent() {
         return parent;
     }
 

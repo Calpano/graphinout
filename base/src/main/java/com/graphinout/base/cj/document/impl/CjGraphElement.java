@@ -33,10 +33,11 @@ public class CjGraphElement extends CjGraphChunk implements ICjGraphMutable {
 
 
     @Override
-    public void addEdge(Consumer<ICjEdgeMutable> edge) {
+    public CjEdgeElement addEdge(Consumer<ICjEdgeMutable> edge) {
         CjEdgeElement edgeEvent = new CjEdgeElement(this);
         edge.accept(edgeEvent);
         edges.add(edgeEvent);
+        return edgeEvent;
     }
 
     public void addGraph(CjGraphElement graph) {
