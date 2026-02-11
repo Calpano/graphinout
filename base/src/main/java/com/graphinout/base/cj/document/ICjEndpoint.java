@@ -3,6 +3,7 @@ package com.graphinout.base.cj.document;
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.util.Comparables;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
@@ -13,7 +14,7 @@ import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccep
 public interface ICjEndpoint extends ICjHasData, ICjElement, Comparable<ICjEndpoint> {
 
     @Override
-    default int compareTo(ICjEndpoint other) {
+    default int compareTo(@NonNull ICjEndpoint other) {
         return Comparables.<ICjEndpoint>comparing() //
                 .byKey(ICjEndpoint::direction) //
                 .byKey(ICjEndpoint::node) //
