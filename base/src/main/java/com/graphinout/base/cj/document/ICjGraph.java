@@ -30,6 +30,12 @@ public interface ICjGraph extends ICjGraphChunk, ICjHasGraphs, ICjCoreElement, C
         graphs().forEach(sourceSubGraph -> targetGraph.addGraph(sourceSubGraph::copyTo));
     }
 
+    /** Excludes this graph */
+    default Stream<ICjCoreElement> coreElements() {
+        return Stream.concat( //
+                Stream.<ICjCoreElement>concat(nodes(), edges()), graphs().map(x -> (ICjCoreElement) x));
+    }
+
     /** Edge count in this graph, excluding subgraphs */
     default long countEdgesDirect() {
         return edges().count();
