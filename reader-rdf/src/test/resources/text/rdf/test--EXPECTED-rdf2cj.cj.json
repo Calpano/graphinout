@@ -1,15 +1,15 @@
 {
-  "baseUri": "https://example.com/",
+  "@context": {"ex": "https://example.com/"},
   "connectedJson": { "canonical": false, "versionDate": "2026-01-15", "versionNumber": "7.0.0" }, "graphs": [
   {
     "nodes": [
-      { "id": "Alice" },
-      { "id": "Bob" },
-      { "id": "Charlie" }
+      { "id": "ex:Alice" },
+      { "id": "ex:Bob" },
+      { "id": "ex:Charlie" }
     ],
     "edges": [
-      { "type": "knows", "endpoints": [ { "node": "Alice", "direction": "in" }, { "node": "Bob", "direction": "out" } ] },
-      { "type": "knows", "endpoints": [ { "node": "Charlie", "direction": "out" }, { "node": "Bob", "direction": "in" } ] }
+      { "type": "ex:knows", "endpoints": [ { "node": "ex:Alice", "direction": "in" }, { "node": "ex:Bob", "direction": "out" } ] },
+      { "type": "ex:knows", "endpoints": [ { "node": "ex:Charlie", "direction": "out" }, { "node": "ex:Bob", "direction": "in" } ] }
     ]
   }
 ]

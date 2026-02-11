@@ -111,6 +111,14 @@ public class RdfReader implements GioReader, GioWriter {
         model.setNsPrefix("cj", RdfCj.CjInRdf.VOC);
         model.setNsPrefix("rdf", RDF.uri);
         model.setNsPrefix("rdfs", RDFS.uri);
+        // Map @context prefix entries back to RDF namespace prefixes
+        if (context != null) {
+            for (Map.Entry<String, String> entry : context.entrySet()) {
+                if (!CjConstants.VOCAB.equals(entry.getKey())) {
+                    model.setNsPrefix(entry.getKey(), entry.getValue());
+                }
+            }
+        }
 
         // Write RDF as Turtle (more readable than RDF/XML)
         StringWriter stringWriter = new StringWriter();

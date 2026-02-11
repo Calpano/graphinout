@@ -99,15 +99,24 @@ public class CjValidator {
                     }
                 }
             });
-            // Expanded URIs:
-            // - context + edge.type,
-            // - TODO context + node.types
+            // Expanded URIs: context + edge.type,
             cjDoc.edgesAll().forEach(edge -> {
                 ifPresentAccept(edge.edgeType(), edgeType -> {
                     //  expand edge type ID via @context and validate resulting URI
                     String uri = cjDoc.uri(edgeType.type());
                     if (!isValidUri(uri)) {
                         errors.add(ContentError.error("URI Error: Edge type URI from String '" + uri + "' is not a valid URI"));
+                    }
+                });
+            });
+
+            // Expanded URIs: context + node.types
+            cjDoc.nodesAll().forEach(node -> {
+                node.types().forEach(nodeType -> {
+                    // expand node type ID via @context and validate resulting URI
+                    String uri = cjDoc.uri(nodeType.type());
+                    if (!isValidUri(uri)) {
+                        errors.add(ContentError.error("URI Error: Node type URI from String '" + uri + "' is not a valid URI"));
                     }
                 });
             });

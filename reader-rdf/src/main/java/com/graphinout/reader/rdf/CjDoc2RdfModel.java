@@ -47,7 +47,7 @@ public class CjDoc2RdfModel {
         List<ICjEndpoint> targets = cjEdge.targets();
         List<ICjEndpoint> undirectedEndpoints = cjEdge.undirectedEndpoints();
 
-        String edgeType = cjEdge.type();
+        String edgeType = cjEdge.type() != null ? CjUris.expandId(context, cjEdge.type()) : null;
 
         if (endpoints.size() == 2 && sources.size() < 2 && targets.size() < 2) {
             // Order can be derived from endpoints
@@ -87,12 +87,12 @@ public class CjDoc2RdfModel {
             }
             ifPresentAccept(sourceEndpoint.type(), sssType -> {
                 // Triple: (SSS, SSS_TYPE, TTT)
-                Property property = rdfModel.getProperty(sssType);
+                Property property = rdfModel.getProperty(CjUris.expandId(context, sssType));
                 rdfModel.add(subject, property, object);
             });
             ifPresentAccept(targetEndpoint.type(), tttType -> {
                 // Triple: (SSS, TTT_TYPE, TTT)
-                Property property = rdfModel.getProperty(tttType);
+                Property property = rdfModel.getProperty(CjUris.expandId(context, tttType));
                 rdfModel.add(subject, property, object);
             });
 
@@ -118,11 +118,11 @@ public class CjDoc2RdfModel {
                     String predicateUri;
                     // Priority: endpoint type > edge type
                     if (ep2.type() != null) {
-                        predicateUri = ep2.type();
+                        predicateUri = CjUris.expandId(context, ep2.type());
                     } else if (ep1.type() != null) {
-                        predicateUri = ep1.type();
+                        predicateUri = CjUris.expandId(context, ep1.type());
                     } else if (cjEdge.edgeType() != null) {
-                        predicateUri = cjEdge.type();
+                        predicateUri = CjUris.expandId(context, cjEdge.type());
                     } else {
                         predicateUri = RdfCj.CjInRdf.IS_RELATED;
                     }
@@ -157,7 +157,7 @@ public class CjDoc2RdfModel {
 
         // Add node types
         cjNode.types().forEach(cjType -> {
-            Resource typeResource = rdfModel.createResource(cjType.type());
+            Resource typeResource = rdfModel.createResource(CjUris.expandId(context, cjType.type()));
             rdfModel.add(rdfSubject, RDF.type, typeResource);
         });
 
@@ -182,7 +182,7 @@ public class CjDoc2RdfModel {
             if (value != null) {
                 if (value.isObject()) {
                     IJsonObject dataObject = value.asObject();
-                    jsonObject2rdfModel(rdfSubject, dataObject, rdfModel);
+                    jsonObject2rdfModel(context, rdfSubject, dataObject, rdfModel);
                 }
             }
         });
@@ -207,7 +207,7 @@ public class CjDoc2RdfModel {
         return cjDoc.nodesAll().filter(n -> nodeId.equals(n.id())).findFirst().orElse(null);
     }
 
-    private static void jsonObject2rdfModel(Resource rdfSubject, IJsonObject dataObject, Model rdfModel) {
+    private static void jsonObject2rdfModel(@Nullable Map<String, String> context, Resource rdfSubject, IJsonObject dataObject, Model rdfModel) {
         boolean hasRdfData = false;
 
         // Check if there's an "rdf:data" object containing RDF property-value pairs
@@ -217,9 +217,9 @@ public class CjDoc2RdfModel {
                 hasRdfData = true;
                 IJsonObject rdfDataObject = rdfDataValue.asObject();
                 // Extract and emit RDF triples from the "rdf:data" object
-                for (String predicateUri : rdfDataObject.keys()) {
-                    Property predicate = rdfModel.createProperty(predicateUri);
-                    IJsonValue value = rdfDataObject.get(predicateUri);
+                for (String predicateId : rdfDataObject.keys()) {
+                    Property predicate = rdfModel.createProperty(CjUris.expandId(context, predicateId));
+                    IJsonValue value = rdfDataObject.get(predicateId);
 
                     toRdfLiterals(rdfModel, value, literal -> {
                         rdfModel.add(rdfSubject, predicate, literal);

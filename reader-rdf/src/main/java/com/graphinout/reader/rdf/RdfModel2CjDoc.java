@@ -20,6 +20,7 @@ import org.apache.jena.vocabulary.RDFS;
 
 import com.graphinout.base.cj.CjConstants;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -58,9 +59,13 @@ public class RdfModel2CjDoc {
             c.versionDate(ConnectedJson.CJ_LATEST_VERSION_DATE);
             c.versionNumber(ConnectedJson.CJ_LATEST_VERSION_NUMBER);
         });
-        // Set @context with @vocab if a baseUri was provided
+        // Collect RDF namespace prefixes into @context
+        Map<String, String> contextMap = new HashMap<>(rdfModel.getNsPrefixMap());
         if (baseUri != null && !baseUri.isEmpty()) {
-            cjDoc.context(Map.of(CjConstants.VOCAB, baseUri));
+            contextMap.put(CjConstants.VOCAB, baseUri);
+        }
+        if (!contextMap.isEmpty()) {
+            cjDoc.context(contextMap);
         }
 
         cjDoc.addGraph(cjGraph -> rdfModel2CjGraph(rdfModel, cjDoc, cjGraph));
