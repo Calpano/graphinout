@@ -65,7 +65,7 @@ public class Neo4jReader implements GioReader, GioWriter {
         Map<String, Object> object = new HashMap<>();
 
         while (parser.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = parser.getCurrentName();
+            String fieldName = parser.currentName();
             parser.nextToken();
 
             switch (fieldName) {
@@ -183,7 +183,7 @@ public class Neo4jReader implements GioReader, GioWriter {
     private Map<String, Object> parseProperties(JsonParser parser) throws IOException {
         Map<String, Object> properties = new HashMap<>();
         while (parser.nextToken() != JsonToken.END_OBJECT) {
-            String key = parser.getCurrentName();
+            String key = parser.currentName();
             parser.nextToken();
             properties.put(key, parseValue(parser));
         }
@@ -193,7 +193,7 @@ public class Neo4jReader implements GioReader, GioWriter {
     private Map<String, String> parseNodeReference(JsonParser parser) throws IOException {
         Map<String, String> nodeRef = new HashMap<>();
         while (parser.nextToken() != JsonToken.END_OBJECT) {
-            String key = parser.getCurrentName();
+            String key = parser.currentName();
             parser.nextToken();
             if ("id".equals(key)) {
                 nodeRef.put("id", parser.getText());
@@ -205,23 +205,18 @@ public class Neo4jReader implements GioReader, GioWriter {
     }
 
     private Object parseValue(JsonParser parser) throws IOException {
-        switch (parser.getCurrentToken()) {
-            case VALUE_STRING:
-                return parser.getText();
-            case VALUE_NUMBER_INT:
-                return parser.getIntValue();
-            case VALUE_NUMBER_FLOAT:
-                return parser.getDoubleValue();
-            case VALUE_TRUE:
-                return Boolean.TRUE;
-            case VALUE_FALSE:
-                return Boolean.FALSE;
-            case VALUE_NULL:
-                return null;
-            default:
+        return switch (parser.getCurrentToken()) {
+            case VALUE_STRING -> parser.getText();
+            case VALUE_NUMBER_INT -> parser.getIntValue();
+            case VALUE_NUMBER_FLOAT -> parser.getDoubleValue();
+            case VALUE_TRUE -> Boolean.TRUE;
+            case VALUE_FALSE -> Boolean.FALSE;
+            case VALUE_NULL -> null;
+            default -> {
                 parser.skipChildren();
-                return null;
-        }
+                yield null;
+            }
+        };
     }
 
     private void addPropertyToData(ICjHasDataMutable element, String key, Object value) {
