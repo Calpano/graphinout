@@ -41,10 +41,11 @@ public interface ICjHasGraphs {
      * nodes or edges.
      */
     default Stream<ICjGraph> graphsAll() {
-        return graphs().flatMap(g -> Stream.concat(Stream.of(g), g.graphsNestedNonRecursive()));
+        Stream<ICjGraph> self = (this instanceof ICjGraph g) ? Stream.of(g) : Stream.empty();
+        return Stream.concat(self, graphs().flatMap(g -> Stream.concat(Stream.of(g), g.graphsNestedNonRecursive())));
     }
 
-    /** Index of given graph in this element. -1 if not found */
+    /** Index of the given graph in this element. -1 if not found */
     int indexOf(ICjGraph graph);
 
     /**
