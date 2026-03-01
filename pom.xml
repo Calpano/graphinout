@@ -75,7 +75,7 @@
         <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
         <!-- must use same version as spring, otherwise 'java.lang.NoClassDefFoundError: com/fasterxml/jackson/core/exc/StreamConstraintsException' -->
-        <jackson-core-version>2.19.2</jackson-core-version>
+        <jackson-core-version>2.21.1</jackson-core-version>
         <jackson-databind-version>2.19.2</jackson-databind-version>
 
         <j2cl-mp-version>0.22.0</j2cl-mp-version>
