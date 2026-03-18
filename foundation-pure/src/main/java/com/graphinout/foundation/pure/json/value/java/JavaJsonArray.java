@@ -53,6 +53,18 @@ public class JavaJsonArray implements IJsonArrayMutable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JavaJsonArray)) return false;
+        return this.list.equals(((JavaJsonArray) o).list);
+    }
+
+    @Override
+    public int hashCode() {
+        return list.hashCode();
+    }
+
+    @Override
     public String toString() {
         Json2StringWriter w = new Json2StringWriter();
         fire(w);

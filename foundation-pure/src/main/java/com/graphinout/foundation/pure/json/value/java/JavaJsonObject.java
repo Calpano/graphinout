@@ -69,6 +69,18 @@ public class JavaJsonObject implements IJsonObjectMutable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JavaJsonObject)) return false;
+        return this.map.equals(((JavaJsonObject) o).map);
+    }
+
+    @Override
+    public int hashCode() {
+        return map.hashCode();
+    }
+
+    @Override
     public String toString() {
         Json2StringWriter w = new Json2StringWriter();
         fire(w);

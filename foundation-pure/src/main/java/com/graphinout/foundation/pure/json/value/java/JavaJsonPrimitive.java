@@ -5,6 +5,8 @@ import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonPrimitive;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Objects;
+
 public class JavaJsonPrimitive implements IJsonPrimitive {
 
     public static final IJsonPrimitive NULL = new IJsonPrimitive() {
@@ -21,6 +23,18 @@ public class JavaJsonPrimitive implements IJsonPrimitive {
         @Override
         public JsonType jsonType() {
             return JsonType.Null;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof JavaJsonPrimitive)) return false;
+            return ((JavaJsonPrimitive) o).primitive == null;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(JsonType.Null, (Object) null);
         }
 
         @Override
@@ -60,6 +74,19 @@ public class JavaJsonPrimitive implements IJsonPrimitive {
         }
 
         throw new AssertionError("Unknown node type: " + primitive.getClass());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == NULL) return primitive == null;
+        if (!(o instanceof JavaJsonPrimitive)) return false;
+        return Objects.equals(this.primitive, ((JavaJsonPrimitive) o).primitive);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(jsonType(), primitive);
     }
 
     @Override
