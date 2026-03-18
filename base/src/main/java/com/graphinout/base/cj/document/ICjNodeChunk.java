@@ -30,6 +30,7 @@ public interface ICjNodeChunk extends ICjHasId, ICjHasData, ICjHasLabel, ICjHasP
     default void copyTo(ICjNodeMutable targetNode) {
         ifPresentAccept(id(), targetNode::id);
         ifPresentAccept(label(), label -> targetNode.labelMutable(label::copyTo));
+        types().forEach(targetNode::addType);
         data(data -> targetNode.dataJsonValue(data.jsonValue()));
         ports().forEach(sourcePort -> targetNode.addPort(sourcePort::copyTo));
     }
