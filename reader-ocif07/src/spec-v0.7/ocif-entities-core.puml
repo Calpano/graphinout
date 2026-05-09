@@ -1,0 +1,66 @@
+@startuml ocif-core
+!theme vibrant
+hide empty members
+title OCIF Core Entities
+
+abstract class Entity {
+  + comment: String
+}
+
+abstract class Item {
+  + id: String
+}
+
+interface Extension {
+  + type: String
+}
+
+class OcifDocument {
+  + ocif: String
+  + rootNode: String
+}
+
+class Node {
+  + parent: String
+  + deleteWithParent: boolean
+  + position: Vector
+  + size: Vector
+  + rotation: Angle
+  + rotationAxis: Vector
+  + scale: Vector
+  + resource: String
+  + resourceFit: String
+}
+
+class Resource extends Item {
+}
+
+class Representation  {
+  + mimeType: String
+  + location: URI
+  + content: String
+}
+
+class Schema {
+  + uri: URI
+  + name: String
+  + location: URI
+  + schema: Object
+}
+
+Entity <|- Item
+Entity <|-- Representation
+Item <|- Node
+Entity o--u "n" Extension : data
+
+OcifDocument *-- "n" Node : nodes
+OcifDocument *-- "n" Resource : resources
+OcifDocument *-- "n" Schema : schemas
+OcifDocument o-l "data" Extension
+
+Resource "1" *-- "representations" Representation
+Node --> "resource" Resource
+Node --> "parent" Node
+
+
+@enduml

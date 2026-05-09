@@ -1,0 +1,16 @@
+@startuml ocif-canvas-extensions
+!theme vibrant
+hide empty members
+title Canvas Extensions
+
+interface Extension {
+  + type: String
+}
+
+class CanvasViewport implements Extension {
+  + type: "@ocif/canvas-viewport"
+  + position: Vector
+  + size: Vector
+}
+
+@enduml

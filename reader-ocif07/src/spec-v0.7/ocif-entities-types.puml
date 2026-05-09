@@ -1,0 +1,24 @@
+@startuml ocif-types
+!theme vibrant
+hide empty members
+title OCIF Types
+
+class Vector {
+  + x: number
+  + y: number
+  + z: number
+}
+
+class Angle {
+  + degrees: number
+}
+
+class Color {
+  + hex: String
+}
+
+class URI {
+  + value: String
+}
+
+@enduml

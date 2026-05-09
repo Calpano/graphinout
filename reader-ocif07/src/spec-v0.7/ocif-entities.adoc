@@ -1,0 +1,284 @@
+= OCIF Entities
+:toc:
+
+This document describes the main entities in the Open Canvas Interchange Format (OCIF) version 0.7.0.
+
+== Overview
+
+.OCIF Entities Overview
+[plantuml]
+....
+include::ocif-entities.puml[]
+....
+
+== OCIF Types
+
+The following primitive types are used throughout the spec.
+
+.OCIF Types
+[plantuml]
+....
+include::ocif-entities-types.puml[]
+....
+
+* `Vector`: A 2D or 3D coordinate or size expressed as a number array `[x, y]` or `[x, y, z]`.
+* `Angle`: A floating-point number in degrees.
+* `Color`: A hex color string, e.g., `#FF0000` or `#FF0000AA` (with alpha).
+* `URI`: A string conforming to RFC 3986.
+
+== File Structure
+
+.OCIF Core Entities
+[plantuml]
+....
+include::ocif-entities-core.puml[]
+....
+
+The OCIF file is a JSON object with the following properties:
+
+* `ocif`: The URI of the OCIF schema. (Required)
+* `rootNode`: The ID of the root <<Node>>. (Optional)
+* `data`: Extended canvas data (canvas extensions). (Optional)
+* `nodes`: A list of <<Nodes,Node>>. (Optional)
+* `resources`: A list of <<Resources,Resource>>. (Optional)
+* `schemas`: A list of <<Schemas,Schema>> entries. (Optional)
+
+NOTE: Compared to v0.6, the `relations` array has been removed. Structural relations (group, edge, hyperedge, parent-child) are now expressed as <<Node Extensions>> on nodes.
+
+== Entity and Item
+
+*Entity* is the abstract base type. It provides extension data and an optional comment field:
+
+* `data`: Extended data as an array of extensions. (Optional)
+* `comment`: A human-readable annotation. (Optional)
+
+*Item* extends Entity and adds a unique identifier:
+
+* `id`: A unique identifier, must be unique within an OCIF file. (Required)
+
+All core OCIF types (Node, Resource, Representation) inherit from Entity or Item.
+
+== Canvas Extensions
+
+The canvas itself can carry extensions via a `data` array on the root OCIF object. Each extension is identified by a `type` property.
+
+.Canvas Extensions
+[plantuml]
+....
+include::ocif-entities-canvas-ext.puml[]
+....
+
+=== Canvas Viewport
+
+Defines the initial viewport of the canvas.
+
+* Name: `@ocif/canvas-viewport`
+* Properties: `position`, `size`
+
+== Nodes
+
+Nodes are the main entities of a canvas, inheriting from <<Item>> (`id`, `data`, `comment`).
+A visual node has a `position` and `size`, making it a rectangle on the canvas.
+Nodes without `position` and `size` can serve a structural role (e.g., edges or groups).
+
+=== Structural Properties
+
+* `id`: Unique identifier. (Required)
+* `parent`: ID of a parent node. Establishes a hierarchical, coordinate-local relationship. (Optional)
+* `deleteWithParent`: Whether this node is deleted when its parent is deleted. Default: `true`. (Optional)
+
+NOTE: In v0.7.0, parent-child hierarchy is expressed directly on the node via `parent`, replacing the old `ParentChild` relation extension.
+
+=== Layout Properties
+
+* `position`: Coordinate as (x,y) or (x,y,z) in the local coordinate system. (Optional)
+* `size`: The size of the node per dimension. (Optional)
+* `rotation`: Rotation in degrees, counter-clockwise. Default: `0`. (Optional)
+* `rotationAxis`: Rotation axis as `[x,y,z]`. Default: `[0,0,1]`. (Optional)
+* `scale`: Scale factor(s). Default: `1`. (Optional)
+
+NOTE: In v0.7.0, `rotation`, `rotationAxis`, and `scale` are now core Node properties. The former `NodeTransforms` extension has been removed.
+
+=== Content Properties
+
+* `resource`: Reference to a <<Resources,Resource>> to display. (Optional)
+* `resourceFit`: How the resource is fitted into the node bounding box (`contain`, `cover`, `fill`, etc.). (Optional)
+
+=== Extension Properties
+
+Nodes can be extended with additional data via the `data` array.
+
+* `data`: A list of extensions (each a JSON object with a `type` property). (Optional)
+* `comment`: A comment in the OCIF file. (Optional)
+
+== Node Extensions
+
+Node extensions are placed inside the `data` array of a node.
+
+=== Shape Extensions
+
+.Node Extensions: Shape
+[plantuml]
+....
+include::ocif-entities-shape-ext.puml[]
+....
+
+==== Rectangle
+
+A visual extension defining the appearance of a node as a rectangle.
+
+* Name: `@ocif/rect`
+* Properties: `strokeWidth`, `strokeColor`, `fillColor`
+
+==== Oval
+
+Similar to the Rectangle extension, but renders the node as an oval (ellipse).
+
+* Name: `@ocif/oval`
+* Properties: `strokeWidth`, `strokeColor`, `fillColor`
+
+==== Arrow
+
+A visual node extension rendering a straight line with optional markers at start and end.
+
+* Name: `@ocif/arrow`
+* Properties: `strokeWidth`, `strokeColor`, `start`, `end`, `startMarker`, `endMarker`
+
+==== Path
+
+A visual extension defining the appearance of a node as an SVG-compatible path.
+
+* Name: `@ocif/path`
+* Properties: `strokeWidth`, `strokeColor`, `fillColor`, `path`
+
+=== Layout Extensions
+
+.Node Extensions: Layout
+[plantuml]
+....
+include::ocif-entities-layout-ext.puml[]
+....
+
+==== Ports
+
+Allows a node to define named port nodes that act as connection attachment points.
+
+* Name: `@ocif/ports`
+* Properties: `ports` (list of node IDs)
+
+==== Global Positions
+
+Stores pre-computed global (absolute) coordinates, making it easier for simple viewers to render OCIF content. These values are redundant and derived from the core layout properties.
+
+* Name: `@ocif/global-positions`
+* Properties: `globalPosition`, `globalSize`, `globalRotation`
+
+==== Anchored Node
+
+Allows for relative (percentage-based) positioning of a node within its parent.
+
+* Name: `@ocif/anchored-node`
+* Properties: `topLeftAnchor`, `bottomRightAnchor`, `topLeftOffset`, `bottomRightOffset`
+
+=== Style Extensions
+
+.Node Extensions: Style
+[plantuml]
+....
+include::ocif-entities-style-ext.puml[]
+....
+
+==== Text Style
+
+Sets common properties for rendering text (plain or structured) such as font size, family, and color.
+
+* Name: `@ocif/textstyle`
+* Properties: `fontSizePx`, `fontFamily`, `color`, `align`, `bold`, `italic`
+
+==== Theme Definition
+
+Defines named themes. Each theme contains node properties (including extensions) applied when the theme is selected.
+
+* Name: `@ocif/theme-def`
+* Dynamic theme keys, each containing a `data` array of extensions.
+
+==== Theme Selection
+
+Selects which theme to apply. Theme selection inherits downwards through the parent-child tree.
+
+* Name: `@ocif/theme-use`
+* Properties: `selectTheme`
+
+NOTE: In v0.7.0, the single `Theme` extension from v0.6 is split into `@ocif/theme-def` (definition) and `@ocif/theme-use` (selection).
+
+=== Structural Extensions
+
+.Node Extensions: Structural
+[plantuml]
+....
+include::ocif-entities-structural-ext.puml[]
+....
+
+==== Inheritance
+
+Lets a node inherit properties from another node. Many nodes may inherit from a single node.
+
+* Name: `@ocif/inherit`
+* Properties: `inheritFrom`, `include`, `exclude`
+
+==== Page
+
+Marks a node as a page with a page number and optional label.
+
+* Name: `@ocif/page`
+* Properties: `pageNumber`, `label`
+
+==== Group
+
+Groups nodes (and other items) together. Formerly a Relation Extension in v0.6.
+
+* Name: `@ocif/group`
+* Properties: `members` (list of node IDs), `cascadeDelete`
+
+==== Edge
+
+Represents a directed or undirected edge between two elements. Can reference a visual node. Formerly a Relation Extension in v0.6.
+
+* Name: `@ocif/edge`
+* Properties: `start`, `end`, `directed`, `rel`, `node`
+
+==== Hyperedge
+
+Connects any number of nodes with defined directionality for each endpoint. Formerly a Relation Extension in v0.6.
+
+* Name: `@ocif/hyperedge`
+* Properties: `endpoints` (list of `Endpoint` objects with `id`, `direction`, `weight`), `weight`, `rel`
+
+==== Data Extension
+
+A generic extension for round-tripping arbitrary data with no OCIF semantics.
+
+* Name: `@ocif/data`
+
+== Resources
+
+Resources are assets displayed by nodes (text, images, other media). They are stored separately to allow reuse. A resource inherits from <<Item>> and has one or more representations.
+
+Resources have:
+
+* `id`: Unique identifier. (Required)
+* `representations`: A list of <<Representation,Representation>> objects. (Required)
+
+Nodes themselves can be used as resources (via `application/ocif+json` MIME type for nesting canvases).
+
+=== Representation
+
+A Representation inherits from <<Entity>> (`data`, `comment`) and defines a specific format of a resource:
+
+* `mimeType`: The MIME type of the representation. (Required)
+* `location`: A URI to an external resource. (Optional)
+* `content`: Inline content as a string. (Optional)
+
+== Schemas
+
+Schemas define the structure of extensions using JSON Schema. They can be stored inline, externally, or remotely. OCIF provides a set of built-in schema mappings for common extensions.

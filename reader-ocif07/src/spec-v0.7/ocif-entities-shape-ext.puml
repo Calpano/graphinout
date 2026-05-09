@@ -1,0 +1,42 @@
+@startuml ocif-shape-extensions
+!theme vibrant
+hide empty members
+title Node Extensions: Shape
+
+interface NodeExtension {
+  + type: String
+}
+
+class Rectangle implements NodeExtension {
+  + type: "@ocif/rect"
+  + strokeWidth: double
+  + strokeColor: Color
+  + fillColor: Color
+}
+
+class Oval implements NodeExtension {
+  + type: "@ocif/oval"
+  + strokeWidth: double
+  + strokeColor: Color
+  + fillColor: Color
+}
+
+class Arrow implements NodeExtension {
+  + type: "@ocif/arrow"
+  + strokeWidth: double
+  + strokeColor: Color
+  + start: Vector
+  + end: Vector
+  + startMarker: String
+  + endMarker: String
+}
+
+class Path implements NodeExtension {
+  + type: "@ocif/path"
+  + strokeWidth: double
+  + strokeColor: Color
+  + fillColor: Color
+  + path: String
+}
+
+@enduml

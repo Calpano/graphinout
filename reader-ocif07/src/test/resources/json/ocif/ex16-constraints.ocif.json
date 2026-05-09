@@ -1,0 +1,9 @@
+{
+  "nodes": [
+    {"id": "left"}, {"id": "center"}, {"id": "right"}
+  ],
+  "constraints": [
+    {"type": "align-vertical-center", "nodes": ["left", "center", "right"]},
+    {"type": "distribute-horizontal", "nodes": ["left", "center", "right"], "spacing": 40}
+  ]
+}

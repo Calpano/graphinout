@@ -1,0 +1,30 @@
+@startuml ocif-layout-extensions
+!theme vibrant
+hide empty members
+title Node Extensions: Layout
+
+interface NodeExtension {
+  + type: String
+}
+
+class Ports implements NodeExtension {
+  + type: "@ocif/ports"
+  + ports: List<String>
+}
+
+class GlobalPositions implements NodeExtension {
+  + type: "@ocif/global-positions"
+  + globalPosition: Vector
+  + globalSize: Vector
+  + globalRotation: Angle
+}
+
+class AnchoredNode implements NodeExtension {
+  + type: "@ocif/anchored-node"
+  + topLeftAnchor: Vector
+  + bottomRightAnchor: Vector
+  + topLeftOffset: Vector
+  + bottomRightOffset: Vector
+}
+
+@enduml

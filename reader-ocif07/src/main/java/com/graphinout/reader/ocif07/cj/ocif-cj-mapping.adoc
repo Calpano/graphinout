@@ -1,0 +1,529 @@
+= OCIF-CJ Mapping
+
+OCIF spec: /Users/maxvolkel/_data_/_git/GitHubOld/graphinout/reader-ocif07/src/spec-v0.7.0-draft/spec.md
+CJ spec: /Users/maxvolkel/_data_/_git/GitHubOld/graphinout/doc/COPY-spec-cj.adoc
+
+.OCIF Core Entities
+[plantuml]
+....
+hide empty members
+hide circle
+
+class Document
+class Node
+class Resource
+class Representation
+class Schema
+class Data
+interface HasData
+
+HasData <|-- Document
+HasData <|-- Node
+HasData <|-- Resource
+HasData <|-- Representation
+HasData *-- "n" Data
+
+Document *-- "n" Node
+Document *-- "n" Resource
+Document *-- "n" Schema
+Resource *-- "n" Representation
+Node --> "parent" Node
+....
+
+.CJ Core Entities
+[plantuml]
+....
+hide empty members
+hide circle
+
+
+class Document
+class Graph
+class Node
+class Edge
+class Label
+class Data
+class Port
+interface HasData
+interface HasLabelAndData
+
+HasData <|-- Document
+HasData *-- Data
+
+HasData <|-- HasLabelAndData
+HasLabelAndData -- Label
+HasLabelAndData <|-- Graph
+HasLabelAndData <|-- Node
+HasLabelAndData <|-- Edge
+
+Document *-- "n" Graph
+Graph *-- "n" Node
+Graph *-- "n" Edge
+Graph *-- "n" Graph
+Node -- Port
+Port -- Port
+....
+
+
+|===
+| OCIF | CJ
+
+| Document | Document
+| Document.data | Document.data
+| Node | Node
+| Node.data | Node.data
+| Resource | Document.data
+| Resource.data | Document.data
+| Representation | Node.label or Document.data
+| Representation.data | Node.label.language or Document.data
+|===
+
+== Conceptual Mapping
+=== OCIF -> CJ
+
+|===
+| OCIF | CJ
+
+| Document | Document
+| Node | Node or Edge
+| Resource | Document.data
+| Representation | Document.data
+| Schema | Document.data
+|===
+
+=== CJ -> OCIF
+|===
+| CJ | OCIF
+
+| Document | Document
+| Graph | Node [synthetic]
+| Node | Node
+| Edge | Node (sometimes with Extension)
+| Port | Node > Port Extension
+| Label | Node.resource & Representation
+|===
+
+
+== Detailed Mapping
+
+[cols="l,l"]
+|===
+| OCIF | CJ
+
+|/ocif                                 |/data/ocif:schema
+|/nodes/$NODE                          |/nodes/$NODE
+
+| $NODE/id                              | $NODE/id
+| $NODE/position                        | $NODE/data/ocif:position
+| $NODE/size                            | $NODE/data/ocif:size
+
+| $NODE/resource                        | $NODE/data/ocif:resource
+
+|/resources/$RES                       |/data/ocif:resources/$RES
+| $RES/representations                  | $RES/representations
+
+|===
+
+
+== OCIF as Paths
+
+.OCIF Core as Paths
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/ocif                                         | string!     | URI of the OCIF schema (required)
+|/rootNode                                     | string?     | Optional canvas root node ID
+|/data                                         | Array?      | Extended canvas data (extensions)
+|/nodes                                        | Array?      | List of nodes
+|/nodes/*                                      | Object      | A single node
+|/nodes/*/id                                   | string!     | Node id
+|/nodes/*/parent                               | string?     | ID of parent node
+|/nodes/*/deleteWithParent                     | boolean?    | Delete when parent deleted (default: true)
+|/nodes/*/position                             | Number[]?   | Node position (2D or 3D)
+|/nodes/*/size                                 | Number[]?   | Node size (2D or 3D)
+|/nodes/*/rotation                             | number?     | +/- 360 degrees
+|/nodes/*/rotationAxis                         | Number[]?   | Rotation axis (default: [0,0,1])
+|/nodes/*/scale                                | Number/?    | Scale factor (scalar or per-axis)
+|/nodes/*/resource                             | string?     | Reference to resource id
+|/nodes/*/resourceFit                          | string?     | none, containX, containY, contain, cover, fill, tile
+|/nodes/*/data                                 | Array?      | Extended node data (extensions)
+|/nodes/*/comment                              | string?     | Human-readable annotation
+|/resources                                    | Array?      | List of resources
+|/resources/*                                  | Object      | A single resource
+|/resources/*/id                               | string!     | Resource id
+|/resources/*/representations                  | Array!      | List of representations
+|/resources/*/representations/*                | Object      | A single representation
+|/resources/*/representations/*/mediaType      | string?     | Media type of representation
+|/resources/*/representations/*/content        | string?     | Data of representation (encoded as base64 for binary data)
+|/resources/*/representations/*/location       | string?     | Storage location (relative/absolute URI)
+|/resources/*/representations/*/data           | Array?      | Extended representation data
+|/resources/*/representations/*/comment        | string?     | Human-readable annotation
+|/schemas                                      | Array?      | List of schemas
+|/schemas/*                                    | Object      | A single schema
+|/schemas/*/uri                                | string!     | URI of the schema
+|/schemas/*/location                           | string?     | Location of the schema definition
+|/schemas/*/name                               | string?     | Name of the schema
+|/schemas/*/schema                             | Object?     | Inline schema definition
+|===
+
+== Canvas Extensions
+
+.Extension: @ocif/canvas-viewport
+|===
+| OCIF Path                            | Type        | Comment
+
+|/data/*/type                                  | string!     | "@ocif/canvas-viewport"
+|/data/*/position                              | Number[]!   | Top-left corner of viewport
+|/data/*/size                                  | Number[]!   | Size of viewport
+|===
+
+== Node Extensions
+
+.Extension: @ocif/rect
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                           | string!     | "@ocif/rect"
+|/nodes/*/data/*/strokeWidth                   | number?     | Line width (default: 1)
+|/nodes/*/data/*/strokeColor                   | string?     | Stroke color (default: #FFFFFF)
+|/nodes/*/data/*/fillColor                     | string?     | Fill color (default: none)
+|===
+
+.Extension: @ocif/oval
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/oval"
+|/nodes/*/data/*/strokeWidth                   | number?     | Line width (default: 1)
+|/nodes/*/data/*/strokeColor                   | string?     | Stroke color (default: #FFFFFF)
+|/nodes/*/data/*/fillColor                     | string?     | Fill color (default: none)
+|===
+
+.Extension: @ocif/arrow
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/arrow"
+|/nodes/*/data/*/strokeWidth                   | number?     | Line width (default: 1)
+|/nodes/*/data/*/strokeColor                   | string?     | Stroke color (default: #FFFFFF)
+|/nodes/*/data/*/start                         | Number[]!   | Start point coordinates
+|/nodes/*/data/*/end                           | Number[]!   | End point coordinates
+|/nodes/*/data/*/startMarker                   | string?     | none, arrowhead
+|/nodes/*/data/*/endMarker                     | string?     | none, arrowhead
+|===
+
+.Extension: @ocif/path
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/path"
+|/nodes/*/data/*/strokeWidth                   | number?     | Line width (default: 1)
+|/nodes/*/data/*/strokeColor                   | string?     | Stroke color (default: #FFFFFF)
+|/nodes/*/data/*/fillColor                     | string?     | Fill color (default: none)
+|/nodes/*/data/*/path                          | string!     | SVG path data
+|===
+
+.Extension: @ocif/ports
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/ports"
+|/nodes/*/data/*/ports                         | string[]!   | List of node IDs acting as ports
+|===
+
+.Extension: @ocif/global-positions
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/global-positions"
+|/nodes/*/data/*/globalPosition                | Number[]!   | Absolute global position (2D or 3D)
+|/nodes/*/data/*/globalSize                    | Number[]!   | Absolute global size
+|/nodes/*/data/*/globalRotation                | number!     | Absolute global rotation in degrees
+|===
+
+.Extension: @ocif/anchored-node
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/anchored-node"
+|/nodes/*/data/*/topLeftAnchor                 | Number[]?   | Top-left percentage anchor
+|/nodes/*/data/*/bottomRightAnchor             | Number[]?   | Bottom-right percentage anchor
+|/nodes/*/data/*/topLeftOffset                 | Number[]?   | Absolute offset for top-left
+|/nodes/*/data/*/bottomRightOffset             | Number[]?   | Absolute offset for bottom-right
+|===
+
+.Extension: @ocif/textstyle
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/textstyle"
+|/nodes/*/data/*/fontSizePx                    | number?     | Font size in pixels (default: 12)
+|/nodes/*/data/*/fontFamily                    | string?     | Font family (default: sans-serif)
+|/nodes/*/data/*/color                         | string?     | Text color (default: #000000)
+|/nodes/*/data/*/align                         | string?     | left, right, center, justify
+|/nodes/*/data/*/bold                          | boolean?    | Is bold? (default: false)
+|/nodes/*/data/*/italic                        | boolean?    | Is italic? (default: false)
+|===
+
+.Extension: @ocif/theme-def
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/theme-def"
+|/nodes/*/data/*/<themeName>                   | Object?     | Named theme definition (dynamic key)
+|/nodes/*/data/*/<themeName>/data              | Array?      | Extensions applied when this theme is selected
+|===
+
+.Extension: @ocif/theme-use
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/theme-use"
+|/nodes/*/data/*/selectTheme                   | string?     | Name of theme to apply (null = no theme)
+|===
+
+.Extension: @ocif/inherit
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/inherit"
+|/nodes/*/data/*/inheritFrom                   | string?     | ID of the source node to inherit from
+|/nodes/*/data/*/include                       | string[]?   | Property keys to include (default: all)
+|/nodes/*/data/*/exclude                       | string[]?   | Property keys to exclude (default: none)
+|===
+
+.Extension: @ocif/page
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/page"
+|/nodes/*/data/*/pageNumber                    | number?     | Page number (default: 1)
+|/nodes/*/data/*/label                         | string?     | Page label
+|===
+
+.Extension: @ocif/group
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/group"
+|/nodes/*/data/*/members                       | string[]!   | IDs of group members
+|/nodes/*/data/*/cascadeDelete                 | boolean?    | Delete members when group is deleted? (default: true)
+|===
+
+.Extension: @ocif/edge
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/edge"
+|/nodes/*/data/*/start                         | string!     | ID of source element
+|/nodes/*/data/*/end                           | string!     | ID of target element
+|/nodes/*/data/*/directed                      | boolean?    | Is directed? (default: true)
+|/nodes/*/data/*/rel                           | string?     | Relation type URI (predicate)
+|/nodes/*/data/*/node                          | string?     | ID of node visually representing the edge
+|===
+
+.Extension: @ocif/hyperedge
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/hyperedge"
+|/nodes/*/data/*/weight                        | number?     | Edge weight (default: 1.0)
+|/nodes/*/data/*/rel                           | string?     | Relation type URI
+|/nodes/*/data/*/endpoints                     | Array!      | List of endpoints
+|/nodes/*/data/*/endpoints/*/id               | string!     | Entity ID
+|/nodes/*/data/*/endpoints/*/direction        | string?     | in, out, undir (default: undir)
+|/nodes/*/data/*/endpoints/*/weight           | number?     | Endpoint weight (default: 1.0)
+|===
+
+.Extension: @ocif/data
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/data"
+|===
+
+
+== CJ as Paths
+.CJ as Paths
+[cols="l,d,d"]
+|===
+| CJ Path                            | Type        | Comment
+
+|/connectedJson                                | Object?     | Document metadata
+|/connectedJson/versionDate                    | string?     | Version date
+|/connectedJson/versionNumber                  | string?     | Version number
+|/baseUri                                      | string?     | Base URI
+|/data                                         | any?        | User data
+|/graphs                                       | Array?      | List of graphs
+|/graphs/*                                     | Object      | A single graph
+|/graphs/*/id                                  | string?     | Graph ID
+|/graphs/*/label                               | Object?     | Graph label
+|/graphs/*/label/language                      | string?     | Language tag
+|/graphs/*/label/value                         | string!     | Label value
+|/graphs/*/data                                | any?        | Graph data
+|/graphs/*/nodes                               | Array?      | List of nodes
+|/graphs/*/nodes/*                             | Object      | A single node
+|/graphs/*/nodes/*/id                          | string!     | Node ID
+|/graphs/*/nodes/*/label                       | Object?     | Node label
+|/graphs/*/nodes/*/label/language              | string?     | Language tag
+|/graphs/*/nodes/*/label/value                 | string!     | Label value
+|/graphs/*/nodes/*/ports                       | Array?      | List of ports
+|/graphs/*/nodes/*/ports/*                     | Object      | A single port
+|/graphs/*/nodes/*/ports/*/id                  | string!     | Port ID
+|/graphs/*/nodes/*/ports/*/label               | Object?     | Port label
+|/graphs/*/nodes/*/ports/*/ports               | Array?      | Nested ports
+|/graphs/*/nodes/*/data                        | any?        | Node data
+|/graphs/*/nodes/*/graphs                      | Array?      | Nested graphs
+|/graphs/*/edges                               | Array?      | List of edges
+|/graphs/*/edges/*                             | Object      | A single edge
+|/graphs/*/edges/*/id                          | string?     | Edge ID
+|/graphs/*/edges/*/label                       | Object?     | Edge label
+|/graphs/*/edges/*/type                        | string?     | Edge type
+|/graphs/*/edges/*/typeUri                     | string?     | Edge type URI
+|/graphs/*/edges/*/typeNode                    | string?     | Edge type Node ID
+|/graphs/*/edges/*/endpoints                   | Array!      | List of endpoints
+|/graphs/*/edges/*/endpoints/*                 | Object      | A single endpoint
+|/graphs/*/edges/*/endpoints/*/node            | string!     | Node ID
+|/graphs/*/edges/*/endpoints/*/port            | string?     | Port ID
+|/graphs/*/edges/*/endpoints/*/direction       | string?     | in, out, undir
+|/graphs/*/edges/*/endpoints/*/type            | string?     | Endpoint type
+|/graphs/*/edges/*/endpoints/*/typeUri         | string?     | Endpoint type URI
+|/graphs/*/edges/*/endpoints/*/typeNode        | string?     | Endpoint type Node ID
+|/graphs/*/edges/*/endpoints/*/data            | any?        | Endpoint data
+|/graphs/*/edges/*/data                        | any?        | Edge data
+|/graphs/*/edges/*/graphs                      | Array?      | Nested graphs
+|===
+
+
+== Mapping OCIF Resources and CJ Labels
+
+- OCIF resources with mimeType=text/plain maps to CJ labels without language
+
+
+[cols="l,d"]
+|===
+| OCIF Path                                | Type
+
+|/nodes/*/resource                         | string?
+|/resources/*/id                           | string!
+|/resources/*/representations              | Array!
+|/resources/*/representations/*            | Object
+|/resources/*/representations/*/mediaType  | string?
+|/resources/*/representations/*/content    | string?
+
+h| CJ Path                                h| Type
+
+|/graphs/*/nodes/*/label                   | Object?
+|/graphs/*/nodes/*/label/language          | string?
+|/graphs/*/nodes/*/label/value             | string!
+|/graphs/*/nodes/*/data                    | Object
+
+|===
+
+.OCIF Constraint
+`/nodes/$OCIF_NODE/resource` == `/resources/$OCIF_RESOURCE/id`
+
+`/resources/$OCIF_RESOURCE/representations/$OCIF_REP/mediaType`
+`/resources/$OCIF_RESOURCE/representations/$OCIF_REP/content`
+
+
+`/graphs/$CJ_GRAPH/nodes/$CJ_NODE/label/language`
+`/graphs/$CJ_GRAPH/nodes/$CJ_NODE/label/value`
+
+
+.Cases
+1 OCIF Representation with mimeType=text/plain <==> 1 CJ LabelEntry
+
+.Insights
+- Any OCIF resource with multiple representations needs to be fully intact to preserve representation order
+- A CJ label entry with a language can be mapped to an OCIF representation with a CJ extension.
+- An OCIF resource with *only* text/plain representations can map to a CJ label with multiple entries
+
+.Mapping
+[plantuml]
+....
+hide empty members
+hide circle
+
+class ocifNode as "Node"<<OCIF>> {
+  String resource
+}
+class Resource<<OCIF>> {
+    String id
+}
+class Representation<<OCIF>> {
+    String mediaType
+    String content
+}
+class cjNode as "Node"<<CJ>>
+class Label<<CJ>>
+class LabelEntry<<CJ>> {
+    String value
+    String language
+}
+class CjLanguageExt<<OCIF>> {
+    language
+}
+class Data<<CJ>> {
+    resourceId
+}
+
+
+cjNode *--> Label
+Resource *--> "n" Representation
+ocifNode *..> Resource
+Label *--> LabelEntry
+Representation *-- CjLanguageExt
+LabelEntry  .[#red]. CjLanguageExt
+
+Representation .[#red] LabelEntry : mapping:\ncontent=value\nmediaType='text/plain'
+
+Data --* Label
+Resource .[#red] Data
+note top of Data: If resource\nfully represented
+....
+
+.OCIF to CJ
+|===
+| OCIF resource | CJ label | OCIF resources in CJ doc data
+
+| 1 text/plain  | 1 label entry | --
+| n text/plain  | n label entry | --
+
+| mixed mimeTypes | 1 label entry | all
+|===
+
+.CJ to OCIF
+|===
+| CJ label | OCIF resources in CJ doc data | OCIF resource
+
+| content | -- | text/plain
+| language | -- | data[type=@cj/label]/language
+|===
+
+
+== Missing Test Cases
+
+=== OCIF to CJ
+Export using unknown extensions, e.g. a `@example/foo` extension. Schema present in file OR in a remote file.
+Does CJ round-trip the unknown extension correctly back?
+
+Can we deal with unknown extension type NAMES, which map to known extension URIs in the schemas section?
+

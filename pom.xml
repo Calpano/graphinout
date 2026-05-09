@@ -48,6 +48,7 @@
         <module>reader-tgf</module>
         <module>reader-example</module>
         <module>reader-ocif</module>
+        <module>reader-ocif07</module>
         <module>reader-tripletext</module>
         <module>reader-jgrapht</module>
         <module>reader-textbased</module>

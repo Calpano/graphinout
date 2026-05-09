@@ -1,0 +1,43 @@
+{
+  "data": {
+    "ocif:document": {
+      "ocif": "https://canvasprotocol.org/ocif/v0.7.0",
+
+      "resources": [
+        { "id": "r-text",
+          "representations":
+          [ { "mimeType": "text/plain",
+              "content": "This is inline text."
+            },
+            { "content": "{\"a\": 1, \"b\": 2}",
+              "mimeType": "application/json"
+            }
+          ]
+        },
+        { "id": "r-uri",
+          "representations":
+          [ { "location": "https://example.org/sample.png",
+              "mimeType": "image/png"
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+
+  "graphs": [
+    {
+      "nodes": [
+        {
+          "id": "n1",
+          "label": { "entries": [ { "value": "This is inline text." } ] },
+          "data": { "ocif:node": { "resource": "r-text" } }
+        },
+        { "id": "n2",
+          "data": { "ocif:node": { "resource": "r-uri" } }
+        }
+      ]
+    }
+  ]
+}

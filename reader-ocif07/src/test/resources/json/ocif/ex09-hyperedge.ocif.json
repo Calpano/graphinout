@@ -1,0 +1,12 @@
+{
+  "nodes": [
+    {"id": "a"}, {"id": "b"}, {"id": "c"}, {"id": "d"}
+  ],
+  "relations": [
+    {
+      "type": "@ocif/rel/hyperedge",
+      "members": ["a", "b", "c", "d"],
+      "label": "clique"
+    }
+  ]
+}

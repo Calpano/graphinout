@@ -1,0 +1,36 @@
+@startuml ocif-style-extensions
+!theme vibrant
+hide empty members
+title Node Extensions: Style
+
+interface NodeExtension {
+  + type: String
+}
+
+class TextStyle implements NodeExtension {
+  + type: "@ocif/textstyle"
+  + fontSizePx: int
+  + fontFamily: String
+  + color: Color
+  + align: String
+  + bold: boolean
+  + italic: boolean
+}
+
+class ThemeDef implements NodeExtension {
+  + type: "@ocif/theme-def"
+  + <themeName>: ThemeDefinition
+}
+
+class ThemeDefinition {
+  + data: List<Extension>
+}
+
+class ThemeUse implements NodeExtension {
+  + type: "@ocif/theme-use"
+  + selectTheme: String
+}
+
+ThemeDef *-- "themes" ThemeDefinition
+
+@enduml

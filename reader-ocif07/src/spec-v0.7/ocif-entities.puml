@@ -1,0 +1,116 @@
+@startuml ocif-overview
+!theme vibrant
+left to right direction
+hide empty members
+title OCIF Entities v0.7.0 - Overview
+
+' This is the combined overview diagram.
+' For details, see the individual diagrams:
+'   ocif-entities-core.puml
+'   ocif-entities-types.puml
+'   ocif-entities-canvas-ext.puml
+'   ocif-entities-shape-ext.puml
+'   ocif-entities-layout-ext.puml
+'   ocif-entities-style-ext.puml
+'   ocif-entities-structural-ext.puml
+
+abstract class Entity {
+  + data: List<Extension>
+  + comment: String
+}
+
+abstract class Item extends Entity {
+  + id: String
+}
+
+interface Extension {
+  + type: String
+}
+
+interface NodeExtension extends Extension {
+}
+
+class OcifDocument {
+  + ocif: String
+  + rootNode: String
+  + data: List<Extension>
+  + nodes: List<Node>
+  + resources: List<Resource>
+  + schemas: List<Schema>
+}
+
+class Node extends Item {
+  + parent: String
+  + deleteWithParent: boolean
+  + position: Vector
+  + size: Vector
+  + rotation: Angle
+  + rotationAxis: Vector
+  + scale: Vector
+  + resource: String
+  + resourceFit: String
+}
+
+class Resource extends Item {
+  + representations: List<Representation>
+}
+
+class Representation extends Entity {
+  + mimeType: String
+  + location: URI
+  + content: String
+}
+
+class Schema {
+  + uri: URI
+  + name: String
+  + location: URI
+  + schema: Object
+}
+
+OcifDocument *-- "nodes" Node
+OcifDocument *-- "resources" Resource
+OcifDocument *-- "schemas" Schema
+OcifDocument o-- "canvas data" Extension
+
+Resource "1" *-- "representations" Representation
+Node --> "resource" Resource
+Node --> "parent" Node
+Node "1" *-- "data" NodeExtension
+
+package "Canvas Extensions" {
+  class CanvasViewport implements Extension {
+    + position: Vector
+    + size: Vector
+  }
+}
+
+package "Shape Extensions" {
+  class Rectangle implements NodeExtension
+  class Oval implements NodeExtension
+  class Arrow implements NodeExtension
+  class Path implements NodeExtension
+}
+
+package "Layout Extensions" {
+  class Ports implements NodeExtension
+  class GlobalPositions implements NodeExtension
+  class AnchoredNode implements NodeExtension
+}
+
+package "Style Extensions" {
+  class TextStyle implements NodeExtension
+  class ThemeDef implements NodeExtension
+  class ThemeUse implements NodeExtension
+}
+
+package "Structural Extensions" {
+  class Inherit implements NodeExtension
+  class Page implements NodeExtension
+  class Group implements NodeExtension
+  class Edge implements NodeExtension
+  class Hyperedge implements NodeExtension
+  class DataExtension implements NodeExtension
+}
+
+@enduml

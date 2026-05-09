@@ -1,0 +1,58 @@
+@startuml ocif-structural-extensions
+!theme vibrant
+left to right direction
+hide empty members
+title Node Extensions: Structural
+
+interface NodeExtension {
+  + type: String
+}
+
+class Inherit implements NodeExtension {
+  + type: "@ocif/inherit"
+  + inheritFrom: String
+  + include: List<String>
+  + exclude: List<String>
+}
+
+class Page implements NodeExtension {
+  + type: "@ocif/page"
+  + pageNumber: int
+  + label: String
+}
+
+class Group implements NodeExtension {
+  + type: "@ocif/group"
+  + members: List<String>
+  + cascadeDelete: boolean
+}
+
+class Edge implements NodeExtension {
+  + type: "@ocif/edge"
+  + start: String
+  + end: String
+  + directed: boolean
+  + rel: String
+  + node: String
+}
+
+class Hyperedge implements NodeExtension {
+  + type: "@ocif/hyperedge"
+  + endpoints: List<Endpoint>
+  + weight: double
+  + rel: String
+}
+
+class Endpoint {
+  + id: String
+  + direction: String
+  + weight: double
+}
+
+class DataExtension implements NodeExtension {
+  + type: "@ocif/data"
+}
+
+Hyperedge *-- "endpoints" Endpoint
+
+@enduml
