@@ -1,0 +1,65 @@
+[
+  {
+    "line": 0,
+    "start": 0,
+    "end": 11,
+    "token": "command",
+    "text": "ddot.it/off"
+  },
+  {
+    "line": 1,
+    "start": 0,
+    "end": 34,
+    "token": "disabled",
+    "text": "Draft idea ..maybe.. ship it later"
+  },
+  {
+    "line": 2,
+    "start": 0,
+    "end": 23,
+    "token": "disabled",
+    "text": "..maybe not.. who knows"
+  },
+  {
+    "line": 3,
+    "start": 0,
+    "end": 10,
+    "token": "command",
+    "text": "ddot.it/on"
+  },
+  {
+    "line": 4,
+    "start": 0,
+    "end": 12,
+    "token": "subject",
+    "text": "Active again"
+  },
+  {
+    "line": 4,
+    "start": 13,
+    "end": 15,
+    "token": "operator",
+    "text": ".."
+  },
+  {
+    "line": 4,
+    "start": 15,
+    "end": 20,
+    "token": "relation",
+    "text": "works"
+  },
+  {
+    "line": 4,
+    "start": 20,
+    "end": 22,
+    "token": "operator",
+    "text": ".."
+  },
+  {
+    "line": 4,
+    "start": 23,
+    "end": 26,
+    "token": "object",
+    "text": "yes"
+  }
+]

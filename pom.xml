@@ -46,6 +46,9 @@
         <module>reader-gml</module>
         <module>reader-rdf</module>
         <module>reader-tgf</module>
+        <module>reader-ddot</module>
+        <module>reader-mermaid</module>
+        <module>reader-d2</module>
         <module>reader-example</module>
         <module>reader-ocif</module>
         <module>reader-ocif07</module>

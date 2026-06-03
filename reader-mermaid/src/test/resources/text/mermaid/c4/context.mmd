@@ -1,0 +1,6 @@
+C4Context
+    Person(customer, "Customer", "A user")
+    System(banking, "Internet Banking", "Allows balance lookups")
+    System_Ext(mail, "Email System")
+    Rel(customer, banking, "uses")
+    Rel(banking, mail, "sends emails", "SMTP")

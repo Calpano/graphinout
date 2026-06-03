@@ -1,0 +1,65 @@
+[
+  {
+    "line": 0,
+    "start": 0,
+    "end": 13,
+    "token": "subject",
+    "text": "Project Eagle"
+  },
+  {
+    "line": 0,
+    "start": 14,
+    "end": 16,
+    "token": "operator",
+    "text": ".."
+  },
+  {
+    "line": 0,
+    "start": 16,
+    "end": 26,
+    "token": "relation",
+    "text": "started in"
+  },
+  {
+    "line": 0,
+    "start": 26,
+    "end": 28,
+    "token": "operator",
+    "text": ".."
+  },
+  {
+    "line": 0,
+    "start": 29,
+    "end": 33,
+    "token": "object",
+    "text": "2024"
+  },
+  {
+    "line": 1,
+    "start": 0,
+    "end": 2,
+    "token": "operator",
+    "text": ".."
+  },
+  {
+    "line": 1,
+    "start": 2,
+    "end": 10,
+    "token": "relation",
+    "text": "doc site"
+  },
+  {
+    "line": 1,
+    "start": 10,
+    "end": 12,
+    "token": "operator",
+    "text": ".."
+  },
+  {
+    "line": 1,
+    "start": 13,
+    "end": 40,
+    "token": "object",
+    "text": "example.com/docbase/8dcjsid"
+  }
+]

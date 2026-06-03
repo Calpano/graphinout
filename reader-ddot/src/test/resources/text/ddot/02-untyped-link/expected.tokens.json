@@ -1,0 +1,23 @@
+[
+  {
+    "line": 0,
+    "start": 0,
+    "end": 13,
+    "token": "subject",
+    "text": "Project Eagle"
+  },
+  {
+    "line": 0,
+    "start": 14,
+    "end": 18,
+    "token": "operator",
+    "text": "...."
+  },
+  {
+    "line": 0,
+    "start": 19,
+    "end": 27,
+    "token": "object",
+    "text": "Moonshot"
+  }
+]

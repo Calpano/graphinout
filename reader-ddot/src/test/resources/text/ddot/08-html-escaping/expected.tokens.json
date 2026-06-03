@@ -1,0 +1,37 @@
+[
+  {
+    "line": 0,
+    "start": 0,
+    "end": 4,
+    "token": "subject",
+    "text": "Repo"
+  },
+  {
+    "line": 0,
+    "start": 5,
+    "end": 7,
+    "token": "operator",
+    "text": ".."
+  },
+  {
+    "line": 0,
+    "start": 7,
+    "end": 12,
+    "token": "relation",
+    "text": "hosts"
+  },
+  {
+    "line": 0,
+    "start": 12,
+    "end": 14,
+    "token": "operator",
+    "text": ".."
+  },
+  {
+    "line": 0,
+    "start": 15,
+    "end": 46,
+    "token": "object",
+    "text": "<https://example.com/x?a=1&b=2>"
+  }
+]

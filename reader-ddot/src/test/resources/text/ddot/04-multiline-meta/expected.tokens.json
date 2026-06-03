@@ -1,0 +1,107 @@
+[
+  {
+    "line": 0,
+    "start": 0,
+    "end": 13,
+    "token": "subject",
+    "text": "Dirk Hagemann"
+  },
+  {
+    "line": 0,
+    "start": 14,
+    "end": 16,
+    "token": "operator",
+    "text": ".."
+  },
+  {
+    "line": 0,
+    "start": 16,
+    "end": 24,
+    "token": "relation",
+    "text": "works at"
+  },
+  {
+    "line": 0,
+    "start": 24,
+    "end": 26,
+    "token": "operator",
+    "text": ".."
+  },
+  {
+    "line": 0,
+    "start": 27,
+    "end": 30,
+    "token": "object",
+    "text": "SAP"
+  },
+  {
+    "line": 0,
+    "start": 31,
+    "end": 33,
+    "token": "meta-delim",
+    "text": ",,"
+  },
+  {
+    "line": 1,
+    "start": 0,
+    "end": 2,
+    "token": "meta-operator",
+    "text": ".."
+  },
+  {
+    "line": 1,
+    "start": 2,
+    "end": 6,
+    "token": "meta-relation",
+    "text": "year"
+  },
+  {
+    "line": 1,
+    "start": 6,
+    "end": 8,
+    "token": "meta-operator",
+    "text": ".."
+  },
+  {
+    "line": 1,
+    "start": 9,
+    "end": 13,
+    "token": "meta-object",
+    "text": "2010"
+  },
+  {
+    "line": 2,
+    "start": 0,
+    "end": 2,
+    "token": "meta-operator",
+    "text": ".."
+  },
+  {
+    "line": 2,
+    "start": 2,
+    "end": 9,
+    "token": "meta-relation",
+    "text": "fictive"
+  },
+  {
+    "line": 2,
+    "start": 9,
+    "end": 11,
+    "token": "meta-operator",
+    "text": ".."
+  },
+  {
+    "line": 2,
+    "start": 12,
+    "end": 15,
+    "token": "meta-object",
+    "text": "yes"
+  },
+  {
+    "line": 3,
+    "start": 0,
+    "end": 2,
+    "token": "meta-delim",
+    "text": ",,"
+  }
+]
