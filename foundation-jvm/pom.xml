@@ -37,10 +37,11 @@
             <version>2.20</version>
         </dependency>
 
-        <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId></dependency>
+        <!-- Logging API only; the logback binding is test-scope (below), not imposed on consumers. -->
         <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></dependency>
 
         <!-- Test Dependencies -->
+        <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope>
             <exclusions>
