@@ -68,6 +68,11 @@ public class DDotRoundtripTest {
         DDotOutput out = new DDotOutput(cjDoc1);
         String content2 = out.toDDot();
 
+        if (!content.equals(content2)) {
+            System.err.println("FAIL for: " + textResource.getPath());
+            System.err.println("Expected:\n" + normalizeDDot(content));
+            System.err.println("Actual:\n" + normalizeDDot(content2));
+        }
         TestFileUtil.verifyOrRecord(textResource, "ddot_cj", content2, content, String::equals, this::normalizeDDot);
     }
 
