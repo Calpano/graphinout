@@ -6,10 +6,13 @@ import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.foundation.pure.input.ContentError;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -69,5 +72,26 @@ class RdfReaderTest {
         assertNotNull(cjDoc.theGraph());
         assertTrue(cjDoc.nodesAll().count() >= 2, "Should have at least 2 nodes");
         assertTrue(cjDoc.edgesAll().count() >= 1, "Should have at least 1 edge");
+    }
+
+    /** "Reader finds validation error": malformed Turtle is reported via the content error handler. */
+    @Test
+    void shouldReportContentErrorOnMalformedTurtle() {
+        String malformed = """
+                @prefix ex: <http://example.org/> .
+                ex:subject ex:predicate this-is-not-valid-turtle @@@
+                """;
+
+        SingleInputSource inputSource = SingleInputSource.of("bad.ttl", malformed);
+        RdfReader reader = new RdfTurtleReader();
+        List<ContentError> errors = new ArrayList<>();
+        reader.setContentErrorHandler(errors::add);
+        CjWriter2CjDocumentWriter cj2document = new CjWriter2CjDocumentWriter();
+        ICjStream cjStream = new CjStream2CjWriter(cj2document, true);
+
+        // Malformed RDF is rejected: the reader both reports a ContentError and rethrows.
+        assertThrows(IOException.class, () -> reader.read(inputSource, cjStream));
+        assertTrue(errors.stream().anyMatch(ContentError::isError),
+                "expected an Error-level ContentError, got: " + errors);
     }
 }
