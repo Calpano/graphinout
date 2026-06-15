@@ -2,6 +2,9 @@ package com.graphinout.base.cj.document;
 
 import java.util.function.Consumer;
 
+/**
+ * Mutable variant of {@link ICjEdgeChunk} used while constructing an edge.
+ */
 public interface ICjEdgeChunkMutable extends ICjChunkMutable, ICjEdgeChunk, ICjHasIdMutable<ICjEdgeChunkMutable>, ICjHasLabelMutable, ICjHasDataMutable {
 
     /** Consumer should finish with a valid endpoint. */

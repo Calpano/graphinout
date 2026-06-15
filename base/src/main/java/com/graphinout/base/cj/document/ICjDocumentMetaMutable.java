@@ -6,6 +6,9 @@ import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.jspecify.annotations.NonNull;
 
+/**
+ * Mutable variant of {@link ICjDocumentMeta} used while constructing document metadata.
+ */
 public interface ICjDocumentMetaMutable extends ICjDocumentMeta {
 
     static ICjDocumentMetaMutable of(@NonNull IJsonValue jsonValue) {

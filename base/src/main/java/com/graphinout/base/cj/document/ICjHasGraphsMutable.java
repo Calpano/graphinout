@@ -2,6 +2,9 @@ package com.graphinout.base.cj.document;
 
 import java.util.function.Consumer;
 
+/**
+ * Mutable variant of {@link ICjHasGraphs}: allows adding (sub)graphs.
+ */
 public interface ICjHasGraphsMutable extends ICjHasGraphs {
 
     /**

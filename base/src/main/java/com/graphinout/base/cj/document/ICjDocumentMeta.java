@@ -9,6 +9,10 @@ import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.stream.Stream;
 
+/**
+ * Document-level metadata of a CJ document: the Connected JSON version (date and number) and whether the
+ *  document is in canonical form.
+ */
 public interface ICjDocumentMeta extends ICjElement {
 
     static ICjDocumentMeta of(@NonNull IJsonValue jsonValue) {

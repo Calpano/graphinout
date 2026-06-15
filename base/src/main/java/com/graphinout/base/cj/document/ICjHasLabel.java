@@ -8,6 +8,9 @@ import java.util.List;
 
 import static java.util.Optional.ofNullable;
 
+/**
+ * Mixin for CJ elements that carry an optional label (one or more, possibly localized, entries).
+ */
 public interface ICjHasLabel {
 
     default void fireLabelMaybe(ICjWriter cjWriter, boolean sort) {

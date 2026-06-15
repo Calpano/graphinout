@@ -7,6 +7,9 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
+/**
+ * Mixin for CJ elements that carry a JSON data payload.
+ */
 public interface ICjHasData {
 
     /** @return this as {@link ICjElement} or throws */

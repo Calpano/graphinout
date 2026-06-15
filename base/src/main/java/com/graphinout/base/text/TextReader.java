@@ -2,6 +2,9 @@ package com.graphinout.base.text;
 
 public class TextReader {
 
+    /**
+     * Transforms a single code point, given the next code point as look-ahead.
+     */
     @FunctionalInterface
     public interface ITranscoder {
 
@@ -14,6 +17,9 @@ public class TextReader {
 
     }
 
+    /**
+     * Consumer of code points that also receives the next code point as look-ahead.
+     */
     @FunctionalInterface
     public interface ICodepointWithLookAhead {
 
@@ -25,6 +31,9 @@ public class TextReader {
 
     }
 
+    /**
+     * Consumer of code points that receives the code point, its index, and the next code point as look-ahead.
+     */
     @FunctionalInterface
     public interface ICodepointWithIndexAndLookAhead {
 

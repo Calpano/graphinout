@@ -8,6 +8,10 @@ import java.io.IOException;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+/**
+ * Reads JSON from an {@link com.graphinout.base.input.InputSource} and emits events to a
+ *  {@link com.graphinout.foundation.pure.json.writer.JsonWriter}.
+ */
 public interface JsonReader {
 
     Logger log = getLogger(JsonReader.class);

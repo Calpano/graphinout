@@ -9,6 +9,9 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
+/**
+ * Mutable variant of {@link ICjHasData}: allows setting the JSON data payload.
+ */
 public interface ICjHasDataMutable extends ICjHasData {
 
     /**

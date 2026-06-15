@@ -17,6 +17,9 @@ import java.util.stream.Stream;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
+/**
+ * A single entry of a CJ {@link ICjLabel}: a text value with an optional language tag and data.
+ */
 public interface ICjLabelEntry extends ICjHasData, ICjElement, Comparable<ICjLabelEntry> {
 
     /**

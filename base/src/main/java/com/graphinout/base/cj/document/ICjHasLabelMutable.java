@@ -7,6 +7,9 @@ import java.util.function.Consumer;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
+/**
+ * Mutable variant of {@link ICjHasLabel}: allows setting the label.
+ */
 public interface ICjHasLabelMutable extends ICjHasLabel {
 
     default void addLabel(String label, @Nullable String language) {

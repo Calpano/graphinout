@@ -7,6 +7,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
+/**
+ * A single, named {@link InputSource} backed by one stream or string, with an optional character encoding.
+ */
 public interface SingleInputSource extends InputSource {
 
     static SingleInputSource of(String name, String content) {

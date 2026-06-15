@@ -10,6 +10,9 @@ import org.jspecify.annotations.Nullable;
 
 import javax.annotation.concurrent.Immutable;
 
+/**
+ * Immutable, string-backed type discriminator for a CJ element (e.g. a node, edge or endpoint type).
+ */
 @Immutable
 public interface ICjElementType extends Comparable<ICjElementType> {
 

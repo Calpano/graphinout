@@ -6,6 +6,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * Mutable variant of {@link ICjDocumentChunk} used while constructing a CJ document.
+ */
 public interface ICjDocumentChunkMutable extends ICjDocumentChunk, ICjHasDataMutable {
 
     /**

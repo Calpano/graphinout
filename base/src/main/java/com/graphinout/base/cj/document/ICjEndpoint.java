@@ -11,6 +11,9 @@ import java.util.stream.Stream;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
+/**
+ * One endpoint of a CJ edge: references a node (and optionally a port), with a direction and optional type and data.
+ */
 public interface ICjEndpoint extends ICjHasData, ICjElement, Comparable<ICjEndpoint> {
 
     @Override

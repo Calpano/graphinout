@@ -7,6 +7,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+/**
+ * Mixin for CJ elements that contain (sub)graphs, with convenience traversal over all nested graphs, nodes and edges.
+ */
 public interface ICjHasGraphs {
 
     /**

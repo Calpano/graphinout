@@ -25,6 +25,9 @@ import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccep
 import static com.graphinout.foundation.pure.functional.Nullables.mapOrNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
+/**
+ * A CJ label: an ordered collection of {@link ICjLabelEntry} values (e.g. one per language) plus optional data.
+ */
 public interface ICjLabel extends ICjElement, ICjHasData, Comparable<ICjLabel> {
 
     Logger _log = getLogger(ICjLabel.class);

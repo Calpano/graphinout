@@ -6,6 +6,9 @@ import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 
+/**
+ * Factory for creating mutable CJ chunk instances (document, graph, node, edge, ...) while streaming events.
+ */
 public interface ICjFactory {
 
     ICjDocumentChunkMutable createDocumentChunk();

@@ -7,6 +7,9 @@ import java.util.function.Consumer;
 
 import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrGetDefault;
 
+/**
+ * Mutable variant of {@link ICjGraph} used while constructing a CJ document.
+ */
 public interface ICjGraphMutable extends ICjGraph, ICjHasGraphsMutable, ICjGraphChunkMutable, ICjHasLabelMutable {
 
     /**
