@@ -2,6 +2,9 @@ package com.graphinout.foundation.pure.json.path;
 
 import com.graphinout.foundation.pure.json.JsonType;
 
+/**
+ * A JSON path step into an object by property key.
+ */
 public interface IJsonObjectNavigationStep extends IJsonContainerNavigationStep {
 
     static IJsonObjectNavigationStep of(String propertyKey) {

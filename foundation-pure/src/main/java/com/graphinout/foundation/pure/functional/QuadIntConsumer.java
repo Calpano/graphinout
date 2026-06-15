@@ -1,5 +1,8 @@
 package com.graphinout.foundation.pure.functional;
 
+/**
+ * Consumer of four primitive {@code int} arguments.
+ */
 public interface QuadIntConsumer extends QuadConsumer<Integer, Integer, Integer, Integer> {
 
     /**

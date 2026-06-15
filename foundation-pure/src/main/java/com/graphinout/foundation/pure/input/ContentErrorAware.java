@@ -4,6 +4,9 @@ import com.graphinout.foundation.pure.functional.Nullables;
 import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
+/**
+ * Mixin for components that collect and forward {@link ContentError}s through a settable handler.
+ */
 public interface ContentErrorAware {
 
     /** Implementations should override this one */

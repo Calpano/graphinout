@@ -1,5 +1,8 @@
 package com.graphinout.foundation.pure.xml;
 
+/**
+ * A qualified XML name: namespace URI, local name and qualified (prefixed) name.
+ */
 public interface IXmlName {
 
     static IXmlName of(String uri, String localName, String qName) {

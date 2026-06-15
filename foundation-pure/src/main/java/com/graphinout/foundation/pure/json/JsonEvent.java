@@ -10,6 +10,9 @@ import static com.graphinout.foundation.pure.json.JsonEvent.Type.ObjectEnd;
 import static com.graphinout.foundation.pure.json.JsonEvent.Type.ObjectStart;
 import static com.graphinout.foundation.pure.json.JsonEvent.Type.Value;
 
+/**
+ * A single JSON stream event: a {@link Type} together with an optional payload.
+ */
 public interface JsonEvent {
 
     enum Type {

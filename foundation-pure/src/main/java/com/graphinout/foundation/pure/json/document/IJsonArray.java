@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+/**
+ * An immutable JSON array value: an ordered sequence of {@link IJsonValue}s.
+ */
 public interface IJsonArray extends IJsonContainer {
 
     /**

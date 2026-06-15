@@ -2,6 +2,9 @@ package com.graphinout.foundation.pure.types;
 
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Registry of {@link ITypeAdapter}s that converts values between registered input and target types.
+ */
 public interface ITypeAdapters {
 
     <I, O> @Nullable O adaptTo(I inputValue, Class<O> targetType);

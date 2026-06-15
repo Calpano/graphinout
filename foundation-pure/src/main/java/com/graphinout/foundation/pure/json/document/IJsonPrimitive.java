@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.BiConsumer;
 
+/**
+ * A scalar JSON value: string, number, boolean or null.
+ */
 public interface IJsonPrimitive extends IJsonValue {
 
     default double asDouble() {

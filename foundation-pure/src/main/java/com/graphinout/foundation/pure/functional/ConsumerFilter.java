@@ -3,6 +3,10 @@ package com.graphinout.foundation.pure.functional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/**
+ * A {@link java.util.function.Consumer} that, via {@link java.util.function.Predicate}, also signals whether
+ *  traversal should continue after each accepted element.
+ */
 @FunctionalInterface
 public interface ConsumerFilter<T> extends Consumer<T>, Predicate<T> {
     static <N> ConsumerFilter<N> consumerFilter(Predicate<N> fun) {

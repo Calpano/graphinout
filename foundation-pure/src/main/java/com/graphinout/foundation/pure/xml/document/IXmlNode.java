@@ -7,6 +7,9 @@ import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 
 import java.io.IOException;
 
+/**
+ * A node in an XML document tree (element, text, ...).
+ */
 public interface IXmlNode extends IXmlContent {
 
     void fire(XmlWriter writer) throws IOException;

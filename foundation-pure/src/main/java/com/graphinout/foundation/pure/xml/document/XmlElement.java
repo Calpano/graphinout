@@ -18,6 +18,9 @@ import java.util.function.Function;
 
 public class XmlElement extends XmlContent implements IXmlNode {
 
+    /**
+     * Predicate over an element's attribute, by name and value.
+     */
     @FunctionalInterface
     public interface AttributeTest {
 

@@ -11,6 +11,10 @@ import java.util.Objects;
 
 public final class JsonTransformer {
 
+    /**
+     * Callbacks invoked while traversing a JSON tree, before and after each object and array, for in-place
+     *  transformation.
+     */
     public interface IJsonTransformHandler {
 
         void transformArrayPost(List<Object> steps, IJsonArrayMutable arrayValue);

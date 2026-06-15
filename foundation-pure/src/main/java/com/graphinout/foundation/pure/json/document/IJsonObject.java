@@ -18,6 +18,9 @@ import java.util.stream.Stream;
 
 import static com.graphinout.foundation.pure.functional.Nullables.nonNull;
 
+/**
+ * An immutable JSON object value: an ordered map of string keys to {@link IJsonValue}s.
+ */
 public interface IJsonObject extends IJsonContainer {
 
 

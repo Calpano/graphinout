@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+/**
+ * Mutable variant of {@link ISparseVec}: a sparse vector keyed by {@code K} whose entries can be added and scaled.
+ */
 public interface IMutableSparseVec<K> extends ISparseVec<K> {
 
     IMutableSparseVec<K> deIndex(@NonNull K k);

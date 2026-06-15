@@ -11,6 +11,9 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+/**
+ * XML content holding child nodes, with traversal over descendant nodes and elements.
+ */
 public interface IXmlContent {
 
     default Stream<XmlElement> allElements() {

@@ -5,6 +5,9 @@ import com.graphinout.foundation.pure.json.JsonException;
 
 import java.util.function.Consumer;
 
+/**
+ * Streaming writer for a JSON object.
+ */
 public interface JsonObjectWriter extends JsonPropertyWriter {
 
     default void object(Consumer<JsonPropertyWriter> consumer) {

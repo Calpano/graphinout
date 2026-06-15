@@ -6,6 +6,9 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 
+/**
+ * XML constants and helper types, including the {@code xml:space} values and the set of XML whitespace characters.
+ */
 public interface XML {
 
     enum XmlSpace {

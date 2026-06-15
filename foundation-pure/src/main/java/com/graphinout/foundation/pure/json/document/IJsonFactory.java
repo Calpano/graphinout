@@ -14,6 +14,9 @@ import java.math.BigInteger;
 import java.util.stream.Collector;
 
 
+/**
+ * Factory for creating JSON values (objects, arrays, primitives), in mutable and immutable form.
+ */
 public interface IJsonFactory {
 
     Logger _log = LoggerFactory.getLogger(IJsonFactory.class);

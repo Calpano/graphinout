@@ -21,6 +21,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Base type for any JSON value (object, array or primitive), with type queries and typed accessors.
+ */
 @SuppressWarnings({"unused"})
 public interface IJsonValue {
 

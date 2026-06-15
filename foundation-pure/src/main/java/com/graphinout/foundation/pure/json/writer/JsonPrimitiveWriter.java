@@ -7,6 +7,9 @@ import org.jspecify.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+/**
+ * Streaming writer for scalar JSON values (string, number, boolean, null).
+ */
 public interface JsonPrimitiveWriter extends IHasJsonValueWriter {
 
     /**

@@ -1,5 +1,8 @@
 package com.graphinout.foundation.pure.collections;
 
+/**
+ * Generates unique string ids (e.g. for synthetic node or edge identifiers).
+ */
 public interface IdFactory {
 
     class CountingIdFactory implements IdFactory {

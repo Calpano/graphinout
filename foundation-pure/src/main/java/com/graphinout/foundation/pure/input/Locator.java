@@ -2,6 +2,9 @@ package com.graphinout.foundation.pure.input;
 
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Supplies the current {@link Location} (line/column) within the input being parsed, for error reporting.
+ */
 @FunctionalInterface
 public interface Locator {
 

@@ -6,6 +6,9 @@ import com.graphinout.foundation.pure.bridge.Java9;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * A single step of a JSON path: either an object property key or an array index.
+ */
 public interface IJsonContainerNavigationStep {
 
     /**

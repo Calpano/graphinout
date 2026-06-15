@@ -1,5 +1,8 @@
 package com.graphinout.foundation.pure.functional;
 
+/**
+ * A {@link Runnable} whose action may throw a checked exception.
+ */
 @FunctionalInterface
 public interface ThrowingRunnable {
 

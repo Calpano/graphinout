@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * Factory for {@link java.util.Set}s with a bounded capacity that ignore additions beyond the limit.
+ */
 public interface ILimitedSet {
 
     /**
