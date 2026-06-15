@@ -78,6 +78,48 @@ public class Cj2GraphmlAndBackTest {
         CjAssert.verifySameCjOrRecord(resource, "Cj2Gml2Cj", jsonOut, jsonIn, null);
     }
 
+    /**
+     * Issue #137: an edge declared in a subgraph but referencing a node from an ancestor graph must be written into the
+     * lowest common ancestor graph, otherwise the GraphML is invalid (the edge would reference a node not visible in or
+     * below its graph).
+     */
+    @Test
+    @DisplayName("#137 edge hoisted to lowest common ancestor graph")
+    void testEdgeHoistedToCommonAncestorGraph() throws IOException {
+        // 'trade_transatlantic' is declared inside subgraph 'europe' but connects germany (in europe) with usa (in the
+        // parent graph 'world'). GraphML requires it to be declared in 'world'.
+        String jsonIn = """
+                { "$schema": "https://j-s-o-n.org/schema/cj-7.0.0.json",
+                  "graphs": [ { "id": "world",
+                    "nodes": [ { "id": "canada" }, { "id": "usa" } ],
+                    "edges": [ { "id": "trade_na", "endpoints": [ { "node": "canada" }, { "node": "usa" } ] } ],
+                    "graphs": [ { "id": "europe",
+                      "nodes": [ { "id": "france" }, { "id": "germany" } ],
+                      "edges": [
+                        { "id": "trade_eu", "endpoints": [ { "node": "france" }, { "node": "germany" } ] },
+                        { "id": "trade_transatlantic", "endpoints": [ { "node": "germany" }, { "node": "usa" } ] }
+                      ] } ] } ] }
+                """;
+        ICjDocument cjDoc = CjDocuments.parseCjJsonString("issue137", jsonIn);
+
+        Xml2StringWriter xmlWriter = new Xml2StringWriter();
+        Graphml2XmlWriter graphml2XmlWriter = new Graphml2XmlWriter(xmlWriter);
+        new CjDocument2Graphml(graphml2XmlWriter).writeDocumentToGraphml(cjDoc);
+        String xml = xmlWriter.resultString();
+        log.info("GraphML/XML:\n---------------\n{}\n---------------", xml);
+
+        int worldGraph = xml.indexOf("\"world\"");
+        int transatlanticEdge = xml.indexOf("trade_transatlantic");
+        int europeGraph = xml.indexOf("\"europe\"");
+        assertThat(worldGraph).isGreaterThan(-1);
+        assertThat(transatlanticEdge).isGreaterThan(-1);
+        assertThat(europeGraph).isGreaterThan(-1);
+        // the edge must be emitted after 'world' opens but before the 'europe' subgraph opens,
+        // i.e. as a direct child of 'world' rather than nested inside 'europe'
+        assertThat(transatlanticEdge).isGreaterThan(worldGraph);
+        assertThat(transatlanticEdge).isLessThan(europeGraph);
+    }
+
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @Description("Test JSON->CJ->Graphml->CjStream->CJ->JSON (all)")

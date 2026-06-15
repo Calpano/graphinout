@@ -3,9 +3,11 @@ package com.graphinout.reader.graphml.cj;
 import com.graphinout.base.cj.data.CjDataProperty;
 import com.graphinout.base.cj.data.CjMappedProperties;
 import com.graphinout.base.cj.document.CjType;
+import com.graphinout.base.cj.document.ICjCoreElement;
 import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
+import com.graphinout.base.cj.document.ICjElement;
 import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjGraph;
@@ -55,6 +57,7 @@ import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,6 +72,13 @@ public class CjDocument2Graphml {
 
     private final IGraphmlWriter graphmlWriter;
     private GraphmlSchema graphmlSchema;
+    /**
+     * Maps each edge to the graph it must be written into for valid GraphML. Unlike the CJ model, GraphML requires an
+     * edge to be declared in a graph that contains (transitively, through the nesting hierarchy) all nodes the edge
+     * references. See issue #137. Populated per document in {@link #writeDocumentToGraphml(ICjDocument)} and keyed by
+     * graph identity.
+     */
+    private Map<ICjGraph, List<ICjEdge>> edgesByHostGraph = new IdentityHashMap<>();
 
     public CjDocument2Graphml(IGraphmlWriter graphmlWriter) {
         this.graphmlWriter = graphmlWriter;
@@ -173,6 +183,9 @@ public class CjDocument2Graphml {
         // emit cjData as graphMl data
         writeData_Json(cjDoc, graphmlWriter::data);
 
+        // GraphML requires each edge in the graph that contains all its referenced nodes (issue #137)
+        this.edgesByHostGraph = computeEdgeHostGraphs(cjDoc);
+
         forEach(cjDoc.graphs(), this::writeGraph);
 
         graphmlWriter.documentEnd();
@@ -261,7 +274,10 @@ public class CjDocument2Graphml {
 
 
         forEach(cjGraph.nodes().sorted(Comparator.comparing(node -> Nullables.nonNullOrEmpty(node.id()))), this::writeNode);
-        forEach(cjGraph.edges().sorted(Comparator.comparing(edge -> Nullables.nonNullOrEmpty(edge.id()))), this::writeEdge);
+        // Write the edges hosted by this graph. This is usually cjGraph.edges(), but edges referencing nodes from an
+        // ancestor graph are hoisted here to their lowest common ancestor graph for valid GraphML (issue #137).
+        List<ICjEdge> hostedEdges = edgesByHostGraph.getOrDefault(cjGraph, List.of());
+        forEach(hostedEdges.stream().sorted(Comparator.comparing(edge -> Nullables.nonNullOrEmpty(edge.id()))), this::writeEdge);
 
         forEach(cjGraph.graphs(), cjSubGraph -> {
             // What to do when we are in a graph? GraphML has no graph-graph nesting.
@@ -276,6 +292,74 @@ public class CjDocument2Graphml {
         });
 
         graphmlWriter.graphEnd();
+    }
+
+    /**
+     * Assigns every edge in the document to the graph it must be written into for valid GraphML (see
+     * {@link #hostGraphForEdge(ICjEdge)}). See issue #137.
+     *
+     * @return a graph-identity keyed map; a graph absent from the map simply hosts no edges
+     */
+    private Map<ICjGraph, List<ICjEdge>> computeEdgeHostGraphs(ICjDocument cjDoc) {
+        Map<ICjGraph, List<ICjEdge>> result = new IdentityHashMap<>();
+        PowerStreams.filterMap(cjDoc.allElements(), ICjEdge.class) //
+                .forEach(edge -> result.computeIfAbsent(hostGraphForEdge(edge), g -> new ArrayList<>()).add(edge));
+        return result;
+    }
+
+    /**
+     * @return the graph an edge must be declared in for valid GraphML. GraphML allows an edge in any graph that
+     * contains (transitively, through the nesting hierarchy) all referenced nodes. So if the edge's own parent graph is
+     * already such a common-ancestor graph it is kept there (preserving the input structure); only edges in an invalid
+     * position are hoisted to the lowest common ancestor graph of all endpoint nodes. Falls back to the edge's own
+     * parent graph when no common ancestor graph exists (e.g. endpoints under different root graphs, or unresolved node
+     * references).
+     */
+    private ICjGraph hostGraphForEdge(ICjEdge edge) {
+        List<ICjNode> nodes = edge.nodesResolved().toList();
+        ICjGraph current = edge.parent();
+        if (nodes.isEmpty() || isCommonAncestorGraph(current, nodes)) {
+            return current;
+        }
+        // invalid position: hoist to the lowest common ancestor graph (nearest first among node0's ancestor graphs)
+        for (ICjGraph candidate : ancestorGraphsInclusive(nodes.get(0).parent())) {
+            if (isCommonAncestorGraph(candidate, nodes)) {
+                return candidate;
+            }
+        }
+        return current;
+    }
+
+    /** @return true iff {@code graph} contains every given node transitively through the nesting hierarchy */
+    private static boolean isCommonAncestorGraph(ICjGraph graph, List<ICjNode> nodes) {
+        for (ICjNode node : nodes) {
+            if (!containsByIdentity(ancestorGraphsInclusive(node.parent()), graph)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** @return the given graph and its ancestor graphs, ordered nearest-first (leaf-to-root) */
+    private static List<ICjGraph> ancestorGraphsInclusive(ICjGraph graph) {
+        List<ICjGraph> chain = new ArrayList<>();
+        ICjElement current = graph;
+        while (current instanceof ICjCoreElement core) {
+            if (core instanceof ICjGraph g) {
+                chain.add(g);
+            }
+            current = core.parent();
+        }
+        return chain;
+    }
+
+    private static boolean containsByIdentity(List<ICjGraph> graphs, ICjGraph target) {
+        for (ICjGraph g : graphs) {
+            if (g == target) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void writeNode(ICjNode cjNode) throws IOException {

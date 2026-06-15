@@ -10,7 +10,8 @@
         { "id": "usa" }
       ],
       "edges": [
-        { "id": "trade_na", "endpoints": [ { "node": "canada" }, { "node": "usa" } ] }
+        { "id": "trade_na", "endpoints": [ { "node": "canada" }, { "node": "usa" } ] },
+        { "id": "trade_transatlantic", "endpoints": [ { "node": "germany" }, { "node": "usa" } ] }
       ],
       "graphs": [
         {
@@ -21,8 +22,7 @@
             { "id": "germany" }
           ],
           "edges": [
-            { "id": "trade_eu", "endpoints": [ { "node": "france" }, { "node": "germany" } ] },
-            { "id": "trade_transatlantic", "endpoints": [ { "node": "germany" }, { "node": "usa" } ] }
+            { "id": "trade_eu", "endpoints": [ { "node": "france" }, { "node": "germany" } ] }
           ]
         }
       ]
