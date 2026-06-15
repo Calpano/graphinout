@@ -18,7 +18,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class DDotOutput {
 
-    public static final String DEFAULT_PREDICATE = "rel";
     private static final Logger log = getLogger(DDotOutput.class);
     private final ICjDocument cjDoc;
 
@@ -73,8 +72,9 @@ public class DDotOutput {
                 subject = CjUris.expandId(context, subject);
                 object = CjUris.expandId(context, object);
             }
+            // an edge without a label round-trips as a DDot "untyped link" (empty predicate: "a .. .. b")
             String predicate = firstLabelOrDesc(e, e.labelEntries());
-            if (predicate == null || predicate.isEmpty()) predicate = DEFAULT_PREDICATE;
+            if (predicate == null) predicate = "";
             out.triples.add(new DDotDoc.DDotTriple(subject, predicate, object));
         });
     }

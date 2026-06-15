@@ -161,9 +161,10 @@ public class DDotReader implements GioReader {
                 object = parts[2].trim();
                 currentSubject = subject;
             }
-            if (subject.isEmpty() || predicate.isEmpty() || object.isEmpty()) {
+            // subject and object are mandatory; an empty predicate is a valid "untyped link" (e.g. "a .. .. b")
+            if (subject.isEmpty() || object.isEmpty()) {
                 sendIssue(ContentError.ErrorLevel.Warn,
-                        "Triple has empty component; skipping: " + rawLine, locator);
+                        "Triple has empty subject/object; skipping: " + rawLine, locator);
                 continue;
             }
 
@@ -175,7 +176,10 @@ public class DDotReader implements GioReader {
             final String objectFinal = object;
             edgeChunk.addEndpoint(ep -> ep.node(subjectFinal).direction(CjDirection.IN));
             edgeChunk.addEndpoint(ep -> ep.node(objectFinal).direction(CjDirection.OUT));
-            edgeChunk.addLabelWithoutLanguage(predicate);
+            // an untyped link carries no predicate, hence no edge label
+            if (!predicate.isEmpty()) {
+                edgeChunk.addLabelWithoutLanguage(predicate);
+            }
             edgeBuffer.add(edgeChunk);
 
             foundAny = true;
