@@ -1,8 +1,11 @@
 package com.graphinout.foundation.pure.json.json5;
 
-import com.graphinout.foundation.pure.bridge.Java9;
-
 public class Json5Preprocessor {
+
+    /** Quote unquoted object keys: {@code {key:} / ,key:} -> {@code {"key":} / ,"key":}. */
+    private static final String UNQUOTED_KEY = "([{,]\\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\\s*:";
+    /** Drop a trailing comma before a closing brace/bracket. */
+    private static final String TRAILING_COMMA = ",\\s*([}\\]])";
 
     /**
      * Convert all relaxed JSON5 specialties to their stricter JSON versions.
@@ -16,10 +19,14 @@ public class Json5Preprocessor {
         }
 
         StringBuilder sb = new StringBuilder();
+        // Non-string content pending regex normalization. We accumulate it separately from string literals so
+        // that the context-insensitive regexes (key quoting, trailing-comma removal) never touch string values.
+        StringBuilder chunk = new StringBuilder();
         int i = 0;
         while (i < json5.length()) {
             char c = json5.charAt(i);
             if (c == '"') {
+                flushChunk(sb, chunk);
                 sb.append(c);
                 i++;
                 while (i < json5.length()) {
@@ -36,6 +43,7 @@ public class Json5Preprocessor {
                     i++;
                 }
             } else if (c == '\'') {
+                flushChunk(sb, chunk);
                 sb.append('"');
                 i++;
                 while (i < json5.length()) {
@@ -63,7 +71,7 @@ public class Json5Preprocessor {
                             i++;
                         }
                         if (i < json5.length()) {
-                            sb.append('\n');
+                            chunk.append('\n');
                         } else {
                             // end of string
                             continue;
@@ -75,35 +83,31 @@ public class Json5Preprocessor {
                         }
                         i++;
                     } else {
-                        sb.append(c);
+                        chunk.append(c);
                     }
                 } else {
-                    sb.append(c);
-                }
-            } else if (c == '}') {
-                if (!Java9.String.isEmpty(sb) && sb.charAt(sb.length() - 1) == ',') {
-                    sb.setCharAt(sb.length() - 1, c);
-                } else {
-                    sb.append(c);
-                }
-            } else if (c == ']') {
-                if (!Java9.String.isEmpty(sb) && sb.charAt(sb.length() - 1) == ',') {
-                    sb.setCharAt(sb.length() - 1, c);
-                } else {
-                    sb.append(c);
+                    chunk.append(c);
                 }
             } else {
-                sb.append(c);
+                chunk.append(c);
             }
             i++;
         }
+        flushChunk(sb, chunk);
 
-        String result = sb.toString();
-        // still use regex for things that are not context-sensitive
-        result = result.replaceAll("([{,]\\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\\s*:", "$1\"$2\":");
-        result = result.replaceAll(",\\s*([}\\]])", "$1");
+        return sb.toString();
+    }
 
-        return result;
+    /** Normalize a run of non-string JSON5 content and append it to {@code sb}, then reset {@code chunk}. */
+    private static void flushChunk(StringBuilder sb, StringBuilder chunk) {
+        if (chunk.length() == 0) {
+            return;
+        }
+        String normalized = chunk.toString()
+                .replaceAll(UNQUOTED_KEY, "$1\"$2\":")
+                .replaceAll(TRAILING_COMMA, "$1");
+        sb.append(normalized);
+        chunk.setLength(0);
     }
 
 }

@@ -399,50 +399,41 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             if ("label".equalsIgnoreCase(a.key)) {
                 if (isGraph) {
                     // For graphs, keep label as data attribute so emitter prints graph [label=...]
-                    if (a.html) {
-                        hasData.dataMutable(m -> {
-                            IJsonObjectMutable o = m.factory().createObjectMutable();
-                            o.addProperty("type", m.factory().createString("html"));
-                            // strip outer << >> if present
-                            String v = a.value;
-                            if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length() - 2);
-                            o.addProperty("value", m.factory().createString(v));
-                            m.add(a.key, o);
-                        });
-                    } else {
-                        hasData.dataMutable(d -> d.add(a.key, a.value));
-                    }
+                    putAttr(hasData, a);
                 } else if (labelTarget != null) {
                     String val = a.value;
                     labelTarget.setLabel(l -> l.addEntry(le -> le.value(val)));
                 } else {
-                    if (a.html) {
-                        hasData.dataMutable(m -> {
-                            IJsonObjectMutable o = m.factory().createObjectMutable();
-                            o.addProperty("type", m.factory().createString("html"));
-                            String v = a.value;
-                            if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length() - 2);
-                            o.addProperty("value", m.factory().createString(v));
-                            m.add(a.key, o);
-                        });
-                    } else {
-                        hasData.dataMutable(d -> d.add(a.key, a.value));
-                    }
+                    putAttr(hasData, a);
                 }
             } else {
-                if (a.html) {
-                    hasData.dataMutable(m -> {
-                        IJsonObjectMutable o = m.factory().createObjectMutable();
-                        o.addProperty("type", m.factory().createString("html"));
-                        String v = a.value;
-                        if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length() - 2);
-                        o.addProperty("value", m.factory().createString(v));
-                        m.add(a.key, o);
-                    });
-                } else {
-                    hasData.dataMutable(d -> d.add(a.key, a.value));
-                }
+                putAttr(hasData, a);
             }
+        }
+    }
+
+    /**
+     * Set a single attribute as data, overwriting any existing value for the same key. Re-declaring an element
+     * (e.g. {@code insert [color="..."]} twice) overrides per DOT semantics rather than accumulating into an
+     * array, which the emitter could not serialize (issue #133).
+     */
+    private static void putAttr(ICjHasDataMutable hasData, Attr a) {
+        if (a.html) {
+            hasData.dataMutable(m -> {
+                if (m.jsonValue() != null) m.remove(a.key);
+                IJsonObjectMutable o = m.factory().createObjectMutable();
+                o.addProperty("type", m.factory().createString("html"));
+                // strip outer << >> if present
+                String v = a.value;
+                if (v.startsWith("<<") && v.endsWith(">>")) v = v.substring(2, v.length() - 2);
+                o.addProperty("value", m.factory().createString(v));
+                m.add(a.key, o);
+            });
+        } else {
+            hasData.dataMutable(d -> {
+                if (d.jsonValue() != null) d.remove(a.key);
+                d.add(a.key, a.value);
+            });
         }
     }
 
@@ -847,8 +838,10 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 }
                 p.consumeOptionalSemicolon();
             } else {
-                // Node statement with optional multiple attr lists
-                List<Attr> attrs = new ArrayList<>();
+                // Node statement with optional multiple attr lists.
+                // Seed with attrsPreEdge: a pure node stmt like `a [label="Foo"]` has its attr list
+                // consumed into attrsPreEdge above, so it must be applied here too (issue #133).
+                List<Attr> attrs = new ArrayList<>(attrsPreEdge);
                 while (true) {
                     p.skipWs();
                     if (!p.eof() && p.peek() == '[') {

@@ -76,6 +76,23 @@ class Json5PreprocessorTest {
     }
 
     @Test
+    @DisplayName("String values that look like unquoted keys must not be rewritten")
+    void testKeyLikeContentInsideStringIsPreserved() {
+        // A record-style label whose value contains "{input:|output:}". The key-quoting must NOT touch it.
+        String json5 = "{ \"value\": \"priority: Dense|{input:|output:}|{{(?, 172)}}\" }";
+        String actualJson = Json5Preprocessor.toJson(json5);
+        assertEquals(json5, actualJson);
+    }
+
+    @Test
+    @DisplayName("Trailing-comma-like content inside a string must not be removed")
+    void testTrailingCommaInsideStringIsPreserved() {
+        String json5 = "{ \"value\": \"a,]b,}c\" }";
+        String actualJson = Json5Preprocessor.toJson(json5);
+        assertEquals(json5, actualJson);
+    }
+
+    @Test
     @DisplayName("Test that URLs with backslashes are preserved")
     void testUrlWithBackslashes() {
         String json5 = "{ \"url\": \"https://example.com/path\\with\\backslashes\" }";
