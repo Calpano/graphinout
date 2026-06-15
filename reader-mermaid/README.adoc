@@ -1,0 +1,41 @@
+= Mermaid Reader
+
+A GraphInOut reader that parses https://mermaid.js.org/[Mermaid] diagrams and maps their topology to a graph (CJ events).
+
+== File format
+
+* Format id: `mermaid`
+* Extensions: `.mmd`, `.mermaid`
+
+The first non-blank, non-comment, non-config-block line determines the diagram type; subsequent lines are
+dispatched to the matching parser. `%%` line comments and `%%{init: ...}%%` configuration blocks are stripped
+before detection.
+
+== Supported diagram types
+
+Each type is dispatched to a dedicated parser. The "Tested" column reflects the current test depth:
+*full* = dedicated test asserting node/edge counts; *smoke* = parsed via `shouldParseAllTestResources`,
+which only checks that no fatal error is raised.
+
+[cols="1,2,1"]
+|===
+| Type | Header keywords | Tested
+
+| Flowchart      | `flowchart`, `graph`                                                  | full
+| Class diagram  | `classDiagram`                                                       | full
+| State diagram  | `stateDiagram`                                                       | full
+| Sankey         | `sankey`, `sankey-beta`                                              | full
+| ER diagram     | `erDiagram`                                                          | smoke
+| C4             | `C4Context`, `C4Container`, `C4Component`, `C4Dynamic`, `C4Deployment` | smoke
+| Mindmap        | `mindmap`                                                            | smoke
+| Architecture   | `architecture`, `architecture-beta`                                 | smoke
+|===
+
+== Usage
+
+The reader is registered as a `GioService` and discovered automatically. To parse directly to a CJ document:
+
+[source,java]
+----
+ICjDocument doc = MermaidReader.parseMermaidToCjDocument(inputSource);
+----
