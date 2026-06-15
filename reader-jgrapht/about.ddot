@@ -1,0 +1,9 @@
+# Formats read by the GraphInOut JGraphT-based reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+
+graphinout-reader-jgrapht ..has type.. tool
+graphinout-reader-jgrapht ..label.. GraphInOut JGraphT Reader
+graphinout-reader-jgrapht ..reads.. graph6
+# sparse6 and digraph6 are graph6 variants, not yet registered as separate format ids
+graphinout-reader-jgrapht ..reads.. sparse6
+graphinout-reader-jgrapht ..reads.. digraph6

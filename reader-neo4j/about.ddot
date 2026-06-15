@@ -1,0 +1,7 @@
+# Formats read/written by the GraphInOut Neo4j reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+
+graphinout-reader-neo4j ..has type.. tool
+graphinout-reader-neo4j ..label.. GraphInOut Neo4j Reader
+graphinout-reader-neo4j ..reads.. neo4j
+graphinout-reader-neo4j ..writes.. neo4j

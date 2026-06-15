@@ -1,0 +1,7 @@
+# Formats read by the GraphInOut TripleText reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+# 'tripletext' is not yet a registered format id.
+
+graphinout-reader-tripletext ..has type.. tool
+graphinout-reader-tripletext ..label.. GraphInOut TripleText Reader
+graphinout-reader-tripletext ..reads.. tripletext

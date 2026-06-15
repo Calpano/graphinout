@@ -1,0 +1,8 @@
+# Formats read/written by the GraphInOut OCIF 0.7 (preliminary) reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+# The registry currently only carries ocif-0.6; this module targets the preliminary OCIF 0.7.
+
+graphinout-reader-ocif07 ..has type.. tool
+graphinout-reader-ocif07 ..label.. GraphInOut OCIF 0.7 Reader
+graphinout-reader-ocif07 ..reads.. ocif-0.6
+graphinout-reader-ocif07 ..writes.. ocif-0.6

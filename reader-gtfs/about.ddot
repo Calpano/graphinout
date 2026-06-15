@@ -1,0 +1,7 @@
+# Formats read by the GraphInOut GTFS reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+# 'gtfs' (General Transit Feed Specification) is not yet a registered format id.
+
+graphinout-reader-gtfs ..has type.. tool
+graphinout-reader-gtfs ..label.. GraphInOut GTFS Reader
+graphinout-reader-gtfs ..reads.. gtfs

@@ -1,0 +1,6 @@
+# The GraphInOut example reader/writer is a documentation/demo template.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+# It implements no real graph format, so it has no ..reads.. / ..writes.. triples.
+
+graphinout-reader-example ..has type.. tool
+graphinout-reader-example ..label.. GraphInOut Example Reader (demo, no real format)

@@ -1,0 +1,8 @@
+# Formats read/written by the GraphInOut Property Graph (PG) reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+# 'pg-format' (Property Graph Exchange Format, JSON variant) is not yet a registered format id.
+
+graphinout-reader-pgformat ..has type.. tool
+graphinout-reader-pgformat ..label.. GraphInOut Property Graph Reader
+graphinout-reader-pgformat ..reads.. pg-format
+graphinout-reader-pgformat ..writes.. pg-format

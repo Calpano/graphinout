@@ -1,0 +1,7 @@
+# Formats read/written by the GraphInOut TGF reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+
+graphinout-reader-tgf ..has type.. tool
+graphinout-reader-tgf ..label.. GraphInOut TGF Reader
+graphinout-reader-tgf ..reads.. tgf
+graphinout-reader-tgf ..writes.. tgf

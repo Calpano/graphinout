@@ -1,0 +1,8 @@
+# Formats read/written by the GraphInOut D2 reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+# 'd2' (Terrastruct D2) is not yet a registered format id.
+
+graphinout-reader-d2 ..has type.. tool
+graphinout-reader-d2 ..label.. GraphInOut D2 Reader
+graphinout-reader-d2 ..reads.. d2
+graphinout-reader-d2 ..writes.. d2

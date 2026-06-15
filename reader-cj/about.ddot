@@ -1,0 +1,8 @@
+# Formats read/written by the GraphInOut Connected JSON reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+# Reads both Connected JSON and its JSON5 variant; both are connected-json.
+
+graphinout-reader-cj ..has type.. tool
+graphinout-reader-cj ..label.. GraphInOut Connected JSON Reader
+graphinout-reader-cj ..reads.. connected-json-8.0.0
+graphinout-reader-cj ..writes.. connected-json-8.0.0

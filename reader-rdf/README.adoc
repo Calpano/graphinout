@@ -1,0 +1,62 @@
+= RDF Reader
+
+A GraphInOut reader (and writer) for https://www.w3.org/RDF/[RDF] (Resource Description Framework). It parses RDF
+graphs into Connected JSON (CJ) and serializes CJ back to RDF. Parsing and serialization are backed by
+https://jena.apache.org/[Apache Jena].
+
+== Supported syntaxes
+
+Each RDF syntax is registered as its own `GioReader`/`GioWriter` with a distinct format id. All of them share the same
+RDF{nbsp}<->{nbsp}CJ mapping; they differ only in the concrete serialization Jena reads/writes.
+
+[cols="1,2,2"]
+|===
+| Format id | Syntax | Extensions
+
+| `rdf.turtle` | Turtle               | `.ttl`, `.n3`
+| `rdf.xml`    | RDF/XML              | `.rdf`, `.rdf.xml`
+| `rdf.nt`     | N-Triples            | `.nt`
+| `rdf.nq`     | N-Quads              | `.nq`
+| `rdf.trig`   | TriG                 | `.trig`
+| `rdf.trix`   | TriX                 | `.trix`
+| `jsonld`     | JSON-LD              | `.jsonld`, `.jsonld.json`, `.jsonld11`
+| `rdf.json`   | RDF/JSON (deprecated, use JSON-LD) | `.rj`
+|===
+
+The syntax is selected from the input source's file extension (see `RdfFormats.detectRdfLanguage`); a reader's own
+syntax is used as the fallback when the extension is unknown.
+
+== Mapping
+
+Each RDF triple `(subject, predicate, object)` becomes a CJ edge whose type is the predicate, with the subject as the
+`in` endpoint and the object as the `out` endpoint:
+
+[source]
+----
+subject --predicate--> object
+----
+
+Subjects, predicates and objects are initially identified by their RDF URIs (blank nodes and literals are handled
+specially). A relative-URI base can be supplied via the `baseUri` parameter on a parameterized input source.
+
+The full, normative mapping — including base URIs, literals, blank nodes, language tags, datatypes and named graphs —
+is documented in:
+
+* link:src/doc/rdf-cj-mapping.adoc[RDF to Connected JSON Mapping]
+* link:src/doc/rdf-model.adoc[The RDF data model]
+
+== Usage
+
+The readers and writers are registered as a `GioService` (`RdfService`) and discovered automatically, so the engine
+picks the right one from the file extension.
+
+To read RDF into a CJ stream directly with a specific syntax:
+
+[source,java]
+----
+GioReader reader = new RdfTurtleReader();   // or RdfXmlReader, RdfNTriplesReader, JsonLdReader, ...
+reader.read(inputSource, cjStream);
+----
+
+Because `RdfReader` implements both `GioReader` and `GioWriter`, the same classes also serialize a CJ document back to
+RDF via the `GioWriter` API.

@@ -1,0 +1,6 @@
+# Formats read/written by the GraphInOut GEXF reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+
+graphinout-reader-gexf ..has type.. tool
+graphinout-reader-gexf ..label.. GraphInOut GEXF Reader
+graphinout-reader-gexf ..reads.. gexf

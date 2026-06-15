@@ -1,0 +1,6 @@
+# Formats read/written by the GraphInOut text-based reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+
+graphinout-reader-textbased ..has type.. tool
+graphinout-reader-textbased ..label.. GraphInOut Text-based Reader
+graphinout-reader-textbased ..reads.. adjlist

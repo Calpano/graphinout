@@ -1,0 +1,7 @@
+# Formats read/written by the GraphInOut GML reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+
+graphinout-reader-gml ..has type.. tool
+graphinout-reader-gml ..label.. GraphInOut GML Reader
+graphinout-reader-gml ..reads.. gml
+graphinout-reader-gml ..writes.. gml

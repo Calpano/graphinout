@@ -1,0 +1,8 @@
+# Formats read/written by the GraphInOut Mermaid reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+# 'mermaid' is not yet a registered format id.
+
+graphinout-reader-mermaid ..has type.. tool
+graphinout-reader-mermaid ..label.. GraphInOut Mermaid Reader
+graphinout-reader-mermaid ..reads.. mermaid
+graphinout-reader-mermaid ..writes.. mermaid

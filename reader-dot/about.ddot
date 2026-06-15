@@ -1,0 +1,7 @@
+# Formats read/written by the GraphInOut DOT (Graphviz) reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+
+graphinout-reader-dot ..has type.. tool
+graphinout-reader-dot ..label.. GraphInOut DOT Reader
+graphinout-reader-dot ..reads.. dot
+graphinout-reader-dot ..writes.. dot

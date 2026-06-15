@@ -1,0 +1,23 @@
+# Formats read/written by the GraphInOut RDF reader (backed by Apache Jena).
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+# Each RDF syntax round-trips (read and write).
+
+graphinout-reader-rdf ..has type.. tool
+graphinout-reader-rdf ..label.. GraphInOut RDF Reader
+graphinout-reader-rdf ..reads.. turtle
+graphinout-reader-rdf ..reads.. rdf-xml
+graphinout-reader-rdf ..reads.. n-triples
+graphinout-reader-rdf ..reads.. trig
+graphinout-reader-rdf ..reads.. trix
+graphinout-reader-rdf ..reads.. rdf-json
+graphinout-reader-rdf ..reads.. json-ld
+# n-quads is not yet a registered format id
+graphinout-reader-rdf ..reads.. n-quads
+graphinout-reader-rdf ..writes.. turtle
+graphinout-reader-rdf ..writes.. rdf-xml
+graphinout-reader-rdf ..writes.. n-triples
+graphinout-reader-rdf ..writes.. trig
+graphinout-reader-rdf ..writes.. trix
+graphinout-reader-rdf ..writes.. rdf-json
+graphinout-reader-rdf ..writes.. json-ld
+graphinout-reader-rdf ..writes.. n-quads
