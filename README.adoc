@@ -1,4 +1,4 @@
-= 🦋 GraphInOut: Graph In -> Graph Out
+= 🐛 GraphInOut: Graph In -> Graph Out
 :gio: GraphInOut
 :toc:
 
