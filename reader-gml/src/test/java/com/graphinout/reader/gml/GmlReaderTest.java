@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -149,6 +151,43 @@ class GmlReaderTest {
         underTest.read(singleInputSource, cjStream2CjWriter);
         String json = json2StringWriter.jsonString();
         log.info("JSON: " + json);
+    }
+
+    private List<ContentError> readCollectingErrors(String content) throws IOException {
+        SingleInputSource src = SingleInputSource.of("malformed.gml", content);
+        List<ContentError> errors = new ArrayList<>();
+        GmlReader reader = new GmlReader();
+        reader.setContentErrorHandler(errors::add);
+        CjWriter2CjDocumentWriter cj2doc = new CjWriter2CjDocumentWriter();
+        CjStream2CjWriter stream = new CjStream2CjWriter(cj2doc, true);
+        reader.read(src, stream);
+        return errors;
+    }
+
+    /** Issue #140: malformed GML must produce at least one ContentError via the error handler. */
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "graph [ node [ id 0 ",                  // truncated: unclosed brackets
+            "graph [ node [ id 0 label \"oops ] ]",  // unterminated string swallows closing brackets
+            "graph [ node [ id 0 ] ] ] ]",           // extra ']'
+            "%%% not gml $$$ ][][",                  // garbage
+    })
+    void malformedGml_reportsContentError(String malformed) throws IOException {
+        List<ContentError> errors = readCollectingErrors(malformed);
+        assertThat(errors).isNotEmpty();
+    }
+
+    @Test
+    void truncatedGml_reportsError() throws IOException {
+        List<ContentError> errors = readCollectingErrors("graph [ node [ id 0 ");
+        assertThat(errors.stream().anyMatch(e -> e.getLevel() == ContentError.ErrorLevel.Error)).isTrue();
+    }
+
+    /** Valid GML must not produce any ContentError (no false positives). */
+    @Test
+    void validGml_reportsNoErrors() throws IOException {
+        List<ContentError> errors = readCollectingErrors(GML_EXAMPLE);
+        assertThat(errors).isEmpty();
     }
 
     @Test

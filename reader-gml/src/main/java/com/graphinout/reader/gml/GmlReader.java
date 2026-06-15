@@ -46,17 +46,37 @@ public class GmlReader implements GioReader {
 
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
         try (InputStreamReader reader = new InputStreamReader(singleInputSource.inputStream(), StandardCharsets.UTF_8)) {
-            Gml2GmlDataHandler handler = new Gml2GmlDataHandler();
+            Gml2GmlDataHandler handler = new Gml2GmlDataHandler(errorHandler);
             GmlTokenizer tokenizer = new GmlTokenizer(reader, handler);
+            tokenizer.setContentErrorHandler(errorHandler);
+            // the handler reports structural errors and needs the tokenizer's line number for their locations
+            handler.setLineSupplier(tokenizer::currentLine);
             tokenizer.parse();
 
+            // structural validation: report unbalanced/truncated brackets (issue #140)
+            int unclosed = handler.openDepth();
+            if (unclosed > 0) {
+                reportError("Unbalanced GML: " + unclosed + " unclosed '[' at end of input");
+            }
+
             GmlData gmlDoc = handler.result();
-            //            gmlDoc.dump();
-            //            CjWriter2CjDocumentWriter cjWriter2CjDocumentWriter = new CjWriter2CjDocumentWriter();
-            //            CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cjWriter2CjDocumentWriter);
-            //            GmlDocs.toCjDocument(gmlDoc, cjStream2CjWriter);
+            if (gmlDoc.get(Gml.GRAPH) == null) {
+                reportWarn("No 'graph' element found in GML input");
+            }
 
             GmlDocs.toCjDocument(gmlDoc, cjStream);
+        }
+    }
+
+    private void reportError(String message) {
+        if (errorHandler != null) {
+            errorHandler.accept(ContentError.of(ContentError.ErrorLevel.Error, message));
+        }
+    }
+
+    private void reportWarn(String message) {
+        if (errorHandler != null) {
+            errorHandler.accept(ContentError.of(ContentError.ErrorLevel.Warn, message));
         }
     }
 

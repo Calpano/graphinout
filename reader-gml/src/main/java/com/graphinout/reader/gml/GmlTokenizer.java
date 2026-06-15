@@ -1,5 +1,8 @@
 package com.graphinout.reader.gml;
 
+import com.graphinout.foundation.pure.input.ContentError;
+import com.graphinout.foundation.pure.input.Location;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -7,6 +10,7 @@ import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -15,6 +19,7 @@ public class GmlTokenizer {
     private static final Logger log = getLogger(GmlTokenizer.class);
     private final StreamTokenizer tokenizer;
     private final IGmlHandler handler;
+    private @Nullable Consumer<ContentError> errorHandler;
 
     public GmlTokenizer(Reader reader, IGmlHandler handler) {
         this.tokenizer = new StreamTokenizer(reader);
@@ -37,6 +42,16 @@ public class GmlTokenizer {
         tokenizer.ordinaryChar(']');
         // Line comments starting with '#'
         tokenizer.commentChar('#');
+    }
+
+    /** report tokenizer-level content errors (unexpected characters); pass null to ignore */
+    public void setContentErrorHandler(@Nullable Consumer<ContentError> errorHandler) {
+        this.errorHandler = errorHandler;
+    }
+
+    /** @return the current 1-based line number in the input */
+    public int currentLine() {
+        return tokenizer.lineno();
     }
 
     public static void tokenize(Reader reader, IGmlHandler gmlHandler) {
@@ -77,7 +92,12 @@ public class GmlTokenizer {
             } else if (tokenizer.ttype == ']') {
                 handler.close();
             } else {
-                log.warn("Unhandled token " + tokenizer.ttype);
+                String shown = tokenizer.ttype >= 0 ? "'" + (char) tokenizer.ttype + "'" : "type " + tokenizer.ttype;
+                log.warn("Unhandled token {}", shown);
+                if (errorHandler != null) {
+                    errorHandler.accept(ContentError.of(ContentError.ErrorLevel.Warn, //
+                            "Unexpected character " + shown + " in GML", Location.of(tokenizer.lineno(), 1)));
+                }
             }
         }
     }
