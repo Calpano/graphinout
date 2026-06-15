@@ -49,6 +49,7 @@
         <module>reader-ddot</module>
         <module>reader-mermaid</module>
         <module>reader-d2</module>
+        <module>reader-gtfs</module>
         <module>reader-example</module>
         <module>reader-ocif</module>
         <module>reader-ocif07</module>

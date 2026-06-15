@@ -1,0 +1,10 @@
+trip_id,arrival_time,departure_time,stop_id,stop_sequence
+u1-east,05:00:00,05:00:00,goerlitzer-bf,1
+u1-east,05:02:00,05:02:00,schlesisches-tor,2
+u1-east,05:04:00,05:04:00,warschauer-u1,3
+u1-west,05:10:00,05:10:00,warschauer-u1,1
+u1-west,05:12:00,05:12:00,schlesisches-tor,2
+u1-west,05:14:00,05:14:00,goerlitzer-bf,3
+s1-south,06:00:00,06:00:00,friedrichstr-s,10
+s1-south,06:02:00,06:02:00,brandenburger-tor,20
+s1-south,06:04:00,06:04:00,potsdamer-platz,30

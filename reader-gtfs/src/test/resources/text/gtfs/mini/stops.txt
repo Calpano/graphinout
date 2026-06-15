@@ -1,0 +1,15 @@
+stop_id,stop_name,stop_lat,stop_lon,location_type,parent_station,platform_code,level_id,wheelchair_boarding
+warschauer,Warschauer Str.,52.50542,13.44904,1,,,,1
+warschauer-u1,Warschauer Str. (U1),52.50575,13.44866,0,warschauer,1,,
+schlesisches-tor,Schlesisches Tor,52.50083,13.44174,0,,,,
+goerlitzer-bf,"Görlitzer Bahnhof",52.49903,13.43846,0,,,,
+friedrichstr,"Friedrichstr., Bahnhof",52.52030,13.38690,1,,,,1
+friedrichstr-s,Friedrichstr. (S),52.52040,13.38700,0,friedrichstr,,lm1,
+friedrichstr-u6,Friedrichstr. (U6),52.52010,13.38670,0,friedrichstr,,lm2,2
+friedrichstr-halle,Friedrichstr. Halle,52.52025,13.38680,3,friedrichstr,,l0,
+friedrichstr-eingang,Friedrichstr. Eingang Georgenstr.,52.52050,13.38660,2,friedrichstr,,l0,
+brandenburger-tor,Brandenburger Tor,52.51631,13.38188,0,,,,
+potsdamer-platz,Potsdamer Platz,52.50946,13.37598,0,,,,
+ostkreuz,Ostkreuz,52.50305,13.46930,1,,,,
+ostkreuz-ring,Ostkreuz (Ringbahn),52.50320,13.46920,0,ostkreuz,,,
+ostkreuz-stadtbahn,Ostkreuz (Stadtbahn),52.50290,13.46940,0,ostkreuz,,,

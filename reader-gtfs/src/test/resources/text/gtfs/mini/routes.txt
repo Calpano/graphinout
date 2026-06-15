@@ -1,0 +1,3 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_color
+u1,bvg,U1,,400,62AD2D
+s1,sbb,S1,,109,DD6CA6

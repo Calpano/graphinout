@@ -1,0 +1,3 @@
+agency_id,agency_name,agency_url,agency_timezone
+bvg,Berliner Verkehrsbetriebe,https://www.bvg.de,Europe/Berlin
+sbb,S-Bahn Berlin GmbH,https://www.s-bahn-berlin.de,Europe/Berlin

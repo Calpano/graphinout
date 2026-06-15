@@ -15,7 +15,8 @@ Graphinout *reads* many common graph file formats
 - GraphViz/DOT,
 - Graph6,
 - Trivial Graph Format,
-- Adjacency List Format of NetworkX)
+- Adjacency List Format of NetworkX,
+- https://gtfs.org/[GTFS] transit feeds (stations and adjacencies as a graph))
 
 into *CJ* and *writes* losslessly to many output graph file formats.
 

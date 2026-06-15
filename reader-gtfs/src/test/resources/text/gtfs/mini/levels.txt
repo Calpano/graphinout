@@ -1,0 +1,4 @@
+level_id,level_index,level_name
+l0,0,Straßenniveau
+lm1,-1,S-Bahnsteig
+lm2,-2,U-Bahnsteig

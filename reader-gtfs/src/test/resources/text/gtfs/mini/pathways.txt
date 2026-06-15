@@ -1,0 +1,4 @@
+pathway_id,from_stop_id,to_stop_id,pathway_mode,is_bidirectional,traversal_time,length,stair_count,max_slope,min_width,signposted_as,reversed_signposted_as
+pw-stairs,friedrichstr-s,friedrichstr-halle,2,1,45,,24,,,Halle,Gleis S-Bahn
+pw-lift,friedrichstr-halle,friedrichstr-u6,5,1,90,,,,1.1,U6,Halle
+pw-exit,friedrichstr-halle,friedrichstr-eingang,7,0,20,15,,,,Ausgang Georgenstr.,

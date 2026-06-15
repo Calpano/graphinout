@@ -1,0 +1,175 @@
+= Reader: GTFS (General Transit Feed Specification)
+:toc:
+
+Reads public-transit feeds in the GTFS Schedule format and maps the *transit network topology* to Connected JSON (CJ).
+
+== The GTFS format
+
+GTFS is the de-facto world standard for publishing public transit schedules, originally created by Google
+("Google Transit Feed Specification") and now community-governed.
+
+.References
+* https://gtfs.org/[gtfs.org] — official site; https://gtfs.org/documentation/schedule/reference/[GTFS Schedule reference]
+* https://developers.google.com/transit/gtfs[Google's GTFS documentation] — the original spec home, with validation and publishing guides
+* Example feeds (Berlin/Brandenburg):
+** https://daten.berlin.de/datensaetze/vbb-fahrplandaten-via-gtfs[VBB Fahrplandaten via GTFS] on the Berlin Open Data portal (updated twice weekly; direct download: https://www.vbb.de/vbbgtfs[vbb.de/vbbgtfs])
+** https://www.bvg.de/[BVG — Berliner Verkehrsbetriebe], whose lines (U-Bahn, tram, bus, ferry) are contained in the VBB feed;
+   their https://www.bvg.de/en/connections/network-maps-and-routes[network maps & routes] page is the human-readable view of the network this reader extracts as a graph
+
+A GTFS feed is a ZIP archive of CSV files. This reader uses:
+
+[cols="1,1,3"]
+|===
+| File | Required | Used for
+
+| `stops.txt` | required | stations, platforms, entrances, in-station nodes: names, coordinates, containment
+| `routes.txt` | required | route subgraphs (one per line, e.g. "U1"), names, colors
+| `trips.txt` | required | trip → route assignment, `direction_id`, `shape_id`
+| `stop_times.txt` | required | travel edges (consecutive stops of each trip); streamed, never buffered
+| `transfers.txt` | optional | transfer edges, incl. route-/trip-conditional transfers (v2 fields)
+| `pathways.txt` | optional | the in-station pathway network: stairs, escalators, elevators, fare gates, ...
+| `levels.txt` | optional | floor levels for in-station nodes
+| `agency.txt` | optional | agency names (document + route data)
+|===
+
+Timetable details (departure times, calendars, frequencies) are intentionally *not* mapped — they are not graph topology.
+
+== Mapping GTFS → CJ: the two-level model
+
+The network splits into a global *base graph* (the physical world) and encapsulated *route subgraphs*
+(the logical world). See `Gtfs2Cj` for the implementation.
+
+=== Level 1: base graph (physical world)
+
+The first graph in the CJ document (id `base`) is the bare infrastructure:
+
+* *Nodes* — stations (`location_type=1`), platforms/tracks (`0`), entrances (`2`), generic in-station nodes
+  such as concourses (`3`) and boarding areas (`4`). The structure stays *flat*: containment is the
+  `parentStation` data property, not nesting. Nodes carry `locationType`, `platformCode`, `lat`, `lon`,
+  via `levels.txt` `level` / `levelName`, and `isWheelchairAccessible` from `wheelchair_boarding`
+  (GTFS inheritance applied: a child location without an own value inherits the parent station's;
+  omitted when unknown - never defaulted) as data.
+* *Edges* — exclusively physical connections (see the tiers below). No vehicle moves on this level.
+
+==== Intra-station connectivity: three tiers
+
+Stations differ wildly in how well a feed models them, so platform-platform connectivity is emitted in tiers -
+per station, the best available data wins:
+
+[cols="1,2,4"]
+|===
+| Tier | Source | Mapping
+
+| 1. Pathway network
+| `pathways.txt`
+| The exact physics of the station. Edge type from `pathway_mode`: `walkway`, `stairs`, `moving-sidewalk`,
+  `escalator`, `elevator`, `fare-gate`, `exit-gate`. Bidirectional rows become *two directed edges* (stairs
+  cost differently up vs down; closures can hit one direction). Data: `pathwayId` (stable join key for
+  GTFS-RT, e.g. elevator outages), raw constraints (`traversalTime`, `length`, `stairCount`, `maxSlope`,
+  `minWidth`, `signpostedAs`) plus a *derived* `isWheelchairAccessible` flag (policy: stairs/escalators
+  false, everything else true - consumers needing stricter rules re-derive from the raw fields).
+
+| 2. Explicit transfers
+| `transfers.txt`
+| Directed edges of type `transfer` with `transferType` and `minTransferTime` data. Same-stop rows
+  (`from = to`) become self-loops carrying the in-station minimum transfer time. The route-/trip-conditional
+  v2 fields (`fromRouteId`, `toRouteId`, `fromTripId`, `toTripId`) are stored as edge data: a transfer
+  condition is *data on a level-1 edge*, never an edge between route subgraphs.
+
+| 3. Synthesized fallback
+| (none)
+| A station with two or more platforms but *no* intra-station pathway or transfer gets undirected
+  platform-platform edges of type `transfer`, flagged `"synthesized": true` - guessed connectivity, not
+  measured. Routers can penalize or reject these; without them, routing across unmodeled stations would be
+  silently impossible.
+|===
+
+=== Level 2: route subgraphs (logical world)
+
+Each route used by at least one trip becomes its own graph (id `route:<route_id>`, label = route short name),
+with route metadata (`routeType`, `routeColor`, `agency`, ...) as graph data.
+
+* *Nodes* — none are declared. The subgraph's edges _reference_ the platform nodes of level 1 by id;
+  CJ node ids are document-scoped, so the references resolve (the base graph is emitted first).
+* *Edges* — directed travel edges between consecutive platforms, derived from `stop_times.txt`.
+  Each edge aggregates all trips traversing the segment: `tripCount`, distinct `shapeIds`, distinct
+  `directionIds`, and `wheelchairAccessibleTripCount` (trips with `wheelchair_accessible=1`; omitted when
+  zero, so its absence means "no trip declared accessible" - which on many feeds just means no information).
+
+This makes the awkward GTFS cases trivial:
+
+Branchings (Y-shaped routes):: a platform node simply has two outgoing edges within the subgraph.
+Direction separation:: outward and return journey stay separate directed edge sets (`A→B→C` vs `C'→B'→A'`).
+Short workings / depot runs:: just more trips aggregated onto the same edges (visible via `shapeIds`).
+Routing & encapsulation:: a router "boards" a route by entering its subgraph, travels only on its edges, and
+"alights" by returning to level 1 — transfers between two routes are *never* edges between two subgraphs,
+they always happen on the base graph between platforms.
+
+=== Example (abridged)
+
+[source,json]
+----
+{
+  "graphs": [
+    {
+      "id": "base",
+      "nodes": [
+        { "id": "warschauer",    "label": "Warschauer Str.",      "data": { "locationType": "1", "lat": 52.50542, "lon": 13.44904 } },
+        { "id": "warschauer-u1", "label": "Warschauer Str. (U1)", "data": { "locationType": "0", "parentStation": "warschauer", "platformCode": "1" } }
+      ],
+      "edges": [
+        { "type": "transfer",
+          "endpoints": [ { "node": "friedrichstr-s", "direction": "in" }, { "node": "friedrichstr-u6", "direction": "out" } ],
+          "data": { "transferType": "2", "minTransferTime": 180, "fromRouteId": "s1", "toRouteId": "u1" } },
+        { "type": "stairs",
+          "endpoints": [ { "node": "friedrichstr-s", "direction": "in" }, { "node": "friedrichstr-halle", "direction": "out" } ],
+          "data": { "pathwayId": "pw-stairs", "traversalTime": 45, "stairCount": 24, "isWheelchairAccessible": false } },
+        { "type": "transfer",
+          "endpoints": [ { "node": "ostkreuz-ring" }, { "node": "ostkreuz-stadtbahn" } ],
+          "data": { "synthesized": true } }
+      ]
+    },
+    {
+      "id": "route:u1",
+      "label": "U1",
+      "data": { "routeType": "400", "agency": "Berliner Verkehrsbetriebe" },
+      "edges": [
+        { "endpoints": [ { "node": "schlesisches-tor", "direction": "in" }, { "node": "warschauer-u1", "direction": "out" } ],
+          "data": { "tripCount": 142, "shapeIds": ["shp-u1-east"], "directionIds": ["0"] } }
+      ]
+    }
+  ]
+}
+----
+
+NOTE: Per GIO convention (see `TgfReader`), the *source* endpoint has `direction=in`, the *target* `direction=out`.
+
+== Usage
+
+The reader accepts either form of a feed:
+
+* `SingleInputSource` — the GTFS ZIP itself (files may sit at the archive root or in one subdirectory)
+* `MultiInputSource` — unpacked files, named `stops.txt`, `routes.txt`, ...
+
+Content issues (unknown stop/trip references, non-numeric sequences, non-contiguous trips) are reported as
+`Warn` summaries via the `ContentError` handler; a missing required file reports `Error` and still emits a
+valid empty document.
+
+`stop_times.txt` is processed streaming (the VBB feed's 400 MB convert in ~10 s to 1300 graphs,
+~42k nodes and ~247k edges including its full pathway network), so memory stays bounded by the
+stop/route/trip tables.
+
+.Run against a real feed
+[source,bash]
+----
+mvn -pl reader-gtfs test -Dtest=GtfsRealFeedIT -Dgtfs.feed=/path/to/gtfs.zip
+----
+
+== Limitations / possible extensions
+
+* Station↔platform containment is expressed as the `parentStation` data property, not as edges or nesting
+  (deliberate: a flat level 1 streams, validates and converts to non-nesting formats easily).
+* `isWheelchairAccessible` is a derived convenience flag (on nodes from `wheelchair_boarding`, on pathway
+  edges from `pathway_mode`); raw fields are preserved where they add information.
+* No route-type filter yet (e.g. "rail only"); consumers filter by route subgraph `routeType` data.
+* GTFS is read-only: a CJ graph carries too little information to write a meaningful timetable feed back.

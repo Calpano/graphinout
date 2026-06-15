@@ -1,0 +1,4 @@
+route_id,service_id,trip_id,direction_id,shape_id,wheelchair_accessible
+u1,daily,u1-east,0,shp-u1-east,1
+u1,daily,u1-west,1,shp-u1-west,
+s1,daily,s1-south,0,shp-s1-south,2

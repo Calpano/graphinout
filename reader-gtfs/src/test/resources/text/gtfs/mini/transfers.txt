@@ -1,0 +1,4 @@
+from_stop_id,to_stop_id,transfer_type,min_transfer_time,from_route_id,to_route_id
+friedrichstr-s,friedrichstr-u6,2,180,s1,u1
+friedrichstr-u6,friedrichstr-s,2,180,,
+warschauer,warschauer,2,120,,
