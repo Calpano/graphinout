@@ -110,25 +110,20 @@ class AdjListReaderTest {
         InOrder inOrder = Mockito.inOrder(mockCjStream);
         inOrder.verify(mockCjStream).documentStart(any(ICjDocumentChunk.class));
         inOrder.verify(mockCjStream).graphStart(any(ICjGraphChunk.class));
-        // aaa
+        // all nodes first (valid CJ document order: nodes before edges), in first-seen order
         inOrder.verify(mockCjStream).nodeStart(cjFactory.createNodeChunkWithId("aaa"));
         inOrder.verify(mockCjStream).nodeEnd();
-        // bbb
         inOrder.verify(mockCjStream).nodeStart(cjFactory.createNodeChunkWithId("bbb"));
         inOrder.verify(mockCjStream).nodeEnd();
-        // aaa -> bbb
-        inOrder.verify(mockCjStream).edgeStart(any(ICjEdgeChunk.class));
-        inOrder.verify(mockCjStream).edgeEnd();
-        // ccc
         inOrder.verify(mockCjStream).nodeStart(cjFactory.createNodeChunkWithId("ccc"));
         inOrder.verify(mockCjStream).nodeEnd();
-        // aaa -> ccc
-        inOrder.verify(mockCjStream).edgeStart(any(ICjEdgeChunk.class));
-        inOrder.verify(mockCjStream).edgeEnd();
-        // ddd
         inOrder.verify(mockCjStream).nodeStart(cjFactory.createNodeChunkWithId("ddd"));
         inOrder.verify(mockCjStream).nodeEnd();
-        // ddd -> aaa
+        // then all edges: aaa -> bbb, aaa -> ccc, ddd -> aaa
+        inOrder.verify(mockCjStream).edgeStart(any(ICjEdgeChunk.class));
+        inOrder.verify(mockCjStream).edgeEnd();
+        inOrder.verify(mockCjStream).edgeStart(any(ICjEdgeChunk.class));
+        inOrder.verify(mockCjStream).edgeEnd();
         inOrder.verify(mockCjStream).edgeStart(any(ICjEdgeChunk.class));
         inOrder.verify(mockCjStream).edgeEnd();
         inOrder.verify(mockCjStream).graphEnd();

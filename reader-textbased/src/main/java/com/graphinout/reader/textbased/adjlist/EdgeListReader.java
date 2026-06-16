@@ -1,5 +1,6 @@
 package com.graphinout.reader.textbased.adjlist;
 
+import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioReader;
@@ -13,7 +14,9 @@ import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -22,9 +25,10 @@ public class EdgeListReader implements GioReader, ITextWriter {
     public static final String FORMAT_ID = "edgelist";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Edge List Format", ".edgelist");
     private static final String HASH = "#";
-    private final Set<String> nodesCreatedSet = new HashSet<>();
+    // buffered while parsing so we can emit all nodes before all edges (valid CJ document order)
+    private final Set<String> nodeIds = new LinkedHashSet<>();
+    private final List<String[]> edges = new ArrayList<>(); // [source, target, data?]
     private @Nullable Consumer<ContentError> errorHandler;
-    private ICjStream cjStream;
 
 
     @Override
@@ -45,55 +49,22 @@ public class EdgeListReader implements GioReader, ITextWriter {
             return;
         }
 
-        String sourceId, targetId;
-        String dataString;
-
         String[] parts = line.split("\\s+", 2);
         if (parts.length < 2) {
-            // Not enough parts for an edge (source and target)
+            // A lone token is an isolated node (NetworkX edge-list convention)
+            nodeIds.add(parts[0]);
             return;
         }
-        sourceId = parts[0];
+        String sourceId = parts[0];
 
         String rest = parts[1];
         parts = rest.split("\\s+", 2);
-        targetId = parts[0];
+        String targetId = parts[0];
+        String dataString = parts.length > 1 ? parts[1] : null;
 
-        if (parts.length > 1) {
-            dataString = parts[1];
-        } else {
-            dataString = null;
-        }
-
-
-        // create nodes for all parts that have not yet been created
-        if (nodesCreatedSet.add(sourceId)) {
-            var node = cjStream.createNodeChunk();
-            node.id(sourceId);
-            cjStream.nodeStart(node);
-            cjStream.nodeEnd();
-        }
-        if (nodesCreatedSet.add(targetId)) {
-            var node = cjStream.createNodeChunk();
-            node.id(targetId);
-            cjStream.nodeStart(node);
-            cjStream.nodeEnd();
-        }
-
-        var edge = cjStream.createEdgeChunk();
-        // endpoints: source -> target
-        edge.addEndpoint(ep -> ep.node(sourceId));
-        edge.addEndpoint(ep -> ep.node(targetId));
-        if (dataString != null) {
-            // TODO map better to suitable JSON
-            // parse dataString -- is it a python dict or JSON map? -> JSON object
-            // single string?
-            edge.dataMutable(d -> {
-                d.add("data", dataString);
-            });
-        }
-        cjStream.edgeStart(edge);
-        cjStream.edgeEnd();
+        nodeIds.add(sourceId);
+        nodeIds.add(targetId);
+        edges.add(new String[]{sourceId, targetId, dataString});
     }
 
     @Override
@@ -116,19 +87,43 @@ public class EdgeListReader implements GioReader, ITextWriter {
     }
 
     private void processFileContent(final String content, final ICjStream cjStream) {
-        this.cjStream = cjStream;
+        nodeIds.clear();
+        edges.clear();
 
-        // Start document and a single graph to hold nodes and edges
+        // pass 1: parse, buffering nodes and edges
+        TextReader.read(content, this);
+
+        // pass 2: emit a single graph, all nodes first, then all edges (valid CJ order)
         var doc = cjStream.createDocumentChunk();
         cjStream.documentStart(doc);
         var graph = cjStream.createGraphChunk();
         cjStream.graphStart(graph);
 
-        TextReader.read(content, this);
+        for (String nodeId : nodeIds) {
+            var node = cjStream.createNodeChunk();
+            node.id(nodeId);
+            cjStream.nodeStart(node);
+            cjStream.nodeEnd();
+        }
+
+        for (String[] e : edges) {
+            final String sourceId = e[0];
+            final String targetId = e[1];
+            final String dataString = e[2];
+            var edge = cjStream.createEdgeChunk();
+            // edge list lines are directed: source -> target (source is the IN endpoint, target the OUT)
+            edge.addEndpoint(ep -> ep.node(sourceId).direction(CjDirection.IN));
+            edge.addEndpoint(ep -> ep.node(targetId).direction(CjDirection.OUT));
+            if (dataString != null) {
+                // TODO map better to suitable JSON
+                edge.dataMutable(d -> d.add("data", dataString));
+            }
+            cjStream.edgeStart(edge);
+            cjStream.edgeEnd();
+        }
 
         cjStream.graphEnd();
         cjStream.documentEnd();
     }
-
 
 }

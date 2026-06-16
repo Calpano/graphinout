@@ -1,6 +1,7 @@
 package com.graphinout.reader.textbased.adjlist;
 
 import com.graphinout.base.gio.GioReader;
+import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.pure.input.ContentError;
@@ -13,7 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -62,18 +65,37 @@ public class AdjListReader implements GioReader {
         var graph = cjStream.createGraphChunk();
         cjStream.graphStart(graph);
 
-        Set<String> nodesCreatedSet = new HashSet<>();
+        // buffer while parsing so we can emit all nodes before all edges (valid CJ document order)
+        Set<String> nodeIds = new LinkedHashSet<>();
+        List<String[]> edges = new ArrayList<>(); // [source, target]
 
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            processLine(line, cjStream, nodesCreatedSet);
+            parseLine(line, nodeIds, edges);
+        }
+
+        for (String nodeId : nodeIds) {
+            var node = cjStream.createNodeChunk();
+            node.id(nodeId);
+            cjStream.nodeStart(node);
+            cjStream.nodeEnd();
+        }
+        for (String[] e : edges) {
+            final String src = e[0];
+            final String targetId = e[1];
+            var edge = cjStream.createEdgeChunk();
+            // adjacency list lines are directed: source -> target (source is the IN endpoint, target the OUT)
+            edge.addEndpoint(ep -> ep.node(src).direction(CjDirection.IN));
+            edge.addEndpoint(ep -> ep.node(targetId).direction(CjDirection.OUT));
+            cjStream.edgeStart(edge);
+            cjStream.edgeEnd();
         }
 
         cjStream.graphEnd();
         cjStream.documentEnd();
     }
 
-    private void processLine(final String inputLine, final ICjStream cjStream, final Set<String> nodesCreatedSet) throws IOException {
+    private void parseLine(final String inputLine, final Set<String> nodeIds, final List<String[]> edges) {
         // trim comment
         String line = inputLine;
         int commentIndex = line.indexOf(HASH);
@@ -89,24 +111,11 @@ public class AdjListReader implements GioReader {
         String sourceId = null;
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
-            // create nodes for all parts that have not yet been created
-            if (nodesCreatedSet.add(part)) {
-                var node = cjStream.createNodeChunk();
-                node.id(part);
-                cjStream.nodeStart(node);
-                cjStream.nodeEnd();
-            }
+            nodeIds.add(part);
             if (i == 0) {
                 sourceId = part;
             } else {
-                String targetId = parts[i];
-                var edge = cjStream.createEdgeChunk();
-                // endpoints: source -> target
-                final String src = sourceId;
-                edge.addEndpoint(ep -> ep.node(src));
-                edge.addEndpoint(ep -> ep.node(targetId));
-                cjStream.edgeStart(edge);
-                cjStream.edgeEnd();
+                edges.add(new String[]{sourceId, part});
             }
         }
     }

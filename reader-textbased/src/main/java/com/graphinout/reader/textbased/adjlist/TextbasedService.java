@@ -4,7 +4,6 @@ import com.graphinout.base.gio.GioService;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.gio.GioWriter;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class TextbasedService implements GioService {
@@ -16,12 +15,12 @@ public class TextbasedService implements GioService {
 
     @Override
     public List<GioReader> readers() {
-        return Arrays.asList(new AdjListReader());
+        return List.of(new AdjListReader(), new EdgeListReader());
     }
 
     @Override
     public List<GioWriter> writers() {
-        return List.of();
+        return List.of(new AdjListWriter(), new EdgeListWriter());
     }
 
 }
