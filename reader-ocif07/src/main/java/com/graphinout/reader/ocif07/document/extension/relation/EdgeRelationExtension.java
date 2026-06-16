@@ -32,7 +32,7 @@ import static com.graphinout.reader.ocif07.Ocifs.factory;
 public class EdgeRelationExtension extends OcifExtension implements IOcifRelationExtension, com.graphinout.reader.ocif07.document.extension.node.IOcifNodeExtension {
 
     public static final String TYPE_NAME = "@ocif/edge";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.0/extensions/edge.json";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/edge.json";
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/rel/edge";
 

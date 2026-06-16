@@ -29,7 +29,7 @@ import static com.graphinout.reader.ocif07.Ocifs.factory;
 public class AnchoredNodeExtension extends OcifExtension implements IOcifNodeExtension {
 
     public static final String TYPE_NAME = "@ocif/anchored-node";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.0/extensions/anchored-node.json";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/anchored-node.json";
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/anchored";
     private OcifVector23D topLeftAnchor;

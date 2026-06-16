@@ -26,7 +26,7 @@ import static java.util.stream.Collectors.joining;
 public class DataExtension extends OcifExtension implements IOcifCanvasExtension, IOcifNodeExtension, IOcifRelationExtension, IOcifResourceExtension, IOcifRepresentationExtension {
 
     public static final String TYPE_NAME = "@ocif/data";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.0/extensions/data.json";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/data.json";
 
     private Map<String, IJsonValue> map = new TreeMap<>();
 

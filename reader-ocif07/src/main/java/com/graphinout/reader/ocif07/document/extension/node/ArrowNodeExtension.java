@@ -32,7 +32,7 @@ import static com.graphinout.reader.ocif07.Ocifs.factory;
 public class ArrowNodeExtension extends OcifExtension implements IOcifNodeExtension {
 
     public static final String TYPE_NAME = "@ocif/arrow";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.0/extensions/arrow.json";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/arrow.json";
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/arrow";
     /** default 1 */

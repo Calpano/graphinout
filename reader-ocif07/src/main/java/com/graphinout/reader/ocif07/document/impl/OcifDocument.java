@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif07.document.impl;
 
 import com.graphinout.foundation.pure.collections.IdFactory;
+import com.graphinout.reader.ocif07.OCIF;
 import com.graphinout.reader.ocif07.document.IOcifDocumentMutable;
 import com.graphinout.reader.ocif07.document.IOcifNode;
 import com.graphinout.reader.ocif07.document.IOcifRelation;
@@ -34,7 +35,7 @@ public class OcifDocument implements IOcifDocumentMutable {
     private final List<IOcifResource> resources = new ArrayList<>();
     private final List<IOcifSchema> schemas = new ArrayList<>();
     private final List<IOcifCanvasExtension> canvasExtensions = new ArrayList<>();
-    private String ocifSchemaURI;
+    private String ocifSchemaURI = OCIF.OcifSchema.DEFAULT;
     private @Nullable String rootNodeId;
 
     public OcifDocument() {}

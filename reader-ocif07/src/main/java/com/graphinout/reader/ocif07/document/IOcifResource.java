@@ -39,7 +39,18 @@ public interface IOcifResource extends IOcifEntity {
     static @NonNull IOcifResourceMutable jsonToOcifResource(IJsonObject o, Consumer<ContentError> errorHandler) throws ContentErrorException {
         // obtain a usable resource id
         String id = Nullables.mapOrThrow(o.get(OCIF.Common.ID), IJsonValue::asString, () -> contentWarn("OCIF resource has no id"));
-        IOcifResourceMutable res = new OcifResource(id);
+        return parseRepresentationsInto(new OcifResource(id), o, errorHandler);
+    }
+
+    /**
+     * v0.7.1 inline resource: a Resource object <em>without</em> an {@code id}, scoped to a node. The caller supplies a
+     * synthesized id so the resource can be registered on the document and referenced by the node.
+     */
+    static @NonNull IOcifResourceMutable jsonToInlineOcifResource(IJsonObject o, String syntheticId, Consumer<ContentError> errorHandler) throws ContentErrorException {
+        return parseRepresentationsInto(new OcifResource(syntheticId), o, errorHandler);
+    }
+
+    private static @NonNull IOcifResourceMutable parseRepresentationsInto(IOcifResourceMutable res, IJsonObject o, Consumer<ContentError> errorHandler) throws ContentErrorException {
         IJsonValue repsVal = o.get(OCIF.Resource.REPRESENTATIONS);
         if (repsVal != null && repsVal.isArray()) {
             IJsonArray reps = repsVal.asArray();

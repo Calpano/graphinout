@@ -10,8 +10,15 @@ public final class OCIF {
 
         public static final String V0_6 = "https://canvasprotocol.org/ocif/v0.6";
         public static final String V0_7_0 = "https://canvasprotocol.org/ocif/v0.7.0";
+        public static final String V0_7_1 = "https://canvasprotocol.org/ocif/v0.7.1";
+
+        /** The OCIF version this module targets and emits by default. */
+        public static final String DEFAULT = V0_7_1;
 
     }
+
+    /** Base URI for built-in extension schemas of the targeted spec version: {@code .../v0.7.1/extensions/}. */
+    public static final String EXTENSION_BASE = "https://spec.canvasprotocol.org/v0.7.1/extensions/";
 
     public static final class Type {
 

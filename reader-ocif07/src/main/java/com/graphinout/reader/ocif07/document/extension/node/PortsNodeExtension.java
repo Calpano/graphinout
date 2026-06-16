@@ -31,7 +31,7 @@ public class PortsNodeExtension extends OcifExtension implements IOcifNodeExtens
     public static final String PORTS = "ports";
 
     public static final String TYPE_NAME = "@ocif/ports";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.0/extensions/ports.json";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/ports.json";
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/ports";
     /** array of string IDs */

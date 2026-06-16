@@ -8,8 +8,12 @@ import com.graphinout.reader.ocif07.document.extension.canvas.IOcifCanvasExtensi
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.graphinout.reader.ocif07.Ocifs.factory;
 
@@ -26,9 +30,33 @@ public interface IOcifDocument {
             root.setProperty(OCIF.Common.DATA, extensionsArray);
         }
 
+        // v0.7.1: a resource referenced by exactly one node is emitted inline on that node (and omitted from the
+        // top-level "resources" array). Resources shared by several nodes — or referenced by none — stay top-level.
+        Map<String, Integer> resourceRefCounts = new HashMap<>();
+        for (IOcifNode node : ocifDocument.nodes()) {
+            String resourceId = node.resource();
+            if (resourceId != null) {
+                resourceRefCounts.merge(resourceId, 1, Integer::sum);
+            }
+        }
+        Set<String> inlinedResourceIds = new HashSet<>();
+
         if (!ocifDocument.nodes().isEmpty()) {
             IJsonArrayMutable nodesArray = factory().createArrayMutable();
-            ocifDocument.nodes().forEach(node -> nodesArray.add(IOcifNode.nodeToJson(node)));
+            for (IOcifNode node : ocifDocument.nodes()) {
+                IJsonValue nodeJson = IOcifNode.nodeToJson(node);
+                String resourceId = node.resource();
+                if (resourceId != null && resourceRefCounts.getOrDefault(resourceId, 0) == 1
+                        && nodeJson instanceof IJsonObjectMutable nodeObj) {
+                    IOcifResource resource = ocifDocument.findResource(resourceId).orElse(null);
+                    if (resource != null && IOcifResource.resourceToJson(resource) instanceof IJsonObjectMutable inlineResource) {
+                        inlineResource.removeProperty(OCIF.Common.ID); // an inline resource has no id
+                        nodeObj.setProperty(OCIF.Node.RESOURCE, inlineResource);
+                        inlinedResourceIds.add(resourceId);
+                    }
+                }
+                nodesArray.add(nodeJson);
+            }
             root.setProperty(OCIF.Root.NODES, nodesArray);
         }
 
@@ -38,9 +66,12 @@ public interface IOcifDocument {
             root.setProperty(OCIF.Root.RELATIONS, relationsArray);
         }
 
-        if (!ocifDocument.resources().isEmpty()) {
+        List<IOcifResource> topLevelResources = ocifDocument.resources().stream()
+                .filter(resource -> !inlinedResourceIds.contains(resource.id()))
+                .toList();
+        if (!topLevelResources.isEmpty()) {
             IJsonArrayMutable resourcesArray = factory().createArrayMutable();
-            ocifDocument.resources().forEach(resource -> resourcesArray.add(IOcifResource.resourceToJson(resource)));
+            topLevelResources.forEach(resource -> resourcesArray.add(IOcifResource.resourceToJson(resource)));
             root.setProperty(OCIF.Root.RESOURCES, resourcesArray);
         }
 

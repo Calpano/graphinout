@@ -1,0 +1,13 @@
+{ "ocif": "https://canvasprotocol.org/ocif/v0.7.1",
+  "nodes": [
+    { "id": "n1",
+      "position": [300, 200],
+      "size": [120, 40],
+      "resource": {
+        "representations": [
+          { "mimeType": "text/plain", "content": "Hello, World!" }
+        ]
+      }
+    }
+  ]
+}

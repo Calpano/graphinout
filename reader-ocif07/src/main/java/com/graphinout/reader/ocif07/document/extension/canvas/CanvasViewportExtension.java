@@ -23,7 +23,7 @@ import static com.graphinout.reader.ocif07.Ocifs.factory;
 public class CanvasViewportExtension extends OcifExtension implements IOcifCanvasExtension {
 
     public static final String TYPE_NAME = "@ocif/canvas-viewport";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.0/extensions/canvas-viewport.json";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/canvas-viewport.json";
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/canvas/viewport";
 

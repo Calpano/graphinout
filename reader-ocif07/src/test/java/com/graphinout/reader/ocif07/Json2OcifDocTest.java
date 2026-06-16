@@ -49,4 +49,29 @@ class Json2OcifDocTest {
         assertWithMessage("Canvas extensions list must not be null").that(doc.canvasExtensions()).isNotNull();
     }
 
+    @org.junit.jupiter.api.Test
+    @Description("v0.7.1: a node 'resource' given as an inline object is registered as a document resource")
+    void inline_resource_v0_7_1_is_registered_and_referenced() {
+        String json = """
+                { "ocif": "https://canvasprotocol.org/ocif/v0.7.1",
+                  "nodes": [
+                    { "id": "n1",
+                      "resource": { "representations": [ { "mimeType": "text/plain", "content": "Hello" } ] }
+                    }
+                  ]
+                }
+                """;
+        List<ContentError> contentErrors = new ArrayList<>();
+        OcifDocument doc = new Json2OcifDoc().jsonString2ocifDocument(json, contentErrors::add);
+
+        assertThat(contentErrors.stream().filter(ContentError::isError)).isEmpty();
+        // the inline resource was hoisted to a top-level resource under a synthesized id
+        assertThat(doc.resources()).hasSize(1);
+        String synthId = doc.resources().get(0).id();
+        assertThat(synthId).isEqualTo("n1/resource");
+        // and the node now references that resource by id
+        assertThat(doc.nodes().get(0).resource()).isEqualTo(synthId);
+        assertThat(doc.findResource(synthId)).isPresent();
+    }
+
 }

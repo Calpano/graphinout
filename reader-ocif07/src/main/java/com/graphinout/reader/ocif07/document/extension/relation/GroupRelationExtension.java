@@ -25,7 +25,7 @@ import static com.graphinout.reader.ocif07.Ocifs.factory;
 public class GroupRelationExtension extends OcifExtension implements IOcifRelationExtension, com.graphinout.reader.ocif07.document.extension.node.IOcifNodeExtension {
 
     public static final String TYPE_NAME = "@ocif/group";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.0/extensions/group.json";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/group.json";
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/rel/group";
     /** default app-dependent (spec suggests ability) */

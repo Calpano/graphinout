@@ -4,9 +4,16 @@ A Java-based parser and document model for OCIF.
 
 OCIF is the Open Canvas Interchange Format (OCIF).
 
+This module targets the *v0.7.1-draft* spec (and still reads v0.7.0 and v0.6 documents for
+backwards compatibility). It emits v0.7.1 by default: the `ocif` version URI
+`https://canvasprotocol.org/ocif/v0.7.1` and the `https://spec.canvasprotocol.org/v0.7.1/extensions/...`
+extension schema URIs. The v0.7.1 change relative to v0.7.0 — a node `resource` may be an inline
+Resource object instead of a string id — is supported: inline resources are hoisted to a document
+resource under a synthesized id and referenced from the node.
+
 The full spec is here:
-https://raw.githubusercontent.com/ocwg/spec/refs/heads/main/spec/v0.6/spec.md
-A copy has been placed in link:src/main/doc/ocif-spec.md[]
+https://github.com/ocwg/ocif-spec/blob/main/spec/v0.7.1-draft/spec.md
+A copy of the v0.6 spec has been placed in link:src/main/doc/ocif-spec.md[]
 
 == Coding guidelines
 
