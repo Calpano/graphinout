@@ -23,10 +23,8 @@ import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static com.graphinout.foundation.pure.value.IntRef.intRef;
@@ -90,19 +88,25 @@ public class DDotReader implements GioReader {
         this.errorHandler = errorHandler;
     }
 
-    private void ensureNode(String nodeId, ICjStream writer, Set<String> nodesCreatedSet) {
-        if (nodesCreatedSet.add(nodeId)) {
+    /**
+     * Get (creating if needed) the buffered node chunk for {@code nodeId}. Nodes are buffered rather than
+     * emitted immediately so that node-level facts (label, attributes) parsed on later lines can still be
+     * attached. All buffered nodes are emitted (in first-seen order) before the edges.
+     */
+    private ICjNodeChunkMutable ensureNodeChunk(String nodeId, ICjStream writer,
+                                                java.util.Map<String, ICjNodeChunkMutable> nodeBuffer) {
+        return nodeBuffer.computeIfAbsent(nodeId, id -> {
             ICjNodeChunkMutable nodeChunk = writer.createNodeChunk();
-            nodeChunk.id(nodeId);
-            writer.node(nodeChunk);
-        }
+            nodeChunk.id(id);
+            return nodeChunk;
+        });
     }
 
     private void processFileContent(Scanner scanner, ICjStream writer) {
         writer.documentStart(writer.createDocumentChunk());
         writer.graphStart(writer.createGraphChunk());
 
-        Set<String> nodesCreatedSet = new HashSet<>();
+        java.util.Map<String, ICjNodeChunkMutable> nodeBuffer = new java.util.LinkedHashMap<>();
         List<ICjEdgeChunk> edgeBuffer = new ArrayList<>();
         boolean enabled = true;
         @Nullable String currentSubject = null;
@@ -168,16 +172,37 @@ public class DDotReader implements GioReader {
                 continue;
             }
 
-            ensureNode(subject, writer, nodesCreatedSet);
-            ensureNode(object, writer, nodesCreatedSet);
+            // Reserved predicates carry node-level facts, not edges. They reconstruct the subject node's
+            // existence / display label / attributes; the object is a literal, never a node.
+            if (DDotOutput.PRED_NODE.equals(predicate)) {
+                ensureNodeChunk(subject, writer, nodeBuffer);
+                foundAny = true;
+                continue;
+            }
+            if (DDotOutput.PRED_LABEL.equals(predicate)) {
+                ensureNodeChunk(subject, writer, nodeBuffer).addLabelWithoutLanguage(object);
+                foundAny = true;
+                continue;
+            }
+            if (predicate.startsWith(DDotOutput.PRED_DATA_PREFIX)) {
+                String key = predicate.substring(DDotOutput.PRED_DATA_PREFIX.length());
+                ensureNodeChunk(subject, writer, nodeBuffer).addProperty(key, object);
+                foundAny = true;
+                continue;
+            }
+
+            ensureNodeChunk(subject, writer, nodeBuffer);
+            ensureNodeChunk(object, writer, nodeBuffer);
 
             ICjEdgeChunkMutable edgeChunk = writer.createEdgeChunk();
             final String subjectFinal = subject;
             final String objectFinal = object;
             edgeChunk.addEndpoint(ep -> ep.node(subjectFinal).direction(CjDirection.IN));
             edgeChunk.addEndpoint(ep -> ep.node(objectFinal).direction(CjDirection.OUT));
-            // an untyped link carries no predicate, hence no edge label
+            // an untyped link carries no predicate, hence no edge label/type
             if (!predicate.isEmpty()) {
+                // the predicate names a directed, typed edge: restore both the type and the display label
+                edgeChunk.edgeType(predicate);
                 edgeChunk.addLabelWithoutLanguage(predicate);
             }
             edgeBuffer.add(edgeChunk);
@@ -189,6 +214,7 @@ public class DDotReader implements GioReader {
             Nullables.ifConsumerPresentAccept(errorHandler,
                     ContentError.of(ContentError.ErrorLevel.Warn, "Content contains no triples"));
         }
+        nodeBuffer.values().forEach(writer::node);
         edgeBuffer.forEach(writer::edge);
 
         writer.graphEnd();
