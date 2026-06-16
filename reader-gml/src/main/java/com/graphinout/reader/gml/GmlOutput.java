@@ -154,6 +154,19 @@ public record GmlOutput(ICjDocument cjDoc) {
         return v == null ? "" : v;
     }
 
+    /**
+     * GML carries edge directionality on the enclosing graph via the {@code directed} flag. If any edge has a directed
+     * endpoint the graph is emitted as {@code directed 1}; if every edge is undirected it is {@code directed 0}. GML
+     * cannot express mixed directionality within one graph (registry: {@code lacks mixed-directionality-edges}).
+     */
+    private static boolean graphHasDirectedEdges(ICjGraph cjGraph) {
+        return cjGraph.edges().anyMatch(e -> e.endpoints().anyMatch(ICjEndpoint::isDirected));
+    }
+
+    private static boolean graphHasUndirectedEdges(ICjGraph cjGraph) {
+        return cjGraph.edges().anyMatch(e -> e.endpoints().anyMatch(ICjEndpoint::isUndirected));
+    }
+
     private static void graphToGml(ICjGraph cjGraph, IGmlHandler b) {
         b.key(GRAPH);
         b.open();
@@ -163,6 +176,7 @@ public record GmlOutput(ICjDocument cjDoc) {
             b.key(LABEL);
             b.value(formatValue(label.value()));
         });
+        boolean[] directedEmitted = {false};
         cjGraph.data(data -> {
             IJsonValue json = data.jsonValue();
             IJsonObject obj = json == null ? null : json.asObjectOrNull();
@@ -181,9 +195,16 @@ public record GmlOutput(ICjDocument cjDoc) {
                 // Emit known attributes in preferred order matching samples
                 onProp.accept(HIERARCHIC);
                 onProp.accept(DIRECTED);
+                directedEmitted[0] = skip.contains(DIRECTED);
                 emitJsonObjectProperties(obj, b, skip);
             }
         });
+        // Derive the directed flag from the actual edge endpoints when it is not already carried in graph data,
+        // so that undirected edges survive the round-trip (the reader maps 'directed 0' back to undirected endpoints).
+        if (!directedEmitted[0] && graphHasUndirectedEdges(cjGraph) && !graphHasDirectedEdges(cjGraph)) {
+            b.key(DIRECTED);
+            b.value("0");
+        }
 
         // Nodes section
         Comparator<String> numericStr = Comparator.nullsLast((s1, s2) -> {
@@ -202,6 +223,9 @@ public record GmlOutput(ICjDocument cjDoc) {
 
         // Edges section
         cjGraph.edges().sorted(Comparator.comparing(ICjEdge::id, numericStr)).forEach(cjEdge -> edgeToGml(cjEdge, b));
+
+        // Nested graphs-in-graphs (hierarchical structure)
+        cjGraph.graphs().forEach(subGraph -> graphToGml(subGraph, b));
         b.close();
     }
 
@@ -233,6 +257,9 @@ public record GmlOutput(ICjDocument cjDoc) {
                 emitJsonObjectPropertiesPreferred(obj, b, skip, java.util.List.of("graphics", "LabelGraphics", "group", "fill", "border"));
             }
         });
+
+        // Nested graphs-in-nodes (compound nodes)
+        cjNode.graphs().forEach(subGraph -> graphToGml(subGraph, b));
         b.close();
     }
 

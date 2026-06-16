@@ -128,7 +128,9 @@ class GmlReaderTest {
         // Verify interactions counts with adapter semantics
         verify(mockCjStream, times(1)).documentStart(any(ICjDocumentChunk.class));
         verify(mockCjStream, times(1)).graphStart(any(ICjGraphChunk.class));
-        verify(mockCjStream, times(2)).node(any(ICjNodeChunk.class));
+        // nodes are emitted via nodeStart/nodeEnd so that nested graphs (compound nodes) can be streamed in between
+        verify(mockCjStream, times(2)).nodeStart(any(ICjNodeChunk.class));
+        verify(mockCjStream, times(2)).nodeEnd();
         verify(mockCjStream, times(1)).edge(any(ICjEdgeChunk.class));
         verify(mockCjStream, times(1)).graphEnd();
         verify(mockCjStream, times(1)).documentEnd();

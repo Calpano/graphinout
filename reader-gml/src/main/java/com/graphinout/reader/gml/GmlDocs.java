@@ -70,19 +70,39 @@ public class GmlDocs {
         cjStream.documentEnd();
     }
 
-    private static void toCjEdge(GmlData gmlEdge, ICjStream cjStream) {
+    private static void toCjEdge(GmlData gmlEdge, ICjStream cjStream, boolean directed) {
         ICjEdgeChunkMutable cjEdge = cjStream.createEdgeChunk();
         // standard attributes
         String sourceId = gmlEdge.get(Gml.SOURCE);
         String targetId = gmlEdge.get(Gml.TARGET);
         ifPresentAccept(gmlEdge.get(Gml.ID), cjEdge::id);
         ifPresentAccept(gmlEdge.get(Gml.LABEL), cjEdge::addLabelWithoutLanguage);
-        cjEdge.addEndpoint(ep -> ep.direction(CjDirection.IN).node(sourceId));
-        cjEdge.addEndpoint(ep -> ep.direction(CjDirection.OUT).node(targetId));
+        if (directed) {
+            cjEdge.addEndpoint(ep -> ep.direction(CjDirection.IN).node(sourceId));
+            cjEdge.addEndpoint(ep -> ep.direction(CjDirection.OUT).node(targetId));
+        } else {
+            // GML 'directed 0' (or absent) -> undirected edge
+            cjEdge.addEndpoint(ep -> ep.direction(CjDirection.UNDIR).node(sourceId));
+            cjEdge.addEndpoint(ep -> ep.direction(CjDirection.UNDIR).node(targetId));
+        }
         // extended
         copyDataExcept(gmlEdge, cjEdge, Gml.SOURCE, Gml.TARGET, Gml.ID, Gml.LABEL);
 
         cjStream.edge(cjEdge);
+    }
+
+    /**
+     * GML carries edge directionality on the enclosing graph via the {@code directed} flag
+     * ({@code directed 1} = directed, {@code directed 0} = undirected). When the flag is absent we default to
+     * directed, matching the long-standing reader behaviour for files that omit it.
+     */
+    private static boolean isGraphDirected(GmlData gmlGraph) {
+        String directed = gmlGraph.get(Gml.DIRECTED);
+        if (directed == null) {
+            return true;
+        }
+        String trimmed = directed.trim();
+        return !(trimmed.equals("0") || trimmed.equalsIgnoreCase("false"));
     }
 
     private static void toCjGraph(GmlData gmlGraph, ICjStream cjStream) {
@@ -90,12 +110,16 @@ public class GmlDocs {
         // standard attributes
         ifPresentAccept(gmlGraph.get(Gml.ID), cjGraph::id);
         ifPresentAccept(gmlGraph.get(Gml.LABEL), cjGraph::addLabelWithoutLanguage);
-        // graph metadata
-        copyDataExcept(gmlGraph,cjGraph, Gml.NODE, Gml.EDGE,Gml.ID, Gml.LABEL);
+        // graph metadata (nested graph elements are emitted as CJ nested graphs, not as data)
+        copyDataExcept(gmlGraph, cjGraph, Gml.NODE, Gml.EDGE, Gml.GRAPH, Gml.ID, Gml.LABEL);
+
+        boolean directed = isGraphDirected(gmlGraph);
 
         cjStream.graphStart(cjGraph);
         gmlGraph.forEachChild(Gml.NODE, gmlNode -> toCjNode(gmlNode, cjStream));
-        gmlGraph.forEachChild(Gml.EDGE, gmlEdge -> toCjEdge(gmlEdge, cjStream));
+        gmlGraph.forEachChild(Gml.EDGE, gmlEdge -> toCjEdge(gmlEdge, cjStream, directed));
+        // nested graphs-in-graphs
+        gmlGraph.forEachChild(Gml.GRAPH, gmlSubGraph -> toCjGraph(gmlSubGraph, cjStream));
         cjStream.graphEnd();
     }
 
@@ -104,10 +128,13 @@ public class GmlDocs {
         // standard attributes
         ifPresentAccept(gmlNode.get(Gml.ID), cjNode::id);
         ifPresentAccept(gmlNode.get(Gml.LABEL), cjNode::addLabelWithoutLanguage);
-        // node metadata
-        copyDataExcept(gmlNode, cjNode, Gml.ID, Gml.LABEL);
+        // node metadata (nested graph elements are emitted as CJ nested graphs, not as data)
+        copyDataExcept(gmlNode, cjNode, Gml.ID, Gml.LABEL, Gml.GRAPH);
 
-        cjStream.node(cjNode);
+        cjStream.nodeStart(cjNode);
+        // nested graphs-in-nodes (compound nodes)
+        gmlNode.forEachChild(Gml.GRAPH, gmlSubGraph -> toCjGraph(gmlSubGraph, cjStream));
+        cjStream.nodeEnd();
     }
 
     /**
