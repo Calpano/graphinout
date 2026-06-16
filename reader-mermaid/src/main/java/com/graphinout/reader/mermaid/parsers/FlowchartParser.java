@@ -81,12 +81,17 @@ public class FlowchartParser {
             String line = raw.trim();
             if (line.isEmpty()) continue;
             String low = line.toLowerCase();
-            if (low.startsWith("subgraph")) {
+            if (low.equals("subgraph") || low.startsWith("subgraph ")) {
                 subgraphDepth++;
+                SubgraphHeader sh = parseSubgraphHeader(line);
+                ctx.beginSubgraph(sh.id, sh.label);
                 continue;
             }
             if (low.equals("end")) {
-                if (subgraphDepth > 0) subgraphDepth--;
+                if (subgraphDepth > 0) {
+                    subgraphDepth--;
+                    ctx.endSubgraph();
+                }
                 continue;
             }
             if (low.startsWith("direction ")) continue;
@@ -125,7 +130,7 @@ public class FlowchartParser {
             EdgeRef edge = (EdgeRef) eTok;
             NodeRef next = (NodeRef) nTok;
             ctx.ensureNode(next.id, next.label);
-            ctx.addEdge(prev.id, next.id, edge.label);
+            ctx.addEdge(prev.id, next.id, edge.label, edge.directed);
             prev = next;
         }
     }
@@ -143,7 +148,8 @@ public class FlowchartParser {
             Matcher midM = ARROW_WITH_MIDDLE_LABEL.matcher(line).region(pos, n);
             if (midM.lookingAt()) {
                 String txt = midM.group("text");
-                out.add(new EdgeRef(txt));
+                boolean directed = isDirected(midM.group("lead") + midM.group("trail"));
+                out.add(new EdgeRef(txt, directed));
                 pos = midM.end();
                 // Optional immediate "|label|"
                 Matcher pl = PIPE_LABEL.matcher(line).region(pos, n);
@@ -158,7 +164,7 @@ public class FlowchartParser {
             // Try plain arrow token: --, -->, ===, ==>, ---x, --o, -.-, -.->
             Matcher arrM = EDGE_TOKEN.matcher(line).region(pos, n);
             if (arrM.lookingAt()) {
-                EdgeRef edge = new EdgeRef(null);
+                EdgeRef edge = new EdgeRef(null, isDirected(arrM.group("arrow")));
                 out.add(edge);
                 pos = arrM.end();
                 // Optional immediate "|label|"
@@ -231,6 +237,51 @@ public class FlowchartParser {
 
     private static final class EdgeRef {
         @Nullable String label;
-        EdgeRef(@Nullable String label) {this.label = label;}
+        final boolean directed;
+        EdgeRef(@Nullable String label, boolean directed) {this.label = label; this.directed = directed;}
     }
+
+    /**
+     * Mermaid arrow direction: an arrow is directed if it carries an arrowhead ({@code >}, {@code <}) or a
+     * circle/cross terminator ({@code o}, {@code x}). Open links like {@code ---}, {@code ===}, {@code -.-} are
+     * undirected.
+     */
+    static boolean isDirected(String arrow) {
+        for (int i = 0; i < arrow.length(); i++) {
+            char c = arrow.charAt(i);
+            if (c == '>' || c == '<' || c == 'o' || c == 'x') return true;
+        }
+        return false;
+    }
+
+    private record SubgraphHeader(@Nullable String id, @Nullable String label) {}
+
+    /**
+     * Parse a {@code subgraph} header. Forms:
+     * <ul>
+     *   <li>{@code subgraph} (anonymous)</li>
+     *   <li>{@code subgraph id}</li>
+     *   <li>{@code subgraph id [Title]}</li>
+     *   <li>{@code subgraph Title} (a bare title with spaces becomes the id/label)</li>
+     * </ul>
+     */
+    static SubgraphHeader parseSubgraphHeader(String line) {
+        String rest = line.trim().substring("subgraph".length()).trim();
+        if (rest.isEmpty()) return new SubgraphHeader(null, null);
+        // id [Title] form
+        Matcher m = SUBGRAPH_TITLE.matcher(rest);
+        if (m.matches()) {
+            String id = m.group("id").trim();
+            String title = stripQuotes(m.group("title").trim());
+            return new SubgraphHeader(id, title);
+        }
+        // bare id (no spaces) -> id only; otherwise treat whole as a title and synthesize no id
+        if (rest.indexOf(' ') < 0) {
+            return new SubgraphHeader(stripQuotes(rest), null);
+        }
+        return new SubgraphHeader(null, stripQuotes(rest));
+    }
+
+    private static final Pattern SUBGRAPH_TITLE = Pattern.compile(
+            "(?<id>[A-Za-z0-9_\\-]+)\\s*\\[(?<title>[^\\]]*)\\]");
 }
