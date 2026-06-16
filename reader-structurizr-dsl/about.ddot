@@ -1,0 +1,7 @@
+# Formats read/written by the GraphInOut Structurizr DSL reader.
+# Object ids reference the graph-format-registry (https://github.com/calpano/graph-format-registry).
+# 'structurizr-dsl' is not yet a registered format id.
+
+graphinout-reader-structurizr-dsl ..has type.. tool
+graphinout-reader-structurizr-dsl ..label.. GraphInOut Structurizr DSL Reader
+graphinout-reader-structurizr-dsl ..reads.. structurizr-dsl

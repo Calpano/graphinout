@@ -1,0 +1,49 @@
+= Structurizr DSL Reader
+
+A GraphInOut reader that parses the https://docs.structurizr.com/dsl[Structurizr DSL] (a textual C4
+architecture model) and maps the workspace model to a graph (CJ events).
+
+Parsing is delegated to the Apache-2.0-licensed `com.structurizr:structurizr-dsl` library; only the *model*
+(elements + relationships) is mapped. Views, styles and documentation in the DSL are ignored.
+
+== File format
+
+* Format id: `structurizr-dsl`
+* Extensions: `.dsl`
+
+== Mapping
+
+[cols="1,2"]
+|===
+| Structurizr | Graph
+
+| Model element (Person, SoftwareSystem, Container, Component, DeploymentNode, InfrastructureNode, ...)
+| Node. `id` = element id, label = element name, `c4:kind` = element type, `c4:description`,
+  `c4:technology` (containers/components), `c4:tags`.
+
+| Relationship
+| Directed edge (source -> destination). Label = description, `c4:technology` = technology,
+  type = `uses` (when a technology is set) or `relationship`.
+
+| C4 containment (e.g. a container inside a software system)
+| Directed `contains` edge from parent to child.
+|===
+
+== Usage
+
+The reader is registered as a `GioService` and discovered automatically via the Java `ServiceLoader`.
+
+[source]
+----
+workspace "Example" {
+    model {
+        user = person "User"
+        system = softwareSystem "Software System" {
+            web = container "Web Application"
+            db = container "Database"
+        }
+        user -> web "Uses"
+        web -> db "Reads from and writes to"
+    }
+}
+----
