@@ -109,10 +109,9 @@ public class TgfReader implements GioReader {
         ensureNodesExist(edgeParts, writer, nodesCreatedSet, locator);
 
         ICjEdgeChunkMutable edgeChunk = writer.createEdgeChunk();
-        //source
-        edgeChunk.addEndpoint(ep -> ep.node(edgeParts[0]).direction(CjDirection.IN));
-        //target
-        edgeChunk.addEndpoint(ep -> ep.node(edgeParts[1]).direction(CjDirection.OUT));
+        // TGF edges are undirected by default (per the graph-format-registry), so emit undirected endpoints
+        edgeChunk.addEndpoint(ep -> ep.node(edgeParts[0]).direction(CjDirection.UNDIR));
+        edgeChunk.addEndpoint(ep -> ep.node(edgeParts[1]).direction(CjDirection.UNDIR));
 
         if (edgeParts.length == 3 && !edgeParts[2].isBlank()) {
             edgeChunk.addLabelWithoutLanguage(edgeParts[2]);
