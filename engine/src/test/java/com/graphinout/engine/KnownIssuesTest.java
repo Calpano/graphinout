@@ -37,6 +37,7 @@ public class KnownIssuesTest {
         tgfReader.read(inputSource, cjStream);
         String result = outputSink.getBufferAsUtf8String();
 
+        // TGF is treated as directed (source -> target), so the DOT writer renders a `digraph` with `->`.
         assertThat(result.trim()).isEqualTo("""
                 digraph {
                   a;

@@ -118,9 +118,8 @@ public class TgfRoundtripTest {
         // Normalize node section (sort lines and trim)
         String normalizedNodes = nodeSection.isEmpty() ? "" : String.join("\n", nodeSection.lines().map(String::trim).filter(line -> !line.isEmpty()).sorted().toList());
 
-        // Normalize edge section: trim, drop empties, canonicalize endpoint order (TGF edges are
-        // undirected per the registry, so "a b" and "b a" denote the same edge), then sort lines.
-        String normalizedEdges = edgeSection.isEmpty() ? "" : String.join("\n", edgeSection.lines().map(String::trim).filter(line -> !line.isEmpty()).map(TgfRoundtripTest::canonicalizeEdgeLine).sorted().toList());
+        // Normalize edge section (sort lines and trim)
+        String normalizedEdges = edgeSection.isEmpty() ? "" : String.join("\n", edgeSection.lines().map(String::trim).filter(line -> !line.isEmpty()).sorted().toList());
 
         // Reconstruct normalized TGF
         StringBuilder result = new StringBuilder();
@@ -133,25 +132,6 @@ public class TgfRoundtripTest {
         }
 
         return result.toString();
-    }
-
-    /**
-     * Canonicalize a single TGF edge line by ordering its two endpoint ids deterministically. TGF edges are
-     * undirected (per the graph-format-registry), so {@code "a b label"} and {@code "b a label"} denote the same
-     * edge; after a CJ round-trip the endpoint order may differ, so we sort the id pair before comparison while
-     * preserving any trailing edge label.
-     */
-    private static String canonicalizeEdgeLine(String line) {
-        String[] parts = line.split("\\s+", 3);
-        if (parts.length < 2) {
-            return line;
-        }
-        String a = parts[0];
-        String b = parts[1];
-        String first = a.compareTo(b) <= 0 ? a : b;
-        String second = a.compareTo(b) <= 0 ? b : a;
-        String label = parts.length == 3 ? " " + parts[2] : "";
-        return first + " " + second + label;
     }
 
 }

@@ -84,8 +84,8 @@ class FeatureRoundtripTest {
                     "nodes", "undirected-edges", "directed-edges", "nested-graphs-in-nodes", "nested-graphs-in-graphs",
                     "node-labels", "edge-labels", "attributes-on-nodes", "attributes-on-edges",
                     "attributes-on-graphs"), of()),
-            // tgf
-            new Claims("tgf", of("nodes", "undirected-edges", "node-labels", "edge-labels"), of("directed-edges")),
+            // tgf — directed only: a TGF `source target` line is read source -> target.
+            new Claims("tgf", of("nodes", "directed-edges", "node-labels", "edge-labels"), of()),
             // d2
             new Claims("d2", of(
                     "nodes", "undirected-edges", "directed-edges", "nested-graphs-in-nodes", "node-labels",
@@ -107,8 +107,9 @@ class FeatureRoundtripTest {
             new Claims("mermaid", of(
                     "nodes", "undirected-edges", "directed-edges", "mixed-directionality-edges",
                     "nested-graphs-in-nodes", "node-labels", "edge-labels"), of("attributes-on-nodes")),
-            // adjlist
-            new Claims("adjlist", of("undirected-edges", "directed-edges"), of("nodes", "attributes-on-edges")),
+            // adjlist — a line carries no direction marker, so it is read as directed (source -> neighbours);
+            // undirected/mixed are not representable (registry: ..lacks.. undirected-edges).
+            new Claims("adjlist", of("directed-edges"), of("nodes", "attributes-on-edges")),
             // edge-list
             new Claims("edgelist", of("nodes", "directed-edges"), of()));
 
