@@ -17,6 +17,7 @@ import com.graphinout.reader.ocif.document.IOcifSchema;
 import com.graphinout.reader.ocif.document.extension.DataExtension;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.canvas.CanvasViewportExtension;
+import com.graphinout.reader.ocif.document.extension.canvas.CjGraphStructureCanvasExtension;
 import com.graphinout.reader.ocif.document.extension.canvas.IOcifCanvasExtension;
 import com.graphinout.reader.ocif.document.extension.node.AnchoredNodeExtension;
 import com.graphinout.reader.ocif.document.extension.node.ArrowNodeExtension;
@@ -29,6 +30,7 @@ import com.graphinout.reader.ocif.document.extension.node.PortsNodeExtension;
 import com.graphinout.reader.ocif.document.extension.node.RectangleNodeExtension;
 import com.graphinout.reader.ocif.document.extension.node.TextStyleNodeExtension;
 import com.graphinout.reader.ocif.document.extension.node.ThemeNodeExtension;
+import com.graphinout.reader.ocif.document.extension.relation.CjLabelRelationExtension;
 import com.graphinout.reader.ocif.document.extension.relation.EdgeRelationExtension;
 import com.graphinout.reader.ocif.document.extension.relation.GroupRelationExtension;
 import com.graphinout.reader.ocif.document.extension.relation.HyperedgeRelationExtension;
@@ -118,6 +120,8 @@ public class Json2OcifDoc {
             case DataExtension.TYPE_URI, DataExtension.TYPE_NAME -> DataExtension.of(obj);
             // Canvas
             case CanvasViewportExtension.TYPE_URI, CanvasViewportExtension.TYPE_NAME -> CanvasViewportExtension.of(obj);
+            case CjGraphStructureCanvasExtension.TYPE_URI, CjGraphStructureCanvasExtension.TYPE_NAME ->
+                    CjGraphStructureCanvasExtension.of(obj);
             // Node extensions
             case AnchoredNodeExtension.TYPE_URI, AnchoredNodeExtension.TYPE_NAME -> AnchoredNodeExtension.of(obj);
             case ArrowNodeExtension.TYPE_URI, ArrowNodeExtension.TYPE_NAME -> ArrowNodeExtension.of(obj);
@@ -136,6 +140,8 @@ public class Json2OcifDoc {
                     HyperedgeRelationExtension.of(obj);
             case ParentChildRelationExtension.TYPE_URI, ParentChildRelationExtension.TYPE_NAME ->
                     ParentChildRelationExtension.of(obj);
+            case CjLabelRelationExtension.TYPE_URI, CjLabelRelationExtension.TYPE_NAME ->
+                    CjLabelRelationExtension.of(obj);
 
             // FIXME this looses the original type value
             default -> DataExtension.of(obj);

@@ -13,6 +13,7 @@ import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.value.java.JavaJsonFactory;
+import com.graphinout.foundation.pure.value.ObjectRef;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.cj.OcifCj.OcifInCj;
 import com.graphinout.reader.ocif.document.IOcifNode;
@@ -22,6 +23,7 @@ import com.graphinout.reader.ocif.document.IOcifResource;
 import com.graphinout.reader.ocif.document.extension.DataExtension;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.canvas.CjDocumentCanvasExtension;
+import com.graphinout.reader.ocif.document.extension.canvas.CjGraphStructureCanvasExtension;
 import com.graphinout.reader.ocif.document.extension.canvas.IOcifCanvasExtension;
 import com.graphinout.reader.ocif.document.extension.node.IOcifNodeExtension;
 import com.graphinout.reader.ocif.document.extension.node.PortsNodeExtension;
@@ -104,10 +106,14 @@ public class OcifDoc2CjDoc {
     private static void ocifDocument2cjDocument(OcifDocument ocifDocument, ICjDocumentMutable cjDocument) {
         // restore CJ document level properties from canvas extension
         IJsonArrayMutable unknownExt = factory().createArrayMutable();
+        CjGraphStructureCanvasExtension structure = null;
         for (IOcifCanvasExtension ext : ocifDocument.canvasExtensions()) {
             if (ext instanceof CjDocumentCanvasExtension cjDocumentCanvasExt) {
                 ifPresentAccept(cjDocumentCanvasExt.context(), cjDocument::context);
                 ifPresentAccept(cjDocumentCanvasExt.connectedJson(), cjDocument::connectedJson);
+            } else if (ext instanceof CjGraphStructureCanvasExtension cjStructure) {
+                // captured below; this only records the CJ graph tree, not visual content
+                structure = cjStructure;
             } else if (ext instanceof DataExtension dataExt) {
                 // Import OCIF document-level custom data as CJ data
                 cjDocument.dataMutable(d -> d.setJsonValue(dataExt.toJson()));
@@ -120,8 +126,34 @@ public class OcifDoc2CjDoc {
         }
 
 
-        // OCIF canvas to CJ graph
-        if (!ocifDocument.nodes().isEmpty() || !ocifDocument.relations().isEmpty()) {
+        // OCIF canvas to CJ graph(s)
+        final CjGraphStructureCanvasExtension cjStructure = structure;
+        if (cjStructure != null && !cjStructure.isEmpty()) {
+            // Rebuild the original CJ graph tree (multiple graphs, nested graphs, graph data) recorded by the writer.
+            NodeIndex index = new NodeIndex(ocifDocument);
+            ObjectRef<ICjGraphMutable> firstGraph = ObjectRef.createNull();
+            for (CjGraphStructureCanvasExtension.GraphInfo gi : cjStructure.graphs()) {
+                cjDocument.addGraph(cjGraph -> {
+                    if (firstGraph.get() == null) firstGraph.set(cjGraph);
+                    buildCjGraph(ocifDocument, cjStructure, index, gi, cjGraph);
+                });
+            }
+            // Any OCIF nodes/relations not claimed by a recorded graph (e.g. id-less hyperedge relations, or content
+            // not referenced by the structure) must still survive: append them to the first graph (creating one if the
+            // structure recorded no graphs at all).
+            if (!index.nodesById.isEmpty() || !index.relationsById.isEmpty() || !index.relationsNoId.isEmpty()) {
+                if (firstGraph.get() == null) {
+                    cjDocument.addGraph(firstGraph::set);
+                }
+                ICjGraphMutable g = firstGraph.get();
+                index.nodesById.values().forEach(ocifNode ->
+                        g.addNode(cjNode -> ocifNode2cjNode(ocifDocument, ocifNode, cjNode)));
+                index.relationsById.values().forEach(ocifRelation ->
+                        g.addEdge(cjEdge -> ocifRelation2cjEdge(ocifRelation, cjEdge)));
+                index.relationsNoId.forEach(ocifRelation ->
+                        g.addEdge(cjEdge -> ocifRelation2cjEdge(ocifRelation, cjEdge)));
+            }
+        } else if (!ocifDocument.nodes().isEmpty() || !ocifDocument.relations().isEmpty()) {
             cjDocument.addGraph(cjGraph -> ocifDocument2cjGraph(ocifDocument, cjGraph));
         }
 
@@ -130,6 +162,55 @@ public class OcifDoc2CjDoc {
 
         if (!ocifDocLevelData.isEmpty()) {
             cjDocument.dataMutable(d -> d.add(OcifInCj.OCIF_DOCUMENT, ocifDocLevelData.jsonObject()));
+        }
+    }
+
+    /** Lookup of OCIF nodes/relations by id, tracking which were already placed into a CJ graph. */
+    private static final class NodeIndex {
+        final java.util.Map<String, IOcifNode> nodesById = new java.util.LinkedHashMap<>();
+        final java.util.Map<String, IOcifRelation> relationsById = new java.util.LinkedHashMap<>();
+        final java.util.List<IOcifRelation> relationsNoId = new java.util.ArrayList<>();
+
+        NodeIndex(OcifDocument doc) {
+            for (IOcifNode n : doc.nodes()) {
+                if (n.id() != null) nodesById.put(n.id(), n);
+            }
+            for (IOcifRelation r : doc.relations()) {
+                if (r.id() != null) relationsById.put(r.id(), r);
+                else relationsNoId.add(r);
+            }
+        }
+    }
+
+    /** Build a CJ graph from a recorded {@link CjGraphStructureCanvasExtension.GraphInfo}. */
+    private static void buildCjGraph(OcifDocument ocifDocument, CjGraphStructureCanvasExtension structure,
+                                     NodeIndex index, CjGraphStructureCanvasExtension.GraphInfo gi,
+                                     ICjGraphMutable cjGraph) {
+        ifPresentAccept(gi.id, cjGraph::id);
+        if (gi.data != null) {
+            cjGraph.dataMutable(d -> d.setJsonValue(gi.data));
+        }
+        for (String nodeId : gi.nodeIds) {
+            IOcifNode ocifNode = index.nodesById.remove(nodeId);
+            if (ocifNode == null) continue;
+            cjGraph.addNode(cjNode -> {
+                ocifNode2cjNode(ocifDocument, ocifNode, cjNode);
+                // graphs nested inside this node
+                java.util.List<CjGraphStructureCanvasExtension.GraphInfo> nested = structure.nodeGraphs().get(nodeId);
+                if (nested != null) {
+                    for (CjGraphStructureCanvasExtension.GraphInfo child : nested) {
+                        cjNode.addGraph(childGraph -> buildCjGraph(ocifDocument, structure, index, child, childGraph));
+                    }
+                }
+            });
+        }
+        for (String edgeId : gi.edgeIds) {
+            IOcifRelation ocifRelation = index.relationsById.remove(edgeId);
+            if (ocifRelation == null) continue;
+            cjGraph.addEdge(cjEdge -> ocifRelation2cjEdge(ocifRelation, cjEdge));
+        }
+        for (CjGraphStructureCanvasExtension.GraphInfo child : gi.graphs) {
+            cjGraph.addGraph(childGraph -> buildCjGraph(ocifDocument, structure, index, child, childGraph));
         }
     }
 

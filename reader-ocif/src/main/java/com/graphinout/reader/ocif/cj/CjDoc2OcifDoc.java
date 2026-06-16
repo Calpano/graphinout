@@ -13,7 +13,6 @@ import com.graphinout.base.cj.document.ICjLabel;
 import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.base.cj.document.ICjPort;
 import com.graphinout.foundation.pure.input.ContentError;
-import com.graphinout.foundation.pure.input.Location;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
@@ -32,6 +31,7 @@ import com.graphinout.reader.ocif.document.IOcifResourceMutable;
 import com.graphinout.reader.ocif.document.extension.DataExtension;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
 import com.graphinout.reader.ocif.document.extension.canvas.CjDocumentCanvasExtension;
+import com.graphinout.reader.ocif.document.extension.canvas.CjGraphStructureCanvasExtension;
 import com.graphinout.reader.ocif.document.extension.canvas.IOcifCanvasExtension;
 import com.graphinout.reader.ocif.document.extension.node.IOcifNodeExtension;
 import com.graphinout.reader.ocif.document.extension.node.PortsNodeExtension;
@@ -151,16 +151,62 @@ public class CjDoc2OcifDoc {
             ocifDocument.addCanvasExtension(cjDocumentCanvasExtension);
         }
 
-        try {
-            ICjGraph cjGraph = cjDoc.theGraph();
-            if (cjGraph != null) {
-                addCjGraphToOcifDocument(cjGraph, ocifDocument, errorHandler);
+        // Export every top-level CJ graph (OCIF is a single flat canvas) ...
+        cjDoc.graphs().forEach(cjGraph -> addCjGraphToOcifDocument(cjGraph, ocifDocument, errorHandler));
+
+        // ... and preserve the CJ graph tree (multiple graphs, nesting, graph-level data) as a canvas extension,
+        // ONLY when that structure cannot be reconstructed from a single flat OCIF canvas. A document with a single
+        // top-level graph that has no graph-level data and no nested graphs maps losslessly onto the flat canvas, so we
+        // emit nothing extra (keeping the OCIF output clean and stable for OCIF-native consumers).
+        if (needsStructureExtension(cjDoc)) {
+            CjGraphStructureCanvasExtension structure = new CjGraphStructureCanvasExtension();
+            cjDoc.graphs().forEach(cjGraph -> structure.graphs().add(toGraphInfo(cjGraph, structure)));
+            if (!structure.isEmpty()) {
+                ocifDocument.addCanvasExtension(structure);
             }
-        } catch (IllegalStateException e) {
-            errorHandler.accept(ContentError.of(ContentError.ErrorLevel.Warn, "Can only export 1 graph tp OCIF", Location.UNAVAILABLE));
         }
 
         return ocifDocument;
+    }
+
+    /**
+     * @return true if the CJ document's graph structure cannot be losslessly represented by a single flat OCIF canvas,
+     * i.e. there is more than one top-level graph, or any graph carries graph-level data, or any node has a nested
+     * graph, or there are nested graphs-in-graphs.
+     */
+    private static boolean needsStructureExtension(ICjDocument cjDoc) {
+        List<? extends ICjGraph> topGraphs = cjDoc.graphs().toList();
+        if (topGraphs.size() != 1) {
+            return true;
+        }
+        return graphNeedsStructure(topGraphs.get(0));
+    }
+
+    private static boolean graphNeedsStructure(ICjGraph cjGraph) {
+        boolean hasData = cjGraph.data() != null && cjGraph.data().jsonValue() != null;
+        boolean hasNestedInGraph = cjGraph.graphs().findAny().isPresent();
+        boolean hasNestedInNode = cjGraph.nodes().anyMatch(n -> n.graphs().findAny().isPresent());
+        return hasData || hasNestedInGraph || hasNestedInNode;
+    }
+
+    /** Record a CJ graph (skeleton) and, recursively, any graphs nested inside its nodes. */
+    private static CjGraphStructureCanvasExtension.GraphInfo toGraphInfo(ICjGraph cjGraph, CjGraphStructureCanvasExtension structure) {
+        CjGraphStructureCanvasExtension.GraphInfo gi = new CjGraphStructureCanvasExtension.GraphInfo();
+        gi.id = cjGraph.id();
+        ifPresentAccept(cjGraph.data(), ICjData::jsonValue, jv -> gi.data = jv);
+        cjGraph.nodes().forEach(n -> {
+            if (n.id() != null) gi.nodeIds.add(n.id());
+            // graphs nested inside this node
+            var nested = n.graphs().map(child -> toGraphInfo(child, structure)).toList();
+            if (!nested.isEmpty() && n.id() != null) {
+                structure.nodeGraphs().put(n.id(), new java.util.ArrayList<>(nested));
+            }
+        });
+        cjGraph.edges().forEach(e -> {
+            if (e.id() != null) gi.edgeIds.add(e.id());
+        });
+        cjGraph.graphs().forEach(child -> gi.graphs.add(toGraphInfo(child, structure)));
+        return gi;
     }
 
     private static HyperedgeRelationExtension toOcifHyperEdgeRelationExtension(ICjEdge cjEdge) {

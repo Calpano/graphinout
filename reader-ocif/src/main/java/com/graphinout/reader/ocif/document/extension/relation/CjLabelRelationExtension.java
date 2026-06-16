@@ -2,8 +2,10 @@ package com.graphinout.reader.ocif.document.extension.relation;
 
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.document.ICjLabel;
+import com.graphinout.base.cj.document.impl.CjLabelElement;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.document.extension.OcifExtension;
 import org.jspecify.annotations.NonNull;
 
@@ -56,6 +58,15 @@ public class CjLabelRelationExtension extends OcifExtension implements IOcifRela
     }
 
     public static @NonNull CjLabelRelationExtension of(@NonNull ICjLabel cjLabel) {
+        return new CjLabelRelationExtension(cjLabel);
+    }
+
+    /** Parse from the OCIF JSON object form produced by {@link #toJson()}. */
+    public static @NonNull CjLabelRelationExtension of(@NonNull IJsonObject obj) {
+        IJsonValue labelVal = obj.get(CjConstants.LABEL);
+        ICjLabel cjLabel = (labelVal != null && labelVal.isArray())
+                ? ICjLabel.fromJsonValue(labelVal)
+                : new CjLabelElement();
         return new CjLabelRelationExtension(cjLabel);
     }
 
