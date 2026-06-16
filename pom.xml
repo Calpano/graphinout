@@ -47,6 +47,8 @@
         <module>reader-rdf</module>
         <module>reader-tgf</module>
         <module>reader-ddot</module>
+        <module>reader-plantuml</module>
+        <module>reader-structurizr-dsl</module>
         <module>reader-mermaid</module>
         <module>reader-d2</module>
         <module>reader-gtfs</module>

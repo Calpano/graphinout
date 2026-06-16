@@ -1,0 +1,17 @@
+adjlist, edge-list, graph6, sparse6,
+  digraph6
+
+
+Read-only (reader but no GioWriter) — captured in a trailing comment:
+
+gexf,
+adjlist,
+edge-list,
+gtfs,  -- fine
+graph6,
+sparse6,
+digraph6,
+tripletext -- fine
+
+
+upgrade CJ from 5 to 8
