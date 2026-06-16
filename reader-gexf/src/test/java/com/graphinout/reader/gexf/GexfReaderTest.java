@@ -29,7 +29,7 @@ class GexfReaderTest {
         reader.read(inputSource, stream);
         String json = json2StringWriter.jsonString();
         // two labelled nodes and one directed edge (GEXF defaultedgetype="directed" -> endpoint directions in/out)
-        assertThat(json).isEqualTo("{\"$schema\":\"https://j-s-o-n.org/schema/cj-7.0.0.json\",\"connectedJson\":{\"versionDate\":\"2026-01-15\",\"versionNumber\":\"7.0.0\"},\"graphs\":[{\"nodes\":[{\"id\":\"0\",\"label\":{\"entries\":[{\"value\":\"Hello\"}]}},{\"id\":\"1\",\"label\":{\"entries\":[{\"value\":\"World\"}]}}],\"edges\":[{\"endpoints\":[{\"node\":\"0\",\"direction\":\"in\"},{\"node\":\"1\",\"direction\":\"out\"}]}]}]}");
+        assertThat(json).isEqualTo("{\"$schema\":\"https://j-s-o-n.org/schema/cj-8.0.0.json\",\"connectedJson\":{\"versionDate\":\"2026-01-15\",\"versionNumber\":\"8.0.0\"},\"graphs\":[{\"nodes\":[{\"id\":\"0\",\"label\":{\"entries\":[{\"value\":\"Hello\"}]}},{\"id\":\"1\",\"label\":{\"entries\":[{\"value\":\"World\"}]}}],\"edges\":[{\"endpoints\":[{\"node\":\"0\",\"direction\":\"in\"},{\"node\":\"1\",\"direction\":\"out\"}]}]}]}");
     }
 
     @Test

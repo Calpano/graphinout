@@ -11,7 +11,7 @@ class CjAssertTest {
     void test() {
         String actual = """
                 {
-                  "$schema": "https://j-s-o-n.org/schema/cj-7.0.0.json",
+                  "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
                   "graphs": [
                     { "nodes": [
                         { "id": "a" },
@@ -23,7 +23,7 @@ class CjAssertTest {
                 }""";
         String expected = """
                 {
-                  "$schema": "https://j-s-o-n.org/schema/cj-7.0.0.json",
+                  "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
                   "graphs": [
                     { "nodes": [
                         { "id": "c" },

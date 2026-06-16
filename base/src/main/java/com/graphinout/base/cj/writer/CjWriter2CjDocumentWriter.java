@@ -109,7 +109,7 @@ public class CjWriter2CjDocumentWriter extends Json2JavaJsonWriter implements IC
 
     @Override
     public void edgeType(ICjElementType edgeType) {
-        // type can be on edge or endpoint (CJ 7.0.0)
+        // type can be on edge or endpoint (CJ 8.0.0)
         ICjEndpointMutable endpoint = stack.peekOrNull(ICjEndpointMutable.class);
         if (endpoint != null) {
             endpoint.type(edgeType.type());

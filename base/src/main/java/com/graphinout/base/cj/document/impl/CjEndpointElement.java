@@ -39,7 +39,7 @@ public class CjEndpointElement extends CjHasDataElement implements ICjEndpointMu
         cjWriter.nodeId(node);
         ofNullable(port).ifPresent(cjWriter::portId);
         ofNullable(direction).ifPresent(cjWriter::direction);
-        // CJ 7.0.0: endpoints can have a type
+        // CJ 8.0.0: endpoints can have a type
         ofNullable(type).ifPresent(t -> cjWriter.edgeType(ICjElementType.of(t)));
         fireDataMaybe(cjWriter);
         cjWriter.endpointEnd();

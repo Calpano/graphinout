@@ -28,7 +28,7 @@ public class RdfCj {
         /**
          * TODO content negotiation for an index.html and a vocab.rdf file
          */
-        public static final String VOC = "http://j-s-o-n.org/connected-json/7.0.0/cj/";
+        public static final String VOC = "http://j-s-o-n.org/connected-json/8.0.0/cj/";
 
         public static final String HAS_DATA = VOC + "hasData";
 

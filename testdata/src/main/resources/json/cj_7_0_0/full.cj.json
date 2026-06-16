@@ -1,7 +1,7 @@
 {
   "connectedJson": {
     "versionDate": "2025-07-14",
-    "versionNumber": "5.0.0"
+    "versionNumber": "8.0.0"
   },
   "@context": { "@vocab": "http://example.org/graph/" },
   "graphs": [

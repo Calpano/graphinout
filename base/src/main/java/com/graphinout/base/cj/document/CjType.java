@@ -157,7 +157,7 @@ public enum CjType {
         Edge.property(ID).is(Id);
         Edge.property(GRAPHS).is(ArrayOfGraphs);
         Edge.property(LABEL).is(Label);
-        // In v7.0.0, unified "type" key - treated as string (semantic distinction between String/Node/URI is handled at application level)
+        // In v8.0.0, unified "type" key - treated as string (semantic distinction between String/Node/URI is handled at application level)
         Edge.property(EDGE_OR_ENDPOINT__TYPE).is(ElementType);
         Edge.property(EDGE__ENDPOINTS).is(ArrayOfEndpoints);
         Edge.property(DATA).is(Data);
@@ -166,7 +166,7 @@ public enum CjType {
         Endpoint.property(ENDPOINT__NODE).is(NodeId);
         Endpoint.property(ENDPOINT__PORT).is(PortId);
         Endpoint.property(ENDPOINT__DIRECTION).is(Direction);
-        // In v7.0.0, unified "type" key - treated as string (semantic distinction between String/Node/URI is handled at application level)
+        // In v8.0.0, unified "type" key - treated as string (semantic distinction between String/Node/URI is handled at application level)
         Endpoint.property(EDGE_OR_ENDPOINT__TYPE).is(ElementType);
         Endpoint.property(DATA).is(Data);
 

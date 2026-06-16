@@ -1,0 +1,17 @@
+<configuration>
+    <!--
+      reader-graphml test logging. Default level is WARN so the test run stays quiet and fast
+      (the round-trip tests would otherwise dump full GraphML+CJ per resource → multi-MB output).
+      Override on demand, e.g.:  mvn -pl reader-graphml test -Dgio.log.level=debug
+      The pattern intentionally omits %C/%L (caller location) because computing it per line is slow.
+    -->
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5p %logger{0} - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="${gio.log.level:-warn}">
+        <appender-ref ref="Console"/>
+    </root>
+</configuration>

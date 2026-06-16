@@ -118,7 +118,7 @@ public class Cj2JsonWriter extends DelegatingJsonWriter implements ICjWriter {
 
     @Override
     public void edgeType(ICjElementType edgeType) {
-        // In v7.0.0, always use "type" key regardless of source
+        // In v8.0.0, always use "type" key regardless of source
         super.onKey(CjConstants.EDGE_OR_ENDPOINT__TYPE);
         onString(edgeType.type());
     }

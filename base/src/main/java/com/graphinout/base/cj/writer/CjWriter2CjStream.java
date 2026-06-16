@@ -143,7 +143,7 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     @Override
     public void edgeType(ICjElementType edgeType) {
-        // type can be on edge or endpoint (CJ 7.0.0)
+        // type can be on edge or endpoint (CJ 8.0.0)
         ICjEndpointMutable endpoint = stack.peekOrNull(ICjEndpointMutable.class);
         if (endpoint != null) {
             endpoint.type(edgeType.type());
@@ -233,7 +233,7 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     @Override
     public void labelEnd() {
-        // In v7.0.0, label is an object, so we pop it here
+        // In v8.0.0, label is an object, so we pop it here
         stack.pop(ICjLabelMutable.class);
     }
 
@@ -252,7 +252,7 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     @Override
     public void labelStart() {
-        // In v7.0.0, label is an object with an "entries" array
+        // In v8.0.0, label is an object with an "entries" array
         ICjHasLabelMutable hasLabel = currentHasLabel();
         if (hasLabel != null) {
             hasLabel.setLabel(stack::push);

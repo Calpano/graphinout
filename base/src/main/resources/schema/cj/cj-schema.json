@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://j-s-o-n.org/schema/cj-7.0.0.json",
-  "title": "Connected JSON (7.0.0)",
-  "description": "A JSON schema for Connected JSON v7.0.0. Connected JSON is a format for exchanging connected data like graphs and networks. URI: 'https://j-s-o-n.org/schema/connected-json/7.0.0'",
+  "$id": "https://j-s-o-n.org/schema/cj-8.0.0.json",
+  "title": "Connected JSON (8.0.0)",
+  "description": "A JSON schema for Connected JSON v8.0.0. Connected JSON is a format for exchanging connected data like graphs and networks. URI: 'https://j-s-o-n.org/schema/connected-json/8.0.0'",
   "type": "object",
   "additionalProperties": false,
   "definitions": {
@@ -258,7 +258,7 @@
           "type": "string"
         },
         "versionNumber": {
-          "description": "The specification version number used by the document, e.g., '7.0.0'.",
+          "description": "The specification version number used by the document, e.g., '8.0.0'.",
           "type": "string"
         },
         "canonical": {

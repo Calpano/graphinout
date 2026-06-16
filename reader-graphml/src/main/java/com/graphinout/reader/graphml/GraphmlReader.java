@@ -15,9 +15,6 @@ import com.graphinout.base.xml.sax.SimpleSaxErrorHandler;
 import com.graphinout.base.xml.factory.XmlFactory;
 import com.graphinout.base.xml.util.XmlTool;
 import com.graphinout.reader.graphml.cj.Graphml2CjWriter;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.Resource;
-import io.github.classgraph.ResourceList;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -26,13 +23,8 @@ import org.jspecify.annotations.Nullable;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -44,18 +36,26 @@ public class GraphmlReader extends BaseOutput implements GioReader {
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "GraphML",  ".graphml.xml", ".graphml");
 
     private static final Logger log = getLogger(GraphmlReader.class);
+
     /**
      * TODO This can load from config file - use only GraphML 1.1
-     * lists of schema contents
+     * lists of schema contents.
+     * <p>
+     * The schema map is the result of a full ClassGraph classpath scan for {@code *.xsd.xml} resources. That scan is
+     * expensive and its result never varies per input document, so it is computed once per JVM and shared (thread-safe,
+     * lazily, via the {@link SchemaCache} holder) across all reader instances and concurrent reads.
      */
-    private final Map<String, String> externalSchemaMap = new HashMap<>();
+    private final Map<String, String> externalSchemaMap;
 
     public GraphmlReader() {
+        Map<String, String> map;
         try {
-            loadSchemaFiles();
+            map = SchemaCache.externalSchemaMap();
         } catch (IOException e) {
             sendContentError_Warn("Schema loading failed", e);
+            map = Map.of();
         }
+        this.externalSchemaMap = map;
     }
 
 
@@ -132,34 +132,20 @@ public class GraphmlReader extends BaseOutput implements GioReader {
     void validateExternalSchema(SingleInputSource inputSource) throws SAXException, IOException, ParserConfigurationException {
         if (externalSchemaMap.isEmpty())
             throw sendContentError_Error(null, new IllegalStateException("no schemas loaded"), null);
+        if (externalSchemaMap.get("graphml.xsd.xml") == null) {
+            throw sendContentError_Error(null, new IllegalStateException("Required schema 'graphml.xsd.xml' not loaded"), null);
+        }
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(false);
         factory.setNamespaceAware(true);
-        SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        schemaFactory.setResourceResolver((type, namespaceURI, publicId, systemId, baseURI) -> {
-            // type: http://www.w3.org/2001/XMLSchema
-            // namespaceURI: http://graphml.graphdrawing.org/xmlns
-            // http://www.w3.org/1999/xlink
-
-            // publicId: null
-            // baseUri: null
-            // systemId: graphml-structure.xsd.xml
-
-            log.info("Requesting resource: type=" + type + ", namespaceURI=" + namespaceURI + ", publicId=" + publicId + ", systemId=" + systemId + ", baseURI=" + baseURI);
-            String content = externalSchemaMap.get(systemId);
-            if (content == null) {
-                log.warn("Schema resource not found for systemId: {}", systemId);
-                return null;
-            }
-            return new SchemaInfo(content, null, null, systemId);
-        });
-        String graphmlSchema = externalSchemaMap.get("graphml.xsd.xml");
-        if (graphmlSchema == null) {
-            throw sendContentError_Error(null, new IllegalStateException("Required schema 'graphml.xsd.xml' not loaded"), null);
+        // The compiled GraphML 1.1 schema is immutable and thread-safe; it is built once per JVM (see SchemaCache) and
+        // reused here, instead of re-scanning the classpath and re-compiling the XSD on every read.
+        try {
+            factory.setSchema(SchemaCache.graphmlSchema());
+        } catch (SAXException e) {
+            throw sendContentError_Error(null, e, null);
         }
-        Source source = new StreamSource(new StringReader(graphmlSchema));
-        factory.setSchema(schemaFactory.newSchema(source));
 
         SAXParser parser = factory.newSAXParser();
         XMLReader reader = parser.getXMLReader();
@@ -197,18 +183,6 @@ public class GraphmlReader extends BaseOutput implements GioReader {
         XMLReader reader = parser.getXMLReader();
         reader.setErrorHandler(new SimpleSaxErrorHandler(ContentErrors.SIMPLE_LOGGING));
         reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));
-    }
-
-    private void loadSchemaFiles() throws IOException {
-        ClassGraph cg = new ClassGraph();
-        try (ResourceList list = cg.scan().getAllResources().filter(r -> r.getPath().contains("schema") && r.getPath().toLowerCase().endsWith(".xsd.xml"))) {
-            for (Resource resource : list) {
-                String content = resource.getContentAsString();
-                int lastSlash = resource.getPath().lastIndexOf('/');
-                String schemaName = resource.getPath().substring(lastSlash + 1);
-                externalSchemaMap.put(schemaName, content);
-            }
-        }
     }
 
 }

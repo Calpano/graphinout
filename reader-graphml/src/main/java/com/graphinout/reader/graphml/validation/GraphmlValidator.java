@@ -37,6 +37,39 @@ public class GraphmlValidator {
     private static final Logger log = getLogger(GraphmlValidator.class);
 
     /**
+     * The compiled GraphML 1.1 schema. {@link Schema} is immutable and thread-safe, the schema never varies per input
+     * document, and compiling it is expensive, so it is built once per JVM and reused. Only the cheap (and not
+     * thread-safe) {@link Validator} is created per call via {@link Schema#newValidator()}.
+     * <p>
+     * Built lazily and thread-safely via the initialization-on-demand holder idiom.
+     */
+    private static final class SchemaHolder {
+        static final SAXException ERROR;
+        static final Schema SCHEMA;
+
+        static {
+            Schema schema = null;
+            SAXException error = null;
+            try {
+                String schemaAsString = IOUtils.resourceToString(xmlSchemaResource, StandardCharsets.UTF_8);
+                SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                factory.setErrorHandler(new SaxErrors2Log(log));
+                // resolve the GraphML sub-schemas (referenced by absolute graphdrawing.org URLs) to bundled local
+                // resources, so validation works offline (e.g. in CI) instead of fetching them over the network
+                factory.setResourceResolver(new BundledSchemaResolver());
+                Source schemaFile = new StreamSource(new StringReader(schemaAsString));
+                schema = factory.newSchema(schemaFile);
+            } catch (IOException e) {
+                error = new SAXException("Failed to load GraphML schema resource", e);
+            } catch (SAXException e) {
+                error = e;
+            }
+            SCHEMA = schema;
+            ERROR = error;
+        }
+    }
+
+    /**
      * Validate with GraphML Schema 1.1 including parseInfo and attribute types extensions
      *
      * @param inputSource
@@ -46,17 +79,11 @@ public class GraphmlValidator {
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
 
         try {
-            String schemaAsString = IOUtils.resourceToString(xmlSchemaResource, StandardCharsets.UTF_8);
+            if (SchemaHolder.ERROR != null) {
+                throw SchemaHolder.ERROR;
+            }
             SaxErrors2Log errorHandler = new SaxErrors2Log(log);
-
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            factory.setErrorHandler(errorHandler);
-            // resolve the GraphML sub-schemas (referenced by absolute graphdrawing.org URLs) to bundled local
-            // resources, so validation works offline (e.g. in CI) instead of fetching them over the network
-            factory.setResourceResolver(new BundledSchemaResolver());
-            Source schemaFile = new StreamSource(new StringReader(schemaAsString));
-            Schema schema = factory.newSchema(schemaFile);
-            Validator validator = schema.newValidator();
+            Validator validator = SchemaHolder.SCHEMA.newValidator();
             validator.setErrorHandler(errorHandler);
             Source source = new SAXSource(new org.xml.sax.InputSource(singleInputSource.inputStream()));
             validator.validate(source);

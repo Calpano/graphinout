@@ -89,7 +89,7 @@ public class Cj2GraphmlAndBackTest {
         // 'trade_transatlantic' is declared inside subgraph 'europe' but connects germany (in europe) with usa (in the
         // parent graph 'world'). GraphML requires it to be declared in 'world'.
         String jsonIn = """
-                { "$schema": "https://j-s-o-n.org/schema/cj-7.0.0.json",
+                { "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
                   "graphs": [ { "id": "world",
                     "nodes": [ { "id": "canada" }, { "id": "usa" } ],
                     "edges": [ { "id": "trade_na", "endpoints": [ { "node": "canada" }, { "node": "usa" } ] } ],

@@ -17,11 +17,11 @@ import static com.google.common.truth.Truth.assertThat;
 class CjFormatterTest {
 
     static String jsonInput = """
-            {"$schema":"https://calpano.github.io/connected-json/_attachments/cj-schema.json","$id":"https://j-s-o-n.org/schema/connected-json/5.0.0","graphs":[{"id":"world","nodes":[{"id":"canada"},{"id":"usa"}],"edges":[{"id":"trade_na","endpoints":[{"node":"canada"},{"node":"usa"}]}],"graphs":[{"id":"europe","label":[{"value":"European Partition"}],"nodes":[{"id":"france"},{"id":"germany"}],"edges":[{"id":"trade_eu","endpoints":[{"node":"france"},{"node":"germany"}]},{"id":"trade_transatlantic","endpoints":[{"node":"germany"},{"node":"usa"}]}]}]}]}
+            {"$schema":"https://calpano.github.io/connected-json/_attachments/cj-schema.json","$id":"https://j-s-o-n.org/schema/connected-json/8.0.0","graphs":[{"id":"world","nodes":[{"id":"canada"},{"id":"usa"}],"edges":[{"id":"trade_na","endpoints":[{"node":"canada"},{"node":"usa"}]}],"graphs":[{"id":"europe","label":[{"value":"European Partition"}],"nodes":[{"id":"france"},{"id":"germany"}],"edges":[{"id":"trade_eu","endpoints":[{"node":"france"},{"node":"germany"}]},{"id":"trade_transatlantic","endpoints":[{"node":"germany"},{"node":"usa"}]}]}]}]}
             """;
     static String formatted = """
             { "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
-              "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+              "$id": "https://j-s-o-n.org/schema/connected-json/8.0.0",
               "graphs":
                 [ { "id": "world",
                     "nodes":

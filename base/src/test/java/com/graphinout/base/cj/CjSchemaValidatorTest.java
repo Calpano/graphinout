@@ -13,7 +13,7 @@ public class CjSchemaValidatorTest {
     @Test
     void test() throws IOException {
 //        "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
-//                "$id": "https://j-s-o-n.org/schema/connected-json/5.0.0",
+//                "$id": "https://j-s-o-n.org/schema/connected-json/8.0.0",
 
         SingleInputSourceOfString is = SingleInputSourceOfString.of("test", """
                 {

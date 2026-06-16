@@ -30,6 +30,7 @@
     </properties>
 
     <dependencies>
+        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId></dependency>
 
         <!-- Test Dependencies -->

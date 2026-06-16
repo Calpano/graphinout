@@ -1,5 +1,5 @@
 {
-  "$schema": "https://j-s-o-n.org/schema/cj-7.0.0.json",
+  "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
   "graphs": [
     {
       "id": "g1",

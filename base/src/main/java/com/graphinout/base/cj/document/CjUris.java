@@ -13,7 +13,7 @@ public class CjUris {
     /**
      * Expand an ID to a full URI using the {@code @context} namespace map.
      * <p>
-     * Rules (per CJ 7.0.0 spec):
+     * Rules (per CJ 8.0.0 spec):
      * <ol>
      *   <li>If id starts with {@code _:} → blank node identifier, returned as-is.</li>
      *   <li>If id contains {@code :} → prefix (before first colon) is looked up in context.

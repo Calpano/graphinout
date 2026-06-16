@@ -19,8 +19,8 @@
     <logger name="com.graphinout.reader.graphml.GraphmlSAXHandler" level="INFO" />
     <logger name="com.graphinout.reader.graphml.validation.graphml.graphml.ValidatingGraphMlWriter" level="INFO" />
 
-    <!-- if higher than warn every other package (like Apache httpClient), logs too much -->
-    <root level="debug">
+    <!-- Default to WARN so test runs stay quiet/fast; override with -Dgio.log.level=debug (or info/trace). -->
+    <root level="${gio.log.level:-warn}">
         <appender-ref ref="Console" />
     </root>
 

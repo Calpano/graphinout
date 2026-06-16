@@ -24,7 +24,7 @@ public class JsonSchemaValidator {
 
     public record JsonSchemaDef(String id, @Nullable String resourcePath, String url, @Nullable String fetchUrl) {}
 
-    public static final JsonSchemaDef CJ = new JsonSchemaDef("https://j-s-o-n.org/schema/connected-json/5.0.0", "/schema/cj/cj-schema.json", "https://calpano.github.io/connected-json/_attachments/cj-schema.json", "https://github.com/Calpano/connected-json/blob/main/modules/ROOT/attachments/cj-schema.json");
+    public static final JsonSchemaDef CJ = new JsonSchemaDef("https://j-s-o-n.org/schema/connected-json/8.0.0", "/schema/cj/cj-schema.json", "https://calpano.github.io/connected-json/_attachments/cj-schema.json", "https://github.com/Calpano/connected-json/blob/main/modules/ROOT/attachments/cj-schema.json");
 
     public static final JsonSchemaDef OCIF_06 = new JsonSchemaDef("https://json-schema.org/draft/2020-12/schema", "/ocif-schema-v0.6.json", "https://json-schema.org/draft/2020-12/schema", "https://raw.githubusercontent.com/ocwg/spec/refs/heads/main/spec/v0.6/schema.json");
     private static final Logger log = getLogger(JsonSchemaValidator.class);

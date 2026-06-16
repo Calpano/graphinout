@@ -57,7 +57,7 @@ public class CjDocsTestData {
      */
     public static ICjDocument documentWithMetadata() {
         ICjDocumentMutable cjDoc = new CjDocumentElement();
-        cjDoc.connectedJson(cj -> cj.versionNumber("5.0.0").versionDate("2025-07-14").canonical(true));
+        cjDoc.connectedJson(cj -> cj.versionNumber("8.0.0").versionDate("2025-07-14").canonical(true));
         return cjDoc;
     }
 

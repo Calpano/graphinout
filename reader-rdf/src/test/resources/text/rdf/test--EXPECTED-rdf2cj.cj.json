@@ -1,6 +1,6 @@
 {
   "@context": {"ex": "https://example.com/"},
-  "connectedJson": { "canonical": false, "versionDate": "2026-01-15", "versionNumber": "7.0.0" }, "graphs": [
+  "connectedJson": { "canonical": false, "versionDate": "2026-01-15", "versionNumber": "8.0.0" }, "graphs": [
   {
     "nodes": [
       { "id": "ex:Alice" },
