@@ -5,21 +5,21 @@
     <parent>
         <artifactId>graphinout</artifactId>
         <groupId>com.graphinout</groupId>
-        <version>0.1.15-SNAPSHOT</version>
+        <version>0.2.0</version>
     </parent>
 
     <artifactId>engine</artifactId>
     <name>engine</name>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.1.15-SNAPSHOT</version>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.0</version>
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.1.15-SNAPSHOT</version>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.0</version>
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
@@ -27,50 +27,50 @@
 
 
         <!-- Main Dependencies: depend on every reader module so the ServiceLoader discovers all of them -->
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-d2</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ddot</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-dot</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-example</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gexf</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gml</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gtfs</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-jgrapht</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-mermaid</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-neo4j</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif07</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-pgformat</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-plantuml</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-rdf</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-structurizr-dsl</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tgf</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.1.15-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-d2</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ddot</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-dot</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-example</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gexf</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gml</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gtfs</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-jgrapht</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-mermaid</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-neo4j</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif07</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-pgformat</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-plantuml</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-rdf</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-structurizr-dsl</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tgf</artifactId><version>0.2.0</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.2.0</version></dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <!-- Test Dependencies: test-jars of every reader, so cross-format tests can reach their test helpers -->
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-d2</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ddot</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-dot</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-example</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gexf</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gml</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gtfs</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-jgrapht</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-mermaid</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-neo4j</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif07</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-pgformat</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-plantuml</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-rdf</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-structurizr-dsl</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tgf</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.1.15-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-d2</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ddot</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-dot</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-example</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gexf</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gml</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-gtfs</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-jgrapht</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-mermaid</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-neo4j</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif07</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-pgformat</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-plantuml</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-rdf</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-structurizr-dsl</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tgf</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.2.0</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
 
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>

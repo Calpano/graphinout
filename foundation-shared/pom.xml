@@ -5,7 +5,7 @@
     <parent>
         <artifactId>graphinout</artifactId>
         <groupId>com.graphinout</groupId>
-        <version>0.1.15-SNAPSHOT</version>
+        <version>0.2.0</version>
     </parent>
 
     <artifactId>foundation-shared</artifactId>
