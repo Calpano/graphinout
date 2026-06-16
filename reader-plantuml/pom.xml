@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.graphinout</groupId>
+        <artifactId>graphinout</artifactId>
+        <version>0.1.15-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>reader-plantuml</artifactId>
+    <name>reader-plantuml</name>
+    <description>Reader/Writer for PlantUML class diagrams (uses the MIT-licensed PlantUML library)</description>
+
+    <dependencies>
+        <!-- Main Dependencies -->
+        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
+        <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
+        <!-- PlantUML parser, MIT-licensed variant (the plain `plantuml` artifact is GPL) -->
+        <dependency><groupId>net.sourceforge.plantuml</groupId><artifactId>plantuml-mit</artifactId><version>1.2026.6</version></dependency>
+
+        <!-- Test Dependencies -->
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId>
+            <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
+        </dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
+            <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
+        </dependency>
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope></dependency>
+    </dependencies>
+</project>
