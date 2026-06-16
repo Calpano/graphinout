@@ -437,11 +437,60 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         }
     }
 
+    /**
+     * Emit one CJ edge for a DOT edge from {@code a} to {@code b}. In a digraph (directed), the left endpoint is the
+     * source (direction {@code in}) and the right endpoint is the target (direction {@code out}), matching the CJ
+     * convention. In an undirected graph both endpoints are {@code undir}.
+     */
+    private static void addEdge(ICjGraphMutable g, NodeRef a, NodeRef b, boolean directed, List<Attr> attrsAccum) {
+        g.addEdge(e -> {
+            e.addEndpoint(ep -> {
+                ep.node(a.nodeId);
+                if (a.port != null) ep.port(a.port);
+                ep.direction(directed ? CjDirection.IN : CjDirection.UNDIR);
+            });
+            e.addEndpoint(ep -> {
+                ep.node(b.nodeId);
+                if (b.port != null) ep.port(b.port);
+                ep.direction(directed ? CjDirection.OUT : CjDirection.UNDIR);
+            });
+            applyAttrsToHasDataAndLabel(attrsAccum, e);
+        });
+    }
+
     private static ICjNodeMutable createNode(ICjGraphMutable g, String id) {
         final ICjNodeMutable[] ref = new ICjNodeMutable[1];
         g.addNode(n -> {
             n.id(id);
             ref[0] = n;
+        });
+        return ref[0];
+    }
+
+    private record NodeCluster(String nodeId, String innerId) {}
+
+    /**
+     * Recognise a DOT subgraph that encodes a node's nested graph (written by {@code CjDocument2Dot}). The cluster name
+     * has the shape {@code cluster_nodegraph__<nodeId>__graph__<innerId>}.
+     *
+     * @return the owning node id and inner graph id, or {@code null} if this is an ordinary subgraph
+     */
+    private static @Nullable NodeCluster parseNodeCluster(@Nullable String subId) {
+        if (subId == null || !subId.startsWith(CjDocument2Dot.NODE_CLUSTER_PREFIX)) return null;
+        String rest = subId.substring(CjDocument2Dot.NODE_CLUSTER_PREFIX.length());
+        int sep = rest.indexOf(CjDocument2Dot.NODE_CLUSTER_SEP);
+        if (sep < 0) return null;
+        String nodeId = rest.substring(0, sep);
+        String innerId = rest.substring(sep + CjDocument2Dot.NODE_CLUSTER_SEP.length());
+        if (nodeId.isEmpty()) return null;
+        return new NodeCluster(nodeId, innerId);
+    }
+
+    private static ICjGraphMutable createNodeSubgraph(ICjNodeMutable owner, @Nullable String id) {
+        final ICjGraphMutable[] ref = new ICjGraphMutable[1];
+        owner.addGraph(gg -> {
+            if (id != null) gg.id(id);
+            ref[0] = gg;
         });
         return ref[0];
     }
@@ -598,19 +647,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                             for (NodeRef b : right) {
                                 nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
                                 nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
-                                g.addEdge(e -> {
-                                    e.addEndpoint(ep -> {
-                                        ep.node(a.nodeId);
-                                        if (a.port != null) ep.port(a.port);
-                                        ep.direction(CjDirection.UNDIR);
-                                    });
-                                    e.addEndpoint(ep -> {
-                                        ep.node(b.nodeId);
-                                        if (b.port != null) ep.port(b.port);
-                                        ep.direction(CjDirection.UNDIR);
-                                    });
-                                    applyAttrsToHasDataAndLabel(attrsAccum, e);
-                                });
+                                addEdge(g, a, b, directed, attrsAccum);
                             }
                     }
                     p.consumeOptionalSemicolon();
@@ -686,19 +723,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                             for (NodeRef b : right) {
                                 nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
                                 nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
-                                g.addEdge(e -> {
-                                    e.addEndpoint(ep -> {
-                                        ep.node(a.nodeId);
-                                        if (a.port != null) ep.port(a.port);
-                                        ep.direction(CjDirection.UNDIR);
-                                    });
-                                    e.addEndpoint(ep -> {
-                                        ep.node(b.nodeId);
-                                        if (b.port != null) ep.port(b.port);
-                                        ep.direction(CjDirection.UNDIR);
-                                    });
-                                    applyAttrsToHasDataAndLabel(attrsAccum, e);
-                                });
+                                addEdge(g, a, b, directed, attrsAccum);
                             }
                     }
                     p.consumeOptionalSemicolon();
@@ -713,7 +738,15 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 String subId = p.tryReadIdOrString();
                 p.skipWs();
                 if (!p.eof() && p.peek() == CURLY_BRACE_OPEN) {
-                    ICjGraphMutable sub = createSubgraph(g, subId);
+                    NodeCluster nc = parseNodeCluster(subId);
+                    ICjGraphMutable sub;
+                    if (nc != null) {
+                        // nested-graphs-in-nodes: attach this subgraph to the owning node, not to the parent graph
+                        ICjNodeMutable owner = nodesById.computeIfAbsent(nc.nodeId, id -> createNode(g, id));
+                        sub = createNodeSubgraph(owner, nc.innerId.isEmpty() ? null : nc.innerId);
+                    } else {
+                        sub = createSubgraph(g, subId);
+                    }
                     p.expect(CURLY_BRACE_OPEN);
                     parseStatements(p, sub, directed);
                     p.skipWs();
@@ -820,19 +853,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                             // ensure nodes exist
                             nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
                             nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
-                            g.addEdge(e -> {
-                                e.addEndpoint(ep -> {
-                                    ep.node(a.nodeId);
-                                    if (a.port != null) ep.port(a.port);
-                                    ep.direction(CjDirection.UNDIR);
-                                });
-                                e.addEndpoint(ep -> {
-                                    ep.node(b.nodeId);
-                                    if (b.port != null) ep.port(b.port);
-                                    ep.direction(CjDirection.UNDIR);
-                                });
-                                applyAttrsToHasDataAndLabel(attrsAccum, e);
-                            });
+                            addEdge(g, a, b, directed, attrsAccum);
                         }
                     }
                 }

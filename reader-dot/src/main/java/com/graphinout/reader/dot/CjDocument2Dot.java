@@ -18,6 +18,11 @@ public class CjDocument2Dot {
     private static final String DOT_RAW_KEY = "dot.raw";
     private static final String DOT_TYPE_KEY = "dot.type"; // "graph" or "digraph"
 
+    /** Prefix marking a DOT subgraph that holds a node's nested graph (nested-graphs-in-nodes). */
+    public static final String NODE_CLUSTER_PREFIX = "cluster_nodegraph__";
+    /** Separator between owning-node id and inner-graph id within a node-cluster subgraph name. */
+    public static final String NODE_CLUSTER_SEP = "__graph__";
+
     public static void toDotSyntax(ICjDocument cjDoc, ITextWriter textWriter) {
         // Prefer passthrough if original DOT text is present; preserves exact round-trip for DOT inputs.
         String raw = extractRawDot(cjDoc);
@@ -42,6 +47,13 @@ public class CjDocument2Dot {
         if (raw == null) return null;
         String dot = raw.asString();
         return dot.isEmpty() ? null : dot;
+    }
+
+    /** Order endpoints for a directed DOT edge: source (IN) first, undirected middle, target (OUT) last. */
+    private static int directedRank(ICjEndpoint ep) {
+        if (ep.direction() == CjDirection.IN) return 0;
+        if (ep.direction() == CjDirection.OUT) return 2;
+        return 1;
     }
 
     private static void writeRaw(String dot, ITextWriter textWriter) {
@@ -145,6 +157,27 @@ public class CjDocument2Dot {
             for (String s : stmts) line(s);
             // second pass: duplicate emissions
             for (String s : dupStmts) line(s);
+            // third pass: nested graphs owned by a node -> emit as DOT clusters (registry: "Via subgraphs/clusters").
+            // The cluster name encodes the owning node id and the inner graph id so the reader can reattach it to the
+            // node (nested-graphs-in-nodes), rather than to the parent graph.
+            g.nodes().forEach(n -> {
+                String nodeId = n.id();
+                if (nodeId == null) return;
+                n.graphs().forEach(inner -> writeNodeCluster(nodeId, inner));
+            });
+        }
+
+        private void writeNodeCluster(String nodeId, ICjGraph inner) {
+            String innerId = inner.id() == null ? "" : inner.id();
+            String clusterName = NODE_CLUSTER_PREFIX + nodeId + NODE_CLUSTER_SEP + innerId;
+            line("subgraph " + idOrString(clusterName) + " {");
+            indent(() -> {
+                writeGraphAttrs(inner);
+                writeNodes(inner);
+                writeEdges(inner, isDirectedGraph(inner));
+                writeSubgraphs(inner);
+            });
+            line("}");
         }
 
         private void writeEdges(ICjGraph g, boolean directed) {
@@ -152,9 +185,15 @@ public class CjDocument2Dot {
             g.edges().forEach(e -> {
                 List<ICjEndpoint> eps = e.endpoints().toList();
                 if (eps.size() < 2) return; // need at least 2 endpoints
-                // sort endpoints to get stable order by node id
                 eps = new ArrayList<>(eps);
-                eps.sort(Comparator.comparing(ICjEndpoint::node, Comparator.nullsLast(String::compareTo)));
+                if (directed) {
+                    // Preserve source->target order: IN (source) endpoints first, OUT (target) last.
+                    // This keeps the DOT '->' direction faithful to the CJ edge.
+                    eps.sort(Comparator.comparingInt(CjDocument2Dot::directedRank));
+                } else {
+                    // sort endpoints to get stable order by node id
+                    eps.sort(Comparator.comparing(ICjEndpoint::node, Comparator.nullsLast(String::compareTo)));
+                }
                 String chain = eps.stream()
                         .map(this::endpointRef)
                         .collect(Collectors.joining(" " + op + " "));
