@@ -87,6 +87,9 @@ You found a bug or want a feature? Please https://github.com/Calpano/graphinout/
 == Questions?
 image:https://deepwiki.com/badge.svg[Ask DeepWiki, link="https://deepwiki.com/Calpano/graphinout"]
 
+== Background: Graph Formats
+There are so many different formats, that we spun them off in their own registry: https://github.com/Calpano/graph-format-registry[]
+
 == Background: Introduction to Graphs
 A graph is first a mathematical concept.
 As it turns out, it is rather a family of concepts.
