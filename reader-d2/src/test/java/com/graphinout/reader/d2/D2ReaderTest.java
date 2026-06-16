@@ -136,8 +136,11 @@ class D2ReaderTest {
         underTest.setContentErrorHandler(errors::add);
         underTest.read(mockInputSrc, mockCjStream);
 
-        // cloud, cloud.server1, cloud.server2 — 3 unique nodes
-        verify(mockCjStream, times(3)).node(any(ICjNodeChunk.class));
+        // 'cloud' is a container: emitted as a nested node (nodeStart/nodeEnd wrapping a subgraph) holding the two
+        // leaf shapes 'server1' and 'server2' (each emitted via the single-shot node()).
+        verify(mockCjStream, times(1)).nodeStart(any(ICjNodeChunk.class));
+        verify(mockCjStream, times(1)).nodeEnd();
+        verify(mockCjStream, times(2)).node(any(ICjNodeChunk.class)); // cloud.server1, cloud.server2
         verify(mockCjStream, times(1)).edge(any(ICjEdgeChunk.class));
         assertThat(errors).isEmpty();
     }
