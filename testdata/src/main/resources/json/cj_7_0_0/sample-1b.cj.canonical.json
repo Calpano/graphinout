@@ -1,9 +1,0 @@
-{
-  "graphs": [
-    { "nodes": [
-        { "id": "node1", "data": "string at node" }
-      ],
-      "data": { "foo": "at-graph" }
-    }
-  ]
-}

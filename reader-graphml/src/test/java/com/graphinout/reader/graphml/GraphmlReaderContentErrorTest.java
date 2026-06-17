@@ -30,7 +30,7 @@ class GraphmlReaderContentErrorTest {
 
     @Test
     void elementsGraphmlDoesNotAllowCharacter_invalid_root() throws Exception {
-        String resourcePath = "xml/graphml/synthetic/invalidgraphml-root.graphml";
+        String resourcePath = "xml/graphml/synthetic/root--INVALIDgraphml.graphml";
         Resource resource = TestFileUtil.resource(resourcePath);
         assertThat(resource).isNotNull();
         String content = resource.getContentAsString();

@@ -33,7 +33,7 @@ public class CjTest {
 
     @Test
     void testBaseUri() throws IOException {
-        String resource = "json/cj_7_0_0/baseuris.cj.json";
+        String resource = "json/connected-json/connected-json-7.0.0/baseuris.cj.json";
         Resource res = TestFileUtil.resource(resource);
         assertThat(res).isNotNull();
 

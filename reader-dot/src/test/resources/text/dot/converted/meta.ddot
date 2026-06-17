@@ -1,0 +1,19 @@
+Converted GraphML test fixtures (graphinout reader-dot)
+
+These are project-own, derived test fixtures: the GraphML OUTPUT produced by
+converting a DOT source file to GraphML. They are used as expected-output /
+golden files. example12_converted has no file extension but its content is
+GraphML (verified: <graphml xmlns="http://graphml.graphdrawing.org/xmlns" ...>).
+
+Folder-wide facts:
+ddot.it/this ..kind.. synthetic
+ddot.it/this ..authored by.. Calpano (graphinout project)
+ddot.it/this ..license.. not stated (public domain unless otherwise stated)
+ddot.it/this ..format.. format:graphml
+ddot.it/this ..content.. GraphML output of DOT-to-GraphML conversion (derived golden files)
+ddot.it/this ..derived from.. DOT source converted to GraphML
+
+Per-file:
+
+example_converted.graphml ..content.. directed GraphML (edgedefault="directed"), six nodes A1..B3, edges with label data and tailport/headport (value="s") data; preserves quote/apostrophe chars in label "(g o f)'""
+example12_converted ..content.. directed GraphML (id="D"), task_* nodes with label data ("done" or empty/unclosed label data), edges forming a task dependency chain; GraphML output file with no .graphml extension

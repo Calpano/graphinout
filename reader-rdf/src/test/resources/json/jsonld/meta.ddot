@@ -1,0 +1,260 @@
+# Metadata for JSON-LD (.jsonld) RDF test data
+
+This folder holds collected JSON-LD test files used to exercise the
+reader-rdf JSON-LD parser. The files come from four sources:
+
+- W3C test suites (w3c-*.jsonld and fromRdf-NNNN-out.jsonld):
+  fragments and expected outputs from the W3C JSON-LD API / RDF test
+  suites. The fromRdf-NNNN-out.jsonld files are the EXPECTED JSON-LD
+  outputs produced when converting RDF (the matching fromRdf-NNNN-in.nq
+  N-Quads inputs, which live under text/rdf/nq/) into JSON-LD.
+- DBpedia (dbpedia-*.jsonld): real entity data exported from DBpedia.
+- EasyRdf (easyrdf-*.jsonld): the FOAF example fixture from EasyRdf.
+- schema.org (schemaorg-current-https.jsonld): the complete schema.org
+  vocabulary as one large JSON-LD document.
+
+ddot.it/this ..kind.. collected
+ddot.it/this ..format.. format:json-ld
+ddot.it/this ..content.. Collected JSON-LD documents (W3C JSON-LD/RDF test-suite fragments and expected fromRdf outputs, DBpedia entity exports, EasyRdf FOAF example, full schema.org vocabulary) for testing the JSON-LD reader.
+ddot.it/this ..depicts.. JSON-LD RDF serialization features: @context, @id, @type, @value, @language, typed literals, @list, @graph, blank nodes.
+
+
+# --- W3C JSON-LD / RDF test suite: w3c-*.jsonld ---
+# Small hand-picked fragments from the W3C JSON-LD test suite, each
+# isolating one JSON-LD feature.
+
+w3c-0001.jsonld ..kind.. collected
+w3c-0001.jsonld ..format.. format:json-ld
+w3c-0001.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+w3c-0001.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+w3c-0001.jsonld ..tests.. Minimal node: @id plus a single fully-expanded (full-IRI) property -> one literal triple.
+w3c-0001.jsonld ..content.. A foaf:name statement using the absolute predicate IRI (no @context).
+
+w3c-0005.jsonld ..kind.. collected
+w3c-0005.jsonld ..format.. format:json-ld
+w3c-0005.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+w3c-0005.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+w3c-0005.jsonld ..tests.. Nested node (implicit blank node) and language-tagged literal (@value + @language "hu").
+w3c-0005.jsonld ..content.. foaf:knows pointing at an anonymous node whose foaf:name is "Herman Iván"@hu (UTF-8 accented characters preserved).
+
+w3c-0010.jsonld ..kind.. collected
+w3c-0010.jsonld ..format.. format:json-ld
+w3c-0010.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+w3c-0010.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+w3c-0010.jsonld ..tests.. @context prefix definition and compact-IRI (CURIE) term expansion; nested node with explicit @id.
+w3c-0010.jsonld ..content.. foaf prefix in @context; foaf:knows -> node with @id and foaf:name "Manu Sporny".
+
+w3c-0020.jsonld ..kind.. collected
+w3c-0020.jsonld ..format.. format:json-ld
+w3c-0020.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+w3c-0020.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+w3c-0020.jsonld ..tests.. Coerced typed literal via @context term with "@type": "xsd:date".
+w3c-0020.jsonld ..content.. dcterms:created "1957-02-27"^^xsd:date defined through a context term.
+
+
+# --- W3C fromRdf test suite: fromRdf-NNNN-out.jsonld ---
+# Expected JSON-LD outputs of the JSON-LD "fromRdf" (RDF -> JSON-LD)
+# algorithm. Each is the expected result for the matching
+# fromRdf-NNNN-in.nq N-Quads input (under text/rdf/nq/). They are in
+# fully-expanded, context-free JSON-LD array form.
+
+fromRdf-0001-out.jsonld ..kind.. collected
+fromRdf-0001-out.jsonld ..format.. format:json-ld
+fromRdf-0001-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0001-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0001-out.jsonld ..tests.. fromRdf base case: @type array plus IRI object and three literal flavours (plain, xsd:date typed, @language).
+fromRdf-0001-out.jsonld ..content.. Expected JSON-LD for fromRdf-0001-in.nq.
+
+fromRdf-0002-out.jsonld ..kind.. collected
+fromRdf-0002-out.jsonld ..format.. format:json-ld
+fromRdf-0002-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0002-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0002-out.jsonld ..tests.. fromRdf with native XSD datatypes: xsd:boolean, xsd:integer, xsd:decimal, xsd:double on one property.
+fromRdf-0002-out.jsonld ..content.. Expected JSON-LD for fromRdf-0002-in.nq.
+
+fromRdf-0003-out.jsonld ..kind.. collected
+fromRdf-0003-out.jsonld ..format.. format:json-ld
+fromRdf-0003-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0003-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0003-out.jsonld ..tests.. fromRdf datatype/literal handling.
+fromRdf-0003-out.jsonld ..content.. Expected JSON-LD for fromRdf-0003-in.nq.
+
+fromRdf-0004-out.jsonld ..kind.. collected
+fromRdf-0004-out.jsonld ..format.. format:json-ld
+fromRdf-0004-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0004-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0004-out.jsonld ..tests.. fromRdf datatype/literal handling.
+fromRdf-0004-out.jsonld ..content.. Expected JSON-LD for fromRdf-0004-in.nq.
+
+fromRdf-0005-out.jsonld ..kind.. collected
+fromRdf-0005-out.jsonld ..format.. format:json-ld
+fromRdf-0005-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0005-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0005-out.jsonld ..tests.. fromRdf datatype/literal handling.
+fromRdf-0005-out.jsonld ..content.. Expected JSON-LD for fromRdf-0005-in.nq.
+
+fromRdf-0006-out.jsonld ..kind.. collected
+fromRdf-0006-out.jsonld ..format.. format:json-ld
+fromRdf-0006-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0006-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0006-out.jsonld ..tests.. fromRdf named graphs (@graph keyed by graph @id) together with @list values.
+fromRdf-0006-out.jsonld ..content.. Expected JSON-LD for fromRdf-0006-in.nq.
+
+fromRdf-0007-out.jsonld ..kind.. collected
+fromRdf-0007-out.jsonld ..format.. format:json-ld
+fromRdf-0007-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0007-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0007-out.jsonld ..tests.. fromRdf list / named-graph handling.
+fromRdf-0007-out.jsonld ..content.. Expected JSON-LD for fromRdf-0007-in.nq.
+
+fromRdf-0008-out.jsonld ..kind.. collected
+fromRdf-0008-out.jsonld ..format.. format:json-ld
+fromRdf-0008-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0008-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0008-out.jsonld ..tests.. fromRdf RDF collections (rdf:first/rdf:rest) converted to nested @list, including a list of blank-node sublists.
+fromRdf-0008-out.jsonld ..content.. Expected JSON-LD for fromRdf-0008-in.nq.
+
+fromRdf-0009-out.jsonld ..kind.. collected
+fromRdf-0009-out.jsonld ..format.. format:json-ld
+fromRdf-0009-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0009-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0009-out.jsonld ..tests.. fromRdf list / blank-node handling.
+fromRdf-0009-out.jsonld ..content.. Expected JSON-LD for fromRdf-0009-in.nq.
+
+fromRdf-0010-out.jsonld ..kind.. collected
+fromRdf-0010-out.jsonld ..format.. format:json-ld
+fromRdf-0010-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0010-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0010-out.jsonld ..tests.. fromRdf list / blank-node handling.
+fromRdf-0010-out.jsonld ..content.. Expected JSON-LD for fromRdf-0010-in.nq.
+
+fromRdf-0011-out.jsonld ..kind.. collected
+fromRdf-0011-out.jsonld ..format.. format:json-ld
+fromRdf-0011-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0011-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0011-out.jsonld ..tests.. fromRdf list node carrying extra (non rdf:first/rdf:rest) properties -> must NOT collapse into a clean @list.
+fromRdf-0011-out.jsonld ..content.. Expected JSON-LD for fromRdf-0011-in.nq.
+
+fromRdf-0012-out.jsonld ..kind.. collected
+fromRdf-0012-out.jsonld ..format.. format:json-ld
+fromRdf-0012-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0012-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0012-out.jsonld ..tests.. fromRdf list / blank-node handling.
+fromRdf-0012-out.jsonld ..content.. Expected JSON-LD for fromRdf-0012-in.nq.
+
+fromRdf-0013-out.jsonld ..kind.. collected
+fromRdf-0013-out.jsonld ..format.. format:json-ld
+fromRdf-0013-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0013-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0013-out.jsonld ..tests.. fromRdf list / blank-node handling.
+fromRdf-0013-out.jsonld ..content.. Expected JSON-LD for fromRdf-0013-in.nq.
+
+fromRdf-0014-out.jsonld ..kind.. collected
+fromRdf-0014-out.jsonld ..format.. format:json-ld
+fromRdf-0014-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0014-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0014-out.jsonld ..tests.. fromRdf list / blank-node handling.
+fromRdf-0014-out.jsonld ..content.. Expected JSON-LD for fromRdf-0014-in.nq.
+
+fromRdf-0015-out.jsonld ..kind.. collected
+fromRdf-0015-out.jsonld ..format.. format:json-ld
+fromRdf-0015-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0015-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0015-out.jsonld ..tests.. fromRdf malformed/partial list (rdf:rest with a non-list literal object) left un-collapsed.
+fromRdf-0015-out.jsonld ..content.. Expected JSON-LD for fromRdf-0015-in.nq.
+
+fromRdf-0016-out.jsonld ..kind.. collected
+fromRdf-0016-out.jsonld ..format.. format:json-ld
+fromRdf-0016-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0016-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0016-out.jsonld ..tests.. fromRdf list / blank-node handling.
+fromRdf-0016-out.jsonld ..content.. Expected JSON-LD for fromRdf-0016-in.nq.
+
+fromRdf-0017-out.jsonld ..kind.. collected
+fromRdf-0017-out.jsonld ..format.. format:json-ld
+fromRdf-0017-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0017-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0017-out.jsonld ..tests.. fromRdf list / blank-node handling.
+fromRdf-0017-out.jsonld ..content.. Expected JSON-LD for fromRdf-0017-in.nq.
+
+fromRdf-0018-out.jsonld ..kind.. collected
+fromRdf-0018-out.jsonld ..format.. format:json-ld
+fromRdf-0018-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0018-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0018-out.jsonld ..tests.. fromRdf list / blank-node handling.
+fromRdf-0018-out.jsonld ..content.. Expected JSON-LD for fromRdf-0018-in.nq.
+
+fromRdf-0019-out.jsonld ..kind.. collected
+fromRdf-0019-out.jsonld ..format.. format:json-ld
+fromRdf-0019-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0019-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0019-out.jsonld ..tests.. fromRdf where rdf:type is emitted as a full-IRI property (object @id) rather than @type, alongside mixed literals.
+fromRdf-0019-out.jsonld ..content.. Expected JSON-LD for fromRdf-0019-in.nq.
+
+fromRdf-0020-out.jsonld ..kind.. collected
+fromRdf-0020-out.jsonld ..format.. format:json-ld
+fromRdf-0020-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0020-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0020-out.jsonld ..tests.. fromRdf list nodes split across two named graphs (@graph) with an empty @list tail.
+fromRdf-0020-out.jsonld ..content.. Expected JSON-LD for fromRdf-0020-in.nq.
+
+fromRdf-0021-out.jsonld ..kind.. collected
+fromRdf-0021-out.jsonld ..format.. format:json-ld
+fromRdf-0021-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0021-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0021-out.jsonld ..tests.. fromRdf list / named-graph handling.
+fromRdf-0021-out.jsonld ..content.. Expected JSON-LD for fromRdf-0021-in.nq.
+
+fromRdf-0022-out.jsonld ..kind.. collected
+fromRdf-0022-out.jsonld ..format.. format:json-ld
+fromRdf-0022-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0022-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0022-out.jsonld ..tests.. fromRdf list / blank-node handling.
+fromRdf-0022-out.jsonld ..content.. Expected JSON-LD for fromRdf-0022-in.nq.
+
+fromRdf-0023-out.jsonld ..kind.. collected
+fromRdf-0023-out.jsonld ..format.. format:json-ld
+fromRdf-0023-out.jsonld ..source url.. https://w3c.github.io/rdf-tests/
+fromRdf-0023-out.jsonld ..license.. W3C Software and Document License / W3C Test Suite License
+fromRdf-0023-out.jsonld ..tests.. fromRdf where rdf:nil is the subject of statements (used as a normal node, not an empty list).
+fromRdf-0023-out.jsonld ..content.. Expected JSON-LD for fromRdf-0023-in.nq.
+
+
+# --- DBpedia entity data: dbpedia-*.jsonld ---
+
+dbpedia-Karlsruhe.jsonld ..kind.. collected
+dbpedia-Karlsruhe.jsonld ..format.. format:json-ld
+dbpedia-Karlsruhe.jsonld ..source url.. https://dbpedia.org/
+dbpedia-Karlsruhe.jsonld ..license.. CC BY-SA 3.0 + GNU FDL
+dbpedia-Karlsruhe.jsonld ..tests.. Large real-world JSON-LD with an extensive @context (many term -> IRI mappings, typed terms, @type: @id) and a rich resource description.
+dbpedia-Karlsruhe.jsonld ..content.. DBpedia entity data for the city of Karlsruhe (~520 KB).
+dbpedia-Karlsruhe.jsonld ..depicts.. dbr:Karlsruhe
+
+dbpedia-berlin.jsonld.toolarge ..kind.. collected
+dbpedia-berlin.jsonld.toolarge ..format.. format:json-ld
+dbpedia-berlin.jsonld.toolarge ..source url.. https://dbpedia.org/
+dbpedia-berlin.jsonld.toolarge ..license.. CC BY-SA 3.0 + GNU FDL
+dbpedia-berlin.jsonld.toolarge ..tests.. Not exercised by the test run: a normal JSON-LD file deliberately renamed with a ".toolarge" suffix so the test harness skips it because it is too big (~8.9 MB).
+dbpedia-berlin.jsonld.toolarge ..content.. DBpedia entity data for the city of Berlin (a regular JSON-LD document; the suffix is only an exclusion marker, not a separate format).
+dbpedia-berlin.jsonld.toolarge ..depicts.. dbr:Berlin
+
+
+# --- EasyRdf FOAF example: easyrdf-*.jsonld ---
+
+easyrdf-foaf.jsonld ..kind.. collected
+easyrdf-foaf.jsonld ..format.. format:json-ld
+easyrdf-foaf.jsonld ..source url.. https://github.com/easyrdf/easyrdf
+easyrdf-foaf.jsonld ..license.. BSD-3-Clause
+easyrdf-foaf.jsonld ..tests.. @context with @vocab default vocabulary, term aliasing, "@type": "@id" coercion, nested objects, and a language-tagged @value.
+easyrdf-foaf.jsonld ..content.. FOAF personal-profile fixture from EasyRdf: a PersonalProfileDocument whose primaryTopic is a Person (Joe Bloggs) with a current Project.
+
+
+# --- schema.org vocabulary: schemaorg-current-https.jsonld ---
+
+schemaorg-current-https.jsonld ..kind.. collected
+schemaorg-current-https.jsonld ..format.. format:json-ld
+schemaorg-current-https.jsonld ..source url.. https://schema.org/
+schemaorg-current-https.jsonld ..license.. CC BY-SA 3.0
+schemaorg-current-https.jsonld ..tests.. Very large JSON-LD vocabulary document: big @context with many prefix mappings plus a large @graph of class/property definitions; stress-tests reader scale and @graph handling (~1.5 MB).
+schemaorg-current-https.jsonld ..content.. The complete current schema.org vocabulary (all terms, https variant).
+schemaorg-current-https.jsonld ..depicts.. The schema.org vocabulary

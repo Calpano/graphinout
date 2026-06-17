@@ -36,7 +36,7 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
                     List.of(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(33, 57)));
             case "xml/graphml/haitimap2--INVALIDgraphml.graphml" ->
                     List.of(new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "\n" + "\n" + "  \n" + "\n" + "========================================================' [Element 'graphml' does not allow characters.]", new Location(25, 57)));
-            case "xml/graphml/graphml/synthetic/invalidgraphml-root.graphml" -> Arrays.asList( //
+            case "xml/graphml/synthetic/root--INVALIDgraphml.graphml" -> Arrays.asList( //
                     new ContentError(ContentError.ErrorLevel.Warn, "The Element <myroot> not acceptable tag for Graphml.", new Location(2, 9)), //
                     new ContentError(ContentError.ErrorLevel.Warn, "Unexpected characters '\n" + "    Hello\n" + "' [No open element to add characters to.]", new Location(4, 1)), //
                     new ContentError(ContentError.ErrorLevel.Warn, "The Element </myroot> not acceptable tag for Graphml.", new Location(4, 10)) //
@@ -57,9 +57,11 @@ class GraphmlReaderTest2 extends AbstractReaderTest {
         String resourcePath = "xml/graphml/synthetic/graphml-key-data.graphml.xml";
         List<ContentError> expectedErrors = Collections.emptyList();
         InMemoryOutputSink outputSink = new InMemoryOutputSink();
-        URL resourceUrl = ClassLoader.getSystemResource(resourcePath);
-        log.info("Reading " + resourceUrl + " as " + gioReader.fileFormat());
-        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
+        // use TestFileUtil (external-root aware) rather than ClassLoader.getSystemResource,
+        // since this file may live in the external graph-test-data checkout
+        Resource resource = TestFileUtil.resource(resourcePath);
+        log.info("Reading " + resource.getURI() + " as " + gioReader.fileFormat());
+        String content = resource.getContentAsString();
         SingleInputSource inputSource = SingleInputSource.of(resourcePath, content);
         ICjStream cjStream = new LoggingCjStream();
         List<ContentError> contentErrors = new ArrayList<>();

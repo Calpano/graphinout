@@ -1,0 +1,23 @@
+Simple Graphviz DOT test fixtures (graphinout reader-dot)
+
+These are project-own, hand-authored minimal synthetic DOT graphs with trivial
+node names (A, B, C). Each isolates one basic DOT construct for the reader-dot
+parser.
+
+Folder-wide facts:
+ddot.it/this ..kind.. synthetic
+ddot.it/this ..authored by.. Calpano (graphinout project)
+ddot.it/this ..license.. not stated (public domain unless otherwise stated)
+ddot.it/this ..format.. format:dot
+ddot.it/this ..content.. minimal single-construct DOT graphs
+
+Per-file:
+
+simple.dot ..tests.. minimal anonymous digraph with two edges (A -> B, A -> C)
+simple2.dot ..tests.. nodes with label attributes plus an undirected -- edge inside a digraph
+simple3.dot ..tests.. edge chain with per-edge label attributes (A -> B [label=...] -> ...)
+simple4.dot ..tests.. default node attrs (node [shape, color]) plus per-node and per-edge attribute overrides
+simple5.dot ..tests.. undirected graph with a chained cycle (A -- B -- C -- A)
+simple6.dot ..tests.. node declared with a label attribute after an edge already referenced it (A -> B; A [label="A"])
+simple-subgraph.dot ..tests.. named subgraph with a label plus an edge crossing out of the subgraph (C -> E)
+simple-undirected.dot ..tests.. strict undirected graph with a -- edge and a labeled node

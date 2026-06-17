@@ -50,7 +50,7 @@ class GraphmlReaderTest {
 
     @Test
     void testBug() throws Exception {
-        String resource = "xml/graphml/images/kubernetes-opensource-deployment.graphml";
+        String resource = "xml/graphml/sciebo-images/kubernetes-opensource-deployment.graphml";
         Resource r = TestFileProvider.resourceByPath(resource).resource();
         readAllGraphmlFiles(resource, r);
     }

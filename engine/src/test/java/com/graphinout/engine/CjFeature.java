@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 /**
  * The controlled vocabulary of graph-model features from the graph-format-registry
  * ({@code graph-features.adoc}). Each constant pairs the registry feature slug (which is also the name of the synthetic
- * CJ test file under {@code testdata json/cj-features/<slug>.cj.json}) with a structural detector that answers
+ * CJ test file under {@code json/connected-json/connected-json-7.0.0/graph-format-features/<slug>.cj.json}) with a structural detector that answers
  * "does this CJ document still exhibit the feature?".
  *
  * <p>Detectors traverse the whole document (top-level graphs plus graphs nested in graphs, nodes and edges), so they
@@ -101,7 +101,7 @@ enum CjFeature {
 
     /** The synthetic CJ resource that exercises exactly this feature. */
     String resourcePath() {
-        return "json/cj-features/" + slug + ".cj.json";
+        return "json/connected-json/connected-json-7.0.0/graph-format-features/" + slug + ".cj.json";
     }
 
     boolean isPresentIn(ICjDocument doc) {

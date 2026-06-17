@@ -72,8 +72,8 @@ class Json5ReaderTest {
     @Test
     void shouldParseExampleConnectedJson5File() throws IOException {
         String name = "example.connected.json5";
-        URL resourceUrl = ClassLoader.getSystemResource("json/graph-entry/"+name);
-        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
+        // external-root aware (file lives in the graph-test-data checkout), unlike ClassLoader.getSystemResource
+        String content = com.graphinout.testdata.TestFileUtil.resource("json/connected-json5/" + name).getContentAsString();
         SingleInputSource singleInputSource = SingleInputSource.of(name, content);
 
         underTest.setContentErrorHandler(errorConsumer);

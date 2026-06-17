@@ -1,0 +1,168 @@
+Graphviz DOT / GV test files (depth-1 top-level only) for the reader-dot module.
+A mix of graphs collected from the web (each with its source URL migrated from the old
+*.gv.meta pointer files) and small synthetic example*.dot graphs authored within the
+GraphInOut project to exercise specific DOT-parser features.
+
+ddot.it/this ..format.. format:dot
+ddot.it/this ..authored by.. Calpano (graphinout)   # applies to the synthetic example*.dot files only
+
+# ---------------------------------------------------------------------------
+# Collected graphs (source URL migrated from *.gv.meta, now deleted)
+# ---------------------------------------------------------------------------
+
+Call_Graph.gv ..kind.. collected
+Call_Graph.gv ..format.. format:dot
+Call_Graph.gv ..content.. Dependency / call graph of software-metric computations (Halstead length, vocabulary, volume, effort, difficulty, maintainability index, cyclomatic complexity, ...) rooted at an "EclipseStatistic" node.
+Call_Graph.gv ..depicts.. metric-dependency call graph from the "Halstead's Revenge" project
+Call_Graph.gv ..tests.. node/edge attribute lists, group edge target "X -> { a, b, c }" syntax, rankdir/layout/size graph attributes, inline "#" line comments
+Call_Graph.gv ..source url.. https://gitlab.eecs.wsu.edu/42986/halsteads-revenge/-/blob/halsteadUnitTests/Call_Graph.gv
+Call_Graph.gv ..license.. not stated (public domain unless otherwise stated)
+
+dt_surrogate_mojo.gv ..kind.. collected
+dt_surrogate_mojo.gv ..format.. format:dot
+dt_surrogate_mojo.gv ..content.. A decision-tree surrogate model (credit-card payment / PAY_* features) exported as a MOJO by H2O-3's PrintMojo tool; nodes grouped by tree level inside a cluster subgraph.
+dt_surrogate_mojo.gv ..depicts.. H2O machine-learning decision-tree surrogate model
+dt_surrogate_mojo.gv ..tests.. subgraph clusters, nested anonymous subgraph blocks, C-style /* */ comments, quoted node ids and labels with operators (e.g. "PAY_AMT5 < 1515.5")
+dt_surrogate_mojo.gv ..source url.. https://resources.oreilly.com/oriole/interpretable-machine-learning-with-python-xgboost-and-h2o/-/blob/master/dt_surrogate_mojo.gv
+dt_surrogate_mojo.gv ..license.. not stated (public domain unless otherwise stated)
+
+graph_coloring_z3_example_fat_graph.gv ..kind.. collected
+graph_coloring_z3_example_fat_graph.gv ..format.. format:dot
+graph_coloring_z3_example_fat_graph.gv ..content.. Large (~8.3k lines) "fat" graph used as a graph-coloring example for the Z3 theorem prover; many filled circle nodes with colored edges.
+graph_coloring_z3_example_fat_graph.gv ..depicts.. graph-coloring instance for the Z3 SMT solver
+graph_coloring_z3_example_fat_graph.gv ..tests.. large-input parsing/performance, multi-line attribute lists, quoted alphanumeric node ids
+graph_coloring_z3_example_fat_graph.gv ..source url.. https://github.com/0vercl0k/z3-playground/blob/master/graph_coloring_z3_example_fat_graph.gv
+graph_coloring_z3_example_fat_graph.gv ..license.. not stated (public domain unless otherwise stated)
+
+graphviz-call-graph.dot.gv ..kind.. collected
+graphviz-call-graph.dot.gv ..format.. format:dot
+graphviz-call-graph.dot.gv ..content.. Classic Graphviz C call-graph example; functions grouped into clusters by source/header file (ciafan.c, util.c, error.h, sfio.h, query.h, field.h).
+graphviz-call-graph.dot.gv ..depicts.. C program call graph, functions clustered by file
+graphviz-call-graph.dot.gv ..tests.. multiple edges per line, named "cluster_*" subgraphs with labels, size/ratio graph attributes
+graphviz-call-graph.dot.gv ..source url.. https://gemfury.com/bvberkum/js:node-sitefile/0.0.4/content/example/graphviz-call-graph.dot.gv
+graphviz-call-graph.dot.gv ..license.. not stated (public domain unless otherwise stated)
+
+libinput-stack-xorg.gv ..kind.. collected
+libinput-stack-xorg.gv ..format.. format:dot
+libinput-stack-xorg.gv ..content.. libinput input-event stack under the X.org server: kernel /dev/input/event* devices through xf86-input-libinput to an X11 client.
+libinput-stack-xorg.gv ..depicts.. libinput / X.org input-event processing stack
+libinput-stack-xorg.gv ..tests.. compound=true with rankdir, nested clusters, box-shaped nodes
+libinput-stack-xorg.gv ..source url.. https://gitlab.freedesktop.org/libinput/libinput/-/blob/6d8b10153c5e6a187585adef00b25b1029213d14/doc/dot/libinput-stack-xorg.gv
+libinput-stack-xorg.gv ..license.. not stated (public domain unless otherwise stated)   # from freedesktop/libinput documentation
+
+oberon.gv ..kind.. collected
+oberon.gv ..format.. format:dot
+oberon.gv ..content.. Genealogy of the Oberon family of programming languages (Pascal, Modula-2, Oberon, Oberon-2/SA/07, Object Oberon, ...) and their influence relations.
+oberon.gv ..depicts.. Oberon programming-language genealogy / family tree
+oberon.gv ..tests.. embedded /* */ header comment carrying author+license, \n escapes inside labels, node/edge default attribute defaults
+oberon.gv ..source url.. https://en.wikibooks.org/wiki/Oberon/oberongenealogy.gv
+oberon.gv ..authored by.. Ivan Denisov <iadenisov@oberon.org>
+oberon.gv ..license.. Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+
+ti.gv ..kind.. collected
+ti.gv ..format.. format:dot
+ti.gv ..content.. Study/curriculum plan for the "Technische Informatik" (Computer Engineering) Master at TU Berlin; courses grouped by semester clusters with prerequisite edges (German labels).
+ti.gv ..depicts.. TU Berlin Computer-Engineering Master curriculum / prerequisite plan
+ti.gv ..tests.. filled "cluster_sem*" subgraphs, colored nodes, German/quoted labels with escaped quotes in the graph label
+ti.gv ..source url.. https://git.tu-berlin.de/freddy1404/stuff/-/blob/master/ti.gv
+ti.gv ..license.. not stated (public domain unless otherwise stated)
+
+Transformer.SC1.gv ..kind.. collected
+Transformer.SC1.gv ..format.. format:dot
+Transformer.SC1.gv ..content.. Overconstrained connection graph for the Modelica model "Transformer.SC1", auto-generated by OpenModelica (roots, branches, connections, broken connections).
+Transformer.SC1.gv ..depicts.. OpenModelica overconstrained-connection graph for a Modelica Transformer model
+Transformer.SC1.gv ..tests.. undirected "graph" keyword (not digraph), // line comments, multi-line graph label with \l/\n escapes, layout/overlap attributes
+Transformer.SC1.gv ..source url.. https://trac.openmodelica.org/OpenModelica/attachment/ticket/3649/Transformer.SC1.gv
+Transformer.SC1.gv ..license.. not stated (public domain unless otherwise stated)
+
+wayland-architecture.gv ..kind.. collected
+wayland-architecture.gv ..format.. format:dot
+wayland-architecture.gv ..content.. High-level Wayland architecture diagram: Wayland clients, the Wayland compositor and the KMS/evdev/Kernel layer, with circled-number step labels.
+wayland-architecture.gv ..depicts.. Wayland display-server architecture (from the Wayland documentation)
+wayland-architecture.gv ..tests.. HTML-like <TABLE> node labels with BGCOLOR/STYLE/COLSPAN, URL/tooltip/taillabel attributes, bidirectional edges (dir=both)
+wayland-architecture.gv ..source url.. https://fossies.org/linux/wayland/doc/doxygen/dot/wayland-architecture.gv
+wayland-architecture.gv ..license.. not stated (public domain unless otherwise stated)   # from the Wayland project documentation
+
+# ---------------------------------------------------------------------------
+# Synthetic example graphs authored within the GraphInOut project (Calpano)
+# These exercise specific Graphviz DOT features; several mirror constructs
+# from the Graphviz documentation/gallery.
+# ---------------------------------------------------------------------------
+
+example.dot ..kind.. synthetic
+example.dot ..format.. format:dot
+example.dot ..content.. Tiny commutative-diagram-style digraph (A1..A3 / B1..B3) with two rank=same rows.
+example.dot ..tests.. rank=same subgraph blocks, edge labels, tailport/headport on an edge, plaintext node shape
+example.dot ..authored by.. Calpano (graphinout)
+example.dot ..license.. not stated
+
+example2.dot ..kind.. synthetic
+example2.dot ..format.. format:dot
+example2.dot ..content.. Three shaped nodes (diamond/box/circle) plus an implicitly declared node D.
+example2.dot ..tests.. node shape attributes, edge styling (dashed/penwidth/arrowhead=none), multi-color edge color "black:invis:black"
+example2.dot ..authored by.. Calpano (graphinout)
+example2.dot ..license.. not stated
+
+example3.dot ..kind.. synthetic
+example3.dot ..format.. format:dot
+example3.dot ..content.. Two nodes demonstrating record vs plaintext shape label semantics.
+example3.dot ..tests.. shape=record label syntax with {|} fields, shape=plaintext where braces/bars are literal text
+example3.dot ..authored by.. Calpano (graphinout)
+example3.dot ..license.. not stated
+
+example4--INVALIDdot.dot ..kind.. synthetic
+example4--INVALIDdot.dot ..format.. format:dot
+example4--INVALIDdot.dot ..content.. Three record nodes a->b->c whose labels use \l (left), \n (newline) and \r (right) justification escapes.
+example4--INVALIDdot.dot ..tests.. negative test: the DOT syntax is itself valid (and renders in some online tools), but it triggers a known parsing issue in JGraphT (see https://github.com/jgrapht/jgrapht/issues/1131); the "--INVALIDdot" marker flags it as a deliberate negative/regression case for the reader.
+example4--INVALIDdot.dot ..depicts.. \l / \n / \r line-justification escapes inside record labels
+example4--INVALIDdot.dot ..authored by.. Calpano (graphinout)
+example4--INVALIDdot.dot ..license.. not stated
+
+example5.dot ..kind.. synthetic
+example5.dot ..format.. format:dot
+example5.dot ..content.. A parent node with an HTML-like table label exposing three ports, each linking to a child node.
+example5.dot ..tests.. HTML-like (<...>) label tables, table cell ports, edges to ports via parent:port_one syntax
+example5.dot ..authored by.. Calpano (graphinout)
+example5.dot ..license.. not stated
+
+example6.dot ..kind.. synthetic
+example6.dot ..format.. format:dot
+example6.dot ..content.. A task/kanban-style graph where each node is an HTML table card (task title, description, colored done/todo status).
+example6.dot ..tests.. HTML-like label tables with <b>/<font color=...> markup, cellborder/cellspacing/align attributes
+example6.dot ..authored by.. Calpano (graphinout)
+example6.dot ..license.. not stated
+
+example7.dot ..kind.. synthetic
+example7.dot ..format.. format:dot
+example7.dot ..content.. Small two-row layout (rA/sA/tA and uB/vB/wB) with implicitly declared nodes t and u.
+example7.dot ..tests.. rank=same blocks, record-shaped node default, implicit node declaration via edges
+example7.dot ..authored by.. Calpano (graphinout)
+example7.dot ..license.. not stated
+
+example8.dot ..kind.. synthetic
+example8.dot ..format.. format:dot
+example8.dot ..content.. A node chain nd_1..nd_4 with extra nodes positioned around nd_3 inside a cluster.
+example8.dot ..tests.. chained edges (a -> b -> c -> d), rank=same inside a named cluster subgraph, edge styling on grouped edges
+example8.dot ..authored by.. Calpano (graphinout)
+example8.dot ..license.. not stated
+
+example9.dot ..kind.. synthetic
+example9.dot ..format.. format:dot
+example9.dot ..content.. Nested cluster hierarchy: Parent > Child one (> Grand-Child one/two) and Child two, each holding plain nodes.
+example9.dot ..tests.. deeply nested subgraph clusters with labels, bare node declarations
+example9.dot ..authored by.. Calpano (graphinout)
+example9.dot ..license.. not stated
+
+example9--SMALL.dot ..kind.. synthetic
+example9--SMALL.dot ..format.. format:dot
+example9--SMALL.dot ..content.. Trimmed minimal variant of example9.dot: bare nested clusters (cluster_BBB > cluster_CCC > cluster_DDD) with no labels.
+example9--SMALL.dot ..tests.. minimal nested-cluster parsing (label-less subgraphs); the "--SMALL" marker flags it as a reduced/minimal variant of example9.dot
+example9--SMALL.dot ..authored by.. Calpano (graphinout)
+example9--SMALL.dot ..license.. not stated
+
+example10.dot ..kind.. synthetic
+example10.dot ..format.. format:dot
+example10.dot ..content.. Single node with a complex nested HTML-like table label (tables within table cells, colspan/rowspan, colors, <br/>).
+example10.dot ..tests.. nested HTML-like label tables, colspan/rowspan, cellpadding/cellspacing/color attributes, <br/> and UTF-8 content (fünf)
+example10.dot ..authored by.. Calpano (graphinout)
+example10.dot ..license.. not stated

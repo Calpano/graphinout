@@ -3,7 +3,7 @@
 Test resources (XML, JSON, CJ, …) plus a ClassGraph-based loader (`TestFileProvider`,
 `TestFileUtil`) used as a test-scoped dependency by the reader/writer modules.
 
-== Optional external test data (graph-test-data)
+== External test data (graph-test-data)
 
 Bulky and shared datasets are being migrated out of this module into the external
 https://github.com/Calpano/graph-test-data[graph-test-data] repository, which mirrors the same
@@ -12,10 +12,18 @@ small (Maven Central limits, see `doc/maven-central.adoc`) and lets the data be 
 
 `TestFileProvider` treats the external checkout as an *additional* resource root: its files are merged
 into every provider (`graphmlResources()`, `xmlResources()`, `cjResources*()`, …) and into
-`--EXPECTED` lookups, deduplicated by path (the external copy wins on collision). The feature is
-*optional* — if no external root is found, tests simply run against the in-repo data only.
+`--EXPECTED` lookups, deduplicated by path (the external copy wins on collision).
 
-=== Enabling it locally
+[IMPORTANT]
+====
+As migration has progressed, the external checkout is now *required* to run the full test suite.
+Several tests load migrated files by exact path (e.g. `XmlTest.testNamespaces`,
+`GraphmlReaderTest2`, `GioEngineCoreTest`) and will *fail* — not skip — without it.
+Parameterized providers still degrade gracefully (fewer cases), but the build as a whole needs the
+data repo checked out.
+====
+
+=== Enabling it
 
 Check out the data repo and point the loader at it, in this resolution order:
 
@@ -44,6 +52,39 @@ GRAPH_TEST_DATA_DIR=/path/to/graph-test-data mvn -pl reader-graphml test -Dtest=
 
 `.github/workflows/build-and-test.yml` checks out `graph-test-data` as a sibling of the project and
 exports `GRAPH_TEST_DATA_DIR` for the build step.
+
+== File-name tag convention (`--TAG`)
+
+Test files carry semantics in their name via a double-dash tag, inserted before the extension(s):
+`name--TAG.ext` (multi-dot extensions are preserved, e.g. `dingo--EXPECTED.graphml.xml`). A tag written
+without a hyphen is upper-cased automatically. This is implemented in `TestFileUtil`
+(`tagResourcePath`, `tagFile`, `tags`, constant `EXPECTED`) — that class is the authoritative source.
+
+[cols="1,1,3", options="header"]
+|===
+| Tag | Read by code? | Meaning
+
+| `--EXPECTED`
+| Yes
+| The recorded expected output for a round-trip/serialization test. Stored as
+  `name--EXPECTED-<testId>.ext` and located/compared by `TestFileUtil.verifyOrRecord(...)` /
+  `expectedResource(...)`. Such files are excluded from the normal input streams
+  (`getAllTestResources()` filters `isExpected()`). Use env `RECORD_MODE=init\|on` to (re)record them.
+
+| `--INVALID`
+| Yes
+| Marks input that is intentionally malformed, used to test error handling. Detected by
+  `TestFileUtil.isInvalid(Resource, markers...)`, which inspects the `--` tag. The optional suffix
+  qualifies *how* it is invalid: `--INVALIDxml` (not even well-formed XML),
+  `--INVALIDgraphml` (valid XML but invalid GraphML), or bare `--INVALID`. Example
+  `root--INVALIDgraphml.graphml`; see the _File naming_ section of the
+  https://github.com/Calpano/graph-test-data[graph-test-data] README.
+
+| `--FIXED`
+| No
+| Human convention only — a manually corrected, valid counterpart of a sibling `--INVALID`/broken file
+  (e.g. `greek2--FIXED.graphml`). No code reads this tag; it is documentation for maintainers.
+|===
 
 == Metadata convention
 

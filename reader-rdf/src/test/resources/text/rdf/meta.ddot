@@ -1,0 +1,33 @@
+= RDF test data (root)
+
+This folder holds the top-level RDF fixtures for the graphinout reader-rdf
+module, plus one expected ConnectedJson conversion output. RDF serialization
+samples organized by format live in the sub-folders n3/, nq/, nt/, trig/ and
+ttl/ (each has its own meta.ddot). See also README.md in this folder for a
+human-readable overview of all formats and sources.
+
+ddot.it/this ..content.. top-level RDF fixtures (Turtle) and one expected RDF-to-ConnectedJson conversion output
+
+# example-simple.ttl: small synthetic Turtle graph of three Persons
+example-simple.ttl ..kind.. synthetic
+example-simple.ttl ..format.. format:turtle
+example-simple.ttl ..content.. minimal example FOAF-like social graph (Alice/Bob/Charlie) using an http://example.org/ namespace
+example-simple.ttl ..tests.. prefixed names, rdf:type via 'a', integer datatype literals, ex:knows object references
+example-simple.ttl ..authored by.. Calpano / graphinout
+example-simple.ttl ..license.. not stated (public domain unless otherwise stated)
+
+# test.ttl: the input for the RDF -> ConnectedJson conversion test
+test.ttl ..kind.. synthetic
+test.ttl ..format.. format:turtle
+test.ttl ..content.. two ex:knows triples (Alice knows Bob, Bob knows Charlie) over an https://example.com/ namespace
+test.ttl ..tests.. simple directed-edge graph used as conversion input
+test.ttl ..authored by.. Calpano / graphinout
+test.ttl ..license.. not stated (public domain unless otherwise stated)
+
+# test--EXPECTED-rdf2cj.cj.json: expected output of converting test.ttl to ConnectedJson
+test--EXPECTED-rdf2cj.cj.json ..kind.. synthetic
+test--EXPECTED-rdf2cj.cj.json ..format.. format:connected-json
+test--EXPECTED-rdf2cj.cj.json ..content.. expected ConnectedJson result of converting test.ttl (3 nodes Alice/Bob/Charlie, 2 ex:knows edges with in/out endpoints)
+test--EXPECTED-rdf2cj.cj.json ..tests.. RDF triple-to-ConnectedJson edge/endpoint mapping (golden file for rdf2cj)
+test--EXPECTED-rdf2cj.cj.json ..authored by.. Calpano / graphinout
+test--EXPECTED-rdf2cj.cj.json ..license.. not stated (public domain unless otherwise stated)

@@ -1,0 +1,121 @@
+= RDF test data: Turtle (.ttl)
+
+Turtle serialization samples. Mix of: real-world DBpedia entity data, an
+EasyRdf FOAF fixture, several W3C standard vocabularies/ontologies, W3C Turtle
+test-suite syntax tests, and one synthetic project fixture.
+
+ddot.it/this ..format.. format:turtle
+ddot.it/this ..content.. Turtle documents: collected real-world data, W3C vocabularies and syntax tests, plus one synthetic fixture
+
+# DBpedia entity data, collected
+dbpedia-berlin.ttl ..kind.. collected
+dbpedia-berlin.ttl ..format.. format:turtle
+dbpedia-berlin.ttl ..content.. DBpedia entity data for the city of Berlin in Turtle
+dbpedia-berlin.ttl ..depicts.. the German capital Berlin (DBpedia resource)
+dbpedia-berlin.ttl ..tests.. real-world data, language-tagged and typed literals, many prefixes
+dbpedia-berlin.ttl ..source url.. https://dbpedia.org/
+dbpedia-berlin.ttl ..license.. CC BY-SA 3.0 and GNU FDL
+
+dbpedia-Karlsruhe.ttl ..kind.. collected
+dbpedia-Karlsruhe.ttl ..format.. format:turtle
+dbpedia-Karlsruhe.ttl ..content.. DBpedia entity data for the city of Karlsruhe in Turtle
+dbpedia-Karlsruhe.ttl ..depicts.. the German city Karlsruhe (DBpedia resource)
+dbpedia-Karlsruhe.ttl ..tests.. real-world multilingual data, language tags, typed literals
+dbpedia-Karlsruhe.ttl ..source url.. https://dbpedia.org/
+dbpedia-Karlsruhe.ttl ..license.. CC BY-SA 3.0 and GNU FDL
+
+# EasyRdf, collected
+easyrdf-foaf.ttl ..kind.. collected
+easyrdf-foaf.ttl ..format.. format:turtle
+easyrdf-foaf.ttl ..content.. FOAF example from the EasyRdf test fixtures in Turtle
+easyrdf-foaf.ttl ..tests.. FOAF vocabulary, person/profile triples, prefixed names
+easyrdf-foaf.ttl ..source url.. https://github.com/easyrdf/easyrdf
+easyrdf-foaf.ttl ..license.. BSD-3-Clause
+
+# Synthetic project fixture
+labels-and-comments.ttl ..kind.. synthetic
+labels-and-comments.ttl ..format.. format:turtle
+labels-and-comments.ttl ..content.. a small ontology snippet (RDF Concepts vocabulary / rdf:HTML datatype) with multilingual rdfs:label and rdfs:comment
+labels-and-comments.ttl ..tests.. rdfs:label and rdfs:comment, language tags ("HTML"@en / "LMTH"@fr), owl:Ontology and rdfs:Datatype declarations
+labels-and-comments.ttl ..authored by.. Calpano / graphinout
+labels-and-comments.ttl ..license.. not stated (public domain unless otherwise stated)
+
+# W3C standard vocabularies / ontologies, collected
+w3c-dcat.ttl ..kind.. collected
+w3c-dcat.ttl ..format.. format:turtle
+w3c-dcat.ttl ..content.. the W3C DCAT (Data Catalog) vocabulary/ontology
+w3c-dcat.ttl ..tests.. real ontology: classes, properties, multilingual labels
+w3c-dcat.ttl ..source url.. https://www.w3.org/ns/dcat
+w3c-dcat.ttl ..license.. W3C Software and Document License
+
+w3c-org.ttl ..kind.. collected
+w3c-org.ttl ..format.. format:turtle
+w3c-org.ttl ..content.. the W3C Core Organization (ORG) ontology
+w3c-org.ttl ..tests.. real ontology with multilingual labels and rich class/property definitions
+w3c-org.ttl ..source url.. https://www.w3.org/ns/org
+w3c-org.ttl ..license.. W3C Software and Document License
+
+w3c-prov.ttl ..kind.. collected
+w3c-prov.ttl ..format.. format:turtle
+w3c-prov.ttl ..content.. the W3C PROV-O provenance ontology
+w3c-prov.ttl ..tests.. large real ontology, many classes/properties
+w3c-prov.ttl ..source url.. https://www.w3.org/ns/prov
+w3c-prov.ttl ..license.. W3C Software and Document License
+
+w3c-rdf-syntax-ns.ttl ..kind.. collected
+w3c-rdf-syntax-ns.ttl ..format.. format:turtle
+w3c-rdf-syntax-ns.ttl ..content.. the RDF syntax namespace vocabulary (rdf:)
+w3c-rdf-syntax-ns.ttl ..tests.. core RDF vocabulary terms
+w3c-rdf-syntax-ns.ttl ..source url.. https://www.w3.org/1999/02/22-rdf-syntax-ns
+w3c-rdf-syntax-ns.ttl ..license.. W3C Software and Document License
+
+w3c-shacl.ttl ..kind.. collected
+w3c-shacl.ttl ..format.. format:turtle
+w3c-shacl.ttl ..content.. the W3C SHACL (Shapes Constraint Language) vocabulary/ontology
+w3c-shacl.ttl ..tests.. real ontology, shapes/constraints vocabulary
+w3c-shacl.ttl ..source url.. https://www.w3.org/ns/shacl
+w3c-shacl.ttl ..license.. W3C Software and Document License
+
+# W3C ORG ontology excerpt with de-anonymized blank nodes, collected
+w3c-org-deanon.ttl ..kind.. collected
+w3c-org-deanon.ttl ..format.. format:turtle
+w3c-org-deanon.ttl ..content.. excerpt of the W3C ORG ontology in Turtle with blank nodes named/de-anonymized
+w3c-org-deanon.ttl ..tests.. de-anonymized blank nodes, multilingual labels
+w3c-org-deanon.ttl ..source url.. https://www.w3.org/ns/org
+w3c-org-deanon.ttl ..license.. W3C Software and Document License
+
+# W3C Turtle test suite (syntax/value tests), all collected
+w3c-collection_subject.ttl ..kind.. collected
+w3c-collection_subject.ttl ..format.. format:turtle
+w3c-collection_subject.ttl ..content.. an RDF collection (list) used as a triple subject
+w3c-collection_subject.ttl ..tests.. RDF collections / list syntax as subject
+w3c-collection_subject.ttl ..source url.. https://w3c.github.io/rdf-tests/
+w3c-collection_subject.ttl ..license.. W3C Software and Document License / W3C Test Suite License
+
+w3c-IRI_subject.ttl ..kind.. collected
+w3c-IRI_subject.ttl ..format.. format:turtle
+w3c-IRI_subject.ttl ..content.. a triple with an IRI subject
+w3c-IRI_subject.ttl ..tests.. IRI subject serialization
+w3c-IRI_subject.ttl ..source url.. https://w3c.github.io/rdf-tests/
+w3c-IRI_subject.ttl ..license.. W3C Software and Document License / W3C Test Suite License
+
+w3c-turtle-subm-01.ttl ..kind.. collected
+w3c-turtle-subm-01.ttl ..format.. format:turtle
+w3c-turtle-subm-01.ttl ..content.. Turtle submission syntax test 01 covering core grammar
+w3c-turtle-subm-01.ttl ..tests.. prefixes, predicate-object lists, basic Turtle syntax
+w3c-turtle-subm-01.ttl ..source url.. https://w3c.github.io/rdf-tests/
+w3c-turtle-subm-01.ttl ..license.. W3C Software and Document License / W3C Test Suite License
+
+w3c-turtle-subm-14.ttl ..kind.. collected
+w3c-turtle-subm-14.ttl ..format.. format:turtle
+w3c-turtle-subm-14.ttl ..content.. Turtle submission syntax test 14 covering further grammar constructs
+w3c-turtle-subm-14.ttl ..tests.. advanced Turtle syntax constructs
+w3c-turtle-subm-14.ttl ..source url.. https://w3c.github.io/rdf-tests/
+w3c-turtle-subm-14.ttl ..license.. W3C Software and Document License / W3C Test Suite License
+
+w3c-turtle-subm-27.ttl ..kind.. collected
+w3c-turtle-subm-27.ttl ..format.. format:turtle
+w3c-turtle-subm-27.ttl ..content.. Turtle submission syntax test 27 covering further grammar constructs
+w3c-turtle-subm-27.ttl ..tests.. advanced Turtle syntax constructs
+w3c-turtle-subm-27.ttl ..source url.. https://w3c.github.io/rdf-tests/
+w3c-turtle-subm-27.ttl ..license.. W3C Software and Document License / W3C Test Suite License

@@ -1,0 +1,40 @@
+# Metadata for RDF/JSON (.rj) test data
+
+This folder holds collected RDF/JSON (.rj) test files used to exercise
+the reader-rdf RDF/JSON parser. RDF/JSON is a deprecated, pre-JSON-LD
+way of serializing RDF as JSON (subject -> predicate -> array of
+{value,type,lang} objects). All files here are FOAF example fixtures
+from EasyRdf, plus one DBpedia entity export in the same format.
+
+ddot.it/this ..kind.. collected
+ddot.it/this ..format.. format:rdf-json
+ddot.it/this ..content.. Collected RDF/JSON documents (EasyRdf FOAF example, DBpedia entity export) for testing the RDF/JSON reader. RDF/JSON is a deprecated pre-JSON-LD RDF serialization.
+ddot.it/this ..depicts.. RDF/JSON serialization: subject-keyed objects, predicate IRIs, and value objects with type uri/bnode/literal plus optional lang.
+
+
+# --- DBpedia entity data ---
+
+dbpedia-Karlsruhe.rj ..kind.. collected
+dbpedia-Karlsruhe.rj ..format.. format:rdf-json
+dbpedia-Karlsruhe.rj ..source url.. https://dbpedia.org/
+dbpedia-Karlsruhe.rj ..license.. CC BY-SA 3.0 + GNU FDL
+dbpedia-Karlsruhe.rj ..tests.. Large real-world RDF/JSON: many subjects, each mapping predicate IRIs to arrays of typed value objects (uri/literal); exercises RDF/JSON reader at scale (~775 KB).
+dbpedia-Karlsruhe.rj ..content.. DBpedia entity data for the city of Karlsruhe, serialized as RDF/JSON.
+dbpedia-Karlsruhe.rj ..depicts.. dbr:Karlsruhe
+
+
+# --- EasyRdf FOAF example ---
+
+easyrdf-foaf.rj ..kind.. collected
+easyrdf-foaf.rj ..format.. format:rdf-json
+easyrdf-foaf.rj ..source url.. https://github.com/easyrdf/easyrdf
+easyrdf-foaf.rj ..license.. BSD-3-Clause
+easyrdf-foaf.rj ..tests.. RDF/JSON subject-keyed form: top-level keys are subject IRIs / blank nodes (_:genid1) mapping predicates to value-object arrays with type uri/bnode/literal and a language-tagged literal (lang "en").
+easyrdf-foaf.rj ..content.. FOAF personal-profile fixture from EasyRdf (Joe Bloggs PersonalProfileDocument, primaryTopic Person, current Project) in RDF/JSON.
+
+easyrdf-foaf-triples.rj ..kind.. collected
+easyrdf-foaf-triples.rj ..format.. format:rdf-json
+easyrdf-foaf-triples.rj ..source url.. https://github.com/easyrdf/easyrdf
+easyrdf-foaf-triples.rj ..license.. BSD-3-Clause
+easyrdf-foaf-triples.rj ..tests.. RDF/JSON triples-style variant: a top-level "triples" array of {subject,predicate,object} value objects (instead of the subject-keyed form) representing the same FOAF graph.
+easyrdf-foaf-triples.rj ..content.. The same EasyRdf FOAF profile as easyrdf-foaf.rj, expressed as an explicit list of subject/predicate/object triples.

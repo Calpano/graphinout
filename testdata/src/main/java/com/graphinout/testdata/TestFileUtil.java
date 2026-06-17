@@ -19,8 +19,6 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -43,7 +41,6 @@ public class TestFileUtil {
     public static final String TARGET_TEST_CLASSES = "target/test-classes";
     public static final String EMOJI_VIDEOCASSETTE = "\uD83D\uDCFC";
     private static final Logger log = getLogger(TestFileUtil.class);
-    static Pattern INVALID_MARKER = Pattern.compile("invalid([a-z]*).*");
 
     private static File asSrcMainResource(File targetTestClasses) {
         assert targetTestClasses.getAbsolutePath().contains(TARGET_TEST_CLASSES);
@@ -147,32 +144,13 @@ public class TestFileUtil {
 
     /**
      * A file can be an invalid file, an invalid XML file or an invalid GraphML file but a valid XML file. So the
-     * invalidness can be quantified with a marker.
-     * <p>
-     * Does the file start with 'invalidXML-' OR with any other marker instead of XML?
-     * <p>
-     * TODO switch to use -INVALID as marker at end of file name.
+     * invalidness can be quantified with a marker: the file name carries a {@code --INVALID<marker>} tag,
+     * e.g. {@code foo--INVALIDxml.ext} (not even well-formed XML) or {@code foo--INVALIDgraphml.graphml}
+     * (valid XML, but invalid GraphML).
      *
      * @param markers can optionally accept only some
-     * @return true if the path is marked as INVALID
+     * @return true if the path is marked as INVALID for any of the given markers
      */
-    public static boolean isInvalid(Path path, String... markers) {
-        String fileName = path.toFile().getName().toLowerCase(Locale.ROOT);
-
-        Matcher m = INVALID_MARKER.matcher(fileName);
-        if (m.matches()) {
-            if (markers == null || markers.length == 0) return true;
-
-            String foundMarker = m.group(1);
-            for (String marker : Set.of(markers)) {
-                if (foundMarker.equals(marker.toLowerCase(Locale.ROOT))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public static boolean isInvalid(Resource resource, String... markers) {
         String tags = tags(resource);
         String tagsLower = tags.toLowerCase(Locale.ROOT);

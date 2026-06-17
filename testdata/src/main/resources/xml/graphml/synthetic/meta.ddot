@@ -1,0 +1,42 @@
+# Metadata for synthetic GraphML test files
+
+These are hand-crafted test fixtures authored within the graphinout project
+(by Calpano) to exercise GraphML parsing/writing. They are NOT collected
+external data. Files named "--EXPECTED-..." are the expected output of a
+specific conversion/handling test.
+
+ddot.it/this ..kind.. synthetic
+ddot.it/this ..format.. format:graphml
+ddot.it/this ..authored by.. Calpano / graphinout project
+ddot.it/this ..license.. not stated (public domain unless otherwise stated)
+ddot.it/this ..content.. Synthetic, hand-crafted GraphML test fixtures (expected outputs of conversion / namespace tests).
+
+
+# --- File: graphml-key-data--EXPECTED-Gml2Cj2Gml.graphml.xml ---
+
+graphml-key-data--EXPECTED-Gml2Cj2Gml.graphml.xml ..kind.. synthetic
+graphml-key-data--EXPECTED-Gml2Cj2Gml.graphml.xml ..format.. format:graphml
+graphml-key-data--EXPECTED-Gml2Cj2Gml.graphml.xml ..authored by.. Calpano / graphinout project
+graphml-key-data--EXPECTED-Gml2Cj2Gml.graphml.xml ..license.. not stated (public domain unless otherwise stated)
+graphml-key-data--EXPECTED-Gml2Cj2Gml.graphml.xml ..tests.. GraphML -> ConnectedJson -> GraphML round-trip conversion (Gml2Cj2Gml); expected output.
+graphml-key-data--EXPECTED-Gml2Cj2Gml.graphml.xml ..content.. Single directed graph (id--graph) with comprehensive <key>/<data> coverage. Defines 22 <key> elements spanning every GraphML "for" domain (all/graphml/graph/node/edge/hyperedge/endpoint/port) and all attr.type values (string, boolean, int, long, float, double) with <default> values. Contains 6 nodes (some with <port> North/South), 2 <edge> (one plain, one with sourceport/targetport), and 2 <hyperedge> elements with multiple <endpoint> (types in/out/undir, one using a port). Exercises GraphML key/data attribute handling and type defaults.
+
+
+# --- Subfolder: namespace/ ---
+# Both files are minimal GraphML documents (empty <graphml> root, no graph
+# content) used purely to test XML namespace declaration handling. They are
+# the expected output of the GraphmlNS namespace test.
+
+namespace/namespace1--EXPECTED-GraphmlNS.graphml.xml ..kind.. synthetic
+namespace/namespace1--EXPECTED-GraphmlNS.graphml.xml ..format.. format:graphml
+namespace/namespace1--EXPECTED-GraphmlNS.graphml.xml ..authored by.. Calpano / graphinout project
+namespace/namespace1--EXPECTED-GraphmlNS.graphml.xml ..license.. not stated (public domain unless otherwise stated)
+namespace/namespace1--EXPECTED-GraphmlNS.graphml.xml ..tests.. GraphML XML namespace handling (GraphmlNS); expected output.
+namespace/namespace1--EXPECTED-GraphmlNS.graphml.xml ..content.. Empty <graphml> root element (no nodes/edges). Declares default GraphML namespace plus an extra prefix "bla" bound to the SAME GraphML namespace URI (http://graphml.graphdrawing.org/xmlns) and xsi schemaLocation. Variant: redundant prefix aliasing the GraphML namespace.
+
+namespace/namespace2--EXPECTED-GraphmlNS.graphml.xml ..kind.. synthetic
+namespace/namespace2--EXPECTED-GraphmlNS.graphml.xml ..format.. format:graphml
+namespace/namespace2--EXPECTED-GraphmlNS.graphml.xml ..authored by.. Calpano / graphinout project
+namespace/namespace2--EXPECTED-GraphmlNS.graphml.xml ..license.. not stated (public domain unless otherwise stated)
+namespace/namespace2--EXPECTED-GraphmlNS.graphml.xml ..tests.. GraphML XML namespace handling (GraphmlNS); expected output.
+namespace/namespace2--EXPECTED-GraphmlNS.graphml.xml ..content.. Empty <graphml> root element (no nodes/edges). Declares default GraphML namespace plus a foreign prefix "foo" bound to an unrelated URI (http://foo.com) and xsi schemaLocation. Variant: extra non-GraphML namespace declared on the root.

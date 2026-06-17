@@ -64,7 +64,7 @@ class GraphmlXmlNamespacesTest {
 
     @Test
     void namespace3() throws IOException {
-        Resource resource = TestFileUtil.resource("xml/namespace3.xml");
+        Resource resource = TestFileUtil.resource("xml/plain-xml/namespace3.xml");
         assertThat(resource).isNotNull();
         String content = resource.getContentAsString();
         SingleInputSource singleInputSource = inputSource(resource);

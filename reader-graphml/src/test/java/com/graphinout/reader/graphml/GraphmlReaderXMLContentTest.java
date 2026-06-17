@@ -38,7 +38,7 @@ class GraphmlReaderXMLContentTest {
     @Test
     @Disabled("See issue #84")
     void html_Content_Tag_test() throws IOException {
-        String resourceName = "xml/graphml/HTML_Content_In_Data.xml";
+        String resourceName = "xml/plain-xml/HTML_Content_In_Data.xml";
         String result = parseGraphmlToString(resourceName);
         String expected = """
             <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
@@ -66,7 +66,7 @@ class GraphmlReaderXMLContentTest {
 
     @Test
     void xml_content_in_data() throws IOException {
-        String resourceName= "xml/XML_Standard_Content_In_Data.xml";
+        String resourceName= "xml/plain-xml/XML_Standard_Content_In_Data.xml";
         String result = parseGraphmlToString(resourceName);
         String expected = TestFileUtil.resource(resourceName).getContentAsString();
         GraphmlAssert.xAssertThatIsSameGraphml(result, expected, null);
@@ -74,7 +74,7 @@ class GraphmlReaderXMLContentTest {
 
     @Test
     void xml_content_in_default() throws IOException {
-        String resourceName= "xml/XML_Standard_Content_In_default.xml";
+        String resourceName= "xml/plain-xml/XML_Standard_Content_In_default.xml";
         String expected = TestFileUtil.resource(resourceName).getContentAsString();
         String result = parseGraphmlToString(resourceName);
         GraphmlAssert.xAssertThatIsSameGraphml(result, expected, null);
@@ -82,7 +82,7 @@ class GraphmlReaderXMLContentTest {
 
     @Test
     void xml_content_in_desc() throws IOException {
-        String resourceName= "xml/XML_Standard_Content_In_Desc.xml";
+        String resourceName= "xml/plain-xml/XML_Standard_Content_In_Desc.xml";
         String result = parseGraphmlToString(resourceName);
         String expected = TestFileUtil.resource(resourceName).getContentAsString();
         GraphmlAssert.xAssertThatIsSameGraphml(result, expected, null);

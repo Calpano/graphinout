@@ -1,0 +1,37 @@
+Synthetic Graphviz DOT test fixtures (graphinout reader-dot)
+
+These are project-own, hand-authored synthetic DOT graphs with trivial node
+names (A, B, C, ...). They exercise increasingly rich combinations of node,
+edge and subgraph styling/attributes, ports, record labels and rank
+constraints. Used as reader-dot parser/conversion fixtures.
+
+Folder-wide facts:
+ddot.it/this ..kind.. synthetic
+ddot.it/this ..authored by.. Calpano (graphinout project)
+ddot.it/this ..license.. not stated (public domain unless otherwise stated)
+ddot.it/this ..format.. format:dot
+ddot.it/this ..content.. synthetic styled digraphs with clusters, ports, records and rank constraints
+
+Per-file:
+
+synthetic.dot ..tests.. basic digraph with default node/edge attrs and per-element overrides (shape, color)
+synthetic2.dot ..tests.. three named clusters with styles plus richly styled nodes/edges and cross-cluster edges
+synthetic3.dot ..tests.. graph layout attrs (rankdir, splines=ortho, overlap, nodesep, ranksep) with styled nodes/edges
+synthetic4.dot ..tests.. two clusters plus top-level nodes, many shapes and edge styles, sizes (width/height)
+synthetic5.dot ..tests.. multiple {rank=same} groups forming a grid, edges with style/weight, edge [dir=none]
+synthetic6.dot ..tests.. record-shaped nodes with field ports (<f0>|<f1>|<f2>) and port-targeted edges (A:f1 -> B:f0)
+synthetic7.dot ..tests.. large graph: graph-level label/style, three clusters, many styled nodes and edges
+synthetic8.dot ..tests.. varied node shapes (box3d, component, parallelogram) and a styled edge chain
+synthetic9.dot ..tests.. rich edge attributes: taillabel, headlabel, arrowhead/arrowtail, penwidth, minlen, arrowsize
+synthetic10.dot ..tests.. four clusters with rank=same, many shapes, cross-cluster rank-same groups
+synthetic11.dot ..tests.. dense digraph with cycles/back-edges and multiple shapes
+synthetic12.dot ..tests.. two clusters as parallel chains tied together by {rank=same} and cross edges
+synthetic13.dot ..tests.. styled edges with taillabel/headlabel/arrowsize across a small DAG
+synthetic14.dot ..tests.. nested record labels ({Node|{<f0>|<f1>|<f2>}|{...}}) with port-to-port edges
+synthetic15.dot ..tests.. peripheries=2 nodes and edges with constraint=false and minlen
+synthetic16.dot ..tests.. full edge arrow/dir matrix (dir forward/back/both/none, arrowhead/arrowtail variants, decorate)
+synthetic17.dot ..tests.. record nodes with subfields, repeated/duplicate edge attribute keys (dir, weight, constraint listed twice)
+synthetic17-A.dot ..tests.. minimal reduction of synthetic17: single C -> E edge with duplicated dir/weight/constraint keys
+synthetic18.dot ..tests.. nested record labels with named ports (<s0>|<s1>|<s2>), port edges, duplicate edge attr keys, {rank=same}
+synthetic19.dot ..tests.. fontname on default node attrs plus full edge arrow/dir/decorate matrix
+synthetic20.dot ..tests.. circle nodes with distinct fillcolors plus full edge arrow/dir matrix

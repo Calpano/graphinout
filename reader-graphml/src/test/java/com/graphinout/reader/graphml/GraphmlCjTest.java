@@ -22,7 +22,7 @@ public class GraphmlCjTest {
     @Test
     @Description("1 file")
     void testDataSimple() throws IOException {
-        TestFileProvider.TestResource tr = TestFileProvider.resourceByPath("json/cj_7_0_0/custom-data-simple.cj.json");
+        TestFileProvider.TestResource tr = TestFileProvider.resourceByPath("json/connected-json/connected-json-7.0.0/custom-data-simple.cj.json");
         String json = tr.resource().getContentAsString();
         ICjDocument doc = ConnectedJsonReader.readToDocument(json);
         assertThat(doc).isNotNull();

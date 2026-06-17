@@ -1,0 +1,25 @@
+= RDF test data: TriG (.trig)
+
+TriG serialization samples (named-graph Turtle). All files are collected from
+the W3C RDF 1.1 TriG test suite.
+
+ddot.it/this ..kind.. collected
+ddot.it/this ..format.. format:trig
+ddot.it/this ..content.. TriG named-graph documents from the W3C RDF 1.1 TriG test suite
+ddot.it/this ..source url.. https://w3c.github.io/rdf-tests/
+ddot.it/this ..license.. W3C Software and Document License / W3C Test Suite License
+
+w3c-alternating_iri_graphs.trig ..content.. statements alternating between the default graph and an IRI-named graph :G
+w3c-alternating_iri_graphs.trig ..tests.. interleaved default-graph and named-graph blocks, repeated graph labels
+
+w3c-collection_object.trig ..content.. an RDF collection (list) used as a triple object inside a graph
+w3c-collection_object.trig ..tests.. RDF collections / list syntax as object
+
+w3c-labeled_blank_node_graph.trig ..content.. a named graph whose label is a labeled blank node
+w3c-labeled_blank_node_graph.trig ..tests.. blank node as graph name
+
+w3c-trig-subm-01.trig ..content.. TriG submission syntax test 01 covering core grammar
+w3c-trig-subm-01.trig ..tests.. prefixes, graphs, triples, basic TriG syntax
+
+w3c-trig-subm-14.trig ..content.. TriG submission syntax test 14 covering further grammar constructs
+w3c-trig-subm-14.trig ..tests.. advanced TriG syntax constructs

@@ -16,6 +16,7 @@ import com.graphinout.foundation.pure.json.writer.impl.DelegatingJsonWriter;
 import com.graphinout.base.json.JsonReaderImpl;
 import com.graphinout.foundation.pure.json.writer.impl.LoggingJsonWriter;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.testdata.TestFileUtil;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,10 +30,11 @@ import static com.google.common.truth.Truth.assertThat;
 public class CjElementsParsingTest {
 
     static ICjDocument toCjDoc(String resourceName) throws IOException {
-        // load resource "sample-1.cj.json"
-        // Use ClassLoader to get the resource URL
-        java.net.URL resourceUrl = CjElementsParsingTest.class.getClassLoader().getResource(resourceName);
-        assertThat(resourceUrl).isNotNull();
+        // load resource e.g. "sample-1.cj.canonical.json" via TestFileUtil so the
+        // optional external graph-test-data root is searched (ClassLoader.getResource is not external-root aware)
+        io.github.classgraph.Resource resource = TestFileUtil.resource(resourceName);
+        assertThat(resource).isNotNull();
+        java.net.URL resourceUrl = resource.getURL();
         String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
 
         CjWriter2CjDocumentWriter cj2elements = new CjWriter2CjDocumentWriter();
@@ -50,11 +52,11 @@ public class CjElementsParsingTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"json/cj_7_0_0/sample-3.cj.canonical.json",
-            "json/cj_7_0_0/sample-2.cj.canonical.json",
-            "json/cj_7_0_0/sample-2b.cj.canonical.json",
-            "json/cj_7_0_0/sample-1b.cj.canonical.json",
-            "json/cj_7_0_0/sample-1.cj.canonical.json"
+    @ValueSource(strings = {"json/connected-json/connected-json-7.0.0/sample-3.cj.canonical.json",
+            "json/connected-json/connected-json-7.0.0/sample-2.cj.canonical.json",
+            "json/connected-json/connected-json-7.0.0/sample-2b.cj.canonical.json",
+            "json/connected-json/connected-json-7.0.0/sample-1b.cj.canonical.json",
+            "json/connected-json/connected-json-7.0.0/sample-1.cj.canonical.json"
     })
     public void testParse(String resourceName) throws IOException {
         ICjDocument doc = toCjDoc(resourceName);
@@ -63,7 +65,7 @@ public class CjElementsParsingTest {
 
     @Test
     public void testParseConnectedJsonDocument() throws IOException {
-        ICjDocument doc = toCjDoc("json/cj_7_0_0/sample-1.cj.canonical.json");
+        ICjDocument doc = toCjDoc("json/connected-json/connected-json-7.0.0/sample-1.cj.canonical.json");
         // Test document-level nodes and edges
         ICjGraph graph_0 = doc.graphs().findFirst().orElseThrow();
 

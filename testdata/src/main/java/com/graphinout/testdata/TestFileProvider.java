@@ -161,13 +161,27 @@ public class TestFileProvider {
             // test: Additional white space characters are allowed.
             NamedString.of("whitespace", "{\t\"foo\"\t:\t42\t}\n"));
 
+    /**
+     * The canonical CJ provider: the clean Connected-JSON files directly in {@code connected-json-7.0.0},
+     * suitable for round-trip and validation tests. Special-purpose subdirs are intentionally excluded
+     * (they break clean round-trip/validation tests and have their own consumers):
+     * <ul>
+     *   <li>{@code roundtrip/} + {@code no_roundtrip/} — "nasty" JSON stress files, covered by
+     *       {@code JaJsonRoundtripResourcesTest} via {@link #jsonResources()}</li>
+     *   <li>{@code graph-format-features/} — per-feature CJ files, covered by the engine
+     *       {@code FeatureRoundtripTest} via {@code CjFeature.resourcePath()}</li>
+     * </ul>
+     * (The former canonical/extended split was dropped — extended syntax no longer exists; all CJ is canonical.)
+     */
     public static Stream<TestResource> cjResourcesCanonical() {
-        return resources("json/cj_7_0_0", EXTENSIONS_CJ_JSON);
-    }
-
-    /** Only extended */
-    public static Stream<TestResource> cjResourcesExtended() {
-        return resources("json/cj_7_0_0", EXTENSIONS_CJ_JSON);
+        final String base = "json/connected-json/connected-json-7.0.0/";
+        return resources("json/connected-json/connected-json-7.0.0", EXTENSIONS_CJ_JSON)
+                // only files directly in the canonical dir, not in any subdir
+                .filter(tr -> {
+                    String path = tr.resource().getPath();
+                    int i = path.indexOf(base);
+                    return i >= 0 && !path.substring(i + base.length()).contains("/");
+                });
     }
 
     /**

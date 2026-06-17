@@ -1,0 +1,41 @@
+Generated Graphviz DOT test fixtures (graphinout reader-dot)
+
+These are project-own, hand-authored / generated synthetic DOT graphs. Each
+gen* file is a minimal graph focused on one DOT-language feature. The
+*--INVALIDdot.dot files are deliberately malformed negative tests (the parser
+is expected to reject or specially handle them).
+
+Folder-wide facts:
+ddot.it/this ..kind.. synthetic
+ddot.it/this ..authored by.. Calpano (graphinout project)
+ddot.it/this ..license.. not stated (public domain unless otherwise stated)
+ddot.it/this ..format.. format:dot
+ddot.it/this ..content.. minimal feature-focused DOT graphs plus negative tests
+
+Per-file:
+
+gen01-minimal-digraph.dot ..tests.. minimal anonymous digraph, single A -> B edge
+gen02-undirected.dot ..tests.. strict undirected graph with -- edge
+gen03-attrs-numbers-strings.dot ..tests.. node/edge/graph attributes mixing numbers, decimals (.75) and quoted strings
+gen04-ports-and-compass.dot ..tests.. port syntax including quoted ports (A:out, C:"p ort", D:"HTMLPORT")
+gen05-subgraphs.dot ..tests.. named cluster_ subgraphs with labels plus cross-subgraph edge
+gen06-edge-chains-and-groups.dot ..tests.. edge chains with brace groups (A -> {B C} -> D) and rank=same group
+gen07-default-attributes.dot ..tests.. default graph/node/edge attribute statements applied to later elements
+gen08-html-labels.dot ..tests.. HTML-like label (<<table>...</table>>) on a plaintext node
+gen09-assignments-and-separators.dot ..tests.. top-level a=b assignments and semicolon separators inside attr lists, multiple statements per line
+gen10-comments-numeric-ids.dot ..tests.. // # and /* */ comments, numeric and quoted IDs, anonymous subgraph
+gen11-edge-mid-attrs.dot ..content.. edge to an anonymous subgraph endpoint (A -> subgraph { B; C; })
+gen12-html-gt-in-text.dot ..tests.. literal > inside HTML-like label text (<B>2 > 1</B>)
+gen13-subgraph-endpoint.dot ..tests.. edge whose head is an anonymous subgraph (A -> subgraph { B; C })
+gen14-node-attrs-before-edge.dot ..tests.. edge to a named subgraph endpoint (A -> subgraph cluster_x { B; })
+gen15-html-attr-gt.dot ..tests.. > character inside an HTML tag attribute value (title=">")
+gen16-html-attr-lt.dot ..tests.. < character inside an HTML tag attribute value (title="<")
+gen17-multi-graphs.dot ..tests.. multiple top-level graphs in one file (digraph A then strict graph B)
+gen18-subgraph-endpoint-named.dot ..tests.. named subgraph as mid endpoint in a chain (A -> subgraph cluster_0 { B; } -> C)
+gen19-subgraph-to-subgraph.dot ..tests.. edge from one named subgraph to another (subgraph cluster_a -> subgraph cluster_b)
+gen20-edge-multi-mid-attrs.dot ..tests.. brace group as edge tail ({ A; B; } -> C)
+
+edge-mid-attrs--INVALIDdot.dot ..tests.. INVALID: attribute list in the middle of an edge chain (A -> B [color=red] -> C)
+edge-multi-mid-attrs--INVALIDdot.dot ..tests.. INVALID: multiple mid-chain attribute lists (A -> B [..] -> C [..] -> D)
+group-with-subgraph--INVALIDdot.dot ..tests.. INVALID: subgraph nested inside a brace group with a comma (A -> { B, subgraph { C; D } })
+node-attrs-before-edge--INVALIDdot.dot ..tests.. INVALID: node attribute list directly preceding -> on same statement (A [label="x"] -> B)

@@ -30,7 +30,7 @@ public class JsonTest {
     @BeforeEach
     void setUp() {
         jsonReader = new JsonReaderImpl();
-        testResourcesPrefix = "json";
+        testResourcesPrefix = "json/plain-json";
     }
 
     @Test

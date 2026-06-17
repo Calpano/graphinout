@@ -50,7 +50,7 @@ public class XmlTest {
     @Test
     @DisplayName("Test cdata in XML file")
     void testCDATA() throws Exception {
-        testXmlFile(TestFileUtil.resource("xml/cdata.xml"));
+        testXmlFile(TestFileUtil.resource("xml/plain-xml/cdata.xml"));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class XmlTest {
     @Test
     @DisplayName("Test minimal XML file processing")
     void testMinimalXml() throws Exception {
-        testXmlFile(TestFileUtil.resource("xml/minimal.xml"));
+        testXmlFile(TestFileUtil.resource("xml/plain-xml/minimal.xml"));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class XmlTest {
     @Test
     @DisplayName("Test typical XML file processing")
     void testTypicalXml() throws Exception {
-        testXmlFile(TestFileUtil.resource("xml/typical.xml"));
+        testXmlFile(TestFileUtil.resource("xml/plain-xml/typical.xml"));
     }
 
     private void parseXmlString(String xml) throws Exception {

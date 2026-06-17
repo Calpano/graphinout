@@ -1,6 +1,0 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/company.json",
-  "title": "Complex Company Data Structure",
-  "description": "A comprehensive JSON document demonstrating all JSON features and common patterns"
-}

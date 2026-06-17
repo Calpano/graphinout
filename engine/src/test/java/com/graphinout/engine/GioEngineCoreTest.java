@@ -102,7 +102,7 @@ class GioEngineCoreTest {
 
     @Test
     void testWith1Resource() {
-        testTheResource(TestFileProvider.TestResource.testResource(resource("xml/graphml/synthetic/invalidgraphml-root.graphml")));
+        testTheResource(TestFileProvider.TestResource.testResource(resource("xml/graphml/synthetic/root--INVALIDgraphml.graphml")));
     }
 
     private void testResourceWithReader(GioReader gioReader, SingleInputSource inputSource, String resourcePath) throws IOException {

@@ -13,7 +13,6 @@ class TestFileProviderTest {
         Truth.assertThat(TestFileProvider.graphmlResources()).isNotEmpty();
         Truth.assertThat(TestFileProvider.xmlResources()).isNotEmpty();
         Truth.assertThat(TestFileProvider.cjResourcesCanonical()).isNotEmpty();
-        Truth.assertThat(TestFileProvider.cjResourcesExtended()).isNotEmpty();
         Truth.assertThat(TestFileProvider.jsonResources()).isNotEmpty();
         Truth.assertThat(TestFileProvider.json5InputSources()).isNotEmpty();
     }

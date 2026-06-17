@@ -14,7 +14,7 @@ class TestFileUtilTest {
     @Test
     @Disabled("Cannot run in pipeline")
     void test() {
-        String resourcePath = "xml/minimal.xml";
+        String resourcePath = "xml/plain-xml/minimal.xml";
         Resource resource = TestFileUtil.resource(resourcePath);
         Truth.assertThat(resource).isNotNull();
         Truth.assertThat(resource.getPath()).isEqualTo(resourcePath);

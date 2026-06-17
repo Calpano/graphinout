@@ -1,0 +1,174 @@
+# meta.ddot for the Graphviz GALLERY / documentation example graphs
+#
+# This directory contains the canonical Graphviz GALLERY and documentation
+# example graphs, as published at https://graphviz.org/gallery/ and shipped in
+# the Graphviz source `graphs/` directory. They are the classic, well-known
+# example graphs used throughout the Graphviz documentation.
+#
+# FILE-EXTENSION CONVENTION: the DOT source is stored with an extra `.txt`
+# suffix so the files render as plain text in browsers / repos. Most files use
+# the `.gv.txt` convention (DOT source, `.gv` being the modern Graphviz
+# extension). A few keep the legacy `.dot` extension (html1.dot, pspdf.dot) or
+# the `.dot.txt` convention (inet.dot.txt). The underlying content is plain DOT
+# language in every case.
+#
+# LICENSE: Graphviz is open-source. Per the official license page
+# (https://graphviz.org/license/), Graphviz was historically distributed under
+# the Common Public License Version 1.0 (CPL-1.0), the predecessor of the
+# Eclipse Public License (EPL); the project's license page records the change
+# "from Common Public License Version 1.0 to Eclipse Public License version
+# 2.0" (page modified 2026-03-07), so current Graphviz releases are EPL-2.0.
+# These example graphs were collected from the Graphviz distribution and
+# documentation. Two files (colors.gv.txt, grid.gv.txt) carry an explicit
+# "© 2022 Costa Shulyupin, licensed under EPL" notice in their source.
+#
+# Triple syntax: `subject ..predicate.. object`
+#   ddot.it/this        = folder-wide facts
+#   <filename>          = per-file ..content.. / ..depicts.. facts
+
+ddot.it/this ..kind.. collected
+ddot.it/this ..format.. dot
+ddot.it/this ..source.. https://graphviz.org/gallery/
+ddot.it/this ..source.. https://graphviz.org/documentation/ (Graphviz source `graphs/` directory)
+ddot.it/this ..license.. EPL-2.0 (historically CPL-1.0 / Common Public License; see https://graphviz.org/license/)
+ddot.it/this ..description.. Canonical Graphviz GALLERY and documentation example graphs; DOT source stored with a `.txt` (or `.gv.txt` / `.dot.txt`) suffix.
+
+# --- per-file descriptions -------------------------------------------------
+
+hello.gv.txt ..content.. The minimal one-line digraph `digraph G {Hello->World}`.
+hello.gv.txt ..depicts.. The classic minimal "Hello World" directed graph; the canonical first Graphviz example.
+
+unix.gv.txt ..content.. A digraph of named editions/variants ("5th Edition", "6th Edition", BSD, System V, Xenix, ...) connected by `->` edges; light-blue filled nodes. Courtesy Ian Darwin and Geoff Collyer, Softquad Inc.
+unix.gv.txt ..depicts.. The evolution/family history of the Unix operating systems; the best-known Graphviz directed-graph example.
+
+crazy.gv.txt ..content.. Same Unix-genealogy data as unix, but each node is a randomly distorted/skewed polygon (sides, distortion, orientation, skew) with filled colors; graph label "Object Oriented Graphs / Stephen North, 3/19/93".
+crazy.gv.txt ..depicts.. A deliberately "crazy" rendering of the Unix history graph showing polygon node shapes, distortion, skew and orientation node attributes.
+
+world.gv.txt ..content.. A digraph with many `{rank=same; ...}` groups (S8, T8, numbered nodes) and a layered set of edges, `size="7,7"`.
+world.gv.txt ..depicts.. The "world dynamics" example graph; a large layered ranking demo using rank=same to align levels.
+
+cluster.gv.txt ..content.. A digraph with two `subgraph cluster_0` / `cluster_1` boxes labelled "process #1" / "process #2", gradient fills, Mdiamond start and Msquare end nodes, gradientangle and radial styles.
+cluster.gv.txt ..depicts.. The canonical subgraph-clusters example; demonstrates clustering of nodes plus color gradients and special start/end node shapes.
+
+fsm.gv.txt ..content.. `digraph finite_state_machine` with `rankdir=LR`, doublecircle accept states (0 3 4 8) and circle states, edges labelled with shift/reduce-style actions like "SS(B)", "S(a)".
+fsm.gv.txt ..depicts.. A finite state machine (parser/automaton) with start/accept states drawn left-to-right.
+
+ER.gv.txt ..content.. An undirected `graph ER` (layout=neato) with box entities (course, institute, student), ellipse attributes (name, code, grade, number) and diamond relationships ("C-I", "S-C", "S-I") with 1/n/m cardinality edge labels; label "Entity Relation Diagram / drawn by NEATO".
+ER.gv.txt ..depicts.. A classic entity-relationship (ER) diagram of a student/course/institute schema.
+
+datastruct.gv.txt ..content.. A left-to-right digraph of `shape=record` nodes with `<f0>|<f1>|<f2>` ports holding pointer values (0x..., (nil)), gradient fill colors, and port-to-port edges.
+datastruct.gv.txt ..depicts.. A data-structure diagram using record-shape nodes and field ports to show linked nodes/pointers (e.g. a tree/list in memory).
+
+philo.gv.txt ..content.. A `digraph PhiloDilemma` (layout=neato, overlap=false) of box and circle nodes (hu/th/ri/ea, acq/bec/rel per philosopher) wired into three symmetric rings; label "PetriNet Model PhiloDilemma". Contributed by Manfred Jeusfeld from ConceptBase.
+philo.gv.txt ..depicts.. The dining philosophers problem modelled as a Petri net.
+
+traffic_lights.gv.txt ..content.. A `digraph TrafficLights` (layout=neato) of box transition nodes (gy/yr/rg) and circle place nodes (green/yellow/red/safe) forming two coupled light controllers; label "PetriNet Model TrafficLights". Contributed by Manfred Jeusfeld from ConceptBase (example from Wil van der Aalst).
+traffic_lights.gv.txt ..depicts.. A Petri-net model of Dutch traffic lights.
+
+process.gv.txt ..content.. A small undirected `graph G` (layout=neato) of process scheduler states: run, intr, runbl, kernel, zombie, sleep, swap, runswap, runmem, new.
+process.gv.txt ..depicts.. A process / scheduler state-transition diagram (Unix process states).
+
+lion_share.gv.txt ..content.. A `digraph Ped_Lion_Share` of box (male) and circle (female) individuals joined through diamond "marr####" marriage nodes via dir=none edges; label "Pedigree Lion_Share". Contributed by David Duffy (FTREE pedigree package).
+lion_share.gv.txt ..depicts.. A genetics "marriage node" pedigree / ancestry diagram (Lion Share was a racehorse).
+
+kennedyanc.gv.txt ..content.. A genealogy graph (ancestor/descendant tree) with image references; from Kaarle Kaila's FinFamily software (images at graphviz.org/Gallery/directed/images/).
+kennedyanc.gv.txt ..depicts.. A Kennedy-family ancestor/genealogy chart produced by FinFamily.
+
+siblings.gv.txt ..content.. A large `digraph sdsu` (size="36,36") family tree of a fraternity/sorority, blue (brother), pink (sister) and purple (both) icons, charter members outlined; from Japheth Cleaver.
+siblings.gv.txt ..depicts.. The "family tree" of big-brother/big-sister relationships in a fraternity and sorority.
+
+switch.gv.txt ..content.. A `digraph G` (rankdir=LR, edge dir=none) of circle and diamond nodes wired in stages with multi-color parallel edges (e.g. `color="#ff0000:#0000ff"`).
+switch.gv.txt ..depicts.. A switching/interconnection network (multistage switch fabric) demonstrating multi-color parallel edges.
+
+sdh.gv.txt ..content.. A `digraph G` (page="8.5,11", ratio=fill) of rank=same subgraphs of colored shapes (ds3CTP boxes, t3TTP/vc3TTP invtriangles, fabric hexagons, xp diamonds, au3CTP...).
+sdh.gv.txt ..depicts.. An SDH (Synchronous Digital Hierarchy) telecom transport-network / termination-point diagram.
+
+psg.gv.txt ..content.. A `digraph g` (rankdir=LR) of Mrecord state nodes whose HTML-like table labels show LR(0) parser items "(n) e -> &bull;l '=' r"; conflict states highlighted (black/red). Contributed by Kalani Thielen.
+psg.gv.txt ..depicts.. An LR(0)/LALR(1) parser state graph (parsing-state machine for a context-free grammar).
+
+softmaint.gv.txt ..content.. A large `digraph G` (layout=neato) of many alphanumeric nodes (fcfpr1_..., rdlfpr2_..., numeric ids) connected by `->` edges; small node sizes.
+softmaint.gv.txt ..depicts.. A software-maintenance / fault-propagation-report dependency diagram.
+
+UML_Class_diagram.gv.txt ..content.. A `digraph UML_Class_diagram` with record/HTML-like-label classes and interfaces (Client, Interface1/2, Class1, System_1), inheritance (empty arrowtail), dependency (dashed vee) and implementation edges; «interface» stereotype labels and a nested HTML table for System.
+UML_Class_diagram.gv.txt ..depicts.. A UML class diagram demonstrating classes, interfaces, inheritance, dependency and realization relationships.
+
+Linux_kernel_diagram.gv.txt ..content.. A `digraph "Linux_kernel_diagram"` (newrank=true) of filled boxes grouped into kernel subsystems (system calls, process/memory/file/device/network management, architecture-dependent code, hardware) with thick borders.
+Linux_kernel_diagram.gv.txt ..depicts.. The layered structure of the Linux kernel (subsystems and their relationships).
+
+profile.gv.txt ..content.. A `digraph prof` of filled nodes (start, main, sort, merge, term, ...) with HSV-colored `->` edges representing call frequency/cost.
+profile.gv.txt ..depicts.. An execution-profiling call graph (gprof-style), edges colored by weight.
+
+pprof.gv.txt ..content.. A `digraph "[stackcollapse]"` with a cluster_L legend box ("Showing nodes accounting for ... See https://git.io/JfYMW") and box nodes sized/colored by sample counts (deflate, gzip, longest_match, do_syscall_64, ...).
+pprof.gv.txt ..depicts.. A pprof/perf profiling call graph (flame-graph-style hot path), node size & color encode CPU samples.
+
+go-package.gv.txt ..content.. A `digraph regexp` of Go standard-library packages (regexp, bytes, io, sort, strconv, ...) as nodes with godoc.org URLs/tooltips and import-dependency `->` edges.
+go-package.gv.txt ..depicts.. The package import-dependency graph of the Go `regexp` package and its transitive standard-library imports.
+
+bazel.gv.txt ..content.. A `digraph mygraph` of box nodes labelled with Bazel/Abseil build targets ("//absl/random:random", "//absl/random/internal:pool_urbg", ...) and dependency `->` edges.
+bazel.gv.txt ..depicts.. A Bazel build dependency graph (target dependency tree, here for Abseil's random library).
+
+ninja.gv.txt ..content.. A `digraph ninja` (rankdir=LR) with hex-address node ids, box build outputs, ellipse "phony"/rule nodes and arrowhead=none input edges.
+ninja.gv.txt ..depicts.. A Ninja build-system dependency graph (build targets, rules and their inputs/outputs).
+
+git.gv.txt ..content.. A `digraph git_basics` (rankdir=LR) of HTML-like-table nodes (working-tree changes, staging area/index, ...) with dotted edges labelled with git commands; label "Basic git concepts and operations".
+git.gv.txt ..depicts.. The basic git concepts and data flow (working tree, staging area, repository) and the commands that move data between them.
+
+Genetic_Programming.gv.txt ..content.. An undirected `graph ""` of clustered expression trees with single-character node labels (+, *, X, %, COS, SIN, EXP, -); graph label is the full S-expression. Contributed by Wayne Folta.
+Genetic_Programming.gv.txt ..depicts.. Genetic-programming expression trees (symbolic-regression individuals) visualized for crossover/mutation debugging.
+
+neural-network.gv.txt ..content.. A `digraph G` (rankdir=TB, concentrate=True) of `shape=record` nodes with Keras-style layer labels ("InputLayer", "Embedding", "LSTM", "Concatenate", "Dense") showing input/output tensor shapes.
+neural-network.gv.txt ..depicts.. A neural-network architecture diagram (a Keras multi-input/multi-output model: embeddings, LSTMs, concat, dense heads).
+
+happiness.gv.txt ..content.. An undirected `graph happiness` (layout=twopi, cursive font) radiating from a central "Happiness" node to Peace/Love/Soul/Mind/Life/Health and their sub-topics; nodes carry Wikipedia URLs.
+happiness.gv.txt ..depicts.. A radial mind-map of "Happiness" laid out with the twopi engine.
+
+color_wheel.gv.txt ..content.. An undirected `graph Color_wheel` (layout=neato, start=regular) of 33 filled circle nodes arranged as a color wheel; label "Color wheel, 33 colors. Neato layout".
+color_wheel.gv.txt ..depicts.. A color wheel of 33 named colors, demonstrating neato radial placement.
+
+colors.gv.txt ..content.. A `digraph Twelve_colors` (layout=neato) of filled circle color nodes (green, white, blue, red, yellow, cyan, magenta, ...) with edges colored to match; carries "© 2022 Costa Shulyupin, licensed under EPL".
+colors.gv.txt ..depicts.. Twelve named colors and their relationships, neato layout (color attribute demo).
+
+transparency.gv.txt ..content.. A small undirected `graph Transparency` (layout=neato) of six large filled circles with 8-digit RGBA colors (e.g. `#0000ff80`) and a translucent bgcolor; nodes joined in a ring.
+transparency.gv.txt ..depicts.. Demonstration of color transparency / alpha channel (RGBA fills overlapping).
+
+angles.gv.txt ..content.. A digraph with cluster_1 ("Linear Angle Variations") of `style=filled` nodes and cluster_2 ("Radial Angle Variations") of `style=radial` nodes, each node varying `gradientangle` from 0..360 over a white-to-black gradient.
+angles.gv.txt ..depicts.. A demonstration of the `gradientangle` attribute for linear and radial node gradients.
+
+linear_angle.gv.txt ..content.. A `digraph G` with a single `shape=none` node whose HTML-like `<TABLE>` label is a grid of cells with two-color `bgcolor` linear gradients at `gradientangle="315"`.
+linear_angle.gv.txt ..depicts.. A grid demonstrating linear (non-radial) two-color gradient fills in HTML-like table cells.
+
+radial_angle.gv.txt ..content.. Like linear_angle but with `style="radial"` cells and `gradientangle="60"`; an HTML-like `<TABLE>` grid of two-color radial gradients.
+radial_angle.gv.txt ..depicts.. A grid demonstrating radial two-color gradient fills in HTML-like table cells.
+
+g_c_n.gv.txt ..content.. A tiny `digraph G` ("agraph") containing one `subgraph cluster1` ("acluster") with a single box node "anode", all using two-color gradient fills and gradientangle.
+g_c_n.gv.txt ..depicts.. A minimal graph/cluster/node gradient-fill example (hence "g_c_n": graph, cluster, node).
+
+grid.gv.txt ..content.. An undirected `graph grid` (layout=dot) wiring plaintext nodes A0..H7 into an 8x8 rigid grid with rank=same rows, weighted/dashed grid edges and a highlighted arbitrary path. By Costa Shulyupin.
+grid.gv.txt ..depicts.. A rigid 8x8 grid layout (rank constraints + high-weight edges) with an arbitrary path drawn across it.
+
+table.gv.txt ..content.. A `digraph G` with one `shape=none` node whose HTML-like `<TABLE>` label uses rowspan/colspan cells, rounded/radial styles and Brewer color-scheme gradient bgcolors (`/rdylgn11/...`).
+table.gv.txt ..depicts.. An HTML-like table label demonstrating rowspan/colspan, rounded corners, radial style and Brewer color schemes.
+
+html1.dot ..content.. A `digraph structs` of `shape=plaintext` nodes whose HTML-like `<TABLE>` labels have PORT cells (f0, f1, f2, here) with rowspan/colspan, joined by port-to-port edges.
+html1.dot ..depicts.. The canonical HTML-like label example (records built from HTML tables with ports). Stored with the legacy `.dot` extension.
+
+pspdf.dot ..content.. A `digraph` of document-conversion tool nodes (dot -Tps, dot -Tps2, dvips, ps2pdf, pdflatex) and file-type nodes (.ps, .dvi, .pdf, .tex) wired into conversion pipelines; some .pdf outputs filled grey.
+pspdf.dot ..depicts.. The PostScript/PDF document-conversion toolchain (paths from dot/TeX output to PDF). Stored with the legacy `.dot` extension.
+
+inet.dot.txt ..content.. A `strict graph ip_map` (undirected) of two/three-letter host codes (MH, ERC, ALC, WH1, HO1, IH1, MV, AN, ...) connected by `--` links, including self-connected host clusters.
+inet.dot.txt ..depicts.. An IP / internetwork connectivity map (host interconnection topology). Stored with the `.dot.txt` convention.
+
+fdpclust.gv.txt ..content.. A small undirected `graph G` (layout=fdp) with nested clusters (clusterA containing clusterC, clusterB) and edges that connect to clusters as endpoints (`e -- clusterB`, `clusterC -- clusterB`).
+fdpclust.gv.txt ..depicts.. The fdp layout engine's support for nested clusters and edges between clusters.
+
+twopi2.gv.txt ..content.. A large `digraph G` (layout=twopi, ranksep=3) of green hexagon nodes (hash-like labels) and grey box nodes (short hex labels) radiating outward.
+twopi2.gv.txt ..depicts.. A large radial (twopi) graph, e.g. a hash/blockchain or network-discovery tree laid out from a center.
+
+networkmap_twopi.gv.txt ..content.. A very large `graph networkmap` (layout=twopi, ratio=fill, root=0) of host nodes with HTML-like image labels (IMG SRC="images/N.png"), IP-address text, doublecircle shapes and URL/tooltip attributes. Contributed by Sancho Lerena (Pandora FMS).
+networkmap_twopi.gv.txt ..depicts.. An auto-generated network discovery map (Pandora FMS) drawn radially with twopi, including node images and clickable URLs/tooltips.
+
+root.gv.txt ..content.. A large `digraph G_component_0` (layout=sfdp, overlap=prism, root="189E") of green hexagon and colored box nodes with hash-like labels; from the Graphviz tests/graphs directory.
+root.gv.txt ..depicts.. A large sfdp-laid-out graph component (a Graphviz test graph) demonstrating scalable force-directed placement with overlap removal.
+
+gd_1994_2007.gv.txt ..content.. A large undirected `graph` with pre-assigned `pos` coordinates and bounding box; nodes are author names (Lee, Robertson, Bederson, Nachmanson, ...) grouped into components; meant for gvmap clustering.
+gd_1994_2007.gv.txt ..depicts.. A co-authorship graph of the International Symposium on Graph Drawing (1994-2007), laid out with sfdp and rendered as a clustered map via gvmap.
