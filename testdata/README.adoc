@@ -1,0 +1,51 @@
+= testdata
+
+Test resources (XML, JSON, CJ, …) plus a ClassGraph-based loader (`TestFileProvider`,
+`TestFileUtil`) used as a test-scoped dependency by the reader/writer modules.
+
+== Optional external test data (graph-test-data)
+
+Bulky and shared datasets are being migrated out of this module into the external
+https://github.com/Calpano/graph-test-data[graph-test-data] repository, which mirrors the same
+top-level layout (`xml/`, `json/`, `text/`, `binary/`). This keeps the published `testdata` artifact
+small (Maven Central limits, see `doc/maven-central.adoc`) and lets the data be shared across projects.
+
+`TestFileProvider` treats the external checkout as an *additional* resource root: its files are merged
+into every provider (`graphmlResources()`, `xmlResources()`, `cjResources*()`, …) and into
+`--EXPECTED` lookups, deduplicated by path (the external copy wins on collision). The feature is
+*optional* — if no external root is found, tests simply run against the in-repo data only.
+
+=== Enabling it locally
+
+Check out the data repo and point the loader at it, in this resolution order:
+
+. System property: `mvn test -Dgraph.test.data.dir=/path/to/graph-test-data`
+. Environment variable: `export GRAPH_TEST_DATA_DIR=/path/to/graph-test-data`
+. Auto-discovery: a sibling directory `../graph-test-data` or `../../graph-test-data` of the project.
+
+[NOTE]
+====
+Surefire forks a separate JVM for tests. The forked JVM inherits *environment variables*
+automatically, but *not* `-D` system properties. So `GRAPH_TEST_DATA_DIR` (env) works out of the box,
+while `-Dgraph.test.data.dir` works because the loader is read in-process during classpath scanning.
+For CI, prefer the environment variable.
+====
+
+To verify the external data is active, run a parameterized GraphML test with and without the root and
+compare the case count — the difference equals the number of migrated files:
+
+[source,bash]
+----
+mvn -pl reader-graphml test -Dtest=GraphmlTest                                   # in-repo only
+GRAPH_TEST_DATA_DIR=/path/to/graph-test-data mvn -pl reader-graphml test -Dtest=GraphmlTest
+----
+
+=== CI
+
+`.github/workflows/build-and-test.yml` checks out `graph-test-data` as a sibling of the project and
+exports `GRAPH_TEST_DATA_DIR` for the build step.
+
+== Metadata convention
+
+The external repo documents data provenance with `meta.ddot` files (https://ddot.it[ddot.it] triples:
+source URL, download date, license), superseding the older in-repo `info.meta` (`url-info=`) files.

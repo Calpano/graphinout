@@ -203,7 +203,66 @@ public class TestFileUtil {
         return RecordMode.Off;
     }
 
+    public static final String EXTERNAL_ROOT_PROPERTY = "graph.test.data.dir";
+    public static final String EXTERNAL_ROOT_ENV = "GRAPH_TEST_DATA_DIR";
+
+    private static boolean externalRootResolved = false;
+    private static @Nullable File externalRootCached;
+
+    /**
+     * Optional, additional root for test data, mirroring the in-repo {@code src/main/resources} layout
+     * ({@code xml/}, {@code json/}, {@code text/}, {@code binary/}). Resolution order:
+     * <ol>
+     *   <li>System property {@value #EXTERNAL_ROOT_PROPERTY}</li>
+     *   <li>Environment variable {@value #EXTERNAL_ROOT_ENV}</li>
+     *   <li>Auto-discovered sibling directory {@code ../graph-test-data} or {@code ../../graph-test-data}</li>
+     * </ol>
+     *
+     * @return the external root directory, or null if none is configured/checked out (feature simply off)
+     */
+    public static synchronized @Nullable File externalRoot() {
+        if (externalRootResolved) {
+            return externalRootCached;
+        }
+        externalRootResolved = true;
+        externalRootCached = resolveExternalRoot();
+        if (externalRootCached != null) {
+            log.info("Using external graph-test-data root: {}", externalRootCached.getAbsolutePath());
+        } else {
+            log.debug("No external graph-test-data root configured (set -D{} or {})",
+                    EXTERNAL_ROOT_PROPERTY, EXTERNAL_ROOT_ENV);
+        }
+        return externalRootCached;
+    }
+
+    private static @Nullable File resolveExternalRoot() {
+        String configured = System.getProperty(EXTERNAL_ROOT_PROPERTY);
+        if (configured == null || configured.isBlank()) {
+            configured = System.getenv(EXTERNAL_ROOT_ENV);
+        }
+        if (configured != null && !configured.isBlank()) {
+            File dir = new File(configured);
+            return dir.isDirectory() ? dir.getAbsoluteFile() : null;
+        }
+        // auto-discover: sibling of module dir or of project root
+        for (String candidate : new String[]{"../graph-test-data", "../../graph-test-data"}) {
+            File dir = new File(candidate);
+            if (dir.isDirectory()) {
+                return dir.getAbsoluteFile();
+            }
+        }
+        return null;
+    }
+
     public static @Nullable Resource resource(String path) {
+        File ext = externalRoot();
+        if (ext != null) {
+            Resource external = new ClassGraph().overrideClasspath(ext.getAbsolutePath())
+                    .scan().getResourcesWithPath(path).stream().findFirst().orElse(null);
+            if (external != null) {
+                return external;
+            }
+        }
         return new ClassGraph().scan().getResourcesWithPath(path).stream().findFirst().orElse(null);
     }
 

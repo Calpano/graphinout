@@ -9,6 +9,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -173,11 +174,33 @@ public class TestFileProvider {
      * Use the classpath resource mechanism to list ALL resources within packages 'xml','json','json5' on the current
      * classpath. Resulting paths have the syntax 'com/example/filename.ext'.
      */
+    private static final String[] SCAN_PACKAGES = {"json", "xml", "json5", "text"};
+
+    /**
+     * All resources from the in-repo classpath, plus — if configured — the optional
+     * {@link TestFileUtil#externalRoot() external graph-test-data root}. External resources are
+     * yielded first, so on a path collision the external (migrated) copy wins.
+     */
+    private static Stream<Resource> scanResources() {
+        Stream<Resource> classpath = new ClassGraph()
+                .acceptPackages(SCAN_PACKAGES)
+                .scan().getAllResources().stream();
+        File external = TestFileUtil.externalRoot();
+        if (external == null) {
+            return classpath;
+        }
+        Stream<Resource> externalResources = new ClassGraph()
+                .overrideClasspath(external.getAbsolutePath())
+                .acceptPackages(SCAN_PACKAGES)
+                .scan().getAllResources().stream();
+        return Stream.concat(externalResources, classpath);
+    }
+
     public static Stream<TestResource> getAllTestResources() {
-        return new ClassGraph()
-                .acceptPackages("json", "xml", "json5", "text")
-                .scan().getAllResources().stream() //
+        Set<String> seenPaths = new HashSet<>();
+        return scanResources() //
                 .filter(res -> !res.getPath().endsWith(".class")) //
+                .filter(res -> seenPaths.add(res.getPath())) // dedup by path; external (first) wins
                 .map(TestResource::testResource) //
                 .filter(tr -> !tr.isExpected());
     }
