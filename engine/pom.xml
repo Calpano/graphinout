@@ -48,6 +48,7 @@
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-tgf</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-grale</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <!-- Test Dependencies: test-jars of every reader, so cross-format tests can reach their test helpers -->
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.2.1-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>

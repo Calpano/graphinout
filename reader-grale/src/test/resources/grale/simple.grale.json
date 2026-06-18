@@ -1,0 +1,11 @@
+{
+  "options": { "directed": true, "multigraph": false, "compound": false },
+  "value": { "rankdir": "LR" },
+  "nodes": [
+    { "v": "a", "value": { "width": 60, "height": 40, "meta": { "label": "Start" } } },
+    { "v": "b", "value": { "width": 60, "height": 40, "meta": { "label": "End" } } }
+  ],
+  "edges": [
+    { "v": "a", "w": "b", "id": "e_ab", "value": { "minlen": 1, "weight": 1, "meta": { "label": "next" } } }
+  ]
+}

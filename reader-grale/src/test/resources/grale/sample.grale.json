@@ -1,0 +1,116 @@
+{
+  "options": { "directed": true, "multigraph": false, "compound": false },
+  "value": {
+    "rankdir": "LR",
+    "cornerRadius": 6,
+    "focus": "Z",
+    "width": 280,
+    "height": 200,
+    "markers": {
+      "arrow": { "width": 12, "height": 9 },
+      "dot": { "width": 8, "height": 8 }
+    }
+  },
+  "nodes": [
+    { "v": "a", "value": { "width": 80, "height": 40, "x": 60, "y": 60, "meta": { "label": "Start", "fill": "#dcfce7", "color": "#16a34a" } } },
+    { "v": "b", "value": { "width": 80, "height": 40, "x": 220, "y": 60, "ports": { "bottom": 2 }, "meta": { "label": "Process" } } },
+    { "v": "c", "value": { "width": 80, "height": 40, "x": 220, "y": 160, "meta": { "label": "End", "fill": "#fee2e2", "color": "#dc2626" } } }
+  ],
+  "edges": [
+    {
+      "v": "a", "w": "b", "id": "e_ab",
+      "value": {
+        "points": [ { "x": 100, "y": 60 }, { "x": 168, "y": 60 } ],
+        "normals": [ 1.5708, 1.5708 ],
+        "endMarker": "arrow",
+        "meta": { "label": "next" }
+      }
+    },
+    {
+      "v": "b", "w": "c", "id": "e_bc",
+      "value": {
+        "points": [ { "x": 200, "y": 80 }, { "x": 200, "y": 120 }, { "x": 220, "y": 120 }, { "x": 220, "y": 128 } ],
+        "normals": [ 0, 0, 1.5708, 0 ],
+        "endMarker": "arrow",
+        "lineWidth": 2,
+        "crossings": [ { "x": 200, "y": 110 } ],
+        "meta": { "label": "done", "color": "#ea580c" }
+      }
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "h_group",
+      "endpoints": [
+        { "node": "a" },
+        { "node": "b", "marker": "dot" },
+        { "node": "c" }
+      ],
+      "value": {
+        "lineWidth": 2,
+        "x": 132, "y": 112,
+        "meta": { "label": "trip", "color": "#9333ea", "dashed": true },
+        "tree": {
+          "points": [
+            { "kind": "endpoint", "node": "a", "x": 70, "y": 80 },
+            { "kind": "branch", "x": 132, "y": 112 },
+            { "kind": "endpoint", "node": "b", "x": 240, "y": 80, "marker": "dot" },
+            { "kind": "endpoint", "node": "c", "x": 200, "y": 140 }
+          ],
+          "segments": [
+            { "ends": [0, 1], "normals": [0.7854, 2.3562] },
+            { "ends": [1, 2], "normals": [5.4978, 2.3562] },
+            { "ends": [1, 3], "normals": [1.0472, 4.1888] }
+          ]
+        }
+      }
+    }
+  ],
+  "diagnostics": {
+    "elapsedMicros": 1843,
+    "warnings": [
+      { "code": "BAD_FOCUS", "message": "focus id 'Z' is not in nodes[]" }
+    ],
+    "displacement": { "moved": 0, "totalDx": 0, "totalDy": 0 }
+  },
+  "debug": [
+    {
+      "kind": "layer", "name": "grid", "opacity": 0.6,
+      "children": [
+        { "kind": "line", "x1": 0, "y1": 0, "x2": 280, "y2": 0, "stroke": "#e2e8f0" },
+        { "kind": "line", "x1": 0, "y1": 80, "x2": 280, "y2": 80, "stroke": "#e2e8f0" },
+        { "kind": "line", "x1": 0, "y1": 160, "x2": 280, "y2": 160, "stroke": "#e2e8f0" },
+        { "kind": "line", "x1": 0, "y1": 0, "x2": 0, "y2": 200, "stroke": "#e2e8f0" },
+        { "kind": "line", "x1": 140, "y1": 0, "x2": 140, "y2": 200, "stroke": "#e2e8f0" },
+        { "kind": "line", "x1": 280, "y1": 0, "x2": 280, "y2": 200, "stroke": "#e2e8f0" }
+      ]
+    },
+    {
+      "kind": "layer", "name": "centres",
+      "children": [
+        { "kind": "circle", "cx": 60, "cy": 60, "r": 3.5, "stroke": "#ef4444", "fill": "#fee2e2" },
+        { "kind": "circle", "cx": 220, "cy": 60, "r": 3.5, "stroke": "#ef4444", "fill": "#fee2e2" },
+        { "kind": "circle", "cx": 220, "cy": 160, "r": 3.5, "stroke": "#ef4444", "fill": "#fee2e2" }
+      ]
+    },
+    {
+      "kind": "layer", "name": "annotations",
+      "children": [
+        {
+          "kind": "layer", "name": "coords",
+          "children": [
+            { "kind": "text", "x": 60, "y": 38, "text": "(60,60)", "fill": "#ef4444", "fontSize": 9, "anchor": "middle" },
+            { "kind": "text", "x": 220, "y": 38, "text": "(220,60)", "fill": "#ef4444", "fontSize": 9, "anchor": "middle" },
+            { "kind": "text", "x": 220, "y": 138, "text": "(220,160)", "fill": "#ef4444", "fontSize": 9, "anchor": "middle" }
+          ]
+        },
+        {
+          "kind": "layer", "name": "ids", "visible": false,
+          "children": [
+            { "kind": "text", "x": 140, "y": 110, "text": "edge a→b→c", "fill": "#7c3aed", "fontSize": 10, "anchor": "middle" }
+          ]
+        }
+      ]
+    }
+  ]
+}

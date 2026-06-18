@@ -1,0 +1,111 @@
+= reader-grale
+
+Reader and writer for the *grale* graph-layout-engine JSON format — a strict superset of the
+dagre / graphlib `json.write` envelope. See the format spec in the
+https://github.com/Calpano/graph-layout-api[graph-layout-api] project
+(`doc/graph-layout-api.adoc`).
+
+Format id `grale`; file extensions `.grale.json`, `.grale`.
+
+== Mapping to Connected JSON
+
+[cols="1,2",frame=ends]
+|===
+| grale | CJ
+
+| node `v` | node id
+| node `value` object | node `data` (verbatim)
+| `value.meta.label` (string) | node label
+| edge `v` / `w` | source / target endpoint (directed: `in` / `out`)
+| edge `id` | edge id
+| edge `value` object | edge `data`
+| envelope `options`, graph `value`, `hyperedges`, `diagnostics`, `debug` | CJ graph `data`, under the `grale` key
+|===
+
+A grale → CJ → grale round-trip is faithful. The two envelope fields with no native CJ slot —
+a node's compound `parent` and a multigraph edge's `name` — ride on the element `data` under
+reserved keys (`$gioParent` / `$gioName`) and are stripped back out on write.
+
+== Node-size measurement (write)
+
+grale needs a node `width`/`height` (dagre layout inputs). When a CJ node has a *label* but no
+explicit size — e.g. it was converted from a format that stores only a label — the writer
+*estimates* the box from the label text. The estimate is **deterministic** (equal input ⇒ equal
+output): it uses a fixed per-character advance-width table instead of loading a real font, so the
+result does not depend on the host platform's installed fonts.
+
+Implemented in `RobotoLabelMetrics`.
+
+Assumptions / constants:
+
+[cols="1,1,2",frame=ends]
+|===
+| Constant | Value | Meaning
+
+| font            | Roboto Regular | advance-width table is derived from this face
+| `DEFAULT_FONT_SIZE`       | `16` px  | font size assumed for measurement
+| `DEFAULT_MAX_LINE_LENGTH` | `50`     | characters per line before word-wrapping
+| `LINE_HEIGHT_FACTOR`      | `1.2`    | line height as a multiple of the font size
+| `PADDING_X`               | `8` px   | horizontal padding added on *each* side of the text
+| `PADDING_Y`               | `4` px   | vertical padding added on *each* side of the text
+|===
+
+=== Steps
+
+. *Split into lines.* The label is split first on `<br>` tags (`<br>`, `<br/>`, `<br />`,
+  case-insensitive — see <<line-breaks>>), then each part is greedily *word-wrapped* so no line
+  exceeds `DEFAULT_MAX_LINE_LENGTH` (50) characters. A single word longer than the limit is kept
+  on its own line rather than hard-split. Explicit blank lines (`a<br><br>b`) are preserved.
+. *Measure each line.* Each character contributes an advance width in *em* (a fraction of the font
+  size) from the Roboto table; unknown characters use a default of `0.55` em. A line's width is the
+  sum of its characters' advances.
+. *Size the box.*
++
+[source]
+----
+width  = max(line width in em) * fontSize + 2 * PADDING_X
+height = lineCount * fontSize * LINE_HEIGHT_FACTOR + 2 * PADDING_Y
+----
++
+Both are rounded to whole pixels.
+
+=== Worked example
+
+Label `"Node 1"` at the defaults:
+
+* advances (em): `N` 0.71 + `o` 0.56 + `d` 0.56 + `e` 0.54 + `␣` 0.25 + `1` 0.55 = *3.17 em*
+* width  = 3.17 × 16 + 2 × 8  = 50.7 + 16 ≈ *67 px*
+* height = 1 × 16 × 1.2 + 2 × 4 = 19.2 + 8 ≈ *27 px*
+
+A two-line label (e.g. `"Process<br>step"`) yields the same per-line width rule but a taller box
+(2 × 19.2 + 8 ≈ 46 px).
+
+=== Rules
+
+* Estimation runs *only* when a label is present and the node has neither `width` nor `height`.
+* An author-supplied `width`/`height` is *never* overwritten (so grale → CJ → grale is unchanged).
+* A node with no label gains no size.
+
+[[line-breaks]]
+== Line breaks in labels
+
+A label may request an explicit line break with a `<br>` tag (`<br>`, `<br/>` or `<br />`,
+case-insensitive). This is the only markup grale recognises in a label; everything else is literal
+text. `<br>` affects both rendering (renderer-side) and the size estimate above. Example:
+
+[source,json5]
+----
+{ "v": "n", "value": { "meta": { "label": "Order received<br>(pending review)" } } }
+----
+
+== Tests
+
+* `GraleRoundTripTest` — local fixtures (`src/test/resources/grale/`), always run.
+* `GraleNodeSizeTest` — wrapping + size-estimation unit tests and writer wiring.
+* `GraleCorpusRoundTripTest` — round-trips the external corpus
+  `graph-test-data/json/grale/grale-1.0.0/*.json`. It *skips* unless the checkout is configured:
++
+[source,shell]
+----
+mvn -pl reader-grale test -Dgraph.test.data.dir=/path/to/graph-test-data
+----
