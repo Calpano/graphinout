@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+#
+# Graphinout CLI launcher.
+#
+# Resolves the shaded CLI jar relative to this script (so it works regardless of
+# the current working directory or where the repo lives), builds it on first use
+# if missing, then forwards all arguments to the CLI.
+#
+# Put it on your PATH, e.g.:
+#   ln -s "$(pwd)/cli/bin/gio" /usr/local/bin/gio
+# or:
+#   export PATH="$PATH:$(pwd)/cli/bin"
+#
+set -euo pipefail
+
+# Resolve this script's real directory, following symlinks.
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+BIN_DIR="$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)"
+
+CLI_MODULE_DIR="$(cd "$BIN_DIR/.." && pwd)"   # .../cli
+REPO_ROOT="$(cd "$CLI_MODULE_DIR/.." && pwd)"
+
+find_jar() {
+  ls "$CLI_MODULE_DIR"/target/cli-*-cli.jar 2>/dev/null | head -n 1
+}
+
+JAR="$(find_jar || true)"
+
+if [ -z "${JAR:-}" ]; then
+  echo "gio: CLI jar not found. Building it (mvn -pl cli -am clean package -DskipTests) ..." >&2
+  (cd "$REPO_ROOT" && mvn -q -pl cli -am clean package -DskipTests)
+  JAR="$(find_jar || true)"
+fi
+
+if [ -z "${JAR:-}" ]; then
+  echo "gio: could not locate or build the CLI jar under $CLI_MODULE_DIR/target" >&2
+  exit 1
+fi
+
+exec java ${GIO_JAVA_OPTS:-} -jar "$JAR" "$@"

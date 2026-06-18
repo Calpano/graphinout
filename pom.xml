@@ -62,6 +62,7 @@
         <module>reader-pgformat</module>
         <module>reader-grale</module>
         <module>engine</module>
+        <module>cli</module>
     </modules>
 
     <scm>
