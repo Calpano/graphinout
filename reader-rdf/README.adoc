@@ -13,14 +13,14 @@ RDF{nbsp}<->{nbsp}CJ mapping; they differ only in the concrete serialization Jen
 |===
 | Format id | Syntax | Extensions
 
-| `rdf.turtle` | Turtle               | `.ttl`, `.n3`
-| `rdf.xml`    | RDF/XML              | `.rdf`, `.rdf.xml`
-| `rdf.nt`     | N-Triples            | `.nt`
-| `rdf.nq`     | N-Quads              | `.nq`
-| `rdf.trig`   | TriG                 | `.trig`
-| `rdf.trix`   | TriX                 | `.trix`
-| `jsonld`     | JSON-LD              | `.jsonld`, `.jsonld.json`, `.jsonld11`
-| `rdf.json`   | RDF/JSON (deprecated, use JSON-LD) | `.rj`
+| `turtle`     | Turtle               | `.ttl`, `.n3`
+| `rdf-xml`    | RDF/XML              | `.rdf`, `.rdf.xml`
+| `n-triples`  | N-Triples            | `.nt`
+| `rdf-nquads` | N-Quads              | `.nq`
+| `trig`       | TriG                 | `.trig`
+| `trix`       | TriX                 | `.trix`
+| `json-ld`    | JSON-LD              | `.jsonld`, `.jsonld.json`, `.jsonld11`
+| `rdf-json`   | RDF/JSON (deprecated, use JSON-LD) | `.rj`
 |===
 
 The syntax is selected from the input source's file extension (see `RdfFormats.detectRdfLanguage`); a reader's own

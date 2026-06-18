@@ -3,17 +3,17 @@ package com.graphinout.reader.rdf;
 public class RdfFormats {
 
     public enum RdfSyntax {
-        TURTLE("Turtle", "text/rdf/ttl"),//
-        N_TRIPLES("N-Triples", "text/rdf/nt"),//
+        TURTLE("Turtle", "text/turtle"),//
+        N_TRIPLES("N-Triples", "text/n-triples"),//
         /** as alias for Turtle */
-        // N3("N3", "text/rdf/n3"), //
+        // N3("N3", "text/notation3"), //
          /** mediatype application/ld+json */
-        JSON_LD("JSON-LD", "json/jsonld"),//
-        RDF_XML("RDF/XML", "xml/rdf"), //
-        N_QUADS("N-Quads", "text/rdf/nq"), //
-        TRIG("TriG", "text/rdf/trig"), //
+        JSON_LD("JSON-LD", "json/json-ld"),//
+        RDF_XML("RDF/XML", "xml/rdf-xml"), //
+        N_QUADS("N-Quads", "text/rdf-nquads"), //
+        TRIG("TriG", "text/trig"), //
         /** note: deprecated in favor of JSON-LD */
-        RDF_JSON("RDF/JSON", "text/rdf/rj"),//
+        RDF_JSON("RDF/JSON", "json/rdf-json"),//
         /** core TriX format */
         TRIX("TriX", "xml/trix");
         public final String jenaName;

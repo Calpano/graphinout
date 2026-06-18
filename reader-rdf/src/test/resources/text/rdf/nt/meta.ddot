@@ -1,28 +1,10 @@
 = RDF test data: N-Triples (.nt)
 
-N-Triples serialization samples. Mix of W3C N-Triples test suite files,
-real-world DBpedia and W3C-ORG ontology data, an EasyRdf FOAF fixture, and one
-synthetic project fixture.
+Only the synthetic project fixture remains here. The collected N-Triples samples
+(DBpedia, EasyRdf, W3C test suite / ORG ontology) were migrated to the
+graph-test-data repo under text/n-triples/.
 
 ddot.it/this ..format.. format:n-triples
-ddot.it/this ..content.. N-Triples documents: W3C syntax/value tests plus collected real-world data and one synthetic fixture
-
-# DBpedia
-dbpedia-berlin.nt ..kind.. collected
-dbpedia-berlin.nt ..format.. format:n-triples
-dbpedia-berlin.nt ..content.. DBpedia entity data for the city of Berlin serialized as N-Triples
-dbpedia-berlin.nt ..depicts.. the German capital Berlin (DBpedia resource)
-dbpedia-berlin.nt ..tests.. real-world data, language-tagged and typed literals, many IRIs
-dbpedia-berlin.nt ..source url.. https://dbpedia.org/
-dbpedia-berlin.nt ..license.. CC BY-SA 3.0 and GNU FDL
-
-# EasyRdf
-easyrdf-foaf.nt ..kind.. collected
-easyrdf-foaf.nt ..format.. format:n-triples
-easyrdf-foaf.nt ..content.. FOAF example from the EasyRdf test fixtures serialized as N-Triples
-easyrdf-foaf.nt ..tests.. FOAF vocabulary, person/profile triples
-easyrdf-foaf.nt ..source url.. https://github.com/easyrdf/easyrdf
-easyrdf-foaf.nt ..license.. BSD-3-Clause
 
 # Synthetic project fixture
 sp-multi-literal.nt ..kind.. synthetic
@@ -31,54 +13,3 @@ sp-multi-literal.nt ..content.. same subject+predicate (dcterms:created/modified
 sp-multi-literal.nt ..tests.. multiple object literals for one subject-predicate pair, xsd:date typed literals
 sp-multi-literal.nt ..authored by.. Calpano / graphinout
 sp-multi-literal.nt ..license.. not stated (public domain unless otherwise stated)
-
-# W3C ORG ontology excerpt (de-anonymized N-Triples), collected
-w3c-org-deanon.nt ..kind.. collected
-w3c-org-deanon.nt ..format.. format:n-triples
-w3c-org-deanon.nt ..content.. excerpt of the W3C Core Organization (ORG) ontology in N-Triples with blank nodes named/de-anonymized
-w3c-org-deanon.nt ..tests.. de-anonymized blank nodes, multilingual rdfs:label values
-w3c-org-deanon.nt ..source url.. https://www.w3.org/ns/org
-w3c-org-deanon.nt ..license.. W3C Software and Document License
-
-# W3C N-Triples test suite (syntax and literal/value tests), all collected
-w3c-langtagged_string.nt ..kind.. collected
-w3c-langtagged_string.nt ..format.. format:n-triples
-w3c-langtagged_string.nt ..content.. a language-tagged string literal
-w3c-langtagged_string.nt ..tests.. language tags
-w3c-langtagged_string.nt ..source url.. https://w3c.github.io/rdf-tests/
-w3c-langtagged_string.nt ..license.. W3C Software and Document License / W3C Test Suite License
-
-w3c-literal_with_UTF8_boundaries.nt ..kind.. collected
-w3c-literal_with_UTF8_boundaries.nt ..format.. format:n-triples
-w3c-literal_with_UTF8_boundaries.nt ..content.. a literal containing characters at UTF-8 byte-sequence boundaries
-w3c-literal_with_UTF8_boundaries.nt ..tests.. UTF-8 boundary characters, multi-byte Unicode handling
-w3c-literal_with_UTF8_boundaries.nt ..source url.. https://w3c.github.io/rdf-tests/
-w3c-literal_with_UTF8_boundaries.nt ..license.. W3C Software and Document License / W3C Test Suite License
-
-w3c-literal.nt ..kind.. collected
-w3c-literal.nt ..format.. format:n-triples
-w3c-literal.nt ..content.. a plain string literal
-w3c-literal.nt ..tests.. plain literal serialization
-w3c-literal.nt ..source url.. https://w3c.github.io/rdf-tests/
-w3c-literal.nt ..license.. W3C Software and Document License / W3C Test Suite License
-
-w3c-minimal_whitespace.nt ..kind.. collected
-w3c-minimal_whitespace.nt ..format.. format:n-triples
-w3c-minimal_whitespace.nt ..content.. N-Triples document using minimal whitespace between tokens
-w3c-minimal_whitespace.nt ..tests.. whitespace tolerance in the N-Triples grammar
-w3c-minimal_whitespace.nt ..source url.. https://w3c.github.io/rdf-tests/
-w3c-minimal_whitespace.nt ..license.. W3C Software and Document License / W3C Test Suite License
-
-w3c-minimal_whitespace2.nt ..kind.. collected
-w3c-minimal_whitespace2.nt ..format.. format:n-triples
-w3c-minimal_whitespace2.nt ..content.. second minimal-whitespace N-Triples document variant
-w3c-minimal_whitespace2.nt ..tests.. whitespace tolerance in the N-Triples grammar
-w3c-minimal_whitespace2.nt ..source url.. https://w3c.github.io/rdf-tests/
-w3c-minimal_whitespace2.nt ..license.. W3C Software and Document License / W3C Test Suite License
-
-w3c-nt-syntax-subm-01.nt ..kind.. collected
-w3c-nt-syntax-subm-01.nt ..format.. format:n-triples
-w3c-nt-syntax-subm-01.nt ..content.. N-Triples submission syntax test 01 covering core grammar constructs
-w3c-nt-syntax-subm-01.nt ..tests.. IRIs, blank nodes, literals, basic N-Triples syntax
-w3c-nt-syntax-subm-01.nt ..source url.. https://w3c.github.io/rdf-tests/
-w3c-nt-syntax-subm-01.nt ..license.. W3C Software and Document License / W3C Test Suite License

@@ -1,10 +1,12 @@
 = RDF test data (root)
 
-This folder holds the top-level RDF fixtures for the graphinout reader-rdf
-module, plus one expected ConnectedJson conversion output. RDF serialization
-samples organized by format live in the sub-folders n3/, nq/, nt/, trig/ and
-ttl/ (each has its own meta.ddot). See also README.md in this folder for a
-human-readable overview of all formats and sources.
+This folder holds the synthetic top-level RDF fixtures for the graphinout
+reader-rdf module, plus one expected ConnectedJson conversion output. The
+collected, real-world RDF samples that used to live in the per-format sub-folders
+were migrated to the graph-test-data repo (text/turtle/, text/n-triples/,
+text/rdf-nquads/, text/trig/, text/notation3/, json/json-ld/, json/rdf-json/,
+xml/rdf-xml/, xml/trix/). Only synthetic fixtures remain here: a couple of
+hand-authored Turtle/N-Triples files in nt/ and ttl/.
 
 ddot.it/this ..content.. top-level RDF fixtures (Turtle) and one expected RDF-to-ConnectedJson conversion output
 
