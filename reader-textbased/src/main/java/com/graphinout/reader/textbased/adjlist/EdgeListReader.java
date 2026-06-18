@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 public class EdgeListReader implements GioReader, ITextWriter {
 
-    public static final String FORMAT_ID = "edgelist";
+    public static final String FORMAT_ID = "edge-list";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "Edge List Format", ".edgelist");
     private static final String HASH = "#";
     // buffered while parsing so we can emit all nodes before all edges (valid CJ document order)

@@ -111,7 +111,7 @@ class FeatureRoundtripTest {
             // undirected/mixed are not representable (registry: ..lacks.. undirected-edges).
             new Claims("adjlist", of("directed-edges"), of("nodes", "attributes-on-edges")),
             // edge-list
-            new Claims("edgelist", of("nodes", "directed-edges"), of()));
+            new Claims("edge-list", of("nodes", "directed-edges"), of()));
 
     // -------------------------------------------------------------------------------------------------------------
     // Task 3: each synthetic CJ file actually exercises its feature (validated by self-parse).

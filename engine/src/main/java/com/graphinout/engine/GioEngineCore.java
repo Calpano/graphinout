@@ -10,7 +10,6 @@ import com.graphinout.base.gio.GioService;
 import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
-import com.graphinout.reader.cj.Json5Reader;
 import com.graphinout.base.output.OutputSink;
 import com.graphinout.foundation.pure.xml.XML;
 import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
@@ -32,6 +31,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -101,7 +101,6 @@ public class GioEngineCore {
             case AdjListReader.FORMAT_ID:
             case DotReader.FORMAT_ID:
             case Graph6Reader.FORMAT_ID:
-            case Json5Reader.FORMAT_ID:
             case TgfReader.FORMAT_ID:
             case TripleTextReader.FORMAT_ID: {
                 throw new IllegalArgumentException("no output writer exists for this format '" + outputFileFormatId + "'");
@@ -139,13 +138,40 @@ public class GioEngineCore {
             case AdjListReader.FORMAT_ID:
             case DotReader.FORMAT_ID:
             case Graph6Reader.FORMAT_ID:
-            case Json5Reader.FORMAT_ID:
             case TgfReader.FORMAT_ID:
             case TripleTextReader.FORMAT_ID: {
                 throw new IllegalArgumentException("no output writer exists for this format '" + outputFileFormatId + "'");
             }
         }
         throw new IllegalArgumentException("Unknown format id '" + outputFileFormatId + "'");
+    }
+
+    /**
+     * Lists every {@link GioFileFormat} known across all loaded services, mapped to whether the
+     * engine can {@link GioService.FormatSupport#Read}, {@link GioService.FormatSupport#Write}, or
+     * do both ({@link GioService.FormatSupport#ReadAndWrite}) it. A reader and a writer are
+     * considered the same format when their {@link GioFileFormat#id()} matches. Iteration order
+     * lists readers' formats first, then any write-only formats.
+     */
+    public Map<GioFileFormat, GioService.FormatSupport> formats() {
+        // keyed by format id to merge a reader and a writer of the same format (they are distinct instances)
+        Map<String, GioFileFormat> formatById = new HashMap<>();
+        Map<String, GioService.FormatSupport> supportById = new LinkedHashMap<>();
+        for (GioReader reader : readers) {
+            GioFileFormat ff = reader.fileFormat();
+            formatById.putIfAbsent(ff.id(), ff);
+            supportById.put(ff.id(), GioService.FormatSupport.Read);
+        }
+        for (GioWriter writer : writers) {
+            GioFileFormat ff = writer.fileFormat();
+            formatById.putIfAbsent(ff.id(), ff);
+            supportById.merge(ff.id(), GioService.FormatSupport.Write, (existing, added) ->
+                    existing == GioService.FormatSupport.Read || existing == GioService.FormatSupport.ReadAndWrite
+                            ? GioService.FormatSupport.ReadAndWrite : GioService.FormatSupport.Write);
+        }
+        Map<GioFileFormat, GioService.FormatSupport> result = new LinkedHashMap<>();
+        supportById.forEach((id, support) -> result.put(formatById.get(id), support));
+        return result;
     }
 
     public Stream<GioFileFormat> fileFormats() {
@@ -156,7 +182,6 @@ public class GioEngineCore {
                 AdjListReader.FORMAT, //
                 DotReader.FORMAT, //
                 Graph6Reader.FORMAT, //
-                Json5Reader.FORMAT, //
                 TgfReader.FORMAT, //
                 TripleTextReader.FORMAT //
         );
