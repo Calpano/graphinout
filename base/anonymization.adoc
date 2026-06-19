@@ -1,0 +1,89 @@
+= CJ Anonymization
+
+Anonymizes a Connected JSON graph so copyrightable / private material can be published, while the
+graph *structure* stays intact (so the result is still useful for testing, layout, bug reports, …).
+
+Package `com.graphinout.base.cj.anonymize`:
+
+* `Anonymizer` — the character rule.
+* `CjDocumentAnonymizer` — transforms a whole `ICjDocument`.
+* `AnonymizingCjStream` — an `ICjStream` decorator that plugs in front of any writer.
+
+The CLI exposes it as `gio convert … --anonymize` (see `cli/README.adoc`).
+
+== The character rule
+
+Applied per Unicode code point (so it covers characters outside the BMP), the rule keeps the *shape*
+of text — word lengths, word breaks, spacing and punctuation are unchanged:
+
+[cols="2,1",options="header"]
+|===
+| Code point | Becomes
+
+| upper-case or title-case letter | `X`
+| lower-case letter               | `x`
+| any other letter (case-less scripts: CJK, Arabic, Hebrew, …) | `x`
+| digit                           | `0`
+| anything else (space, punctuation, symbols) | kept verbatim
+|===
+
+Examples: `Hello World 42!` → `Xxxxx Xxxxx 00!`; `Über cafÉ` → `Xxxx xxxX`.
+
+Because the rule is deterministic, equal inputs map to equal outputs — so repeated labels and
+repeated type names stay equal to each other after anonymization.
+
+== What the document anonymizer changes
+
+`CjDocumentAnonymizer` works at the document level (not streaming) so it can index everything first,
+then remap consistently. Two passes:
+
+. *Index* every node id, edge id, graph id, port id, and every JSON object key that occurs anywhere
+  in `data` / `meta` (keys collected in sorted order, for reproducible numbering).
+. *Rebuild* a fresh document applying the maps below.
+
+[cols="1,2",options="header"]
+|===
+| Element | Treatment
+
+| Node / edge / graph / port labels (and label entries) | text run through the character rule
+| Element types (node types, edge type, endpoint type)  | character rule (equal types stay equal)
+| Node ids       | remapped to `node1`, `node2`, …
+| Edge ids       | remapped to `edge1`, `edge2`, …
+| Graph ids      | remapped to `graph1`, `graph2`, …
+| Port ids       | remapped to `port1`, `port2`, …
+| Edge endpoints | their referenced `node` / `port` ids are remapped with the *same* maps, so links stay intact
+| Data / meta JSON — object keys   | remapped to `key1`, `key2`, … (consistent across the whole document, collision-free)
+| Data / meta JSON — string values | character rule
+| Data / meta JSON — numbers       | replaced with `0`
+| Data / meta JSON — booleans, null | kept
+|===
+
+Kept unchanged: language tags, endpoint directions, the document `@context`, and the
+`connectedJson` metadata block.
+
+NOTE: Identifiers are remapped (not character-anonymized) so that the cross-references between
+edges and nodes survive — character-anonymizing two distinct ids could collide and break the graph.
+The same reasoning drives the `key1, key2, …` scheme for JSON keys: distinct keys must not collapse
+onto the same anonymized string.
+
+CAUTION: Anonymizing JSON keys means formats that stash structural data under `data` (e.g. grale's
+`value.width` / `meta.label`) come out as `key1, key2, …`. An anonymized document is therefore a
+*sanitized copy for publication*, not something that round-trips back through such a format's
+semantics.
+
+== Usage
+
+As a stream decorator in front of any writer (the writer never sees the original content):
+
+[source,java]
+----
+ICjStream out = writer.createCjStream(sink);
+reader.read(input, new AnonymizingCjStream(out));   // sink now holds the anonymized output
+----
+
+Or directly on a document:
+
+[source,java]
+----
+ICjDocument clean = CjDocumentAnonymizer.anonymize(doc);
+----

@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GraphinoutCliTest {
@@ -66,6 +67,18 @@ class GraphinoutCliTest {
         assertEquals(0, r.exitCode, r.err);
         assertTrue(r.out.contains("\"graphs\""), r.out);
         assertTrue(r.out.contains("\"nodes\""), r.out);
+    }
+
+    @Test
+    void anonymizeRedactsLabelsAndRemapsIds(@TempDir Path dir) throws Exception {
+        File in = dir.resolve("graph.tgf").toFile();
+        Files.writeString(in.toPath(), TGF); // nodes "A"/"B", edge label "edge"
+
+        Result r = run("convert", in.getPath(), "--to", "connected-json", "--anonymize");
+        assertEquals(0, r.exitCode, r.err);
+        assertTrue(r.out.contains("\"node1\""), "ids remapped: " + r.out);
+        assertTrue(r.out.contains("\"xxxx\""), "edge label 'edge' -> 'xxxx': " + r.out);
+        assertFalse(r.out.contains("\"edge\""), "original label text must be gone: " + r.out);
     }
 
     @Test

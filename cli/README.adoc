@@ -70,7 +70,23 @@ Pass extra JVM options via `GIO_JAVA_OPTS`, e.g. `GIO_JAVA_OPTS=-Xmx2g gio conve
 | `-t`, `--to <id>` | Output format id (default: `graphml`)
 | `-o`, `--output <file>` | Write to a file instead of stdout
 | `-f`, `--from <id>` | Force the input format id (default: auto-detect by extension + content probing)
+| `-a`, `--anonymize` | Redact labels, types and content before writing (see below)
 |===
 
 Parse warnings and progress messages go to `stderr`; the converted graph goes to `stdout`
 (or the `--output` file), so piping stdout yields clean output.
+
+=== `--anonymize`
+
+Redacts copyrightable / private material while preserving the graph structure, so a sanitized copy
+can be published. Letters become `X`/`x`, digits become `0`, and spacing and punctuation are kept;
+node/edge/graph/port ids are remapped to `node1`, `edge1`, … (consistently, so links stay intact);
+and JSON keys in `data`/`meta` are remapped to `key1`, `key2`, …
+
+[source,shell]
+----
+gio convert patient-graph.gml --to connected-json --anonymize
+# "Node 1" -> "Xxxx 0";  "Edge from 1 to 2" -> "Xxxx xxxx 0 xx 0"
+----
+
+Full details: link:../base/anonymization.adoc[base/anonymization.adoc].

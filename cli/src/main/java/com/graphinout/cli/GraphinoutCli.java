@@ -1,5 +1,7 @@
 package com.graphinout.cli;
 
+import com.graphinout.base.cj.anonymize.AnonymizingCjStream;
+import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.gio.GioWriter;
@@ -124,10 +126,15 @@ public final class GraphinoutCli {
         @Nullable String outputPath = null;
         @Nullable String fromFormat = null;
         String toFormat = DEFAULT_OUTPUT_FORMAT;
+        boolean anonymize = false;
 
         for (int i = 0; i < args.length; i++) {
             String a = args[i];
             switch (a) {
+                case "-a":
+                case "--anonymize":
+                    anonymize = true;
+                    break;
                 case "-o":
                 case "--output":
                     if (++i >= args.length) return missingValue(a);
@@ -196,28 +203,30 @@ public final class GraphinoutCli {
             });
 
             err.println("Converting " + inputFile.getName()
-                    + " (" + reader.fileFormat().id() + " -> " + writer.fileFormat().id() + ") ...");
+                    + " (" + reader.fileFormat().id() + " -> " + writer.fileFormat().id() + ")"
+                    + (anonymize ? " [anonymized]" : "") + " ...");
 
             return outputPath == null
-                    ? convertToStdout(reader, writer, inputSource)
-                    : convertToFile(reader, writer, inputSource, new File(outputPath));
+                    ? convertToStdout(reader, writer, inputSource, anonymize)
+                    : convertToFile(reader, writer, inputSource, new File(outputPath), anonymize);
         } catch (IOException e) {
             err.println("Conversion failed: " + e.getMessage());
             return 1;
         }
     }
 
-    private int convertToStdout(GioReader reader, GioWriter writer, SingleInputSource inputSource) throws IOException {
+    private int convertToStdout(GioReader reader, GioWriter writer, SingleInputSource inputSource, boolean anonymize)
+            throws IOException {
         InMemoryOutputSink sink = new InMemoryOutputSink();
-        reader.read(inputSource, writer.createCjStream(sink));
+        reader.read(inputSource, cjStream(writer, sink, anonymize));
         closeQuietly(sink);
         out.print(sink.getBufferAsUtf8String());
         out.flush();
         return 0;
     }
 
-    private int convertToFile(GioReader reader, GioWriter writer, SingleInputSource inputSource, File outputFile)
-            throws IOException {
+    private int convertToFile(GioReader reader, GioWriter writer, SingleInputSource inputSource, File outputFile,
+                              boolean anonymize) throws IOException {
         File parent = outputFile.getParentFile();
         if (parent != null) {
             //noinspection ResultOfMethodCallIgnored
@@ -225,12 +234,18 @@ public final class GraphinoutCli {
         }
         OutputSink sink = new FileOutputSink(outputFile);
         try {
-            reader.read(inputSource, writer.createCjStream(sink));
+            reader.read(inputSource, cjStream(writer, sink, anonymize));
         } finally {
             closeQuietly(sink);
         }
         err.println("Wrote " + outputFile.getPath());
         return 0;
+    }
+
+    /** The writer's CJ stream, optionally wrapped so labels and content are anonymized before writing. */
+    private ICjStream cjStream(GioWriter writer, OutputSink sink, boolean anonymize) {
+        ICjStream stream = writer.createCjStream(sink);
+        return anonymize ? new AnonymizingCjStream(stream) : stream;
     }
 
     // ---------------------------------------------------------------------- reader selection
@@ -329,6 +344,8 @@ public final class GraphinoutCli {
         s.println("  -t, --to <id>        Output format id (default: " + DEFAULT_OUTPUT_FORMAT + ")");
         s.println("  -o, --output <file>  Write to a file instead of stdout");
         s.println("  -f, --from <id>      Force the input format id (default: auto-detect)");
+        s.println("  -a, --anonymize      Redact labels/types/content (letters->X/x, digits->0);");
+        s.println("                       remap ids to node1/edge1/…; keep structure, spacing, links");
         s.println();
         s.println("Examples:");
         s.println("  " + PROGRAM + " formats");

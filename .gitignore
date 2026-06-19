@@ -10,3 +10,4 @@ tmp
 *.svg
 .vscode
 /.claude/
+dependency-reduced-pom.xml
