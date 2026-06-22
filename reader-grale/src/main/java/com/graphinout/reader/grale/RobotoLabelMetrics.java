@@ -20,7 +20,10 @@ import java.util.List;
  * {@link #DEFAULT_MAX_LINE_LENGTH 50} characters. A single word longer than the limit is kept on its
  * own line rather than hard-split.
  *
- * <p>The box adds {@link #PADDING_X}/{@link #PADDING_Y} of padding on each side around the text.
+ * <p>The box adds font-relative padding around the text — half a character (½&nbsp;em) on each side
+ * horizontally and vertically (see {@link #PADDING_X_EM}/{@link #PADDING_Y_EM}) — and is clamped to a
+ * minimum size ({@link #MIN_WIDTH_EM}/{@link #MIN_HEIGHT_EM}) so tiny or empty labels still render a
+ * usable node.
  */
 public final class RobotoLabelMetrics {
 
@@ -32,10 +35,14 @@ public final class RobotoLabelMetrics {
     public static final int DEFAULT_MAX_LINE_LENGTH = 50;
     /** Line height as a multiple of the font size. */
     public static final double LINE_HEIGHT_FACTOR = 1.2;
-    /** Horizontal padding added on each side of the text, in px. */
-    public static final double PADDING_X = 8.0;
-    /** Vertical padding added on each side of the text, in px. */
-    public static final double PADDING_Y = 4.0;
+    /** Horizontal padding on each side of the text, as a fraction of the font size (half a char). */
+    public static final double PADDING_X_EM = 0.5;
+    /** Vertical padding on each side of the text, as a fraction of the font size (half a char). */
+    public static final double PADDING_Y_EM = 0.5;
+    /** Minimum box width, as a fraction of the font size, so short labels stay clickable. */
+    public static final double MIN_WIDTH_EM = 2.0;
+    /** Minimum box height, as a fraction of the font size. */
+    public static final double MIN_HEIGHT_EM = 1.5;
 
     /** Per-character advance widths for Roboto Regular, in em (fraction of the font size). */
     private static final double[] ADVANCE = new double[128];
@@ -86,8 +93,10 @@ public final class RobotoLabelMetrics {
         for (String line : lines) {
             maxLineWidthEm = Math.max(maxLineWidthEm, lineWidthEm(line));
         }
-        double width = maxLineWidthEm * fontSize + 2 * PADDING_X;
-        double height = lines.size() * fontSize * LINE_HEIGHT_FACTOR + 2 * PADDING_Y;
+        double width = maxLineWidthEm * fontSize + 2 * PADDING_X_EM * fontSize;
+        double height = lines.size() * fontSize * LINE_HEIGHT_FACTOR + 2 * PADDING_Y_EM * fontSize;
+        width = Math.max(width, MIN_WIDTH_EM * fontSize);
+        height = Math.max(height, MIN_HEIGHT_EM * fontSize);
         return new Box((int) Math.round(width), (int) Math.round(height));
     }
 
