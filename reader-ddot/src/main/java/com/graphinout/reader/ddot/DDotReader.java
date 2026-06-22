@@ -4,6 +4,7 @@ import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
+import com.graphinout.base.cj.document.ICjElementType;
 import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
@@ -63,8 +64,6 @@ public class DDotReader implements GioReader {
     private static final String SWITCH_ON_SHORT = "!!on";
     /** Per-link metadata separator (see https://ddot.it): "Meta-data can be appended behind ,,". */
     private static final String META_SEPARATOR = ",,";
-    /** RDF namespace declaration relation: {@code A ..prefix.. B} → document @context {A: B} (see https://ddot.it/rdf). */
-    private static final String PREFIX_RELATION = "prefix";
 
     private @Nullable Consumer<ContentError> errorHandler;
 
@@ -253,15 +252,21 @@ public class DDotReader implements GioReader {
                 ensureNodeChunk(subject, writer, nodeBuffer);
                 foundAny = true;
             } else if (isLabelCommand(predicate)) {
-                ensureNodeChunk(subject, writer, nodeBuffer).addLabelWithoutLanguage(object);
+                // an inline `,, ..lang.. xx` carries the label's language tag (see https://ddot.it/label)
+                ensureNodeChunk(subject, writer, nodeBuffer).addLabel(object, labelLanguage(metaPart));
                 foundAny = true;
+                if (comma >= 0) continue; // the inline metadata belonged to the label, not an edge
             } else if (predicate.startsWith(DDotOutput.PRED_DATA_PREFIX)) {
                 String key = predicate.substring(DDotOutput.PRED_DATA_PREFIX.length());
                 ensureNodeChunk(subject, writer, nodeBuffer).addProperty(key, object);
                 foundAny = true;
-            } else if (PREFIX_RELATION.equals(predicate)) {
+            } else if (DDotOutput.PREFIX_RELATION.equals(predicate)) {
                 // `A ..prefix.. B` declares a namespace; collect into the document @context (ids left as-is)
                 contextMap.put(subject, object);
+                foundAny = true;
+            } else if (isTypeRelation(predicate)) {
+                // `subject ..has type.. T` (~ rdf:type) sets a node type, not an edge. See https://ddot.it/relations.
+                ensureNodeChunk(subject, writer, nodeBuffer).addType(ICjElementType.of(object));
                 foundAny = true;
             } else if (isBlockMarker(object)) {
                 // ddot.it/block: defer the edge; its object value is gathered from the following lines
@@ -399,6 +404,19 @@ public class DDotReader implements GioReader {
     /** Map a relation alias to its canonical name; non-aliases (incl. the empty untyped link) pass through. */
     private static String canonicalRelation(String predicate) {
         return RELATION_ALIASES.getOrDefault(predicate, predicate);
+    }
+
+    /** Is this predicate the rdf:type-like relation ({@code has type}, or aliases {@code is a}/{@code type})? */
+    private static boolean isTypeRelation(String predicate) {
+        return DDotOutput.TYPE_RELATION.equals(canonicalRelation(predicate));
+    }
+
+    /** Extract the label language from an inline {@code ..lang.. xx} metadata entry, or {@code null}. */
+    private static @Nullable String labelLanguage(@Nullable String metaPart) {
+        if (metaPart == null) return null;
+        String body = metaPart.startsWith("..") ? metaPart.substring(2).trim() : metaPart;
+        String[] p = body.split(SEPARATOR_REGEX, -1);
+        return (p.length == 2 && "lang".equals(p[0].trim()) && !p[1].trim().isEmpty()) ? p[1].trim() : null;
     }
 
     /** Create and buffer a directed edge {@code subject --predicate--> object} (empty predicate = untyped). */

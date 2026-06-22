@@ -2,7 +2,6 @@ package com.graphinout.reader.ddot;
 
 import com.graphinout.base.cj.data.CjDataProperty;
 import com.graphinout.base.cj.document.CjDirection;
-import com.graphinout.base.cj.document.CjUris;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjHasData;
@@ -47,6 +46,12 @@ public class DDotOutput {
     /** Object marker opening a multi-line block literal; the value is the following lines. See https://ddot.it/block. */
     static final String OBJECT_BLOCK = "ddot.it/block";
 
+    /** RDF namespace declaration relation: {@code A ..prefix.. B} ↔ document @context {A: B}. See https://ddot.it/rdf. */
+    static final String PREFIX_RELATION = "prefix";
+
+    /** Canonical "is a type of" relation (~ rdf:type); carries a CJ node type. See https://ddot.it/relations. */
+    static final String TYPE_RELATION = "has type";
+
     private final ICjDocument cjDoc;
 
     public DDotOutput(ICjDocument cjDoc) {
@@ -78,6 +83,13 @@ public class DDotOutput {
     private void cjDoc2ddotDoc(ICjDocument cjDoc, DDotDoc out) {
         @Nullable Map<String, String> context = cjDoc.context();
         boolean hasContext = context != null && !context.isEmpty();
+
+        // The @context round-trips as `A ..prefix.. B` declarations and ids are kept verbatim (no expansion),
+        // mirroring the reader (DDotReader: `A ..prefix.. B` → @context{A:B}). See https://ddot.it/rdf.
+        if (hasContext) {
+            context.forEach((prefix, namespace) ->
+                    out.triples.add(new DDotDoc.DDotTriple(prefix, PREFIX_RELATION, namespace)));
+        }
 
         // Document-level data round-trips as `ddot.it/this ..key.. value` triples (see https://ddot.it/this).
         // A multi-valued key (array) was authored as a repeated predicate, so emit one triple per element.
@@ -111,10 +123,7 @@ public class DDotOutput {
                 }
             }
             if (subject == null || object == null) return;
-            if (hasContext) {
-                subject = CjUris.expandId(context, subject);
-                object = CjUris.expandId(context, object);
-            }
+            // ids are emitted verbatim (CURIEs stay CURIEs); the @context above carries the namespaces
             edgeNodeIds.add(subject);
             edgeNodeIds.add(object);
             // The predicate names the directed, typed edge. Prefer the edge type (a DDot predicate is a type);
@@ -149,13 +158,19 @@ public class DDotOutput {
         cjDoc.nodesAll().forEach(n -> {
             String id = n.id();
             if (id == null) return;
-            String subject = hasContext ? CjUris.expandId(context, id) : id;
+            String subject = id; // verbatim; @context carries the namespaces (no expansion)
 
-            // node display label
-            String label = firstLabelOrDesc(n, n.labelEntries());
+            // node display label (carry the language tag as `,, ..lang.. xx` metadata when present)
+            List<ICjLabelEntry> labelEntries = n.labelEntries();
+            String label = firstLabelOrDesc(n, labelEntries);
             if (label != null && !label.isEmpty()) {
-                out.triples.add(new DDotDoc.DDotTriple(subject, PRED_LABEL, label));
+                String lang = labelEntries.isEmpty() ? null : labelEntries.getFirst().language();
+                List<String> labelMeta = (lang != null && !lang.isEmpty()) ? List.of("..lang.. " + lang) : List.of();
+                out.triples.add(new DDotDoc.DDotTriple(subject, PRED_LABEL, label, labelMeta));
             }
+
+            // node types (~ rdf:type): one `subject ..has type.. T` per declared type
+            n.types().forEach(t -> out.triples.add(new DDotDoc.DDotTriple(subject, TYPE_RELATION, t.type())));
 
             // node attributes (flat string-valued properties)
             IJsonValue json = n.data().jsonValue();

@@ -70,4 +70,23 @@ class DDotLabelCommandTest {
         assertEquals(2, g.edges().count(), "the muted line must not become an edge");
         assertTrue(g.nodes().noneMatch(n -> "muted".equals(n.id())), "no node from the muted line");
     }
+
+    @Test
+    void labelLanguageIsParsedAndRoundTrips() throws IOException {
+        ICjDocument doc1 = DDotReader.parseDDotToCjDocument(SingleInputSource.of("in.ddot", "x ..!!label.. Bob ,, ..lang.. en\n"));
+        ICjLabelEntry e1 = doc1.graphs().findFirst().orElseThrow()
+                .nodes().filter(n -> "x".equals(n.id())).findFirst().orElseThrow()
+                .label().entries().findFirst().orElseThrow();
+        assertEquals("Bob", e1.value());
+        assertEquals("en", e1.language(), "the ,, ..lang.. tag becomes the label language");
+
+        // the writer re-emits the language, and it survives a re-read
+        String ddot2 = new DDotOutput(doc1).toDDot();
+        assertTrue(ddot2.contains("..lang.. en"), () -> ddot2);
+        ICjDocument doc2 = DDotReader.parseDDotToCjDocument(SingleInputSource.of("in2.ddot", ddot2));
+        ICjLabelEntry e2 = doc2.graphs().findFirst().orElseThrow()
+                .nodes().filter(n -> "x".equals(n.id())).findFirst().orElseThrow()
+                .label().entries().findFirst().orElseThrow();
+        assertEquals("en", e2.language(), "label language round-trips through ddot");
+    }
 }
