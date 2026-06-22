@@ -11,6 +11,8 @@ import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,20 @@ public class DDotOutput {
     static final String PRED_NODE = "ddot:node";
     static final String PRED_LABEL = "ddot:label";
     static final String PRED_DATA_PREFIX = "ddot:data:";
+
+    /**
+     * Per-link metadata is namespaced on the edge's CJ data so it never collides with arbitrary keys:
+     * structured {@code ,, ..key.. value} entries live under {@link #LINK_PROPS_KEY}, free-text
+     * {@code ,, note} entries under {@link #LINK_TEXT_KEY}.
+     */
+    static final String LINK_PROPS_KEY = "ddot-it:props";
+    static final String LINK_TEXT_KEY = "ddot-it:text";
+
+    /** Subject naming the current document; its triples are document-level metadata. See https://ddot.it/this. */
+    static final String SUBJECT_THIS = "ddot.it/this";
+
+    /** Object marker opening a multi-line block literal; the value is the following lines. See https://ddot.it/block. */
+    static final String OBJECT_BLOCK = "ddot.it/block";
 
     private final ICjDocument cjDoc;
 
@@ -62,6 +78,20 @@ public class DDotOutput {
     private void cjDoc2ddotDoc(ICjDocument cjDoc, DDotDoc out) {
         @Nullable Map<String, String> context = cjDoc.context();
         boolean hasContext = context != null && !context.isEmpty();
+
+        // Document-level data round-trips as `ddot.it/this ..key.. value` triples (see https://ddot.it/this).
+        // A multi-valued key (array) was authored as a repeated predicate, so emit one triple per element.
+        IJsonValue docData = cjDoc.data().jsonValue();
+        if (docData != null && docData.isObject()) {
+            docData.asObject().forEach((key, value) -> {
+                if (value != null && value.isArray()) {
+                    value.asArray().forEach(el -> out.triples.add(new DDotDoc.DDotTriple(SUBJECT_THIS, key, jsonAsScalar(el))));
+                } else {
+                    out.triples.add(new DDotDoc.DDotTriple(SUBJECT_THIS, key, jsonAsScalar(value)));
+                }
+            });
+        }
+
         Set<String> edgeNodeIds = new HashSet<>();
         cjDoc.edgesAll().forEach(e -> {
             ICjEndpoint inEp = e.endpoints().filter(ep -> ep.direction() == CjDirection.IN).findFirst().orElse(null);
@@ -93,7 +123,26 @@ public class DDotOutput {
             String predicate = edgeType(e);
             if (predicate == null) predicate = firstLabelOrDesc(e, e.labelEntries());
             if (predicate == null) predicate = "";
-            out.triples.add(new DDotDoc.DDotTriple(subject, predicate, object));
+            // Per-link metadata round-trips from the edge's namespaced CJ data (see LINK_PROPS_KEY/LINK_TEXT_KEY):
+            // structured props as ",, ..key.. value", free text as ",, note".
+            List<String> meta = new ArrayList<>();
+            IJsonValue edgeJson = e.data().jsonValue();
+            if (edgeJson != null && edgeJson.isObject()) {
+                IJsonValue props = edgeJson.asObject().get(LINK_PROPS_KEY);
+                if (props != null && props.isObject()) {
+                    List<String> keys = new ArrayList<>(props.asObject().keys());
+                    Collections.sort(keys); // deterministic order
+                    for (String key : keys) {
+                        meta.add(".." + key + ".. " + jsonAsScalar(props.asObject().get(key)));
+                    }
+                }
+                IJsonValue text = edgeJson.asObject().get(LINK_TEXT_KEY);
+                if (text != null) {
+                    if (text.isArray()) text.asArray().forEach(v -> meta.add(jsonAsScalar(v)));
+                    else if (!text.isNull()) meta.add(jsonAsScalar(text));
+                }
+            }
+            out.triples.add(new DDotDoc.DDotTriple(subject, predicate, object, meta));
         });
 
         // Node-level facts that no edge can carry: standalone nodes, display labels, attributes.

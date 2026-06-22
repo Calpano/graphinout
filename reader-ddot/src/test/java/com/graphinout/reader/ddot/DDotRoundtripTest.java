@@ -4,7 +4,6 @@ import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.testdata.TestFileProvider;
-import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -36,80 +35,48 @@ public class DDotRoundtripTest {
         ICjDocument cjDocument1 = CjDocuments.parseCjJsonString(displayPath, cjJsonIn);
         assertThat(cjDocument1).isNotNull();
 
-        DDotOutput out1 = new DDotOutput(cjDocument1);
-        String ddot1 = out1.toDDot();
+        // Project arbitrary CJ into the DDot-representable domain, then assert that projection is stable:
+        // ddot -> cj -> ddot -> cj keeps the exact same CJ (incl. per-link ,, metadata).
+        String ddot1 = new DDotOutput(cjDocument1).toDDot();
+        ICjDocument cjA = DDotReader.parseDDotToCjDocument(SingleInputSource.of(displayPath + ".1", ddot1));
+        String ddot2 = new DDotOutput(cjA).toDDot();
+        ICjDocument cjB = DDotReader.parseDDotToCjDocument(SingleInputSource.of(displayPath + ".2", ddot2));
 
-        SingleInputSource ddotInput = SingleInputSource.of(displayPath + ".ddot", ddot1);
-        ICjDocument cjDocument2 = DDotReader.parseDDotToCjDocument(ddotInput);
-        assertThat(cjDocument2).isNotNull();
-
-        DDotOutput out2 = new DDotOutput(cjDocument2);
-        String ddot2 = out2.toDDot();
-
-        String n1 = normalizeDDot(ddot1);
-        String n2 = normalizeDDot(ddot2);
-        if (!n1.equals(n2)) {
+        String jsonA = CjDocuments.toJsonString(cjA);
+        String jsonB = CjDocuments.toJsonString(cjB);
+        if (!jsonA.equals(jsonB)) {
             System.out.println("---- CJ Input:\n" + cjJsonIn);
             System.out.println("---- DDot 1:\n" + ddot1);
             System.out.println("---- DDot 2:\n" + ddot2);
         }
-        assertThat(n2).isEqualTo(n1);
+        assertThat(jsonB).isEqualTo(jsonA);
     }
 
+    /**
+     * Faithful DDot round-trip: {@code ddot -> cj1 -> ddot -> cj2}, asserting {@code cj1} and {@code cj2}
+     * are semantically identical (canonical, sorted CJ JSON). This covers <em>everything</em> the DDot
+     * model carries — node/edge ids, endpoints, types, labels, node attributes, and crucially the per-link
+     * {@code ,,} metadata — so a writer that dropped any of it (e.g. link meta) would fail here.
+     */
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("ddotResources")
     void shouldRoundtripDDotToCjAndBackToDDot(String displayPath, Resource textResource) throws IOException {
         String content = textResource.getContentAsString();
-        SingleInputSource singleInputSource = SingleInputSource.of(displayPath, content);
 
-        ICjDocument cjDoc1 = DDotReader.parseDDotToCjDocument(singleInputSource);
+        ICjDocument cjDoc1 = DDotReader.parseDDotToCjDocument(SingleInputSource.of(displayPath, content));
         assertThat(cjDoc1).isNotNull();
 
-        DDotOutput out = new DDotOutput(cjDoc1);
-        String content2 = out.toDDot();
+        String ddot2 = new DDotOutput(cjDoc1).toDDot();
+        ICjDocument cjDoc2 = DDotReader.parseDDotToCjDocument(SingleInputSource.of(displayPath + ".roundtrip", ddot2));
 
-        if (!content.equals(content2)) {
-            System.err.println("FAIL for: " + textResource.getPath());
-            System.err.println("Expected:\n" + normalizeDDot(content));
-            System.err.println("Actual:\n" + normalizeDDot(content2));
+        String json1 = CjDocuments.toJsonString(cjDoc1);
+        String json2 = CjDocuments.toJsonString(cjDoc2);
+        if (!json1.equals(json2)) {
+            System.err.println("Round-trip mismatch for: " + textResource.getPath());
+            System.err.println("---- DDot written from CJ:\n" + ddot2);
+            System.err.println("---- CJ 1:\n" + json1);
+            System.err.println("---- CJ 2:\n" + json2);
         }
-        TestFileUtil.verifyOrRecord(textResource, "ddot_cj", content2, content, String::equals, this::normalizeDDot);
-    }
-
-    /** Normalize: drop comments, honor on/off switches, expand continuation lines, trim, sort. */
-    String normalizeDDot(String ddot) {
-        if (ddot == null || ddot.isBlank()) return "";
-        java.util.List<String> out = new java.util.ArrayList<>();
-        String subject = null;
-        boolean enabled = true;
-        for (String raw : ddot.split("\\R")) {
-            String line = raw.trim();
-            if (line.isEmpty()) continue;
-            if (line.startsWith("#")) continue;
-            if (line.equals("ddot.it/off")) { enabled = false; continue; }
-            if (line.equals("ddot.it/on")) { enabled = true; continue; }
-            if (!enabled) continue;
-
-            String body = line;
-            boolean isContinuation = body.startsWith("..");
-            if (isContinuation) body = body.substring(2).trim();
-            String[] parts = body.split("\\s*\\.\\.\\s*", -1);
-            String s, p, o;
-            if (isContinuation) {
-                if (subject == null || parts.length != 2) continue;
-                s = subject;
-                p = parts[0].trim();
-                o = parts[1].trim();
-            } else {
-                if (parts.length != 3) continue;
-                s = parts[0].trim();
-                p = parts[1].trim();
-                o = parts[2].trim();
-                subject = s;
-            }
-            out.add(s + " .. " + p + " .. " + o);
-        }
-        java.util.Collections.sort(out);
-        return String.join("\n", out);
+        assertThat(json2).isEqualTo(json1);
     }
 }
