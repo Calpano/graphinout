@@ -36,6 +36,14 @@ class Cj2RdfTest {
         ICjDocument cjDoc = CjDocuments.parseCjJsonString(displayPath, cjJson);
         assertNotNull(cjDoc);
 
+        // A document with no nodes/edges/data produces an empty RDF model. Prefix-less syntaxes
+        // (N-Triples/N-Quads) then emit a (correct) empty string, so only require non-empty output for
+        // documents that actually carry content. (The writer now emits the real per-syntax serialisation
+        // rather than always Turtle, so empty models no longer carry stray @prefix lines.)
+        boolean hasContent = cjDoc.nodesAll().findAny().isPresent()
+                || cjDoc.edgesAll().findAny().isPresent()
+                || !cjDoc.data().isEmpty();
+
         // CJ to RDF
         for (RdfFormats.RdfSyntax syntax : RdfFormats.RdfSyntax.values()) {
             RdfReader rdfReader = new RdfService().rdfReaders().stream().filter(r -> r.rdfSyntax() == syntax).findFirst().orElseThrow( ()-> new IllegalArgumentException("No reader found for syntax: " + syntax));
@@ -45,7 +53,9 @@ class Cj2RdfTest {
 
             String resultRdf = sink.getBufferAsUtf8String();
             log.info("Result RDF (" + syntax + "):\n" + resultRdf);
-            assertFalse(resultRdf.isEmpty(), "RDF output should not be empty");
+            if (hasContent) {
+                assertFalse(resultRdf.isEmpty(), "RDF output should not be empty for " + syntax);
+            }
         }
     }
 

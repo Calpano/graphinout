@@ -12,6 +12,11 @@ public class RdfCj {
 
         public static String rdfData = "rdf:data";
 
+        /** Edge-data key for structured per-link props (ddot {@code ,, ..key.. value}); a nested key→value object. */
+        public static final String LINK_PROPS = "ddot-it:props";
+
+        /** Edge-data key for free-text per-link notes (ddot {@code ,, note}); a string or array of strings. */
+        public static final String LINK_TEXT = "ddot-it:text";
 
     }
 
@@ -37,6 +42,18 @@ public class RdfCj {
         public static final @Nullable String IS_RELATED = VOC + "isRelated";
 
         public static final String CJ_EDGE = VOC + "Edge";
+
+        /**
+         * Predicate carrying a free-text note (ddot {@code ddot-it:text}) for a statement, used as the
+         * metadata predicate on the RDF-star reifier of the annotated base triple.
+         */
+        public static final String HAS_NOTE = VOC + "hasNote";
+
+        /**
+         * Sentinel subject IRI for CJ document-level data ({@code ddot.it/this}). Fixed (independent of the
+         * base URI) so document-data triples round-trip regardless of the document's location.
+         */
+        public static final String THIS_DOCUMENT = VOC + "thisDocument";
 
     }
 

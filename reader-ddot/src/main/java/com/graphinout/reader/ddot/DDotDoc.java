@@ -45,12 +45,32 @@ public class DDotDoc {
                 b.append(t.subject).append(SEPARATOR).append(t.predicate).append(SEPARATOR);
             }
             if (t.object.indexOf('\n') >= 0) {
-                // a multi-line value is written as a ddot.it/block literal; its lines follow until the next
-                // statement terminates the block (see https://ddot.it/block). Block triples carry no ,, meta.
-                b.append(DDotOutput.OBJECT_BLOCK).append('\n');
-                for (String blockLine : t.object.split("\n", -1)) {
+                // A multi-line value is written as a ddot.it/block literal. Content runs until the end marker:
+                // a blank line by default, or a custom `?end=MARKER` when the content itself contains a blank
+                // line. Any `,,` metadata goes on the opening line. See https://ddot.it/block.
+                String[] blockLines = t.object.split("\n", -1);
+                boolean hasBlank = false;
+                for (String bl : blockLines) if (bl.isEmpty()) { hasBlank = true; break; }
+                String endMarker = null;
+                if (hasBlank) {
+                    endMarker = "END";
+                    boolean collision = true;
+                    while (collision) {
+                        collision = false;
+                        for (String bl : blockLines) if (bl.equals(endMarker)) { collision = true; break; }
+                        if (collision) endMarker += "_";
+                    }
+                }
+                b.append(DDotOutput.OBJECT_BLOCK);
+                if (endMarker != null) b.append("?end=").append(endMarker);
+                for (String payload : t.meta) {
+                    b.append(' ').append(META_SEPARATOR).append(' ').append(payload);
+                }
+                b.append('\n');
+                for (String blockLine : blockLines) {
                     b.append(blockLine).append('\n');
                 }
+                b.append(endMarker != null ? endMarker : "").append('\n'); // blank line (default) or custom marker
             } else {
                 b.append(t.object);
                 for (String payload : t.meta) {

@@ -1,0 +1,327 @@
+= Round-tripping RDF ↔ ddot.it through Connected JSON
+:toc: macro
+:toclevels: 3
+:sectnums:
+
+toc::[]
+
+== Purpose and scope
+
+graphinout converts every format to and from one pivot model, *Connected JSON* (CJ). There is no direct
+RDF↔ddot.it converter; a conversion is always the composition of two mappings:
+
+[source]
+----
+RDF  <-->  CJ  <-->  ddot.it
+----
+
+This document specifies that mapping — how each construct of one model is represented in the others — and
+then lists the known *open issues* where a round-trip is still lossy or under-specified. It reflects what
+graphinout actually does (sources: `reader-rdf` and `reader-ddot`); it is a design reference, not a
+conformance promise.
+
+=== The three models
+
+[cols="1,3,3,3",options="header"]
+|===
+| Concept | RDF | ddot.it | Connected JSON (CJ)
+
+| Atom | triple `s p o` (quad `s p o g`) | line `subject .. predicate .. object` | node / edge / document
+| Identity | IRI or blank node | arbitrary string | node `id` (string)
+| Edge predicate | IRI (mandatory) | predicate (may be empty = untyped) | edge `type` (+ `label`)
+| Value | *literal* (lexical + datatype + lang) | object string, flagged literal by `,,` metadata | node `data` (`rdf:data`)
+| Resource object | IRI / blank node | plain object string | node + edge
+| Namespaces | `@prefix` / base IRI | `A ..prefix.. B` | `@context` map (+ `@vocab`)
+| Type | `rdf:type` | relation `has type` | node `types[]`
+| Display name | `rdfs:label` | `ddot.it/label` / `!!label` | node `label[]` (lang-tagged)
+| Statement metadata | RDF-star / reification | per-link `,, ..k.. v` | edge `data`
+| Document facts | triples about a doc IRI | `ddot.it/this ..k.. v` | document `data`
+| Multiple graphs | named graphs / datasets | — (flat) | `graphs[]`
+|===
+
+The pivotal distinction is the *value* vs *resource object* rows: RDF separates literals from resources;
+ddot.it has only objects, so it marks literals explicitly with `,,` metadata; CJ carries literals as node
+`rdf:data` and resources as nodes/edges.
+
+== Mapping
+
+=== RDF ↔ CJ
+
+Source of truth: `reader-rdf` (`RdfModel2CjDoc`, `CjDoc2RdfModel`, `RdfLiteral`, `RdfCj`, `RdfReader`).
+
+==== RDF → CJ (read)
+
+* IRI subject/object → node `id`, CURIE-abbreviated against `@context` (longest namespace match, or
+  `@vocab`); otherwise the full IRI.
+* `@prefix` declarations → the document `@context`. A supplied base IRI → `@vocab`.
+* Predicate IRI → edge `type` (CURIE/full); the edge is directed subject→object. The predicate
+  `cj:isRelated` becomes an *untyped* edge (no type).
+* `(s, rdf:type, R)` with a resource object → node `s` gains a *type* (CURIE of `R`). The universal
+  built-in `rdf:type rdfs:Resource` is ignored (it carries no information) — `s` is still created.
+* `(s, rdfs:label, "L"@lang)` → node `s` *label* entry `{value:"L", language:"lang"}`.
+* Any other literal object → a node `data` property under `rdf:data` → `<predicateId>`:
+** plain literal → bare JSON string (lexical form);
+** typed / language literal → `{"value":…, "datatype":<CURIE-or-IRI>?, "language":<tag>?}`
+   (the datatype IRI is CURIE-abbreviated against `@context` — symmetrically with node ids and
+   predicates — and stays a full IRI only when no prefix matches; `xsd:string` and `rdf:langString`
+   are elided — they are the defaults);
+** repeated predicate → array.
+* Statement-level annotations (RDF-star `rdf:reifies` triple terms, or classic `rdf:Statement`
+  reification) → the annotated edge's `data` (`ddot-it:props` for keyed entries, `ddot-it:text` for free
+  text — single value ⇒ string, multiple ⇒ array).
+* Triples whose subject is the sentinel `cj:thisDocument` → the document's `data` (repeated key ⇒ array).
+* Blank node → node id `"_:" + <label>`.
+
+==== CJ → RDF (write)
+
+* Node id → resource: `_:`-prefixed ⇒ blank node; otherwise an IRI via `expandId(@context, id)`
+  (CURIE / `@vocab` expansion; a colon-less id with no `@vocab` stays a relative IRI).
+* Edge `type` → predicate IRI via `expandId`. An *untyped* edge ⇒ predicate `cj:isRelated`.
+* Node `types[]` → `(node, rdf:type, <type>)`. A *truly isolated* node (no type, label, data, or incident
+  edge) gets a single `(node, rdf:type, rdfs:Resource)` existence marker so it survives; all other nodes
+  materialise via their own triples and get no such noise.
+* Node `label[]` → `(node, rdfs:label, "…"@lang)`.
+* Node `data.rdf:data.<pred>` → literal triples (string ⇒ plain; `{value,datatype|language}` ⇒
+  typed/lang, with the `datatype` CURIE expanded to a full IRI via `expandId(@context, …)`; array ⇒ one
+  triple per member). Other node `data` → one `cj:hasData` `rdf:RDFJSON` literal.
+* Edge `data` → a statement annotation on `s p o`, encoded *per output syntax* (see
+  <<statement-metadata>>).
+* Document `data` → triples `(cj:thisDocument, <key>, value)` (arrays ⇒ one per element).
+* The writer emits the *requested* syntax — Turtle, TriG, N-Triples, N-Quads, RDF/XML, JSON-LD, RDF-JSON,
+  TriX — via Jena `RDFWriter`/`RDFFormat`. Relative node ids are resolved to absolute against the document
+  vocab so the strict line writers accept them.
+
+=== ddot.it ↔ CJ
+
+Source of truth: `reader-ddot` (`DDotReader`, `DDotOutput`, `DDotDoc`); feature corpus under
+`graph-test-data/text/ddot-it/features`.
+
+==== ddot.it → CJ (read)
+
+* `subject .. predicate .. object` → directed edge subject→object, edge `type` = `label` = predicate.
+* Untyped link `a .... b` (or `a .. .. b`) → edge with no type/label.
+* Relation aliases canonicalised: `is a`/`type` → `has type`, `rel`/`is related` → `related`,
+  `link`/`see also` → `links to`, `tag` → `has tag`, `subtype` → `has subtype`, `is same as` → `same as`,
+  `content` → `has content`. `....` stays untyped.
+* `subject ..has type.. T` (canonical) → node *type* (not an edge).
+* `subject ..!!label.. text` (= `ddot.it/label`, or `ddot:label`) → node *label*; an inline
+  `,, ..lang.. xx` sets the label language.
+* An object flagged a literal by inline `,, ..rdf:literal../..rdf:datatype../..rdf:language..` → a node
+  `rdf:data` property (see <<literals>>); an unflagged object is a resource (an edge).
+* `subject ..ddot:node.. subject` → standalone node; `subject ..ddot:data:KEY.. value` → node data `KEY`.
+* `ddot.it/this ..k.. v` (`!!this`) → document data `k=v` (repeated key ⇒ array).
+* `subject ..rel.. ddot.it/block` (`!!block`) + following lines → a multi-line object value (joined by
+  `\n`) until the *end marker* — a blank line by default, or a custom `?end=MARKER`
+  (`ddot.it/block?end=MARKER`). Content lines are literal (a `..` line is content, not a statement). A `,,`
+  on the opening line is the block's metadata, and may flag the value an RDF literal (see <<literals>>).
+* `A ..prefix.. B` → `@context` entry `A → B` (ids left verbatim).
+* Inline/block `,, ..k.. v` / `,, note` → edge `data` under `ddot-it:props` / `ddot-it:text`.
+* `ddot.it/off`/`!!off` … `ddot.it/on`/`!!on` mute/resume; `#` lines are comments.
+
+==== CJ → ddot.it (write)
+
+* Edge → `subject .. type .. object`; no type ⇒ untyped link; a repeated subject ⇒ continuation lines.
+  Edge `data` → trailing `,,` metadata.
+* Node `types[]` → `subject ..has type.. T`; node `label` → `ddot:label` (+ `,, ..lang..` if a language).
+* Node `data.rdf:data.<pred>` → literal-flagged triples (see below); other node `data` → `ddot:data:KEY`.
+* Standalone node → `ddot:node`. Document `data` → `ddot.it/this ..k.. v` (arrays ⇒ repeated).
+* `@context` → `A ..prefix.. B` declarations; ids are emitted *verbatim* (no expansion).
+
+=== Cross-cutting conventions
+
+[#identifiers]
+==== Identifiers, prefixes and `@context`
+
+IRIs round-trip as themselves; CURIEs (`ex:alice`) round-trip as CURIEs because the ddot writer emits the
+`@context` as `A ..prefix.. B` lines and keeps ids verbatim (no expansion), mirroring the reader. A
+colon-less id with no `@vocab` becomes a relative IRI on the RDF side.
+
+[#types]
+==== Node types
+
+`rdf:type` ⇄ CJ `types[]` ⇄ ddot `has type` (canonical; aliases `is a`/`type`). `subject ..has type.. T`
+sets a node type, not an edge.
+
+[#labels]
+==== Labels and language
+
+`rdfs:label` ⇄ CJ `label[]` ⇄ ddot `ddot:label`/`!!label`. The label language is carried through ddot as
+inline `,, ..lang.. en`, so `"Bob"@en` survives the triple-text hop.
+
+[#literals]
+==== Literals vs resources
+
+This is the central impedance match. RDF separates literals from resources; ddot.it has only objects. A
+ddot triple whose object is a literal is *flagged* with inline `,,` metadata and maps to the subject node's
+`rdf:data` property — the same CJ shape `reader-rdf` produces — so it serialises as a real RDF literal:
+
+[cols="1,3",options="header"]
+|===
+| ddot encoding | CJ `rdf:data.<pred>` → RDF literal
+| `s ..pred.. Alice ,, ..rdf:literal.. true` | `"Alice"` (bare string) → plain literal `"Alice"`
+| `s ..pred.. 30 ,, ..rdf:datatype.. xsd:integer` | `{value:"30", datatype:"xsd:integer"}` → `"30"^^xsd:integer`
+| `s ..pred.. Bonjour ,, ..rdf:language.. fr` | `{value:"Bonjour", language:"fr"}` → `"Bonjour"@fr`
+| `s ..pred.. o` (no marker) | edge → RDF resource `<o>`
+|===
+
+A bare (unflagged) object is always a resource, so ordinary ddot graphs are unaffected. The datatype IRI is
+CURIE-abbreviated against `@context` on read and expanded back on write — symmetrically with node ids and
+predicates — so with `xsd:` in scope the ddot marker reads `,, ..rdf:datatype.. xsd:integer` rather than the
+full XSD IRI (a datatype with no matching prefix stays a full IRI and still round-trips). Repeated literal
+predicates accumulate to a CJ array and re-expand to repeated triples.
+
+[#untyped]
+==== Untyped links
+
+ddot `a .... b` ⇄ CJ untyped edge ⇄ RDF predicate `cj:isRelated` (mapped back to untyped on read).
+
+[#statement-metadata]
+==== Statement metadata (per-edge data)
+
+ddot per-link `,, ..k.. v` ⇄ CJ edge `data` ⇄ an RDF statement annotation, chosen *per output syntax*:
+
+* Turtle / TriG / N-Triples / N-Quads → *RDF-star*: a reifier `r rdf:reifies <<( s p o )>>` with
+  `r <key> value` (free text under `cj:hasNote`).
+* RDF/XML, JSON-LD, RDF-JSON, TriX → classic *reification*: `r rdf:type rdf:Statement; rdf:subject s;
+  rdf:predicate p; rdf:object o` + the same metadata predicates (plain triples, serialise everywhere).
+
+The reader recognises both encodings and rebuilds `ddot-it:props` / `ddot-it:text`.
+
+[#document-metadata]
+==== Document metadata
+
+ddot `ddot.it/this ..k.. v` ⇄ CJ document `data` ⇄ RDF triples `(cj:thisDocument, k, v)` using the fixed
+sentinel IRI `cj:thisDocument`. Plain triples, so they round-trip in every syntax.
+
+[#block]
+==== Multi-line block literals
+
+ddot `..addr.. ddot.it/block` + following lines ⇄ a CJ multi-line value, terminated by a blank line (or a
+custom `?end=MARKER`). The writer picks a custom `?end=` marker automatically when the value itself
+contains a blank line. Combined with a `,, ..rdf:literal../..rdf:datatype..` marker on the opening line
+(see <<literals>>), a multi-line *RDF literal* round-trips through the block form — e.g. a Turtle
+`"line one\nline two"` becomes `..note.. ddot.it/block ,, ..rdf:literal.. true` + the two lines + a blank
+line, and back.
+
+[#multivalued]
+==== Multi-valued properties
+
+Repeated `(s p o)` ⇄ repeated `s ..p.. o` ⇄ a CJ array (document data, node `rdf:data`, and edge text all
+accumulate to arrays and re-expand to repeated triples/lines).
+
+[#blank-nodes]
+==== Blank nodes
+
+RDF `_:b1` ⇄ CJ id `_:b1` ⇄ ddot id `_:b1`; `_:`-prefixed ids map back to RDF blank nodes.
+
+=== Worked round-trips
+
+==== RDF → ddot.it → RDF
+
+[source,turtle]
+----
+ex:alice foaf:name "Alice" ; foaf:age "30"^^xsd:integer ; foaf:knows ex:bob .
+----
+
+ddot.it (note the `prefix` lines, the literal markers, and `foaf:knows` as a real edge):
+
+[source]
+----
+xsd  .. prefix .. http://www.w3.org/2001/XMLSchema#
+foaf .. prefix .. http://xmlns.com/foaf/0.1/
+ex   .. prefix .. http://example.org/
+ex:alice .. foaf:knows .. ex:bob
+         .. foaf:age  .. 30 ,, ..rdf:datatype.. http://www.w3.org/2001/XMLSchema#integer
+         .. foaf:name .. Alice ,, ..rdf:literal.. true
+----
+
+Back to Turtle — the literal/resource distinction is preserved (`30` is an integer literal, `"Alice"` a
+plain literal, `ex:bob` a resource):
+
+[source,turtle]
+----
+ex:alice foaf:age 30 ; foaf:name "Alice" ; foaf:knows ex:bob .
+----
+
+==== ddot.it → RDF → ddot.it
+
+[source]
+----
+foaf ..prefix.. http://xmlns.com/foaf/0.1/
+alice ..foaf:knows.. bob ,, ..since.. 2020
+alice ..!!label.. Alice Smith
+alice ..has type.. foaf:Person
+alice ..foaf:age.. 30 ,, ..rdf:datatype.. http://www.w3.org/2001/XMLSchema#integer
+----
+
+Survives the RDF hop: the `foaf:knows` edge with its `since` statement metadata (RDF-star/reification), the
+label, the `foaf:Person` *type* (via `rdf:type`), and the typed-integer *literal* `age`. The only built-in
+caveat is that a bare object with no marker (had we written `alice ..age.. 30`) would be a resource.
+
+== Open issues
+
+[#oi-named-graphs]
+=== Named graphs / quads (flattened)
+
+TriG / N-Quads / TriX named graphs are flattened to a single CJ graph on read, and multiple CJ `graphs[]`
+are merged on write — graph identity is lost both ways. ddot.it has no multi-graph syntax. A fix would map
+named graphs ⇄ CJ `graphs[]` with stable graph ids and pick a ddot.it convention; out of scope today.
+
+[#oi-reserved-tokens]
+=== Reserved-token collisions
+
+Genuine data that literally equals one of graphinout's sentinels is mis-mapped: a subject `ddot.it/this`;
+an object `ddot.it/block`/`!!block`; a standalone-line toggle `ddot.it/off`/`!!off`/`…on`; a predicate
+`prefix`, `has type` (and aliases `is a`/`type`/…), `ddot:node`, `ddot:label`, `ddot:data:*`; a
+literal-marker meta key `rdf:datatype`/`rdf:language`/`rdf:literal`; or an RDF IRI that looks like an
+undefined CURIE. These need a documented reserved list and a general escaping convention covering all three
+slots and the marker keys.
+
+*Can `ddot.it/block` serve as the escape?* Partly, for the *object* slot. A block's content lines are
+literal — never interpreted as commands/markers, and a `..` line is content — so
+
+[source]
+----
+s ..p.. ddot.it/block
+ddot.it/block
+
+----
+
+yields an object whose value is the literal string `ddot.it/block`. The block's opening line *can* still
+carry a `,,` marker (e.g. `,, ..rdf:datatype..` to make the value a literal), so block escaping composes
+with the literal convention. But it is *object-only* (no help for subject/predicate/marker-key collisions),
+so a general escaping convention is still needed. (The forthcoming `ddot.it/verbatim` command is the
+intended general object-escape — inline and block — for literal `,,`/`..`/command text.)
+
+[#oi-blank-node-stability]
+=== Blank-node label stability
+
+A blank node round-trips as `_:<label>`, but the label is Jena's internal one and need not equal the source
+token; identity is only as stable as Jena guarantees. Best-effort, not guaranteed.
+
+[#oi-literal-default]
+=== Literal-vs-resource default (by design)
+
+A bare ddot object with no literal marker is a *resource*. This is a deliberate choice (ddot graphs are
+resource-centric); authors opt into literals with `,, ..rdf:literal../..rdf:datatype../..rdf:language..`.
+Noted here because it can surprise: `alice ..age.. 30` yields an RDF resource `<30>`, not a literal.
+
+
+[#oi-ordering]
+=== Ordering and determinism
+
+`,,` metadata keys are emitted sorted, but node/edge emission order follows CJ iteration order while RDF is
+an unordered set. A round-trip preserves *content*, not line order; equivalence checks must canonicalise
+(graphinout's faithful tests compare sorted CJ, not text).
+
+[#oi-jsonld-star]
+=== JSON-LD-star upgrade path
+
+JSON-LD currently carries statement metadata as classic reification because JSON-LD-star (`@annotation`,
+`@reifies`, `@triple`) is a W3C *draft* (targeting JSON-LD 1.3 / RDF 1.2) not yet emitted by Jena's
+JSON-LD writer. When the toolchain supports it, JSON-LD output can switch to the more compact
+`@annotation` form. Track publication status here:
+
+* JSON-LD-star draft: https://json-ld.github.io/json-ld-star/
+* JSON-LD WG (1.3): https://www.w3.org/groups/wg/json-ld/
+* RDF 1.2 (RDF-star) concepts: https://www.w3.org/TR/rdf12-concepts/

@@ -21,6 +21,8 @@ import com.graphinout.foundation.pure.input.Locator;
 import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
+import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
 import com.graphinout.foundation.pure.value.IntRef;
 import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.Nullable;
@@ -134,9 +136,11 @@ public class DDotReader implements GioReader {
         boolean inLinkMeta = false; // inside a multi-line `,,` metadata block bound to currentEdge
         boolean inFreeForm = false; // inside a standalone `,,` block (free-form note; ignored)
         boolean foundAny = false;
-        // ddot.it/block: the object value spans the following lines until the next statement
+        // ddot.it/block: the object value spans the following lines until the end marker
         @Nullable String blockSubject = null;
         @Nullable String blockPredicate = null;
+        @Nullable String blockEnd = null;   // custom end marker, or null = default (a blank line)
+        @Nullable String blockMeta = null;  // the `,,` payload on the block-opening line, if any
         List<String> blockLines = new ArrayList<>();
         // RDF `prefix` declarations (A ..prefix.. B) collected into the document @context
         LinkedHashMap<String, String> contextMap = new LinkedHashMap<>();
@@ -147,6 +151,27 @@ public class DDotReader implements GioReader {
         while (scanner.hasNextLine()) {
             String rawLine = scanner.nextLine();
             lineNumber.value++;
+
+            // Inside a ddot.it/block, content is captured verbatim until the end marker — a blank line by
+            // default, or a custom `?end=` marker line. Triples/commands are NOT recognised here (the lines
+            // may contain `..`). See https://ddot.it/block.
+            if (blockSubject != null) {
+                boolean atEnd = blockEnd == null ? rawLine.trim().isEmpty() : rawLine.trim().equals(blockEnd);
+                if (atEnd) {
+                    finalizeBlock(writer, nodeBuffer, edgeBuffer, edgeMeta,
+                            blockSubject, blockPredicate, String.join("\n", blockLines), blockMeta, locator);
+                    foundAny = true;
+                    blockSubject = null;
+                    blockPredicate = null;
+                    blockEnd = null;
+                    blockMeta = null;
+                    blockLines = new ArrayList<>();
+                    continue; // the end-marker / blank line is consumed, not content
+                }
+                blockLines.add(rawLine);
+                continue;
+            }
+
             String line = rawLine.trim();
             if (line.isEmpty()) continue;
             if (line.startsWith(COMMENT_MARKER)) continue;
@@ -160,23 +185,6 @@ public class DDotReader implements GioReader {
                 continue;
             }
             if (!enabled) continue;
-
-            // ddot.it/block: gather raw lines as a multi-line object value until the next statement
-            // (a line carrying the `..` operator, or a `,,`); see https://ddot.it/block.
-            if (blockSubject != null) {
-                if (line.contains("..") || line.equals(META_SEPARATOR)) {
-                    emitEdge(writer, nodeBuffer, edgeBuffer, blockSubject, blockPredicate, String.join("\n", blockLines));
-                    foundAny = true;
-                    blockSubject = null;
-                    blockPredicate = null;
-                    blockLines = new ArrayList<>();
-                    currentEdge = null;
-                    // fall through: parse this statement line normally
-                } else {
-                    blockLines.add(line);
-                    continue;
-                }
-            }
 
             // A lone ",," delimits metadata / free-form blocks (see https://ddot.it).
             if (line.equals(META_SEPARATOR)) {
@@ -246,6 +254,21 @@ public class DDotReader implements GioReader {
                 continue;
             }
 
+            // An object flagged as an RDF literal (inline `,, ..rdf:datatype/language/literal..`) is a node
+            // data property under `rdf:data`, NOT an edge to a resource. See doc/spec-ddot-rdf.adoc E1.
+            // (A block marker is handled below; its literal-ness applies to the gathered block value.)
+            if (comma >= 0 && !isBlockMarker(object)) {
+                IJsonValue literal = literalValue(object, metaPart, writer.jsonFactory());
+                if (literal != null) {
+                    final IJsonValue literalFinal = literal;
+                    final String predicateFinal = predicate;
+                    ensureNodeChunk(subject, writer, nodeBuffer).dataMutable(d ->
+                            d.add(IJsonContainerNavigationStep.pathOf(DDotOutput.RDF_DATA_KEY, predicateFinal), literalFinal));
+                    foundAny = true;
+                    continue;
+                }
+            }
+
             // Reserved predicates carry node-level facts, not edges. They reconstruct the subject node's
             // existence / display label / attributes; the object is a literal, never a node.
             if (DDotOutput.PRED_NODE.equals(predicate)) {
@@ -269,12 +292,16 @@ public class DDotReader implements GioReader {
                 ensureNodeChunk(subject, writer, nodeBuffer).addType(ICjElementType.of(object));
                 foundAny = true;
             } else if (isBlockMarker(object)) {
-                // ddot.it/block: defer the edge; its object value is gathered from the following lines
+                // ddot.it/block: defer; the object value is gathered from the following lines until the end
+                // marker. Any `,,` on this opening line is the block's metadata (see https://ddot.it/block).
                 blockSubject = subject;
                 blockPredicate = predicate;
+                blockEnd = blockEndMarker(object);
+                blockMeta = comma >= 0 ? metaPart : null;
                 blockLines = new ArrayList<>();
                 currentEdge = null;
                 foundAny = true;
+                continue; // opening-line `,,` is captured as blockMeta; skip the generic meta handler
             } else {
                 currentEdge = emitEdge(writer, nodeBuffer, edgeBuffer, subject, predicate, object);
                 foundAny = true;
@@ -293,9 +320,10 @@ public class DDotReader implements GioReader {
             }
         }
 
-        // a block that runs to end-of-file
+        // a block that runs to end-of-file (EOF ends it like a blank line)
         if (blockSubject != null) {
-            emitEdge(writer, nodeBuffer, edgeBuffer, blockSubject, blockPredicate, String.join("\n", blockLines));
+            finalizeBlock(writer, nodeBuffer, edgeBuffer, edgeMeta,
+                    blockSubject, blockPredicate, String.join("\n", blockLines), blockMeta, locator);
             foundAny = true;
         }
 
@@ -386,9 +414,38 @@ public class DDotReader implements GioReader {
         return DDotOutput.SUBJECT_THIS.equals(subject) || "!!this".equals(subject);
     }
 
-    /** Is this object the multi-line block-literal marker {@code ddot.it/block} (shorthand {@code !!block})? */
+    /** Is this object a multi-line block marker {@code ddot.it/block} / {@code !!block} (optionally {@code ?end=…})? */
     private static boolean isBlockMarker(String object) {
-        return DDotOutput.OBJECT_BLOCK.equals(object) || "!!block".equals(object);
+        return object.equals(DDotOutput.OBJECT_BLOCK) || object.equals("!!block")
+                || object.startsWith(DDotOutput.OBJECT_BLOCK + "?end=") || object.startsWith("!!block?end=");
+    }
+
+    /** The custom block end marker from a {@code ?end=…} suffix, or {@code null} for the default (a blank line). */
+    private static @Nullable String blockEndMarker(String object) {
+        int i = object.indexOf("?end=");
+        return i < 0 ? null : object.substring(i + "?end=".length());
+    }
+
+    /**
+     * Emit a finished block: a literal-flagged opening (`,, ..rdf:datatype/language/literal..`) stores the
+     * multi-line value as a node {@code rdf:data} literal; otherwise it is an edge to the value, with any
+     * other opening-line `,,` payload attached as link metadata.
+     */
+    private void finalizeBlock(ICjStream writer, java.util.Map<String, ICjNodeChunkMutable> nodeBuffer,
+                               List<ICjEdgeChunkMutable> edgeBuffer, Map<ICjEdgeChunkMutable, LinkMeta> edgeMeta,
+                               String subject, String predicate, String value, @Nullable String meta, Locator locator) {
+        IJsonValue literal = meta == null ? null : literalValue(value, meta, writer.jsonFactory());
+        if (literal != null) {
+            ensureNodeChunk(subject, writer, nodeBuffer).dataMutable(d ->
+                    d.add(IJsonContainerNavigationStep.pathOf(DDotOutput.RDF_DATA_KEY, predicate), literal));
+            return;
+        }
+        ICjEdgeChunkMutable edge = emitEdge(writer, nodeBuffer, edgeBuffer, subject, predicate, value);
+        if (meta != null && !meta.trim().isEmpty()) {
+            for (String entry : meta.split(java.util.regex.Pattern.quote(META_SEPARATOR))) {
+                if (!entry.trim().isEmpty()) attachMeta(edge, edgeMeta, entry, locator);
+            }
+        }
     }
 
     /** ddot.it's suggested standard relation aliases → canonical names (see https://ddot.it/relations). */
@@ -409,6 +466,38 @@ public class DDotReader implements GioReader {
     /** Is this predicate the rdf:type-like relation ({@code has type}, or aliases {@code is a}/{@code type})? */
     private static boolean isTypeRelation(String predicate) {
         return DDotOutput.TYPE_RELATION.equals(canonicalRelation(predicate));
+    }
+
+    /**
+     * If the inline metadata flags this object as an RDF literal, return the CJ value to store under
+     * {@code rdf:data} (a bare string for a plain literal, or a {@code {value,datatype|language}} envelope);
+     * otherwise {@code null} (the object is an ordinary resource). See doc/spec-ddot-rdf.adoc E1.
+     */
+    private static @Nullable IJsonValue literalValue(String object, @Nullable String metaPart, IJsonFactory jf) {
+        if (metaPart == null) return null;
+        String body = metaPart.startsWith("..") ? metaPart.substring(2).trim() : metaPart;
+        String[] p = body.split(SEPARATOR_REGEX, -1);
+        if (p.length != 2) return null;
+        String key = p[0].trim();
+        String val = p[1].trim();
+        switch (key) {
+            case DDotOutput.MARK_PLAIN:
+                return jf.createString(object);
+            case DDotOutput.MARK_DATATYPE: {
+                IJsonObjectMutable o = jf.createObjectMutable();
+                o.add(DDotOutput.LIT_VALUE, object);
+                o.add(DDotOutput.LIT_DATATYPE, val);
+                return o;
+            }
+            case DDotOutput.MARK_LANGUAGE: {
+                IJsonObjectMutable o = jf.createObjectMutable();
+                o.add(DDotOutput.LIT_VALUE, object);
+                o.add(DDotOutput.LIT_LANGUAGE, val);
+                return o;
+            }
+            default:
+                return null;
+        }
     }
 
     /** Extract the label language from an inline {@code ..lang.. xx} metadata entry, or {@code null}. */

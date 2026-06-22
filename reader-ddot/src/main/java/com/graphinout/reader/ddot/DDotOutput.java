@@ -52,6 +52,21 @@ public class DDotOutput {
     /** Canonical "is a type of" relation (~ rdf:type); carries a CJ node type. See https://ddot.it/relations. */
     static final String TYPE_RELATION = "has type";
 
+    /**
+     * RDF literal interop (see doc/spec-ddot-rdf.adoc E1). RDF literal properties live in CJ under the node's
+     * {@code rdf:data} object as {@code predicate -> literal} (a bare string, or a {value,datatype|language}
+     * envelope). ddot encodes each as a triple whose object is flagged a literal by inline {@code ,,} metadata,
+     * so it round-trips as a real RDF literal rather than degrading to a node/resource or a JSON blob.
+     */
+    static final String RDF_DATA_KEY = "rdf:data";
+    static final String LIT_VALUE = "value";
+    static final String LIT_DATATYPE = "datatype";
+    static final String LIT_LANGUAGE = "language";
+    /** Inline {@code ,,} markers flagging the object as an RDF literal (vs a resource): plain / typed / lang. */
+    static final String MARK_PLAIN = "rdf:literal";
+    static final String MARK_DATATYPE = "rdf:datatype";
+    static final String MARK_LANGUAGE = "rdf:language";
+
     private final ICjDocument cjDoc;
 
     public DDotOutput(ICjDocument cjDoc) {
@@ -177,6 +192,11 @@ public class DDotOutput {
             if (json != null && json.isObject()) {
                 json.asObject().forEach((key, value) -> {
                     if (CjDataProperty.Description.cjPropertyKey.equals(key)) return; // already emitted as label
+                    if (RDF_DATA_KEY.equals(key) && value != null && value.isObject()) {
+                        // RDF literal properties → literal-flagged triples (round-trip as real RDF literals)
+                        value.asObject().forEach((pred, litVal) -> emitLiteralTriples(out, subject, pred, litVal));
+                        return;
+                    }
                     out.triples.add(new DDotDoc.DDotTriple(subject, PRED_DATA_PREFIX + key, jsonAsScalar(value)));
                 });
             }
@@ -186,6 +206,30 @@ public class DDotOutput {
                 out.triples.add(new DDotDoc.DDotTriple(subject, PRED_NODE, subject));
             }
         });
+    }
+
+    /** Emit one literal-flagged triple per literal value (arrays ⇒ one per element) for a node's rdf:data property. */
+    private static void emitLiteralTriples(DDotDoc out, String subject, String pred, @Nullable IJsonValue litVal) {
+        if (litVal == null) return;
+        if (litVal.isArray()) {
+            litVal.asArray().forEach(el -> emitLiteralTriples(out, subject, pred, el));
+            return;
+        }
+        String value;
+        String marker;
+        if (litVal.isObject()) {
+            IJsonValue dt = litVal.asObject().get(LIT_DATATYPE);
+            IJsonValue lang = litVal.asObject().get(LIT_LANGUAGE);
+            IJsonValue v = litVal.asObject().get(LIT_VALUE);
+            value = v != null ? jsonAsScalar(v) : "";
+            if (dt != null) marker = ".." + MARK_DATATYPE + ".. " + jsonAsScalar(dt);
+            else if (lang != null) marker = ".." + MARK_LANGUAGE + ".. " + jsonAsScalar(lang);
+            else marker = ".." + MARK_PLAIN + ".. true";
+        } else {
+            value = jsonAsScalar(litVal); // bare scalar = plain literal
+            marker = ".." + MARK_PLAIN + ".. true";
+        }
+        out.triples.add(new DDotDoc.DDotTriple(subject, pred, value, List.of(marker)));
     }
 
     private static @Nullable String edgeType(com.graphinout.base.cj.document.ICjEdge e) {

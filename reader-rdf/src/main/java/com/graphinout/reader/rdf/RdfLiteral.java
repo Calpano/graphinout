@@ -8,6 +8,8 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.jspecify.annotations.Nullable;
 
+import java.util.function.UnaryOperator;
+
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
 
 record RdfLiteral(IJsonObjectMutable jsonObject) {
@@ -21,10 +23,21 @@ record RdfLiteral(IJsonObjectMutable jsonObject) {
     public static final String DATATYPE = "datatype";
 
     public static RdfLiteral of(Literal literal) {
+        return of(literal, UnaryOperator.identity());
+    }
+
+    /**
+     * Build an {@link RdfLiteral} from a Jena {@link Literal}, abbreviating the datatype IRI to a CURIE
+     * via {@code datatypeAbbreviator} (typically {@code cjDoc::asId_}) so the datatype stored in CJ is
+     * symmetric with node ids and predicates. The {@code xsd:string}/{@code rdf:langString} elision (see
+     * {@link #datatype(String)}) is preserved: those datatypes never produce a {@code datatype} key, so the
+     * abbreviator is not applied to them.
+     */
+    public static RdfLiteral of(Literal literal, UnaryOperator<String> datatypeAbbreviator) {
         IJsonObjectMutable litObj = IJsonFactory.INSTANCE.createObjectMutable();
         RdfLiteral rdfLiteral = new RdfLiteral(litObj);
         rdfLiteral.value(literal.getLexicalForm());
-        ifPresentAccept(literal.getDatatypeURI(), rdfLiteral::datatype);
+        ifPresentAccept(literal.getDatatypeURI(), dt -> rdfLiteral.datatype(dt, datatypeAbbreviator));
         ifPresentAccept(literal.getLanguage(), rdfLiteral::language);
         return rdfLiteral;
     }
@@ -35,8 +48,17 @@ record RdfLiteral(IJsonObjectMutable jsonObject) {
     }
 
     public void datatype(@Nullable String datatype) {
+        datatype(datatype, UnaryOperator.identity());
+    }
+
+    /**
+     * Store the datatype, eliding {@code xsd:string}/{@code rdf:langString} (which never get a datatype
+     * key) and otherwise abbreviating the (full IRI) {@code datatype} to a CURIE via {@code abbreviator}.
+     * The elision is checked against the full IRI <em>before</em> abbreviation.
+     */
+    public void datatype(@Nullable String datatype, UnaryOperator<String> abbreviator) {
         if (XSD.xstring.getURI().equals(datatype) || RDF.langString.getURI().equals(datatype)) return;
-        jsonObject.setString(DATATYPE, datatype);
+        jsonObject.setString(DATATYPE, datatype == null ? null : abbreviator.apply(datatype));
     }
 
     public boolean isDataTyped() {
@@ -79,10 +101,20 @@ record RdfLiteral(IJsonObjectMutable jsonObject) {
      * @return a JENA RDF {@link Literal} representing this RdfLiteral
      */
     public Literal toRdfLiteral(Model model) {
+        return toRdfLiteral(model, UnaryOperator.identity());
+    }
+
+    /**
+     * Like {@link #toRdfLiteral(Model)}, but expands the (possibly CURIE) datatype back to a full IRI via
+     * {@code datatypeExpander} (typically {@code curie -> CjUris.expandId(context, curie)}) before building
+     * the typed literal — the inverse of the abbreviation done in {@link #of(Literal, UnaryOperator)}. A
+     * datatype with no matching prefix is returned unchanged by {@code expandId} and so round-trips.
+     */
+    public Literal toRdfLiteral(Model model, UnaryOperator<String> datatypeExpander) {
         return switch (kind()) {
             case Plain -> model.createLiteral(value());
             case LanguageTagged -> model.createLiteral(value(), language());
-            case DataTyped -> model.createTypedLiteral(value(), datatype());
+            case DataTyped -> model.createTypedLiteral(value(), datatypeExpander.apply(datatype()));
         };
     }
 
