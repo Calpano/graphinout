@@ -13,7 +13,71 @@ mvn release:perform -DlocalCheckout=true -DdeployAtEnd=true -P central-deploy,si
 ----
 
 * Step 3: Push the release tag and commits into the GitHub project.
++
+Pushing the `graphinout-<version>` tag triggers the `Release CLI jar` GitHub Action
+(`.github/workflows/release-cli.yml`): it builds the standalone CLI uber-jar and attaches it as
+`graphinout-cli-<version>.jar` to the GitHub Release for that tag. The CLI is *not* published to
+Maven Central (it is an application, not a library) — GitHub Releases is its distribution channel.
+The workflow can also be run manually (workflow_dispatch) against an existing tag.
 
 * Step 4: Manually deploy
 ** from https://central.sonatype.com/publishing/deployments[] -- requires credentials.
 ** https://central.sonatype.com/[]
+
+== Release tags
+
+The Maven Release Plugin tags each release `graphinout-<version>` — the default
+`+${artifactId}-${version}+` format, where the root module's artifactId is `graphinout`
+(e.g. `graphinout-0.1.14`, `graphinout-0.2.0`).
+
+The `Release CLI jar` workflow triggers on `push` of any tag matching the glob `graphinout-*`
+(see `.github/workflows/release-cli.yml`); the `<version>` is taken from the tag with the
+`graphinout-` prefix stripped. So pushing the release tag in Step 3 is exactly what publishes the
+GitHub Release asset. Use this prefix only for real releases — *any* `graphinout-*` tag fires the workflow.
+
+== What is published where
+
+Two independent distribution channels, split by artifact kind. Both come from the same release tag:
+`mvn release:perform` deploys the libraries to Central (Step 4); pushing the tag (Step 3) fires the
+Action that attaches the CLI jar to the GitHub Release.
+
+[cols="1,2,2",options="header"]
+|===
+| Channel | Artifacts | Why
+
+| *Maven Central* (`com.graphinout:*`)
+| Every *library* module — `foundation-*`, `base`, `testdata`, all `reader-*`, `engine` — each as
+  jar + `-sources.jar` + `-javadoc.jar` + `.pom`, GPG-signed, with md5/sha1 checksums.
+| Maven/Gradle consumers depend on these coordinates. The `cli` module is excluded
+  (`excludeArtifacts` in the root POM).
+
+| *GitHub Releases* (tag `graphinout-<version>`)
+| The standalone CLI uber-jar `graphinout-cli-<version>.jar` (~50 MB, all dependencies bundled).
+| For end users who just want to run the `gio` CLI via `java -jar`. It is an application, not a
+  library, so it does not belong on Central (and would dominate Central's file-count/size budget).
+|===
+
+== Prerequisite: GitHub Actions token permissions
+
+The `Release CLI jar` workflow uploads the asset using the built-in `GITHUB_TOKEN`, so that token
+needs write access. This is satisfied two ways (either is enough):
+
+* the workflow job already declares `permissions: contents: write`, which grants write for that run
+  even if the repo default is read-only; and
+* the repository default is set to read+write.
+
+Check / set the repository default with the `gh` CLI:
+
+----
+# check (read-only)
+gh api repos/Calpano/graphinout/actions/permissions/workflow
+# -> {"default_workflow_permissions":"write","can_approve_pull_request_reviews":true}
+
+# set to read+write, if it ever shows "read"
+gh api -X PUT repos/Calpano/graphinout/actions/permissions/workflow \
+  -f default_workflow_permissions=write \
+  -F can_approve_pull_request_reviews=true
+----
+
+(UI equivalent: repo *Settings -> Actions -> General -> Workflow permissions -> Read and write*.)
+As of this writing the repo default is already `write`, so no change is needed.
