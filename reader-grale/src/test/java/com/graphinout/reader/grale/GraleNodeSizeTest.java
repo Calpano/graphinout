@@ -3,6 +3,10 @@ package com.graphinout.reader.grale;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.document.ICjEdge;
+import com.graphinout.base.cj.document.ICjLabel;
+import com.graphinout.base.cj.document.ICjLabelEntry;
+import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.output.InMemoryOutputSink;
 import org.junit.jupiter.api.Test;
@@ -69,6 +73,24 @@ class GraleNodeSizeTest {
         assertTrue(box.width() > 0 && box.height() > 0);
     }
 
+    @Test
+    void tinyLabelIsClampedToMinimumBox() {
+        // a 1-char label would be narrower than the floor; it must be clamped up
+        RobotoLabelMetrics.Box box = RobotoLabelMetrics.estimate("i");
+        int minWidth = (int) Math.round(RobotoLabelMetrics.MIN_WIDTH_EM * RobotoLabelMetrics.DEFAULT_FONT_SIZE);
+        int minHeight = (int) Math.round(RobotoLabelMetrics.MIN_HEIGHT_EM * RobotoLabelMetrics.DEFAULT_FONT_SIZE);
+        assertTrue(box.width() >= minWidth, "width floored to " + minWidth + ": " + box.width());
+        assertTrue(box.height() >= minHeight, "height floored to " + minHeight + ": " + box.height());
+    }
+
+    @Test
+    void paddingScalesWithFontSize() {
+        // ½-em padding on each side means the box grows with the font even for the same text
+        RobotoLabelMetrics.Box small = RobotoLabelMetrics.estimate("Process step", 16.0, 50);
+        RobotoLabelMetrics.Box big = RobotoLabelMetrics.estimate("Process step", 32.0, 50);
+        assertTrue(big.width() > small.width() && big.height() > small.height());
+    }
+
     // -------------------------------------------------------------- writer wiring
 
     private JsonNode firstNodeValue(String graleInput) throws Exception {
@@ -80,6 +102,66 @@ class GraleNodeSizeTest {
             JsonNode out = mapper.readTree(sink.getBufferAsUtf8String());
             return out.get("nodes").get(0).get("value");
         }
+    }
+
+    /** Read grale into CJ and return the first node of the first graph. */
+    private ICjNode firstCjNode(String graleInput) throws Exception {
+        GraleReader reader = new GraleReader();
+        try (SingleInputSource in = SingleInputSource.of("in.grale.json", graleInput)) {
+            ICjDocument doc = reader.readToCjDocument(in);
+            return doc.graphs().findFirst().orElseThrow()
+                    .nodes().findFirst().orElseThrow();
+        }
+    }
+
+    /** Read grale into CJ and return the first edge of the first graph. */
+    private ICjEdge firstCjEdge(String graleInput) throws Exception {
+        GraleReader reader = new GraleReader();
+        try (SingleInputSource in = SingleInputSource.of("in.grale.json", graleInput)) {
+            ICjDocument doc = reader.readToCjDocument(in);
+            return doc.graphs().findFirst().orElseThrow()
+                    .edges().findFirst().orElseThrow();
+        }
+    }
+
+    private static String labelOf(ICjLabel label) {
+        return label == null ? null : label.entries()
+                .map(ICjLabelEntry::value).filter(s -> s != null && !s.isEmpty()).findFirst().orElse(null);
+    }
+
+    @Test
+    void graleToCjPutsLabelInCjLabelAndSizeInDataNotMeta() throws Exception {
+        String input = "{ \"options\": {\"directed\": true, \"multigraph\": false, \"compound\": false},"
+                + " \"nodes\": [ { \"v\": \"a\", \"value\": { \"width\": 80, \"height\": 40,"
+                + " \"meta\": { \"label\": \"Start\", \"fill\": \"#dcfce7\" } } } ], \"edges\": [] }";
+        ICjNode node = firstCjNode(input);
+
+        // label is carried by the CJ node's native label, not by data
+        assertEquals("Start", labelOf(node.label()), "label should be the CJ node label");
+
+        JsonNode data = mapper.readTree(node.data().jsonValue().toJsonString());
+        assertEquals(80, data.path("size").path("width").asInt(), "width folded into data.size");
+        assertEquals(40, data.path("size").path("height").asInt(), "height folded into data.size");
+        assertFalse(data.has("width"), "width must not stay at data top level");
+        assertFalse(data.path("meta").has("label"), "label must not be duplicated in data.meta");
+        assertEquals("#dcfce7", data.path("meta").path("fill").asText(), "other meta fields are kept");
+    }
+
+    @Test
+    void graleToCjPutsEdgeLabelInCjLabelNotData() throws Exception {
+        String input = "{ \"options\": {\"directed\": true, \"multigraph\": false, \"compound\": false},"
+                + " \"nodes\": [ { \"v\": \"a\" }, { \"v\": \"b\" } ],"
+                + " \"edges\": [ { \"v\": \"a\", \"w\": \"b\", \"value\": { \"weight\": 2,"
+                + " \"meta\": { \"label\": \"next\", \"color\": \"#ea580c\" } } } ] }";
+        ICjEdge edge = firstCjEdge(input);
+
+        // label is carried by the CJ edge's native label, not by data
+        assertEquals("next", labelOf(edge.label()), "label should be the CJ edge label");
+
+        JsonNode data = mapper.readTree(edge.data().jsonValue().toJsonString());
+        assertEquals(2, data.path("weight").asInt(), "non-label edge data is kept");
+        assertFalse(data.path("meta").has("label"), "label must not be duplicated in data.meta");
+        assertEquals("#ea580c", data.path("meta").path("color").asText(), "other meta fields are kept");
     }
 
     @Test

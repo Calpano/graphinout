@@ -1,4 +1,4 @@
-package com.graphinout.engine;
+package com.graphinout.base.cj.analyze;
 
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
@@ -16,13 +16,16 @@ import java.util.stream.Stream;
 /**
  * The controlled vocabulary of graph-model features from the graph-format-registry
  * ({@code graph-features.adoc}). Each constant pairs the registry feature slug (which is also the name of the synthetic
- * CJ test file under {@code json/connected-json/connected-json-7.0.0/graph-format-features/<slug>.cj.json}) with a structural detector that answers
- * "does this CJ document still exhibit the feature?".
+ * CJ test file under {@code .../graph-format-features/<slug>.cj.json}) with a structural detector that answers
+ * "does this CJ document exhibit the feature?".
  *
  * <p>Detectors traverse the whole document (top-level graphs plus graphs nested in graphs, nodes and edges), so they
- * stay correct after a round-trip relocates an element into a different nesting level.
+ * stay correct regardless of where an element is nested.
+ *
+ * <p>Use {@link CjAnalyzer#analyze(ICjDocument)} to get the set of features present in a document together with
+ * node/edge counts.
  */
-enum CjFeature {
+public enum CjFeature {
 
     MULTIPLE_GRAPHS_PER_DOCUMENT("multiple-graphs-per-document", doc -> doc.graphs().count() >= 2),
 
@@ -86,7 +89,7 @@ enum CjFeature {
         this.detector = detector;
     }
 
-    static CjFeature bySlug(String slug) {
+    public static CjFeature bySlug(String slug) {
         for (CjFeature f : values()) {
             if (f.slug.equals(slug)) {
                 return f;
@@ -95,23 +98,19 @@ enum CjFeature {
         throw new IllegalArgumentException("Unknown feature slug: " + slug);
     }
 
-    String slug() {
+    /** The registry feature slug, e.g. {@code "directed-edges"}. */
+    public String slug() {
         return slug;
     }
 
-    /** The synthetic CJ resource that exercises exactly this feature. */
-    String resourcePath() {
-        return "json/connected-json/connected-json-7.0.0/graph-format-features/" + slug + ".cj.json";
-    }
-
-    boolean isPresentIn(ICjDocument doc) {
+    public boolean isPresentIn(ICjDocument doc) {
         return detector.test(doc);
     }
 
     // --- recursive traversal helpers ---------------------------------------------------------------------------
 
     /** All graphs in the document: top-level graphs plus graphs nested inside graphs, nodes and edges. */
-    static Stream<ICjGraph> allGraphs(ICjDocument doc) {
+    public static Stream<ICjGraph> allGraphs(ICjDocument doc) {
         return doc.graphs().flatMap(CjFeature::graphAndDescendants);
     }
 
@@ -124,11 +123,11 @@ enum CjFeature {
                 .flatMap(s -> s);
     }
 
-    static Stream<ICjNode> allNodes(ICjDocument doc) {
+    public static Stream<ICjNode> allNodes(ICjDocument doc) {
         return allGraphs(doc).flatMap(ICjGraph::nodes);
     }
 
-    static Stream<ICjEdge> allEdges(ICjDocument doc) {
+    public static Stream<ICjEdge> allEdges(ICjDocument doc) {
         return allGraphs(doc).flatMap(ICjGraph::edges);
     }
 

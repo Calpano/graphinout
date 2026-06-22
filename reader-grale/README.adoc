@@ -14,11 +14,13 @@ Format id `grale`; file extensions `.grale.json`, `.grale`.
 | grale | CJ
 
 | node `v` | node id
-| node `value` object | node `data` (verbatim)
-| `value.meta.label` (string) | node label
+| `value.meta.label` (string) | node label (the CJ native label, *not* `data`)
+| node `value.width` / `value.height` | node `data.size` `{ width, height }`
+| rest of node `value` object | node `data`
 | edge `v` / `w` | source / target endpoint (directed: `in` / `out`)
 | edge `id` | edge id
-| edge `value` object | edge `data`
+| edge `value.meta.label` (string) | edge label (the CJ native label, *not* `data`)
+| rest of edge `value` object | edge `data`
 | envelope `options`, graph `value`, `hyperedges`, `diagnostics`, `debug` | CJ graph `data`, under the `grale` key
 |===
 
@@ -28,11 +30,12 @@ reserved keys (`$gioParent` / `$gioName`) and are stripped back out on write.
 
 == Node-size measurement (write)
 
-grale needs a node `width`/`height` (dagre layout inputs). When a CJ node has a *label* but no
-explicit size — e.g. it was converted from a format that stores only a label — the writer
-*estimates* the box from the label text. The estimate is **deterministic** (equal input ⇒ equal
-output): it uses a fixed per-character advance-width table instead of loading a real font, so the
-result does not depend on the host platform's installed fonts.
+grale needs a node `width`/`height` (dagre layout inputs). The writer takes them from the CJ node's
+`data.size`; when that is absent but the node has a *label* — e.g. it was converted from a format
+that stores only a label — the writer *estimates* the box from the label text. The estimate is
+**deterministic** (equal input ⇒ equal output): it uses a fixed per-character advance-width table
+instead of loading a real font, so the result does not depend on the host platform's installed
+fonts.
 
 Implemented in `RobotoLabelMetrics`.
 
@@ -46,9 +49,14 @@ Assumptions / constants:
 | `DEFAULT_FONT_SIZE`       | `16` px  | font size assumed for measurement
 | `DEFAULT_MAX_LINE_LENGTH` | `50`     | characters per line before word-wrapping
 | `LINE_HEIGHT_FACTOR`      | `1.2`    | line height as a multiple of the font size
-| `PADDING_X`               | `8` px   | horizontal padding added on *each* side of the text
-| `PADDING_Y`               | `4` px   | vertical padding added on *each* side of the text
+| `PADDING_X_EM`            | `0.5`    | horizontal padding on *each* side, as a fraction of the font size (½ char)
+| `PADDING_Y_EM`            | `0.5`    | vertical padding on *each* side, as a fraction of the font size (½ char)
+| `MIN_WIDTH_EM`            | `2.0`    | minimum box width, as a fraction of the font size
+| `MIN_HEIGHT_EM`           | `1.5`    | minimum box height, as a fraction of the font size
 |===
+
+Padding and the minimum box are *font-relative* (fractions of the font size), so the box scales with
+the font rather than being pinned to fixed pixels.
 
 === Steps
 
@@ -63,28 +71,33 @@ Assumptions / constants:
 +
 [source]
 ----
-width  = max(line width in em) * fontSize + 2 * PADDING_X
-height = lineCount * fontSize * LINE_HEIGHT_FACTOR + 2 * PADDING_Y
+width  = max(line width in em) * fontSize + 2 * PADDING_X_EM * fontSize
+height = lineCount * fontSize * LINE_HEIGHT_FACTOR + 2 * PADDING_Y_EM * fontSize
+width  = max(width,  MIN_WIDTH_EM  * fontSize)   // clamp to the floor
+height = max(height, MIN_HEIGHT_EM * fontSize)
 ----
 +
 Both are rounded to whole pixels.
 
 === Worked example
 
-Label `"Node 1"` at the defaults:
+Label `"Node 1"` at the defaults (`fontSize = 16`, so ½-em padding = 8 px per side):
 
 * advances (em): `N` 0.71 + `o` 0.56 + `d` 0.56 + `e` 0.54 + `␣` 0.25 + `1` 0.55 = *3.17 em*
-* width  = 3.17 × 16 + 2 × 8  = 50.7 + 16 ≈ *67 px*
-* height = 1 × 16 × 1.2 + 2 × 4 = 19.2 + 8 ≈ *27 px*
+* width  = 3.17 × 16 + 2 × 0.5 × 16 = 50.7 + 16 ≈ *67 px*
+* height = 1 × 16 × 1.2 + 2 × 0.5 × 16 = 19.2 + 16 ≈ *35 px*
 
 A two-line label (e.g. `"Process<br>step"`) yields the same per-line width rule but a taller box
-(2 × 19.2 + 8 ≈ 46 px).
+(2 × 19.2 + 16 ≈ 54 px). A very short label (e.g. `"i"`) is clamped up to the minimum box
+(`2 × 16 = 32` px wide, `1.5 × 16 = 24` px tall).
 
 === Rules
 
-* Estimation runs *only* when a label is present and the node has neither `width` nor `height`.
-* An author-supplied `width`/`height` is *never* overwritten (so grale → CJ → grale is unchanged).
-* A node with no label gains no size.
+* The size comes from `data.size` when present; otherwise it is *estimated* from the label.
+* Estimation runs *only* when a label is present and the node has no `data.size`.
+* An author-supplied size is *never* overwritten (so grale → CJ → grale is unchanged).
+* A node with no size and no label gains no size.
+* Every estimated box is clamped to a minimum so tiny/empty labels still render a usable node.
 
 [[line-breaks]]
 == Line breaks in labels

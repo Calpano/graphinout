@@ -1,8 +1,11 @@
 package com.graphinout.reader.grale;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.core.util.Separators;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphinout.base.cj.document.ICjData;
@@ -21,7 +24,9 @@ import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Writes a CJ stream as a single {@link GraleReader grale} JSON document. grale is one JSON object,
@@ -31,6 +36,8 @@ public class GraleWriter extends BaseCjOutput implements ICjStream {
 
     private final OutputSink outputSink;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    /** Renders one node/edge object compactly on a single line: {@code { "v": "2", "value": { … } }}. */
+    private final ObjectWriter oneLineWriter = objectMapper.writer(oneLinePrinter());
 
     private final ArrayNode nodes = objectMapper.createArrayNode();
     private final ArrayNode edges = objectMapper.createArrayNode();
@@ -82,8 +89,9 @@ public class GraleWriter extends BaseCjOutput implements ICjStream {
         if (value != null && value.has(Grale.PARENT_KEY)) {
             nodeObj.set("parent", value.remove(Grale.PARENT_KEY));
         }
-        value = withLabel(value, labelText(node.label()));
-        value = withEstimatedSize(value);
+        String label = labelText(node.label());
+        value = withLabel(value, label);
+        value = withSize(value, label);
         if (value != null && !value.isEmpty()) {
             nodeObj.set("value", value);
         }
@@ -118,21 +126,66 @@ public class GraleWriter extends BaseCjOutput implements ICjStream {
 
     @Override
     public void documentEnd() {
-        // assemble the envelope in canonical order: options, value, nodes, edges, then extras
-        ObjectNode root = objectMapper.createObjectNode();
-        root.set("options", options != null ? options : defaultOptions());
-        if (graphValue != null) root.set("value", graphValue);
-        root.set("nodes", nodes);
-        root.set("edges", edges);
-        if (hyperedges != null) root.set("hyperedges", hyperedges);
-        if (diagnostics != null) root.set("diagnostics", diagnostics);
-        if (debug != null) root.set("debug", debug);
+        // Envelope fields in canonical order (only the present ones); arrays render one element per line,
+        // scalar/object fields render compactly on a single line.
+        LinkedHashMap<String, JsonNode> fields = new LinkedHashMap<>();
+        fields.put("options", options != null ? options : defaultOptions());
+        if (graphValue != null) fields.put("value", graphValue);
+        fields.put("nodes", nodes);
+        fields.put("edges", edges);
+        if (hyperedges != null) fields.put("hyperedges", hyperedges);
+        if (diagnostics != null) fields.put("diagnostics", diagnostics);
+        if (debug != null) fields.put("debug", debug);
 
         try {
-            outputSink.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(root));
+            outputSink.write(render(fields));
         } catch (IOException e) {
             throw new RuntimeException("Failed to write grale output", e);
         }
+    }
+
+    /**
+     * Pretty-print the grale envelope: one top-level field per line, but each element of an array
+     * ({@code nodes}, {@code edges}, …) on its own single line (e.g.
+     * {@code { "v": "2", "value": { "width": 25, "height": 27 } }}). Object/scalar fields are rendered
+     * compactly inline too.
+     */
+    private String render(LinkedHashMap<String, JsonNode> fields) throws JsonProcessingException {
+        StringBuilder sb = new StringBuilder("{\n");
+        int i = 0;
+        int n = fields.size();
+        for (Map.Entry<String, JsonNode> e : fields.entrySet()) {
+            boolean last = (++i == n);
+            sb.append("  \"").append(e.getKey()).append("\": ");
+            JsonNode v = e.getValue();
+            if (v.isArray()) {
+                ArrayNode arr = (ArrayNode) v;
+                if (arr.isEmpty()) {
+                    sb.append("[]");
+                } else {
+                    sb.append("[\n");
+                    for (int j = 0; j < arr.size(); j++) {
+                        sb.append("    ").append(oneLineWriter.writeValueAsString(arr.get(j)));
+                        sb.append(j < arr.size() - 1 ? ",\n" : "\n");
+                    }
+                    sb.append("  ]");
+                }
+            } else {
+                sb.append(oneLineWriter.writeValueAsString(v));
+            }
+            sb.append(last ? "\n" : ",\n");
+        }
+        return sb.append("}\n").toString();
+    }
+
+    /** A pretty-printer that keeps a whole value on one line: {@code { "k": v, "k2": [ … ] }}. */
+    private static DefaultPrettyPrinter oneLinePrinter() {
+        Separators separators = Separators.createDefaultInstance()
+                .withObjectFieldValueSpacing(Separators.Spacing.AFTER);   // "key": value
+        DefaultPrettyPrinter pp = new DefaultPrettyPrinter(separators);
+        pp.indentObjectsWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance);  // "{ … }" inline
+        pp.indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance);   // "[ … ]" inline
+        return pp;
     }
 
     @Override
@@ -188,22 +241,29 @@ public class GraleWriter extends BaseCjOutput implements ICjStream {
     }
 
     /**
-     * Fill in dagre {@code width}/{@code height} estimated from the node's label text when the source
-     * carried none. Author-provided sizes are never overwritten; a node without a label is left as-is.
+     * Supply dagre {@code width}/{@code height} at the grale {@code value} top level. They come from the
+     * CJ node's {@code data.size} (the canonical home, written as {@code {width, height}}); when that is
+     * absent they are estimated from {@code label} via {@link RobotoLabelMetrics}. Author-provided sizes
+     * are never overwritten; a node with neither a size nor a label is left as-is.
      */
-    private @Nullable ObjectNode withEstimatedSize(@Nullable ObjectNode value) {
-        if (value == null || value.has("width") && value.has("height")) {
-            return value; // nothing to do, or sizes already present
+    private @Nullable ObjectNode withSize(@Nullable ObjectNode value, @Nullable String label) {
+        // unfold the canonical CJ data.size {width, height} onto the dagre top-level width/height
+        if (value != null && value.get("size") instanceof ObjectNode size) {
+            if (!value.has("width") && size.has("width")) value.set("width", size.get("width"));
+            if (!value.has("height") && size.has("height")) value.set("height", size.get("height"));
+            value.remove("size");
         }
-        JsonNode meta = value.get("meta");
-        JsonNode labelNode = meta != null ? meta.get("label") : null;
-        if (labelNode == null || !labelNode.isTextual()) {
-            return value; // no label to size from
+        if (value != null && value.has("width") && value.has("height")) {
+            return value; // sizes already present (author-provided)
         }
-        RobotoLabelMetrics.Box box = RobotoLabelMetrics.estimate(labelNode.asText());
-        if (!value.has("width")) value.put("width", box.width());
-        if (!value.has("height")) value.put("height", box.height());
-        return value;
+        if (label == null) {
+            return value; // nothing to estimate from
+        }
+        RobotoLabelMetrics.Box box = RobotoLabelMetrics.estimate(label);
+        ObjectNode v = value != null ? value : objectMapper.createObjectNode();
+        if (!v.has("width")) v.put("width", box.width());
+        if (!v.has("height")) v.put("height", box.height());
+        return v;
     }
 
     private static @Nullable String labelText(@Nullable ICjLabel label) {

@@ -35,10 +35,13 @@ import java.util.function.Consumer;
  *
  * <h2>Mapping to Connected JSON</h2>
  * <ul>
- *   <li>each grale node becomes a CJ node: {@code v} → node id, the node {@code value} object → node
- *       {@code data} (verbatim), and {@code value.meta.label} (when a string) → node label;</li>
+ *   <li>each grale node becomes a CJ node: {@code v} → node id and {@code value.meta.label} (when a
+ *       string) → the node's native label. The rest of {@code value} becomes the node {@code data},
+ *       with the dagre {@code width}/{@code height} folded into a {@code size} sub-object and the
+ *       label removed (it now lives in the CJ label);</li>
  *   <li>each grale edge becomes a directed CJ edge: {@code v} → source endpoint, {@code w} → target
- *       endpoint, {@code id} → edge id, the edge {@code value} object → edge {@code data};</li>
+ *       endpoint, {@code id} → edge id, {@code value.meta.label} → the edge's native label, and the
+ *       rest of the edge {@code value} object → edge {@code data} (label removed);</li>
  *   <li>the envelope-level fields ({@code options}, graph {@code value}, {@code hyperedges},
  *       {@code diagnostics}, {@code debug}) are preserved verbatim on the CJ graph's {@code data}
  *       under the {@code "grale"} key, so a grale → CJ → grale round-trip is faithful.</li>
@@ -48,10 +51,11 @@ import java.util.function.Consumer;
  * and a multigraph edge's {@code name} — are carried on the element {@code data} under the reserved
  * keys {@link Grale#PARENT_KEY} / {@link Grale#NAME_KEY} and stripped back out on write.
  *
- * <p><b>Node sizing on write:</b> grale needs a node {@code width}/{@code height}. When the CJ node
- * has a label but no explicit size (e.g. it came from a format that stores only a label), the writer
- * estimates the box from the label text via {@link RobotoLabelMetrics} — Roboto at 16&nbsp;px, wrapped
- * at 50 characters, honouring {@code <br>} line breaks. Author-supplied sizes are never overwritten.
+ * <p><b>Node sizing on write:</b> grale needs a node {@code width}/{@code height}. The writer takes
+ * them from the CJ node's {@code data.size}; when that is absent but the node has a label (e.g. it
+ * came from a format that stores only a label), it estimates the box from the label text via
+ * {@link RobotoLabelMetrics} — Roboto at 16&nbsp;px, wrapped at 50 characters, honouring {@code <br>}
+ * line breaks. Author-supplied sizes are never overwritten.
  */
 public class GraleReader implements GioReader, GioWriter {
 
@@ -140,9 +144,7 @@ public class GraleReader implements GioReader, GioWriter {
         cjStream.node((ICjNodeChunkMutable n) -> {
             n.id(node.get("v").asText());
 
-            ObjectNode value = node.has("value") && node.get("value").isObject()
-                    ? (ObjectNode) node.get("value").deepCopy()
-                    : objectMapper.createObjectNode();
+            ObjectNode value = toNodeData(node.get("value"));
 
             // carry the compound 'parent' (no native CJ slot) on data, stripped back out on write
             if (node.has("parent") && !node.get("parent").isNull()) {
@@ -182,6 +184,8 @@ public class GraleReader implements GioReader, GioWriter {
             ObjectNode value = edge.has("value") && edge.get("value").isObject()
                     ? (ObjectNode) edge.get("value").deepCopy()
                     : objectMapper.createObjectNode();
+            // the label lives in the CJ edge label, not in data (kept: the rest of meta)
+            stripMetaLabel(value);
 
             // carry the multigraph 'name' (no native CJ slot) on data, stripped back out on write
             if (edge.has("name") && !edge.get("name").isNull()) {
@@ -196,6 +200,39 @@ public class GraleReader implements GioReader, GioWriter {
                 e.setLabel(lbl -> lbl.addEntry(entry -> entry.value(label)));
             }
         });
+    }
+
+    /**
+     * Turn a grale node {@code value} into CJ node {@code data}, moving each field to its canonical CJ
+     * home: the dagre {@code width}/{@code height} become a {@code size} sub-object, and
+     * {@code meta.label} is dropped because the label is carried by the CJ node's native label (see
+     * {@link #readNode}). All other fields (layout output like {@code x}/{@code y}, styling in
+     * {@code meta}, …) are kept verbatim so the round-trip stays faithful.
+     */
+    private ObjectNode toNodeData(@Nullable JsonNode graleValue) {
+        ObjectNode value = graleValue != null && graleValue.isObject()
+                ? (ObjectNode) graleValue.deepCopy()
+                : objectMapper.createObjectNode();
+
+        // width/height -> size {width, height}
+        ObjectNode size = objectMapper.createObjectNode();
+        if (value.has("width")) size.set("width", value.remove("width"));
+        if (value.has("height")) size.set("height", value.remove("height"));
+        if (!size.isEmpty()) value.set("size", size);
+
+        // the label lives in the CJ node label, not in data; keep the rest of meta (fill, color, …)
+        stripMetaLabel(value);
+        return value;
+    }
+
+    /** Remove {@code meta.label} (carried by the CJ element label) while keeping the rest of
+     * {@code meta}; drop {@code meta} entirely once it is empty. */
+    private static void stripMetaLabel(ObjectNode value) {
+        JsonNode meta = value.get("meta");
+        if (meta != null && meta.isObject()) {
+            ((ObjectNode) meta).remove("label");
+            if (((ObjectNode) meta).isEmpty()) value.remove("meta");
+        }
     }
 
     /** Extract {@code value.meta.label} when it is a plain string, else {@code null}. */

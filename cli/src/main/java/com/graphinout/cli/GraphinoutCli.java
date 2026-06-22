@@ -1,7 +1,12 @@
 package com.graphinout.cli;
 
+import com.graphinout.base.cj.analyze.CjAnalysis;
+import com.graphinout.base.cj.analyze.CjAnalyzer;
 import com.graphinout.base.cj.anonymize.AnonymizingCjStream;
+import com.graphinout.base.cj.document.ICjDocument;
+import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
+import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.gio.GioWriter;
@@ -90,6 +95,9 @@ public final class GraphinoutCli {
                 return cmdFormats();
             case "convert":
                 return cmdConvert(rest);
+            case "analyze":
+            case "inspect":
+                return cmdAnalyze(rest);
             default:
                 err.println("Unknown command: '" + command + "'");
                 printUsage(err);
@@ -248,6 +256,82 @@ public final class GraphinoutCli {
         return anonymize ? new AnonymizingCjStream(stream) : stream;
     }
 
+    // ---------------------------------------------------------------------- analyze
+
+    /**
+     * Inspect a graph file: read it into the CJ model, then report graph/node/edge counts and the
+     * {@link com.graphinout.base.cj.analyze.CjFeature features} it uses. Works for any input format (all readers
+     * produce CJ). Output goes to stdout as {@code key: value} lines so it is easy to parse.
+     */
+    private int cmdAnalyze(String[] args) {
+        @Nullable String inputPath = null;
+        @Nullable String fromFormat = null;
+        for (int i = 0; i < args.length; i++) {
+            String a = args[i];
+            switch (a) {
+                case "-f":
+                case "--from":
+                    if (++i >= args.length) return missingValue(a);
+                    fromFormat = args[i];
+                    break;
+                default:
+                    if (a.startsWith("-")) {
+                        err.println("Unknown option: '" + a + "'");
+                        return 2;
+                    }
+                    if (inputPath != null) {
+                        err.println("Unexpected extra argument: '" + a + "'");
+                        return 2;
+                    }
+                    inputPath = a;
+            }
+        }
+
+        if (inputPath == null) {
+            err.println("analyze: missing <input> file");
+            err.println("Usage: " + PROGRAM + " analyze <input> [--from <id>]");
+            return 2;
+        }
+
+        File inputFile = new File(inputPath);
+        if (!inputFile.isFile()) {
+            err.println("Input file not found: " + inputFile.getPath());
+            return 1;
+        }
+
+        try (SingleInputSource inputSource = new FileSingleInputSource(inputFile)) {
+            GioReader reader = selectReader(inputSource, fromFormat);
+            if (reader == null) {
+                if (fromFormat != null) {
+                    err.println("No input reader for format '" + fromFormat + "'.");
+                } else {
+                    err.println("Could not detect the input format of " + inputFile.getPath()
+                            + ". Specify it explicitly with --from <id>.");
+                }
+                err.println("Available input formats: " + availableReaderIds());
+                return 1;
+            }
+
+            reader.setContentErrorHandler(e -> err.println("[" + e.level + "] " + e.message));
+
+            CjWriter2CjDocumentWriter docWriter = new CjWriter2CjDocumentWriter();
+            reader.read(inputSource, new CjStream2CjWriter(docWriter, true));
+            ICjDocument doc = docWriter.resultDoc();
+            CjAnalysis analysis = CjAnalyzer.analyze(doc);
+
+            out.println("format:   " + reader.fileFormat().id());
+            out.println("graphs:   " + analysis.graphCount());
+            out.println("nodes:    " + analysis.nodeCount());
+            out.println("edges:    " + analysis.edgeCount());
+            out.println("features: " + String.join(", ", analysis.featureSlugs()));
+            out.flush();
+            return 0;
+        } catch (IOException e) {
+            err.println("Analysis failed: " + e.getMessage());
+            return 1;
+        }
+    }
+
     // ---------------------------------------------------------------------- reader selection
 
     /**
@@ -337,6 +421,7 @@ public final class GraphinoutCli {
         s.println("Commands:");
         s.println("  formats                          List supported input and output formats");
         s.println("  convert <input> [options]        Convert a graph file to another format");
+        s.println("  analyze <input> [--from <id>]    Inspect a graph: graph/node/edge counts and features used");
         s.println("  version                          Print the version");
         s.println("  help                             Show this help");
         s.println();

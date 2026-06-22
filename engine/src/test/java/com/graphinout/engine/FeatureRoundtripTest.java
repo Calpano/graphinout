@@ -1,5 +1,6 @@
 package com.graphinout.engine;
 
+import com.graphinout.base.cj.analyze.CjFeature;
 import com.graphinout.base.cj.document.CjDocument2CjStream;
 import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
@@ -120,7 +121,7 @@ class FeatureRoundtripTest {
     @ParameterizedTest(name = "{0}")
     @EnumSource(CjFeature.class)
     void featureFileExhibitsItsFeature(CjFeature feature) throws IOException {
-        ICjDocument doc = readCjResource(feature.resourcePath());
+        ICjDocument doc = readCjResource(resourcePath(feature));
         assertThat(feature.isPresentIn(doc)).isTrue();
     }
 
@@ -191,7 +192,7 @@ class FeatureRoundtripTest {
 
     /** CJ doc -> {@code format} (via writer) -> CJ doc (via reader). */
     private ICjDocument roundTrip(GioReader reader, GioWriter writer, CjFeature feature) throws IOException {
-        ICjDocument cjIn = readCjResource(feature.resourcePath());
+        ICjDocument cjIn = readCjResource(resourcePath(feature));
 
         // CJ -> format text
         InMemoryOutputSink sink = new InMemoryOutputSink();
@@ -209,6 +210,11 @@ class FeatureRoundtripTest {
     private static ICjDocument readCjResource(String resourcePath) throws IOException {
         String json = TestFileUtil.resource(resourcePath).getContentAsString();
         return CjDocuments.parseCjJsonString(resourcePath, json);
+    }
+
+    /** The synthetic CJ resource that exercises exactly this feature. */
+    private static String resourcePath(CjFeature feature) {
+        return "json/connected-json/connected-json-7.0.0/graph-format-features/" + feature.slug() + ".cj.json";
     }
 
     private static Optional<GioReader> readerFor(String formatId) {

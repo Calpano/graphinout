@@ -1,0 +1,76 @@
+name: Release CLI jar
+
+# Builds the standalone Graphinout CLI uber-jar and attaches it to the GitHub Release
+# for the tag. The CLI is an application (a ~50 MB shaded jar) and is intentionally NOT
+# published to Maven Central — GitHub Releases is its distribution channel.
+#
+# Triggers on the maven-release-plugin tag (graphinout-<version>), or manually.
+
+on:
+  push:
+    tags:
+      - 'graphinout-*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to build the CLI jar from and attach it to (e.g. graphinout-0.2.0)'
+        required: true
+
+permissions:
+  contents: write   # create the release and upload the asset
+
+jobs:
+  release-cli:
+    runs-on: ubuntu-latest
+    env:
+      MAVEN_OPTS: "-Xmx4096m"
+    steps:
+      - name: ↙️ Check out the tagged revision
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - name: ☕ Setup Java JDK 21
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      # -am also-makes the upstream modules (base, readers, engine, …) from the reactor.
+      # No GitHub Packages / Central auth needed: graphinout modules build from source,
+      # only third-party deps are fetched from Maven Central (public).
+      - name: 🔨 Build the CLI uber-jar
+        run: mvn -pl cli -am clean package -DskipTests --batch-mode
+
+      - name: 📦 Resolve tag and rename the asset
+        id: asset
+        run: |
+          TAG="${{ inputs.tag }}"
+          [ -z "$TAG" ] && TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#graphinout-}"
+          SRC="$(ls cli/target/cli-*-cli.jar | head -1)"
+          ASSET="graphinout-cli-${VERSION}.jar"
+          cp "$SRC" "$ASSET"
+          echo "tag=$TAG"     >> "$GITHUB_OUTPUT"
+          echo "asset=$ASSET" >> "$GITHUB_OUTPUT"
+          ls -l "$ASSET"
+
+      - name: 🚀 Attach the CLI jar to the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG='${{ steps.asset.outputs.tag }}'
+          ASSET='${{ steps.asset.outputs.asset }}'
+          NOTES="Graphinout CLI (standalone uber-jar). Requires Java 21+.
+
+          Usage:
+            java -jar ${ASSET} help
+            java -jar ${ASSET} formats
+            java -jar ${ASSET} convert graph.gml --to connected-json"
+          # Create the release if it doesn't exist yet, otherwise just (re)upload the asset.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ASSET" --clobber
+          else
+            gh release create "$TAG" "$ASSET" --title "$TAG" --notes "$NOTES"
+          fi

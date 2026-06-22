@@ -251,6 +251,16 @@
                   <extensions>true</extensions>
                   <configuration>
                     <publishingServerId>central</publishingServerId>
+                    <!-- Only MD5 + SHA1 (Central's required set); skips the optional .sha256/.sha512 sidecars to
+                         cut ~2 files per published artifact. -->
+                    <checksums>required</checksums>
+                    <!-- 'cli' is an application (it attaches a ~52 MB shaded uber-jar), not a library: keep the whole
+                         cli coordinate out of Central. excludeArtifacts matches by artifactId, so this drops the
+                         cli main jar, the -cli shaded uber-jar, sources and pom. cli is still built locally (the
+                         `gio` launcher uses cli/target/cli-*-cli.jar); nothing published depends on cli. -->
+                    <excludeArtifacts>
+                      <excludeArtifact>cli</excludeArtifact>
+                    </excludeArtifacts>
                   </configuration>
             </plugin>
 
