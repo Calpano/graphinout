@@ -21,7 +21,7 @@ public class JgraphtService implements GioService {
 
     @Override
     public List<GioWriter> writers() {
-        return List.of();
+        return List.of(new Graph6Writer());
     }
 
 
