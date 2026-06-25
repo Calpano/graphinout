@@ -38,10 +38,23 @@ public class PlantUmlWriter implements GioWriter {
             "ENUM", "enum", "ANNOTATION", "annotation", "PROTOCOL", "protocol",
             "STRUCT", "struct", "EXCEPTION", "exception", "ENTITY", "entity");
 
-    /** uml:rel -> PlantUML arrow (source &lt;arrow&gt; target). */
-    private static final Map<String, String> REL_ARROW = Map.of(
-            "extension", "--|>", "realization", "..|>", "composition", "*--", "aggregation", "o--",
-            "association-directed", "-->", "dependency", "..>", "association", "--", "link-dashed", "..");
+    /** UML relationship type -> {leftGlyph (source end), base line, rightGlyph (target end)}. The base line is solid
+     * (`--`) or dashed (`..`); a {@code style} (dotted/bold) overrides it, and a {@code nav} adds open arrow heads. */
+    private static final Map<String, String[]> REL_PARTS = Map.ofEntries(
+            Map.entry("association", new String[]{"", "--", ""}),
+            Map.entry("dependency", new String[]{"", "..", ""}),
+            Map.entry("generalization", new String[]{"", "--", "|>"}),
+            Map.entry("realization", new String[]{"", "..", "|>"}),
+            Map.entry("composition", new String[]{"*", "--", ""}),
+            Map.entry("aggregation", new String[]{"o", "--", ""}),
+            Map.entry("crowfoot", new String[]{"", "--", "{"}),
+            Map.entry("nested", new String[]{"", "--", "+"}),
+            Map.entry("not-navigable", new String[]{"", "--", "x"}));
+
+    /** UML relationships whose orientation is fixed (decoration end is meaningful): they are inherently directed and a
+     * coexisting open arrow is extra navigability. The rest (association/dependency) take their direction from the edge. */
+    private static final java.util.Set<String> DECORATED = java.util.Set.of(
+            "generalization", "realization", "composition", "aggregation", "crowfoot", "nested", "not-navigable");
 
     /** Data keys that the writer/reader handle specially and must not be re-emitted as generic members. */
     private static final java.util.Set<String> RESERVED_KEYS = java.util.Set.of("uml:kind", "uml:members");
@@ -112,30 +125,52 @@ public class PlantUmlWriter implements GioWriter {
             return null;
         }
         String type = e.edgeType() != null ? e.edgeType().type() : null;
-        boolean directed = endpoints.stream().anyMatch(ICjEndpoint::isDirected);
-
-        String arrow;
-        String stereotype = null;
-        if (type != null && REL_ARROW.containsKey(type)) {
-            arrow = REL_ARROW.get(type);
-        } else {
-            // No known UML relationship: pick a plain arrow honoring directionality, carry the type as a stereotype.
-            arrow = directed ? "-->" : "--";
-            if (type != null && !type.isBlank()) {
-                stereotype = type;
-            }
-        }
-
         String label = firstLabel(e.labelEntries());
-        StringBuilder line = new StringBuilder(st[0]).append(' ').append(arrow).append(' ').append(st[1]);
-        // PlantUML keeps only the stereotype when both a plain label and a <<stereotype>> are present, so a stereotype
-        // (arbitrary edge type) takes precedence over a textual label here.
-        if (stereotype != null) {
-            line.append(" : <<").append(stereotype).append(">>");
-        } else if (label != null) {
-            line.append(" : ").append(label);
+
+        // The UML kind is the edge type itself for an unlabeled edge; otherwise it rides as the `line` property and
+        // the type is the relation name (the colon label). Unknown ⇒ default association.
+        String kind;
+        String colon;
+        if (type != null && REL_PARTS.containsKey(type)) {
+            kind = type;
+            colon = null;
+        } else {
+            String lineMeta = lineProp(e);
+            kind = (lineMeta != null && REL_PARTS.containsKey(lineMeta)) ? lineMeta : "association";
+            colon = (type != null && !type.isBlank()) ? type : label;
         }
-        return line.toString();
+
+        boolean directed = endpoints.stream().anyMatch(ICjEndpoint::isDirected);
+        String arrow = arrowFor(kind, navProp(e), styleProp(e), directed);
+        StringBuilder out = new StringBuilder(st[0]).append(' ').append(arrow).append(' ').append(st[1]);
+        if (colon != null && !colon.isEmpty()) {
+            out.append(" : ").append(colon);
+        }
+        return out.toString();
+    }
+
+    /**
+     * The PlantUML arrow for a UML relationship. {@code association}/{@code dependency} take their direction from the
+     * edge (or the {@code nav} marker {@code undirected}/{@code both}); the decorated kinds are inherently directed and
+     * a {@code nav} of {@code to}/{@code from}/{@code both} adds extra open arrow heads. A {@code style} of {@code
+     * dotted}/{@code bold} overrides the line rendering.
+     */
+    private static String arrowFor(String kind, @Nullable String nav, @Nullable String style, boolean directed) {
+        String[] parts = REL_PARTS.getOrDefault(kind, REL_PARTS.get("association"));
+        String left = parts[0];
+        String line = (style != null) ? "-[" + style + "]-" : parts[1];
+        String right = parts[2];
+        if (DECORATED.contains(kind)) {
+            // inherently directed; nav adds an extra navigability arrow head
+            if ("to".equals(nav) || "both".equals(nav)) right = right + ">";
+            if ("from".equals(nav) || "both".equals(nav)) left = "<" + left;
+            return left + line + right;
+        }
+        // plain association/dependency: the direction IS the edge's; default directed unless marked otherwise
+        String dir = nav != null ? nav : (directed ? "to" : "undirected");
+        if ("both".equals(dir)) return "<" + line + ">";
+        if ("undirected".equals(dir)) return line;
+        return line + ">"; // directed
     }
 
     /** Render a graph's direct nodes as declarations and its sub-graphs as `package <id> { ... }` blocks (sorted). */
@@ -202,6 +237,51 @@ public class PlantUmlWriter implements GioWriter {
             return value.asString();
         }
         return value.toJsonString();
+    }
+
+    /** The plain-link line token preserved as the edge's {@code line} property, read from a top-level property or from
+     * the DDot {@code ddot-it:props} metadata bag (so it survives a PlantUML→ddot→PlantUML round-trip). */
+    private static @Nullable String lineProp(ICjEdge e) {
+        IJsonValue json = e.data() != null ? e.data().jsonValue() : null;
+        if (json == null || !json.isObject()) {
+            return null;
+        }
+        String top = stringProperty(json, "line");
+        if (top != null) {
+            return top;
+        }
+        IJsonValue props = json.resolve("ddot-it:props");
+        return stringProperty(props, "line");
+    }
+
+    /** The navigability ({@code to}|{@code from}|{@code both}) of a decorated relation, read from a top-level {@code
+     * nav} property or the DDot {@code ddot-it:props} metadata bag. */
+    private static @Nullable String navProp(ICjEdge e) {
+        IJsonValue json = e.data() != null ? e.data().jsonValue() : null;
+        if (json == null || !json.isObject()) {
+            return null;
+        }
+        String top = stringProperty(json, "nav");
+        if (top != null) {
+            return top;
+        }
+        IJsonValue props = json.resolve("ddot-it:props");
+        return stringProperty(props, "nav");
+    }
+
+    /** The presentation styling ({@code dotted}|{@code bold}) of a relationship, read from a top-level {@code style}
+     * property or the DDot {@code ddot-it:props} metadata bag. */
+    private static @Nullable String styleProp(ICjEdge e) {
+        IJsonValue json = e.data() != null ? e.data().jsonValue() : null;
+        if (json == null || !json.isObject()) {
+            return null;
+        }
+        String top = stringProperty(json, "style");
+        if (top != null) {
+            return top;
+        }
+        IJsonValue props = json.resolve("ddot-it:props");
+        return stringProperty(props, "style");
     }
 
     private static @Nullable String stringProperty(@Nullable IJsonValue json, String key) {

@@ -54,6 +54,17 @@ class DDotReaderTest {
             Should .. not .. emit
             ddot.it/on
             Carol .. knows .. Dave""";
+    /** The three command spellings (URL / host-relative / {@code !!}) must be recognised identically. */
+    public static final String ON_OFF_ALL_SPELLINGS = """
+            Alice .. knows .. Bob
+            https://ddot.it/off
+            Should .. not .. emit
+            !!on
+            Carol .. knows .. Dave
+            ddot.it/off
+            Also .. not .. emit
+            https://ddot.it/on
+            Eve .. knows .. Frank""";
 
     private AutoCloseable closeable;
     private DDotReader underTest;
@@ -152,6 +163,22 @@ class DDotReaderTest {
         // Only Alice/Bob and Carol/Dave should be emitted; the disabled triple is ignored
         verify(mockCjStream, times(4)).node(any(ICjNodeChunk.class));
         verify(mockCjStream, times(2)).edge(any(ICjEdgeChunk.class));
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldHonorOnOffSwitchesInAllSpellings() throws IOException {
+        when(mockInputSrc.inputStream()).thenReturn(new ByteArrayInputStream(ON_OFF_ALL_SPELLINGS.getBytes(StandardCharsets.UTF_8)));
+
+        List<ContentError> errors = new ArrayList<>();
+        underTest.setContentErrorHandler(errors::add);
+        underTest.read(mockInputSrc, mockCjStream);
+
+        // Only the three enabled triples emit: Alice/Bob, Carol/Dave, Eve/Frank = 6 nodes, 3 edges.
+        // The two disabled triples ("Should .. not .. emit", "Also .. not .. emit") are dropped — and, crucially,
+        // never raise a parse warning, proving every command spelling was consumed as a switch.
+        verify(mockCjStream, times(6)).node(any(ICjNodeChunk.class));
+        verify(mockCjStream, times(3)).edge(any(ICjEdgeChunk.class));
         assertThat(errors).isEmpty();
     }
 

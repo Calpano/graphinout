@@ -46,11 +46,12 @@ import static com.graphinout.foundation.pure.value.IntRef.intRef;
  * <pre>subject .. predicate .. object</pre>
  * or a continuation line that inherits the subject from the preceding triple
  * <pre>.. predicate .. object</pre>
- * Lines starting with {@code #} are comments. The switches
- * {@code ddot.it/off} / {@code ddot.it/on} (and their {@code !!off} / {@code !!on} shorthands) disable /
- * re-enable emission of subsequent triples (useful inside templates and code samples). The
- * {@code ddot.it/label} command (shorthand {@code !!label}) — {@code subject ..!!label.. text} — sets the
- * subject node's display label instead of creating an edge (see https://ddot.it/label).
+ * Lines starting with {@code #} are comments. Commands may be written in any of three interchangeable
+ * spellings — the full URL {@code https://ddot.it/<word>}, the host-relative {@code ddot.it/<word>}, or the
+ * {@code !!<word>} shorthand (see {@link #commandWord}). The {@code off} / {@code on} switches disable /
+ * re-enable emission of subsequent triples (useful inside templates and code samples). The {@code label}
+ * command — {@code subject ..!!label.. text} — sets the subject node's display label instead of creating an
+ * edge (see https://ddot.it/label).
  */
 public class DDotReader implements GioReader {
 
@@ -59,11 +60,12 @@ public class DDotReader implements GioReader {
 
     private static final String SEPARATOR_REGEX = "\\s*\\.\\.\\s*";
     private static final String COMMENT_MARKER = "#";
-    private static final String SWITCH_OFF = "ddot.it/off";
-    private static final String SWITCH_ON = "ddot.it/on";
-    /** {@code !!} shorthands for the off/on commands (see https://ddot.it grammar: command = "!!", word). */
-    private static final String SWITCH_OFF_SHORT = "!!off";
-    private static final String SWITCH_ON_SHORT = "!!on";
+    /**
+     * The interchangeable spellings of a ddot.it command prefix. A command {@code <word>} may be written as the
+     * full URL {@code https://ddot.it/<word>}, the host-relative {@code ddot.it/<word>}, or the {@code !!<word>}
+     * shorthand — all three denote the same command (see https://ddot.it grammar: command = "!!", word).
+     */
+    private static final String[] COMMAND_PREFIXES = {"https://ddot.it/", "http://ddot.it/", "ddot.it/", "!!"};
     /** Per-link metadata separator (see https://ddot.it): "Meta-data can be appended behind ,,". */
     private static final String META_SEPARATOR = ",,";
 
@@ -176,11 +178,12 @@ public class DDotReader implements GioReader {
             if (line.isEmpty()) continue;
             if (line.startsWith(COMMENT_MARKER)) continue;
 
-            if (line.equals(SWITCH_OFF) || line.equals(SWITCH_OFF_SHORT)) {
+            String command = commandWord(line);
+            if ("off".equals(command)) {
                 enabled = false;
                 continue;
             }
-            if (line.equals(SWITCH_ON) || line.equals(SWITCH_ON_SHORT)) {
+            if ("on".equals(command)) {
                 enabled = true;
                 continue;
             }
@@ -399,25 +402,36 @@ public class DDotReader implements GioReader {
     }
 
     /**
+     * If {@code token} is a ddot.it command, return its bare command word; otherwise {@code null}. Accepts every
+     * spelling in {@link #COMMAND_PREFIXES} — {@code https://ddot.it/<word>}, {@code ddot.it/<word>} and the
+     * {@code !!<word>} shorthand — so all three are recognised identically. The returned word keeps any suffix
+     * (e.g. {@code block?end=X}). See https://ddot.it grammar: command = "!!", word.
+     */
+    private static @Nullable String commandWord(String token) {
+        for (String prefix : COMMAND_PREFIXES) {
+            if (token.startsWith(prefix)) return token.substring(prefix.length());
+        }
+        return null;
+    }
+
+    /**
      * Is this predicate the "set node label" command? Accepts graphinout's own round-trip form
-     * ({@code ddot:label}), the ddot.it-native command ({@code ddot.it/label}) and its shorthand
-     * ({@code !!label}). See https://ddot.it/label.
+     * ({@code ddot:label}) and the ddot.it-native {@code label} command in any spelling
+     * ({@code https://ddot.it/label} / {@code ddot.it/label} / {@code !!label}). See https://ddot.it/label.
      */
     private static boolean isLabelCommand(String predicate) {
-        return DDotOutput.PRED_LABEL.equals(predicate)
-                || "ddot.it/label".equals(predicate)
-                || "!!label".equals(predicate);
+        return DDotOutput.PRED_LABEL.equals(predicate) || "label".equals(commandWord(predicate));
     }
 
-    /** Is this subject the "current document" command {@code ddot.it/this} (shorthand {@code !!this})? */
+    /** Is this subject the "current document" command {@code this} (in any spelling)? See https://ddot.it/this. */
     private static boolean isThisCommand(String subject) {
-        return DDotOutput.SUBJECT_THIS.equals(subject) || "!!this".equals(subject);
+        return "this".equals(commandWord(subject));
     }
 
-    /** Is this object a multi-line block marker {@code ddot.it/block} / {@code !!block} (optionally {@code ?end=…})? */
+    /** Is this object a multi-line block marker {@code block} (in any spelling, optionally {@code ?end=…})? See https://ddot.it/block. */
     private static boolean isBlockMarker(String object) {
-        return object.equals(DDotOutput.OBJECT_BLOCK) || object.equals("!!block")
-                || object.startsWith(DDotOutput.OBJECT_BLOCK + "?end=") || object.startsWith("!!block?end=");
+        String cmd = commandWord(object);
+        return cmd != null && (cmd.equals("block") || cmd.startsWith("block?end="));
     }
 
     /** The custom block end marker from a {@code ?end=…} suffix, or {@code null} for the default (a blank line). */
@@ -456,7 +470,17 @@ public class DDotReader implements GioReader {
             Map.entry("tag", "has tag"),
             Map.entry("type", "has type"), Map.entry("is a", "has type"),
             Map.entry("subtype", "has subtype"),
-            Map.entry("content", "has content"));
+            Map.entry("content", "has content"),
+            // UML relationship aliases: the simple visual tokens map to the standard UML name (see PlantUmlReader).
+            Map.entry("solid-to", "association"), Map.entry("solid", "association"),
+            Map.entry("solid-both", "association"), Map.entry("directed", "association"),
+            Map.entry("dashed-to", "dependency"), Map.entry("dashed", "dependency"),
+            Map.entry("dashed-both", "dependency"),
+            Map.entry("extends", "generalization"), Map.entry("extension", "generalization"),
+            Map.entry("inheritance", "generalization"), Map.entry("generalizes", "generalization"),
+            Map.entry("realizes", "realization"), Map.entry("implements", "realization"),
+            Map.entry("composed of", "composition"), Map.entry("composes", "composition"),
+            Map.entry("aggregates", "aggregation"), Map.entry("has a", "aggregation"));
 
     /** Map a relation alias to its canonical name; non-aliases (incl. the empty untyped link) pass through. */
     private static String canonicalRelation(String predicate) {

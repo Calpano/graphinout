@@ -165,6 +165,17 @@ public class DDotOutput {
                     if (text.isArray()) text.asArray().forEach(v -> meta.add(jsonAsScalar(v)));
                     else if (!text.isNull()) meta.add(jsonAsScalar(text));
                 }
+                // Generic scalar edge properties (e.g. `uml:rel` carrying the source format's arrow/relation kind)
+                // round-trip as `,, ..key.. value` metadata. The reserved keys above are already handled.
+                List<String> genericKeys = new ArrayList<>(edgeJson.asObject().keys());
+                Collections.sort(genericKeys);
+                for (String key : genericKeys) {
+                    if (LINK_PROPS_KEY.equals(key) || LINK_TEXT_KEY.equals(key)) continue;
+                    IJsonValue v = edgeJson.asObject().get(key);
+                    if (v != null && !v.isObject() && !v.isArray() && !v.isNull()) {
+                        meta.add(".." + key + ".. " + jsonAsScalar(v));
+                    }
+                }
             }
             out.triples.add(new DDotDoc.DDotTriple(subject, predicate, object, meta));
         });

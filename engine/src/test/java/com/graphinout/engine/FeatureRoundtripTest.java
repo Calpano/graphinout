@@ -99,11 +99,13 @@ class FeatureRoundtripTest {
                     "nodes", "undirected-edges", "directed-edges", "multiple-graphs-per-document",
                     "nested-graphs-in-nodes", "node-labels", "edge-labels", "attributes-on-nodes",
                     "attributes-on-edges", "attributes-on-graphs"), of("typed-edges")),
-            // plantuml-class-diagram
+            // plantuml-class-diagram — a relationship's colon text is its *relation* (the DDot predicate / CJ edge
+            // type), so PlantUML edges have no label channel separate from the type: a CJ edge label round-trips as a
+            // typed edge, not as a label. Hence edge-labels is partial (text survives, reclassified as the type).
             new Claims("plantuml", of(
                     "nodes", "undirected-edges", "directed-edges", "mixed-directionality-edges",
-                    "multiple-graphs-per-document", "nested-graphs-in-graphs", "node-labels", "edge-labels",
-                    "attributes-on-nodes", "typed-edges"), of("attributes-on-edges")),
+                    "multiple-graphs-per-document", "nested-graphs-in-graphs", "node-labels",
+                    "attributes-on-nodes", "typed-edges"), of("attributes-on-edges", "edge-labels")),
             // mermaid-flowchart
             new Claims("mermaid", of(
                     "nodes", "undirected-edges", "directed-edges", "mixed-directionality-edges",

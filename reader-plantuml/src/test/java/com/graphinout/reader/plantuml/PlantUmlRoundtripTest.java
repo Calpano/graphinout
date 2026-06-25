@@ -64,11 +64,14 @@ class PlantUmlRoundtripTest {
         String s = structure(doc1);
         assertTrue(s.contains("Pet:INTERFACE"), "interface kind preserved: " + s);
         assertTrue(s.contains("Mammal:ABSTRACT_CLASS"), "abstract class kind preserved: " + s);
-        assertTrue(s.contains("Dog->Mammal:extension"), "extension relation preserved: " + s);
+        // relationships use standard UML names: `--|>`=generalization, `..|>`=realization, `*--`=composition
+        assertTrue(s.contains("Dog->Mammal:generalization"), "generalization relation preserved: " + s);
         assertTrue(s.contains("Dog->Pet:realization"), "realization relation preserved: " + s);
         assertTrue(s.contains("Animal->Color:composition"), "composition relation preserved: " + s);
-        assertTrue(s.contains("Dog->Color:association-directed"), "directed association preserved: " + s);
-        assertTrue(s.contains("Pet->Color:dependency"), "dependency relation preserved: " + s);
+        // a plain association's colon-label is the relation name (DDot predicate semantics): `Dog --> Color : likes`
+        assertTrue(s.contains("Dog->Color:likes"), "labeled association uses the label as the relation: " + s);
+        // dashed open-arrow `Pet ..> Color` is a UML dependency
+        assertTrue(s.contains("Pet->Color:dependency"), "dashed arrow becomes a UML dependency: " + s);
 
         // alias (display name) and members survive
         assertTrue(out1.contains("class \"Big Cat\" as Cat"), "alias/display name preserved:\n" + out1);
@@ -77,8 +80,9 @@ class PlantUmlRoundtripTest {
 
         // package grouping survives (as a nested CJ graph)
         assertTrue(out1.contains("package model {"), "package preserved:\n" + out1);
-        assertTrue(s.contains("User:CLASS"), "class inside package preserved: " + s);
-        assertTrue(s.contains("User->Role:association-directed"), "edge inside package preserved: " + s);
+        assertTrue(s.contains("User:?"), "class inside package preserved (plain class carries no kind): " + s);
+        // a plain solid arrow `User --> Role` is a (directed) UML association
+        assertTrue(s.contains("User->Role:association"), "plain solid arrow is a UML association: " + s);
     }
 
     private static ICjDocument read(String content) throws IOException {
@@ -116,6 +120,39 @@ class PlantUmlRoundtripTest {
         if (in != null && out != null) return new String[]{in.node(), out.node()};
         if (eps.size() == 2) return new String[]{eps.get(0).node(), eps.get(1).node()};
         return null;
+    }
+
+    /**
+     * Every PlantUML link form parses, serializes to a stable canonical arrow, and round-trips (the reversed form
+     * normalises to the canonical one). {@code input -> expected canonical relationship line}.
+     */
+    @Test
+    void roundtripLinkVocabulary() throws IOException {
+        String[][] cases = {
+                // association (solid) / dependency (dashed); direction normalised, undirected/bidirectional preserved
+                {"A --> B", "A --> B"}, {"A <-- B", "B --> A"}, {"A <--> B", "A <--> B"}, {"A -- B", "A -- B"},
+                {"A ..> B", "A ..> B"}, {"A <.. B", "B ..> A"}, {"A <..> B", "A <..> B"}, {"A .. B", "A .. B"},
+                // decorated UML relations (reversed forms normalise to the canonical orientation)
+                {"A --|> B", "A --|> B"}, {"A <|-- B", "B --|> A"},      // generalization
+                {"A ..|> B", "A ..|> B"}, {"A <|.. B", "B ..|> A"},      // realization
+                {"A *-- B", "A *-- B"}, {"A --* B", "B *-- A"},          // composition
+                {"A o-- B", "A o-- B"}, {"A --o B", "B o-- A"},          // aggregation
+                // exotic decorations preserved (crowfoot / nested / not-navigable)
+                {"A }-- B", "B --{ A"}, {"A --+ B", "A --+ B"}, {"A x-- B", "B --x A"},
+                // combined decoration + navigability arrow
+                {"A *--> B", "A *--> B"}, {"A o--> B", "A o--> B"},
+                // presentation styling (dotted/bold) is preserved, orthogonal to the relation
+                {"A -[dotted]-> B", "A -[dotted]-> B"}, {"A -[bold]-> B", "A -[bold]-> B"},
+                // a labeled relation: the label is the predicate, the UML kind rides as `line` metadata
+                {"A *-- B : owns", "A *-- B : owns"}, {"A --> B : knows", "A --> B : knows"},
+        };
+        for (String[] c : cases) {
+            String input = "@startuml\nclass A\nclass B\n" + c[0] + "\n@enduml\n";
+            String out1 = PlantUmlWriter.toPlantUml(read(input));
+            String out2 = PlantUmlWriter.toPlantUml(read(out1));
+            assertEquals(out1, out2, "unstable round-trip for: " + c[0]);
+            assertTrue(out1.contains(c[1]), "expected '" + c[1] + "' for input '" + c[0] + "' but got:\n" + out1);
+        }
     }
 
 }
