@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.base.cj.jackson.CjJacksonDocument;
 import com.graphinout.base.cj.jackson.CjJacksonEdge;
 import com.graphinout.base.cj.jackson.CjJacksonEndpoint;
@@ -19,6 +18,40 @@ import static com.google.common.truth.Truth.assertThat;
 
 public class CjJacksonParsingTest {
 
+    /**
+     * A Connected JSON 8.0.0 "graph entry" sample: document-level nodes/edges (incl. a source/target shortcut), a node
+     * with ports, an edge with explicit endpoints and {@code data}, and a subgraph. Inlined so the test is
+     * self-contained — the on-disk fixture moved to the external graph-test-data repo in the test-data migration.
+     */
+    private static final String SAMPLE_1_GRAPH_ENTRY = """
+            {
+              "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
+              "nodes": [
+                { "id": "node1", "label": "First Node" },
+                { "id": "node2", "label": "Second Node", "ports": [ "port1", { "id": "port2" } ] }
+              ],
+              "edges": [
+                { "source": "node1", "target": "node2" },
+                {
+                  "data": { "foo": "bar" },
+                  "endpoints": [
+                    { "direction": "out", "node": "node1" },
+                    { "direction": "in", "node": "node2", "port": "port1" }
+                  ]
+                }
+              ],
+              "graphs": [
+                {
+                  "id": "subgraph1",
+                  "nodes": [ { "id": "sub1", "label": "Sub Node" } ],
+                  "edges": [
+                    { "endpoints": [ { "direction": "in", "node": "sub1" }, { "direction": "out", "node": "node2" } ] }
+                  ]
+                }
+              ]
+            }
+            """;
+
     @Test
     public void testParseConnectedJsonDocument() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -26,10 +59,7 @@ public class CjJacksonParsingTest {
         objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
         objectMapper.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-        // load resource "sample-1.cj.json"
-        // Use ClassLoader to get the resource URL
-        String jsonIn = TestFileUtil.resource("json/connected-json/connected-json-8.0.0/graph-entry/sample-1.cj.json").getContentAsString();
-        CjJacksonDocument doc = objectMapper.readValue(jsonIn, CjJacksonDocument.class);
+        CjJacksonDocument doc = objectMapper.readValue(SAMPLE_1_GRAPH_ENTRY, CjJacksonDocument.class);
 
         // Test document-level nodes and edges
         assertThat(doc.getNodes()).isNotNull();
