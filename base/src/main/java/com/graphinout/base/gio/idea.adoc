@@ -1,0 +1,48 @@
+= idea
+
+when we let a reader analyze an input, what can we do?
+
+
+== ENGINE level
+First:
+
+- look at filename: it MIGHT hint at a certain tool or format name.
+
+- look at file extension if we have one, InputSource#name
+** every Reader.fileFormat.extensions.primary/alt  tells us something
+
+- LATER: look for magic bytes – but almost NO files have that
+
+- run a heuristic if the file is XML or JSON at all
+** compare with formats type
+
+- for XML, JSON or even TEXT we can look for typical 'vocabulary'
+
+== READER level
+For all non-excluded candidates:
+
+- we can just TRY to parse the file and then analyze the result
+** which features are present in the graph?
+** how large is the graph? nodes, edges, node labels, edge labels
+
+
+== In General
+
+=== Signal
+every signal can be:
+
+- discouraging to treat as format X
+- encouraging
+- no information
+
+we express every signal as -1 .. 0 .. 1
+
+=== Large Files
+We must for larger files > 1MB just skip all reader-based detailed analysis
+
+=== Archives
+TODO also deal with COMPRESSED files, like graphml.gz
+and then look INSIDE them to find a single graph and exclude companion files
+might even find multiple graphs -> REJECT
+
+
