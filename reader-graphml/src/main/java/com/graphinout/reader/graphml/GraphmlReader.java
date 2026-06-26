@@ -10,6 +10,7 @@ import com.graphinout.base.input.ContentErrors;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.base.xml.HtmlEntityDecodingReader;
 import com.graphinout.base.xml.sax.Sax2XmlWriter;
 import com.graphinout.base.xml.sax.SimpleSaxErrorHandler;
 import com.graphinout.base.xml.factory.XmlFactory;
@@ -25,6 +26,9 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -106,8 +110,13 @@ public class GraphmlReader extends BaseOutput implements GioReader {
                 XMLReader reader = XmlTool.createXmlReaderOn(saxHandler);
                 try {
                     InputStream in = singleInputSource.inputStream();
-                    org.xml.sax.InputSource saxInputSource = new org.xml.sax.InputSource(in);
+                    Charset charset = singleInputSource.encoding().orElse(StandardCharsets.UTF_8);
+                    // Stream the input through an HTML-entity decoder so HTML-flavoured GraphML (e.g. &Eacute;) parses
+                    // as well-formed XML — bounded lookahead, no temp file or whole-document buffer.
+                    HtmlEntityDecodingReader charReader = new HtmlEntityDecodingReader(new InputStreamReader(in, charset));
+                    org.xml.sax.InputSource saxInputSource = new org.xml.sax.InputSource(charReader);
                     reader.parse(saxInputSource);
+                    warnOnAutoFixedEntities(charReader, contentErrorHandler);
                 } catch (SAXException e) {
                     throw sendContentError_Error(null, e, null);
                 }
@@ -121,6 +130,14 @@ public class GraphmlReader extends BaseOutput implements GioReader {
         }
     }
 
+    /** Report (as a warning) any undeclared HTML entities the streaming decoder auto-corrected to numeric char refs. */
+    private static void warnOnAutoFixedEntities(HtmlEntityDecodingReader charReader,
+                                                @Nullable Consumer<ContentError> errorHandler) {
+        ContentError warning = charReader.autoCorrectionWarning();
+        if (warning != null && errorHandler != null) {
+            errorHandler.accept(warning);
+        }
+    }
 
     /**
      * Two sub-options: (1) XML file contains "xsi:schemaLocation" -> take XML Schema from there; (2) we pre-downloaded

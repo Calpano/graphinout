@@ -5,6 +5,7 @@ import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.base.xml.HtmlEntityDecodingReader;
 import com.graphinout.base.xml.sax.Sax2XmlWriter;
 import com.graphinout.base.xml.util.XmlTool;
 import com.graphinout.foundation.pure.functional.Nullables;
@@ -19,6 +20,9 @@ import org.xml.sax.XMLReader;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 public class GexfReader implements GioReader {
@@ -47,7 +51,14 @@ public class GexfReader implements GioReader {
         try {
             XMLReader reader = XmlTool.createXmlReaderOn(saxHandler);
             try (InputStream in = singleInputSource.inputStream()) {
-                reader.parse(new org.xml.sax.InputSource(in));
+                Charset charset = singleInputSource.encoding().orElse(StandardCharsets.UTF_8);
+                // Stream through an HTML-entity decoder so HTML-flavoured GEXF parses as well-formed XML.
+                HtmlEntityDecodingReader charReader = new HtmlEntityDecodingReader(new InputStreamReader(in, charset));
+                reader.parse(new org.xml.sax.InputSource(charReader));
+                ContentError fixWarning = charReader.autoCorrectionWarning();
+                if (fixWarning != null && errorHandler != null) {
+                    errorHandler.accept(fixWarning);
+                }
             }
         } catch (SAXException | ParserConfigurationException e) {
             Nullables.ifConsumerPresentAccept(errorHandler, //
