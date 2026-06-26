@@ -433,11 +433,21 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
         GraphmlGraphBuilder builder = IGraphmlGraph.builder();
         builder.attributes(attributes);
         ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
-        ifAttributeNotNull(attributes, ATTRIBUTE_EDGE_DEFAULT, value -> //
-                builder.edgeDefault(IGraphmlGraph.EdgeDefault.valueOf(value)));
+        ifAttributeNotNull(attributes, ATTRIBUTE_EDGE_DEFAULT, value -> builder.edgeDefault(edgeDefaultLenient(value)));
 
         elementStack.push(Graphml.xmlNameOf(GRAPH), attributes, false, builder, XmlMode.Graphml);
         // dont start element, maybe <desc> or <key> comes
+    }
+
+    /** Parse a GraphML {@code edgedefault}, falling back to the default ({@code directed}) with a warning for bad values. */
+    private IGraphmlGraph.EdgeDefault edgeDefaultLenient(String value) {
+        try {
+            return IGraphmlGraph.EdgeDefault.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            sendContentError_Warn("Unknown GraphML edgedefault '" + value + "', treating it as '"
+                    + IGraphmlGraph.EdgeDefault.DEFAULT_EDGE_DEFAULT + "'", null);
+            return IGraphmlGraph.EdgeDefault.DEFAULT_EDGE_DEFAULT;
+        }
     }
 
     private void graphmlHyperedgeEnd() throws IOException {
@@ -472,6 +482,16 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
         }
     }
 
+    /** Parse a GraphML {@code attr.type}, falling back to {@code string} (with a warning) for non-standard types. */
+    private GraphmlDataType graphmlDataTypeLenient(String attrType) {
+        try {
+            return GraphmlDataType.fromGraphmlName(attrType);
+        } catch (IllegalArgumentException e) {
+            sendContentError_Warn("Unknown GraphML attr.type '" + attrType + "', treating it as 'string'", null);
+            return GraphmlDataType.typeString;
+        }
+    }
+
     private void graphmlKeyStart(Map<String, String> attributes) throws IOException {
         elementStack.peek_().maybeWriteStartTo(graphmlWriter);
 
@@ -479,7 +499,7 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
         builder.attributes(attributes);
         ifAttributeNotNull(attributes, IGraphmlKey.ATTRIBUTE_FOR, value -> builder.forType(GraphmlKeyForType.keyForType(value)));
         ifAttributeNotNull(attributes, IGraphmlKey.ATTRIBUTE_ATTR_NAME, builder::attrName);
-        ifAttributeNotNull(attributes, IGraphmlKey.ATTRIBUTE_ATTR_TYPE, str -> builder.attrType(GraphmlDataType.fromGraphmlName(str)));
+        ifAttributeNotNull(attributes, IGraphmlKey.ATTRIBUTE_ATTR_TYPE, str -> builder.attrType(graphmlDataTypeLenient(str)));
         ifAttributeNotNull(attributes, ATTRIBUTE_ID, id -> {
             builder.id(id);
             IGraphmlKey prev = dataId_key.get(id);
