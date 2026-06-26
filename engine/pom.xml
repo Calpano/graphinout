@@ -28,6 +28,7 @@
 
         <!-- Main Dependencies: depend on every reader module so the ServiceLoader discovers all of them -->
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>reader-jgef</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-d2</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-ddot</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-dot</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
