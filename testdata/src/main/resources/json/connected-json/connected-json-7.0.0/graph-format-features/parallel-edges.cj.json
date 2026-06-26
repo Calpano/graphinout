@@ -1,0 +1,27 @@
+{
+  "graphs": [
+    {
+      "id": "g_parallel_edges",
+      "nodes": [
+        { "id": "a" },
+        { "id": "b" }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "endpoints": [
+            { "direction": "out", "node": "a" },
+            { "direction": "in", "node": "b" }
+          ]
+        },
+        {
+          "id": "e2",
+          "endpoints": [
+            { "direction": "out", "node": "a" },
+            { "direction": "in", "node": "b" }
+          ]
+        }
+      ]
+    }
+  ]
+}

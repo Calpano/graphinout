@@ -1,0 +1,19 @@
+{
+  "graphs": [
+    {
+      "id": "g_self_loops",
+      "nodes": [
+        { "id": "n1" }
+      ],
+      "edges": [
+        {
+          "id": "e_loop",
+          "endpoints": [
+            { "direction": "out", "node": "n1" },
+            { "direction": "in", "node": "n1" }
+          ]
+        }
+      ]
+    }
+  ]
+}

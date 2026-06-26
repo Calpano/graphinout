@@ -7,6 +7,8 @@ import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjLabel;
 import com.graphinout.base.cj.document.ICjNode;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -49,6 +51,19 @@ public enum CjFeature {
         boolean directed = g.edges().anyMatch(e -> e.endpoints().anyMatch(ICjEndpoint::isDirected));
         boolean undirected = g.edges().anyMatch(e -> e.endpoints().anyMatch(ICjEndpoint::isUndirected));
         return directed && undirected;
+    })),
+
+    /** An edge with a node appearing at more than one endpoint (e.g. a binary edge whose two ends are the same node). */
+    SELF_LOOPS("self-loops",
+            doc -> allEdges(doc).anyMatch(e -> e.endpoints().map(ICjEndpoint::node).distinct().count() < e.endpoints().count())),
+
+    /**
+     * Two distinct edges in the same graph connecting the same set of endpoint nodes (a multigraph). The signature is
+     * the sorted endpoint node-id list, so it is direction-agnostic.
+     */
+    PARALLEL_EDGES("parallel-edges", doc -> allGraphs(doc).anyMatch(g -> {
+        Set<List<String>> seen = new HashSet<>();
+        return g.edges().anyMatch(e -> !seen.add(e.endpoints().map(ICjEndpoint::node).sorted().toList()));
     })),
 
     /** An edge endpoint that points at another edge (by id). */
