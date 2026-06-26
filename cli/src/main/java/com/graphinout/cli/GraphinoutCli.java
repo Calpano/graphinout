@@ -8,6 +8,9 @@ import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.gio.GioFileFormat;
+import com.graphinout.base.gio.GioInputAnalysis;
+import com.graphinout.base.gio.GioInputAnalysisJson;
+import com.graphinout.base.gio.GioInputAnalyzer;
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.input.FileSingleInputSource;
@@ -98,6 +101,8 @@ public final class GraphinoutCli {
             case "analyze":
             case "inspect":
                 return cmdAnalyze(rest);
+            case "detect":
+                return cmdDetect(rest);
             default:
                 err.println("Unknown command: '" + command + "'");
                 printUsage(err);
@@ -332,6 +337,47 @@ public final class GraphinoutCli {
         }
     }
 
+    // ---------------------------------------------------------------------- detect
+
+    /**
+     * Probe every reader against the input and print the ranked-candidate {@link GioInputAnalysis} as JSON
+     * (formats, outcomes, parse stats, confidence and the signals behind each score). Unlike {@code analyze}
+     * (which inspects a single chosen reader), {@code detect} answers "which format is this?".
+     */
+    private int cmdDetect(String[] args) {
+        @Nullable String inputPath = null;
+        for (String a : args) {
+            if (a.startsWith("-")) {
+                err.println("Unknown option: '" + a + "'");
+                return 2;
+            }
+            if (inputPath != null) {
+                err.println("Unexpected extra argument: '" + a + "'");
+                return 2;
+            }
+            inputPath = a;
+        }
+        if (inputPath == null) {
+            err.println("detect: missing <input> file");
+            err.println("Usage: " + PROGRAM + " detect <input>");
+            return 2;
+        }
+        File inputFile = new File(inputPath);
+        if (!inputFile.isFile()) {
+            err.println("Input file not found: " + inputFile.getPath());
+            return 1;
+        }
+        try (SingleInputSource inputSource = new FileSingleInputSource(inputFile)) {
+            GioInputAnalysis analysis = new GioInputAnalyzer(engine.readers()).analyze(inputSource);
+            out.println(GioInputAnalysisJson.toJson(analysis));
+            out.flush();
+            return 0;
+        } catch (IOException e) {
+            err.println("Detection failed: " + e.getMessage());
+            return 1;
+        }
+    }
+
     // ---------------------------------------------------------------------- reader selection
 
     /**
@@ -422,6 +468,7 @@ public final class GraphinoutCli {
         s.println("  formats                          List supported input and output formats");
         s.println("  convert <input> [options]        Convert a graph file to another format");
         s.println("  analyze <input> [--from <id>]    Inspect a graph: graph/node/edge counts and features used");
+        s.println("  detect <input>                   Probe all readers; print ranked format candidates as JSON");
         s.println("  version                          Print the version");
         s.println("  help                             Show this help");
         s.println();

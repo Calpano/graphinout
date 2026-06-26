@@ -110,4 +110,16 @@ class GraphinoutCliTest {
         assertEquals(1, r.exitCode);
         assertTrue(r.err.contains("not found"), r.err);
     }
+
+    @Test
+    void detectRanksCandidatesAsJson(@TempDir Path dir) throws Exception {
+        File in = dir.resolve("graph.tgf").toFile();
+        Files.writeString(in.toPath(), TGF);
+
+        Result r = run("detect", in.getPath());
+        assertEquals(0, r.exitCode, r.err);
+        assertTrue(r.out.contains("\"candidates\""), r.out);
+        assertTrue(r.out.contains("\"best\":\"tgf\""), r.out);
+        assertTrue(r.out.contains("\"outcome\":\"RECOVERED\""), r.out);
+    }
 }
