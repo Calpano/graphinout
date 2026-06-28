@@ -226,6 +226,8 @@ public interface GioInputAnalysis {
         GRAPH_SIZE,
         /** Recovered features are characteristic (or uncharacteristic) of the format. */
         FEATURES,
+        /** Structural quality of the recovered graph (connectedness, clean ids/labels) — a misparse looks implausible. */
+        PLAUSIBILITY,
         /** Any other heuristic. */
         OTHER
     }
