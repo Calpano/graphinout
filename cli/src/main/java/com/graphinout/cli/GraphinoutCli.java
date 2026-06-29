@@ -2,7 +2,10 @@ package com.graphinout.cli;
 
 import com.graphinout.base.cj.analyze.CjAnalysis;
 import com.graphinout.base.cj.analyze.CjAnalyzer;
+import com.graphinout.base.cj.analyze.CjMetaGraph;
 import com.graphinout.base.cj.anonymize.AnonymizingCjStream;
+import com.graphinout.base.cj.document.CjDocument2CjStream;
+import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.stream.CjStream2CjWriter;
 import com.graphinout.base.cj.stream.ICjStream;
@@ -101,6 +104,8 @@ public final class GraphinoutCli {
             case "analyze":
             case "inspect":
                 return cmdAnalyze(rest);
+            case "meta":
+                return cmdMeta(rest);
             case "detect":
                 return cmdDetect(rest);
             default:
@@ -140,6 +145,7 @@ public final class GraphinoutCli {
         @Nullable String fromFormat = null;
         String toFormat = DEFAULT_OUTPUT_FORMAT;
         boolean anonymize = false;
+        boolean meta = false;
 
         for (int i = 0; i < args.length; i++) {
             String a = args[i];
@@ -147,6 +153,10 @@ public final class GraphinoutCli {
                 case "-a":
                 case "--anonymize":
                     anonymize = true;
+                    break;
+                case "-m":
+                case "--meta":
+                    meta = true;
                     break;
                 case "-o":
                 case "--output":
@@ -217,21 +227,21 @@ public final class GraphinoutCli {
 
             err.println("Converting " + inputFile.getName()
                     + " (" + reader.fileFormat().id() + " -> " + writer.fileFormat().id() + ")"
-                    + (anonymize ? " [anonymized]" : "") + " ...");
+                    + (meta ? " [meta]" : "") + (anonymize ? " [anonymized]" : "") + " ...");
 
             return outputPath == null
-                    ? convertToStdout(reader, writer, inputSource, anonymize)
-                    : convertToFile(reader, writer, inputSource, new File(outputPath), anonymize);
+                    ? convertToStdout(reader, writer, inputSource, meta, anonymize)
+                    : convertToFile(reader, writer, inputSource, new File(outputPath), meta, anonymize);
         } catch (IOException e) {
             err.println("Conversion failed: " + e.getMessage());
             return 1;
         }
     }
 
-    private int convertToStdout(GioReader reader, GioWriter writer, SingleInputSource inputSource, boolean anonymize)
-            throws IOException {
+    private int convertToStdout(GioReader reader, GioWriter writer, SingleInputSource inputSource,
+                                boolean meta, boolean anonymize) throws IOException {
         InMemoryOutputSink sink = new InMemoryOutputSink();
-        reader.read(inputSource, cjStream(writer, sink, anonymize));
+        pipe(reader, inputSource, cjStream(writer, sink, anonymize), meta);
         closeQuietly(sink);
         out.print(sink.getBufferAsUtf8String());
         out.flush();
@@ -239,7 +249,7 @@ public final class GraphinoutCli {
     }
 
     private int convertToFile(GioReader reader, GioWriter writer, SingleInputSource inputSource, File outputFile,
-                              boolean anonymize) throws IOException {
+                              boolean meta, boolean anonymize) throws IOException {
         File parent = outputFile.getParentFile();
         if (parent != null) {
             //noinspection ResultOfMethodCallIgnored
@@ -247,12 +257,29 @@ public final class GraphinoutCli {
         }
         OutputSink sink = new FileOutputSink(outputFile);
         try {
-            reader.read(inputSource, cjStream(writer, sink, anonymize));
+            pipe(reader, inputSource, cjStream(writer, sink, anonymize), meta);
         } finally {
             closeQuietly(sink);
         }
         err.println("Wrote " + outputFile.getPath());
         return 0;
+    }
+
+    /**
+     * Drive the read → (maybe meta) → write pipeline. Without {@code meta} the reader streams straight to the output
+     * stream; with it, the input is materialized into a CJ document, replaced by its {@link CjMetaGraph meta graph},
+     * and that is streamed out. The output stream is already anonymized if requested, so the order is always
+     * read → meta → anonymize → write.
+     */
+    private void pipe(GioReader reader, SingleInputSource inputSource, ICjStream outStream, boolean meta)
+            throws IOException {
+        if (meta) {
+            CjWriter2CjDocumentWriter docWriter = new CjWriter2CjDocumentWriter();
+            reader.read(inputSource, new CjStream2CjWriter(docWriter, true));
+            CjDocument2CjStream.toCjStream(CjMetaGraph.metaGraph(docWriter.resultDoc()), outStream);
+        } else {
+            reader.read(inputSource, outStream);
+        }
     }
 
     /** The writer's CJ stream, optionally wrapped so labels and content are anonymized before writing. */
@@ -333,6 +360,91 @@ public final class GraphinoutCli {
             return 0;
         } catch (IOException e) {
             err.println("Analysis failed: " + e.getMessage());
+            return 1;
+        }
+    }
+
+    // ---------------------------------------------------------------------- meta
+
+    /**
+     * Infer a meta graph (schema) from any input and emit it as Connected JSON. Every distinct node type and edge type
+     * becomes a node (typed {@code Node}/{@code Edge}) carrying its instance {@code count}; node types link to the edge
+     * types their instances touch via {@code uses} edges, and strict-subset edge usage is generalised into
+     * {@code has subtype} edges (see {@link CjMetaGraph}). Output goes to stdout, or to {@code -o <file>}.
+     */
+    private int cmdMeta(String[] args) {
+        @Nullable String inputPath = null;
+        @Nullable String fromFormat = null;
+        @Nullable String outputPath = null;
+        for (int i = 0; i < args.length; i++) {
+            String a = args[i];
+            switch (a) {
+                case "-f":
+                case "--from":
+                    if (++i >= args.length) return missingValue(a);
+                    fromFormat = args[i];
+                    break;
+                case "-o":
+                case "--output":
+                    if (++i >= args.length) return missingValue(a);
+                    outputPath = args[i];
+                    break;
+                default:
+                    if (a.startsWith("-")) {
+                        err.println("Unknown option: '" + a + "'");
+                        return 2;
+                    }
+                    if (inputPath != null) {
+                        err.println("Unexpected extra argument: '" + a + "'");
+                        return 2;
+                    }
+                    inputPath = a;
+            }
+        }
+
+        if (inputPath == null) {
+            err.println("meta: missing <input> file");
+            err.println("Usage: " + PROGRAM + " meta <input> [--from <id>] [-o <file>]");
+            return 2;
+        }
+
+        File inputFile = new File(inputPath);
+        if (!inputFile.isFile()) {
+            err.println("Input file not found: " + inputFile.getPath());
+            return 1;
+        }
+
+        try (SingleInputSource inputSource = new FileSingleInputSource(inputFile)) {
+            GioReader reader = selectReader(inputSource, fromFormat);
+            if (reader == null) {
+                if (fromFormat != null) {
+                    err.println("No input reader for format '" + fromFormat + "'.");
+                } else {
+                    err.println("Could not detect the input format of " + inputFile.getPath()
+                            + ". Specify it explicitly with --from <id>.");
+                }
+                err.println("Available input formats: " + availableReaderIds());
+                return 1;
+            }
+
+            reader.setContentErrorHandler(e -> err.println("[" + e.level + "] " + e.message));
+
+            CjWriter2CjDocumentWriter docWriter = new CjWriter2CjDocumentWriter();
+            reader.read(inputSource, new CjStream2CjWriter(docWriter, true));
+            ICjDocument doc = docWriter.resultDoc();
+
+            String json = CjDocuments.toJsonString(CjMetaGraph.metaGraph(doc));
+            if (outputPath != null) {
+                try (PrintStream fileOut = new PrintStream(new File(outputPath), "UTF-8")) {
+                    fileOut.println(json);
+                }
+            } else {
+                out.println(json);
+                out.flush();
+            }
+            return 0;
+        } catch (IOException e) {
+            err.println("Meta failed: " + e.getMessage());
             return 1;
         }
     }
@@ -468,6 +580,7 @@ public final class GraphinoutCli {
         s.println("  formats                          List supported input and output formats");
         s.println("  convert <input> [options]        Convert a graph file to another format");
         s.println("  analyze <input> [--from <id>]    Inspect a graph: graph/node/edge counts and features used");
+        s.println("  meta <input> [--from <id>]       Infer a type schema (node/edge types, uses, subtypes) as CJ");
         s.println("  detect <input>                   Probe all readers; print ranked format candidates as JSON");
         s.println("  version                          Print the version");
         s.println("  help                             Show this help");
@@ -476,8 +589,10 @@ public final class GraphinoutCli {
         s.println("  -t, --to <id>        Output format id (default: " + DEFAULT_OUTPUT_FORMAT + ")");
         s.println("  -o, --output <file>  Write to a file instead of stdout");
         s.println("  -f, --from <id>      Force the input format id (default: auto-detect)");
+        s.println("  -m, --meta           Replace the graph with its inferred type schema (see 'meta')");
         s.println("  -a, --anonymize      Redact labels/types/content (letters->X/x, digits->0);");
         s.println("                       remap ids to node1/edge1/…; keep structure, spacing, links");
+        s.println("                       Pipeline order: read -> [meta] -> [anonymize] -> write");
         s.println();
         s.println("Examples:");
         s.println("  " + PROGRAM + " formats");
