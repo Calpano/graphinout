@@ -3,7 +3,7 @@ package com.graphinout.base.cj.anonymize;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The character-level anonymization rule used by {@link CjDocumentAnonymizer} to redact copyrightable
+ * The character-level anonymization rule used by {@link AnonymizingCjStream} to redact copyrightable
  * text while preserving its <em>shape</em>: word lengths, word breaks, spacing and punctuation stay
  * identical, so the anonymized graph still looks structurally like the original.
  *

@@ -32,12 +32,12 @@ import java.util.function.Consumer;
  * An {@link ICjStream} that sits in front of a real writer's stream, anonymizes every chunk as it flows through, and
  * forwards the redacted result to that {@code delegate} immediately — without buffering the graph.
  *
- * <p>It applies the same rules as {@link CjDocumentAnonymizer} (labels/types/string values run through
- * {@link Anonymizer}; numbers zeroed; ids remapped to {@code node1/edge1/graph1/port1/…}; data object keys to
- * {@code key1/…}; directions, languages, {@code @context} and {@code connectedJson} kept), but in a single streaming
- * pass: each identifier and data key is interned the first time it is seen and reused thereafter, so links stay intact
- * and a forward-referenced node id (an edge endpoint seen before the node is declared) is minted on first contact and
- * the eventual node declaration reuses it.
+ * <p>Rules: labels/types/string values run through {@link Anonymizer} (letters &rarr; X/x, digits &rarr; 0); numbers
+ * are zeroed; ids are remapped to {@code node1/edge1/graph1/port1/…} and data object keys to {@code key1/…}; directions,
+ * languages, {@code @context} and {@code connectedJson} are kept. It runs in a single streaming pass: each identifier
+ * and data key is interned the first time it is seen and reused thereafter, so links stay intact and a
+ * forward-referenced node id (an edge endpoint seen before the node is declared) is minted on first contact and the
+ * eventual node declaration reuses it.
  *
  * <p><b>Memory.</b> Unlike a document-level anonymizer, this holds <em>no</em> graph — only five
  * {@code original → anonymized} string maps: one entry per <em>distinct</em> node id, edge id, graph id, port id and
