@@ -15,6 +15,12 @@ GraphInOut was made possible using the following third-party open-source librari
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
 
+== Apache Jena
+- Project: https://jena.apache.org/
+- Coordinates: org.apache.jena:jena-arq, org.apache.jena:jena-core
+- License: Apache License 2.0
+- License URL: https://www.apache.org/licenses/LICENSE-2.0
+
 == ClassGraph
 - Project: https://github.com/classgraph/classgraph
 - Coordinates: io.github.classgraph:classgraph:4.8.157
@@ -33,12 +39,19 @@ GraphInOut was made possible using the following third-party open-source librari
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
 
+== GWT RegExp
+- Project: https://github.com/gwtproject/gwt-regexp
+- Coordinates: org.gwtproject.regexp:gwt-regexp:1.0.0-RC1
+- License: Apache License 2.0
+- License URL: https://www.apache.org/licenses/LICENSE-2.0
+
 == Jackson
 - Projects:
 https://github.com/FasterXML/jackson-databind,
 https://github.com/FasterXML/jackson-core,
-https://github.com/FasterXML/jackson-modules-java8
-- Coordinates: com.fasterxml.jackson.core, com.fasterxml.jackson.datatype
+https://github.com/FasterXML/jackson-modules-java8,
+https://github.com/FasterXML/jackson-dataformats-text
+- Coordinates: com.fasterxml.jackson.core, com.fasterxml.jackson.datatype, com.fasterxml.jackson.dataformat
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
 
@@ -47,12 +60,6 @@ https://github.com/FasterXML/jackson-modules-java8
 - Coordinates: org.jgrapht
 - License: Eclipse Public License 2.0
 - License URL: https://github.com/jgrapht/jgrapht/blob/master/license-EPL.txt[]
-
-== JetBrains Annotations
-- Project: https://github.com/JetBrains/java-annotations
-- Coordinates: org.jetbrains:annotations:24.0.1
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
 
 == JSON Schema Validator (NetworkNT)
 - Project: https://github.com/networknt/json-schema-validator[]
@@ -72,6 +79,12 @@ https://github.com/FasterXML/jackson-modules-java8
 - License: BSD 3-Clause License
 - License URL: https://opensource.org/license/bsd-3-clause
 
+== JSpecify
+- Project: https://jspecify.dev/
+- Coordinates: org.jspecify:jspecify:1.0.0
+- License: Apache License 2.0
+- License URL: https://www.apache.org/licenses/LICENSE-2.0
+
 == JUnit
 - Project: https://junit.org/junit5/
 - Coordinates: org.junit.jupiter
@@ -90,6 +103,12 @@ https://github.com/FasterXML/jackson-modules-java8
 - License: MIT License
 - License URL: https://github.com/mockito/mockito/blob/main/LICENSE
 
+== PlantUML (MIT edition)
+- Project: https://plantuml.com/
+- Coordinates: net.sourceforge.plantuml:plantuml-mit:1.2026.6
+- License: MIT License
+- License URL: https://opensource.org/license/mit
+
 == SLF4J API
 - Project: https://www.slf4j.org/
 - Coordinates: org.slf4j:slf4j-api
@@ -101,5 +120,11 @@ https://github.com/FasterXML/jackson-modules-java8
 - Coordinates: com.github.spotbugs:spotbugs-annotations:4.7.3
 - License: GNU Lesser General Public License 2.1
 - License URL: https://github.com/spotbugs/spotbugs/blob/master/LICENSE.md
+
+== Structurizr DSL
+- Project: https://github.com/structurizr/dsl
+- Coordinates: com.structurizr:structurizr-dsl:6.2.1
+- License: Apache License 2.0
+- License URL: https://www.apache.org/licenses/LICENSE-2.0
 
 
