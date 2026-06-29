@@ -3,6 +3,7 @@ package com.graphinout.cli;
 import com.graphinout.base.cj.analyze.CjAnalysis;
 import com.graphinout.base.cj.analyze.CjAnalyzer;
 import com.graphinout.base.cj.analyze.CjMetaGraph;
+import com.graphinout.base.cj.analyze.CjMetaGraphCollector;
 import com.graphinout.base.cj.anonymize.AnonymizingCjStream;
 import com.graphinout.base.cj.document.CjDocument2CjStream;
 import com.graphinout.base.cj.document.CjDocuments;
@@ -274,9 +275,9 @@ public final class GraphinoutCli {
     private void pipe(GioReader reader, SingleInputSource inputSource, ICjStream outStream, boolean meta)
             throws IOException {
         if (meta) {
-            CjWriter2CjDocumentWriter docWriter = new CjWriter2CjDocumentWriter();
-            reader.read(inputSource, new CjStream2CjWriter(docWriter, true));
-            CjDocument2CjStream.toCjStream(CjMetaGraph.metaGraph(docWriter.resultDoc()), outStream);
+            CjMetaGraphCollector collector = new CjMetaGraphCollector();
+            reader.read(inputSource, collector); // streams the input; only the type projection is buffered
+            CjDocument2CjStream.toCjStream(collector.build(), outStream);
         } else {
             reader.read(inputSource, outStream);
         }
@@ -429,11 +430,9 @@ public final class GraphinoutCli {
 
             reader.setContentErrorHandler(e -> err.println("[" + e.level + "] " + e.message));
 
-            CjWriter2CjDocumentWriter docWriter = new CjWriter2CjDocumentWriter();
-            reader.read(inputSource, new CjStream2CjWriter(docWriter, true));
-            ICjDocument doc = docWriter.resultDoc();
-
-            String json = CjDocuments.toJsonString(CjMetaGraph.metaGraph(doc));
+            CjMetaGraphCollector collector = new CjMetaGraphCollector();
+            reader.read(inputSource, collector); // streams the input; only the type projection is buffered
+            String json = CjDocuments.toJsonString(collector.build());
             if (outputPath != null) {
                 try (PrintStream fileOut = new PrintStream(new File(outputPath), "UTF-8")) {
                     fileOut.println(json);

@@ -1,5 +1,6 @@
 package com.graphinout.base.cj.analyze;
 
+import com.graphinout.base.cj.document.CjDocument2CjStream;
 import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjElementType;
@@ -78,6 +79,19 @@ class CjMetaGraphTest {
                 new MetaEdge(CjMetaGraph.EDGE_USES, "Person", "knows"),
                 new MetaEdge(CjMetaGraph.EDGE_USES, "Employee", "worksAt"),
                 new MetaEdge(CjMetaGraph.EDGE_HAS_SUBTYPE, "Person", "Employee"));
+    }
+
+    @Test
+    void streamingCollectorMatchesDocumentPath() throws IOException {
+        ICjDocument source = CjDocuments.parseCjJsonString("src", SOURCE);
+
+        String viaDocument = CjDocuments.toJsonString(CjMetaGraph.metaGraph(source));
+
+        CjMetaGraphCollector collector = new CjMetaGraphCollector();
+        CjDocument2CjStream.toCjStream(source, collector); // stream the input instead of holding the document
+        String viaStream = CjDocuments.toJsonString(collector.build());
+
+        assertThat(viaStream).isEqualTo(viaDocument);
     }
 
     private static String metaType(ICjNode n) {
