@@ -1,0 +1,427 @@
+= Reading Graphs from Archives — Concept
+:toc:
+:toclevels: 3
+
+A design concept for letting graphinout accept an *archive* (`.zip`, `.gz`,
+`.tar`, `.tar.gz`, …), find the graph(s) inside it, and read them — across the
+CLI, the REST API and the web UI.
+
+NOTE: This is a concept/design document, not an implementation. It is grounded
+in the abstractions that already exist in the codebase (see
+<<existing,§2>>); concrete type names below are proposals unless marked
+_(exists)_.
+
+== 1. Motivation
+
+Graphs rarely travel alone. In practice they arrive as:
+
+* a single compressed file — `movies.graphml.gz`, `roads.gml.bz2`;
+* a container with one graph plus assets — `dataset.zip` holding
+  `graph.graphml`, `README.md`, `thumbnail.png`;
+* a container with *several* graphs — `exports.zip` with `g1.gml`, `g2.gml`, …;
+* a self-describing multi-file format — a GTFS feed (`.zip` of `stops.txt`,
+  `routes.txt`, …) that *is* one graph spread over many files;
+* combinations — `data.tar.gz`.
+
+Today the user has to unpack the archive by hand and point graphinout at the
+right inner file. The goal: *point graphinout at the archive and let it do the
+right thing* — detect, pick (or ask), and read.
+
+== 2. The key insight: an archive is a `MultiInputSource` [[existing]]
+
+graphinout already models exactly this. No new core concept is required — only
+a generic *expansion* layer plus detection-over-members and a little UX.
+
+The relevant existing pieces (all under
+`base/.../com/graphinout/base/input/` and `.../gio/`):
+
+[%header,cols="2,3",grid=rows,frame=none]
+|===
+| Type _(exists)_ | What it gives us
+
+| `InputSource`
+| Base type with `isSingle()`, `name()`, `asSingle()`, `asMulti()`, `close()`.
+
+| `SingleInputSource`
+| One stream: `inputStream()` (re-openable), `encoding()`, `inputFormat()`,
+  `getContentAsUtf8String()`, factories `of(name, content)` / `of(byte[])`.
+
+| `MultiInputSource`
+| *Already documented as "an InputSource composed of several named sub-sources
+  (e.g. the entries of an archive)".* Methods: `names()`, `getNamedSource(name)`.
+
+| `FilesMultiInputSource`
+| A directory/file-set implementation of the above (its `names()` is currently
+  a stub — see <<gaps>>).
+
+| `GioReader.read(InputSource, ICjStream)`
+| Reader entry point is *polymorphic* — it already accepts a `MultiInputSource`.
+
+| `reader-gtfs`
+| Working precedent: `GtfsReader` reads a `.zip` (via `java.util.zip.ZipInputStream`)
+  as a `SingleInputSource`, *and* reads pre-unpacked files as a
+  `MultiInputSource`. The pattern is proven.
+
+| `GioInputAnalyzer.analyze(SingleInputSource)`
+| The format detector — ranks every reader by what it recovers.
+
+| `GioInputAnalysis`
+| The ranked result. Its `deepAnalysisSkipped()` javadoc *already* anticipates
+  "an archive containing multiple graphs".
+|===
+
+So the building blocks exist. What is missing:
+
+[[gaps]]
+* a generic *archive sniff + expand* layer (today only GTFS understands a zip,
+  and only as GTFS);
+* detection *across members* (the analyzer is single-input and reads bytes as a
+  UTF-8 string — wrong for a binary archive);
+* a result/UX model for "this input contains N candidate graphs; here they are";
+* `FilesMultiInputSource.names()` is a stub and would need completing.
+
+== 3. Archive taxonomy
+
+[%header,cols="1,2,2",grid=rows,frame=none]
+|===
+| Class | Examples | Expands to
+
+| Compression-only (single stream)
+| `.gz` `.bz2` `.xz` `.zst` `.Z`
+| One `SingleInputSource`. The inner name is the outer name minus the suffix
+  (`roads.gml.gz` → `roads.gml`), which drives extension-based detection.
+
+| Container (many members)
+| `.zip` `.jar` `.tar` `.7z`
+| A `MultiInputSource` with N members.
+
+| Compressed container
+| `.tar.gz` `.tgz` `.tar.bz2` `.tar.xz`
+| Decompress, then untar → `MultiInputSource`.
+
+| Self-describing format-archive
+| GTFS `.zip`, future multi-file formats
+| *Stays a single logical input* — the archive **is** the graph (see
+  <<gtfs,§6.2>>).
+
+| Nested
+| archive-in-archive
+| Bounded-depth recursion (see <<safety,§7>>).
+|===
+
+== 4. Components
+
+[[arch]]
+.Proposed flow
+----
+ bytes ──▶ ArchiveSniffer ──not an archive──▶ existing single-input path
+              │ (magic bytes + extension)
+              ▼ is an archive
+        ArchiveExpander
+              │
+   ┌──────────┴───────────┐
+   ▼                      ▼
+ compression-only     container
+   │                      │
+   ▼                      ▼
+ one SingleInputSource  ArchiveMultiInputSource (implements MultiInputSource)
+                          │
+                          ▼
+               per-member GioInputAnalyzer.analyze(member)
+                          │
+                          ▼
+                  ArchiveAnalysis  { members[], recommended }
+                          │
+              ┌───────────┼─────────────┐
+              ▼           ▼             ▼
+          1 graph     N graphs       0 graphs
+       auto-select   pick / ask     "no graph found"
+----
+
+=== 4.1 `ArchiveSniffer` _(new)_
+
+Classifies the raw bytes by magic number (not by extension alone, which lies):
+
+[%header,cols="1,2",grid=rows,frame=none]
+|===
+| Kind | Magic
+| ZIP / JAR | `50 4B 03 04` (`PK..`)
+| GZIP | `1F 8B`
+| BZIP2 | `42 5A 68` (`BZh`)
+| XZ | `FD 37 7A 58 5A 00`
+| ZSTD | `28 B5 2F FD`
+| 7-Zip | `37 7A BC AF 27 1C`
+| TAR | `ustar` at offset 257
+|===
+
+Output: an `ArchiveKind` enum (`NONE, ZIP, GZIP, BZIP2, XZ, ZSTD, SEVENZIP,
+TAR, TAR_GZIP, …`). Also surface a new `ContentKind.ARCHIVE` _(exists enum,
+add value)_ so `detect` can cleanly say "this is an archive" instead of
+falling back to `BINARY`.
+
+=== 4.2 `ArchiveExpander` _(new)_
+
+Turns the archive `SingleInputSource` into either a single member
+(compression-only) or an `ArchiveMultiInputSource`. Implementation:
+
+* ZIP + GZIP: `java.util.zip` — *no new dependency* (the GTFS reader already
+  uses it).
+* TAR, BZIP2, XZ, ZSTD, 7-Zip: **Apache Commons Compress** — _not yet a
+  dependency_; it is Apache-2.0 (fits the project's license set) and is the
+  standard, well-maintained choice. Add to `base` (or a new `base-archive`
+  module to keep the dependency optional).
+
+=== 4.3 `ArchiveMultiInputSource` _(new, implements `MultiInputSource`)_
+
+* `names()` — member paths, *directories and junk filtered* (skip dir entries,
+  `__MACOSX/`, `.DS_Store`, zero-length, etc.), but everything remains
+  discoverable via a `rawNames()` if asked.
+* `getNamedSource(path)` — a `SingleInputSource` over that member's bytes,
+  extracted *lazily and in memory* (bounded — see <<safety,§7>>), with
+  `name()` set to the member path so extension detection works.
+* Backed by either the in-memory archive bytes or a bounded temp extraction.
+
+=== 4.4 `ArchiveAnalysis` _(new result type)_
+
+Per-member detection aggregated:
+
+[source]
+----
+ArchiveAnalysis {
+  ArchiveKind kind;
+  List<Member> members;        // every (graph-candidate) member
+  Optional<Member> recommended; // the single best graph, if unambiguous
+}
+Member {
+  String path;
+  long sizeBytes;
+  GioInputAnalysis detect;     // the existing per-file analysis (exists)
+}
+----
+
+A member is a *graph member* when its `detect.best()` is present (i.e. some
+reader recovered/identified a graph). Members are ranked by
+`best().confidence()`. This reuses 100% of the existing detection engine.
+
+Rather than invent a parallel type, the cleaner option is to *extend*
+`GioInputAnalysis` with an optional facet
+`Optional<List<Member>> archiveMembers()` (its javadoc already mentions
+archives), keeping the single-input contract intact for non-archives.
+
+=== 4.5 Selection policy
+
+[%header,cols="1,3",grid=rows,frame=none]
+|===
+| Graph members | Behaviour
+| 0 | Report "no graph found in archive" (list what *was* inside).
+| 1 | Auto-select — archive in, graph out, transparently.
+| N | Ambiguous: recommend the highest-confidence one, but surface the full
+      list so CLI/REST/UI can let the user choose (or act on all).
+|===
+
+== 5. Detection integration
+
+`GioInputAnalyzer.analyze(SingleInputSource)` reads the whole input as a UTF-8
+string (`getContentAsUtf8String()`), which is meaningless for binary archives.
+So archive handling sits *in front of* it:
+
+. `ArchiveAwareAnalyzer.analyze(SingleInputSource)` sniffs the raw bytes (via
+  `inputStream()`, not the UTF-8 string).
+. *Not an archive* → delegate unchanged to `GioInputAnalyzer`.
+. *Archive* → ask archive-native readers first (<<gtfs,§6.2>>); if none claims
+  it, expand and run `GioInputAnalyzer.analyze` on each member, then aggregate
+  into the `ArchiveAnalysis` / `archiveMembers()` facet.
+
+The 1 MB `LARGE_FILE_THRESHOLD_BYTES` _(exists)_ in the analyzer already makes
+big inputs cheap to skip; per-member analysis stays bounded by the same logic.
+
+== 6. Reader integration
+
+Two distinct paths, chosen by detection:
+
+=== 6.1 Generic "graph inside a container" (default)
+
+Expand → select a member → feed *that member's* `SingleInputSource` to the
+normal reader pipeline. This is format-agnostic and works for **every** reader
+with zero reader changes — the archive layer is invisible to readers.
+
+[[gtfs]]
+=== 6.2 "The archive IS the format" (GTFS-style)
+
+Some formats span many files inside one archive (GTFS). These must consume the
+*whole* archive, not a single member. Reconciliation:
+
+* When the sniffer says "ZIP/TAR", first offer the archive to *archive-native*
+  readers. A reader signals this capability (proposal): `GioReader` gains
+  `default Set<ArchiveKind> consumesArchives() { return Set.of(); }` and GTFS
+  returns `{ZIP}`; it then `isValid()`-probes the archive (does it contain
+  `stops.txt`, `routes.txt`, …?).
+* If a native reader claims it → treat as a *single* input (the whole archive),
+  no member expansion.
+* Otherwise → generic container path (§6.1).
+
+This keeps the existing GTFS behaviour and generalises it.
+
+== 7. Safety & hardening [[safety]]
+
+Archives are a classic attack surface; the REST/UI paths receive *untrusted*
+uploads. All limits are configurable (`ArchiveLimits`) with safe server-side
+defaults:
+
+* *Decompression-bomb guard* — cap total uncompressed size (e.g. 256 MB) and
+  the compression ratio (e.g. 100:1); abort with a clear error.
+* *Member-count cap* (e.g. 10 000 entries).
+* *Per-member and total size caps.*
+* *Nesting-depth cap* (e.g. 2) for archive-in-archive.
+* *Zip-slip / path traversal* — member names with `..` or absolute paths are
+  rejected/sanitised. By default we *stream members in memory* and never
+  extract to disk; optional temp-dir extraction is behind a flag with
+  guaranteed cleanup.
+* *Time budget* per analysis.
+
+Errors flow through the existing `ContentError` (`Error`/`Warn`) +
+`setContentErrorHandler` mechanism _(exists)_.
+
+== 8. CLI
+
+Every command (`detect`, `analyze`, `meta`, `convert`) accepts an archive path
+transparently — the `FileSingleInputSource` _(exists)_ built at each command is
+wrapped by the archive layer.
+
+.Transparent single-graph cases
+[source,console]
+----
+# compression-only: decompress, detect inner graph.gml, convert
+gio convert roads.gml.gz --to graphml
+
+# container with exactly one graph member: auto-selected
+gio convert dataset.zip --to dot
+----
+
+.Inspecting & choosing
+[source,console]
+----
+# list archive members with detected format + confidence (no conversion)
+gio ls exports.zip
+#   g1.gml         gml        CONFIDENT (0.95)
+#   g2.graphml     graphml    CONFIDENT (0.91)
+#   notes.txt      —          (no graph)
+
+# detect over an archive prints the ranked members + the recommended one
+gio detect exports.zip
+
+# pick a specific member (exact path or glob)
+gio convert exports.zip --member 'g2.graphml' --to dot
+gio convert exports.zip --member '*.gml' --to dot
+----
+
+.Acting on all graphs
+[source,console]
+----
+gio convert exports.zip --all --to graphml -o out/        # one file per graph
+gio convert exports.zip --all --to graphml --archive-out out.zip
+----
+
+New options: `--member <path|glob>`, `--list` (or the `ls` command), `--all`,
+`--archive-out <file>`. *Ambiguity rule:* `convert <archive>` with multiple
+graphs and no `--member` fails fast, listing the members and asking the user to
+choose — never silently picks.
+
+== 9. REST API
+
+=== 9.1 `/api/detect`
+
+Response gains an optional `archive` facet; non-archives are unchanged:
+
+[source,json]
+----
+{
+  "contentKind": "ARCHIVE",
+  "archive": {
+    "kind": "ZIP",
+    "recommendedMember": "g1.gml",
+    "members": [
+      { "path": "g1.gml",     "sizeBytes": 5120, "detect": { /* DetectResultDto */ } },
+      { "path": "g2.graphml", "sizeBytes": 8210, "detect": { /* DetectResultDto */ } },
+      { "path": "notes.txt",  "sizeBytes": 64,   "detect": { "best": null } }
+    ]
+  }
+}
+----
+
+=== 9.2 `/api/convert`
+
+`ConverterRequest` _(exists, Base64 `inputContent` + `fileName`)_ gains:
+
+* `member` (optional) — path or glob selecting the archive entry; default = the
+  single/best graph member.
+* `allMembers` (optional) — convert every graph member; response returns an
+  output archive (Base64) or a list of outputs.
+
+If the archive has multiple graphs and no `member` is given → `400` with the
+member list in the issues, so the UI can prompt (mirrors the CLI ambiguity
+rule). New DTOs: `ArchiveDetectDto`, `ArchiveMemberDto`. The same
+`ArchiveLimits` are enforced server-side (stricter caps for uploads). Memory
+stays bounded by the existing decode-to-bytes model plus the safety caps.
+
+== 10. Web UI
+
+The existing convert widget gains an *archive step* between upload and
+format-choice:
+
+. User drops/uploads an archive → `POST /api/detect` returns the member list.
+. *0 graphs* → friendly "no graph found in this archive" with the file listing.
+. *1 graph* → proceed automatically, showing a breadcrumb
+  `exports.zip › g1.gml` so the choice is transparent and reversible.
+. *N graphs* → a *member picker*: a table of entries each with a detected-format
+  badge + confidence; non-graph entries collapsed under "show all files". The
+  user picks one (or "Convert all → download .zip").
+. Guardrails surfaced: member count, total size, and a clear message if the
+  archive exceeds limits.
+
+== 11. New / changed types (summary)
+
+[%header,cols="2,1,3",grid=rows,frame=none]
+|===
+| Type | New? | Note
+| `ArchiveKind` (enum) | new | ZIP, GZIP, TAR, TAR_GZIP, BZIP2, XZ, ZSTD, SEVENZIP, …
+| `ContentKind.ARCHIVE` | add value | clean "this is an archive" signal
+| `ArchiveSniffer` | new | magic-byte classification
+| `ArchiveExpander` | new | sniff → single member or `ArchiveMultiInputSource`
+| `ArchiveMultiInputSource` | new | implements existing `MultiInputSource`
+| `ArchiveAnalysis` / `GioInputAnalysis.archiveMembers()` | new facet | per-member ranking
+| `ArchiveAwareAnalyzer` | new | wraps `GioInputAnalyzer`
+| `GioReader.consumesArchives()` | add default | GTFS-style "archive is the format"
+| `ArchiveLimits` | new | configurable safety caps
+| `FilesMultiInputSource.names()` | fix | currently a stub
+|===
+
+== 12. Implementation phases
+
+. *Phase 0* — `ArchiveSniffer` + `ContentKind.ARCHIVE`; `detect` reports
+  "archive" (no expansion). Pure addition, no new dependency.
+. *Phase 1* — ZIP + GZIP expansion via `java.util.zip` (reuse the GTFS code);
+  `ArchiveMultiInputSource`; per-member detection; CLI auto-select-single +
+  `--member` + `ls`. Still no new dependency.
+. *Phase 2* — add Apache Commons Compress → TAR, `.tar.gz`, BZIP2, XZ, ZSTD,
+  7-Zip.
+. *Phase 3* — REST `/api/detect` archive facet + `/api/convert` `member`
+  selection; safety caps server-side.
+. *Phase 4* — Web UI member picker; CLI `--all` / `--archive-out`; nested
+  archives.
+. *Phase 5* — GTFS-style "archive is the format" reconciliation
+  (`consumesArchives()` + probe ordering).
+
+== 13. Open questions
+
+* *One-member transparency* — auto-select a sole graph (recommended) vs always
+  show the picker? Proposed: auto-select, with a visible/reversible breadcrumb.
+* *Tie-breaking* among equal-confidence graphs — path order, largest, or always
+  prompt? Proposed: prompt (CLI/REST error, UI picker).
+* *Asset resolution* — a member graph that references sibling files (e.g. a
+  GraphML pointing at external data). Out of scope for v1; the existing
+  `ParameterizedInputSource` (carries a base URI) _(exists)_ is the natural hook
+  to resolve sibling members later.
+* *`--all` output shape* — many files vs one output archive (support both).
+* *Dependency footprint* — Commons Compress pulls a few transitive deps;
+  isolating archive support in a `base-archive` module keeps it optional.
