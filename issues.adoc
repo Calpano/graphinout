@@ -1,0 +1,77 @@
+= Open Issues
+:toc:
+
+Issues surfaced while triaging test-log spam on 2026-06-30 (full `mvn clean test`, all
+modules). After silencing the three noise sources (GmlTokenizer per-token WARN, Apache
+Jena's RIOT logger, and the `ReaderTests` probe catch), the log shrank from ~890,000 to
+~15,900 lines — and the warnings below stopped being drowned. Most are emitted because
+detection probes every reader against every file, but several point at genuine behaviour
+worth fixing. Severity is the author's estimate; "investigate" means *confirm whether it
+fires on inputs that should parse, vs. detection probing incompatible files*.
+
+== Done (noise removed)
+
+* `GmlTokenizer` no longer logs a WARN per unhandled token; it reports a single capped
+  `ContentError` and bails once the input is clearly not GML (was ~860k log lines).
+* `logback-test.xml` (base) silences `org.apache.jena` — its RIOT parser logs at ERROR on
+  non-RDF input; the RDF reader already surfaces real problems as `ContentError`s.
+* `ReaderTests.testWithAllResource` logs expected probe failures at DEBUG, not WARN+stacktrace.
+
+== Genuine issues
+
+=== I1 — CJ reader silently drops unknown properties [HIGH / investigate]
+`Json2CjWriter` (`com.graphinout.base.cj.writer.JsonNCjWriter`) logs `Unknown property … in CJ`
+~200×, then drops the property. Observed keys: `options` (134×, on RootObject — likely a
+grale or OCIF document property), and JSON-LD/RDF keys `@id` `@type` `@graph` `nodes` `maker`
+`primaryTopic` `label` `created`, plus `foaf:*` / full-IRI keys.
+
+* *Risk:* silent data loss on read into CJ. If `options` belongs to a grale/OCIF file that
+  should round-trip, the data is dropped without a `ContentError` the caller can act on.
+* *Action:* determine which reader+fixtures produce each key. If they are real inputs (not
+  detection probing non-CJ JSON), either model the property or report a proper `ContentError`
+  instead of a silent WARN.
+
+=== I2 — GraphML `<data>` referencing an undeclared `<key>` is dropped [MEDIUM / investigate]
+`GraphmlNCjDocument` logs `Found no <key id=…> for <data key='dN'>` ~42× and drops the `<data>`.
+
+* *Risk:* data loss for GraphML that uses keys not declared up front (common in the wild).
+* *Action:* confirm whether the offending fixtures are negative tests or valid GraphML; if
+  valid, retain the data (e.g. infer a string key) rather than dropping it.
+
+=== I3 — Neo4j writer emits empty output for some CJ inputs [MEDIUM / investigate]
+`NeoNj JSON output is empty for json/connected-json/.../custom-data-simpleN.cj.json (may not …)` ×2.
+
+* *Action:* check whether these CJ documents should produce Neo4j output; if so the LPG
+  writer is dropping them.
+
+=== I4 — GraphmlReader logs every ContentError at WARN [LOW]
+`com.graphinout.reader.graphml.GraphmlReader` logs `ContentError` ~200× — the same
+anti-pattern just fixed in GML: the reader both *reports* a `ContentError` and *logs* it.
+
+* *Action:* route through the `ContentError` handler only; log at DEBUG. (The underlying
+  errors are I2.)
+
+=== I5 — OCIF: many fixtures lack a schema declaration [LOW]
+OCIF reader logs `Found no OCIF schema, using v0.6` / `assuming …/ocif/vN.N.N` ~84×, defaulting
+the version.
+
+* *Action:* decide if the test data should declare a schema; otherwise drop this to INFO so a
+  reasonable default isn't reported as a warning.
+
+=== I6 — A few Jena `riot` ERROR lines still leak [LOW]
+~6 `ERROR riot - …` lines (e.g. `Unrecognized keyword: A`) survive the `org.apache.jena` OFF
+rule — emitted under a logger named `riot` from a module that doesn't pick up base's
+`logback-test.xml`. Negative-test RDF input.
+
+* *Action:* add `<logger name="riot" level="OFF"/>` (or give that module its own config).
+
+== Known limitations (not bugs)
+
+* I7 — `MermaidOutput`: `Cannot represent hyper-edge in Mermaid flowchart` ×3. Mermaid
+  flowcharts have no hyper-edge syntax; the warning is expected. Documented for completeness.
+
+== Cross-cutting note
+The root cause of the original spam is an anti-pattern: **readers logging parse problems
+directly instead of reporting them via the `ContentError` handler and letting the caller
+decide whether to log.** GML is fixed; GraphML (I4) still does it. Worth a sweep of all
+readers for stray `log.warn`/`log.error` on parse paths.

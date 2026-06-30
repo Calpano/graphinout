@@ -19,6 +19,10 @@
     <logger name="com.graphinout.reader.graphml.GraphmlSAXHandler" level="INFO" />
     <logger name="com.graphinout.reader.graphml.validation.graphml.graphml.ValidatingGraphMlWriter" level="INFO" />
 
+    <!-- Apache Jena's RIOT parser logs at ERROR when probed against non-RDF input (detection tries every reader);
+         the RDF reader surfaces real problems as ContentErrors, so silence Jena's own logger during tests. -->
+    <logger name="org.apache.jena" level="OFF" />
+
     <!-- Default to WARN so test runs stay quiet/fast; override with -Dgio.log.level=debug (or info/trace). -->
     <root level="${gio.log.level:-warn}">
         <appender-ref ref="Console" />

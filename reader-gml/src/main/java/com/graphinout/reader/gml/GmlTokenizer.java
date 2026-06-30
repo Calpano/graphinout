@@ -17,6 +17,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class GmlTokenizer {
 
     private static final Logger log = getLogger(GmlTokenizer.class);
+    /** Beyond this many unexpected characters the input clearly is not GML; stop, to avoid flooding errors/logs. */
+    private static final int MAX_UNEXPECTED_TOKENS = 50;
     private final StreamTokenizer tokenizer;
     private final IGmlHandler handler;
     private @Nullable Consumer<ContentError> errorHandler;
@@ -71,6 +73,7 @@ public class GmlTokenizer {
     }
 
     public void parse() throws IOException {
+        int unexpected = 0;
         while (tokenizer.nextToken() != StreamTokenizer.TT_EOF) {
             if (tokenizer.ttype == StreamTokenizer.TT_WORD) {
                 handler.key(tokenizer.sval);
@@ -92,9 +95,18 @@ public class GmlTokenizer {
             } else if (tokenizer.ttype == ']') {
                 handler.close();
             } else {
-                String shown = tokenizer.ttype >= 0 ? "'" + (char) tokenizer.ttype + "'" : "type " + tokenizer.ttype;
-                log.warn("Unhandled token {}", shown);
+                // Unexpected character: report it through the content-error handler (the caller decides whether to
+                // log) and NEVER log per token — detection probes this reader against every input, so a non-GML file
+                // would otherwise flood the log with one WARN per character. Bail once it is clearly not GML.
+                if (++unexpected > MAX_UNEXPECTED_TOKENS) {
+                    if (errorHandler != null) {
+                        errorHandler.accept(ContentError.of(ContentError.ErrorLevel.Warn, //
+                                "Too many unexpected characters — input does not look like GML", Location.of(tokenizer.lineno(), 1)));
+                    }
+                    return;
+                }
                 if (errorHandler != null) {
+                    String shown = tokenizer.ttype >= 0 ? "'" + (char) tokenizer.ttype + "'" : "type " + tokenizer.ttype;
                     errorHandler.accept(ContentError.of(ContentError.ErrorLevel.Warn, //
                             "Unexpected character " + shown + " in GML", Location.of(tokenizer.lineno(), 1)));
                 }

@@ -111,7 +111,9 @@ public class ReaderTests {
             try {
                 testReadResourceToGraph(gioReader, resourcePath, expectedErrorsFun.apply(resourcePath));
             } catch (Throwable e) {
-                log.warn("Exception during parsing", e);
+                // Expected when probing readers against incompatible input and for negative tests — keep at DEBUG so
+                // it doesn't drown the real signal (raise with -Dgio.log.level=debug).
+                log.debug("Exception during parsing", e);
             }
         });
     }
