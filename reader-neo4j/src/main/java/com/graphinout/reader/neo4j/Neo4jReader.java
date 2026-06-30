@@ -244,6 +244,10 @@ public class Neo4jReader implements GioReader, GioWriter {
 
     @Override
     public ICjStream createCjStream(OutputSink outputSink) {
-        return new Neo4jWriter(outputSink);
+        Neo4jWriter writer = new Neo4jWriter(outputSink);
+        if (errorHandler != null) {
+            writer.setContentErrorHandler(errorHandler);
+        }
+        return writer;
     }
 }

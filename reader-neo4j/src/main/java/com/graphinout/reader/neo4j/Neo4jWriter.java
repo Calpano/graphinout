@@ -20,6 +20,7 @@ public class Neo4jWriter extends BaseCjOutput implements ICjStream {
 
     private final OutputSink outputSink;
     private final ObjectMapper objectMapper;
+    private boolean wroteAnything = false;
 
     public Neo4jWriter(OutputSink outputSink) {
         this.outputSink = outputSink;
@@ -33,7 +34,11 @@ public class Neo4jWriter extends BaseCjOutput implements ICjStream {
 
     @Override
     public void documentEnd() {
-        // No-op: Neo4j JSON Lines format has no document wrapper
+        // A Neo4j property graph is nodes + relationships only. A document with no nodes/edges (e.g. only
+        // document-level custom data) produces no output; report that loss instead of writing silence.
+        if (!wroteAnything) {
+            sendContentError_Warn("No nodes or edges to export to Neo4j; the document has no graph content");
+        }
     }
 
     @Override
@@ -143,6 +148,7 @@ public class Neo4jWriter extends BaseCjOutput implements ICjStream {
     private void writeJsonLine(Map<String, Object> object) throws IOException {
         String json = objectMapper.writeValueAsString(object);
         outputSink.write(json + "\n");
+        wroteAnything = true;
     }
 
     private Map<String, Object> extractProperties(IJsonValue jsonValue) {

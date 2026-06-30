@@ -141,6 +141,8 @@ class Neo4jRoundTripTest {
         Neo4jReader neo4jWriter = new Neo4jReader();
         InMemoryOutputSink neo4jSink = InMemoryOutputSink.create();
 
+        java.util.List<com.graphinout.foundation.pure.input.ContentError> writeErrors = new java.util.ArrayList<>();
+        neo4jWriter.setContentErrorHandler(writeErrors::add);
         ICjStream neo4jStream = neo4jWriter.createCjStream(neo4jSink);
         ICjWriter cjWriter = new CjWriter2CjStream(neo4jStream);
         originalCjDoc.fire(cjWriter, false);
@@ -149,7 +151,10 @@ class Neo4jRoundTripTest {
         log.debug("Neo4j JSON:\n{}", neo4jJson);
 
         if (neo4jJson.isEmpty()) {
-            log.warn("Neo4j JSON output is empty for {} (may not have convertible content)", res.getPath());
+            // Graph-less documents (only document-level data) legitimately produce no Neo4j output — but the
+            // writer must report that loss as a ContentError rather than emitting silence (issues.adoc I3).
+            assertFalse(writeErrors.isEmpty(),
+                    "empty Neo4j output must be reported as a ContentError for " + res.getPath());
             return;
         }
 

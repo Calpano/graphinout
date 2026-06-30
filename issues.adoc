@@ -49,11 +49,16 @@ JSON-LD/RDF keys `@id` `@type` `@graph` `nodes` `maker` `primaryTopic` `label` `
   key — both are malformed per the GraphML spec (every `<data key>` must be declared).
 * *Action:* none required (recovery is correct); optionally fix the fixtures to declare the keys.
 
-=== I3 — Neo4j writer emits empty output for some CJ inputs [MEDIUM / investigate]
-`NeoNj JSON output is empty for json/connected-json/.../custom-data-simpleN.cj.json (may not …)` ×2.
+=== I3 — Neo4j writer emits empty output for some CJ inputs [DONE]
+The two inputs (`custom-data-simple2.cj.json`, `custom-data-simple3.cj.json`) have *only*
+document-level `data` and no `graphs`/nodes/edges. A Neo4j property graph is nodes +
+relationships, so empty output is correct — not a writer bug. But it was *silent* data loss.
 
-* *Action:* check whether these CJ documents should produce Neo4j output; if so the LPG
-  writer is dropping them.
+* *Fix:* `Neo4jWriter` (which already extends `BaseCjOutput implements IHandleContentErrors`) now
+  reports a `ContentError` from `documentEnd()` when nothing was written ("No nodes or edges to
+  export to Neo4j; the document has no graph content"). `Neo4jReader.createCjStream` forwards the
+  configured handler to the writer, so a CLI convert surfaces it on stderr. `Neo4jRoundTripTest`
+  now asserts empty output is always explained by a reported `ContentError`, never silence.
 
 === I4 — GraphmlReader logged every ContentError at WARN [DONE]
 `GraphmlReader` and `Xml2GraphmlWriter` both *reported* a `ContentError` and then re-logged it
