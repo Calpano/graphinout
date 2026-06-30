@@ -19,6 +19,9 @@ Added::
 * `self-loops` and `parallel-edges` to the `CjFeature` vocabulary.
 * `LICENSES/` folder reproducing every (transitive) dependency's own license text,
   linked from `THIRD_PARTY.adoc`; `archive-concept.adoc` design note.
+* A write-time `ContentError` channel for output writers (`GioWriter.setContentErrorHandler`):
+  the format writers (GML, DOT, D2, Mermaid, TGF) now report graph data the target format cannot
+  represent (hyper-edges, nodes without ids); the CLI `convert` surfaces it on stderr.
 
 Changed::
 * `AnonymizingCjStream` and the meta-graph collector are now streaming (only id/key
@@ -26,10 +29,20 @@ Changed::
 * GraphML/GEXF readers stream-decode HTML named entities, and GraphML parses
   non-standard `attr.type`/`edgedefault` leniently (warn instead of fail).
 * Harmonized transitive dependency versions to a single resolved version each.
+* Readers report parse problems through the `ContentError` handler instead of logging them
+  directly, and cap the reports once an input clearly isn't their format (GML, GraphML, GEXF,
+  OCIF, CJ, RDF) — removing incidental log noise during format detection.
+* OCIF assumes **v0.7** (was v0.6) when a document declares no schema.
+* Published POMs are flattened for Maven Central (self-contained: resolved dependency versions
+  plus project metadata) via `flatten-maven-plugin`.
 
 Removed::
 * The whole-document anonymizer (the streaming one replaces it, verified equivalent
   across the test corpus).
+
+Fixed::
+* The Neo4j writer reports a `ContentError` when a document has no nodes or edges to export,
+  instead of silently producing empty output.
 
 == 0.2.0 — 2026-06-16
 
