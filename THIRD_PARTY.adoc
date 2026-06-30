@@ -129,104 +129,107 @@ https://github.com/FasterXML/jackson-dataformats-text
 
 == Complete Dependency List (including transitive)
 
-The curated sections above describe the direct dependencies. The list below is the
+The curated sections above describe the direct dependencies. The table below is the
 full resolved Maven dependency tree across all modules (generated with
-`mvn license:aggregate-add-third-party`); internal `com.graphinout:*` modules are
-omitted. Each entry is `(License) Name (groupId:artifactId:version - URL)`.
+`mvn license:aggregate-add-third-party`, then sorted by name with license names
+normalised); internal `com.graphinout:*` modules are omitted.
 
-----
-(Apache 2.0) AutoValue Annotations (com.google.auto.value:auto-value-annotations:1.11.0 - https://github.com/google/auto/tree/main/value)
-(Apache 2.0) error-prone annotations (com.google.errorprone:error_prone_annotations:2.26.1 - https://errorprone.info/error_prone_annotations)
-(Apache 2.0) error-prone annotations (com.google.errorprone:error_prone_annotations:2.28.0 - https://errorprone.info/error_prone_annotations)
-(Apache 2) org.roaringbitmap:RoaringBitmap (org.roaringbitmap:RoaringBitmap:1.3.0 - https://github.com/RoaringBitmap/RoaringBitmap)
-(Apache License 2.0) (LGPL 2.1) (MPL 1.1) Javassist (org.javassist:javassist:3.30.2-GA - https://www.javassist.org/)
-(Apache License Version 2.0) JsonSchemaValidator (com.networknt:json-schema-validator:1.5.9 - https://github.com/networknt/json-schema-validator)
-(Apache License, Version 2.0) (GNU Lesser General Public License) com.github.javaparser:javaparser-core (com.github.javaparser:javaparser-core:3.28.0 - https://github.com/javaparser)
-(Apache License, Version 2.0) (GNU Lesser General Public License) com.github.javaparser:javaparser-symbol-solver-core (com.github.javaparser:javaparser-symbol-solver-core:3.28.0 - https://github.com/javaparser)
-(Apache License, Version 2.0) Apache HttpClient (org.apache.httpcomponents.client5:httpclient5:5.6 - https://hc.apache.org/httpcomponents-client-5.5.x/5.6/httpclient5/)
-(Apache License, Version 2.0) Apache HttpComponents Core HTTP/1.1 (org.apache.httpcomponents.core5:httpcore5:5.4 - https://hc.apache.org/httpcomponents-core-5.4.x/5.4/httpcore5/)
-(Apache License, Version 2.0) Apache HttpComponents Core HTTP/2 (org.apache.httpcomponents.core5:httpcore5-h2:5.4 - https://hc.apache.org/httpcomponents-core-5.4.x/5.4/httpcore5-h2/)
-(Apache License, Version 2.0) Byte Buddy (without dependencies) (net.bytebuddy:byte-buddy:1.14.8 - https://bytebuddy.net/byte-buddy)
-(Apache License, Version 2.0) Byte Buddy agent (net.bytebuddy:byte-buddy-agent:1.14.8 - https://bytebuddy.net/byte-buddy-agent)
-(Apache License, Version 2.0) Caffeine cache (com.github.ben-manes.caffeine:caffeine:3.2.2 - https://github.com/ben-manes/caffeine)
-(Apache License, Version 2.0) Guava: Google Core Libraries for Java (com.google.guava:guava:33.2.0-jre - https://github.com/google/guava)
-(Apache License, Version 2.0) Internet Time Utility (com.ethlo.time:itu:1.14.0 - https://github.com/ethlo/itu)
-(Apache License, Version 2.0) J2ObjC Annotations (com.google.j2objc:j2objc-annotations:3.0.0 - https://github.com/google/j2objc/)
-(Apache License, Version 2.0) JHeaps (org.jheaps:jheaps:0.14 - http://www.jheaps.org)
-(Apache License, Version 2.0) Objenesis (org.objenesis:objenesis:3.3 - http://objenesis.org/objenesis)
-(Apache License, Version 2.0) Titanium JCS (com.apicatalog:titanium-jcs:1.1.1 - https://github.com/filip26/titanium-jcs)
-(Apache License, Version 2.0) Titanium JSON-LD 1.1 (JRE11) (com.apicatalog:titanium-json-ld:1.7.0 - https://github.com/filip26/titanium-json-ld)
-(Apache License, Version 2.0) Titanium RDF API (com.apicatalog:titanium-rdf-api:1.0.0 - https://github.com/filip26/titanium-rdf-api)
-(Apache License, Version 2.0) Titanium RDF N-QUADS (com.apicatalog:titanium-rdf-n-quads:1.0.2 - https://github.com/filip26/titanium-rdf-n-quads)
-(Apache-2.0) Apache Commons BCEL (org.apache.bcel:bcel:6.12.0 - https://commons.apache.org/proper/commons-bcel)
-(Apache-2.0) Apache Commons Codec (commons-codec:commons-codec:1.19.0 - https://commons.apache.org/proper/commons-codec/)
-(Apache-2.0) Apache Commons Collections (org.apache.commons:commons-collections4:4.5.0 - https://commons.apache.org/proper/commons-collections/)
-(Apache-2.0) Apache Commons Compress (org.apache.commons:commons-compress:1.28.0 - https://commons.apache.org/proper/commons-compress/)
-(Apache-2.0) Apache Commons CSV (org.apache.commons:commons-csv:1.14.1 - https://commons.apache.org/proper/commons-csv/)
-(Apache-2.0) Apache Commons IO (commons-io:commons-io:2.20.0 - https://commons.apache.org/proper/commons-io/)
-(Apache-2.0) Apache Commons Lang (org.apache.commons:commons-lang3:3.18.0 - https://commons.apache.org/proper/commons-lang/)
-(Apache-2.0) Apache Commons Lang (org.apache.commons:commons-lang3:3.19.0 - https://commons.apache.org/proper/commons-lang/)
-(Apache-2.0) Apache Commons Lang (org.apache.commons:commons-lang3:3.20.0 - https://commons.apache.org/proper/commons-lang/)
-(Apache-2.0) Apache Commons Logging (commons-logging:commons-logging:1.3.6 - https://commons.apache.org/proper/commons-logging/)
-(Apache-2.0) Apache Commons Text (org.apache.commons:commons-text:1.14.0 - https://commons.apache.org/proper/commons-text)
-(Apache-2.0) Gson (com.google.code.gson:gson:2.13.2 - https://github.com/google/gson)
-(Apache-2.0) JCL 1.2 implemented over SLF4J (org.slf4j:jcl-over-slf4j:2.0.17 - http://www.slf4j.org)
-(BSD-3-Clause) ANTLR 4 Runtime (org.antlr:antlr4-runtime:4.12.0 - https://www.antlr.org/antlr4-runtime/)
-(BSD-3-Clause) asm (org.ow2.asm:asm:9.7 - http://asm.ow2.io/)
-(BSD-3-Clause) Protocol Buffers [Core] (com.google.protobuf:protobuf-java:4.32.1 - https://developers.google.com/protocol-buffers/protobuf-java/)
-(CDDL 1.1) (GPL2 w/ CPE) jaxb-api (javax.xml.bind:jaxb-api:2.4.0-b180830.0359 - https://github.com/javaee/jaxb-spec/jaxb-api)
-(CDDL/GPLv2+CE) JavaBeans Activation Framework API jar (javax.activation:javax.activation-api:1.2.0 - http://java.net/all/javax.activation-api/)
-(Eclipse Public License - v 2.0) (GNU Lesser General Public License) Logback Classic Module (ch.qos.logback:logback-classic:1.5.32 - http://logback.qos.ch/logback-classic)
-(Eclipse Public License - v 2.0) (GNU Lesser General Public License) Logback Core Module (ch.qos.logback:logback-core:1.5.32 - http://logback.qos.ch/logback-core)
-(Eclipse Public License (EPL) 2.0) (GNU Lesser General Public License Version 2.1, February 1999) JGraphT - Core (org.jgrapht:jgrapht-core:1.5.2 - http://www.jgrapht.org/jgrapht-core)
-(Eclipse Public License (EPL) 2.0) (GNU Lesser General Public License Version 2.1, February 1999) JGraphT - I/O (org.jgrapht:jgrapht-io:1.5.2 - http://www.jgrapht.org/jgrapht-io)
-(Eclipse Public License 1.0) JUnit (junit:junit:4.13.2 - http://junit.org)
-(Eclipse Public License 2.0) (GNU General Public License, version 2 with the GNU Classpath Exception) JSON-P Default Provider (org.glassfish:jakarta.json:2.0.1 - https://github.com/eclipse-ee4j/jsonp)
-(Eclipse Public License v2.0) JUnit Jupiter (Aggregator) (org.junit.jupiter:junit-jupiter:5.9.0 - https://junit.org/junit5/)
-(Eclipse Public License v2.0) JUnit Jupiter API (org.junit.jupiter:junit-jupiter-api:5.9.0 - https://junit.org/junit5/)
-(Eclipse Public License v2.0) JUnit Jupiter API (org.junit.jupiter:junit-jupiter-api:5.9.2 - https://junit.org/junit5/)
-(Eclipse Public License v2.0) JUnit Jupiter Engine (org.junit.jupiter:junit-jupiter-engine:5.9.0 - https://junit.org/junit5/)
-(Eclipse Public License v2.0) JUnit Jupiter Params (org.junit.jupiter:junit-jupiter-params:5.9.0 - https://junit.org/junit5/)
-(Eclipse Public License v2.0) JUnit Platform Commons (org.junit.platform:junit-platform-commons:1.9.0 - https://junit.org/junit5/)
-(Eclipse Public License v2.0) JUnit Platform Commons (org.junit.platform:junit-platform-commons:1.9.2 - https://junit.org/junit5/)
-(Eclipse Public License v2.0) JUnit Platform Engine API (org.junit.platform:junit-platform-engine:1.9.0 - https://junit.org/junit5/)
-(MIT License) apfloat (org.apfloat:apfloat:1.10.1 - http://www.apfloat.org)
-(MIT License) dexx (com.github.andrewoma.dexx:collection:0.7 - https://github.com/andrewoma/dexx)
-(MIT License) JCodings (org.jruby.jcodings:jcodings:1.0.63 - http://nexus.sonatype.org/oss-repository-hosting.html/jcodings)
-(MIT License) Joni (org.jruby.joni:joni:2.2.6 - http://nexus.sonatype.org/oss-repository-hosting.html/joni)
-(MIT License) PlantUML (net.sourceforge.plantuml:plantuml-mit:1.2026.6 - https://plantuml.com/)
-(MIT) mockito-core (org.mockito:mockito-core:5.6.0 - https://github.com/mockito/mockito)
-(MIT) SLF4J API Module (org.slf4j:slf4j-api:2.0.17 - http://www.slf4j.org)
-(New BSD License) Hamcrest Core (org.hamcrest:hamcrest-core:1.3 - https://github.com/hamcrest/JavaHamcrest/hamcrest-core)
-(The Apache License, Version 2.0) JSpecify annotations (org.jspecify:jspecify:1.0.0 - http://jspecify.org/)
-(The Apache License, Version 2.0) org.apiguardian:apiguardian-api (org.apiguardian:apiguardian-api:1.1.2 - https://github.com/apiguardian-team/apiguardian)
-(The Apache License, Version 2.0) org.opentest4j:opentest4j (org.opentest4j:opentest4j:1.2.0 - https://github.com/ota4j-team/opentest4j)
-(The Apache License, Version 2.0) structurizr-client (com.structurizr:structurizr-client:6.2.1 - https://docs.structurizr.com/structurizr-client)
-(The Apache License, Version 2.0) structurizr-component (com.structurizr:structurizr-component:6.2.1 - https://docs.structurizr.com/structurizr-component)
-(The Apache License, Version 2.0) structurizr-core (com.structurizr:structurizr-core:6.2.1 - https://docs.structurizr.com/structurizr-core)
-(The Apache License, Version 2.0) structurizr-dsl (com.structurizr:structurizr-dsl:6.2.1 - https://docs.structurizr.com/structurizr-dsl)
-(The Apache License, Version 2.0) structurizr-export (com.structurizr:structurizr-export:6.2.1 - https://docs.structurizr.com/structurizr-export)
-(The Apache License, Version 2.0) structurizr-import (com.structurizr:structurizr-import:6.2.1 - https://docs.structurizr.com/structurizr-import)
-(The Apache Software License, Version 2.0) Apache Jena - ARQ (org.apache.jena:jena-arq:5.6.0 - https://jena.apache.org/jena-arq/)
-(The Apache Software License, Version 2.0) Apache Jena - Base (org.apache.jena:jena-base:5.6.0 - https://jena.apache.org/jena-base/)
-(The Apache Software License, Version 2.0) Apache Jena - Core (org.apache.jena:jena-core:5.6.0 - https://jena.apache.org/jena-core/)
-(The Apache Software License, Version 2.0) Apache Jena - IRI (org.apache.jena:jena-iri:5.6.0 - https://jena.apache.org/jena-iri/)
-(The Apache Software License, Version 2.0) Apache Jena - IRI3986 (org.apache.jena:jena-iri3986:5.6.0 - https://jena.apache.org/jena-iri3986/)
-(The Apache Software License, Version 2.0) Apache Jena - Language tags (org.apache.jena:jena-langtag:5.6.0 - https://jena.apache.org/jena-langtag/)
-(The Apache Software License, Version 2.0) Apache Thrift (org.apache.thrift:libthrift:0.22.0 - https://thrift.apache.org/)
-(The Apache Software License, Version 2.0) Elemental2 Core (com.google.elemental2:elemental2-core:1.1.0 - https://www.gwtproject.org)
-(The Apache Software License, Version 2.0) Elemental2 Promise (com.google.elemental2:elemental2-promise:1.1.0 - https://www.gwtproject.org)
-(The Apache Software License, Version 2.0) FindBugs-jsr305 (com.google.code.findbugs:jsr305:3.0.2 - http://findbugs.sourceforge.net/)
-(The Apache Software License, Version 2.0) Guava InternalFutureFailureAccess and InternalFutures (com.google.guava:failureaccess:1.0.2 - https://github.com/google/guava/failureaccess)
-(The Apache Software License, Version 2.0) Guava ListenableFuture only (com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava - https://github.com/google/guava/listenablefuture)
-(The Apache Software License, Version 2.0) GWT Regular Expression (org.gwtproject.regexp:gwt-regexp:1.0.0-RC1 - https://github.com/gwtproject/gwt-regexp)
-(The Apache Software License, Version 2.0) Jackson-annotations (com.fasterxml.jackson.core:jackson-annotations:2.20 - https://github.com/FasterXML/jackson)
-(The Apache Software License, Version 2.0) Jackson-annotations (com.fasterxml.jackson.core:jackson-annotations:2.21 - https://github.com/FasterXML/jackson)
-(The Apache Software License, Version 2.0) Jackson-core (com.fasterxml.jackson.core:jackson-core:2.21.2 - https://github.com/FasterXML/jackson-core)
-(The Apache Software License, Version 2.0) jackson-databind (com.fasterxml.jackson.core:jackson-databind:2.21.2 - https://github.com/FasterXML/jackson)
-(The Apache Software License, Version 2.0) JsInterop Base (com.google.jsinterop:base:1.0.0 - https://www.gwtproject.org)
-(The Apache Software License, Version 2.0) Truth Core (com.google.truth:truth:1.4.4 - http://github.com/google/truth/truth)
-(The MIT License (MIT)) ClassGraph (io.github.classgraph:classgraph:4.8.157 - https://github.com/classgraph/classgraph)
-(The MIT License) Checker Qual (org.checkerframework:checker-qual:3.42.0 - https://checkerframework.org/)
-(The MIT License) mockito-junit-jupiter (org.mockito:mockito-junit-jupiter:5.1.1 - https://github.com/mockito/mockito)
-----
+[%header,cols="3,4,1,2",grid=rows,frame=none]
+|===
+| Library | Maven coordinates | Version | License
+
+| https://www.antlr.org/antlr4-runtime/[ANTLR 4 Runtime] | `org.antlr:antlr4-runtime` | `4.12.0` | BSD-3-Clause
+| https://commons.apache.org/proper/commons-bcel[Apache Commons BCEL] | `org.apache.bcel:bcel` | `6.12.0` | Apache-2.0
+| https://commons.apache.org/proper/commons-codec/[Apache Commons Codec] | `commons-codec:commons-codec` | `1.19.0` | Apache-2.0
+| https://commons.apache.org/proper/commons-collections/[Apache Commons Collections] | `org.apache.commons:commons-collections4` | `4.5.0` | Apache-2.0
+| https://commons.apache.org/proper/commons-compress/[Apache Commons Compress] | `org.apache.commons:commons-compress` | `1.28.0` | Apache-2.0
+| https://commons.apache.org/proper/commons-csv/[Apache Commons CSV] | `org.apache.commons:commons-csv` | `1.14.1` | Apache-2.0
+| https://commons.apache.org/proper/commons-io/[Apache Commons IO] | `commons-io:commons-io` | `2.20.0` | Apache-2.0
+| https://commons.apache.org/proper/commons-lang/[Apache Commons Lang] | `org.apache.commons:commons-lang3` | `3.18.0` | Apache-2.0
+| https://commons.apache.org/proper/commons-lang/[Apache Commons Lang] | `org.apache.commons:commons-lang3` | `3.19.0` | Apache-2.0
+| https://commons.apache.org/proper/commons-lang/[Apache Commons Lang] | `org.apache.commons:commons-lang3` | `3.20.0` | Apache-2.0
+| https://commons.apache.org/proper/commons-logging/[Apache Commons Logging] | `commons-logging:commons-logging` | `1.3.6` | Apache-2.0
+| https://commons.apache.org/proper/commons-text[Apache Commons Text] | `org.apache.commons:commons-text` | `1.14.0` | Apache-2.0
+| https://hc.apache.org/httpcomponents-client-5.5.x/5.6/httpclient5/[Apache HttpClient] | `org.apache.httpcomponents.client5:httpclient5` | `5.6` | Apache-2.0
+| https://hc.apache.org/httpcomponents-core-5.4.x/5.4/httpcore5/[Apache HttpComponents Core HTTP/1.1] | `org.apache.httpcomponents.core5:httpcore5` | `5.4` | Apache-2.0
+| https://hc.apache.org/httpcomponents-core-5.4.x/5.4/httpcore5-h2/[Apache HttpComponents Core HTTP/2] | `org.apache.httpcomponents.core5:httpcore5-h2` | `5.4` | Apache-2.0
+| https://jena.apache.org/jena-arq/[Apache Jena - ARQ] | `org.apache.jena:jena-arq` | `5.6.0` | Apache-2.0
+| https://jena.apache.org/jena-base/[Apache Jena - Base] | `org.apache.jena:jena-base` | `5.6.0` | Apache-2.0
+| https://jena.apache.org/jena-core/[Apache Jena - Core] | `org.apache.jena:jena-core` | `5.6.0` | Apache-2.0
+| https://jena.apache.org/jena-iri/[Apache Jena - IRI] | `org.apache.jena:jena-iri` | `5.6.0` | Apache-2.0
+| https://jena.apache.org/jena-iri3986/[Apache Jena - IRI3986] | `org.apache.jena:jena-iri3986` | `5.6.0` | Apache-2.0
+| https://jena.apache.org/jena-langtag/[Apache Jena - Language tags] | `org.apache.jena:jena-langtag` | `5.6.0` | Apache-2.0
+| https://thrift.apache.org/[Apache Thrift] | `org.apache.thrift:libthrift` | `0.22.0` | Apache-2.0
+| http://www.apfloat.org[apfloat] | `org.apfloat:apfloat` | `1.10.1` | MIT
+| http://asm.ow2.io/[asm] | `org.ow2.asm:asm` | `9.7` | BSD-3-Clause
+| https://github.com/google/auto/tree/main/value[AutoValue Annotations] | `com.google.auto.value:auto-value-annotations` | `1.11.0` | Apache-2.0
+| https://bytebuddy.net/byte-buddy[Byte Buddy (without dependencies)] | `net.bytebuddy:byte-buddy` | `1.14.8` | Apache-2.0
+| https://bytebuddy.net/byte-buddy-agent[Byte Buddy agent] | `net.bytebuddy:byte-buddy-agent` | `1.14.8` | Apache-2.0
+| https://github.com/ben-manes/caffeine[Caffeine cache] | `com.github.ben-manes.caffeine:caffeine` | `3.2.2` | Apache-2.0
+| https://checkerframework.org/[Checker Qual] | `org.checkerframework:checker-qual` | `3.42.0` | MIT
+| https://github.com/classgraph/classgraph[ClassGraph] | `io.github.classgraph:classgraph` | `4.8.157` | MIT
+| https://github.com/javaparser[com.github.javaparser:javaparser-core] | `com.github.javaparser:javaparser-core` | `3.28.0` | Apache-2.0 / LGPL-2.1
+| https://github.com/javaparser[com.github.javaparser:javaparser-symbol-solver-core] | `com.github.javaparser:javaparser-symbol-solver-core` | `3.28.0` | Apache-2.0 / LGPL-2.1
+| https://github.com/andrewoma/dexx[dexx] | `com.github.andrewoma.dexx:collection` | `0.7` | MIT
+| https://www.gwtproject.org[Elemental2 Core] | `com.google.elemental2:elemental2-core` | `1.1.0` | Apache-2.0
+| https://www.gwtproject.org[Elemental2 Promise] | `com.google.elemental2:elemental2-promise` | `1.1.0` | Apache-2.0
+| https://errorprone.info/error_prone_annotations[error-prone annotations] | `com.google.errorprone:error_prone_annotations` | `2.26.1` | Apache-2.0
+| https://errorprone.info/error_prone_annotations[error-prone annotations] | `com.google.errorprone:error_prone_annotations` | `2.28.0` | Apache-2.0
+| http://findbugs.sourceforge.net/[FindBugs-jsr305] | `com.google.code.findbugs:jsr305` | `3.0.2` | Apache-2.0
+| https://github.com/google/gson[Gson] | `com.google.code.gson:gson` | `2.13.2` | Apache-2.0
+| https://github.com/google/guava/failureaccess[Guava InternalFutureFailureAccess and InternalFutures] | `com.google.guava:failureaccess` | `1.0.2` | Apache-2.0
+| https://github.com/google/guava/listenablefuture[Guava ListenableFuture only] | `com.google.guava:listenablefuture` | `9999.0-empty-to-avoid-conflict-with-guava` | Apache-2.0
+| https://github.com/google/guava[Guava: Google Core Libraries for Java] | `com.google.guava:guava` | `33.2.0-jre` | Apache-2.0
+| https://github.com/gwtproject/gwt-regexp[GWT Regular Expression] | `org.gwtproject.regexp:gwt-regexp` | `1.0.0-RC1` | Apache-2.0
+| https://github.com/hamcrest/JavaHamcrest/hamcrest-core[Hamcrest Core] | `org.hamcrest:hamcrest-core` | `1.3` | BSD-3-Clause
+| https://github.com/ethlo/itu[Internet Time Utility] | `com.ethlo.time:itu` | `1.14.0` | Apache-2.0
+| https://github.com/google/j2objc/[J2ObjC Annotations] | `com.google.j2objc:j2objc-annotations` | `3.0.0` | Apache-2.0
+| https://github.com/FasterXML/jackson[Jackson-annotations] | `com.fasterxml.jackson.core:jackson-annotations` | `2.20` | Apache-2.0
+| https://github.com/FasterXML/jackson[Jackson-annotations] | `com.fasterxml.jackson.core:jackson-annotations` | `2.21` | Apache-2.0
+| https://github.com/FasterXML/jackson-core[Jackson-core] | `com.fasterxml.jackson.core:jackson-core` | `2.21.2` | Apache-2.0
+| https://github.com/FasterXML/jackson[jackson-databind] | `com.fasterxml.jackson.core:jackson-databind` | `2.21.2` | Apache-2.0
+| http://java.net/all/javax.activation-api/[JavaBeans Activation Framework API jar] | `javax.activation:javax.activation-api` | `1.2.0` | GPL-2.0+CPE
+| https://www.javassist.org/[Javassist] | `org.javassist:javassist` | `3.30.2-GA` | Apache-2.0 / LGPL-2.1 / MPL-1.1
+| https://github.com/javaee/jaxb-spec/jaxb-api[jaxb-api] | `javax.xml.bind:jaxb-api` | `2.4.0-b180830.0359` | CDDL-1.1 / GPL-2.0+CPE
+| http://www.slf4j.org[JCL 1.2 implemented over SLF4J] | `org.slf4j:jcl-over-slf4j` | `2.0.17` | Apache-2.0
+| http://nexus.sonatype.org/oss-repository-hosting.html/jcodings[JCodings] | `org.jruby.jcodings:jcodings` | `1.0.63` | MIT
+| http://www.jgrapht.org/jgrapht-core[JGraphT - Core] | `org.jgrapht:jgrapht-core` | `1.5.2` | EPL-2.0 / LGPL-2.1
+| http://www.jgrapht.org/jgrapht-io[JGraphT - I/O] | `org.jgrapht:jgrapht-io` | `1.5.2` | EPL-2.0 / LGPL-2.1
+| http://www.jheaps.org[JHeaps] | `org.jheaps:jheaps` | `0.14` | Apache-2.0
+| http://nexus.sonatype.org/oss-repository-hosting.html/joni[Joni] | `org.jruby.joni:joni` | `2.2.6` | MIT
+| https://www.gwtproject.org[JsInterop Base] | `com.google.jsinterop:base` | `1.0.0` | Apache-2.0
+| https://github.com/eclipse-ee4j/jsonp[JSON-P Default Provider] | `org.glassfish:jakarta.json` | `2.0.1` | EPL-2.0 / GPL-2.0+CPE
+| https://github.com/networknt/json-schema-validator[JsonSchemaValidator] | `com.networknt:json-schema-validator` | `1.5.9` | Apache-2.0
+| http://jspecify.org/[JSpecify annotations] | `org.jspecify:jspecify` | `1.0.0` | Apache-2.0
+| http://junit.org[JUnit] | `junit:junit` | `4.13.2` | EPL-1.0
+| https://junit.org/junit5/[JUnit Jupiter (Aggregator)] | `org.junit.jupiter:junit-jupiter` | `5.9.0` | EPL-2.0
+| https://junit.org/junit5/[JUnit Jupiter API] | `org.junit.jupiter:junit-jupiter-api` | `5.9.0` | EPL-2.0
+| https://junit.org/junit5/[JUnit Jupiter API] | `org.junit.jupiter:junit-jupiter-api` | `5.9.2` | EPL-2.0
+| https://junit.org/junit5/[JUnit Jupiter Engine] | `org.junit.jupiter:junit-jupiter-engine` | `5.9.0` | EPL-2.0
+| https://junit.org/junit5/[JUnit Jupiter Params] | `org.junit.jupiter:junit-jupiter-params` | `5.9.0` | EPL-2.0
+| https://junit.org/junit5/[JUnit Platform Commons] | `org.junit.platform:junit-platform-commons` | `1.9.0` | EPL-2.0
+| https://junit.org/junit5/[JUnit Platform Commons] | `org.junit.platform:junit-platform-commons` | `1.9.2` | EPL-2.0
+| https://junit.org/junit5/[JUnit Platform Engine API] | `org.junit.platform:junit-platform-engine` | `1.9.0` | EPL-2.0
+| http://logback.qos.ch/logback-classic[Logback Classic Module] | `ch.qos.logback:logback-classic` | `1.5.32` | EPL-2.0 / LGPL-2.1
+| http://logback.qos.ch/logback-core[Logback Core Module] | `ch.qos.logback:logback-core` | `1.5.32` | EPL-2.0 / LGPL-2.1
+| https://github.com/mockito/mockito[mockito-core] | `org.mockito:mockito-core` | `5.6.0` | MIT
+| https://github.com/mockito/mockito[mockito-junit-jupiter] | `org.mockito:mockito-junit-jupiter` | `5.1.1` | MIT
+| http://objenesis.org/objenesis[Objenesis] | `org.objenesis:objenesis` | `3.3` | Apache-2.0
+| https://github.com/apiguardian-team/apiguardian[org.apiguardian:apiguardian-api] | `org.apiguardian:apiguardian-api` | `1.1.2` | Apache-2.0
+| https://github.com/ota4j-team/opentest4j[org.opentest4j:opentest4j] | `org.opentest4j:opentest4j` | `1.2.0` | Apache-2.0
+| https://github.com/RoaringBitmap/RoaringBitmap[org.roaringbitmap:RoaringBitmap] | `org.roaringbitmap:RoaringBitmap` | `1.3.0` | Apache-2.0
+| https://plantuml.com/[PlantUML] | `net.sourceforge.plantuml:plantuml-mit` | `1.2026.6` | MIT
+| https://developers.google.com/protocol-buffers/protobuf-java/[Protocol Buffers [Core]] | `com.google.protobuf:protobuf-java` | `4.32.1` | BSD-3-Clause
+| http://www.slf4j.org[SLF4J API Module] | `org.slf4j:slf4j-api` | `2.0.17` | MIT
+| https://docs.structurizr.com/structurizr-client[structurizr-client] | `com.structurizr:structurizr-client` | `6.2.1` | Apache-2.0
+| https://docs.structurizr.com/structurizr-component[structurizr-component] | `com.structurizr:structurizr-component` | `6.2.1` | Apache-2.0
+| https://docs.structurizr.com/structurizr-core[structurizr-core] | `com.structurizr:structurizr-core` | `6.2.1` | Apache-2.0
+| https://docs.structurizr.com/structurizr-dsl[structurizr-dsl] | `com.structurizr:structurizr-dsl` | `6.2.1` | Apache-2.0
+| https://docs.structurizr.com/structurizr-export[structurizr-export] | `com.structurizr:structurizr-export` | `6.2.1` | Apache-2.0
+| https://docs.structurizr.com/structurizr-import[structurizr-import] | `com.structurizr:structurizr-import` | `6.2.1` | Apache-2.0
+| https://github.com/filip26/titanium-jcs[Titanium JCS] | `com.apicatalog:titanium-jcs` | `1.1.1` | Apache-2.0
+| https://github.com/filip26/titanium-json-ld[Titanium JSON-LD 1.1 (JRE11)] | `com.apicatalog:titanium-json-ld` | `1.7.0` | Apache-2.0
+| https://github.com/filip26/titanium-rdf-api[Titanium RDF API] | `com.apicatalog:titanium-rdf-api` | `1.0.0` | Apache-2.0
+| https://github.com/filip26/titanium-rdf-n-quads[Titanium RDF N-QUADS] | `com.apicatalog:titanium-rdf-n-quads` | `1.0.2` | Apache-2.0
+| http://github.com/google/truth/truth[Truth Core] | `com.google.truth:truth` | `1.4.4` | Apache-2.0
+|===
