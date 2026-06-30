@@ -7,7 +7,9 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -82,7 +84,7 @@ public class GraphmlValidator {
             if (SchemaHolder.ERROR != null) {
                 throw SchemaHolder.ERROR;
             }
-            SaxErrors2Log errorHandler = new SaxErrors2Log(log);
+            CountingSaxErrorHandler errorHandler = new CountingSaxErrorHandler();
             Validator validator = SchemaHolder.SCHEMA.newValidator();
             validator.setErrorHandler(errorHandler);
             Source source = new SAXSource(new org.xml.sax.InputSource(singleInputSource.inputStream()));
@@ -96,6 +98,50 @@ public class GraphmlValidator {
         } catch (SAXException e) {
             log.warn("SAX Exception", e);
             return false;
+        }
+    }
+
+    /**
+     * Counts SAX validation findings so {@link #isValidGraphml(InputSource)} can return a boolean verdict, while
+     * logging them only at DEBUG. A schema-validation failure on the input is a content problem, not infrastructure
+     * noise: the production reader path surfaces such problems through the {@code ContentError} handler
+     * (see {@code Xml2GraphmlWriter}). This validator is a side-channel boolean check with no such handler, so it
+     * just keeps a quiet debug trail instead of logging at ERROR.
+     */
+    private static final class CountingSaxErrorHandler implements ErrorHandler {
+
+        private int errors = 0;
+        private int fatals = 0;
+        private int warnings = 0;
+
+        @Override
+        public void error(SAXParseException exception) {
+            log.debug("SAX error", exception);
+            errors++;
+        }
+
+        @Override
+        public void fatalError(SAXParseException exception) {
+            log.debug("SAX fatal error", exception);
+            fatals++;
+        }
+
+        @Override
+        public void warning(SAXParseException exception) {
+            log.debug("SAX warning", exception);
+            warnings++;
+        }
+
+        int errors() {
+            return errors;
+        }
+
+        int fatals() {
+            return fatals;
+        }
+
+        int warnings() {
+            return warnings;
         }
     }
 

@@ -85,8 +85,11 @@ suppression). Jena logs these under a *top-level* logger named `riot`, which the
 
 * *Fix:* added `cli/src/test/resources/logback-test.xml` silencing `org.apache.jena` and `riot`,
   and added `<logger name="riot" level="OFF"/>` to base's config too. `ERROR riot` lines: 6 → 0.
-* *Remaining (separate, ~1 line):* `ERROR GraphmlValidator - SAX error` from a malformed-graphml
-  test — the validator logs instead of reporting via `ContentError`; small follow-up if wanted.
+* *Done (separate):* the lone `ERROR GraphmlValidator - SAX error` came from `SaxErrors2Log`
+  installed by the static, test-only `GraphmlValidator.isValidGraphml` (a boolean check with no
+  `ContentError` handler to route to — the production reader path reports via `Xml2GraphmlWriter`).
+  Replaced it with an in-module counting SAX handler that logs findings at DEBUG; the boolean
+  verdict is unchanged. No more ERROR line.
 
 == Known limitations (not bugs)
 
