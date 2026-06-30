@@ -6,6 +6,8 @@ import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjLabelEntry;
+import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -16,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -69,8 +72,15 @@ public class DDotOutput {
 
     private final ICjDocument cjDoc;
 
+    private final @Nullable Consumer<ContentError> errorHandler;
+
     public DDotOutput(ICjDocument cjDoc) {
+        this(cjDoc, null);
+    }
+
+    public DDotOutput(ICjDocument cjDoc, @Nullable Consumer<ContentError> errorHandler) {
         this.cjDoc = cjDoc;
+        this.errorHandler = errorHandler;
     }
 
     private static @Nullable String firstLabelOrDesc(ICjHasData hasData, List<ICjLabelEntry> labels) {
@@ -133,7 +143,7 @@ public class DDotOutput {
                     subject = eps.get(0).node();
                     object = eps.get(1).node();
                 } else {
-                    log.warn("Cannot represent hyper-edge in DDot");
+                    Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Cannot represent hyper-edge in DDot"));
                     return;
                 }
             }

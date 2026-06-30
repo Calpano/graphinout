@@ -10,6 +10,8 @@ import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjLabelEntry;
 import com.graphinout.base.cj.document.ICjNode;
+import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import org.slf4j.Logger;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -29,11 +32,17 @@ public class CjDocument2D2 {
     private final boolean hasContext;
     /** CJ node-id (and uri) -> fully-qualified D2 id, so cross-scope edge endpoints resolve to the nested shape. */
     private final Map<String, String> qualifiedNodeIds = new LinkedHashMap<>();
+    private final @Nullable Consumer<ContentError> errorHandler;
 
     public CjDocument2D2(ICjDocument cjDoc) {
+        this(cjDoc, null);
+    }
+
+    public CjDocument2D2(ICjDocument cjDoc, @Nullable Consumer<ContentError> errorHandler) {
         this.cjDoc = cjDoc;
         this.context = cjDoc.context();
         this.hasContext = context != null && !context.isEmpty();
+        this.errorHandler = errorHandler;
     }
 
     static @Nullable String firstLabelOrDesc(ICjHasData hasData, List<ICjLabelEntry> labels) {
@@ -168,7 +177,7 @@ public class CjDocument2D2 {
             // undirected when neither endpoint is directed
             undirected = eps.stream().noneMatch(ICjEndpoint::isDirected);
         } else {
-            log.warn("Cannot represent hyper-edge in D2");
+            Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Cannot represent hyper-edge in D2"));
             return null;
         }
         if (source == null || target == null) return null;

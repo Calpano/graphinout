@@ -9,10 +9,12 @@ import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjLabelEntry;
 import com.graphinout.base.cj.document.ICjNode;
 import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.input.ContentError;
 import org.slf4j.Logger;
 
 import org.jspecify.annotations.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -24,9 +26,15 @@ public class TripleTextOutput {
 
     private static final Logger log = getLogger(TripleTextOutput.class);
     private final ICjDocument cjDoc;
+    private final @Nullable Consumer<ContentError> errorHandler;
 
     public TripleTextOutput(ICjDocument cjDoc) {
+        this(cjDoc, null);
+    }
+
+    public TripleTextOutput(ICjDocument cjDoc, @Nullable Consumer<ContentError> errorHandler) {
         this.cjDoc = cjDoc;
+        this.errorHandler = errorHandler;
     }
 
     private static void appendTripleLine(StringBuilder b, String s, String p, boolean isDirected, String o, @Nullable String meta) {
@@ -42,7 +50,7 @@ public class TripleTextOutput {
         b.append('\n');
     }
 
-    public static void toTripleText(ICjGraph graph, StringBuilder b) {
+    public void toTripleText(ICjGraph graph, StringBuilder b) {
         // First: emit node label triples (nodeId -- label -- labelValue)
         graph.nodes().forEach(n -> toTripleText(n, b));
 
@@ -50,9 +58,9 @@ public class TripleTextOutput {
         graph.edges().forEach(e -> toTripleText(e, b));
     }
 
-    private static void toTripleText(ICjEdge e, StringBuilder b) {
+    private void toTripleText(ICjEdge e, StringBuilder b) {
         if (e.endpoints().count() != 2) {
-            log.warn("TripleText cannot represent hyper-edges, skipping");
+            Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "TripleText cannot represent hyper-edges, skipping"));
             return;
         }
         // edge from subject to object is: subject=IN, object=OUT
@@ -68,7 +76,7 @@ public class TripleTextOutput {
         appendTripleLine(b, s.node(), predicate, isDirected, o.node(), null);
     }
 
-    private static void toTripleText(ICjNode n, StringBuilder b) {
+    private void toTripleText(ICjNode n, StringBuilder b) {
         String id = n.id();
         if (id == null || id.isEmpty()) return;
         // TODO is there a better way to represent a node without a label in tripleText?

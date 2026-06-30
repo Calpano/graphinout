@@ -10,6 +10,9 @@ import com.graphinout.foundation.pure.json.document.IJsonArray;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.bridge.Java9;
+import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.input.ContentError;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Comparator;
@@ -26,7 +29,11 @@ import static com.graphinout.reader.gml.Gml.LABEL;
 import static com.graphinout.reader.gml.Gml.NODE;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public record GmlOutput(ICjDocument cjDoc) {
+public record GmlOutput(ICjDocument cjDoc, @Nullable Consumer<ContentError> errorHandler) {
+
+    public GmlOutput(ICjDocument cjDoc) {
+        this(cjDoc, null);
+    }
 
     private static final Logger log = getLogger(GmlOutput.class);
 
@@ -43,7 +50,7 @@ public record GmlOutput(ICjDocument cjDoc) {
         return !arr.isEmpty();
     }
 
-    private static void documentToGml(ICjDocument cjDoc, IGmlHandler b) {
+    private static void documentToGml(ICjDocument cjDoc, IGmlHandler b, @Nullable Consumer<ContentError> errorHandler) {
         // Document-level attributes (generic JSON emission)
         cjDoc.data(data -> {
             IJsonValue json = data.jsonValue();
@@ -56,11 +63,11 @@ public record GmlOutput(ICjDocument cjDoc) {
         // Graph(s)
         List<ICjGraph> graphs = cjDoc.graphs().toList();
         for (ICjGraph g : graphs) {
-            graphToGml(g, b);
+            graphToGml(g, b, errorHandler);
         }
     }
 
-    private static void edgeToGml(ICjEdge cjEdge, IGmlHandler b) {
+    private static void edgeToGml(ICjEdge cjEdge, IGmlHandler b, @Nullable Consumer<ContentError> errorHandler) {
         // Preserve order of mandatory attributes
         Map<String, String> attributes = new java.util.LinkedHashMap<>();
         ICjEndpoint inEp = cjEdge.endpoints().filter(ep -> ep.direction() == CjDirection.IN).findFirst().orElse(null);
@@ -75,7 +82,7 @@ public record GmlOutput(ICjDocument cjDoc) {
                 attributes.put(Gml.SOURCE, formatValue(eps.get(0).node()));
                 attributes.put(Gml.TARGET, formatValue(eps.get(1).node()));
             } else {
-                log.warn("Cannot represent hyper-edge in GML");
+                Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Cannot represent hyper-edge in GML"));
                 return;
             }
         }
@@ -167,7 +174,7 @@ public record GmlOutput(ICjDocument cjDoc) {
         return cjGraph.edges().anyMatch(e -> e.endpoints().anyMatch(ICjEndpoint::isUndirected));
     }
 
-    private static void graphToGml(ICjGraph cjGraph, IGmlHandler b) {
+    private static void graphToGml(ICjGraph cjGraph, IGmlHandler b, @Nullable Consumer<ContentError> errorHandler) {
         b.key(GRAPH);
         b.open();
         // Graph-level attributes from labels and data
@@ -219,21 +226,21 @@ public record GmlOutput(ICjDocument cjDoc) {
                 return s1.compareTo(s2);
             }
         });
-        cjGraph.nodes().sorted(Comparator.comparing(ICjNode::id, numericStr)).forEach(cjNode -> nodeToGml(cjNode, b));
+        cjGraph.nodes().sorted(Comparator.comparing(ICjNode::id, numericStr)).forEach(cjNode -> nodeToGml(cjNode, b, errorHandler));
 
         // Edges section
-        cjGraph.edges().sorted(Comparator.comparing(ICjEdge::id, numericStr)).forEach(cjEdge -> edgeToGml(cjEdge, b));
+        cjGraph.edges().sorted(Comparator.comparing(ICjEdge::id, numericStr)).forEach(cjEdge -> edgeToGml(cjEdge, b, errorHandler));
 
         // Nested graphs-in-graphs (hierarchical structure)
-        cjGraph.graphs().forEach(subGraph -> graphToGml(subGraph, b));
+        cjGraph.graphs().forEach(subGraph -> graphToGml(subGraph, b, errorHandler));
         b.close();
     }
 
 
-    private static void nodeToGml(ICjNode cjNode, IGmlHandler b) {
+    private static void nodeToGml(ICjNode cjNode, IGmlHandler b, @Nullable Consumer<ContentError> errorHandler) {
         String id = cjNode.id();
         if (id == null) {
-            log.warn("Skip node without id");
+            Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Skip node without id"));
             return;
         }
 
@@ -259,19 +266,19 @@ public record GmlOutput(ICjDocument cjDoc) {
         });
 
         // Nested graphs-in-nodes (compound nodes)
-        cjNode.graphs().forEach(subGraph -> graphToGml(subGraph, b));
+        cjNode.graphs().forEach(subGraph -> graphToGml(subGraph, b, errorHandler));
         b.close();
     }
 
     public String toGml() {
         GmlStringHandler gmlStringHandler = new GmlStringHandler();
-        documentToGml(cjDoc, gmlStringHandler);
+        documentToGml(cjDoc, gmlStringHandler, errorHandler);
         return gmlStringHandler.result();
     }
 
     public List<Object> toGmlList() {
         GmlListHandler gmlListHandler = new GmlListHandler();
-        documentToGml(cjDoc, gmlListHandler);
+        documentToGml(cjDoc, gmlListHandler, errorHandler);
         return gmlListHandler.list();
     }
 

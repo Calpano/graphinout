@@ -219,12 +219,14 @@ public final class GraphinoutCli {
                 return 1;
             }
 
-            // Report parse problems on stderr; they do not necessarily abort the conversion.
+            // Report parse and write problems on stderr; they do not necessarily abort the conversion.
             List<ContentError> errors = new ArrayList<>();
-            reader.setContentErrorHandler(e -> {
+            java.util.function.Consumer<ContentError> errorHandler = e -> {
                 errors.add(e);
                 err.println("[" + e.level + "] " + e.message);
-            });
+            };
+            reader.setContentErrorHandler(errorHandler);
+            writer.setContentErrorHandler(errorHandler);
 
             err.println("Converting " + inputFile.getName()
                     + " (" + reader.fileFormat().id() + " -> " + writer.fileFormat().id() + ")"

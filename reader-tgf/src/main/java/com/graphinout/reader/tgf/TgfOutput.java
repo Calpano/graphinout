@@ -7,12 +7,15 @@ import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEndpoint;
 import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjLabelEntry;
+import com.graphinout.foundation.pure.functional.Nullables;
+import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -20,9 +23,15 @@ public class TgfOutput {
 
     private static final Logger log = getLogger(TgfOutput.class);
     private final ICjDocument cjDoc;
+    private final @Nullable Consumer<ContentError> errorHandler;
 
     public TgfOutput(ICjDocument cjDoc) {
+        this(cjDoc, null);
+    }
+
+    public TgfOutput(ICjDocument cjDoc, @Nullable Consumer<ContentError> errorHandler) {
         this.cjDoc = cjDoc;
+        this.errorHandler = errorHandler;
     }
 
     private static String firstLabelOrDesc(ICjHasData hasData, List<ICjLabelEntry> labels) {
@@ -70,7 +79,7 @@ public class TgfOutput {
                     n1 = eps.get(0).node();
                     n2 = eps.get(1).node();
                 } else {
-                    log.warn("Cannot represent hyper-edge in TGF");
+                    Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Cannot represent hyper-edge in TGF"));
                 }
             }
             if (n1 != null && n2 != null) {

@@ -38,7 +38,7 @@ JSON-LD/RDF keys `@id` `@type` `@graph` `nodes` `maker` `primaryTopic` `label` `
 * *Action:* determine which reader+fixtures produce each key; if they are real inputs (grale
   `options`, JSON-LD `@id`/`@type`), model the property rather than dropping it.
 
-=== I2 — GraphML `<data>` referencing an undeclared `<key>` [MEDIUM — now reported + recovered]
+=== [x] I2 — GraphML `<data>` referencing an undeclared `<key>` [MEDIUM — now reported + recovered]
 `Graphml2CjDocument` hit `<data key='dN'>` with no matching `<key id='dN'>`.
 
 * *Status:* now reports a `ContentError` (Warn) and recovers by auto-creating a string key (so
@@ -76,13 +76,19 @@ rule — emitted under a logger named `riot` from a module that doesn't pick up 
 
 == Known limitations (not bugs)
 
-* I7 — `MermaidOutput`: `Cannot represent hyper-edge in Mermaid flowchart` ×3. Mermaid
-  flowcharts have no hyper-edge syntax; the warning is expected. Documented for completeness.
+* I7 — `MermaidOutput`: `Cannot represent hyper-edge in Mermaid flowchart`. Mermaid flowcharts
+  have no hyper-edge syntax; this is an inherent limitation, now surfaced via the writer's
+  `ContentError` channel (below) rather than logged.
 
-== Cross-cutting note
-The root cause of the original spam was an anti-pattern: **readers logging parse problems
-directly instead of reporting them via the `ContentError` handler.** The read-side sweep is
-done (see the Done section). Still **open: the output writers** — `DDotOutput`, `CjDocument2D2`,
-`GmlOutput` (hyper-edge + "skip node without id"), `MermaidOutput`, `TgfOutput`,
-`TripleTextOutput` log `Cannot represent …` on write-time data loss. They have no error channel
-(don't extend `BaseOutput`); giving writers a `ContentError` sink is a separate, larger change.
+== Cross-cutting note [DONE]
+The root cause of the original spam was an anti-pattern: **readers/writers logging data problems
+directly instead of reporting them via the `ContentError` handler.** Both sweeps are done:
+
+* *Read side* — see the Done section.
+* *Write side* — `GioWriter` gained a `default setContentErrorHandler(Consumer<ContentError>)`;
+  the 5 registered output writers (`GmlOutput`/`GmlWriter`, `DDotOutput`, `CjDocument2D2`,
+  `MermaidOutput`, `TgfOutput`) plus `TripleTextOutput` now report write-time data loss
+  ("Cannot represent hyper-edge …", "Skip node without id") through that channel instead of
+  `log.warn`. The CLI convert command wires one handler into both reader and writer, so write-time
+  losses print to stderr alongside parse errors. (Without a handler set, the loss is silent — same
+  contract as readers.)

@@ -7,10 +7,20 @@ import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.output.OutputSink;
+import com.graphinout.foundation.pure.input.ContentError;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class TgfWriter implements GioWriter {
+
+    private @Nullable Consumer<ContentError> errorHandler;
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> contentErrorHandler) {
+        this.errorHandler = contentErrorHandler;
+    }
 
     @Override
     public ICjStream createCjStream(OutputSink outputSink) {
@@ -32,7 +42,7 @@ public class TgfWriter implements GioWriter {
 
     @Override
     public void writeCjDocument(ICjDocument cjDoc, OutputSink outputSink) throws IOException {
-        String tgf = new TgfOutput(cjDoc).toTgf();
+        String tgf = new TgfOutput(cjDoc, errorHandler).toTgf();
         outputSink.write(tgf);
     }
 

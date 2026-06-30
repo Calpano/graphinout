@@ -7,10 +7,20 @@ import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.base.gio.GioWriter;
 import com.graphinout.base.output.OutputSink;
+import com.graphinout.foundation.pure.input.ContentError;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class GmlWriter implements GioWriter {
+
+    private @Nullable Consumer<ContentError> errorHandler;
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> contentErrorHandler) {
+        this.errorHandler = contentErrorHandler;
+    }
 
     @Override
     public ICjStream createCjStream(OutputSink outputSink) {
@@ -31,7 +41,7 @@ public class GmlWriter implements GioWriter {
     }
 
     private void write(ICjDocument cjDoc, OutputSink outputSink) throws IOException {
-        String gml = new GmlOutput(cjDoc).toGml();
+        String gml = new GmlOutput(cjDoc, errorHandler).toGml();
         outputSink.write(gml);
     }
 
