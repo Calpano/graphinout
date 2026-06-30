@@ -72,12 +72,16 @@ the version.
 * *Action:* decide if the test data should declare a schema; otherwise drop this to INFO so a
   reasonable default isn't reported as a warning.
 
-=== I6 — A few Jena `riot` ERROR lines still leak [LOW]
-~6 `ERROR riot - …` lines (e.g. `Unrecognized keyword: A`) survive the `org.apache.jena` OFF
-rule — emitted under a logger named `riot` from a module that doesn't pick up base's
-`logback-test.xml`. Negative-test RDF input.
+=== I6 — A few Jena `riot` ERROR lines still leak [DONE]
+The ~6 `ERROR riot - …` lines came from `GraphinoutCliTest`: the `cli` module had no
+`logback-test.xml`, so its tests fell back to `cli/src/main/resources/logback.xml` (no
+suppression). Jena logs these under a *top-level* logger named `riot`, which the package-scoped
+`org.apache.jena` OFF rule does not match.
 
-* *Action:* add `<logger name="riot" level="OFF"/>` (or give that module its own config).
+* *Fix:* added `cli/src/test/resources/logback-test.xml` silencing `org.apache.jena` and `riot`,
+  and added `<logger name="riot" level="OFF"/>` to base's config too. `ERROR riot` lines: 6 → 0.
+* *Remaining (separate, ~1 line):* `ERROR GraphmlValidator - SAX error` from a malformed-graphml
+  test — the validator logs instead of reporting via `ContentError`; small follow-up if wanted.
 
 == Known limitations (not bugs)
 

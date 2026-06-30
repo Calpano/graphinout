@@ -1,0 +1,21 @@
+<configuration debug="false">
+    <!-- Test-only logging for the CLI module. Without this, CLI tests fall back to
+         src/main/resources/logback.xml and Apache Jena's RIOT parser floods ERROR lines when the RDF reader is
+         probed against non-RDF input. The CLI surfaces real problems via its own ContentError handler (stderr),
+         so Jena's internal logging is pure noise here. -->
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5p: %m   at %C:%L%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Jena logs under both package-named loggers (org.apache.jena.*) and a top-level logger named "riot". -->
+    <logger name="org.apache.jena" level="OFF" />
+    <logger name="riot" level="OFF" />
+
+    <root level="${gio.log.level:-warn}">
+        <appender-ref ref="Console" />
+    </root>
+
+    <shutdownHook/>
+</configuration>

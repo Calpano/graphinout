@@ -22,6 +22,8 @@
     <!-- Apache Jena's RIOT parser logs at ERROR when probed against non-RDF input (detection tries every reader);
          the RDF reader surfaces real problems as ContentErrors, so silence Jena's own logger during tests. -->
     <logger name="org.apache.jena" level="OFF" />
+    <!-- Jena also logs under a top-level logger literally named "riot" -->
+    <logger name="riot" level="OFF" />
 
     <!-- Default to WARN so test runs stay quiet/fast; override with -Dgio.log.level=debug (or info/trace). -->
     <root level="${gio.log.level:-warn}">
