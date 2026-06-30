@@ -9,6 +9,9 @@ public final class OCIF {
     public static class OcifSchema {
 
         public static final String V0_6 = "https://canvasprotocol.org/ocif/v0.6";
+        public static final String V0_7_0 = "https://canvasprotocol.org/ocif/v0.7.0";
+        /** Assumed when an OCIF document declares no schema. Per the spec, OCIF files SHOULD declare one. */
+        public static final String DEFAULT = V0_7_0;
 
     }
 

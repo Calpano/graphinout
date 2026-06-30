@@ -1,7 +1,7 @@
 {
   "data": {
     "ocif:document": {
-      "ocif": "https://canvasprotocol.org/ocif/v0.6",
+      "ocif": "https://canvasprotocol.org/ocif/v0.7.0",
 
       "resources": [
         { "id": "r-text",

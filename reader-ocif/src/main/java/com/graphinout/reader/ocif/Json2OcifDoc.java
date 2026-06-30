@@ -193,8 +193,8 @@ public class Json2OcifDoc {
         if (schemaUri != null) {
             doc.ocifSchemaURI(schemaUri.asString());
         } else {
-            errorHandler.accept(ContentError.warn("Found no OCIF schema, using v0.6"));
-            doc.ocifSchemaURI(OCIF.OcifSchema.V0_6);
+            errorHandler.accept(ContentError.warn("Found no OCIF schema, assuming " + OCIF.OcifSchema.DEFAULT));
+            doc.ocifSchemaURI(OCIF.OcifSchema.DEFAULT);
         }
 
         // optional canvas-level extensions under root.data[]
