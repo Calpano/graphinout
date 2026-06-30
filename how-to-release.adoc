@@ -1,5 +1,37 @@
 = Manual Maven Release Process
 
+.Step 0: Update `CHANGELOG.adoc`
+Before tagging, record the release in `CHANGELOG.adoc` at the repo root (create it if it does
+not exist yet) so the notable changes ship with the tag. Follow
+https://keepachangelog.com[Keep a Changelog] conventions:
+
+* During development, accumulate entries under a top `== Unreleased` section, grouped as
+  `Added` / `Changed` / `Fixed` / `Removed` / `Security`.
+* At release time, rename `== Unreleased` to `== <version> — <yyyy-mm-dd>`
+  (e.g. `== 0.2.1 — 2026-06-30`) and start a fresh empty `== Unreleased` above it.
+* Commit `CHANGELOG.adoc` *before* Step 1. `release:prepare` tags the current commit, so the
+  entry must already be in place to ship inside the `graphinout-<version>` tag (and to back the
+  GitHub Release notes in Step 3).
+
+[%collapsible]
+.Skeleton
+====
+[source,asciidoc]
+----
+= Changelog
+
+== Unreleased
+
+== 0.2.1 — 2026-06-30
+Added::
+* …
+Changed::
+* …
+Fixed::
+* …
+----
+====
+
 .Step 1: Prepare the release with
 ----
 mvn release:prepare -DpushChanges=false -P central-deploy,sign-for-sonar

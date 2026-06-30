@@ -1,0 +1,162 @@
+= Changelog
+:toc:
+
+All notable changes to GraphInOut, newest first. Format based on
+https://keepachangelog.com[Keep a Changelog]. Releases are tagged
+`graphinout-<version>`; library modules publish to Maven Central and the `gio` CLI
+ships via GitHub Releases. Curated from git history — routine merges, dependency
+bumps and "minor/doc/WIP" commits are omitted.
+
+== Unreleased
+
+Added::
+* Identity-based, ranked-confidence format detection with a `gio detect` command;
+  ranking now weighs extension, content kind, vocabulary/signatures and graph
+  plausibility rather than recovered graph size.
+* `gio meta` — type-schema inference (node/edge types as counted nodes, `uses`
+  links, `has subtype` generalisation) — plus a `convert --meta` flag.
+* `reader-jgef` — JSON Graph Entry Format (GEF) reader.
+* `self-loops` and `parallel-edges` to the `CjFeature` vocabulary.
+* `LICENSES/` folder reproducing every (transitive) dependency's own license text,
+  linked from `THIRD_PARTY.adoc`; `archive-concept.adoc` design note.
+
+Changed::
+* `AnonymizingCjStream` and the meta-graph collector are now streaming (only id/key
+  maps or a type projection are buffered, not the whole document).
+* GraphML/GEXF readers stream-decode HTML named entities, and GraphML parses
+  non-standard `attr.type`/`edgedefault` leniently (warn instead of fail).
+* Harmonized transitive dependency versions to a single resolved version each.
+
+Removed::
+* The whole-document anonymizer (the streaming one replaces it, verified equivalent
+  across the test corpus).
+
+== 0.2.0 — 2026-06-16
+
+Added::
+* `reader-plantuml` (PlantUML class diagrams) and `reader-structurizr-dsl`.
+* Adjacency-list and edge-list readers + writers; feature-based round-trip tests.
+* GEXF 1.3 round-trip support; OCIF upgraded to the v0.7.1-draft spec with inline
+  resources; `CjGraphStructureCanvasExtension` to preserve the CJ tree on OCIF
+  round-trips.
+* `SchemaCache` for GraphML validation; Connected JSON upgraded to the v8.0.0 schema.
+
+Changed::
+* DOT, GML, Mermaid and D2 readers gained nested graphs, mixed directed/undirected
+  edges, compound nodes and subgraph syntax.
+* Normalized TGF edge handling (undirected semantics) and edge normalization.
+
+== 0.1.14 — 2026-06-15
+
+Added::
+* GEXF reader (closes #141); experimental GTFS topology support; `reader-ddot`,
+  `reader-mermaid`, `reader-d2`; preliminary OCIF 0.7; `about.ddot` for every reader.
+
+Changed::
+* GraphML schemas resolve offline (`GraphmlValidator`); logging moved to `slf4j-api`
+  with `logback-classic` at test scope; Jackson aligned with Spring Boot 4.0.6.
+* Javadoc added across `foundation-pure` and `base` (#30).
+
+Fixed::
+* DOT reader dropping node attributes (#133); GraphML edges hoisted to a common
+  ancestor graph (#137); `findNodeById` on compound/nested graphs; GML input
+  validation reports ContentErrors (#140); `reader-ddot` preserves untyped links.
+
+== 0.1.13 — 2026-02-11
+
+Added::
+* `RdfReader`/`RdfWriter` for many RDF syntaxes, with RDF canonicalization and
+  round-trip testing; experimental `pg-format` and Neo4j LPG readers.
+* `node.types`, `ParameterizedInputSource`, and a `CjValidator`.
+
+Changed::
+* Migrated to the Connected JSON 7.0.0 spec; replaced the `baseUri` concept with a
+  JSON-LD `@context` namespace map; `label`-array migrated to `label`-entries.
+
+Fixed::
+* GraphML URI handling and hyperedge validation (allow `GRAPH` in a hyperedge).
+
+== 0.1.12 — 2026-01-09
+
+Fixed::
+* Nested nodes/edges losing their IDs; `CjDocument2CjStream` emits graphs nested in
+  nodes and edges; `TgfOutput` flattens all graphs into one; "Edge can have graphs"
+  CJ bug.
+
+== 0.1.11 — 2026-01-05
+
+Added::
+* OCIF writer.
+
+== 0.1.10 — 2026-01-05
+
+Added::
+* `foundation-emulation` module; native JSON parsing; finalized OCIF implementation;
+  synthetic CJ documents via the API.
+
+Changed::
+* Extensive CJ and JSON API extensions; full `@Nullable` annotation coverage;
+  `testdata` and `foundation-pure` made Java 8 compatible.
+
+== 0.1.9 — 2025-12-08
+
+Changed::
+* Publish `foundation-pure` including its sources jar.
+
+== 0.1.8 — 2025-12-08
+
+Changed::
+* Large internal refactoring.
+
+== 0.1.7 — 2025-12-05
+
+Changed::
+* Split `base` into `base` + `foundation`; JSON formatting (compacting, forced
+  multiline); tests load fixtures from resources.
+
+== 0.1.6 — 2025-11-20
+
+Fixed::
+* Text output.
+
+== 0.1.5 — 2025-11-20
+
+Added::
+* `reader-gexf` (initial); TGF and DOT writers; `ContentError` INFO level;
+  `formats.adoc`.
+
+Fixed::
+* TGF, GraphML and DOT readers and CjStream/Writer conversion bugs.
+
+== 0.1.4 — 2025-11-10
+
+Added::
+* GML reader; `GioWriter` and `GraphmlWriter`; edge-list reader; generalized the
+  adjacency-list reader to more text-based formats.
+
+== 0.1.3 — 2025-10-29
+
+Added::
+* Custom DOT parser; initial OCIF parser; TripleText output; Sparse6 and Digraph6
+  readers; `CjStream`/`Gio2CjStream` tooling.
+
+Changed::
+* Reorganized packages, removed the GIO API layer, and migrated readers onto the CJ
+  API.
+
+== 0.1.2 — 2025-10-20
+
+Changed::
+* Better CjStream adapter; license metadata.
+
+Security::
+* Upgraded Jackson and commons-text to fix CVEs; bumped logback-classic.
+
+== 0.1.1 — 2025-10-16
+
+Fixed::
+* Service loading.
+
+== 0.1 — 2025-10-16
+
+* Initial tagged release.
