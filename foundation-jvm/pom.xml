@@ -33,9 +33,7 @@
         </dependency>
         <!-- use real dependencies instead -->
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId><optional>true</optional></dependency>
-        <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId>
-            <version>2.20</version>
-        </dependency>
+        <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId></dependency>
 
         <!-- Logging API only; the logback binding is test-scope (below), not imposed on consumers. -->
         <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></dependency>

@@ -80,7 +80,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j-version>2.0.17</slf4j-version>
         <logback-classic-version>1.5.32</logback-classic-version>
-        <junit-jupiter.version>5.9.0</junit-jupiter.version>
+        <junit-jupiter.version>5.9.2</junit-jupiter.version>
         <mockito-core-version>5.6.0</mockito-core-version>
         <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
@@ -158,6 +158,12 @@
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><version>${mockito-core-version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><version>${mockito-junit-jupiter-version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>${slf4j-version}</version></dependency>
+
+            <!-- Harmonize transitive version conflicts: pin each to the highest version already in use -->
+            <dependency><groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.20.0</version></dependency>
+            <dependency><groupId>com.google.errorprone</groupId><artifactId>error_prone_annotations</artifactId><version>2.28.0</version></dependency>
+            <!-- JUnit BOM keeps junit-jupiter-api / junit-platform-commons aligned with junit-jupiter -->
+            <dependency><groupId>org.junit</groupId><artifactId>junit-bom</artifactId><version>${junit-jupiter.version}</version><type>pom</type><scope>import</scope></dependency>
 
 
             <!-- Maven Dependencies -->
