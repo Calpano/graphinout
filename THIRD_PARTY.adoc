@@ -20,259 +20,120 @@ The dependencies use nine distinct license types, all either permissive or weak
 
 == Direct Dependencies
 
-=== Apache Commons IO
-- Project: https://commons.apache.org/proper/commons-io/
-- Coordinates: commons-io:commons-io
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
-- License text: link:LICENSES/commons-io-2.20.0/[reproduced under LICENSES/commons-io-2.20.0/]
+Libraries graphinout depends on directly. The _License_ column links the
+reproduced text under `LICENSES/`; _Original_ links the upstream file it was
+copied from (rendered [1], and [2] where a project ships two license files),
+so each reproduced copy can be re-verified against its source.
 
-=== Apache Commons Text
-- Project: https://commons.apache.org/proper/commons-text/
-- Coordinates: org.apache.commons:commons-text
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
-- License text: link:LICENSES/commons-text-1.14.0/[reproduced under LICENSES/commons-text-1.14.0/]
-
-=== Apache Jena
-- Project: https://jena.apache.org/
-- Coordinates: org.apache.jena:jena-arq, org.apache.jena:jena-core
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
-- License text: link:LICENSES/jena-core-5.6.0/[reproduced under LICENSES/jena-core-5.6.0/]
-
-=== ClassGraph
-- Project: https://github.com/classgraph/classgraph
-- Coordinates: io.github.classgraph:classgraph:4.8.157
-- License: MIT License
-- License URL: https://github.com/classgraph/classgraph/blob/master/LICENSE
-- License text: link:LICENSES/classgraph-4.8.157/[reproduced under LICENSES/classgraph-4.8.157/]
-
-=== Google Truth
-- Project: https://github.com/google/truth
-- Coordinates: com.google.truth:truth
-- License: Apache License 2.0
-- License URL: https://github.com/google/truth/blob/master/LICENSE
-- License text: link:LICENSES/truth-1.4.4/[reproduced under LICENSES/truth-1.4.4/]
-
-=== Guava
-- Project: https://github.com/google/guava
-- Coordinates: com.google.guava:guava:33.2.0-jre
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
-- License text: link:LICENSES/guava-33.2.0-jre/[reproduced under LICENSES/guava-33.2.0-jre/]
-
-=== GWT RegExp
-- Project: https://github.com/gwtproject/gwt-regexp
-- Coordinates: org.gwtproject.regexp:gwt-regexp:1.0.0-RC1
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
-- License text: link:LICENSES/gwt-regexp-1.0.0-RC1/[reproduced under LICENSES/gwt-regexp-1.0.0-RC1/]
-
-=== Jackson
-- Projects:
-https://github.com/FasterXML/jackson-databind,
-https://github.com/FasterXML/jackson-core,
-https://github.com/FasterXML/jackson-modules-java8,
-https://github.com/FasterXML/jackson-dataformats-text
-- Coordinates: com.fasterxml.jackson.core, com.fasterxml.jackson.datatype, com.fasterxml.jackson.dataformat
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
-- License text: link:LICENSES/jackson-core-2.21.2/[reproduced under LICENSES/jackson-core-2.21.2/]
-
-=== JGraphT
-- Project: https://github.com/jgrapht/jgrapht
-- Coordinates: org.jgrapht
-- License: Eclipse Public License 2.0
-- License URL: https://github.com/jgrapht/jgrapht/blob/master/license-EPL.txt[]
-- License text: link:LICENSES/jgrapht-core-1.5.2/[reproduced under LICENSES/jgrapht-core-1.5.2/]
-
-=== JSON Schema Validator (NetworkNT)
-- Project: https://github.com/networknt/json-schema-validator[]
-- Coordinates: com.networknt:json-schema-validator:1.5.9
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
-- License text: link:LICENSES/json-schema-validator-1.5.9/[reproduced under LICENSES/json-schema-validator-1.5.9/]
-
-=== Joni (JRuby Regex Engine)
-- Project: https://github.com/jruby/joni
-- Coordinates: org.jruby.joni
-- License: MIT License
-- License URL: https://opensource.org/license/mit
-- License text: link:LICENSES/joni-2.2.6/[reproduced under LICENSES/joni-2.2.6/]
-
-=== JSR 305 Annotations
-- Project: https://github.com/findbugsproject/findbugs
-- Coordinates: com.google.code.findbugs:jsr305:3.0.2
-- License: BSD 3-Clause License
-- License URL: https://opensource.org/license/bsd-3-clause
-- License text: link:LICENSES/jsr305-3.0.2/[reproduced under LICENSES/jsr305-3.0.2/]
-
-=== JSpecify
-- Project: https://jspecify.dev/
-- Coordinates: org.jspecify:jspecify:1.0.0
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
-- License text: link:LICENSES/jspecify-1.0.0/[reproduced under LICENSES/jspecify-1.0.0/]
-
-=== JUnit
-- Project: https://junit.org/junit5/
-- Coordinates: org.junit.jupiter
-- License: Eclipse Public License 2.0
-- License URL: https://www.eclipse.org/legal/epl-2.0/
-- License text: link:LICENSES/junit-jupiter-5.9.0/[reproduced under LICENSES/junit-jupiter-5.9.0/]
-
-=== Logback Classic
-- Project: https://logback.qos.ch/
-- Coordinates: ch.qos.logback:logback-classic
-- License: Eclipse Public License 1.0 and GNU Lesser General Public License 2.1 (dual license)
-- License URL: https://github.com/qos-ch/logback/blob/master/LICENSE.txt
-- License text: link:LICENSES/logback-classic-1.5.32/[reproduced under LICENSES/logback-classic-1.5.32/]
-
-=== Mockito
-- Project: https://site.mockito.org/
-- Coordinates: org.mockito
-- License: MIT License
-- License URL: https://github.com/mockito/mockito/blob/main/LICENSE
-- License text: link:LICENSES/mockito-core-5.6.0/[reproduced under LICENSES/mockito-core-5.6.0/]
-
-=== PlantUML (MIT edition)
-- Project: https://plantuml.com/
-- Coordinates: net.sourceforge.plantuml:plantuml-mit:1.2026.6
-- License: MIT License
-- License URL: https://opensource.org/license/mit
-- License text: link:LICENSES/plantuml-mit-1.2026.6/[reproduced under LICENSES/plantuml-mit-1.2026.6/]
-
-=== SLF4J API
-- Project: https://www.slf4j.org/
-- Coordinates: org.slf4j:slf4j-api
-- License: MIT License
-- License URL: https://www.slf4j.org/license.html
-- License text: link:LICENSES/slf4j-api-2.0.17/[reproduced under LICENSES/slf4j-api-2.0.17/]
-
-=== SpotBugs Annotations
-- Project: https://spotbugs.github.io/
-- Coordinates: com.github.spotbugs:spotbugs-annotations:4.7.3
-- License: GNU Lesser General Public License 2.1
-- License URL: https://github.com/spotbugs/spotbugs/blob/master/LICENSE.md
-- License text: link:LICENSES/spotbugs-annotations-4.7.3/[reproduced under LICENSES/spotbugs-annotations-4.7.3/]
-
-=== Structurizr DSL
-- Project: https://github.com/structurizr/dsl
-- Coordinates: com.structurizr:structurizr-dsl:6.2.1
-- License: Apache License 2.0
-- License URL: https://www.apache.org/licenses/LICENSE-2.0
-- License text: link:LICENSES/structurizr-dsl-6.2.1/[reproduced under LICENSES/structurizr-dsl-6.2.1/]
-
-== Complete Dependency List (including transitive)
-
-The curated sections above describe the direct dependencies. The table below is the
-full resolved Maven dependency tree across all modules (generated with
-`mvn license:aggregate-add-third-party`, then sorted by name with license names
-normalised); internal `com.graphinout:*` modules are omitted.
-
-Each row's *License* links to that project's own license text, reproduced verbatim
-under `LICENSES/<artifact>-<version>/` — extracted from the artifact's `META-INF`
-where it ships one, otherwise fetched from the project's source repository. Apache
-projects' `NOTICE` files and the second file of dual-licensed projects are kept in
-the same folder.
-
-[%header,cols="3,5,1,3",grid=rows,frame=none]
+[%header,cols="3,5,1,2,1",grid=rows,frame=none]
 |===
-| Library | Maven coordinates | Version | License
+| Library | Maven coordinates | Version | License | Original
 
-| https://www.antlr.org/antlr4-runtime/[ANTLR 4 Runtime] | `org.antlr:antlr4-runtime` | `4.12.0` | link:LICENSES/antlr4-runtime-4.12.0/[BSD-3-Clause]
-| https://commons.apache.org/proper/commons-bcel[Apache Commons BCEL] | `org.apache.bcel:bcel` | `6.12.0` | link:LICENSES/bcel-6.12.0/[Apache-2.0]
-| https://commons.apache.org/proper/commons-codec/[Apache Commons Codec] | `commons-codec:commons-codec` | `1.19.0` | link:LICENSES/commons-codec-1.19.0/[Apache-2.0]
-| https://commons.apache.org/proper/commons-collections/[Apache Commons Collections] | `org.apache.commons:commons-collections4` | `4.5.0` | link:LICENSES/commons-collections4-4.5.0/[Apache-2.0]
-| https://commons.apache.org/proper/commons-compress/[Apache Commons Compress] | `org.apache.commons:commons-compress` | `1.28.0` | link:LICENSES/commons-compress-1.28.0/[Apache-2.0]
-| https://commons.apache.org/proper/commons-csv/[Apache Commons CSV] | `org.apache.commons:commons-csv` | `1.14.1` | link:LICENSES/commons-csv-1.14.1/[Apache-2.0]
-| https://commons.apache.org/proper/commons-io/[Apache Commons IO] | `commons-io:commons-io` | `2.20.0` | link:LICENSES/commons-io-2.20.0/[Apache-2.0]
-| https://commons.apache.org/proper/commons-lang/[Apache Commons Lang] | `org.apache.commons:commons-lang3` | `3.18.0` | link:LICENSES/commons-lang3-3.18.0/[Apache-2.0]
-| https://commons.apache.org/proper/commons-lang/[Apache Commons Lang] | `org.apache.commons:commons-lang3` | `3.19.0` | link:LICENSES/commons-lang3-3.19.0/[Apache-2.0]
-| https://commons.apache.org/proper/commons-lang/[Apache Commons Lang] | `org.apache.commons:commons-lang3` | `3.20.0` | link:LICENSES/commons-lang3-3.20.0/[Apache-2.0]
-| https://commons.apache.org/proper/commons-logging/[Apache Commons Logging] | `commons-logging:commons-logging` | `1.3.6` | link:LICENSES/commons-logging-1.3.6/[Apache-2.0]
-| https://commons.apache.org/proper/commons-text[Apache Commons Text] | `org.apache.commons:commons-text` | `1.14.0` | link:LICENSES/commons-text-1.14.0/[Apache-2.0]
-| https://hc.apache.org/httpcomponents-client-5.5.x/5.6/httpclient5/[Apache HttpClient] | `org.apache.httpcomponents.client5:httpclient5` | `5.6` | link:LICENSES/httpclient5-5.6/[Apache-2.0]
-| https://hc.apache.org/httpcomponents-core-5.4.x/5.4/httpcore5/[Apache HttpComponents Core HTTP/1.1] | `org.apache.httpcomponents.core5:httpcore5` | `5.4` | link:LICENSES/httpcore5-5.4/[Apache-2.0]
-| https://hc.apache.org/httpcomponents-core-5.4.x/5.4/httpcore5-h2/[Apache HttpComponents Core HTTP/2] | `org.apache.httpcomponents.core5:httpcore5-h2` | `5.4` | link:LICENSES/httpcore5-h2-5.4/[Apache-2.0]
-| https://jena.apache.org/jena-arq/[Apache Jena - ARQ] | `org.apache.jena:jena-arq` | `5.6.0` | link:LICENSES/jena-arq-5.6.0/[Apache-2.0]
-| https://jena.apache.org/jena-base/[Apache Jena - Base] | `org.apache.jena:jena-base` | `5.6.0` | link:LICENSES/jena-base-5.6.0/[Apache-2.0]
-| https://jena.apache.org/jena-core/[Apache Jena - Core] | `org.apache.jena:jena-core` | `5.6.0` | link:LICENSES/jena-core-5.6.0/[Apache-2.0]
-| https://jena.apache.org/jena-iri/[Apache Jena - IRI] | `org.apache.jena:jena-iri` | `5.6.0` | link:LICENSES/jena-iri-5.6.0/[Apache-2.0]
-| https://jena.apache.org/jena-iri3986/[Apache Jena - IRI3986] | `org.apache.jena:jena-iri3986` | `5.6.0` | link:LICENSES/jena-iri3986-5.6.0/[Apache-2.0]
-| https://jena.apache.org/jena-langtag/[Apache Jena - Language tags] | `org.apache.jena:jena-langtag` | `5.6.0` | link:LICENSES/jena-langtag-5.6.0/[Apache-2.0]
-| https://thrift.apache.org/[Apache Thrift] | `org.apache.thrift:libthrift` | `0.22.0` | link:LICENSES/libthrift-0.22.0/[Apache-2.0]
-| http://www.apfloat.org[apfloat] | `org.apfloat:apfloat` | `1.10.1` | link:LICENSES/apfloat-1.10.1/[MIT]
-| http://asm.ow2.io/[asm] | `org.ow2.asm:asm` | `9.7` | link:LICENSES/asm-9.7/[BSD-3-Clause]
-| https://github.com/google/auto/tree/main/value[AutoValue Annotations] | `com.google.auto.value:auto-value-annotations` | `1.11.0` | link:LICENSES/auto-value-annotations-1.11.0/[Apache-2.0]
-| https://bytebuddy.net/byte-buddy[Byte Buddy (without dependencies)] | `net.bytebuddy:byte-buddy` | `1.14.8` | link:LICENSES/byte-buddy-1.14.8/[Apache-2.0]
-| https://bytebuddy.net/byte-buddy-agent[Byte Buddy agent] | `net.bytebuddy:byte-buddy-agent` | `1.14.8` | link:LICENSES/byte-buddy-agent-1.14.8/[Apache-2.0]
-| https://github.com/ben-manes/caffeine[Caffeine cache] | `com.github.ben-manes.caffeine:caffeine` | `3.2.2` | link:LICENSES/caffeine-3.2.2/[Apache-2.0]
-| https://checkerframework.org/[Checker Qual] | `org.checkerframework:checker-qual` | `3.42.0` | link:LICENSES/checker-qual-3.42.0/[MIT]
-| https://github.com/classgraph/classgraph[ClassGraph] | `io.github.classgraph:classgraph` | `4.8.157` | link:LICENSES/classgraph-4.8.157/[MIT]
-| https://github.com/javaparser[com.github.javaparser:javaparser-core] | `com.github.javaparser:javaparser-core` | `3.28.0` | link:LICENSES/javaparser-core-3.28.0/[Apache-2.0 / LGPL-2.1]
-| https://github.com/javaparser[com.github.javaparser:javaparser-symbol-solver-core] | `com.github.javaparser:javaparser-symbol-solver-core` | `3.28.0` | link:LICENSES/javaparser-symbol-solver-core-3.28.0/[Apache-2.0 / LGPL-2.1]
-| https://github.com/andrewoma/dexx[dexx] | `com.github.andrewoma.dexx:collection` | `0.7` | link:LICENSES/collection-0.7/[MIT]
-| https://www.gwtproject.org[Elemental2 Core] | `com.google.elemental2:elemental2-core` | `1.1.0` | link:LICENSES/elemental2-core-1.1.0/[Apache-2.0]
-| https://www.gwtproject.org[Elemental2 Promise] | `com.google.elemental2:elemental2-promise` | `1.1.0` | link:LICENSES/elemental2-promise-1.1.0/[Apache-2.0]
-| https://errorprone.info/error_prone_annotations[error-prone annotations] | `com.google.errorprone:error_prone_annotations` | `2.26.1` | link:LICENSES/error_prone_annotations-2.26.1/[Apache-2.0]
-| https://errorprone.info/error_prone_annotations[error-prone annotations] | `com.google.errorprone:error_prone_annotations` | `2.28.0` | link:LICENSES/error_prone_annotations-2.28.0/[Apache-2.0]
-| http://findbugs.sourceforge.net/[FindBugs-jsr305] | `com.google.code.findbugs:jsr305` | `3.0.2` | link:LICENSES/jsr305-3.0.2/[Apache-2.0]
-| https://github.com/google/gson[Gson] | `com.google.code.gson:gson` | `2.13.2` | link:LICENSES/gson-2.13.2/[Apache-2.0]
-| https://github.com/google/guava/failureaccess[Guava InternalFutureFailureAccess and InternalFutures] | `com.google.guava:failureaccess` | `1.0.2` | link:LICENSES/failureaccess-1.0.2/[Apache-2.0]
-| https://github.com/google/guava/listenablefuture[Guava ListenableFuture only] | `com.google.guava:listenablefuture` | `9999.0-empty-to-avoid-conflict-with-guava` | link:LICENSES/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava/[Apache-2.0]
-| https://github.com/google/guava[Guava: Google Core Libraries for Java] | `com.google.guava:guava` | `33.2.0-jre` | link:LICENSES/guava-33.2.0-jre/[Apache-2.0]
-| https://github.com/gwtproject/gwt-regexp[GWT Regular Expression] | `org.gwtproject.regexp:gwt-regexp` | `1.0.0-RC1` | link:LICENSES/gwt-regexp-1.0.0-RC1/[Apache-2.0]
-| https://github.com/hamcrest/JavaHamcrest/hamcrest-core[Hamcrest Core] | `org.hamcrest:hamcrest-core` | `1.3` | link:LICENSES/hamcrest-core-1.3/[BSD-3-Clause]
-| https://github.com/ethlo/itu[Internet Time Utility] | `com.ethlo.time:itu` | `1.14.0` | link:LICENSES/itu-1.14.0/[Apache-2.0]
-| https://github.com/google/j2objc/[J2ObjC Annotations] | `com.google.j2objc:j2objc-annotations` | `3.0.0` | link:LICENSES/j2objc-annotations-3.0.0/[Apache-2.0]
-| https://github.com/FasterXML/jackson[Jackson-annotations] | `com.fasterxml.jackson.core:jackson-annotations` | `2.20` | link:LICENSES/jackson-annotations-2.20/[Apache-2.0]
-| https://github.com/FasterXML/jackson[Jackson-annotations] | `com.fasterxml.jackson.core:jackson-annotations` | `2.21` | link:LICENSES/jackson-annotations-2.21/[Apache-2.0]
-| https://github.com/FasterXML/jackson-core[Jackson-core] | `com.fasterxml.jackson.core:jackson-core` | `2.21.2` | link:LICENSES/jackson-core-2.21.2/[Apache-2.0]
-| https://github.com/FasterXML/jackson[jackson-databind] | `com.fasterxml.jackson.core:jackson-databind` | `2.21.2` | link:LICENSES/jackson-databind-2.21.2/[Apache-2.0]
-| http://java.net/all/javax.activation-api/[JavaBeans Activation Framework API jar] | `javax.activation:javax.activation-api` | `1.2.0` | link:LICENSES/javax.activation-api-1.2.0/[GPL-2.0+CPE]
-| https://www.javassist.org/[Javassist] | `org.javassist:javassist` | `3.30.2-GA` | link:LICENSES/javassist-3.30.2-GA/[Apache-2.0 / LGPL-2.1 / MPL-1.1]
-| https://github.com/javaee/jaxb-spec/jaxb-api[jaxb-api] | `javax.xml.bind:jaxb-api` | `2.4.0-b180830.0359` | link:LICENSES/jaxb-api-2.4.0-b180830.0359/[CDDL-1.1 / GPL-2.0+CPE]
-| http://www.slf4j.org[JCL 1.2 implemented over SLF4J] | `org.slf4j:jcl-over-slf4j` | `2.0.17` | link:LICENSES/jcl-over-slf4j-2.0.17/[Apache-2.0]
-| http://nexus.sonatype.org/oss-repository-hosting.html/jcodings[JCodings] | `org.jruby.jcodings:jcodings` | `1.0.63` | link:LICENSES/jcodings-1.0.63/[MIT]
-| http://www.jgrapht.org/jgrapht-core[JGraphT - Core] | `org.jgrapht:jgrapht-core` | `1.5.2` | link:LICENSES/jgrapht-core-1.5.2/[EPL-2.0 / LGPL-2.1]
-| http://www.jgrapht.org/jgrapht-io[JGraphT - I/O] | `org.jgrapht:jgrapht-io` | `1.5.2` | link:LICENSES/jgrapht-io-1.5.2/[EPL-2.0 / LGPL-2.1]
-| http://www.jheaps.org[JHeaps] | `org.jheaps:jheaps` | `0.14` | link:LICENSES/jheaps-0.14/[Apache-2.0]
-| http://nexus.sonatype.org/oss-repository-hosting.html/joni[Joni] | `org.jruby.joni:joni` | `2.2.6` | link:LICENSES/joni-2.2.6/[MIT]
-| https://www.gwtproject.org[JsInterop Base] | `com.google.jsinterop:base` | `1.0.0` | link:LICENSES/base-1.0.0/[Apache-2.0]
-| https://github.com/eclipse-ee4j/jsonp[JSON-P Default Provider] | `org.glassfish:jakarta.json` | `2.0.1` | link:LICENSES/jakarta.json-2.0.1/[EPL-2.0 / GPL-2.0+CPE]
-| https://github.com/networknt/json-schema-validator[JsonSchemaValidator] | `com.networknt:json-schema-validator` | `1.5.9` | link:LICENSES/json-schema-validator-1.5.9/[Apache-2.0]
-| http://jspecify.org/[JSpecify annotations] | `org.jspecify:jspecify` | `1.0.0` | link:LICENSES/jspecify-1.0.0/[Apache-2.0]
-| http://junit.org[JUnit] | `junit:junit` | `4.13.2` | link:LICENSES/junit-4.13.2/[EPL-1.0]
-| https://junit.org/junit5/[JUnit Jupiter (Aggregator)] | `org.junit.jupiter:junit-jupiter` | `5.9.0` | link:LICENSES/junit-jupiter-5.9.0/[EPL-2.0]
-| https://junit.org/junit5/[JUnit Jupiter API] | `org.junit.jupiter:junit-jupiter-api` | `5.9.0` | link:LICENSES/junit-jupiter-api-5.9.0/[EPL-2.0]
-| https://junit.org/junit5/[JUnit Jupiter API] | `org.junit.jupiter:junit-jupiter-api` | `5.9.2` | link:LICENSES/junit-jupiter-api-5.9.2/[EPL-2.0]
-| https://junit.org/junit5/[JUnit Jupiter Engine] | `org.junit.jupiter:junit-jupiter-engine` | `5.9.0` | link:LICENSES/junit-jupiter-engine-5.9.0/[EPL-2.0]
-| https://junit.org/junit5/[JUnit Jupiter Params] | `org.junit.jupiter:junit-jupiter-params` | `5.9.0` | link:LICENSES/junit-jupiter-params-5.9.0/[EPL-2.0]
-| https://junit.org/junit5/[JUnit Platform Commons] | `org.junit.platform:junit-platform-commons` | `1.9.0` | link:LICENSES/junit-platform-commons-1.9.0/[EPL-2.0]
-| https://junit.org/junit5/[JUnit Platform Commons] | `org.junit.platform:junit-platform-commons` | `1.9.2` | link:LICENSES/junit-platform-commons-1.9.2/[EPL-2.0]
-| https://junit.org/junit5/[JUnit Platform Engine API] | `org.junit.platform:junit-platform-engine` | `1.9.0` | link:LICENSES/junit-platform-engine-1.9.0/[EPL-2.0]
-| http://logback.qos.ch/logback-classic[Logback Classic Module] | `ch.qos.logback:logback-classic` | `1.5.32` | link:LICENSES/logback-classic-1.5.32/[EPL-2.0 / LGPL-2.1]
-| http://logback.qos.ch/logback-core[Logback Core Module] | `ch.qos.logback:logback-core` | `1.5.32` | link:LICENSES/logback-core-1.5.32/[EPL-2.0 / LGPL-2.1]
-| https://github.com/mockito/mockito[mockito-core] | `org.mockito:mockito-core` | `5.6.0` | link:LICENSES/mockito-core-5.6.0/[MIT]
-| https://github.com/mockito/mockito[mockito-junit-jupiter] | `org.mockito:mockito-junit-jupiter` | `5.1.1` | link:LICENSES/mockito-junit-jupiter-5.1.1/[MIT]
-| http://objenesis.org/objenesis[Objenesis] | `org.objenesis:objenesis` | `3.3` | link:LICENSES/objenesis-3.3/[Apache-2.0]
-| https://github.com/apiguardian-team/apiguardian[org.apiguardian:apiguardian-api] | `org.apiguardian:apiguardian-api` | `1.1.2` | link:LICENSES/apiguardian-api-1.1.2/[Apache-2.0]
-| https://github.com/ota4j-team/opentest4j[org.opentest4j:opentest4j] | `org.opentest4j:opentest4j` | `1.2.0` | link:LICENSES/opentest4j-1.2.0/[Apache-2.0]
-| https://github.com/RoaringBitmap/RoaringBitmap[org.roaringbitmap:RoaringBitmap] | `org.roaringbitmap:RoaringBitmap` | `1.3.0` | link:LICENSES/RoaringBitmap-1.3.0/[Apache-2.0]
-| https://plantuml.com/[PlantUML] | `net.sourceforge.plantuml:plantuml-mit` | `1.2026.6` | link:LICENSES/plantuml-mit-1.2026.6/[MIT]
-| https://developers.google.com/protocol-buffers/protobuf-java/[Protocol Buffers [Core]] | `com.google.protobuf:protobuf-java` | `4.32.1` | link:LICENSES/protobuf-java-4.32.1/[BSD-3-Clause]
-| http://www.slf4j.org[SLF4J API Module] | `org.slf4j:slf4j-api` | `2.0.17` | link:LICENSES/slf4j-api-2.0.17/[MIT]
-| https://docs.structurizr.com/structurizr-client[structurizr-client] | `com.structurizr:structurizr-client` | `6.2.1` | link:LICENSES/structurizr-client-6.2.1/[Apache-2.0]
-| https://docs.structurizr.com/structurizr-component[structurizr-component] | `com.structurizr:structurizr-component` | `6.2.1` | link:LICENSES/structurizr-component-6.2.1/[Apache-2.0]
-| https://docs.structurizr.com/structurizr-core[structurizr-core] | `com.structurizr:structurizr-core` | `6.2.1` | link:LICENSES/structurizr-core-6.2.1/[Apache-2.0]
-| https://docs.structurizr.com/structurizr-dsl[structurizr-dsl] | `com.structurizr:structurizr-dsl` | `6.2.1` | link:LICENSES/structurizr-dsl-6.2.1/[Apache-2.0]
-| https://docs.structurizr.com/structurizr-export[structurizr-export] | `com.structurizr:structurizr-export` | `6.2.1` | link:LICENSES/structurizr-export-6.2.1/[Apache-2.0]
-| https://docs.structurizr.com/structurizr-import[structurizr-import] | `com.structurizr:structurizr-import` | `6.2.1` | link:LICENSES/structurizr-import-6.2.1/[Apache-2.0]
-| https://github.com/filip26/titanium-jcs[Titanium JCS] | `com.apicatalog:titanium-jcs` | `1.1.1` | link:LICENSES/titanium-jcs-1.1.1/[Apache-2.0]
-| https://github.com/filip26/titanium-json-ld[Titanium JSON-LD 1.1 (JRE11)] | `com.apicatalog:titanium-json-ld` | `1.7.0` | link:LICENSES/titanium-json-ld-1.7.0/[Apache-2.0]
-| https://github.com/filip26/titanium-rdf-api[Titanium RDF API] | `com.apicatalog:titanium-rdf-api` | `1.0.0` | link:LICENSES/titanium-rdf-api-1.0.0/[Apache-2.0]
-| https://github.com/filip26/titanium-rdf-n-quads[Titanium RDF N-QUADS] | `com.apicatalog:titanium-rdf-n-quads` | `1.0.2` | link:LICENSES/titanium-rdf-n-quads-1.0.2/[Apache-2.0]
-| http://github.com/google/truth/truth[Truth Core] | `com.google.truth:truth` | `1.4.4` | link:LICENSES/truth-1.4.4/[Apache-2.0]
+| https://commons.apache.org/proper/commons-io/[Apache Commons IO] | `commons-io:commons-io` | `2.20.0` | link:LICENSES/commons-io-2.20.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/commons-io/commons-io/2.20.0/commons-io-2.20.0.jar[1]]
+| https://commons.apache.org/proper/commons-text[Apache Commons Text] | `org.apache.commons:commons-text` | `1.14.0` | link:LICENSES/commons-text-1.14.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/commons/commons-text/1.14.0/commons-text-1.14.0.jar[1]]
+| https://jena.apache.org/jena-core/[Apache Jena - Core] | `org.apache.jena:jena-core` | `5.6.0` | link:LICENSES/jena-core-5.6.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/jena/jena-core/5.6.0/jena-core-5.6.0.jar[1]]
+| https://github.com/classgraph/classgraph[ClassGraph] | `io.github.classgraph:classgraph` | `4.8.157` | link:LICENSES/classgraph-4.8.157/[MIT] | [link:https://raw.githubusercontent.com/classgraph/classgraph/HEAD/LICENSE-ClassGraph.txt[1]]
+| http://findbugs.sourceforge.net/[FindBugs-jsr305] | `com.google.code.findbugs:jsr305` | `3.0.2` | link:LICENSES/jsr305-3.0.2/[Apache-2.0] | [link:https://raw.githubusercontent.com/findbugsproject/findbugs/master/findbugs/licenses/LICENSE-jsr305.txt[1]]
+| https://github.com/google/guava[Guava: Google Core Libraries for Java] | `com.google.guava:guava` | `33.2.0-jre` | link:LICENSES/guava-33.2.0-jre/[Apache-2.0] | [link:https://repo1.maven.org/maven2/com/google/guava/guava/33.2.0-jre/guava-33.2.0-jre.jar[1]]
+| https://github.com/gwtproject/gwt-regexp[GWT Regular Expression] | `org.gwtproject.regexp:gwt-regexp` | `1.0.0-RC1` | link:LICENSES/gwt-regexp-1.0.0-RC1/[Apache-2.0] | [link:https://raw.githubusercontent.com/gwtproject/gwt-regexp/HEAD/LICENSE[1]]
+| https://github.com/FasterXML/jackson-core[Jackson-core] | `com.fasterxml.jackson.core:jackson-core` | `2.21.2` | link:LICENSES/jackson-core-2.21.2/[Apache-2.0] | [link:https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.21.2/jackson-core-2.21.2.jar[1]]
+| http://www.jgrapht.org/jgrapht-core[JGraphT - Core] | `org.jgrapht:jgrapht-core` | `1.5.2` | link:LICENSES/jgrapht-core-1.5.2/[EPL-2.0 / LGPL-2.1] | [link:https://raw.githubusercontent.com/jgrapht/jgrapht/HEAD/license-EPL.txt[1]] [link:https://raw.githubusercontent.com/jgrapht/jgrapht/HEAD/license-LGPL.txt[2]]
+| http://nexus.sonatype.org/oss-repository-hosting.html/joni[Joni] | `org.jruby.joni:joni` | `2.2.6` | link:LICENSES/joni-2.2.6/[MIT] | [link:https://raw.githubusercontent.com/jruby/joni/HEAD/LICENSE[1]]
+| https://github.com/networknt/json-schema-validator[JsonSchemaValidator] | `com.networknt:json-schema-validator` | `1.5.9` | link:LICENSES/json-schema-validator-1.5.9/[Apache-2.0] | [link:https://raw.githubusercontent.com/networknt/json-schema-validator/HEAD/LICENSE[1]]
+| http://jspecify.org/[JSpecify annotations] | `org.jspecify:jspecify` | `1.0.0` | link:LICENSES/jspecify-1.0.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/jspecify/jspecify/HEAD/LICENSE[1]]
+| https://junit.org/junit5/[JUnit Jupiter (Aggregator)] | `org.junit.jupiter:junit-jupiter` | `5.9.0` | link:LICENSES/junit-jupiter-5.9.0/[EPL-2.0] | [link:https://repo1.maven.org/maven2/org/junit/jupiter/junit-jupiter/5.9.0/junit-jupiter-5.9.0.jar[1]]
+| http://logback.qos.ch/logback-classic[Logback Classic Module] | `ch.qos.logback:logback-classic` | `1.5.32` | link:LICENSES/logback-classic-1.5.32/[EPL-2.0 / LGPL-2.1] | [link:https://raw.githubusercontent.com/qos-ch/logback/HEAD/LICENSE.txt[1]]
+| https://github.com/mockito/mockito[mockito-core] | `org.mockito:mockito-core` | `5.6.0` | link:LICENSES/mockito-core-5.6.0/[MIT] | [link:https://raw.githubusercontent.com/mockito/mockito/HEAD/LICENSE[1]]
+| https://plantuml.com/[PlantUML] | `net.sourceforge.plantuml:plantuml-mit` | `1.2026.6` | link:LICENSES/plantuml-mit-1.2026.6/[MIT] | [link:https://raw.githubusercontent.com/plantuml/plantuml-mit/master/LICENSE[1]]
+| http://www.slf4j.org[SLF4J API Module] | `org.slf4j:slf4j-api` | `2.0.17` | link:LICENSES/slf4j-api-2.0.17/[MIT] | [link:https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar[1]]
+| https://spotbugs.github.io/[SpotBugs Annotations] | `com.github.spotbugs:spotbugs-annotations` | `4.7.3` | link:LICENSES/spotbugs-annotations-4.7.3/[LGPL-2.1] | [link:https://raw.githubusercontent.com/spotbugs/spotbugs/master/LICENSE[1]]
+| https://docs.structurizr.com/structurizr-dsl[structurizr-dsl] | `com.structurizr:structurizr-dsl` | `6.2.1` | link:LICENSES/structurizr-dsl-6.2.1/[Apache-2.0] | [link:https://raw.githubusercontent.com/structurizr/java/HEAD/LICENSE[1]]
+| http://github.com/google/truth/truth[Truth Core] | `com.google.truth:truth` | `1.4.4` | link:LICENSES/truth-1.4.4/[Apache-2.0] | [link:https://repo1.maven.org/maven2/com/google/truth/truth/1.4.4/truth-1.4.4.jar[1]]
+|===
+
+== Transitive Dependencies
+
+The remaining resolved dependencies across all modules — the direct ones above
+are not repeated. Generated with `mvn license:aggregate-add-third-party`;
+internal `com.graphinout:*` modules are omitted.
+
+[%header,cols="3,5,1,2,1",grid=rows,frame=none]
+|===
+| Library | Maven coordinates | Version | License | Original
+
+| https://www.antlr.org/antlr4-runtime/[ANTLR 4 Runtime] | `org.antlr:antlr4-runtime` | `4.12.0` | link:LICENSES/antlr4-runtime-4.12.0/[BSD-3-Clause] | [link:https://raw.githubusercontent.com/antlr/antlr4/HEAD/LICENSE.txt[1]]
+| https://commons.apache.org/proper/commons-bcel[Apache Commons BCEL] | `org.apache.bcel:bcel` | `6.12.0` | link:LICENSES/bcel-6.12.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/bcel/bcel/6.12.0/bcel-6.12.0.jar[1]]
+| https://commons.apache.org/proper/commons-codec/[Apache Commons Codec] | `commons-codec:commons-codec` | `1.19.0` | link:LICENSES/commons-codec-1.19.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/commons-codec/commons-codec/1.19.0/commons-codec-1.19.0.jar[1]]
+| https://commons.apache.org/proper/commons-collections/[Apache Commons Collections] | `org.apache.commons:commons-collections4` | `4.5.0` | link:LICENSES/commons-collections4-4.5.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/commons/commons-collections4/4.5.0/commons-collections4-4.5.0.jar[1]]
+| https://commons.apache.org/proper/commons-compress/[Apache Commons Compress] | `org.apache.commons:commons-compress` | `1.28.0` | link:LICENSES/commons-compress-1.28.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/commons/commons-compress/1.28.0/commons-compress-1.28.0.jar[1]]
+| https://commons.apache.org/proper/commons-csv/[Apache Commons CSV] | `org.apache.commons:commons-csv` | `1.14.1` | link:LICENSES/commons-csv-1.14.1/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/commons/commons-csv/1.14.1/commons-csv-1.14.1.jar[1]]
+| https://commons.apache.org/proper/commons-lang/[Apache Commons Lang] | `org.apache.commons:commons-lang3` | `3.18.0` | link:LICENSES/commons-lang3-3.18.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.18.0/commons-lang3-3.18.0.jar[1]]
+| https://commons.apache.org/proper/commons-lang/[Apache Commons Lang] | `org.apache.commons:commons-lang3` | `3.19.0` | link:LICENSES/commons-lang3-3.19.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.19.0/commons-lang3-3.19.0.jar[1]]
+| https://commons.apache.org/proper/commons-lang/[Apache Commons Lang] | `org.apache.commons:commons-lang3` | `3.20.0` | link:LICENSES/commons-lang3-3.20.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.20.0/commons-lang3-3.20.0.jar[1]]
+| https://commons.apache.org/proper/commons-logging/[Apache Commons Logging] | `commons-logging:commons-logging` | `1.3.6` | link:LICENSES/commons-logging-1.3.6/[Apache-2.0] | [link:https://repo1.maven.org/maven2/commons-logging/commons-logging/1.3.6/commons-logging-1.3.6.jar[1]]
+| https://hc.apache.org/httpcomponents-client-5.5.x/5.6/httpclient5/[Apache HttpClient] | `org.apache.httpcomponents.client5:httpclient5` | `5.6` | link:LICENSES/httpclient5-5.6/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/httpcomponents/client5/httpclient5/5.6/httpclient5-5.6.jar[1]]
+| https://hc.apache.org/httpcomponents-core-5.4.x/5.4/httpcore5/[Apache HttpComponents Core HTTP/1.1] | `org.apache.httpcomponents.core5:httpcore5` | `5.4` | link:LICENSES/httpcore5-5.4/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/httpcomponents/core5/httpcore5/5.4/httpcore5-5.4.jar[1]]
+| https://hc.apache.org/httpcomponents-core-5.4.x/5.4/httpcore5-h2/[Apache HttpComponents Core HTTP/2] | `org.apache.httpcomponents.core5:httpcore5-h2` | `5.4` | link:LICENSES/httpcore5-h2-5.4/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/httpcomponents/core5/httpcore5-h2/5.4/httpcore5-h2-5.4.jar[1]]
+| https://jena.apache.org/jena-arq/[Apache Jena - ARQ] | `org.apache.jena:jena-arq` | `5.6.0` | link:LICENSES/jena-arq-5.6.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/jena/jena-arq/5.6.0/jena-arq-5.6.0.jar[1]]
+| https://jena.apache.org/jena-base/[Apache Jena - Base] | `org.apache.jena:jena-base` | `5.6.0` | link:LICENSES/jena-base-5.6.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/jena/jena-base/5.6.0/jena-base-5.6.0.jar[1]]
+| https://jena.apache.org/jena-iri/[Apache Jena - IRI] | `org.apache.jena:jena-iri` | `5.6.0` | link:LICENSES/jena-iri-5.6.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/jena/jena-iri/5.6.0/jena-iri-5.6.0.jar[1]]
+| https://jena.apache.org/jena-iri3986/[Apache Jena - IRI3986] | `org.apache.jena:jena-iri3986` | `5.6.0` | link:LICENSES/jena-iri3986-5.6.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/jena/jena-iri3986/5.6.0/jena-iri3986-5.6.0.jar[1]]
+| https://jena.apache.org/jena-langtag/[Apache Jena - Language tags] | `org.apache.jena:jena-langtag` | `5.6.0` | link:LICENSES/jena-langtag-5.6.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/jena/jena-langtag/5.6.0/jena-langtag-5.6.0.jar[1]]
+| https://thrift.apache.org/[Apache Thrift] | `org.apache.thrift:libthrift` | `0.22.0` | link:LICENSES/libthrift-0.22.0/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apache/thrift/libthrift/0.22.0/libthrift-0.22.0.jar[1]]
+| http://www.apfloat.org[apfloat] | `org.apfloat:apfloat` | `1.10.1` | link:LICENSES/apfloat-1.10.1/[MIT] | [link:https://raw.githubusercontent.com/mtommila/apfloat/HEAD/LICENSE.txt[1]]
+| http://asm.ow2.io/[asm] | `org.ow2.asm:asm` | `9.7` | link:LICENSES/asm-9.7/[BSD-3-Clause] | [link:https://gitlab.ow2.org/asm/asm/-/raw/master/LICENSE.txt[1]]
+| https://github.com/google/auto/tree/main/value[AutoValue Annotations] | `com.google.auto.value:auto-value-annotations` | `1.11.0` | link:LICENSES/auto-value-annotations-1.11.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/google/auto/HEAD/LICENSE[1]]
+| https://bytebuddy.net/byte-buddy[Byte Buddy (without dependencies)] | `net.bytebuddy:byte-buddy` | `1.14.8` | link:LICENSES/byte-buddy-1.14.8/[Apache-2.0] | [link:https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.14.8/byte-buddy-1.14.8.jar[1]]
+| https://bytebuddy.net/byte-buddy-agent[Byte Buddy agent] | `net.bytebuddy:byte-buddy-agent` | `1.14.8` | link:LICENSES/byte-buddy-agent-1.14.8/[Apache-2.0] | [link:https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy-agent/1.14.8/byte-buddy-agent-1.14.8.jar[1]]
+| https://github.com/ben-manes/caffeine[Caffeine cache] | `com.github.ben-manes.caffeine:caffeine` | `3.2.2` | link:LICENSES/caffeine-3.2.2/[Apache-2.0] | [link:https://repo1.maven.org/maven2/com/github/ben-manes/caffeine/caffeine/3.2.2/caffeine-3.2.2.jar[1]]
+| https://checkerframework.org/[Checker Qual] | `org.checkerframework:checker-qual` | `3.42.0` | link:LICENSES/checker-qual-3.42.0/[MIT] | [link:https://repo1.maven.org/maven2/org/checkerframework/checker-qual/3.42.0/checker-qual-3.42.0.jar[1]]
+| https://github.com/javaparser[com.github.javaparser:javaparser-core] | `com.github.javaparser:javaparser-core` | `3.28.0` | link:LICENSES/javaparser-core-3.28.0/[Apache-2.0 / LGPL-2.1] | [link:https://raw.githubusercontent.com/javaparser/javaparser/HEAD/LICENSE.APACHE[1]] [link:https://raw.githubusercontent.com/javaparser/javaparser/HEAD/LICENSE.LGPL[2]]
+| https://github.com/javaparser[com.github.javaparser:javaparser-symbol-solver-core] | `com.github.javaparser:javaparser-symbol-solver-core` | `3.28.0` | link:LICENSES/javaparser-symbol-solver-core-3.28.0/[Apache-2.0 / LGPL-2.1] | [link:https://raw.githubusercontent.com/javaparser/javaparser/HEAD/LICENSE.APACHE[1]] [link:https://raw.githubusercontent.com/javaparser/javaparser/HEAD/LICENSE.LGPL[2]]
+| https://github.com/andrewoma/dexx[dexx] | `com.github.andrewoma.dexx:collection` | `0.7` | link:LICENSES/collection-0.7/[MIT] | [link:https://raw.githubusercontent.com/andrewoma/dexx/HEAD/LICENSE.txt[1]]
+| https://www.gwtproject.org[Elemental2 Core] | `com.google.elemental2:elemental2-core` | `1.1.0` | link:LICENSES/elemental2-core-1.1.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/google/elemental2/HEAD/LICENSE[1]]
+| https://www.gwtproject.org[Elemental2 Promise] | `com.google.elemental2:elemental2-promise` | `1.1.0` | link:LICENSES/elemental2-promise-1.1.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/google/elemental2/HEAD/LICENSE[1]]
+| https://errorprone.info/error_prone_annotations[error-prone annotations] | `com.google.errorprone:error_prone_annotations` | `2.26.1` | link:LICENSES/error_prone_annotations-2.26.1/[Apache-2.0] | [link:https://raw.githubusercontent.com/google/error-prone/HEAD/COPYING[1]]
+| https://errorprone.info/error_prone_annotations[error-prone annotations] | `com.google.errorprone:error_prone_annotations` | `2.28.0` | link:LICENSES/error_prone_annotations-2.28.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/google/error-prone/HEAD/COPYING[1]]
+| https://github.com/google/gson[Gson] | `com.google.code.gson:gson` | `2.13.2` | link:LICENSES/gson-2.13.2/[Apache-2.0] | [link:https://raw.githubusercontent.com/google/gson/HEAD/LICENSE[1]]
+| https://github.com/google/guava/failureaccess[Guava InternalFutureFailureAccess and InternalFutures] | `com.google.guava:failureaccess` | `1.0.2` | link:LICENSES/failureaccess-1.0.2/[Apache-2.0] | [link:https://raw.githubusercontent.com/google/guava/HEAD/LICENSE[1]]
+| https://github.com/google/guava/listenablefuture[Guava ListenableFuture only] | `com.google.guava:listenablefuture` | `9999.0-empty-to-avoid-conflict-with-guava` | link:LICENSES/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava/[Apache-2.0] | [link:https://raw.githubusercontent.com/google/guava/HEAD/LICENSE[1]]
+| https://github.com/hamcrest/JavaHamcrest/hamcrest-core[Hamcrest Core] | `org.hamcrest:hamcrest-core` | `1.3` | link:LICENSES/hamcrest-core-1.3/[BSD-3-Clause] | [link:https://raw.githubusercontent.com/hamcrest/JavaHamcrest/HEAD/LICENSE[1]]
+| https://developers.google.com/protocol-buffers/protobuf-java/[Protocol Buffers [Core]] | `com.google.protobuf:protobuf-java` | `4.32.1` | link:LICENSES/protobuf-java-4.32.1/[BSD-3-Clause] | [link:https://raw.githubusercontent.com/protocolbuffers/protobuf/HEAD/LICENSE[1]]
+| https://github.com/ethlo/itu[Internet Time Utility] | `com.ethlo.time:itu` | `1.14.0` | link:LICENSES/itu-1.14.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/ethlo/itu/HEAD/LICENSE[1]]
+| https://github.com/google/j2objc/[J2ObjC Annotations] | `com.google.j2objc:j2objc-annotations` | `3.0.0` | link:LICENSES/j2objc-annotations-3.0.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/google/j2objc/HEAD/LICENSE[1]]
+| https://github.com/FasterXML/jackson[Jackson-annotations] | `com.fasterxml.jackson.core:jackson-annotations` | `2.20` | link:LICENSES/jackson-annotations-2.20/[Apache-2.0] | [link:https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.20/jackson-annotations-2.20.jar[1]]
+| https://github.com/FasterXML/jackson[Jackson-annotations] | `com.fasterxml.jackson.core:jackson-annotations` | `2.21` | link:LICENSES/jackson-annotations-2.21/[Apache-2.0] | [link:https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.21/jackson-annotations-2.21.jar[1]]
+| https://github.com/FasterXML/jackson[jackson-databind] | `com.fasterxml.jackson.core:jackson-databind` | `2.21.2` | link:LICENSES/jackson-databind-2.21.2/[Apache-2.0] | [link:https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.21.2/jackson-databind-2.21.2.jar[1]]
+| http://java.net/all/javax.activation-api/[JavaBeans Activation Framework API jar] | `javax.activation:javax.activation-api` | `1.2.0` | link:LICENSES/javax.activation-api-1.2.0/[GPL-2.0+CPE] | [link:https://repo1.maven.org/maven2/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar[1]]
+| https://www.javassist.org/[Javassist] | `org.javassist:javassist` | `3.30.2-GA` | link:LICENSES/javassist-3.30.2-GA/[Apache-2.0 / LGPL-2.1 / MPL-1.1] | [link:https://raw.githubusercontent.com/jboss-javassist/javassist/HEAD/License.html[1]]
+| https://github.com/javaee/jaxb-spec/jaxb-api[jaxb-api] | `javax.xml.bind:jaxb-api` | `2.4.0-b180830.0359` | link:LICENSES/jaxb-api-2.4.0-b180830.0359/[CDDL-1.1 / GPL-2.0+CPE] | [link:https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api/2.4.0-b180830.0359/jaxb-api-2.4.0-b180830.0359.jar[1]]
+| http://www.slf4j.org[JCL 1.2 implemented over SLF4J] | `org.slf4j:jcl-over-slf4j` | `2.0.17` | link:LICENSES/jcl-over-slf4j-2.0.17/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/slf4j/jcl-over-slf4j/2.0.17/jcl-over-slf4j-2.0.17.jar[1]]
+| http://nexus.sonatype.org/oss-repository-hosting.html/jcodings[JCodings] | `org.jruby.jcodings:jcodings` | `1.0.63` | link:LICENSES/jcodings-1.0.63/[MIT] | [link:https://raw.githubusercontent.com/jruby/jcodings/HEAD/LICENSE.txt[1]]
+| http://www.jgrapht.org/jgrapht-io[JGraphT - I/O] | `org.jgrapht:jgrapht-io` | `1.5.2` | link:LICENSES/jgrapht-io-1.5.2/[EPL-2.0 / LGPL-2.1] | [link:https://raw.githubusercontent.com/jgrapht/jgrapht/HEAD/license-EPL.txt[1]] [link:https://raw.githubusercontent.com/jgrapht/jgrapht/HEAD/license-LGPL.txt[2]]
+| http://www.jheaps.org[JHeaps] | `org.jheaps:jheaps` | `0.14` | link:LICENSES/jheaps-0.14/[Apache-2.0] | [link:https://raw.githubusercontent.com/d-michail/jheaps/HEAD/LICENSE[1]]
+| https://www.gwtproject.org[JsInterop Base] | `com.google.jsinterop:base` | `1.0.0` | link:LICENSES/base-1.0.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/google/jsinterop-base/HEAD/LICENSE[1]]
+| https://github.com/eclipse-ee4j/jsonp[JSON-P Default Provider] | `org.glassfish:jakarta.json` | `2.0.1` | link:LICENSES/jakarta.json-2.0.1/[EPL-2.0 / GPL-2.0+CPE] | [link:https://repo1.maven.org/maven2/org/glassfish/jakarta.json/2.0.1/jakarta.json-2.0.1.jar[1]]
+| http://junit.org[JUnit] | `junit:junit` | `4.13.2` | link:LICENSES/junit-4.13.2/[EPL-1.0] | [link:https://raw.githubusercontent.com/junit-team/junit4/HEAD/LICENSE-junit.txt[1]]
+| https://junit.org/junit5/[JUnit Jupiter API] | `org.junit.jupiter:junit-jupiter-api` | `5.9.0` | link:LICENSES/junit-jupiter-api-5.9.0/[EPL-2.0] | [link:https://repo1.maven.org/maven2/org/junit/jupiter/junit-jupiter-api/5.9.0/junit-jupiter-api-5.9.0.jar[1]]
+| https://junit.org/junit5/[JUnit Jupiter API] | `org.junit.jupiter:junit-jupiter-api` | `5.9.2` | link:LICENSES/junit-jupiter-api-5.9.2/[EPL-2.0] | [link:https://repo1.maven.org/maven2/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar[1]]
+| https://junit.org/junit5/[JUnit Jupiter Engine] | `org.junit.jupiter:junit-jupiter-engine` | `5.9.0` | link:LICENSES/junit-jupiter-engine-5.9.0/[EPL-2.0] | [link:https://repo1.maven.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.9.0/junit-jupiter-engine-5.9.0.jar[1]]
+| https://junit.org/junit5/[JUnit Jupiter Params] | `org.junit.jupiter:junit-jupiter-params` | `5.9.0` | link:LICENSES/junit-jupiter-params-5.9.0/[EPL-2.0] | [link:https://repo1.maven.org/maven2/org/junit/jupiter/junit-jupiter-params/5.9.0/junit-jupiter-params-5.9.0.jar[1]]
+| https://junit.org/junit5/[JUnit Platform Commons] | `org.junit.platform:junit-platform-commons` | `1.9.0` | link:LICENSES/junit-platform-commons-1.9.0/[EPL-2.0] | [link:https://repo1.maven.org/maven2/org/junit/platform/junit-platform-commons/1.9.0/junit-platform-commons-1.9.0.jar[1]]
+| https://junit.org/junit5/[JUnit Platform Commons] | `org.junit.platform:junit-platform-commons` | `1.9.2` | link:LICENSES/junit-platform-commons-1.9.2/[EPL-2.0] | [link:https://repo1.maven.org/maven2/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar[1]]
+| https://junit.org/junit5/[JUnit Platform Engine API] | `org.junit.platform:junit-platform-engine` | `1.9.0` | link:LICENSES/junit-platform-engine-1.9.0/[EPL-2.0] | [link:https://repo1.maven.org/maven2/org/junit/platform/junit-platform-engine/1.9.0/junit-platform-engine-1.9.0.jar[1]]
+| http://logback.qos.ch/logback-core[Logback Core Module] | `ch.qos.logback:logback-core` | `1.5.32` | link:LICENSES/logback-core-1.5.32/[EPL-2.0 / LGPL-2.1] | [link:https://raw.githubusercontent.com/qos-ch/logback/HEAD/LICENSE.txt[1]]
+| https://github.com/mockito/mockito[mockito-junit-jupiter] | `org.mockito:mockito-junit-jupiter` | `5.1.1` | link:LICENSES/mockito-junit-jupiter-5.1.1/[MIT] | [link:https://raw.githubusercontent.com/mockito/mockito/HEAD/LICENSE[1]]
+| http://objenesis.org/objenesis[Objenesis] | `org.objenesis:objenesis` | `3.3` | link:LICENSES/objenesis-3.3/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/objenesis/objenesis/3.3/objenesis-3.3.jar[1]]
+| https://github.com/apiguardian-team/apiguardian[org.apiguardian:apiguardian-api] | `org.apiguardian:apiguardian-api` | `1.1.2` | link:LICENSES/apiguardian-api-1.1.2/[Apache-2.0] | [link:https://repo1.maven.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar[1]]
+| https://github.com/ota4j-team/opentest4j[org.opentest4j:opentest4j] | `org.opentest4j:opentest4j` | `1.2.0` | link:LICENSES/opentest4j-1.2.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/ota4j-team/opentest4j/HEAD/LICENSE[1]]
+| https://github.com/RoaringBitmap/RoaringBitmap[org.roaringbitmap:RoaringBitmap] | `org.roaringbitmap:RoaringBitmap` | `1.3.0` | link:LICENSES/RoaringBitmap-1.3.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/RoaringBitmap/RoaringBitmap/HEAD/LICENSE[1]]
+| https://docs.structurizr.com/structurizr-client[structurizr-client] | `com.structurizr:structurizr-client` | `6.2.1` | link:LICENSES/structurizr-client-6.2.1/[Apache-2.0] | [link:https://raw.githubusercontent.com/structurizr/java/HEAD/LICENSE[1]]
+| https://docs.structurizr.com/structurizr-component[structurizr-component] | `com.structurizr:structurizr-component` | `6.2.1` | link:LICENSES/structurizr-component-6.2.1/[Apache-2.0] | [link:https://raw.githubusercontent.com/structurizr/java/HEAD/LICENSE[1]]
+| https://docs.structurizr.com/structurizr-core[structurizr-core] | `com.structurizr:structurizr-core` | `6.2.1` | link:LICENSES/structurizr-core-6.2.1/[Apache-2.0] | [link:https://raw.githubusercontent.com/structurizr/java/HEAD/LICENSE[1]]
+| https://docs.structurizr.com/structurizr-export[structurizr-export] | `com.structurizr:structurizr-export` | `6.2.1` | link:LICENSES/structurizr-export-6.2.1/[Apache-2.0] | [link:https://raw.githubusercontent.com/structurizr/java/HEAD/LICENSE[1]]
+| https://docs.structurizr.com/structurizr-import[structurizr-import] | `com.structurizr:structurizr-import` | `6.2.1` | link:LICENSES/structurizr-import-6.2.1/[Apache-2.0] | [link:https://raw.githubusercontent.com/structurizr/java/HEAD/LICENSE[1]]
+| https://github.com/filip26/titanium-jcs[Titanium JCS] | `com.apicatalog:titanium-jcs` | `1.1.1` | link:LICENSES/titanium-jcs-1.1.1/[Apache-2.0] | [link:https://raw.githubusercontent.com/filip26/titanium-jcs/HEAD/LICENSE[1]]
+| https://github.com/filip26/titanium-json-ld[Titanium JSON-LD 1.1 (JRE11)] | `com.apicatalog:titanium-json-ld` | `1.7.0` | link:LICENSES/titanium-json-ld-1.7.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/filip26/titanium-json-ld/HEAD/LICENSE[1]]
+| https://github.com/filip26/titanium-rdf-api[Titanium RDF API] | `com.apicatalog:titanium-rdf-api` | `1.0.0` | link:LICENSES/titanium-rdf-api-1.0.0/[Apache-2.0] | [link:https://raw.githubusercontent.com/filip26/titanium-rdf-api/HEAD/LICENSE[1]]
+| https://github.com/filip26/titanium-rdf-n-quads[Titanium RDF N-QUADS] | `com.apicatalog:titanium-rdf-n-quads` | `1.0.2` | link:LICENSES/titanium-rdf-n-quads-1.0.2/[Apache-2.0] | [link:https://raw.githubusercontent.com/filip26/titanium-rdf-n-quads/HEAD/LICENSE[1]]
 |===
