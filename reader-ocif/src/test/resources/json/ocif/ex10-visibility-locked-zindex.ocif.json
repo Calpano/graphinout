@@ -1,4 +1,5 @@
 {
+  "ocif": "https://spec.canvasprotocol.org/v0.6",
   "nodes": [
     {"id": "bg", "label": "background", "zIndex": 0, "visible": true},
     {"id": "mid", "label": "middle", "zIndex": 10, "visible": true},

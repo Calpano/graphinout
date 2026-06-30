@@ -65,18 +65,17 @@ relationships, so empty output is correct — not a writer bug. But it was *sile
 at WARN. Fixed: the redundant logs are now DEBUG; the `ContentError` handler is the single
 channel.
 
-=== I5 — OCIF: many fixtures lack a schema declaration [PARTLY DONE]
+=== I5 — OCIF: many fixtures lack a schema declaration [DONE]
 The warning is legitimate — OCIF files SHOULD declare a schema — so it is kept, not downgraded.
 
-* *Done:* `reader-ocif` now defaults to **v0.7.0** when no schema is given (was v0.6), via a new
-  `OCIF.OcifSchema.DEFAULT` constant, matching `reader-ocif07` (which already defaulted to v0.7.x).
-  The one synthetic EXPECTED file that encoded the old assumed default
-  (`ex04-resources-text-uri--EXPECTED-ocif2cj.ocif.json`) was updated to v0.7.0.
-* *Open (optional):* ~21 schema-less OCIF fixtures per module (all ours under
-  `reader-ocif*/src/test/resources/json/ocif/`: `ex01`–`ex20`, `hello-world`) still trigger the
-  warning. They can be fixed by adding an explicit `"ocif"` schema declaration (per the rule:
-  only our own synthetic files are edited, never wild ones). Pending a decision on which schema
-  version to stamp per module.
+* `reader-ocif` now defaults to **v0.7.0** when no schema is given (was v0.6), via a new
+  `OCIF.OcifSchema.DEFAULT` constant, matching `reader-ocif07` (already v0.7.x).
+* All 42 schema-less synthetic fixtures (`ex01`–`ex20`, `hello-world` in both
+  `reader-ocif*/src/test/resources/json/ocif/`) now declare an explicit `"ocif"` schema, matching
+  each module's version: `reader-ocif` → `spec.canvasprotocol.org/v0.6`, `reader-ocif07` →
+  `canvasprotocol.org/ocif/v0.7.1`. (Wild fixtures were not touched — there were none here.)
+* `ex04`'s EXPECTED round-trip fixture updated to the now-explicit v0.6. Full build green; the
+  "Found no OCIF schema" warning dropped from 84 to 0.
 
 === I6 — A few Jena `riot` ERROR lines still leak [DONE]
 The ~6 `ERROR riot - …` lines came from `GraphinoutCliTest`: the `cli` module had no

@@ -1,4 +1,5 @@
 {
+  "ocif": "https://spec.canvasprotocol.org/v0.6",
   "nodes": [
     {"id": "a"}, {"id": "b"}, {"id": "c"}, {"id": "d"}
   ],

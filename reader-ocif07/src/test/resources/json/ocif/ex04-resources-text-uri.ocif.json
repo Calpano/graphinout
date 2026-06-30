@@ -1,4 +1,5 @@
 {
+  "ocif": "https://canvasprotocol.org/ocif/v0.7.1",
   "nodes": [
     {"id": "n1", "resource": "r-text"},
     {"id": "n2", "resource": "r-uri"}

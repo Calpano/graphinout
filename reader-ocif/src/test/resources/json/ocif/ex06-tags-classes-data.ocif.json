@@ -1,4 +1,5 @@
-{ "nodes": [
+{
+  "ocif": "https://spec.canvasprotocol.org/v0.6", "nodes": [
     { "id": "n1",
       "tags": ["important", "blue"],
       "classes": ["type-A"],

@@ -1,4 +1,5 @@
 {
+  "ocif": "https://spec.canvasprotocol.org/v0.6",
   "metadata": {
     "title": "Sample Graph",
     "description": "Demonstrates metadata at document level.",
