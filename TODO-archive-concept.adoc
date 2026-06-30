@@ -414,14 +414,13 @@ format-choice:
 
 == 13. Open questions
 
-* *One-member transparency* — auto-select a sole graph (recommended) vs always
-  show the picker? Proposed: auto-select, with a visible/reversible breadcrumb.
-* *Tie-breaking* among equal-confidence graphs — path order, largest, or always
-  prompt? Proposed: prompt (CLI/REST error, UI picker).
+* *One-member transparency* — auto-select a sole graph (recommended) -- DONT always
+  show the picker. Auto-select, with a visible/reversible breadcrumb.
+* *Tie-breaking* among equal-confidence graphs? Always
+  prompt (CLI/REST error, UI picker).
 * *Asset resolution* — a member graph that references sibling files (e.g. a
-  GraphML pointing at external data). Out of scope for v1; the existing
+  GraphML pointing at external data or an OCIF file). Out of scope for v1; the existing
   `ParameterizedInputSource` (carries a base URI) _(exists)_ is the natural hook
   to resolve sibling members later.
 * *`--all` output shape* — many files vs one output archive (support both).
-* *Dependency footprint* — Commons Compress pulls a few transitive deps;
-  isolating archive support in a `base-archive` module keeps it optional.
+* *Dependency footprint* — Commons Compress pulls a few transitive deps. So be it.
