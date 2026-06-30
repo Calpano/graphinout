@@ -101,6 +101,8 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
     }
 
     private static final Logger log = getLogger(Json2CjWriter.class);
+    /** Beyond this many unknown properties the input clearly is not Connected JSON; stop reporting each one. */
+    private static final int MAX_UNKNOWN_PROPERTIES = 50;
     /** The sink for the converted events. */
     final ICjWriter cjWriter;
     /** The current context from root: stack of Container and String (property keys). */
@@ -109,6 +111,8 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
     private Map<String, String> contextBuffer;
     /** Current key being buffered inside @context */
     private String contextKey;
+    /** Count of unknown properties seen; once it exceeds the cap, individual reports are suppressed. */
+    private int unknownProperties = 0;
 
     public Json2CjWriter(ICjWriter cjWriter) {
         this.cjWriter = cjWriter;
@@ -311,8 +315,15 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
             CjType.CjProperty prop = cjType.properties.get(key);
             if (prop == null) {
                 // Unknown property for this CJ type: report it (the value is skipped, so this is potential data loss)
-                // instead of logging — the caller's content-error handler decides whether/how to surface it.
-                sendContentError_Warn("Unknown property '" + key + "' on CJ " + cjType + " — value ignored");
+                // instead of logging — the caller's content-error handler decides whether/how to surface it. Detection
+                // probes this reader against every input, so a non-CJ file (grale/JSON-LD/JGF) would otherwise emit one
+                // warning per foreign key; cap the reports and emit a single "not CJ" note once it is clearly not CJ.
+                if (unknownProperties < MAX_UNKNOWN_PROPERTIES) {
+                    sendContentError_Warn("Unknown property '" + key + "' on CJ " + cjType + " — value ignored");
+                } else if (unknownProperties == MAX_UNKNOWN_PROPERTIES) {
+                    sendContentError_Warn("Too many unknown properties — input does not look like Connected JSON; suppressing further unknown-property warnings");
+                }
+                unknownProperties++;
                 parseStack.stack.push(JsonType.Property);
             } else {
                 if (key.equals("data")) {

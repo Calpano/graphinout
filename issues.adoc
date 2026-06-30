@@ -26,17 +26,20 @@ fires on inputs that should parse, vs. detection probing incompatible files*.
 
 == Genuine issues
 
-=== I1 — CJ reader drops unknown properties [HIGH / investigate — now reported]
-`Json2CjWriter` encounters a key that is not a known CJ property, then drops the value.
-Observed keys: `options` (134×, on RootObject — likely a grale or OCIF document property), and
-JSON-LD/RDF keys `@id` `@type` `@graph` `nodes` `maker` `primaryTopic` `label` `created`, plus
-`foaf:*` / full-IRI keys.
+=== I1 — CJ reader drops unknown properties [DONE — not a data-loss bug]
+`Json2CjWriter` flags a key that is not a known CJ property. Observed keys: `options` (the 134×
+driver), JSON-LD/RDF `@id` `@type` `@graph` `maker` `primaryTopic` `foaf:*`, and top-level `nodes`.
 
-* *Status:* no longer a silent WARN — it now reports a `ContentError` (Warn) so the caller can
-  see the drop. (Surfaced no asserting-test failures, i.e. it fires on probe/non-CJ paths.)
-* *Risk:* still **data loss** — the value is dropped, just visibly now.
-* *Action:* determine which reader+fixtures produce each key; if they are real inputs (grale
-  `options`, JSON-LD `@id`/`@type`), model the property rather than dropping it.
+* *Investigated:* this is **not** data loss. Real `.cj.json` inputs trigger it zero times
+  (`reader-cj`'s 124 tests, incl. the `custom-data-*` fixtures, emit none — CJ custom data lives
+  under `data`, which is preserved). The warnings come only from **detection probing** the CJ
+  reader against non-CJ files, whose keys are fully modelled by their *own* readers: `options`
+  by `GraleReader`/`GraleWriter`, `@id`/`@graph`/`foaf:*` by `RdfReader`, top-level `nodes` by
+  grale/JGF. So nothing is lost when each file is read by the right reader.
+* *Done:* the drop is reported as a `ContentError` (not a silent log), and the reports are now
+  **capped** (`MAX_UNKNOWN_PROPERTIES = 50`): once a probed input clearly isn't CJ, a single
+  "input does not look like Connected JSON" note replaces a flood of per-key warnings (mirrors
+  the `GmlTokenizer` bail). Per-read counter, so real CJ files are unaffected.
 
 === [x] I2 — GraphML `<data>` referencing an undeclared `<key>` [MEDIUM — now reported + recovered]
 `Graphml2CjDocument` hit `<data key='dN'>` with no matching `<key id='dN'>`.
