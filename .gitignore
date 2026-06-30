@@ -11,3 +11,4 @@ tmp
 .vscode
 /.claude/
 dependency-reduced-pom.xml
+.flattened-pom.xml

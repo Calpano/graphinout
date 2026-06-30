@@ -215,6 +215,29 @@
                 </executions>
             </plugin>
             <plugin>
+                <!-- Publish self-contained POMs. The Central Portal validates each POM standalone (it does not
+                     resolve the parent), so flatten inlines parent-managed dependency versions and the required
+                     project metadata (url/scm/licenses/developers/description) and drops test-scope deps. -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <flattenMode>ossrh</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals><goal>flatten</goal></goals>
+                    </execution>
+                    <execution>
+                        <id>flatten-clean</id>
+                        <phase>clean</phase>
+                        <goals><goal>clean</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <!-- create "-sources.jar" at verify-phase just before install-phase -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
