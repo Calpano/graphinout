@@ -8,42 +8,49 @@ GraphInOut was made possible using the following third-party open-source librari
 - Coordinates: commons-io:commons-io
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
+- License text: link:LICENSES/commons-io-2.20.0/[reproduced under LICENSES/commons-io-2.20.0/]
 
 == Apache Commons Text
 - Project: https://commons.apache.org/proper/commons-text/
 - Coordinates: org.apache.commons:commons-text
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
+- License text: link:LICENSES/commons-text-1.14.0/[reproduced under LICENSES/commons-text-1.14.0/]
 
 == Apache Jena
 - Project: https://jena.apache.org/
 - Coordinates: org.apache.jena:jena-arq, org.apache.jena:jena-core
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
+- License text: link:LICENSES/jena-core-5.6.0/[reproduced under LICENSES/jena-core-5.6.0/]
 
 == ClassGraph
 - Project: https://github.com/classgraph/classgraph
 - Coordinates: io.github.classgraph:classgraph:4.8.157
 - License: MIT License
 - License URL: https://github.com/classgraph/classgraph/blob/master/LICENSE
+- License text: link:LICENSES/classgraph-4.8.157/[reproduced under LICENSES/classgraph-4.8.157/]
 
 == Google Truth
 - Project: https://github.com/google/truth
 - Coordinates: com.google.truth:truth
 - License: Apache License 2.0
 - License URL: https://github.com/google/truth/blob/master/LICENSE
+- License text: link:LICENSES/truth-1.4.4/[reproduced under LICENSES/truth-1.4.4/]
 
 == Guava
 - Project: https://github.com/google/guava
 - Coordinates: com.google.guava:guava:33.2.0-jre
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
+- License text: link:LICENSES/guava-33.2.0-jre/[reproduced under LICENSES/guava-33.2.0-jre/]
 
 == GWT RegExp
 - Project: https://github.com/gwtproject/gwt-regexp
 - Coordinates: org.gwtproject.regexp:gwt-regexp:1.0.0-RC1
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
+- License text: link:LICENSES/gwt-regexp-1.0.0-RC1/[reproduced under LICENSES/gwt-regexp-1.0.0-RC1/]
 
 == Jackson
 - Projects:
@@ -54,78 +61,91 @@ https://github.com/FasterXML/jackson-dataformats-text
 - Coordinates: com.fasterxml.jackson.core, com.fasterxml.jackson.datatype, com.fasterxml.jackson.dataformat
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
+- License text: link:LICENSES/jackson-core-2.21.2/[reproduced under LICENSES/jackson-core-2.21.2/]
 
 == JGraphT
 - Project: https://github.com/jgrapht/jgrapht
 - Coordinates: org.jgrapht
 - License: Eclipse Public License 2.0
 - License URL: https://github.com/jgrapht/jgrapht/blob/master/license-EPL.txt[]
+- License text: link:LICENSES/jgrapht-core-1.5.2/[reproduced under LICENSES/jgrapht-core-1.5.2/]
 
 == JSON Schema Validator (NetworkNT)
 - Project: https://github.com/networknt/json-schema-validator[]
 - Coordinates: com.networknt:json-schema-validator:1.5.9
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
+- License text: link:LICENSES/json-schema-validator-1.5.9/[reproduced under LICENSES/json-schema-validator-1.5.9/]
 
 == Joni (JRuby Regex Engine)
 - Project: https://github.com/jruby/joni
 - Coordinates: org.jruby.joni
 - License: MIT License
 - License URL: https://opensource.org/license/mit
+- License text: link:LICENSES/joni-2.2.6/[reproduced under LICENSES/joni-2.2.6/]
 
 == JSR 305 Annotations
 - Project: https://github.com/findbugsproject/findbugs
 - Coordinates: com.google.code.findbugs:jsr305:3.0.2
 - License: BSD 3-Clause License
 - License URL: https://opensource.org/license/bsd-3-clause
+- License text: link:LICENSES/jsr305-3.0.2/[reproduced under LICENSES/jsr305-3.0.2/]
 
 == JSpecify
 - Project: https://jspecify.dev/
 - Coordinates: org.jspecify:jspecify:1.0.0
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
+- License text: link:LICENSES/jspecify-1.0.0/[reproduced under LICENSES/jspecify-1.0.0/]
 
 == JUnit
 - Project: https://junit.org/junit5/
 - Coordinates: org.junit.jupiter
 - License: Eclipse Public License 2.0
 - License URL: https://www.eclipse.org/legal/epl-2.0/
+- License text: link:LICENSES/junit-jupiter-5.9.0/[reproduced under LICENSES/junit-jupiter-5.9.0/]
 
 == Logback Classic
 - Project: https://logback.qos.ch/
 - Coordinates: ch.qos.logback:logback-classic
 - License: Eclipse Public License 1.0 and GNU Lesser General Public License 2.1 (dual license)
 - License URL: https://github.com/qos-ch/logback/blob/master/LICENSE.txt
+- License text: link:LICENSES/logback-classic-1.5.32/[reproduced under LICENSES/logback-classic-1.5.32/]
 
 == Mockito
 - Project: https://site.mockito.org/
 - Coordinates: org.mockito
 - License: MIT License
 - License URL: https://github.com/mockito/mockito/blob/main/LICENSE
+- License text: link:LICENSES/mockito-core-5.6.0/[reproduced under LICENSES/mockito-core-5.6.0/]
 
 == PlantUML (MIT edition)
 - Project: https://plantuml.com/
 - Coordinates: net.sourceforge.plantuml:plantuml-mit:1.2026.6
 - License: MIT License
 - License URL: https://opensource.org/license/mit
+- License text: link:LICENSES/plantuml-mit-1.2026.6/[reproduced under LICENSES/plantuml-mit-1.2026.6/]
 
 == SLF4J API
 - Project: https://www.slf4j.org/
 - Coordinates: org.slf4j:slf4j-api
 - License: MIT License
 - License URL: https://www.slf4j.org/license.html
+- License text: link:LICENSES/slf4j-api-2.0.17/[reproduced under LICENSES/slf4j-api-2.0.17/]
 
 == SpotBugs Annotations
 - Project: https://spotbugs.github.io/
 - Coordinates: com.github.spotbugs:spotbugs-annotations:4.7.3
 - License: GNU Lesser General Public License 2.1
 - License URL: https://github.com/spotbugs/spotbugs/blob/master/LICENSE.md
+- License text: link:LICENSES/spotbugs-annotations-4.7.3/[reproduced under LICENSES/spotbugs-annotations-4.7.3/]
 
 == Structurizr DSL
 - Project: https://github.com/structurizr/dsl
 - Coordinates: com.structurizr:structurizr-dsl:6.2.1
 - License: Apache License 2.0
 - License URL: https://www.apache.org/licenses/LICENSE-2.0
+- License text: link:LICENSES/structurizr-dsl-6.2.1/[reproduced under LICENSES/structurizr-dsl-6.2.1/]
 
 == Complete Dependency List (including transitive)
 
@@ -140,7 +160,7 @@ where it ships one, otherwise fetched from the project's source repository. Apac
 projects' `NOTICE` files and the second file of dual-licensed projects are kept in
 the same folder.
 
-[%header,cols="3,4,1,2",grid=rows,frame=none]
+[%header,cols="3,5,1,3",grid=rows,frame=none]
 |===
 | Library | Maven coordinates | Version | License
 
