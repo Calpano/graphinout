@@ -245,7 +245,7 @@ public class OcifDoc2CjDoc {
                         cjNode.dataMutable(d ->
                                 d.setJsonValue(dataExt.toJson()));
                 case null -> {
-                    log.warn("null in extensions data array");
+                    log.debug("null in extensions data array");
                 }
                 default -> unknownExts.add(ext.toJson());
             }

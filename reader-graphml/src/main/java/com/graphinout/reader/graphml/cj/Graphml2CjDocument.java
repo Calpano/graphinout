@@ -121,7 +121,7 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
         IGraphmlKey key = graphmlSchema.keyById(graphmlKey);
 
         if (key == null) {
-            log.warn("Found no <key id=...> for <data key='" + graphmlKey + "'>. Have these keys: " + graphmlSchema.keys().toList() + ". Assuming type string.");
+            sendContentError_Warn("No <key id='" + graphmlKey + "'> declared for <data key='" + graphmlKey + "'>; assuming type string");
             key = new GraphmlKey(null, graphmlKey, IGraphmlDescription.of("auto-created missing key"), graphmlKey, GraphmlDataType.typeString.graphmlName(), GraphmlKeyForType.All, null);
         }
 

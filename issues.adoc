@@ -16,27 +16,38 @@ fires on inputs that should parse, vs. detection probing incompatible files*.
 * `logback-test.xml` (base) silences `org.apache.jena` — its RIOT parser logs at ERROR on
   non-RDF input; the RDF reader already surfaces real problems as `ContentError`s.
 * `ReaderTests.testWithAllResource` logs expected probe failures at DEBUG, not WARN+stacktrace.
+* *log-content-errors-as-ContentError sweep (read side):* readers now report parse problems
+  through the `ContentError` handler instead of logging them directly. Converted to a reported
+  `ContentError`: `Json2CjWriter` unknown-property (I1) and `Graphml2CjDocument` undeclared-key
+  (I2). Demoted to DEBUG (already reported elsewhere): `GraphmlReader`, `Xml2GraphmlWriter`,
+  `GexfReader`, `OcifDoc2CjDoc` (ocif + ocif07), `CjNormalizer`. Added the no-Throwable
+  `IHandleContentErrors.sendContentError_Warn(String)` overload. Full test log is now ~3,400
+  lines (was ~890,000).
 
 == Genuine issues
 
-=== I1 — CJ reader silently drops unknown properties [HIGH / investigate]
-`Json2CjWriter` (`com.graphinout.base.cj.writer.JsonNCjWriter`) logs `Unknown property … in CJ`
-~200×, then drops the property. Observed keys: `options` (134×, on RootObject — likely a
-grale or OCIF document property), and JSON-LD/RDF keys `@id` `@type` `@graph` `nodes` `maker`
-`primaryTopic` `label` `created`, plus `foaf:*` / full-IRI keys.
+=== I1 — CJ reader drops unknown properties [HIGH / investigate — now reported]
+`Json2CjWriter` encounters a key that is not a known CJ property, then drops the value.
+Observed keys: `options` (134×, on RootObject — likely a grale or OCIF document property), and
+JSON-LD/RDF keys `@id` `@type` `@graph` `nodes` `maker` `primaryTopic` `label` `created`, plus
+`foaf:*` / full-IRI keys.
 
-* *Risk:* silent data loss on read into CJ. If `options` belongs to a grale/OCIF file that
-  should round-trip, the data is dropped without a `ContentError` the caller can act on.
-* *Action:* determine which reader+fixtures produce each key. If they are real inputs (not
-  detection probing non-CJ JSON), either model the property or report a proper `ContentError`
-  instead of a silent WARN.
+* *Status:* no longer a silent WARN — it now reports a `ContentError` (Warn) so the caller can
+  see the drop. (Surfaced no asserting-test failures, i.e. it fires on probe/non-CJ paths.)
+* *Risk:* still **data loss** — the value is dropped, just visibly now.
+* *Action:* determine which reader+fixtures produce each key; if they are real inputs (grale
+  `options`, JSON-LD `@id`/`@type`), model the property rather than dropping it.
 
-=== I2 — GraphML `<data>` referencing an undeclared `<key>` is dropped [MEDIUM / investigate]
-`GraphmlNCjDocument` logs `Found no <key id=…> for <data key='dN'>` ~42× and drops the `<data>`.
+=== I2 — GraphML `<data>` referencing an undeclared `<key>` [MEDIUM — now reported + recovered]
+`Graphml2CjDocument` hit `<data key='dN'>` with no matching `<key id='dN'>`.
 
-* *Risk:* data loss for GraphML that uses keys not declared up front (common in the wild).
-* *Action:* confirm whether the offending fixtures are negative tests or valid GraphML; if
-  valid, retain the data (e.g. infer a string key) rather than dropping it.
+* *Status:* now reports a `ContentError` (Warn) and recovers by auto-creating a string key (so
+  no data loss). `GraphmlReaderContentErrorTest` now tolerates recoverable Warns, asserting only
+  no Error-level errors.
+* *Found:* the external fixture `graph-test-data/xml/graphml/yworks/yed-3.12.2/graph1_test.graphml`
+  references 5 undeclared keys (`d5 d6 d7 d9 d10`), plus one more file with a single undeclared
+  key — both are malformed per the GraphML spec (every `<data key>` must be declared).
+* *Action:* none required (recovery is correct); optionally fix the fixtures to declare the keys.
 
 === I3 — Neo4j writer emits empty output for some CJ inputs [MEDIUM / investigate]
 `NeoNj JSON output is empty for json/connected-json/.../custom-data-simpleN.cj.json (may not …)` ×2.
@@ -44,12 +55,10 @@ grale or OCIF document property), and JSON-LD/RDF keys `@id` `@type` `@graph` `n
 * *Action:* check whether these CJ documents should produce Neo4j output; if so the LPG
   writer is dropping them.
 
-=== I4 — GraphmlReader logs every ContentError at WARN [LOW]
-`com.graphinout.reader.graphml.GraphmlReader` logs `ContentError` ~200× — the same
-anti-pattern just fixed in GML: the reader both *reports* a `ContentError` and *logs* it.
-
-* *Action:* route through the `ContentError` handler only; log at DEBUG. (The underlying
-  errors are I2.)
+=== I4 — GraphmlReader logged every ContentError at WARN [DONE]
+`GraphmlReader` and `Xml2GraphmlWriter` both *reported* a `ContentError` and then re-logged it
+at WARN. Fixed: the redundant logs are now DEBUG; the `ContentError` handler is the single
+channel.
 
 === I5 — OCIF: many fixtures lack a schema declaration [LOW]
 OCIF reader logs `Found no OCIF schema, using v0.6` / `assuming …/ocif/vN.N.N` ~84×, defaulting
@@ -71,7 +80,9 @@ rule — emitted under a logger named `riot` from a module that doesn't pick up 
   flowcharts have no hyper-edge syntax; the warning is expected. Documented for completeness.
 
 == Cross-cutting note
-The root cause of the original spam is an anti-pattern: **readers logging parse problems
-directly instead of reporting them via the `ContentError` handler and letting the caller
-decide whether to log.** GML is fixed; GraphML (I4) still does it. Worth a sweep of all
-readers for stray `log.warn`/`log.error` on parse paths.
+The root cause of the original spam was an anti-pattern: **readers logging parse problems
+directly instead of reporting them via the `ContentError` handler.** The read-side sweep is
+done (see the Done section). Still **open: the output writers** — `DDotOutput`, `CjDocument2D2`,
+`GmlOutput` (hyper-edge + "skip node without id"), `MermaidOutput`, `TgfOutput`,
+`TripleTextOutput` log `Cannot represent …` on write-time data loss. They have no error channel
+(don't extend `BaseOutput`); giving writers a `ContentError` sink is a separate, larger change.

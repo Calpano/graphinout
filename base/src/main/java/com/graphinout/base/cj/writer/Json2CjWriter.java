@@ -310,7 +310,9 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
             assert cjType != null;
             CjType.CjProperty prop = cjType.properties.get(key);
             if (prop == null) {
-                log.warn("Unknown property. CJ type on stack={}. key='{}' in CJ.", cjType, key);
+                // Unknown property for this CJ type: report it (the value is skipped, so this is potential data loss)
+                // instead of logging — the caller's content-error handler decides whether/how to surface it.
+                sendContentError_Warn("Unknown property '" + key + "' on CJ " + cjType + " — value ignored");
                 parseStack.stack.push(JsonType.Property);
             } else {
                 if (key.equals("data")) {

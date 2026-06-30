@@ -252,7 +252,8 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
         if (errorLevel == ContentError.ErrorLevel.Error) {
             return new RuntimeException("While parsing " + location + "\n" + "Stack: " + elementStack + "\n" + "Message: " + e.getMessage(), e);
         } else {
-            log.warn("ContentError: " + contentError, e);
+            // already reported via onContentError above; keep at DEBUG so it doesn't double up as a log line
+            log.debug("ContentError: " + contentError, e);
             return null;
         }
     }

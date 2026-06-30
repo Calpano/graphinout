@@ -145,7 +145,8 @@ public class CjNormalizer {
 
             n = CjDocuments.toJsonString(cjDoc);
         } catch (IOException e) {
-            log.warn("Could not parse to CjDoc");
+            // not a parseable CJ document — fall back to JSON-level normalization (expected for non-CJ input)
+            log.debug("Could not parse to CjDoc", e);
             n = normalizeOnJsonLevel(cjJson);
         }
         this.resultJson = n;

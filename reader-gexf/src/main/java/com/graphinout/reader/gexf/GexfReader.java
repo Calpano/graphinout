@@ -64,8 +64,8 @@ public class GexfReader implements GioReader {
             Nullables.ifConsumerPresentAccept(errorHandler, //
                     ContentError.of(ContentError.ErrorLevel.Error, "Failed to parse GEXF '" + inputSource.name() + "': " + e.getMessage()));
         } catch (ContentErrorException e) {
-            // already reported via the content error handler
-            log.warn("ContentError while reading GEXF", e);
+            // already reported via the content-error handler; keep at DEBUG so it doesn't double up as a log line
+            log.debug("ContentError while reading GEXF", e);
         }
     }
 

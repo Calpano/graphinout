@@ -48,4 +48,10 @@ public interface IHandleContentErrors extends ContentErrorAware, LocationAware {
         onContentError(contentError);
     }
 
+    /** Report a warning-level content problem (e.g. dropped/unknown input) via the content-error handler. */
+    default void sendContentError_Warn(String message) {
+        Location location = Locator.locationOrNotAvailable(locator());
+        onContentError(new ContentError(ContentError.ErrorLevel.Warn, message, location));
+    }
+
 }

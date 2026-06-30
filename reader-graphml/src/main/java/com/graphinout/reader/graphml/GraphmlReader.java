@@ -124,7 +124,8 @@ public class GraphmlReader extends BaseOutput implements GioReader {
                 throw sendContentError_Error(null, e, null);
             }
         } catch (ContentErrorException t) {
-            log.warn("ContentError", t);
+            // already reported via the content-error handler; keep at DEBUG so it doesn't double up as a log line
+            log.debug("ContentError already reported", t);
         } catch (Throwable t) {
             throw new RuntimeException("Failed reading '" + inputSource.name(), t);
         }
