@@ -193,6 +193,14 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <!-- One shared test-logging config for every module, loaded by file path (not the classpath) so
+                         there is never a duplicate logback-test.xml on any classpath and nothing leaks through
+                         test-jars. maven.multiModuleProjectDirectory is the reactor root (anchored by the .mvn/ dir). -->
+                    <systemPropertyVariables>
+                        <logback.configurationFile>${maven.multiModuleProjectDirectory}/config/logback-test.xml</logback.configurationFile>
+                    </systemPropertyVariables>
+                </configuration>
                 <executions>
                     <execution>
                         <id>default-test</id>
@@ -212,6 +220,16 @@
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
+                        <configuration>
+                            <!-- A test-jar shares reusable test CODE (e.g. ReaderTests), not logging config: test
+                                 logging uses one shared file via -Dlogback.configurationFile (see the surefire plugin
+                                 above). Excluding logback config from test-jars is a belt-and-braces guard so a stray
+                                 one can never leak onto a dependent's classpath. -->
+                            <excludes>
+                                <exclude>logback-test.xml</exclude>
+                                <exclude>logback.xml</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

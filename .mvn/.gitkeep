@@ -1,0 +1,4 @@
+This file makes git track the .mvn directory. Its presence anchors Maven's
+`maven.multiModuleProjectDirectory` to the repository root regardless of which module directory a build is invoked
+from, so the surefire `-Dlogback.configurationFile=${maven.multiModuleProjectDirectory}/config/logback-test.xml`
+system property always resolves to the shared test-logging config.

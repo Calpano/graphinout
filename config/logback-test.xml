@@ -1,0 +1,28 @@
+<configuration>
+    <!--
+      Single shared test-logging configuration for the whole graphinout reactor.
+
+      It is loaded by every module's test run via -Dlogback.configurationFile (set in the parent
+      maven-surefire-plugin), NOT from the classpath. That is deliberate: a classpath logback-test.xml shipped in a
+      test-jar (or exposed via a reactor module's target/test-classes) lands on dependents' classpaths too, and
+      logback then warns "occurs multiple times" and dumps its whole config status. Loading one file by path avoids
+      all of that — there is exactly one config, and no classpath scanning.
+
+      Default level is WARN so test runs stay quiet and fast; raise on demand, e.g. mvn test -Dgio.log.level=debug.
+    -->
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5p %logger{0} - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Apache Jena's RIOT parser logs at ERROR when probed against non-RDF input (detection tries every reader);
+         the readers surface real problems as ContentErrors, so silence Jena's own loggers. Jena logs under both
+         package-named loggers (org.apache.jena.*) and a top-level logger literally named "riot". -->
+    <logger name="org.apache.jena" level="OFF"/>
+    <logger name="riot" level="OFF"/>
+
+    <root level="${gio.log.level:-warn}">
+        <appender-ref ref="Console"/>
+    </root>
+</configuration>
