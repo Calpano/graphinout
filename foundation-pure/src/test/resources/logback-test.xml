@@ -15,9 +15,6 @@
     </appender>
 
     <logger name="org.mortbay.thread" level="ERROR"/>
-    <!-- Set level to DEBUG or even TRACE -->
-    <logger name="com.graphinout.reader.graphml.GraphmlSAXHandler" level="INFO" />
-    <logger name="com.graphinout.reader.graphml.validation.graphml.graphml.ValidatingGraphMlWriter" level="INFO" />
 
     <!-- Default to WARN so test runs stay quiet/fast; override with -Dgio.log.level=debug (or info/trace). -->
     <root level="${gio.log.level:-warn}">

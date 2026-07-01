@@ -64,6 +64,7 @@
         <module>reader-grale</module>
         <module>engine</module>
         <module>cli</module>
+        <module>devtools</module>
     </modules>
 
     <scm>
@@ -290,6 +291,8 @@
                          `gio` launcher uses cli/target/cli-*-cli.jar); nothing published depends on cli. -->
                     <excludeArtifacts>
                       <excludeArtifact>cli</excludeArtifact>
+                      <!-- devtools is internal dev/build tooling, never a published library -->
+                      <excludeArtifact>devtools</excludeArtifact>
                     </excludeArtifacts>
                   </configuration>
             </plugin>
