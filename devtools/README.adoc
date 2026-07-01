@@ -1,0 +1,57 @@
+= devtools
+:toc:
+
+Internal developer / build tooling for the graphinout repository.
+
+This module is **not** published to Maven Central — it is excluded via `excludeArtifacts` in the root POM
+(alongside `cli`). Nothing that ships depends on it; it exists only to keep the repo healthy.
+
+== Tools
+
+=== LogbackLoggerCheck
+
+Verifies that every `<logger name="com.graphinout...">` entry in every `logback*.xml` in the repository refers to
+a package or class that actually exists in the source tree.
+
+Why: logback silently ignores a `<logger>` whose name matches nothing, so a renamed or misspelled package becomes
+dead config that quietly stops working. This tool turns that into a visible failure. It already caught two dead
+overrides — `com.graphinout.reader.graphml.GraphmlSAXHandler` (class removed) and a wrong-package
+`...validation.graphml.graphml.ValidatingGraphMlWriter` (the real one is `...validation.ValidatingGraphMlWriter`).
+
+How it works:
+
+* collects every package name and top-level fully-qualified class name declared under `*/src/**/*.java`;
+* parses each `logback*.xml` (excluding `target/`) for `<logger name>` values;
+* flags any `com.graphinout` name that is neither a known package/class nor a parent package of one.
+
+Third-party logger names (e.g. `org.apache.jena`, `riot`) cannot be checked against our sources and are reported
+as *unverified* rather than failed.
+
+==== Run it
+
+As a build check (this is what CI runs):
+
+[source,shell]
+----
+mvn -pl devtools test
+----
+
+As a standalone report (prints every config, the unverified externals, and any stale names; exits non-zero on
+failure):
+
+[source,shell]
+----
+mvn -pl devtools -o compile
+java -cp devtools/target/classes com.graphinout.devtools.LogbackLoggerCheck
+# optional: pass the repo root explicitly
+java -cp devtools/target/classes com.graphinout.devtools.LogbackLoggerCheck /path/to/graphinout
+----
+
+`LogbackLoggerCheckTest` runs the same check and fails the build (listing the offending file → logger name) if any
+stale `com.graphinout` logger name is found.
+
+== Adding a tool
+
+Add a class under `src/main/java/com/graphinout/devtools/` (a `main` method makes it runnable), and — if it should
+be enforced — a matching test under `src/test/java/...`. Keep dependencies minimal: the tools scan the repository
+source tree and need no runtime libraries beyond the JDK.
