@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.graphinout</groupId>
         <artifactId>graphinout</artifactId>
-        <version>0.2.1</version>
+        <version>0.2.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>reader-cj</artifactId>
@@ -13,16 +13,16 @@
     <description>Reader for Connected JSON</description>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.1</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.1</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
 
         <!-- Test Dependencies -->
-        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.1</version>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.2-SNAPSHOT</version>
               <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
         </dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.1</version>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.2-SNAPSHOT</version>
               <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
         </dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
