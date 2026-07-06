@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.graphinout</groupId>
         <artifactId>graphinout</artifactId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>reader-grale</artifactId>
@@ -13,8 +13,8 @@
     <description>Reader and writer for the grale graph-layout-engine JSON format (dagre / graphlib json.write envelope)</description>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId></dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
 
@@ -26,7 +26,7 @@
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><scope>test</scope></dependency>
         <!-- testdata test-jar provides the TestFileProvider meta files; classgraph types appear in test signatures -->
-        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.2-SNAPSHOT</version>
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.1-SNAPSHOT</version>
             <classifier>tests</classifier><type>test-jar</type><scope>test</scope></dependency>
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
     </dependencies>
