@@ -5,7 +5,7 @@
     <parent>
         <artifactId>graphinout</artifactId>
         <groupId>com.graphinout</groupId>
-        <version>0.2.1-SNAPSHOT</version>
+        <version>0.2.1</version>
     </parent>
 
     <artifactId>cli</artifactId>
@@ -14,8 +14,8 @@
 
     <dependencies>
         <!-- The engine depends on every reader module, so the ServiceLoader discovers all readers/writers. -->
-        <dependency><groupId>com.graphinout</groupId><artifactId>engine</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.1-SNAPSHOT</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>engine</artifactId><version>0.2.1</version></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.1</version></dependency>
 
         <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></dependency>
         <!-- Runtime logging backend: this module is an application, so it ships a binding. -->
@@ -43,7 +43,7 @@
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>cli</shadedClassifierName>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.graphinout.cli.GraphinoutCli</mainClass>
                                 </transformer>
