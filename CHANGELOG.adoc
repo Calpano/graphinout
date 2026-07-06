@@ -43,6 +43,9 @@ Removed::
   across the test corpus).
 
 Fixed::
+* `CjWriter2CjStream`: graph-level `data` field dropped when it appears after `nodes` in the JSON;
+  nested subgraph structures lost in stream output.
+* `CjValidator`: false-positive "no nodes or edges" warning for graphs that contain only nested subgraphs.
 * The Neo4j writer reports a `ContentError` when a document has no nodes or edges to export,
   instead of silently producing empty output.
 

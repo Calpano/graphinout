@@ -1,0 +1,9 @@
+Hand-authored synthetic plain-JSON test fixture (not a ConnectedJson graph
+document).
+
+ddot.it/this ..kind.. synthetic
+ddot.it/this ..authored by.. Calpano (graphinout project)
+ddot.it/this ..format.. format:json
+ddot.it/this ..content.. large fictional company dataset (TechCorp Solutions): employees, finances, products, tech stack; fictional names and example.com $id
+ddot.it/this ..tests.. deep/complex JSON document covering many value types and nesting
+ddot.it/this ..license.. not stated (public domain unless otherwise stated)

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <hello>world</hello>
+  <toc tac="toe"/>
+  <baz>&amp; more</baz>
+</root>

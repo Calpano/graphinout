@@ -29,6 +29,10 @@ import org.jspecify.annotations.NonNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -49,11 +53,21 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
     private static class StartEdge extends StartState {}
 
     private static class StartDocument extends StartState {}
+
+    @FunctionalInterface
+    private interface CjTask {
+        void run() throws CjException;
+    }
+
     final ICjStream cjStream;
     // Buffer for JSON data values between jsonDataStart/jsonDataEnd
     private final Json2JavaJsonWriter jsonBuffer = new Json2JavaJsonWriter();
     // Unified type-aware stack for ALL elements (document parts, graphs, nodes, edges, endpoints, ports, label, data)
     private final PowerStackOnClasses<Object> stack = PowerStackOnClasses.create();
+    // Unified scope buffer stack: one entry per active graph/node/edge scope.
+    // Each entry collects the deferred stream events for that scope's direct children.
+    // Flushed at end of scope, so properties set after child arrays (e.g. graph "data" after "nodes") are captured.
+    private final Deque<List<CjTask>> contexts = new ArrayDeque<>();
     private boolean inJsonData = false;
     public CjWriter2CjStream(ICjStream cjStream) {this.cjStream = cjStream;}
 
@@ -125,20 +139,23 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     @Override
     public void edgeEnd() {
-        // ensure edge start was sent (for empty edge with only endpoints maybe)
-        ensureCurrentEdgeStartSent();
-        cjStream.edgeEnd();
-        // pop start marker then the edge chunk
+        ICjEdgeChunkMutable e = stack.peekSearch(ICjEdgeChunkMutable.class);
         stack.pop(StartEdge.class);
         stack.pop(ICjEdgeChunkMutable.class);
+        List<CjTask> edgeCtx = contexts.pop();
+        contexts.peek().add(() -> {
+            cjStream.edgeStart(e);
+            for (CjTask t : edgeCtx) t.run();
+            cjStream.edgeEnd();
+        });
     }
 
     @Override
     public void edgeStart() {
-        ensureCurrentGraphStartSent();
         ICjEdgeChunkMutable edge = cjStream.createEdgeChunk();
         stack.push(edge);
         stack.push(new StartEdge());
+        contexts.push(new ArrayList<>());
     }
 
     @Override
@@ -185,22 +202,32 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     @Override
     public void graphEnd() throws CjException {
-        // ensure graph start was sent (for empty graph)
-        ensureCurrentGraphStartSent();
-        cjStream.graphEnd();
+        ICjGraphChunkMutable g = stack.peekSearch(ICjGraphChunkMutable.class);
         stack.pop(StartGraph.class);
         stack.pop(ICjGraphChunkMutable.class);
+        List<CjTask> graphCtx = contexts.pop();
+        if (contexts.isEmpty()) {
+            // Top-level graph: emit directly now that all graph-level properties are set
+            ensureDocumentStartSent();
+            cjStream.graphStart(g);
+            for (CjTask t : graphCtx) t.run();
+            cjStream.graphEnd();
+        } else {
+            // Nested graph (inside another graph, node, or edge): defer into enclosing scope
+            contexts.peek().add(() -> {
+                cjStream.graphStart(g);
+                for (CjTask t : graphCtx) t.run();
+                cjStream.graphEnd();
+            });
+        }
     }
 
     @Override
     public void graphStart() throws CjException {
-        // Before starting a subgraph, ensure parent node/edge starts are sent so protocol is consistent
-        ensureCurrentNodeStartSent();
-        ensureCurrentEdgeStartSent();
-        // defer actual graph start emission until we see first child or end to allow id/label/data before start
         ICjGraphChunkMutable graph = cjStream.createGraphChunk();
         stack.push(graph);
         stack.push(new StartGraph());
+        contexts.push(new ArrayList<>());
     }
 
     @Override
@@ -277,10 +304,15 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     @Override
     public void nodeEnd() {
-        ensureCurrentNodeStartSent();
-        cjStream.nodeEnd();
+        ICjNodeChunkMutable n = stack.peekSearch(ICjNodeChunkMutable.class);
         stack.pop(StartNode.class);
         stack.pop(ICjNodeChunkMutable.class);
+        List<CjTask> nodeCtx = contexts.pop();
+        contexts.peek().add(() -> {
+            cjStream.nodeStart(n);
+            for (CjTask t : nodeCtx) t.run();
+            cjStream.nodeEnd();
+        });
     }
 
     @Override
@@ -297,10 +329,10 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     @Override
     public void nodeStart() {
-        ensureCurrentGraphStartSent();
         ICjNodeChunkMutable node = cjStream.createNodeChunk();
         stack.push(node);
         stack.push(new StartNode());
+        contexts.push(new ArrayList<>());
     }
 
     @Override
@@ -470,45 +502,6 @@ public class CjWriter2CjStream extends BaseCjOutput implements ICjWriter {
 
     private ICjNodeChunkMutable currentNode() {
         return stack.peekSearchOrNull(ICjNodeChunkMutable.class);
-    }
-
-    private void ensureCurrentEdgeStartSent() {
-        ICjEdgeChunkMutable e = currentEdge();
-        if (e != null) {
-            StartEdge se = stack.peekSearch(StartEdge.class);
-            Objects.requireNonNull(se, "Edge chunk present without StartEdge marker");
-            if (!se.started) {
-                ensureCurrentGraphStartSent();
-                cjStream.edgeStart(e);
-                se.started = true;
-            }
-        }
-    }
-
-    private void ensureCurrentGraphStartSent() {
-        ICjGraphChunkMutable g = currentGraph();
-        if (g != null) {
-            StartGraph sg = stack.peekSearch(StartGraph.class);
-            Objects.requireNonNull(sg, "Graph chunk present without StartGraph marker");
-            if (!sg.started) {
-                ensureDocumentStartSent();
-                cjStream.graphStart(g);
-                sg.started = true;
-            }
-        }
-    }
-
-    private void ensureCurrentNodeStartSent() {
-        ICjNodeChunkMutable n = currentNode();
-        if (n != null) {
-            StartNode startNode = stack.peekSearch(StartNode.class);
-            Objects.requireNonNull(startNode, "Node chunk present without StartNode marker");
-            if (!startNode.started) {
-                ensureCurrentGraphStartSent();
-                cjStream.nodeStart(n);
-                startNode.started = true;
-            }
-        }
     }
 
     private void ensureDocumentStartSent() {

@@ -114,7 +114,7 @@ public class TestFileProvider {
         }
 
     public static final Set<String> EXTENSIONS_GRAPHML = Set.of(".graphml.xml", ".graphml");
-    public static final Set<String> EXTENSIONS_CJ_JSON = Set.of(".cj.json", ".cj");
+    public static final Set<String> EXTENSIONS_CJ_JSON = Set.of(".cj.json", ".cj", ".cj.canonical.json");
     static final List<NamedString> jsonInputs = List.of( //
             NamedString.of("number", "{\"foo\":42}"),//
             NamedString.of("string", "{\"foo\":\"bar\"}"),//

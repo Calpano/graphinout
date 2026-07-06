@@ -1,0 +1,9 @@
+Hand-authored synthetic plain-JSON test fixture (not a ConnectedJson graph
+document).
+
+ddot.it/this ..kind.. synthetic
+ddot.it/this ..authored by.. Calpano (graphinout project)
+ddot.it/this ..format.. format:json
+ddot.it/this ..content.. fictional bookstore (Downtown Books) with 3 books, nested objects and arrays
+ddot.it/this ..tests.. typical nested JSON structure parsing
+ddot.it/this ..license.. not stated (public domain unless otherwise stated)

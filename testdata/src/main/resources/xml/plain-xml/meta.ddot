@@ -1,0 +1,41 @@
+# Provenance metadata for testdata/.../xml/plain-xml
+#
+# Triple syntax: subject ..predicate.. object
+# ddot.it/this = facts about this whole folder.
+# A filename as subject = facts specific to that file.
+
+# === Folder-wide verdict ===
+ddot.it/this ..kind.. synthetic
+ddot.it/this ..authored by.. Calpano (graphinout project)
+ddot.it/this ..format.. format:xml
+ddot.it/this ..license.. not stated (public domain unless otherwise stated)
+ddot.it/this ..content.. small hand-crafted plain-XML test snippets used as parser fixtures
+ddot.it/this ..tests.. XML parsing edge cases: CDATA, nested/standard XML inside data, namespaces, mixed content, processing instructions, line endings, minimal/empty documents
+
+# Verdict: ALL files are hand-authored synthetic XML test fixtures by Calpano.
+# Evidence:
+#  - Every file is tiny (48 B - 3.7 KB) and minimal/synthetic-looking.
+#  - No source URLs, no copyright lines, no generator/tool markers, no DOCTYPE,
+#    no author names, no downloaded-dataset signatures.
+#  - The only external-looking URLs are XML namespace declarations
+#    (http://graphml.graphdrawing.org/xmlns, http://www.w3.org/2001/XMLSchema-instance)
+#    and an illustrative cloudflare/font-awesome <link> that lives INSIDE a CDATA
+#    HTML sample (it is test payload, not provenance).
+#  - Company/person/address data (cdata.xml, complex.xml) is obviously fictional
+#    (techcorp.com, generic names, made-up coordinates).
+#  - No external/collected dataset found -> no per-file external license needed.
+
+# === Per-file notes ===
+
+minimal.xml ..content.. single self-closing root element; smallest valid document
+small.xml ..content.. tiny root with child element, attribute, and an &amp; entity
+namespace3.xml ..content.. empty root declaring default + foo namespaces
+typical.xml ..content.. fictional bookstore with 3 books; real book titles/authors used as a common hand-typed tutorial example, NOT a downloaded dataset
+cdata.xml ..content.. fictional employee record using a CDATA name (Jane <Smith>)
+complex.xml ..content.. fictional company with departments/employees/locations; exercises comments, mixed content, processing instruction, self-closing elements
+HTML_Content_In_Data.xml ..content.. GraphML node whose data element holds an HTML snippet inside CDATA
+XML_Standard_Content_In_Data.xml ..content.. GraphML node with nested XML (<b>Hello</b>World) directly in a data element
+XML_Standard_Content_In_Desc.xml ..content.. GraphML key with nested XML inside a desc element
+XML_Standard_Content_In_default.xml ..content.. GraphML key with nested XML inside a default element
+line-endings.xml ..content.. Resource element holding a base64-encoded tiny PNG with &#13; carriage-return entities per line; tests CR/LF line-ending handling
+line-endings.xml ..tests.. line-ending (CR / &#13;) normalization during XML parsing

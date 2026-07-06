@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<company id="comp001"
+         founded="2010"
+         industry="Technology">
+
+    <departments>
+        <department id="dept001" budget="500000">
+            <name>Engineering</name>
+            <employees>
+                <employee id="emp001" status="active" hire-date="2020-01-15">
+                    <position>Senior Software Engineer</position>
+                    <contact>
+                        <email>john.doe@techcorp.com</email>
+                        <phone>+1-555-0123</phone>
+                    </contact>
+                </employee>
+                <employee id="emp002" status="active" hire-date="2019-03-22">
+                    <position>Lead Developer</position>
+                    <contact>
+                        <email>jane.smith@techcorp.com</email>
+                        <phone>+1-555-0124</phone>
+                    </contact>
+                </employee>
+                <employee id="emp003" status="inactive">
+                    <name>Bob Johnson</name>
+                    <position>Junior Developer</position>
+                    <!-- Salary information confidential -->
+                </employee>
+            </employees>
+        </department>
+
+        <department id="dept002" budget="300000">
+            <name>Marketing</name>
+            <employees>
+                <employee id="emp004" status="active" hire-date="2021-06-10">
+                    <name>Alice Brown</name>
+                    <position>Marketing Manager</position>
+                    <contact>
+                        <email>alice.brown@techcorp.com</email>
+                    </contact>
+                </employee>
+            </employees>
+        </department>
+    </departments>
+
+    <locations>
+        <location>
+            <address>123 Tech Street, San Francisco, CA 94105</address>
+            <coordinates lat="37.7749" lon="-122.4194"/>
+        </location>
+        <location>
+            <address>456 Innovation Ave, Austin, TX 78701</address>
+            <coordinates lat="30.2672" lon="-97.7431"/>
+        </location>
+    </locations>
+
+    <!-- Mixed content example -->
+    <description>
+        <strong>software development</strong> and <code>cloud solutions</code>.
+        Founded in 2010, we have grown to serve clients worldwide.
+    </description>
+
+    <!-- Processing instruction for application-specific data -->
+    <?analytics track="company-data" version="2.1"?>
+
+    <!-- Self-closing element with attributes -->
+    <metadata created="2025-07-18T10:30:00Z" version="1.0"/>
+
+</company>
+

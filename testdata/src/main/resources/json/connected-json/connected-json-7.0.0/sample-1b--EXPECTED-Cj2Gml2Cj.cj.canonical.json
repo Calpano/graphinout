@@ -1,0 +1,11 @@
+{"$schema":
+"https://j-s-o-n.org/schema/cj-8.0.0.json","connectedJson":
+{"versionDate":
+"2026-01-15","versionNumber":
+"8.0.0"},"graphs":
+[{"data":
+{"foo":
+"at-graph"},"nodes":
+[{"id":
+"node1","data":
+"string at node"}]}]}

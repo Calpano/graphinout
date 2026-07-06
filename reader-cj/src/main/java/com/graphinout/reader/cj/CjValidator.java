@@ -123,7 +123,8 @@ public class CjValidator {
 
             // check for empty graphs or edges
             cjDoc.graphs().forEach(graph -> {
-                if (graph.nodes().findAny().isEmpty() && graph.edges().findAny().isEmpty()) {
+                if (graph.nodes().findAny().isEmpty() && graph.edges().findAny().isEmpty()
+                        && graph.graphs().findAny().isEmpty()) {
                     errors.add(ContentError.warn("Graph '" + graph.id() + "' has no nodes or edges -- legal, but maybe an error?"));
                 }
             });

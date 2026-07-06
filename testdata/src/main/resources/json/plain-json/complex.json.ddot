@@ -1,0 +1,9 @@
+Hand-authored synthetic plain-JSON test fixture (not a ConnectedJson graph
+document).
+
+ddot.it/this ..kind.. synthetic
+ddot.it/this ..authored by.. Calpano (graphinout project)
+ddot.it/this ..format.. format:json
+ddot.it/this ..content.. JSON Schema-style header only ($schema/$id/title/description), example.com $id
+ddot.it/this ..tests.. small JSON document with schema metadata header
+ddot.it/this ..license.. not stated (public domain unless otherwise stated)

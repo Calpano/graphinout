@@ -1,0 +1,39 @@
+{
+  "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
+
+  "graphs": [
+    { "nodes": [
+        { "id": "node1", "label": { "entries": [ { "value": "First Node" } ] } },
+        { "id": "node2", "label": { "entries": [ { "value": "Second Node" } ] },
+          "ports": [ {"id":"port1"}, { "id": "port2" } ] }
+      ],
+      "edges": [
+        { "endpoints": [
+            { "direction": "in", "node": "node1" },
+            { "direction": "out", "node": "node2" }
+          ]
+        },
+        { "data": { "foo": "bar" },
+          "endpoints": [
+            { "direction": "out", "node": "node1" },
+            { "direction": "in", "node": "node2", "port": "port1" }
+          ]
+        }
+      ],
+      "graphs": [
+        { "id": "subgraph1",
+          "nodes": [
+            { "id": "sub1", "label": { "entries": [ { "value": "Sub Node" } ] } }
+          ],
+          "edges": [ {
+              "data": { "foo": "bar" },
+              "endpoints": [
+                { "direction": "in", "node": "sub1" },
+                { "direction": "out", "node": "node2" }
+              ]
+            }
+          ]
+      } ]
+    }
+  ]
+}

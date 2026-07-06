@@ -1,0 +1,10 @@
+NOT synthetic: a verbatim copy of the official JSON Schema Draft 2020-12
+core+validation meta-schema (carries the canonical $id and $vocabulary entries).
+This content is external/collected, authored by the JSON Schema organization.
+
+ddot.it/this ..kind.. collected
+ddot.it/this ..authored by.. JSON Schema organization
+ddot.it/this ..format.. format:json
+ddot.it/this ..content.. JSON Schema Draft 2020-12 core and validation meta-schema (verbatim official copy)
+ddot.it/this ..source url.. https://json-schema.org/draft/2020-12/schema
+ddot.it/this ..license.. JSON Schema spec license (Academic Free License 3.0 / BSD-3-Clause); not stated in-file
