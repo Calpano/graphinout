@@ -1,0 +1,11 @@
+% Example Pajek network
+*Vertices 4
+1 "Alice"
+2 "Bob"
+3 "Carol"
+4 "David"
+*Arcs
+1 2 1.0
+2 3
+*Edges
+3 4

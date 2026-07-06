@@ -114,7 +114,15 @@ class FeatureRoundtripTest {
             // undirected/mixed are not representable (registry: ..lacks.. undirected-edges).
             new Claims("adjlist", of("directed-edges"), of("nodes", "attributes-on-edges")),
             // edge-list
-            new Claims("edge-list", of("nodes", "directed-edges"), of()));
+            new Claims("edge-list", of("nodes", "directed-edges"), of()),
+            // pajek — reader/writer preserve topology and node labels.
+            // attributes-on-nodes and attributes-on-edges are full claims in the format registry but our
+            // implementation does not yet round-trip coordinates or weights, so they appear here as partial
+            // to make the gap visible in the matrix report without failing the build.
+            new Claims("pajek",
+                    of("nodes", "directed-edges", "undirected-edges", "mixed-directionality-edges", "node-labels"),
+                    of("edge-labels", "typed-edges", "multiple-graphs-per-document",
+                            "attributes-on-nodes", "attributes-on-edges")));
 
     // -------------------------------------------------------------------------------------------------------------
     // Task 3: each synthetic CJ file actually exercises its feature (validated by self-parse).

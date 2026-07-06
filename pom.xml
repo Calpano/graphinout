@@ -61,6 +61,7 @@
         <module>reader-textbased</module>
         <module>reader-neo4j</module>
         <module>reader-pgformat</module>
+        <module>reader-pajek</module>
         <module>reader-grale</module>
         <module>engine</module>
         <module>cli</module>
