@@ -1,0 +1,29 @@
+{ "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
+  "@context": { "@vocab": "doi:doc#" },
+  "graphs": [
+    {
+      "nodes": [
+        { "id": "aaa", "data": "Full URI=doi:doc#aaa (1)",
+          "graphs": [
+            {
+              "nodes": [{ "id": "bbb", "data": "Full URI=doi:doc#bbb (2)" }]
+            }
+          ]
+        }
+      ],
+      "edges": [
+        { "id": "edge-1",
+          "endpoints": [
+            { "node": "aaa", "direction": "in", "data": "Full URI=doi:doc#aaa (3)==(1)" },
+            { "node": "bbb", "direction": "out", "data": "Full URI=doi:doc#bbb (4)==(2)" }
+          ],
+          "graphs": [
+            {
+              "nodes": [{ "id": "ccc", "data": "Full URI=doi:doc#ccc (5)" }]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
