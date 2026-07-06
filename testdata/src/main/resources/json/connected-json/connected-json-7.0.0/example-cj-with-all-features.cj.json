@@ -1,0 +1,51 @@
+{
+  "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
+  "@context": { "@vocab": "https://example.org/" },
+
+  "graphs":[
+    {
+      "nodes": [
+        {
+          "id": "Alice",
+          "types": ["http://xmlns.com/foaf/0.1/Person"],
+          "data": {
+            "foo": { "bar":  "baz"}
+          }
+        },
+        {
+          "id": "Bob",
+          "types": ["http://xmlns.com/foaf/0.1/Person"],
+          "data": "just a string"
+        },
+        {
+          "id": "_:b1",
+          "label": { "entries": [
+            { "value": "Milano", "language": "it"},
+            { "value": "Milan"},
+            { "value": "Mailand", "language": "de"}
+          ]}
+        }
+      ],
+      "edges": [
+        {
+          "type": "http://xmlns.com/foaf/0.1/knows",
+          "endpoints": [
+            { "node": "Alice", "direction": "in" },
+            { "node": "Bob", "direction": "out" }
+          ]
+        },
+        {
+          "type": "https://example.org/livesIn",
+          "endpoints": [
+            { "node": "Alice", "direction": "in", "type": "https://example.org/aaa", "data": 1234 },
+            { "node": "Bob", "direction": "in", "type": "https://example.org/bbb" },
+            { "node": "_:b1", "direction": "out" }
+          ],
+          "data": {
+            "since": 2001
+          }
+        }
+      ]
+    }
+  ]
+}

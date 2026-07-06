@@ -1,0 +1,10 @@
+{
+  "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
+  "graphs": [
+    {
+      "id": "g",
+      "data": { "title": "My Graph" },
+      "nodes": [ { "id": "a" } ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
+
+
+  "graphs": [
+    {
+      "id": "world",
+      "nodes": [
+        { "id": "canada" },
+        { "id": "usa" }
+      ],
+      "edges": [
+        { "id": "trade_na", "endpoints": [ { "node": "canada" }, { "node": "usa" } ] },
+        { "id": "trade_transatlantic", "endpoints": [ { "node": "germany" }, { "node": "usa" } ] }
+      ],
+      "graphs": [
+        {
+          "id": "europe",
+          "label": { "entries": [ { "value": "European Partition" } ] },
+          "nodes": [
+            { "id": "france" },
+            { "id": "germany" }
+          ],
+          "edges": [
+            { "id": "trade_eu", "endpoints": [ { "node": "france" }, { "node": "germany" } ] }
+          ]
+        }
+      ]
+    }
+  ]
+}

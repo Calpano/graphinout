@@ -1,0 +1,13 @@
+{
+  "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
+  "graphs": [
+    {
+      "id": "g",
+      "nodes": [ { "id": "a" }, { "id": "b" }, { "id": "c" } ],
+      "edges": [
+        { "id": "directed", "endpoints": [ { "node": "a", "direction": "in" }, { "node": "b", "direction": "out" } ] },
+        { "id": "undirected", "endpoints": [ { "node": "b", "direction": "undir" }, { "node": "c", "direction": "undir" } ] }
+      ]
+    }
+  ]
+}
