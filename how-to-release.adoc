@@ -1,5 +1,20 @@
 = Manual Maven Release Process
 
+.Pre-flight: Ensure a clean working tree
+----
+git status
+----
+There must be no uncommitted changes before starting the release. `release:prepare` will
+fail or produce a dirty tag if staged or unstaged changes are present.
+
+.Pre-flight: Run the full test suite
+----
+mvn test
+----
+Fix any failures before proceeding. `release:perform` checks out the tagged commit and
+runs the tests again in a local clone; a failure there is harder to roll back than one
+caught here.
+
 .Step 0: Update `CHANGELOG.adoc`
 Before tagging, record the release in `CHANGELOG.adoc` at the repo root (create it if it does
 not exist yet) so the notable changes ship with the tag. Follow
