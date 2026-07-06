@@ -9,6 +9,8 @@ bumps and "minor/doc/WIP" commits are omitted.
 
 == Unreleased
 
+== 0.2.1 — 2026-07-06
+
 Added::
 * Identity-based, ranked-confidence format detection with a `gio detect` command;
   ranking now weighs extension, content kind, vocabulary/signatures and graph
