@@ -248,7 +248,10 @@ public class TestFileProvider {
     }
 
     public static TestResource resourceByPath(String path) {
-        return resources(path, Collections.emptySet()).findFirst().orElseThrow();
+        return getAllTestResources()
+                .filter(tr -> tr.resource().getPath().equals(path))
+                .findFirst()
+                .orElseThrow();
     }
 
     /**
