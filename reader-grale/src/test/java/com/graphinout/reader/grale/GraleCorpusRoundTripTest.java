@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -113,7 +114,7 @@ class GraleCorpusRoundTripTest {
         return m;
     }
 
-    private static java.util.stream.Stream<JsonNode> stream(JsonNode array) {
+    private static Stream<JsonNode> stream(JsonNode array) {
         if (array == null || !array.isArray()) return java.util.stream.Stream.empty();
         return StreamSupport.stream(array.spliterator(), false);
     }
