@@ -38,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -62,7 +61,7 @@ public class ValidatingGraphMlWriterTest {
             when(mockEdge.id()).thenReturn(EDGE_ID_1);
             when(mockEdge.source()).thenReturn(NODE_ID_1);
             when(mockEdge.target()).thenReturn(NODE_ID_2);
-            when(IGraphmlLocator2.xlinkHref()).thenReturn(URI.create("http://example.com").toURL());
+            when(IGraphmlLocator2.xlinkHref()).thenReturn(URI.create("https://example.com").toURL());
             underTest.documentStart(mockDocument);
             underTest.graphStart(mockGraph);
             underTest.nodeStart(node1);
@@ -85,7 +84,7 @@ public class ValidatingGraphMlWriterTest {
 
         @Test
         void shouldWorkAsIntendedWithNode() throws IOException {
-            IGraphmlNode node1 = IGraphmlNode.builder().id(NODE_ID_1).build();
+            IGraphmlNode.builder().id(NODE_ID_1).build();
 
             underTest.documentStart(mockDocument);
             underTest.graphStart(mockGraph);
@@ -117,10 +116,6 @@ public class ValidatingGraphMlWriterTest {
                 this.offendingElement = offendingElement;
                 this.lastStartedElement = lastStartedElement;
                 this.exceptionClass = exceptionClass;
-            }
-
-            public ParameterData(String[] previousOrders, String exceptionThrowerMethod, CurrentElement offendingElement, CurrentElement lastStartedElement, Class<?> exceptionClass) {
-                this(List.of(previousOrders), exceptionThrowerMethod, offendingElement, lastStartedElement, exceptionClass);
             }
 
         }
@@ -275,7 +270,6 @@ public class ValidatingGraphMlWriterTest {
 
     public static final String NODE_ID_1 = "node1";
     public static final String NODE_ID_2 = "node2";
-    public static final String NODE_ID_3 = "node3";
     public static final String EDGE_ID_1 = "edge1";
     public static final String PORT_NAME_1 = "port_name_1";
     public static final IGraphmlEndpoint ENDPOINT_1 = IGraphmlEndpoint.builder().node(NODE_ID_1).build();
@@ -311,7 +305,7 @@ public class ValidatingGraphMlWriterTest {
     void setUp() throws MalformedURLException {
         closeable = MockitoAnnotations.openMocks(this);
         underTest = new ValidatingGraphMlWriter();
-        when(mockLocator.xlinkHref()).thenReturn(URI.create("http://example.com").toURL());
+        when(mockLocator.xlinkHref()).thenReturn(URI.create("https://example.com").toURL());
     }
 
 }
