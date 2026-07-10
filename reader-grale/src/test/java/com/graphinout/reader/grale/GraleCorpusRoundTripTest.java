@@ -7,7 +7,6 @@ import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.output.InMemoryOutputSink;
 import com.graphinout.testdata.TestFileProvider;
 import com.graphinout.testdata.TestFileProvider.TestResource;
-import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -19,6 +18,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -40,7 +40,7 @@ class GraleCorpusRoundTripTest {
     @Test
     void externalCorpusRoundTripsPreservingStructure() {
         List<TestResource> corpus =
-                TestFileProvider.resources("json/grale", Set.of(".json")).collect(Collectors.toList());
+                TestFileProvider.resources("json/grale", Set.of(".json")).toList();
 
         Assumptions.assumeFalse(corpus.isEmpty(),
                 "grale corpus not on classpath; set -Dgraph.test.data.dir to the graph-test-data checkout");
@@ -50,8 +50,8 @@ class GraleCorpusRoundTripTest {
 
         for (TestResource tr : corpus) {
             String name = tr.asPath();
-            try {
-                String original = tr.resource().getContentAsString();
+            try (var r = tr.resource()) {
+                String original = r.getContentAsString();
                 JsonNode in = mapper.readTree(original);
                 JsonNode out = roundTrip(name, original);
                 checkStructure(name, in, out);
@@ -93,7 +93,7 @@ class GraleCorpusRoundTripTest {
     }
 
     private Set<String> nodeIds(JsonNode g) {
-        return stream(g.get("nodes")).map(n -> n.path("v").asText()).collect(Collectors.toCollection(java.util.TreeSet::new));
+        return stream(g.get("nodes")).map(n -> n.path("v").asString()).collect(Collectors.toCollection(java.util.TreeSet::new));
     }
 
     /** sorted multiset of "v w name" so multigraph parallel edges with distinct names are kept apart */
