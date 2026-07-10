@@ -3,7 +3,6 @@ package com.graphinout.base.gio.dom;
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import com.graphinout.base.cj.jackson.CjJacksonDocument;
 import com.graphinout.base.cj.jackson.CjJacksonEdge;
 import com.graphinout.base.cj.jackson.CjJacksonEndpoint;
@@ -53,7 +52,7 @@ public class CjJacksonParsingTest {
             """;
 
     @Test
-    public void testParseConnectedJsonDocument() throws IOException {
+    public void testParseConnectedJsonDocument() {
         tools.jackson.databind.json.JsonMapper objectMapper = tools.jackson.databind.json.JsonMapper.builder()
                 .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
                 .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
@@ -74,7 +73,7 @@ public class CjJacksonParsingTest {
         assertThat(doc.getGraphs()).hasSize(1);
 
         // Test first node
-        CjJacksonNode firstNode = doc.getNodes().get(0);
+        CjJacksonNode firstNode = doc.getNodes().getFirst();
         assertThat(firstNode.getId()).isEqualTo("node1");
         assertThat(firstNode.getLabel()).isEqualTo("First Node");
 
@@ -85,7 +84,7 @@ public class CjJacksonParsingTest {
         assertThat(secondNode.getPorts()).isNotNull();
 
         // Test first edge (simple source/target)
-        CjJacksonEdge firstEdge = doc.getEdges().get(0);
+        CjJacksonEdge firstEdge = doc.getEdges().getFirst();
         assertThat(firstEdge.getSource()).isEqualTo("node1");
         assertThat(firstEdge.getTarget()).isEqualTo("node2");
 
@@ -99,9 +98,9 @@ public class CjJacksonParsingTest {
         assertThat(secondEdgeData).isNotNull();
         JsonNode data = secondEdgeData.get("data");
         assertThat(data.get("foo")).isNotNull();
-        assertThat(data.get("foo").asText()).isEqualTo("bar");
+        assertThat(data.get("foo").asString()).isEqualTo("bar");
 
-        CjJacksonEndpoint firstEndpoint = secondEdge.getEndpoints().get(0);
+        CjJacksonEndpoint firstEndpoint = secondEdge.getEndpoints().getFirst();
         assertThat(firstEndpoint.getDirection()).isEqualTo("out");
         assertThat(firstEndpoint.getNode()).isEqualTo("node1");
 
@@ -111,7 +110,7 @@ public class CjJacksonParsingTest {
         assertThat(secondEndpoint.getPort()).isEqualTo("port1");
 
         // Test subgraph
-        CjJacksonGraph subgraph = doc.getGraphs().get(0);
+        CjJacksonGraph subgraph = doc.getGraphs().getFirst();
         assertThat(subgraph.getId()).isEqualTo("subgraph1");
         assertThat(subgraph.getNodes()).isNotNull();
         assertThat(subgraph.getNodes()).hasSize(1);

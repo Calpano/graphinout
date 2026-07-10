@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class JacksonValueWriter implements JsonValueWriter {
 
     static JsonNodeFactory factory = JsonNodeFactory.instance;
@@ -102,12 +103,12 @@ public class JacksonValueWriter implements JsonValueWriter {
 
     @Override
     public void onString(String s) throws JsonException {
-        value(factory.textNode(s));
+        value(factory.stringNode(s));
     }
 
     public JsonNode result() {
         assert nodes.size() == 1;
-        return nodes.get(0);
+        return nodes.getFirst();
     }
 
     protected JsonNode peek() {

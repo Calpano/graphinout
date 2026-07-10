@@ -3,7 +3,6 @@ package com.graphinout.reader.pgformat;
 import tools.jackson.core.json.JsonFactory;
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.JsonToken;
-import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.ICjHasDataMutable;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioFileFormat;
@@ -24,7 +23,7 @@ import java.util.function.Consumer;
 
 /**
  * Reads and writes PG-JSON (Property Graph JSON) format.
- * Specification: https://pg-format.github.io/specification/
+ * Specification: <a href="https://pg-format.github.io/specification/">https://pg-format.github.io/specification/</a>
  */
 public class PgJsonReader implements GioReader, GioWriter {
 
@@ -43,7 +42,7 @@ public class PgJsonReader implements GioReader, GioWriter {
     @Override
     public void read(InputSource inputSource, ICjStream cjStream) throws IOException {
         try (InputStream is = inputSource.asSingle().inputStream()) {
-            JsonParser parser = jsonFactory.createParser(is);
+            JsonParser parser = jsonFactory.createParser(tools.jackson.core.ObjectReadContext.empty(), is);
 
             // Start document and graph
             cjStream.documentStart(cjStream.createDocumentChunk());
@@ -95,7 +94,7 @@ public class PgJsonReader implements GioReader, GioWriter {
 
             switch (fieldName) {
                 case "id":
-                    nodeData.put("id", parser.getText());
+                    nodeData.put("id", parser.getString());
                     break;
                 case "labels":
                     nodeData.put("labels", parseStringArray(parser));
@@ -152,14 +151,14 @@ public class PgJsonReader implements GioReader, GioWriter {
             switch (fieldName) {
                 case "id":
                     if (parser.currentToken() != JsonToken.VALUE_NULL) {
-                        edgeData.put("id", parser.getText());
+                        edgeData.put("id", parser.getString());
                     }
                     break;
                 case "from":
-                    edgeData.put("from", parser.getText());
+                    edgeData.put("from", parser.getString());
                     break;
                 case "to":
-                    edgeData.put("to", parser.getText());
+                    edgeData.put("to", parser.getString());
                     break;
                 case "undirected":
                     edgeData.put("undirected", parser.getBooleanValue());
@@ -186,7 +185,7 @@ public class PgJsonReader implements GioReader, GioWriter {
             @SuppressWarnings("unchecked")
             List<String> labels = (List<String>) edgeData.get("labels");
             if (labels != null && !labels.isEmpty()) {
-                edge.setLabel(lbl -> lbl.addEntry(entry -> entry.value(labels.get(0))));
+                edge.setLabel(lbl -> lbl.addEntry(entry -> entry.value(labels.getFirst())));
             }
 
             String from = (String) edgeData.get("from");
@@ -216,7 +215,7 @@ public class PgJsonReader implements GioReader, GioWriter {
     private List<String> parseStringArray(JsonParser parser) throws IOException {
         List<String> list = new ArrayList<>();
         while (parser.nextToken() != JsonToken.END_ARRAY) {
-            list.add(parser.getText());
+            list.add(parser.getString());
         }
         return list;
     }
@@ -239,22 +238,15 @@ public class PgJsonReader implements GioReader, GioWriter {
     }
 
     private Object parseValue(JsonParser parser) throws IOException {
-        switch (parser.currentToken()) {
-            case VALUE_STRING:
-                return parser.getText();
-            case VALUE_NUMBER_INT:
-                return parser.getIntValue();
-            case VALUE_NUMBER_FLOAT:
-                return parser.getDoubleValue();
-            case VALUE_TRUE:
-                return Boolean.TRUE;
-            case VALUE_FALSE:
-                return Boolean.FALSE;
-            case VALUE_NULL:
-                return null;
-            default:
-                return null;
-        }
+        return switch (parser.currentToken()) {
+            case VALUE_STRING -> parser.getString();
+            case VALUE_NUMBER_INT -> parser.getIntValue();
+            case VALUE_NUMBER_FLOAT -> parser.getDoubleValue();
+            case VALUE_TRUE -> Boolean.TRUE;
+            case VALUE_FALSE -> Boolean.FALSE;
+            case VALUE_NULL -> null;
+            default -> null;
+        };
     }
 
     private void addPropertiesToData(ICjHasDataMutable element, Map<String, List<Object>> properties) {
@@ -265,15 +257,14 @@ public class PgJsonReader implements GioReader, GioWriter {
             // PG-JSON allows arrays of values, but CJ typically has single values
             // We'll take the first value if available
             if (values != null && !values.isEmpty()) {
-                Object value = values.get(0);
+                Object value = values.getFirst();
                 if (value != null) {
                     element.dataMutable(data -> {
-                        if (value instanceof String) {
-                            data.add(key, (String) value);
-                        } else if (value instanceof Number) {
-                            data.add(key, (Number) value);
-                        } else if (value instanceof Boolean) {
-                            data.add(key, (Boolean) value);
+                        switch (value) {
+                            case String s -> data.add(key, s);
+                            case Number n -> data.add(key, n);
+                            case Boolean b -> data.add(key, b);
+                            default -> { }
                         }
                     });
                 }

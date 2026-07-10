@@ -17,6 +17,7 @@ import java.util.Stack;
 /**
  * Base class for collecting all JSON calls into a string. Impl uses {@link #jsonNode()} and {@link #reset()}.
  */
+@SuppressWarnings("unused")
 public class CjJson2JacksonNodeWriter extends BaseOutput implements JsonWriter {
 
     private final Stack<Object> stack = new Stack<>();
@@ -118,7 +119,7 @@ public class CjJson2JacksonNodeWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void onString(String s) throws JsonException {
-        ValueNode node = nf.textNode(s);
+        ValueNode node = nf.stringNode(s);
         attach(node);
     }
 

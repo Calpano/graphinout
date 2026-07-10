@@ -400,7 +400,6 @@ Comprehensive support for the GraphML format, including reading, writing, and va
 .Utilities
 * `GraphmlLocator` - Location tracking for parsing
 * `GraphmlDirection` - Direction handling
-* `BufferingJsonWriter` - Buffered JSON writing
 * `IXmlElement` - XML value representation
 
 === Reader Package (`com.graphinout.base.reader`)

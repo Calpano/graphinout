@@ -23,7 +23,7 @@ public class JacksonPrimitive implements IJsonPrimitive {
     @SuppressWarnings("unchecked")
     public <T> T castTo(Class<T> clazz) {
         if (clazz.equals(String.class)) {
-            return (T) primitive.asText();
+            return (T) primitive.asString();
         } else if (clazz.equals(Boolean.class)) {
             return (T) Boolean.valueOf(primitive.asBoolean());
         } else if (clazz.equals(Number.class)) {

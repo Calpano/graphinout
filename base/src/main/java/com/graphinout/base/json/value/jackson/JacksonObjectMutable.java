@@ -45,11 +45,10 @@ public class JacksonObjectMutable implements IJsonObjectMutable {
 
     @Override
     public Set<String> keys() {
-        Set<String> keys = new HashSet<>();
-        objectNode.propertyNames().forEach(keys::add);
-        return keys;
+        return new HashSet<>(objectNode.propertyNames());
     }
 
+    @SuppressWarnings("unused")
     public ObjectNode objectNode() {
         return objectNode;
     }

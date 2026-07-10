@@ -50,21 +50,21 @@ class GraleRoundTripTest {
         JsonNode out = roundTrip("simple.grale.json");
 
         assertTrue(out.path("options").path("directed").asBoolean(), "directed option preserved");
-        assertEquals("LR", out.path("value").path("rankdir").asText(), "graph label preserved");
+        assertEquals("LR", out.path("value").path("rankdir").asString(), "graph label preserved");
 
         assertEquals(2, out.get("nodes").size());
         assertEquals(1, out.get("edges").size());
 
         JsonNode a = out.get("nodes").get(0);
-        assertEquals("a", a.get("v").asText());
-        assertEquals("Start", a.path("value").path("meta").path("label").asText());
+        assertEquals("a", a.get("v").asString());
+        assertEquals("Start", a.path("value").path("meta").path("label").asString());
         assertEquals(60, a.path("value").path("width").asInt());
 
         JsonNode edge = out.get("edges").get(0);
-        assertEquals("a", edge.get("v").asText());
-        assertEquals("b", edge.get("w").asText());
-        assertEquals("e_ab", edge.get("id").asText());
-        assertEquals("next", edge.path("value").path("meta").path("label").asText());
+        assertEquals("a", edge.get("v").asString());
+        assertEquals("b", edge.get("w").asString());
+        assertEquals("e_ab", edge.get("id").asString());
+        assertEquals("next", edge.path("value").path("meta").path("label").asString());
         assertEquals(1, edge.path("value").path("weight").asInt());
     }
 
@@ -76,7 +76,7 @@ class GraleRoundTripTest {
         assertEquals(2, out.get("edges").size());
 
         // graph-level grale extras survive
-        assertEquals("Z", out.path("value").path("focus").asText());
+        assertEquals("Z", out.path("value").path("focus").asString());
         assertTrue(out.path("value").path("markers").has("arrow"), "markers registry preserved");
         assertEquals(1, out.get("hyperedges").size(), "hyperedges preserved");
         assertTrue(out.path("diagnostics").has("warnings"), "diagnostics preserved");
@@ -84,13 +84,13 @@ class GraleRoundTripTest {
 
         // per-node layout output survives
         JsonNode a = out.get("nodes").get(0);
-        assertEquals("a", a.get("v").asText());
+        assertEquals("a", a.get("v").asString());
         assertEquals(60, a.path("value").path("x").asInt());
         assertEquals(60, a.path("value").path("y").asInt());
 
         // per-edge routed points + markers survive
         JsonNode ab = out.get("edges").get(0);
-        assertEquals("arrow", ab.path("value").path("endMarker").asText());
+        assertEquals("arrow", ab.path("value").path("endMarker").asString());
         assertTrue(ab.path("value").path("points").isArray(), "edge points preserved");
         assertEquals(2, ab.path("value").path("points").size());
     }
@@ -103,6 +103,7 @@ class GraleRoundTripTest {
         GraleReader reader = new GraleReader();
         try (SingleInputSource in = SingleInputSource.of("sample.grale.json", first.toString())) {
             ICjDocument doc = reader.readToCjDocument(in);
+            assertNotNull(doc);
             InMemoryOutputSink sink = new InMemoryOutputSink();
             reader.writeCjDocument(doc, sink);
             JsonNode second = mapper.readTree(sink.getBufferAsUtf8String());

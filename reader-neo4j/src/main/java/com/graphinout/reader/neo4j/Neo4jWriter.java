@@ -62,7 +62,7 @@ public class Neo4jWriter extends BaseCjOutput implements ICjStream {
             }
 
             // Labels
-            if (node.label() != null) {
+            if (node.label() != null && node.label().entries() != null) {
                 List<String> labels = new java.util.ArrayList<>();
                 List<ICjLabelEntry> entryList = node.label().entries().toList();
                 for (ICjLabelEntry entry : entryList) {
@@ -74,7 +74,7 @@ public class Neo4jWriter extends BaseCjOutput implements ICjStream {
             }
 
             // Properties from data
-            if (node.data() != null && node.data().jsonValue() != null) {
+            if (node.data().jsonValue() != null) {
                 Map<String, Object> properties = extractProperties(node.data().jsonValue());
                 if (!properties.isEmpty()) {
                     nodeMap.put("properties", properties);
@@ -103,10 +103,10 @@ public class Neo4jWriter extends BaseCjOutput implements ICjStream {
             }
 
             // Label
-            if (edge.label() != null) {
+            if (edge.label() != null && edge.label().entries() != null) {
                 List<ICjLabelEntry> entryList = edge.label().entries().toList();
                 if (!entryList.isEmpty()) {
-                    edgeMap.put("label", entryList.get(0).value());
+                    edgeMap.put("label", entryList.getFirst().value());
                 }
             }
 
@@ -116,18 +116,18 @@ public class Neo4jWriter extends BaseCjOutput implements ICjStream {
 
             if (!sources.isEmpty()) {
                 Map<String, String> start = new HashMap<>();
-                start.put("id", sources.get(0).node());
+                start.put("id", sources.getFirst().node());
                 edgeMap.put("start", start);
             }
 
             if (!targets.isEmpty()) {
                 Map<String, String> end = new HashMap<>();
-                end.put("id", targets.get(0).node());
+                end.put("id", targets.getFirst().node());
                 edgeMap.put("end", end);
             }
 
             // Properties from data
-            if (edge.data() != null && edge.data().jsonValue() != null) {
+            if (edge.data().jsonValue() != null) {
                 Map<String, Object> properties = extractProperties(edge.data().jsonValue());
                 if (!properties.isEmpty()) {
                     edgeMap.put("properties", properties);

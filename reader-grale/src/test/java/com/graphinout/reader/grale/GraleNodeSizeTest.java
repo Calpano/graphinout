@@ -15,6 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GraleNodeSizeTest {
@@ -97,6 +98,7 @@ class GraleNodeSizeTest {
         GraleReader reader = new GraleReader();
         try (SingleInputSource in = SingleInputSource.of("in.grale.json", graleInput)) {
             ICjDocument doc = reader.readToCjDocument(in);
+            assertNotNull(doc);
             InMemoryOutputSink sink = new InMemoryOutputSink();
             reader.writeCjDocument(doc, sink);
             JsonNode out = mapper.readTree(sink.getBufferAsUtf8String());
@@ -109,6 +111,7 @@ class GraleNodeSizeTest {
         GraleReader reader = new GraleReader();
         try (SingleInputSource in = SingleInputSource.of("in.grale.json", graleInput)) {
             ICjDocument doc = reader.readToCjDocument(in);
+            assertNotNull(doc);
             return doc.graphs().findFirst().orElseThrow()
                     .nodes().findFirst().orElseThrow();
         }
@@ -119,6 +122,7 @@ class GraleNodeSizeTest {
         GraleReader reader = new GraleReader();
         try (SingleInputSource in = SingleInputSource.of("in.grale.json", graleInput)) {
             ICjDocument doc = reader.readToCjDocument(in);
+            assertNotNull(doc);
             return doc.graphs().findFirst().orElseThrow()
                     .edges().findFirst().orElseThrow();
         }
@@ -139,12 +143,14 @@ class GraleNodeSizeTest {
         // label is carried by the CJ node's native label, not by data
         assertEquals("Start", labelOf(node.label()), "label should be the CJ node label");
 
+        assertNotNull(node.data());
+        assertNotNull(node.data().jsonValue());
         JsonNode data = mapper.readTree(node.data().jsonValue().toJsonString());
         assertEquals(80, data.path("size").path("width").asInt(), "width folded into data.size");
         assertEquals(40, data.path("size").path("height").asInt(), "height folded into data.size");
         assertFalse(data.has("width"), "width must not stay at data top level");
         assertFalse(data.path("meta").has("label"), "label must not be duplicated in data.meta");
-        assertEquals("#dcfce7", data.path("meta").path("fill").asText(), "other meta fields are kept");
+        assertEquals("#dcfce7", data.path("meta").path("fill").asString(), "other meta fields are kept");
     }
 
     @Test
@@ -158,10 +164,12 @@ class GraleNodeSizeTest {
         // label is carried by the CJ edge's native label, not by data
         assertEquals("next", labelOf(edge.label()), "label should be the CJ edge label");
 
+        assertNotNull(edge.data());
+        assertNotNull(edge.data().jsonValue());
         JsonNode data = mapper.readTree(edge.data().jsonValue().toJsonString());
         assertEquals(2, data.path("weight").asInt(), "non-label edge data is kept");
         assertFalse(data.path("meta").has("label"), "label must not be duplicated in data.meta");
-        assertEquals("#ea580c", data.path("meta").path("color").asText(), "other meta fields are kept");
+        assertEquals("#ea580c", data.path("meta").path("color").asString(), "other meta fields are kept");
     }
 
     @Test
@@ -208,6 +216,7 @@ class GraleNodeSizeTest {
         GraleReader reader = new GraleReader();
         try (SingleInputSource in = SingleInputSource.of("in.grale.json", graleInput)) {
             ICjDocument doc = reader.readToCjDocument(in);
+            assertNotNull(doc);
             InMemoryOutputSink sink = new InMemoryOutputSink();
             reader.writeCjDocument(doc, sink);
             return sink.getBufferAsUtf8String();

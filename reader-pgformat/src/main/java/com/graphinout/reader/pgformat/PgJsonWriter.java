@@ -13,7 +13,7 @@ import java.util.*;
 
 /**
  * Writes CJ documents to PG-JSON (Property Graph JSON) format.
- * Specification: https://pg-format.github.io/specification/
+ * Specification: <a href="https://pg-format.github.io/specification/">https://pg-format.github.io/specification/</a>
  */
 public class PgJsonWriter extends BaseCjOutput implements ICjStream {
 
@@ -71,7 +71,7 @@ public class PgJsonWriter extends BaseCjOutput implements ICjStream {
 
         // Labels (mandatory in PG-JSON, must be non-empty array)
         List<String> labels = new ArrayList<>();
-        if (node.label() != null) {
+        if (node.label() != null && node.label().entries() != null) {
             List<ICjLabelEntry> entryList = node.label().entries().toList();
             for (ICjLabelEntry entry : entryList) {
                 labels.add(entry.value());
@@ -84,7 +84,7 @@ public class PgJsonWriter extends BaseCjOutput implements ICjStream {
 
         // Properties (mandatory in PG-JSON, can be empty object)
         Map<String, List<Object>> properties = new LinkedHashMap<>();
-        if (node.data() != null && node.data().jsonValue() != null) {
+        if (node.data().jsonValue() != null) {
             extractProperties(node.data().jsonValue(), properties);
         }
         nodeMap.put("properties", properties);
@@ -122,14 +122,14 @@ public class PgJsonWriter extends BaseCjOutput implements ICjStream {
             to = undirected.get(1).node();
         } else if (!sources.isEmpty() && !targets.isEmpty()) {
             // Directed edge
-            from = sources.get(0).node();
-            to = targets.get(0).node();
-        } else if (!sources.isEmpty() && undirected.size() >= 1) {
-            from = sources.get(0).node();
-            to = undirected.get(0).node();
-        } else if (!targets.isEmpty() && undirected.size() >= 1) {
-            from = undirected.get(0).node();
-            to = targets.get(0).node();
+            from = sources.getFirst().node();
+            to = targets.getFirst().node();
+        } else if (!sources.isEmpty() && !undirected.isEmpty()) {
+            from = sources.getFirst().node();
+            to = undirected.getFirst().node();
+        } else if (!targets.isEmpty() && !undirected.isEmpty()) {
+            from = undirected.getFirst().node();
+            to = targets.getFirst().node();
         }
 
         // From and To (mandatory in PG-JSON)
@@ -145,7 +145,7 @@ public class PgJsonWriter extends BaseCjOutput implements ICjStream {
 
         // Labels (mandatory in PG-JSON, must be non-empty array)
         List<String> labels = new ArrayList<>();
-        if (edge.label() != null) {
+        if (edge.label() != null && edge.label().entries() != null) {
             List<ICjLabelEntry> entryList = edge.label().entries().toList();
             for (ICjLabelEntry entry : entryList) {
                 labels.add(entry.value());
@@ -158,7 +158,7 @@ public class PgJsonWriter extends BaseCjOutput implements ICjStream {
 
         // Properties (mandatory in PG-JSON, can be empty object)
         Map<String, List<Object>> properties = new LinkedHashMap<>();
-        if (edge.data() != null && edge.data().jsonValue() != null) {
+        if (edge.data().jsonValue() != null) {
             extractProperties(edge.data().jsonValue(), properties);
         }
         edgeMap.put("properties", properties);

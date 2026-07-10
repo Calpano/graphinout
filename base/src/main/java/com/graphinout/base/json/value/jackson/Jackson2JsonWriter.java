@@ -3,12 +3,13 @@ package com.graphinout.base.json.value.jackson;
 import tools.jackson.databind.JsonNode;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
 
+@SuppressWarnings("unused")
 public class Jackson2JsonWriter {
 
     public static void write(JsonNode jsonNode, JsonWriter jsonWriter) {
         switch (jsonNode.getNodeType()) {
             case BOOLEAN -> jsonWriter.onBoolean(jsonNode.asBoolean());
-            case STRING -> jsonWriter.onString(jsonNode.asText());
+            case STRING -> jsonWriter.onString(jsonNode.asString());
             case NUMBER -> {
                 // depends on number
                 if (jsonNode.isBigDecimal()) {

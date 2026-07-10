@@ -20,6 +20,7 @@ public class JacksonArrayMutable implements IJsonArrayMutable {
         arrayNode.add(JacksonValues.jacksonValue(jsonValue));
     }
 
+    @SuppressWarnings("unused")
     public ArrayNode arrayNode() {
         return arrayNode;
     }

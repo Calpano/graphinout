@@ -40,7 +40,7 @@ public class Neo4jReader implements GioReader, GioWriter {
     @Override
     public void read(InputSource inputSource, ICjStream cjStream) throws IOException {
         try (InputStream is = inputSource.asSingle().inputStream()) {
-            JsonParser parser = jsonFactory.createParser(is);
+            JsonParser parser = jsonFactory.createParser(tools.jackson.core.ObjectReadContext.empty(), is);
 
             // Start document and graph
             cjStream.documentStart(cjStream.createDocumentChunk());
@@ -70,16 +70,16 @@ public class Neo4jReader implements GioReader, GioWriter {
 
             switch (fieldName) {
                 case "type":
-                    object.put("type", parser.getText());
+                    object.put("type", parser.getString());
                     break;
                 case "id":
-                    object.put("id", parser.getText());
+                    object.put("id", parser.getString());
                     break;
                 case "labels":
                     object.put("labels", parseArray(parser));
                     break;
                 case "label":
-                    object.put("label", parser.getText());
+                    object.put("label", parser.getString());
                     break;
                 case "properties":
                     object.put("properties", parseProperties(parser));
@@ -172,10 +172,10 @@ public class Neo4jReader implements GioReader, GioWriter {
         });
     }
 
-    private java.util.List<String> parseArray(JsonParser parser) throws IOException {
+    private java.util.List<String> parseArray(JsonParser parser) {
         java.util.List<String> list = new java.util.ArrayList<>();
         while (parser.nextToken() != JsonToken.END_ARRAY) {
-            list.add(parser.getText());
+            list.add(parser.getString());
         }
         return list;
     }
@@ -190,13 +190,13 @@ public class Neo4jReader implements GioReader, GioWriter {
         return properties;
     }
 
-    private Map<String, String> parseNodeReference(JsonParser parser) throws IOException {
+    private Map<String, String> parseNodeReference(JsonParser parser) {
         Map<String, String> nodeRef = new HashMap<>();
         while (parser.nextToken() != JsonToken.END_OBJECT) {
             String key = parser.currentName();
             parser.nextToken();
             if ("id".equals(key)) {
-                nodeRef.put("id", parser.getText());
+                nodeRef.put("id", parser.getString());
             } else {
                 parser.skipChildren();
             }
@@ -204,9 +204,9 @@ public class Neo4jReader implements GioReader, GioWriter {
         return nodeRef;
     }
 
-    private Object parseValue(JsonParser parser) throws IOException {
+    private Object parseValue(JsonParser parser) {
         return switch (parser.currentToken()) {
-            case VALUE_STRING -> parser.getText();
+            case VALUE_STRING -> parser.getString();
             case VALUE_NUMBER_INT -> parser.getIntValue();
             case VALUE_NUMBER_FLOAT -> parser.getDoubleValue();
             case VALUE_TRUE -> Boolean.TRUE;

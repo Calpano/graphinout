@@ -1,17 +1,10 @@
 package com.graphinout.foundation.pure.json.json5;
 
-import tools.jackson.core.JsonParser;
-import tools.jackson.core.JacksonException;
-import tools.jackson.core.StreamReadFeature;
-import tools.jackson.core.json.JsonReadFeature;
-import tools.jackson.databind.ObjectMapper;
 import com.graphinout.testdata.TestFileProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -20,7 +13,7 @@ class Json5PreprocessorTest {
 
     @ParameterizedTest
     @MethodSource("com.graphinout.testdata.TestFileProvider#json5InputSources")
-    void testJson5(String name, TestFileProvider.NamedString input) throws IOException {
+    void testJson5(@SuppressWarnings("unused") String name, TestFileProvider.NamedString input) {
         testInput(input);
     }
 
@@ -102,7 +95,7 @@ class Json5PreprocessorTest {
         assertEquals(expectedJson.replaceAll("\\s", ""), actualJson.replaceAll("\\s", ""));
     }
 
-    private void testInput(TestFileProvider.NamedString input) throws IOException {
+    private void testInput(TestFileProvider.NamedString input) {
         String json = Json5Preprocessor.toJson(input.content());
         // Validate json is valid JSON syntax by parsing it
         tools.jackson.databind.json.JsonMapper objectMapper = tools.jackson.databind.json.JsonMapper.builder()

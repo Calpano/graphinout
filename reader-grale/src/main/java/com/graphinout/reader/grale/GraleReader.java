@@ -142,7 +142,7 @@ public class GraleReader implements GioReader, GioWriter {
             return;
         }
         cjStream.node((ICjNodeChunkMutable n) -> {
-            n.id(node.get("v").asText());
+            n.id(node.get("v").asString());
 
             ObjectNode value = toNodeData(node.get("value"));
 
@@ -168,11 +168,11 @@ public class GraleReader implements GioReader, GioWriter {
         }
         cjStream.edge((ICjEdgeChunkMutable e) -> {
             if (edge.has("id") && !edge.get("id").isNull()) {
-                e.id(edge.get("id").asText());
+                e.id(edge.get("id").asString());
             }
 
-            String v = edge.get("v").asText();
-            String w = edge.get("w").asText();
+            String v = edge.get("v").asString();
+            String w = edge.get("w").asString();
             if (directed) {
                 e.addEndpointIncoming(v); // source (direction=in)
                 e.addEndpointOutgoing(w); // target (direction=out)
@@ -228,10 +228,9 @@ public class GraleReader implements GioReader, GioWriter {
     /** Remove {@code meta.label} (carried by the CJ element label) while keeping the rest of
      * {@code meta}; drop {@code meta} entirely once it is empty. */
     private static void stripMetaLabel(ObjectNode value) {
-        JsonNode meta = value.get("meta");
-        if (meta != null && meta.isObject()) {
-            ((ObjectNode) meta).remove("label");
-            if (((ObjectNode) meta).isEmpty()) value.remove("meta");
+        if (value.get("meta") instanceof ObjectNode meta) {
+            meta.remove("label");
+            if (meta.isEmpty()) value.remove("meta");
         }
     }
 
@@ -241,7 +240,7 @@ public class GraleReader implements GioReader, GioWriter {
         JsonNode meta = value.get("meta");
         if (meta == null || !meta.isObject()) return null;
         JsonNode label = meta.get("label");
-        return label != null && label.isTextual() ? label.asText() : null;
+        return label != null && label.isString() ? label.asString() : null;
     }
 
     /**
