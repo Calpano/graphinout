@@ -63,6 +63,7 @@ public class PgJsonReader implements GioReader, GioWriter {
                 } else if ("edges".equals(fieldName)) {
                     processEdges(parser, cjStream);
                 } else {
+                    warnUnknownField("graph", fieldName);
                     parser.skipChildren();
                 }
             }
@@ -103,6 +104,7 @@ public class PgJsonReader implements GioReader, GioWriter {
                     nodeData.put("properties", parseProperties(parser));
                     break;
                 default:
+                    warnUnknownField("node", fieldName);
                     parser.skipChildren();
                     break;
             }
@@ -170,6 +172,7 @@ public class PgJsonReader implements GioReader, GioWriter {
                     edgeData.put("properties", parseProperties(parser));
                     break;
                 default:
+                    warnUnknownField("edge", fieldName);
                     parser.skipChildren();
                     break;
             }
@@ -275,6 +278,12 @@ public class PgJsonReader implements GioReader, GioWriter {
     @Override
     public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
         this.errorHandler = errorHandler;
+    }
+
+    private void warnUnknownField(String context, String fieldName) {
+        if (errorHandler != null) {
+            errorHandler.accept(ContentError.warn("Unknown field in " + context + ": " + fieldName));
+        }
     }
 
     @Override
