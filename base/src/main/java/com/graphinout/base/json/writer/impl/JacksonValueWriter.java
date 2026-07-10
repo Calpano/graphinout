@@ -1,10 +1,10 @@
 package com.graphinout.base.json.writer.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ValueNode;
 import com.graphinout.foundation.pure.json.JsonException;
 import com.graphinout.foundation.pure.json.writer.JsonValueWriter;
 
@@ -129,7 +129,7 @@ public class JacksonValueWriter implements JsonValueWriter {
     }
 
     protected void value(ValueNode value) {
-        assert peek().isContainerNode();
+        assert peek().isContainer();
         if (peek().isArray()) {
             ArrayNode array = (ArrayNode) peek();
             array.add(value);

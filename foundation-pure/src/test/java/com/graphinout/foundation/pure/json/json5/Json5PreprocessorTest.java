@@ -1,9 +1,10 @@
 package com.graphinout.foundation.pure.json.json5;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.core.json.JsonReadFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.databind.ObjectMapper;
 import com.graphinout.testdata.TestFileProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -104,23 +105,24 @@ class Json5PreprocessorTest {
     private void testInput(TestFileProvider.NamedString input) throws IOException {
         String json = Json5Preprocessor.toJson(input.content());
         // Validate json is valid JSON syntax by parsing it
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature());
-        // enable all json5 features
-        objectMapper.enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
-        objectMapper.enable(JsonParser.Feature.ALLOW_COMMENTS);
-        objectMapper.enable(JsonParser.Feature.ALLOW_SINGLE_QUOTES);
-        objectMapper.enable(JsonReadFeature.ALLOW_TRAILING_COMMA.mappedFeature());
-        objectMapper.enable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS.mappedFeature());
-        objectMapper.enable(JsonReadFeature.ALLOW_LEADING_DECIMAL_POINT_FOR_NUMBERS.mappedFeature());
-        objectMapper.enable(JsonReadFeature.ALLOW_LEADING_PLUS_SIGN_FOR_NUMBERS.mappedFeature());
-        objectMapper.enable(JsonReadFeature.ALLOW_LEADING_ZEROS_FOR_NUMBERS.mappedFeature());
-        objectMapper.enable(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER.mappedFeature());
-        objectMapper.enable(JsonReadFeature.ALLOW_TRAILING_DECIMAL_POINT_FOR_NUMBERS.mappedFeature());
-        objectMapper.enable(JsonReadFeature.ALLOW_NON_NUMERIC_NUMBERS.mappedFeature());
+        tools.jackson.databind.json.JsonMapper objectMapper = tools.jackson.databind.json.JsonMapper.builder()
+                .enable(tools.jackson.core.StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+                // enable all json5 features
+                .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_UNQUOTED_PROPERTY_NAMES)
+                .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_JAVA_COMMENTS)
+                .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_SINGLE_QUOTES)
+                .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_TRAILING_COMMA)
+                .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS)
+                .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_LEADING_DECIMAL_POINT_FOR_NUMBERS)
+                .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_LEADING_PLUS_SIGN_FOR_NUMBERS)
+                .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_LEADING_ZEROS_FOR_NUMBERS)
+                .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER)
+                .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_TRAILING_DECIMAL_POINT_FOR_NUMBERS)
+                .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_NON_NUMERIC_NUMBERS)
+                .build();
         // TODO allow hex numbers, see https://github.com/FasterXML/jackson-core/issues/707
 
-        objectMapper.readTree(json); // This will throw JsonProcessingException if JSON is invalid
+        objectMapper.readTree(json); // This will throw JacksonException if JSON is invalid
     }
 
 }

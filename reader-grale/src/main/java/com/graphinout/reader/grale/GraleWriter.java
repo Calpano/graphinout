@@ -1,13 +1,13 @@
 package com.graphinout.reader.grale;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.core.util.Separators;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.util.DefaultPrettyPrinter;
+import tools.jackson.core.util.Separators;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjEdgeChunk;
@@ -37,7 +37,7 @@ public class GraleWriter extends BaseCjOutput implements ICjStream {
     private final OutputSink outputSink;
     private final ObjectMapper objectMapper = new ObjectMapper();
     /** Renders one node/edge object compactly on a single line: {@code { "v": "2", "value": { … } }}. */
-    private final ObjectWriter oneLineWriter = objectMapper.writer(oneLinePrinter());
+    private final ObjectWriter oneLineWriter = objectMapper.writer().with((tools.jackson.core.PrettyPrinter) oneLinePrinter());
 
     private final ArrayNode nodes = objectMapper.createArrayNode();
     private final ArrayNode edges = objectMapper.createArrayNode();
@@ -150,7 +150,7 @@ public class GraleWriter extends BaseCjOutput implements ICjStream {
      * {@code { "v": "2", "value": { "width": 25, "height": 27 } }}). Object/scalar fields are rendered
      * compactly inline too.
      */
-    private String render(LinkedHashMap<String, JsonNode> fields) throws JsonProcessingException {
+    private String render(LinkedHashMap<String, JsonNode> fields) throws JacksonException {
         StringBuilder sb = new StringBuilder("{\n");
         int i = 0;
         int n = fields.size();
@@ -181,10 +181,11 @@ public class GraleWriter extends BaseCjOutput implements ICjStream {
     /** A pretty-printer that keeps a whole value on one line: {@code { "k": v, "k2": [ … ] }}. */
     private static DefaultPrettyPrinter oneLinePrinter() {
         Separators separators = Separators.createDefaultInstance()
-                .withObjectFieldValueSpacing(Separators.Spacing.AFTER);   // "key": value
+                .withObjectNameValueSpacing(Separators.Spacing.AFTER);   // "key": value
         DefaultPrettyPrinter pp = new DefaultPrettyPrinter(separators);
-        pp.indentObjectsWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance);  // "{ … }" inline
-        pp.indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance);   // "[ … ]" inline
+        tools.jackson.core.util.DefaultIndenter indenter = new tools.jackson.core.util.DefaultIndenter(" ", "");
+        pp.indentObjectsWith(indenter);  // "{ … }" inline
+        pp.indentArraysWith(indenter);   // "[ … ]" inline
         return pp;
     }
 
@@ -283,7 +284,7 @@ public class GraleWriter extends BaseCjOutput implements ICjStream {
         if (jsonValue == null || jsonValue.isNull()) return null;
         try {
             return objectMapper.readTree(jsonValue.toJsonString());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Failed to read CJ data as JSON", e);
         }
     }

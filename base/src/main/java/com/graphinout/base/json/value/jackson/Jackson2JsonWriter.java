@@ -1,6 +1,6 @@
 package com.graphinout.base.json.value.jackson;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
 
 public class Jackson2JsonWriter {
@@ -38,7 +38,7 @@ public class Jackson2JsonWriter {
             case OBJECT -> {
                 jsonWriter.objectStart();
                 // newer API: .properties().forEach(
-                jsonNode.fields().forEachRemaining(e -> {
+                jsonNode.properties().forEach(e -> {
                     jsonWriter.onKey(e.getKey());
                     write(e.getValue(), jsonWriter);
                 });

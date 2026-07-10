@@ -1,6 +1,6 @@
 package com.graphinout.reader.neo4j;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.graphinout.base.cj.document.*;
 import com.graphinout.base.cj.factory.BaseCjOutput;
 import com.graphinout.base.cj.stream.ICjStream;

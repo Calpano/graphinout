@@ -1,8 +1,8 @@
 package com.graphinout.reader.neo4j;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
 import com.graphinout.base.cj.document.ICjHasDataMutable;
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioFileFormat;
@@ -48,7 +48,7 @@ public class Neo4jReader implements GioReader, GioWriter {
 
             // Process JSON lines
             while (parser.nextToken() != null) {
-                if (parser.getCurrentToken() == JsonToken.START_OBJECT) {
+                if (parser.currentToken() == JsonToken.START_OBJECT) {
                     processObject(parser, cjStream);
                 }
             }
@@ -92,7 +92,7 @@ public class Neo4jReader implements GioReader, GioWriter {
                     break;
                 case "rel":
                     // Handle wrapped relationship format
-                    if (parser.getCurrentToken() == JsonToken.START_OBJECT) {
+                    if (parser.currentToken() == JsonToken.START_OBJECT) {
                         processObject(parser, cjStream);
                         return;
                     }
@@ -205,7 +205,7 @@ public class Neo4jReader implements GioReader, GioWriter {
     }
 
     private Object parseValue(JsonParser parser) throws IOException {
-        return switch (parser.getCurrentToken()) {
+        return switch (parser.currentToken()) {
             case VALUE_STRING -> parser.getText();
             case VALUE_NUMBER_INT -> parser.getIntValue();
             case VALUE_NUMBER_FLOAT -> parser.getDoubleValue();

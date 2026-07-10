@@ -1,9 +1,9 @@
 package com.graphinout.base.gio.dom;
 
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import com.graphinout.base.cj.jackson.CjJacksonDocument;
 import com.graphinout.base.cj.jackson.CjJacksonEdge;
 import com.graphinout.base.cj.jackson.CjJacksonEndpoint;
@@ -54,10 +54,11 @@ public class CjJacksonParsingTest {
 
     @Test
     public void testParseConnectedJsonDocument() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature());
-        objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-        objectMapper.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        tools.jackson.databind.json.JsonMapper objectMapper = tools.jackson.databind.json.JsonMapper.builder()
+                .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .build();
 
         CjJacksonDocument doc = objectMapper.readValue(SAMPLE_1_GRAPH_ENTRY, CjJacksonDocument.class);
 

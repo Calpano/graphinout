@@ -2,7 +2,7 @@ package com.graphinout.base.cj.jackson;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import java.util.HashMap;
 import java.util.Map;

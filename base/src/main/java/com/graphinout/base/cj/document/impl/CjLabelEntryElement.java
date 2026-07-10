@@ -1,6 +1,6 @@
 package com.graphinout.base.cj.document.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjLabelEntryMutable;
 import com.graphinout.base.cj.writer.ICjWriter;

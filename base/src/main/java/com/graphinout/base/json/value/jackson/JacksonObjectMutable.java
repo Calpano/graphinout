@@ -1,6 +1,6 @@
 package com.graphinout.base.json.value.jackson;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
@@ -46,7 +46,7 @@ public class JacksonObjectMutable implements IJsonObjectMutable {
     @Override
     public Set<String> keys() {
         Set<String> keys = new HashSet<>();
-        objectNode.fieldNames().forEachRemaining(keys::add);
+        objectNode.propertyNames().forEach(keys::add);
         return keys;
     }
 

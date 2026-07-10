@@ -1,8 +1,8 @@
 package com.graphinout.reader.grale;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import com.graphinout.base.cj.document.ICjEdgeChunkMutable;
 import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;

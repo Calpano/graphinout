@@ -87,8 +87,8 @@
         <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
         <!-- Aligned with Spring Boot 4.0.6 (jackson 2 BOM 2.21.2). jackson-annotations dropped patch versions from 2.20 onwards. -->
-        <jackson-core-version>2.21.2</jackson-core-version>
-        <jackson-databind-version>2.21.2</jackson-databind-version>
+        <jackson-core-version>3.2.0</jackson-core-version>
+        <jackson-databind-version>3.2.0</jackson-databind-version>
         <jackson-annotations-version>2.21</jackson-annotations-version>
 
         <j2cl-mp-version>0.22.0</j2cl-mp-version>
@@ -135,9 +135,8 @@
             <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>${logback-classic-version}</version></dependency>
             <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-core</artifactId><version>${logback-classic-version}</version></dependency>
             <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId><version>${jackson-annotations-version}</version></dependency>
-            <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-core</artifactId><version>${jackson-core-version}</version></dependency>
-            <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-core-version}</version></dependency>
-            <dependency><groupId>com.fasterxml.jackson.datatype</groupId><artifactId>jackson-datatype-jsr310</artifactId><version>${jackson-databind-version}</version></dependency>
+            <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-core</artifactId><version>${jackson-core-version}</version></dependency>
+            <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-core-version}</version></dependency>
             <dependency><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>4.7.3</version></dependency>
             <dependency><groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId><version>3.0.2</version></dependency>
             <!-- Truth should not use guava xxx-android ... but the xxx-jre variant -->
@@ -147,7 +146,7 @@
                 <exclusions><exclusion><groupId>com.google.guava</groupId><artifactId>guava</artifactId></exclusion></exclusions>
             </dependency>
             <dependency><groupId>com.networknt</groupId><artifactId>json-schema-validator</artifactId><version>1.5.9</version>
-                <exclusions><exclusion><groupId>com.fasterxml.jackson.dataformat</groupId><artifactId>jackson-dataformat-yaml</artifactId></exclusion></exclusions>
+                <exclusions><exclusion><groupId>tools.jackson.dataformat</groupId><artifactId>jackson-dataformat-yaml</artifactId></exclusion></exclusions>
             </dependency>
             <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.20.0</version></dependency>
             <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><version>4.8.157</version></dependency>

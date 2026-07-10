@@ -1,9 +1,9 @@
 package com.graphinout.base.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.StreamReadFeature;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
+import tools.jackson.core.StreamReadFeature;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.input.SingleInputSourceOfString;
@@ -20,14 +20,10 @@ import java.nio.charset.StandardCharsets;
 
 public class JsonReaderImpl implements JsonReader {
 
-    private static final JsonFactory JSON_FACTORY = new JsonFactory();
-
-    static {
-        JSON_FACTORY //
-                .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature())
-                //.enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION.mappedFeature())
-        ;
-    }
+    private static final JsonFactory JSON_FACTORY = JsonFactory.builder()
+            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+            //.enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
+            .build();
 
     final boolean useBigDecimals;
 
@@ -104,7 +100,7 @@ public class JsonReaderImpl implements JsonReader {
 
     private void parseJsonToken(JsonParser parser, JsonToken token, JsonWriter stream) throws IOException {
         switch (token) {
-            case FIELD_NAME:
+            case PROPERTY_NAME:
                 stream.onKey(parser.currentName());
                 break;
             case VALUE_NULL:

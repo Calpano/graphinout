@@ -1,6 +1,6 @@
 package com.graphinout.base.json.value.jackson;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.JsonNodeFactory;
 import com.graphinout.foundation.pure.json.document.IJsonArray;
 import com.graphinout.foundation.pure.json.document.IJsonArrayAppendable;
 import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;

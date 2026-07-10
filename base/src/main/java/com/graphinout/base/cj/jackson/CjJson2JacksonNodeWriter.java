@@ -1,10 +1,10 @@
 package com.graphinout.base.cj.jackson;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ValueNode;
 import com.graphinout.foundation.pure.input.BaseOutput;
 import com.graphinout.foundation.pure.json.JsonException;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;

@@ -1,8 +1,8 @@
 package com.graphinout.reader.pgformat;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.ICjHasDataMutable;
 import com.graphinout.base.cj.stream.ICjStream;
@@ -56,7 +56,7 @@ public class PgJsonReader implements GioReader, GioWriter {
 
             // Process nodes and edges
             while (parser.nextToken() != JsonToken.END_OBJECT) {
-                String fieldName = parser.getCurrentName();
+                String fieldName = parser.currentName();
                 parser.nextToken();
 
                 if ("nodes".equals(fieldName)) {
@@ -77,7 +77,7 @@ public class PgJsonReader implements GioReader, GioWriter {
     }
 
     private void processNodes(JsonParser parser, ICjStream cjStream) throws IOException {
-        if (parser.getCurrentToken() != JsonToken.START_ARRAY) {
+        if (parser.currentToken() != JsonToken.START_ARRAY) {
             throw new IOException("Expected array for 'nodes'");
         }
 
@@ -90,7 +90,7 @@ public class PgJsonReader implements GioReader, GioWriter {
         Map<String, Object> nodeData = new HashMap<>();
 
         while (parser.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = parser.getCurrentName();
+            String fieldName = parser.currentName();
             parser.nextToken();
 
             switch (fieldName) {
@@ -133,7 +133,7 @@ public class PgJsonReader implements GioReader, GioWriter {
     }
 
     private void processEdges(JsonParser parser, ICjStream cjStream) throws IOException {
-        if (parser.getCurrentToken() != JsonToken.START_ARRAY) {
+        if (parser.currentToken() != JsonToken.START_ARRAY) {
             throw new IOException("Expected array for 'edges'");
         }
 
@@ -146,12 +146,12 @@ public class PgJsonReader implements GioReader, GioWriter {
         Map<String, Object> edgeData = new HashMap<>();
 
         while (parser.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = parser.getCurrentName();
+            String fieldName = parser.currentName();
             parser.nextToken();
 
             switch (fieldName) {
                 case "id":
-                    if (parser.getCurrentToken() != JsonToken.VALUE_NULL) {
+                    if (parser.currentToken() != JsonToken.VALUE_NULL) {
                         edgeData.put("id", parser.getText());
                     }
                     break;
@@ -225,7 +225,7 @@ public class PgJsonReader implements GioReader, GioWriter {
         Map<String, List<Object>> properties = new HashMap<>();
 
         while (parser.nextToken() != JsonToken.END_OBJECT) {
-            String key = parser.getCurrentName();
+            String key = parser.currentName();
             parser.nextToken();
 
             List<Object> values = new ArrayList<>();
@@ -239,7 +239,7 @@ public class PgJsonReader implements GioReader, GioWriter {
     }
 
     private Object parseValue(JsonParser parser) throws IOException {
-        switch (parser.getCurrentToken()) {
+        switch (parser.currentToken()) {
             case VALUE_STRING:
                 return parser.getText();
             case VALUE_NUMBER_INT:
