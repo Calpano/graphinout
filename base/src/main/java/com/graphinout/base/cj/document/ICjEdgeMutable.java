@@ -7,6 +7,9 @@ import org.jspecify.annotations.NonNull;
  */
 public interface ICjEdgeMutable extends ICjEdge, ICjEdgeChunkMutable, ICjHasGraphsMutable, ICjHasLabelMutable {
 
+    /**
+     * @return the parent mutable graph containing this edge.
+     */
     @Override
     @NonNull ICjGraphMutable parent();
 

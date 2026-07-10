@@ -18,6 +18,9 @@ import java.util.stream.Stream;
  */
 public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement {
 
+    /**
+     * @return all direct children of this document, including data, the connected JSON context, and graphs.
+     */
     @Override
     default Stream<ICjElement> directChildren() {
         return Stream.concat(Stream.concat(Stream.of(data().ifNotEmpty()), Stream.of(connectedJson())).filter(Objects::nonNull), graphs());
@@ -34,6 +37,11 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement 
         throw new IllegalStateException("Multiple graphs present, use graphs() instead.");
     }
 
+    /**
+     * Converts this document and its hierarchy into a JaJson map.
+     *
+     * @return a Map representing the JSON structure of this document.
+     */
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap() //
                 .putNonNull(JsonConstants.DOLLAR_SCHEMA, ConnectedJson.CJ_SCHEMA_URL) //
@@ -42,16 +50,32 @@ public interface ICjDocument extends ICjHasGraphs, ICjDocumentChunk, ICjElement 
                 .putMaybe(CjConstants.GRAPHS, graphs(), ICjGraph::toJaJsonMap).build();
     }
 
+    /**
+     * Converts this document to its stringified JSON representation.
+     *
+     * @return the JSON string.
+     */
     default String toJson() {
         return CjDocuments.toJsonString(this);
     }
 
+    /**
+     * Converts this document to its formatted JSON representation.
+     *
+     * @return the formatted JSON string.
+     */
     default String toJsonFormatted() {
         String json = toJson();
         Object jaJson = JaJson.parse(json);
         return JsonCompactFormatter.formatCompact(jaJson);
     }
 
+    /**
+     * Expands a query ID to its full URI using the context of this document.
+     *
+     * @param queryId the ID to expand.
+     * @return the expanded URI.
+     */
     default String uri(@NonNull String queryId) {
         return CjUris.expandId(context(), queryId);
     }

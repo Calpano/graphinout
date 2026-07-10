@@ -50,8 +50,22 @@ public interface GioReader {
         return valid.get();
     }
 
+    /**
+     * Reads graph data from the specified input source into the provided CJ stream.
+     *
+     * @param inputSource the source to read from.
+     * @param cjStream    the CJ stream to push events to.
+     * @throws IOException if an I/O error occurs during reading.
+     */
     void read(InputSource inputSource, ICjStream cjStream) throws IOException;
 
+    /**
+     * Reads graph data from the specified input source and builds an in-memory CJ document.
+     *
+     * @param inputSource the source to read from.
+     * @return the constructed CJ document, or null if the input produced no document.
+     * @throws IOException if an I/O error occurs during reading.
+     */
     default @Nullable ICjDocument readToCjDocument(InputSource inputSource) throws IOException {
         CjWriter2CjDocumentWriter cjStream2CjDocumentWriter = new CjWriter2CjDocumentWriter();
         CjStream2CjWriter cjStream2CjWriter = new CjStream2CjWriter(cjStream2CjDocumentWriter, true);

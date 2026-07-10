@@ -40,6 +40,9 @@ import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+/**
+ * Core engine implementation for GraphInOut, managing readers, writers, and format services.
+ */
 public class GioEngineCore {
 
     private static final Logger log = getLogger(GioEngineCore.class);
@@ -51,6 +54,12 @@ public class GioEngineCore {
         loadServices();
     }
 
+    /**
+     * Checks if any registered reader can read the given resource path based on its file format.
+     *
+     * @param resourcePath the path or name of the resource to check.
+     * @return true if a capable reader is found, false otherwise.
+     */
     public boolean canRead(String resourcePath) {
         for (GioReader gioReader : readers()) {
             if (gioReader.fileFormat().matches(resourcePath)) {
@@ -174,6 +183,9 @@ public class GioEngineCore {
         return result;
     }
 
+    /**
+     * @return a stream of known default file formats supported by the engine.
+     */
     public Stream<GioFileFormat> fileFormats() {
         return Stream.of( //
                 ConnectedJsonReader.FORMAT, //
@@ -187,22 +199,43 @@ public class GioEngineCore {
         );
     }
 
+    /**
+     * Gets a writer by its file format ID.
+     *
+     * @param fileFormatId the ID of the file format.
+     * @return the corresponding writer, or null if not found.
+     */
     public @Nullable GioWriter getWriter(String fileFormatId) {
         return writers.stream().filter(writer -> writer.fileFormat().id().equals(fileFormatId)).findFirst().orElse(null);
     }
 
+    /**
+     * Gets a reader by its file format ID.
+     *
+     * @param fileFormatId the ID of the file format.
+     * @return the corresponding reader, or null if not found.
+     */
     public @Nullable GioReader getReader(String fileFormatId) {
         return readers.stream().filter(writer -> writer.fileFormat().id().equals(fileFormatId)).findFirst().orElse(null);
     }
 
+    /**
+     * @return a list of all registered readers.
+     */
     public List<GioReader> readers() {
         return readers;
     }
 
+    /**
+     * @return a map of all registered services by their ID.
+     */
     public Map<String, GioService> services() {
         return services;
     }
 
+    /**
+     * @return a list of all registered writers.
+     */
     public List<GioWriter> writers() {
         return writers;
     }

@@ -24,11 +24,19 @@ public interface ICjNode extends ICjNodeChunk, ICjHasGraphs, ICjCoreElement, Com
                 .compare(this, other);
     }
 
+    /**
+     * Copies the content of this node into a target mutable node.
+     *
+     * @param targetNode the mutable node to copy data into.
+     */
     default void copyTo(ICjNodeMutable targetNode) {
         ICjNodeChunk.super.copyTo(targetNode);
         graphs().forEach(sourceGraph -> targetNode.addGraph(sourceGraph::copyTo));
     }
 
+    /**
+     * @return all direct children of this node, including data, ports, and subgraphs.
+     */
     @Override
     default Stream<ICjElement> directChildren() {
         return Stream.concat(Stream.concat(Stream.of(data().ifNotEmpty()).filter(Objects::nonNull), ports()), graphs());
@@ -37,9 +45,17 @@ public interface ICjNode extends ICjNodeChunk, ICjHasGraphs, ICjCoreElement, Com
     /** Index of subGraph in this node @return -1 if not found */
     int indexOf(ICjGraph subGraph);
 
+    /**
+     * @return the parent graph containing this node.
+     */
     @Override
     @NonNull ICjGraph parent();
 
+    /**
+     * Converts this node and its hierarchy into a JaJson map.
+     *
+     * @return a Map representing the JSON structure of this node.
+     */
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap() //
                 .putMaybe(CjConstants.ID, id()) //

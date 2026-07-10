@@ -40,6 +40,13 @@ public interface GioWriter {
         // no-op by default
     }
 
+    /**
+     * Writes the provided CJ document to the output sink in this writer's format.
+     *
+     * @param cjDoc      the CJ document to write.
+     * @param outputSink the destination to write to.
+     * @throws IOException if an I/O error occurs during writing.
+     */
     default void writeCjDocument(ICjDocument cjDoc, OutputSink outputSink) throws IOException {
         ICjStream cjStream = createCjStream(outputSink);
         CjWriter2CjStream cjWriter2Stream = new CjWriter2CjStream(cjStream);

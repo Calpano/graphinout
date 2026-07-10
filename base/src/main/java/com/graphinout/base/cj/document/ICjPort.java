@@ -29,6 +29,11 @@ public interface ICjPort extends ICjHasId, ICjHasLabel, ICjHasData, ICjElement, 
                 .compare(this, other);
     }
 
+    /**
+     * Copies the content of this port into a target mutable port.
+     *
+     * @param targetPort the mutable port to copy data into.
+     */
     default void copyTo(ICjPortMutable targetPort) {
         ifPresentAccept(id(), targetPort::id);
         data(data -> targetPort.dataJsonValue(data.jsonValue()));
@@ -42,8 +47,16 @@ public interface ICjPort extends ICjHasId, ICjHasLabel, ICjHasData, ICjElement, 
         return Stream.concat(Stream.of(data().ifNotEmpty()).filter(Objects::nonNull), ports());
     }
 
+    /**
+     * @return a stream of nested sub-ports within this port.
+     */
     Stream<ICjPort> ports();
 
+    /**
+     * Converts this port and its hierarchy into a JaJson map.
+     *
+     * @return a Map representing the JSON structure of this port.
+     */
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap() //
                 .putMaybe(CjConstants.ID, id()) //

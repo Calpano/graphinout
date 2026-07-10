@@ -24,6 +24,9 @@ public interface ICjStream extends ICjFactory, IHandleContentErrors {
         documentEnd();
     }
 
+    /** 
+     * Signals the end of the CJ document.
+     */
     void documentEnd();
 
     /** Next expect: 0...n graphs */
@@ -46,6 +49,9 @@ public interface ICjStream extends ICjFactory, IHandleContentErrors {
         edge(edge);
     }
 
+    /**
+     * Signals the end of the current CJ edge.
+     */
     void edgeEnd();
 
     /** Start a CJ edge which may contain subgraphs */
@@ -56,11 +62,17 @@ public interface ICjStream extends ICjFactory, IHandleContentErrors {
         graphEnd();
     }
 
+    /**
+     * Signals the end of the current CJ graph.
+     */
     void graphEnd();
 
     /** Start a CJ graph which may contain nodes, edges, subgraphs */
     void graphStart(ICjGraphChunk graph);
 
+    /**
+     * @return the JSON factory used by this stream to create or process JSON data.
+     */
     IJsonFactory jsonFactory();
 
     /**
@@ -80,6 +92,9 @@ public interface ICjStream extends ICjFactory, IHandleContentErrors {
         nodeEnd();
     }
 
+    /**
+     * Signals the end of the current CJ node.
+     */
     void nodeEnd();
 
     /** Start a CJ node which may contain subgraphs */

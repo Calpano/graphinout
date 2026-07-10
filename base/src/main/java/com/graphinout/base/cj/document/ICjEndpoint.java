@@ -39,34 +39,63 @@ public interface ICjEndpoint extends ICjHasData, ICjElement, Comparable<ICjEndpo
         return Stream.of(data()).map(x -> x);
     }
 
+    /**
+     * @return the direction of this endpoint relative to the edge (e.g., IN, OUT, UNDIR).
+     */
     CjDirection direction();
 
+    /**
+     * @return true if this endpoint has a specific direction (IN or OUT), false if undirected or null.
+     */
     default boolean isDirected() {
         CjDirection direction = direction();
         return direction != null && direction != CjDirection.UNDIR;
     }
 
+    /**
+     * @return true if this endpoint acts as a source (IN direction).
+     */
     default boolean isSource() {
         return direction() == CjDirection.IN;
     }
 
+    /**
+     * @return true if this endpoint acts as a target (OUT direction).
+     */
     default boolean isTarget() {
         return direction() == CjDirection.OUT;
     }
 
+    /**
+     * @return true if this endpoint is undirected or has no explicit direction.
+     */
     default boolean isUndirected() {
         CjDirection direction = direction();
         return direction == null || direction == CjDirection.UNDIR;
     }
 
+    /**
+     * @return the ID of the node this endpoint connects to.
+     */
     String node();
 
+    /**
+     * @return the optional port ID on the node this endpoint connects to, or null if none.
+     */
     @Nullable String port();
 
+    /**
+     * Converts this endpoint into a JaJson map.
+     *
+     * @return a Map representing the JSON structure of this endpoint.
+     */
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap().putMaybe(CjConstants.ENDPOINT__NODE, node()).putMaybe(CjConstants.ENDPOINT__PORT, port()).build();
     }
 
+    /**
+     * @return the optional type or role of this endpoint, or null if none.
+     */
     @Nullable String type();
 
     /**

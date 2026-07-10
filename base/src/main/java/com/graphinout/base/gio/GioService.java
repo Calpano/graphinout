@@ -28,6 +28,9 @@ public interface GioService {
      */
     List<GioReader> readers();
 
+    /**
+     * @return all {@link GioWriter} instances which this service provides.
+     */
     List<GioWriter> writers();
 
     /**

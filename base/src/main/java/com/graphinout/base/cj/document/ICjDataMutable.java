@@ -21,34 +21,84 @@ public interface ICjDataMutable extends ICjData {
      */
     void add(List<IJsonContainerNavigationStep> path, @NonNull IJsonValue jsonValue);
 
+    /**
+     * Adds a string value at the specified navigation path.
+     *
+     * @param path       the path where the value should be added.
+     * @param javaString the string to add.
+     */
     default void add(List<IJsonContainerNavigationStep> path, String javaString) {
         add(path, factory().createString(javaString));
     }
 
+    /**
+     * Adds an XML fragment string value at the specified navigation path.
+     *
+     * @param path              the path where the value should be added.
+     * @param xmlFragmentString the XML fragment to add.
+     */
     default void add(List<IJsonContainerNavigationStep> path, XmlFragmentString xmlFragmentString) {
         add(path, factory().createXmlString(xmlFragmentString.rawXml(), xmlFragmentString.xmlSpace()));
     }
 
+    /**
+     * Adds a string property to the root of this data element.
+     *
+     * @param propertyKey the key of the property to add.
+     * @param javaString  the string value to add.
+     */
     default void add(String propertyKey, String javaString) {
         add(IJsonContainerNavigationStep.pathOf(propertyKey), javaString);
     }
 
+    /**
+     * Adds a boolean property to the root of this data element.
+     *
+     * @param propertyKey the key of the property to add.
+     * @param b           the boolean value to add.
+     */
     default void add(String propertyKey, boolean b) {
         add(IJsonContainerNavigationStep.pathOf(propertyKey), IJsonFactory.INSTANCE.createBoolean(b));
     }
 
+    /**
+     * Adds a numeric property to the root of this data element.
+     *
+     * @param propertyKey the key of the property to add.
+     * @param number      the numeric value to add.
+     */
     default void add(String propertyKey, Number number) {
         add(IJsonContainerNavigationStep.pathOf(propertyKey), IJsonFactory.INSTANCE.createNumber(number));
     }
 
+    /**
+     * Adds a JSON value property to the root of this data element.
+     *
+     * @param propertyKey the key of the property to add.
+     * @param jsonValue   the JSON value to add.
+     */
     default void add(String propertyKey, IJsonValue jsonValue) {
         add(IJsonContainerNavigationStep.pathOf(propertyKey), jsonValue);
     }
 
+    /**
+     * Removes a property from the root of this data element by its key.
+     *
+     * @param propertyKey the key of the property to remove.
+     */
     void remove(String propertyKey);
 
+    /**
+     * Clears or removes the entire JSON value associated with this data element.
+     */
     void removeJsonValue();
 
+    /**
+     * Sets (replacing if exists) a JSON value property at the root of this data element.
+     *
+     * @param propertyKey the key of the property to set.
+     * @param jsonValue   the JSON value to set.
+     */
     default void set(String propertyKey, IJsonValue jsonValue) {
         remove(propertyKey);
         add(propertyKey, jsonValue);
@@ -64,6 +114,12 @@ public interface ICjDataMutable extends ICjData {
         add(List.of(), jsonValue);
     }
 
+    /**
+     * Sets (replacing if exists) a string property at the root of this data element.
+     *
+     * @param key   the key of the property to set.
+     * @param value the string value to set.
+     */
     default void setString(String key, String value) {
         set(key, factory().createString(value));
     }

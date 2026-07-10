@@ -25,6 +25,12 @@ public interface ICjEdge extends ICjEdgeChunk, ICjHasGraphs, ICjCoreElement, Com
                 .compare(this, other);
     }
 
+    /**
+     * Checks if this edge is connected to the specified node.
+     *
+     * @param node the node to check for connection.
+     * @return true if one of the endpoints connects to the given node, false otherwise.
+     */
     default boolean containsNode(ICjNode node) {
         return endpoints().map(ICjElement::asEndpoint).anyMatch(ep -> {
             return ep.node().equals(node.id());
@@ -52,9 +58,19 @@ public interface ICjEdge extends ICjEdgeChunk, ICjHasGraphs, ICjCoreElement, Com
         return endpoints().map(ep -> resolveNodeById(ep.node()));
     }
 
+    /**
+     * @return the parent graph containing this edge.
+     */
     @Override
     @NonNull ICjGraph parent();
 
+    /**
+     * Resolves a node by its ID within the context of this edge's document.
+     * If the node is not found, an implied node is returned.
+     *
+     * @param nodeId the ID of the node to resolve.
+     * @return the resolved node or a newly implied node.
+     */
     default @NonNull ICjNode resolveNodeById(String nodeId) {
         ICjNode node = document().findNodeById(nodeId);
         if (node == null) {

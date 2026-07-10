@@ -32,6 +32,12 @@ public interface ICjLabel extends ICjElement, ICjHasData, Comparable<ICjLabel> {
 
     Logger _log = getLogger(ICjLabel.class);
 
+    /**
+     * Creates a CJ label from a JSON value.
+     *
+     * @param jsonValue the JSON value representing the label.
+     * @return the created CJ label.
+     */
     static ICjLabel fromJsonValue(IJsonValue jsonValue) {
         CjLabelElement cjLabelElement = new CjLabelElement();
         jsonValue.asArray().forEach(jsonEntry -> cjLabelElement.addEntry(cjEntry -> {
@@ -78,6 +84,11 @@ public interface ICjLabel extends ICjElement, ICjHasData, Comparable<ICjLabel> {
         return Comparables.<ICjLabel>comparing().byStream(ICjLabel::entries, ICjLabelEntry::compareTo).compare(this, other);
     }
 
+    /**
+     * Creates a mutable copy of this label.
+     *
+     * @return a new mutable label containing the same entries.
+     */
     default ICjLabelMutable copyMutable() {
         CjLabelElement copy = new CjLabelElement();
         copyTo(copy);
@@ -117,6 +128,11 @@ public interface ICjLabel extends ICjElement, ICjHasData, Comparable<ICjLabel> {
         return entries().map(ICjLabelEntry::toJaJsonMap).collect(Collectors.toList());
     }
 
+    /**
+     * Converts this label's entries into a JSON array.
+     *
+     * @return a JSON array containing all entries of this label.
+     */
     default IJsonArray toJsonArrayOfEntries() {
         IJsonArrayMutable a = IJsonFactory.INSTANCE.createArrayMutable();
         entries().forEach(x -> a.add(x.toJsonValue()));

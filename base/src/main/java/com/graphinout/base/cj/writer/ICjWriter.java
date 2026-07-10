@@ -72,14 +72,35 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
         return this;
     }
 
+    /**
+     * Signals the end of the root connected JSON declaration.
+     */
     void connectedJsonEnd();
 
+    /**
+     * Signals the start of the root connected JSON declaration.
+     */
     void connectedJsonStart();
 
+    /**
+     * Sets the canonical flag for the connected JSON context.
+     *
+     * @param b true if canonical, false otherwise.
+     */
     void connectedJson__canonical(boolean b);
 
+    /**
+     * Sets the version date for the connected JSON context.
+     *
+     * @param s the version date string.
+     */
     void connectedJson__versionDate(String s);
 
+    /**
+     * Sets the version number for the connected JSON context.
+     *
+     * @param s the version number string.
+     */
     void connectedJson__versionNumber(String s);
 
     /** endpoint.direction */
@@ -132,6 +153,11 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
      */
     void graphStart() throws CjException;
 
+    /**
+     * Sets the ID of the current CJ element (e.g., node, edge, graph).
+     *
+     * @param id the element ID.
+     */
     void id(String id);
 
     /** Marker for extension data end. */
@@ -145,8 +171,14 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
      */
     void labelEnd();
 
+    /**
+     * Signals the end of a label entry within a label object.
+     */
     void labelEntryEnd();
 
+    /**
+     * Signals the start of a new label entry within a label object.
+     */
     void labelEntryStart();
 
     /**
@@ -154,6 +186,11 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
      */
     void labelStart();
 
+    /**
+     * Sets the language of the current label entry.
+     *
+     * @param language the language code.
+     */
     void language(String language);
 
     default <T> void list(List<T> list, CjType cjArrayType, boolean sort, BiConsumer<T, ICjWriter> element_writer) {
@@ -168,10 +205,18 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
         }
     }
 
-    /** TODO doc */
+    /**
+     * Signals the end of a CJ list of the specified type.
+     *
+     * @param cjType the type of elements in the list.
+     */
     void listEnd(CjType cjType);
 
-    /** TODO doc */
+    /**
+     * Signals the start of a CJ list of the specified type.
+     *
+     * @param cjType the type of elements in the list.
+     */
     void listStart(CjType cjType);
 
     default <T> void maybe(@Nullable T object, Consumer<@NonNull T> consumer) {
@@ -220,6 +265,11 @@ public interface ICjWriter extends JsonWriter, IHasCjWriter, IJsonXmlStringWrite
      */
     void portStart();
 
+    /**
+     * Sets the value for the current element, typically a label entry.
+     *
+     * @param value the string value.
+     */
     void value(String value);
 
 }

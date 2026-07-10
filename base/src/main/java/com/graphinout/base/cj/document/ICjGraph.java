@@ -23,6 +23,11 @@ public interface ICjGraph extends ICjGraphChunk, ICjHasGraphs, ICjCoreElement, C
                 .compare(this, other);
     }
 
+    /**
+     * Copies the content of this graph into a target mutable graph.
+     *
+     * @param targetGraph the mutable graph to copy data into.
+     */
     default void copyTo(ICjGraphMutable targetGraph) {
         ICjGraphChunk.super.copyTo(targetGraph);
         nodes().forEach(sourceNode -> targetGraph.addNode(sourceNode::copyTo));
@@ -46,6 +51,9 @@ public interface ICjGraph extends ICjGraphChunk, ICjHasGraphs, ICjCoreElement, C
         return nodes().count();
     }
 
+    /**
+     * @return all direct children of this graph, including data, nodes, edges, and subgraphs.
+     */
     @Override
     default Stream<ICjElement> directChildren() {
         return Stream.concat( //
@@ -56,6 +64,9 @@ public interface ICjGraph extends ICjGraphChunk, ICjHasGraphs, ICjCoreElement, C
                 graphs());
     }
 
+    /**
+     * @return a stream of all edges contained directly in this graph.
+     */
     Stream<ICjEdge> edges();
 
     /**
@@ -79,8 +90,16 @@ public interface ICjGraph extends ICjGraphChunk, ICjHasGraphs, ICjCoreElement, C
     /** @return -1 if not found */
     int indexOf(ICjEdge edge);
 
+    /**
+     * @return a stream of all nodes contained directly in this graph.
+     */
     Stream<ICjNode> nodes();
 
+    /**
+     * Converts this graph and its hierarchy into a JaJson map.
+     *
+     * @return a Map representing the JSON structure of this graph.
+     */
     default Map<String, Object> toJaJsonMap() {
         return JaJson.createMap() //
                 .putMaybe(CjConstants.ID, id()) //
