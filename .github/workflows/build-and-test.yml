@@ -37,7 +37,24 @@ jobs:
           cache: 'maven'
           server-id: github-graphinout # This ID must match the <id> in your pom.xml's <distributionManagement>
 
-      - name: "⚙️ Configure settings.xml for Maven"
+      - name: "⚙️ Configure settings.xml for Maven (without Central)"
+        if: ${{ secrets.MAVEN_CENTRAL_USER == '' }}
+        uses: s4u/maven-settings-action@894661b3ddae382f1ae8edbeab60987e08cf0788 # v4.0.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        with:
+          override: true
+          githubServer: false
+          servers: |
+            [{
+                "id": "github-graphinout",
+                "username": "${{ env.GITHUB_ACTOR }}",
+                "password": "${{ env.GITHUB_TOKEN }}"
+            }]
+
+      - name: "⚙️ Configure settings.xml for Maven (with Central)"
+        if: ${{ secrets.MAVEN_CENTRAL_USER != '' }}
         uses: s4u/maven-settings-action@894661b3ddae382f1ae8edbeab60987e08cf0788 # v4.0.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
