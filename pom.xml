@@ -194,6 +194,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
+                    <argLine>-XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
                     <!-- One shared test-logging config for every module, loaded by file path (not the classpath) so
                          there is never a duplicate logback-test.xml on any classpath and nothing leaks through
                          test-jars. maven.multiModuleProjectDirectory is the reactor root (anchored by the .mvn/ dir). -->

@@ -42,6 +42,10 @@ public class XmlTool {
         // set namespace-aware
         reader.setFeature("http://xml.org/sax/features/namespaces", true);
 
+        // Suppress default System.err printing of fatal errors.
+        // Callers can replace this with their own ErrorHandler if needed.
+        reader.setErrorHandler(new com.graphinout.base.xml.sax.SimpleSaxErrorHandler(null));
+
         return reader;
     }
 
