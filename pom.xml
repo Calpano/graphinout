@@ -80,7 +80,7 @@
         <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
         <!-- Aligned with Spring Boot 4.0.6 (jackson 2 BOM 2.21.2). jackson-annotations dropped patch versions from 2.20 onwards. -->
-        <jackson-core-version>2.21.2</jackson-core-version>
+        <jackson-core-version>2.21.5</jackson-core-version>
         <jackson-databind-version>2.21.2</jackson-databind-version>
         <jackson-annotations-version>2.21</jackson-annotations-version>
 
