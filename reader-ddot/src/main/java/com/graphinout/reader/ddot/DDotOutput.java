@@ -159,7 +159,7 @@ public class DDotOutput {
             if (predicate == null) predicate = "";
             // Per-link metadata round-trips from the edge's namespaced CJ data (see LINK_PROPS_KEY/LINK_TEXT_KEY):
             // structured props as ",, ..key.. value", free text as ",, note".
-            List<String> meta = new ArrayList<>();
+            List<DDotDoc.Meta> meta = new ArrayList<>();
             IJsonValue edgeJson = e.data().jsonValue();
             if (edgeJson != null && edgeJson.isObject()) {
                 IJsonValue props = edgeJson.asObject().get(LINK_PROPS_KEY);
@@ -167,13 +167,13 @@ public class DDotOutput {
                     List<String> keys = new ArrayList<>(props.asObject().keys());
                     Collections.sort(keys); // deterministic order
                     for (String key : keys) {
-                        meta.add(".." + key + ".. " + jsonAsScalar(props.asObject().get(key)));
+                        meta.add(DDotDoc.Meta.pair(key, jsonAsScalar(props.asObject().get(key))));
                     }
                 }
                 IJsonValue text = edgeJson.asObject().get(LINK_TEXT_KEY);
                 if (text != null) {
-                    if (text.isArray()) text.asArray().forEach(v -> meta.add(jsonAsScalar(v)));
-                    else if (!text.isNull()) meta.add(jsonAsScalar(text));
+                    if (text.isArray()) text.asArray().forEach(v -> meta.add(DDotDoc.Meta.text(jsonAsScalar(v))));
+                    else if (!text.isNull()) meta.add(DDotDoc.Meta.text(jsonAsScalar(text)));
                 }
                 // Generic scalar edge properties (e.g. `uml:rel` carrying the source format's arrow/relation kind)
                 // round-trip as `,, ..key.. value` metadata. The reserved keys above are already handled.
@@ -183,7 +183,7 @@ public class DDotOutput {
                     if (LINK_PROPS_KEY.equals(key) || LINK_TEXT_KEY.equals(key)) continue;
                     IJsonValue v = edgeJson.asObject().get(key);
                     if (v != null && !v.isObject() && !v.isArray() && !v.isNull()) {
-                        meta.add(".." + key + ".. " + jsonAsScalar(v));
+                        meta.add(DDotDoc.Meta.pair(key, jsonAsScalar(v)));
                     }
                 }
             }
@@ -201,7 +201,8 @@ public class DDotOutput {
             String label = firstLabelOrDesc(n, labelEntries);
             if (label != null && !label.isEmpty()) {
                 String lang = labelEntries.isEmpty() ? null : labelEntries.getFirst().language();
-                List<String> labelMeta = (lang != null && !lang.isEmpty()) ? List.of("..lang.. " + lang) : List.of();
+                List<DDotDoc.Meta> labelMeta = (lang != null && !lang.isEmpty())
+                        ? List.of(DDotDoc.Meta.pair("lang", lang)) : List.<DDotDoc.Meta>of();
                 out.triples.add(new DDotDoc.DDotTriple(subject, PRED_LABEL, label, labelMeta));
             }
 
@@ -237,18 +238,18 @@ public class DDotOutput {
             return;
         }
         String value;
-        String marker;
+        DDotDoc.Meta marker;
         if (litVal.isObject()) {
             IJsonValue dt = litVal.asObject().get(LIT_DATATYPE);
             IJsonValue lang = litVal.asObject().get(LIT_LANGUAGE);
             IJsonValue v = litVal.asObject().get(LIT_VALUE);
             value = v != null ? jsonAsScalar(v) : "";
-            if (dt != null) marker = ".." + MARK_DATATYPE + ".. " + jsonAsScalar(dt);
-            else if (lang != null) marker = ".." + MARK_LANGUAGE + ".. " + jsonAsScalar(lang);
-            else marker = ".." + MARK_PLAIN + ".. true";
+            if (dt != null) marker = DDotDoc.Meta.pair(MARK_DATATYPE, jsonAsScalar(dt));
+            else if (lang != null) marker = DDotDoc.Meta.pair(MARK_LANGUAGE, jsonAsScalar(lang));
+            else marker = DDotDoc.Meta.pair(MARK_PLAIN, "true");
         } else {
             value = jsonAsScalar(litVal); // bare scalar = plain literal
-            marker = ".." + MARK_PLAIN + ".. true";
+            marker = DDotDoc.Meta.pair(MARK_PLAIN, "true");
         }
         out.triples.add(new DDotDoc.DDotTriple(subject, pred, value, List.of(marker)));
     }

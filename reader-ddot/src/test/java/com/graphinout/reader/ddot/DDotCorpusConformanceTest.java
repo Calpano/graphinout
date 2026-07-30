@@ -1,6 +1,7 @@
 package com.graphinout.reader.ddot;
 
 import com.calpano.ddot.it.event.DdotEventExporter;
+import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.cj.document.ICjNode;
@@ -118,6 +119,47 @@ class DDotCorpusConformanceTest {
             fail("The vocabulary fold in DDotReader lost or invented facts: " + String.join("; ", failures)
                     + ". Every ddot.it event must land in the CJ document as exactly one of: edge, node type,"
                     + " node label, node data property, document property, @context entry.");
+        }
+    }
+
+    /**
+     * Every case must survive {@code ddot -> CJ -> ddot -> CJ} unchanged. This is the WRITER's half of the
+     * contract, and it is the half that rotted: the reader became spec-conformant first, so it started
+     * accepting constructs {@link DDotOutput} could not spell — a multi-line subject, a multi-line metadata
+     * value, a value containing {@code ;;} — and each of those was written back in a form that read as
+     * something else (or, for {@code ;;}, as nothing at all: the line failed to derive and the triple was
+     * silently lost). Asserting only the read direction, as the tests above do, cannot see any of that.
+     *
+     * <p>A case that yields no facts at all ({@code 23-not-a-triple} is pure prose) writes back as the
+     * empty string, which the reader answers with a bare document and no graph rather than an empty one.
+     * That asymmetry loses nothing, so it is asserted as "still no facts" instead of by document equality.
+     */
+    @Test
+    void everyCaseRoundTripsThroughTheWriter() throws IOException {
+        List<String> failures = new ArrayList<>();
+        for (Path caseDir : cases()) {
+            String name = caseDir.getFileName().toString();
+            ICjDocument cj1 = read(Files.readString(requireFile(caseDir, "input.ddot")), name, new ArrayList<>());
+            String ddot2 = new DDotOutput(cj1).toDDot();
+            ICjDocument cj2 = read(ddot2, name + ".roundtrip", new ArrayList<>());
+            if (cjFacts(cj1) == 0) {
+                if (cjFacts(cj2) != 0) failures.add(name + ": no facts became " + cjFacts(cj2));
+                continue;
+            }
+            String json1 = CjDocuments.toJsonString(cj1);
+            String json2 = CjDocuments.toJsonString(cj2);
+            if (!json1.equals(json2)) {
+                failures.add(name);
+                System.err.println("[corpus] ROUND-TRIP MISMATCH " + name);
+                System.err.println("---- ddot written from CJ ----\n" + ddot2);
+                System.err.println("---- CJ 1 ----\n" + json1);
+                System.err.println("---- CJ 2 ----\n" + json2);
+            }
+        }
+        if (!failures.isEmpty()) {
+            fail(failures.size() + " case(s) did not survive ddot -> CJ -> ddot: " + String.join(", ", failures)
+                    + ". DDotOutput/DDotDoc must spell every construct the reader accepts; see the"
+                    + " block/`;;` rules in DDotDoc.appendMeta.");
         }
     }
 

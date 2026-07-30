@@ -139,11 +139,13 @@ class DDotSpecBehaviourTest {
     }
 
     /**
-     * A link with more than one metadata payload is written as a multi-line {@code ,,} block, because only
-     * ONE {@code ,,} per line is a metadata delimiter. Round-tripping it must be lossless.
+     * Several typed pairs ride on one line separated by {@code ;;} (only the first {@code ,,} is a
+     * delimiter); but as soon as free text shares the link with another payload, the {@code ,,} block is
+     * the only readable form — free text runs to end of line and would swallow a following {@code ;;}.
+     * Both spellings must round-trip losslessly.
      */
     @Test
-    void multiplePayloadsRoundTripThroughAMetaBlock() throws IOException {
+    void severalPayloadsPickTheReadableSpelling() throws IOException {
         ICjDocument cj1 = parse("""
                 A ..works at.. B ,, ..since.. 2010 ;; ..until.. 2020
                 C ..leads.. D ,,
@@ -152,9 +154,67 @@ class DDotSpecBehaviourTest {
                 ,,
                 """);
         String ddot2 = new DDotOutput(cj1).toDDot();
-        assertTrue(ddot2.contains("\n,,\n..since.. 2010\n..until.. 2020\n,,\n"),
-                () -> "multiple payloads must be written as a `,,` block:\n" + ddot2);
+        assertTrue(ddot2.contains(",, ..since.. 2010 ;; ..until.. 2020"),
+                () -> "two typed pairs belong inline, separated by `;;`:\n" + ddot2);
+        assertTrue(ddot2.contains("\n,,\n..k.. v\na free note\n,,\n"),
+                () -> "a pair mixed with free text needs the `,,` block:\n" + ddot2);
         ICjDocument cj2 = parse(ddot2);
         assertEquals(CjDocuments.toJsonString(cj1), CjDocuments.toJsonString(cj2), () -> ddot2);
+    }
+
+    /**
+     * A typed value containing {@code ;;} must NOT go inline — the separator that joins pairs would cut it
+     * in two and the reader would drop the line entirely. Inside a {@code ,,} block it is ordinary content
+     * (corpus 28-semicolon-in-meta-block).
+     */
+    @Test
+    void aValueContainingSemicolonsUsesTheBlockForm() throws IOException {
+        ICjDocument cj1 = parse("""
+                Dirk Hagemann ..works at.. SAP ,,
+                ..note.. first ;; second
+                ,,
+                """);
+        String ddot2 = new DDotOutput(cj1).toDDot();
+        assertTrue(ddot2.contains("\n,,\n..note.. first ;; second\n,,\n"),
+                () -> "a `;;`-bearing value must be written in a `,,` block:\n" + ddot2);
+        assertEquals(CjDocuments.toJsonString(cj1), CjDocuments.toJsonString(parse(ddot2)), () -> ddot2);
+    }
+
+    /**
+     * A multi-line SUBJECT is only expressible as a {@code !!block} filling the subject slot, with the
+     * triple following as a continuation line (corpus 29-block-subject). Written raw it would decay into
+     * stray prose plus a triple with the wrong subject.
+     */
+    @Test
+    void aMultiLineSubjectRoundTripsThroughASubjectBlock() throws IOException {
+        ICjDocument cj1 = parse("""
+                !!block
+                Alice
+                Anderson
+
+                ..knows.. Bob
+                """);
+        String ddot2 = new DDotOutput(cj1).toDDot();
+        assertTrue(ddot2.startsWith("!!block\nAlice\nAnderson\n"),
+                () -> "the subject must be re-emitted as a subject block:\n" + ddot2);
+        assertEquals(CjDocuments.toJsonString(cj1), CjDocuments.toJsonString(parse(ddot2)), () -> ddot2);
+    }
+
+    /**
+     * A metadata value spanning lines is only expressible as a {@code !!block} meta object
+     * (corpus 30-block-meta-object); as plain block lines every line but the first would decay to meta text.
+     */
+    @Test
+    void aMultiLineMetaValueRoundTripsThroughABlock() throws IOException {
+        ICjDocument cj1 = parse("""
+                Dirk ..works at.. SAP ,, ..note.. !!block
+                line one
+                line two
+
+                """);
+        String ddot2 = new DDotOutput(cj1).toDDot();
+        assertTrue(ddot2.contains(",, ..note.. " + DDotOutput.OBJECT_BLOCK + "\nline one\nline two\n"),
+                () -> "a multi-line meta value must open a block:\n" + ddot2);
+        assertEquals(CjDocuments.toJsonString(cj1), CjDocuments.toJsonString(parse(ddot2)), () -> ddot2);
     }
 }
