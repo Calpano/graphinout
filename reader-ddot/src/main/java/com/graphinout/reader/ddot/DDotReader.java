@@ -1,5 +1,9 @@
 package com.graphinout.reader.ddot;
 
+import com.calpano.ddot.it.event.DdotEvent;
+import com.calpano.ddot.it.event.DdotEventExporter;
+import com.calpano.ddot.it.refactor.DdotLineSerializer;
+import com.calpano.ddot.it.source.DdotCommands;
 import com.graphinout.base.cj.document.CjDirection;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
@@ -18,12 +22,10 @@ import com.graphinout.foundation.pure.functional.Nullables;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.input.Location;
 import com.graphinout.foundation.pure.input.Locator;
-import com.graphinout.foundation.pure.json.document.IJsonArrayMutable;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
-import com.graphinout.foundation.pure.value.IntRef;
 import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.Nullable;
 
@@ -34,40 +36,65 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.function.Consumer;
 
-import static com.graphinout.foundation.pure.value.IntRef.intRef;
-
 /**
- * Reads the DDot.it simple triple text format.
+ * Reads the ddot.it triple text format into Connected JSON.
  * <p>
- * Each non-blank, non-comment line is either a full triple
- * <pre>subject .. predicate .. object</pre>
- * or a continuation line that inherits the subject from the preceding triple
- * <pre>.. predicate .. object</pre>
- * Lines starting with {@code #} are comments. Commands may be written in any of three interchangeable
- * spellings — the full URL {@code https://ddot.it/<word>}, the host-relative {@code ddot.it/<word>}, or the
- * {@code !!<word>} shorthand (see {@link #commandWord}). The {@code off} / {@code on} switches disable /
- * re-enable emission of subsequent triples (useful inside templates and code samples). The {@code label}
- * command — {@code subject ..!!label.. text} — sets the subject node's display label instead of creating an
- * edge (see https://ddot.it/label).
+ * <strong>This class does not implement the ddot.it grammar.</strong> The grammar lives in
+ * {@code com.calpano.ddot.it:ddot-core}, whose {@link DdotEventExporter} is a fold over the canonical
+ * {@code DdotTokenizer} and is pinned to the cross-implementation golden corpus (35 cases, see
+ * {@link DDotCorpusConformanceTest}). This reader consumes the resulting
+ * {@link DdotEvent} stream — {@code from} / {@code type} / {@code to} / {@code meta} / {@code location} —
+ * and folds it into the CJ node/edge/document stream. Everything the format itself defines (the exact
+ * two-dot runs, the {@code .... } untyped form, the line gate that keeps prose out, {@code !!off}/{@code !!on}
+ * regions incl. the host-comment spelling, subject inheritance on continuation lines, {@code !!block}
+ * bodies, inline and multi-line {@code ,,} metadata and its {@code ;;} separator) is handled there, once,
+ * for every ddot.it implementation.
+ * <p>
+ * What remains here is graphinout's <em>vocabulary</em> layer, which is not part of the ddot.it grammar:
+ * <ul>
+ *   <li>{@code ddot.it/this} (any spelling) as the subject ⇒ document-level metadata (https://ddot.it/this)</li>
+ *   <li>{@code label} ⇒ node display label; {@code prefix} ⇒ document {@code @context} (https://ddot.it/rdf)</li>
+ *   <li>{@code has type} and its aliases ⇒ a node type; the other {@link #RELATION_ALIASES} ⇒ canonical names
+ *       (https://ddot.it/relations)</li>
+ *   <li>RDF literal markers in the {@code ,,} metadata ⇒ a node {@code rdf:data} literal (doc/spec-ddot-rdf.adoc E1)</li>
+ *   <li>graphinout's own round-trip predicates {@code ddot:node} / {@code ddot:label} / {@code ddot:data:*}</li>
+ * </ul>
  */
 public class DDotReader implements GioReader {
 
     public static final String FORMAT_ID = "ddot";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "DDot.it Triple Text Format", ".ddot", ".ddot.txt");
 
-    private static final String SEPARATOR_REGEX = "\\s*\\.\\.\\s*";
-    private static final String COMMENT_MARKER = "#";
+    /** The {@code kind} context field of the emitted ddot.it events (see https://ddot.it/developer-guide.html#events). */
+    private static final String EVENT_KIND = "ddot";
+
     /**
-     * The interchangeable spellings of a ddot.it command prefix. A command {@code <word>} may be written as the
-     * full URL {@code https://ddot.it/<word>}, the host-relative {@code ddot.it/<word>}, or the {@code !!<word>}
-     * shorthand — all three denote the same command (see https://ddot.it grammar: command = "!!", word).
+     * The built-in relation ddot.it gives to free metadata text ({@code ,, a note}), as opposed to a
+     * structured pair ({@code ,, ..key.. value}). See the Parse Spec, Information Model.
      */
-    private static final String[] COMMAND_PREFIXES = {"https://ddot.it/", "http://ddot.it/", "ddot.it/", "!!"};
-    /** Per-link metadata separator (see https://ddot.it): "Meta-data can be appended behind ,,". */
-    private static final String META_SEPARATOR = ",,";
+    private static final String META_TEXT_RELATION = "text";
+
+    /** ddot.it's suggested standard relation aliases → canonical names (see https://ddot.it/relations). */
+    private static final Map<String, String> RELATION_ALIASES = Map.ofEntries(
+            Map.entry("rel", "related"), Map.entry("is related", "related"),
+            Map.entry("is same as", "same as"),
+            Map.entry("link", "links to"), Map.entry("see also", "links to"),
+            Map.entry("tag", "has tag"),
+            Map.entry("type", "has type"), Map.entry("is a", "has type"),
+            Map.entry("subtype", "has subtype"),
+            Map.entry("content", "has content"),
+            // UML relationship aliases: the simple visual tokens map to the standard UML name (see PlantUmlReader).
+            Map.entry("solid-to", "association"), Map.entry("solid", "association"),
+            Map.entry("solid-both", "association"), Map.entry("directed", "association"),
+            Map.entry("dashed-to", "dependency"), Map.entry("dashed", "dependency"),
+            Map.entry("dashed-both", "dependency"),
+            Map.entry("extends", "generalization"), Map.entry("extension", "generalization"),
+            Map.entry("inheritance", "generalization"), Map.entry("generalizes", "generalization"),
+            Map.entry("realizes", "realization"), Map.entry("implements", "realization"),
+            Map.entry("composed of", "composition"), Map.entry("composes", "composition"),
+            Map.entry("aggregates", "aggregation"), Map.entry("has a", "aggregation"));
 
     private @Nullable Consumer<ContentError> errorHandler;
 
@@ -97,9 +124,8 @@ public class DDotReader implements GioReader {
             writer.document(writer.createDocumentChunk());
             return;
         }
-        try (Scanner scanner = new Scanner(content)) {
-            processFileContent(scanner, writer);
-        }
+        // The one and only parse: ddot-core owns the grammar; this class only interprets the events.
+        collect(DdotEventExporter.parse(content, EVENT_KIND, singleInputSource.name()), writer);
     }
 
     @Override
@@ -108,144 +134,37 @@ public class DDotReader implements GioReader {
     }
 
     /**
-     * Get (creating if needed) the buffered node chunk for {@code nodeId}. Nodes are buffered rather than
-     * emitted immediately so that node-level facts (label, attributes) parsed on later lines can still be
-     * attached. All buffered nodes are emitted (in first-seen order) before the edges.
+     * Fold the ddot.it event stream into the CJ stream.
+     * <p>
+     * Document/graph starts are deferred to the end so that facts discovered in the body — {@code
+     * ddot.it/this} document metadata and {@code prefix} declarations — can still be attached to the
+     * document chunk before it is emitted. Nodes are likewise buffered so a label or attribute parsed on a
+     * later line still lands on the node it belongs to.
      */
-    private ICjNodeChunkMutable ensureNodeChunk(String nodeId, ICjStream writer,
-                                                java.util.Map<String, ICjNodeChunkMutable> nodeBuffer) {
-        return nodeBuffer.computeIfAbsent(nodeId, id -> {
-            ICjNodeChunkMutable nodeChunk = writer.createNodeChunk();
-            nodeChunk.id(id);
-            return nodeChunk;
-        });
-    }
-
-    private void processFileContent(Scanner scanner, ICjStream writer) {
-        // Document/graph starts are deferred to the end so document-level metadata discovered in the body
-        // (ddot.it/this) can be attached to the document chunk before it is emitted.
+    private void collect(List<DdotEvent> events, ICjStream writer) {
         ICjDocumentChunkMutable docChunk = writer.createDocumentChunk();
         ICjGraphChunkMutable graphChunk = writer.createGraphChunk();
 
-        java.util.Map<String, ICjNodeChunkMutable> nodeBuffer = new java.util.LinkedHashMap<>();
+        Map<String, ICjNodeChunkMutable> nodeBuffer = new LinkedHashMap<>();
         List<ICjEdgeChunkMutable> edgeBuffer = new ArrayList<>();
         // per-link metadata, accumulated by identity until all edges are emitted at the end
         Map<ICjEdgeChunkMutable, LinkMeta> edgeMeta = new IdentityHashMap<>();
-        boolean enabled = true;
-        @Nullable String currentSubject = null;
-        // the most recently created link; per-link `,,` metadata (inline or in a following block) attaches here
-        @Nullable ICjEdgeChunkMutable currentEdge = null;
-        boolean inLinkMeta = false; // inside a multi-line `,,` metadata block bound to currentEdge
-        boolean inFreeForm = false; // inside a standalone `,,` block (free-form note; ignored)
-        boolean foundAny = false;
-        // ddot.it/block: the object value spans the following lines until the end marker
-        @Nullable String blockSubject = null;
-        @Nullable String blockPredicate = null;
-        @Nullable String blockEnd = null;   // custom end marker, or null = default (a blank line)
-        @Nullable String blockMeta = null;  // the `,,` payload on the block-opening line, if any
-        List<String> blockLines = new ArrayList<>();
         // RDF `prefix` declarations (A ..prefix.. B) collected into the document @context
         LinkedHashMap<String, String> contextMap = new LinkedHashMap<>();
 
-        IntRef lineNumber = intRef(0);
-        Locator locator = () -> Location.of(lineNumber.value, 1);
+        for (DdotEvent event : events) {
+            Locator locator = () -> Location.of(event.location, 1);
+            String subject = event.from;
+            String object = event.to;
+            // An event with no `type` is ddot.it's untyped link (`a .... b`); CJ models it as an edge
+            // without a type, so the empty string is the natural in-reader spelling.
+            String predicate = event.type == null ? "" : event.type;
 
-        while (scanner.hasNextLine()) {
-            String rawLine = scanner.nextLine();
-            lineNumber.value++;
-
-            // Inside a ddot.it/block, content is captured verbatim until the end marker — a blank line by
-            // default, or a custom `?end=` marker line. Triples/commands are NOT recognised here (the lines
-            // may contain `..`). See https://ddot.it/block.
-            if (blockSubject != null) {
-                boolean atEnd = blockEnd == null ? rawLine.trim().isEmpty() : rawLine.trim().equals(blockEnd);
-                if (atEnd) {
-                    finalizeBlock(writer, nodeBuffer, edgeBuffer, edgeMeta,
-                            blockSubject, blockPredicate, String.join("\n", blockLines), blockMeta, locator);
-                    foundAny = true;
-                    blockSubject = null;
-                    blockPredicate = null;
-                    blockEnd = null;
-                    blockMeta = null;
-                    blockLines = new ArrayList<>();
-                    continue; // the end-marker / blank line is consumed, not content
-                }
-                blockLines.add(rawLine);
-                continue;
-            }
-
-            String line = rawLine.trim();
-            if (line.isEmpty()) continue;
-            if (line.startsWith(COMMENT_MARKER)) continue;
-
-            String command = commandWord(line);
-            if ("off".equals(command)) {
-                enabled = false;
-                continue;
-            }
-            if ("on".equals(command)) {
-                enabled = true;
-                continue;
-            }
-            if (!enabled) continue;
-
-            // A lone ",," delimits metadata / free-form blocks (see https://ddot.it).
-            if (line.equals(META_SEPARATOR)) {
-                if (inLinkMeta) inLinkMeta = false;        // close the link-metadata block
-                else if (inFreeForm) inFreeForm = false;   // close the standalone block
-                else inFreeForm = true;                    // open a standalone (free-form) block
-                continue;
-            }
-            if (inFreeForm) continue;                      // free-form note content is ignored
-            if (inLinkMeta) {                              // a metadata entry for currentEdge
-                attachMeta(currentEdge, edgeMeta, line, locator);
-                continue;
-            }
-
-            // Split off any inline ",," metadata; the part before it is the link itself.
-            int comma = line.indexOf(META_SEPARATOR);
-            String mainLine = comma >= 0 ? line.substring(0, comma).trim() : line;
-            @Nullable String metaPart = comma >= 0 ? line.substring(comma + META_SEPARATOR.length()).trim() : null;
-
-            currentEdge = null; // reset; set again below if this line creates a link
-
-            boolean isContinuation = mainLine.startsWith("..");
-            String body = isContinuation ? mainLine.substring(2).trim() : mainLine;
-
-            String[] parts = body.split(SEPARATOR_REGEX, -1);
-
-            String subject;
-            String predicate;
-            String object;
-            if (isContinuation) {
-                if (currentSubject == null) {
-                    sendIssue(ContentError.ErrorLevel.Warn,
-                            "Continuation line without prior subject; skipping: " + rawLine, locator);
-                    continue;
-                }
-                if (parts.length != 2) {
-                    sendIssue(ContentError.ErrorLevel.Warn,
-                            "Invalid continuation (expected 'predicate .. object'): " + rawLine, locator);
-                    continue;
-                }
-                subject = currentSubject;
-                predicate = parts[0].trim();
-                object = parts[1].trim();
-            } else {
-                if (parts.length != 3) {
-                    sendIssue(ContentError.ErrorLevel.Warn,
-                            "Invalid triple (expected 'subject .. predicate .. object'): " + rawLine, locator);
-                    continue;
-                }
-                subject = parts[0].trim();
-                predicate = parts[1].trim();
-                object = parts[2].trim();
-                currentSubject = subject;
-            }
-            // subject and object are mandatory; an empty predicate is a valid "untyped link" (e.g. "a .. .. b")
-            if (subject.isEmpty() || object.isEmpty()) {
+            // A `!!block` that never received a body yields an empty value; it cannot name a node.
+            if (subject.isBlank() || object.isBlank()) {
                 sendIssue(ContentError.ErrorLevel.Warn,
-                        "Triple has empty subject/object; skipping: " + rawLine, locator);
+                        "Triple has empty subject/object; skipping: " + subject + " .." + predicate + ".. " + object,
+                        locator);
                 continue;
             }
 
@@ -253,84 +172,40 @@ public class DDotReader implements GioReader {
             // document-level metadata (key -> value), not graph edges. See https://ddot.it/this.
             if (isThisCommand(subject)) {
                 docChunk.addProperty(predicate, object);
-                foundAny = true;
                 continue;
             }
 
-            // An object flagged as an RDF literal (inline `,, ..rdf:datatype/language/literal..`) is a node
-            // data property under `rdf:data`, NOT an edge to a resource. See doc/spec-ddot-rdf.adoc E1.
-            // (A block marker is handled below; its literal-ness applies to the gathered block value.)
-            if (comma >= 0 && !isBlockMarker(object)) {
-                IJsonValue literal = literalValue(object, metaPart, writer.jsonFactory());
-                if (literal != null) {
-                    final IJsonValue literalFinal = literal;
-                    final String predicateFinal = predicate;
-                    ensureNodeChunk(subject, writer, nodeBuffer).dataMutable(d ->
-                            d.add(IJsonContainerNavigationStep.pathOf(DDotOutput.RDF_DATA_KEY, predicateFinal), literalFinal));
-                    foundAny = true;
-                    continue;
-                }
+            // An object flagged as an RDF literal (`,, ..rdf:datatype/language/literal.. …`) is a node data
+            // property under `rdf:data`, NOT an edge to a resource. See doc/spec-ddot-rdf.adoc E1.
+            IJsonValue literal = literalValue(object, event.meta, writer.jsonFactory());
+            if (literal != null) {
+                ensureNodeChunk(subject, writer, nodeBuffer).dataMutable(d ->
+                        d.add(IJsonContainerNavigationStep.pathOf(DDotOutput.RDF_DATA_KEY, predicate), literal));
+                continue;
             }
 
             // Reserved predicates carry node-level facts, not edges. They reconstruct the subject node's
             // existence / display label / attributes; the object is a literal, never a node.
             if (DDotOutput.PRED_NODE.equals(predicate)) {
                 ensureNodeChunk(subject, writer, nodeBuffer);
-                foundAny = true;
             } else if (isLabelCommand(predicate)) {
-                // an inline `,, ..lang.. xx` carries the label's language tag (see https://ddot.it/label)
-                ensureNodeChunk(subject, writer, nodeBuffer).addLabel(object, labelLanguage(metaPart));
-                foundAny = true;
-                if (comma >= 0) continue; // the inline metadata belonged to the label, not an edge
+                // a `,, ..lang.. xx` entry carries the label's language tag (see https://ddot.it/label)
+                ensureNodeChunk(subject, writer, nodeBuffer).addLabel(object, labelLanguage(event.meta));
             } else if (predicate.startsWith(DDotOutput.PRED_DATA_PREFIX)) {
                 String key = predicate.substring(DDotOutput.PRED_DATA_PREFIX.length());
                 ensureNodeChunk(subject, writer, nodeBuffer).addProperty(key, object);
-                foundAny = true;
             } else if (DDotOutput.PREFIX_RELATION.equals(predicate)) {
                 // `A ..prefix.. B` declares a namespace; collect into the document @context (ids left as-is)
                 contextMap.put(subject, object);
-                foundAny = true;
             } else if (isTypeRelation(predicate)) {
                 // `subject ..has type.. T` (~ rdf:type) sets a node type, not an edge. See https://ddot.it/relations.
                 ensureNodeChunk(subject, writer, nodeBuffer).addType(ICjElementType.of(object));
-                foundAny = true;
-            } else if (isBlockMarker(object)) {
-                // ddot.it/block: defer; the object value is gathered from the following lines until the end
-                // marker. Any `,,` on this opening line is the block's metadata (see https://ddot.it/block).
-                blockSubject = subject;
-                blockPredicate = predicate;
-                blockEnd = blockEndMarker(object);
-                blockMeta = comma >= 0 ? metaPart : null;
-                blockLines = new ArrayList<>();
-                currentEdge = null;
-                foundAny = true;
-                continue; // opening-line `,,` is captured as blockMeta; skip the generic meta handler
             } else {
-                currentEdge = emitEdge(writer, nodeBuffer, edgeBuffer, subject, predicate, object);
-                foundAny = true;
-            }
-
-            // Handle the inline / block-opening ",," metadata that followed the link on this line.
-            if (comma >= 0) {
-                if (metaPart.isEmpty()) {
-                    inLinkMeta = true; // trailing ",," opens a multi-line metadata block
-                } else {
-                    // one or more inline entries separated by further ",,"
-                    for (String entry : metaPart.split(java.util.regex.Pattern.quote(META_SEPARATOR))) {
-                        if (!entry.trim().isEmpty()) attachMeta(currentEdge, edgeMeta, entry, locator);
-                    }
-                }
+                attachMeta(emitEdge(writer, nodeBuffer, edgeBuffer, subject, predicate, object), edgeMeta, event.meta);
             }
         }
 
-        // a block that runs to end-of-file (EOF ends it like a blank line)
-        if (blockSubject != null) {
-            finalizeBlock(writer, nodeBuffer, edgeBuffer, edgeMeta,
-                    blockSubject, blockPredicate, String.join("\n", blockLines), blockMeta, locator);
-            foundAny = true;
-        }
-
-        if (!foundAny) {
+        if (events.isEmpty()) {
             Nullables.ifConsumerPresentAccept(errorHandler,
                     ContentError.of(ContentError.ErrorLevel.Warn, "Content contains no triples"));
         }
@@ -347,6 +222,20 @@ public class DDotReader implements GioReader {
         writer.documentEnd();
     }
 
+    /**
+     * Get (creating if needed) the buffered node chunk for {@code nodeId}. Nodes are buffered rather than
+     * emitted immediately so that node-level facts (label, attributes) parsed on later lines can still be
+     * attached. All buffered nodes are emitted (in first-seen order) before the edges.
+     */
+    private ICjNodeChunkMutable ensureNodeChunk(String nodeId, ICjStream writer,
+                                                Map<String, ICjNodeChunkMutable> nodeBuffer) {
+        return nodeBuffer.computeIfAbsent(nodeId, id -> {
+            ICjNodeChunkMutable nodeChunk = writer.createNodeChunk();
+            nodeChunk.id(id);
+            return nodeChunk;
+        });
+    }
+
     /** Accumulator for one link's metadata: structured props (key -&gt; value) and free-text notes. */
     private static final class LinkMeta {
         final LinkedHashMap<String, String> props = new LinkedHashMap<>();
@@ -358,25 +247,21 @@ public class DDotReader implements GioReader {
     }
 
     /**
-     * Route one per-link metadata entry into {@code edge}'s accumulator. A structured entry
-     * ({@code ..key.. value}, the leading {@code ..} optional) becomes a {@code key -> value} property; an
-     * unstructured entry (free text with no {@code ..} separator, e.g. {@code ,, a random note}) becomes a note.
+     * Route one link's metadata entries into {@code edge}'s accumulator. A typed pair
+     * ({@code ,, ..key.. value}) becomes a property; the built-in {@code text} relation — which ddot.it
+     * gives to free metadata text — becomes a note; an untyped pair ({@code ,, .... value}) gets ddot.it's
+     * {@linkplain DdotLineSerializer#DEFAULT_PREDICATE default predicate}, which is also how it is written
+     * back out.
      */
-    private void attachMeta(@Nullable ICjEdgeChunkMutable edge, Map<ICjEdgeChunkMutable, LinkMeta> edgeMeta,
-                            String entry, Locator locator) {
-        String t = entry.trim();
-        if (t.isEmpty()) return;
-        if (edge == null) {
-            sendIssue(ContentError.ErrorLevel.Warn, "Link metadata without a preceding link; skipping: " + entry, locator);
-            return;
-        }
-        LinkMeta meta = edgeMeta.computeIfAbsent(edge, e -> new LinkMeta());
-        String body = t.startsWith("..") ? t.substring(2).trim() : t;
-        String[] p = body.split(SEPARATOR_REGEX, -1);
-        if (p.length == 2 && !p[0].trim().isEmpty() && !p[1].trim().isEmpty()) {
-            meta.props.put(p[0].trim(), p[1].trim());   // structured "key .. value"
-        } else {
-            meta.texts.add(t);                          // free-form note
+    private static void attachMeta(ICjEdgeChunkMutable edge, Map<ICjEdgeChunkMutable, LinkMeta> edgeMeta,
+                                   List<DdotEvent.MetaPair> meta) {
+        if (meta.isEmpty()) return;
+        LinkMeta acc = edgeMeta.computeIfAbsent(edge, e -> new LinkMeta());
+        for (DdotEvent.MetaPair pair : meta) {
+            @Nullable String type = pair.type();
+            if (type == null) acc.props.put(DdotLineSerializer.DEFAULT_PREDICATE, pair.to());
+            else if (META_TEXT_RELATION.equals(type)) acc.texts.add(pair.to());
+            else acc.props.put(type, pair.to());
         }
     }
 
@@ -389,35 +274,34 @@ public class DDotReader implements GioReader {
             meta.props.forEach(props::add);
             data.addProperty(DDotOutput.LINK_PROPS_KEY, props);
         }
+        // ddot.it models a whole meta text block as ONE `text` entry; several entries can only come from
+        // several `,,` constructs on the same link, and they are re-written as one block, so join them.
         if (!meta.texts.isEmpty()) {
-            if (meta.texts.size() == 1) {
-                data.add(DDotOutput.LINK_TEXT_KEY, meta.texts.get(0));
-            } else {
-                IJsonArrayMutable arr = jf.createArrayMutable();
-                meta.texts.forEach(arr::add);
-                data.addProperty(DDotOutput.LINK_TEXT_KEY, arr);
-            }
+            data.add(DDotOutput.LINK_TEXT_KEY, String.join("\n", meta.texts));
         }
         edge.dataMutable(d -> d.setJsonValue(data));
     }
 
     /**
-     * If {@code token} is a ddot.it command, return its bare command word; otherwise {@code null}. Accepts every
-     * spelling in {@link #COMMAND_PREFIXES} — {@code https://ddot.it/<word>}, {@code ddot.it/<word>} and the
-     * {@code !!<word>} shorthand — so all three are recognised identically. The returned word keeps any suffix
-     * (e.g. {@code block?end=X}). See https://ddot.it grammar: command = "!!", word.
+     * If {@code token} is a ddot.it command, its bare command word; otherwise {@code null}. All four
+     * spellings denote the same command — {@code https://ddot.it/<word>}, {@code http://ddot.it/<word>},
+     * {@code ddot.it/<word>} and the {@code !!<word>} shorthand — with the scheme stripped by ddot-core's
+     * {@link DdotCommands#commandToken(String)} so this reader and the ddot.it linter agree by construction.
+     * <p>
+     * This is <em>vocabulary</em> recognition on a slot value the parser already isolated ({@code from} or
+     * {@code type}), not parsing: which commands mean something is up to the consumer, and graphinout only
+     * gives meaning to {@code this} and {@code label}.
      */
     private static @Nullable String commandWord(String token) {
-        for (String prefix : COMMAND_PREFIXES) {
-            if (token.startsWith(prefix)) return token.substring(prefix.length());
-        }
+        String t = DdotCommands.commandToken(token);
+        if (t.startsWith("ddot.it/")) return t.substring("ddot.it/".length());
+        if (t.startsWith("!!")) return t.substring(2);
         return null;
     }
 
     /**
      * Is this predicate the "set node label" command? Accepts graphinout's own round-trip form
-     * ({@code ddot:label}) and the ddot.it-native {@code label} command in any spelling
-     * ({@code https://ddot.it/label} / {@code ddot.it/label} / {@code !!label}). See https://ddot.it/label.
+     * ({@code ddot:label}) and the ddot.it-native {@code label} command in any spelling. See https://ddot.it/label.
      */
     private static boolean isLabelCommand(String predicate) {
         return DDotOutput.PRED_LABEL.equals(predicate) || "label".equals(commandWord(predicate));
@@ -427,60 +311,6 @@ public class DDotReader implements GioReader {
     private static boolean isThisCommand(String subject) {
         return "this".equals(commandWord(subject));
     }
-
-    /** Is this object a multi-line block marker {@code block} (in any spelling, optionally {@code ?end=…})? See https://ddot.it/block. */
-    private static boolean isBlockMarker(String object) {
-        String cmd = commandWord(object);
-        return cmd != null && (cmd.equals("block") || cmd.startsWith("block?end="));
-    }
-
-    /** The custom block end marker from a {@code ?end=…} suffix, or {@code null} for the default (a blank line). */
-    private static @Nullable String blockEndMarker(String object) {
-        int i = object.indexOf("?end=");
-        return i < 0 ? null : object.substring(i + "?end=".length());
-    }
-
-    /**
-     * Emit a finished block: a literal-flagged opening (`,, ..rdf:datatype/language/literal..`) stores the
-     * multi-line value as a node {@code rdf:data} literal; otherwise it is an edge to the value, with any
-     * other opening-line `,,` payload attached as link metadata.
-     */
-    private void finalizeBlock(ICjStream writer, java.util.Map<String, ICjNodeChunkMutable> nodeBuffer,
-                               List<ICjEdgeChunkMutable> edgeBuffer, Map<ICjEdgeChunkMutable, LinkMeta> edgeMeta,
-                               String subject, String predicate, String value, @Nullable String meta, Locator locator) {
-        IJsonValue literal = meta == null ? null : literalValue(value, meta, writer.jsonFactory());
-        if (literal != null) {
-            ensureNodeChunk(subject, writer, nodeBuffer).dataMutable(d ->
-                    d.add(IJsonContainerNavigationStep.pathOf(DDotOutput.RDF_DATA_KEY, predicate), literal));
-            return;
-        }
-        ICjEdgeChunkMutable edge = emitEdge(writer, nodeBuffer, edgeBuffer, subject, predicate, value);
-        if (meta != null && !meta.trim().isEmpty()) {
-            for (String entry : meta.split(java.util.regex.Pattern.quote(META_SEPARATOR))) {
-                if (!entry.trim().isEmpty()) attachMeta(edge, edgeMeta, entry, locator);
-            }
-        }
-    }
-
-    /** ddot.it's suggested standard relation aliases → canonical names (see https://ddot.it/relations). */
-    private static final Map<String, String> RELATION_ALIASES = Map.ofEntries(
-            Map.entry("rel", "related"), Map.entry("is related", "related"),
-            Map.entry("is same as", "same as"),
-            Map.entry("link", "links to"), Map.entry("see also", "links to"),
-            Map.entry("tag", "has tag"),
-            Map.entry("type", "has type"), Map.entry("is a", "has type"),
-            Map.entry("subtype", "has subtype"),
-            Map.entry("content", "has content"),
-            // UML relationship aliases: the simple visual tokens map to the standard UML name (see PlantUmlReader).
-            Map.entry("solid-to", "association"), Map.entry("solid", "association"),
-            Map.entry("solid-both", "association"), Map.entry("directed", "association"),
-            Map.entry("dashed-to", "dependency"), Map.entry("dashed", "dependency"),
-            Map.entry("dashed-both", "dependency"),
-            Map.entry("extends", "generalization"), Map.entry("extension", "generalization"),
-            Map.entry("inheritance", "generalization"), Map.entry("generalizes", "generalization"),
-            Map.entry("realizes", "realization"), Map.entry("implements", "realization"),
-            Map.entry("composed of", "composition"), Map.entry("composes", "composition"),
-            Map.entry("aggregates", "aggregation"), Map.entry("has a", "aggregation"));
 
     /** Map a relation alias to its canonical name; non-aliases (incl. the empty untyped link) pass through. */
     private static String canonicalRelation(String predicate) {
@@ -493,47 +323,45 @@ public class DDotReader implements GioReader {
     }
 
     /**
-     * If the inline metadata flags this object as an RDF literal, return the CJ value to store under
+     * If the link metadata flags this object as an RDF literal, the CJ value to store under
      * {@code rdf:data} (a bare string for a plain literal, or a {@code {value,datatype|language}} envelope);
      * otherwise {@code null} (the object is an ordinary resource). See doc/spec-ddot-rdf.adoc E1.
      */
-    private static @Nullable IJsonValue literalValue(String object, @Nullable String metaPart, IJsonFactory jf) {
-        if (metaPart == null) return null;
-        String body = metaPart.startsWith("..") ? metaPart.substring(2).trim() : metaPart;
-        String[] p = body.split(SEPARATOR_REGEX, -1);
-        if (p.length != 2) return null;
-        String key = p[0].trim();
-        String val = p[1].trim();
-        switch (key) {
-            case DDotOutput.MARK_PLAIN:
-                return jf.createString(object);
-            case DDotOutput.MARK_DATATYPE: {
-                IJsonObjectMutable o = jf.createObjectMutable();
-                o.add(DDotOutput.LIT_VALUE, object);
-                o.add(DDotOutput.LIT_DATATYPE, val);
-                return o;
+    private static @Nullable IJsonValue literalValue(String object, List<DdotEvent.MetaPair> meta, IJsonFactory jf) {
+        for (DdotEvent.MetaPair pair : meta) {
+            if (pair.type() == null) continue;
+            switch (pair.type()) {
+                case DDotOutput.MARK_PLAIN:
+                    return jf.createString(object);
+                case DDotOutput.MARK_DATATYPE: {
+                    IJsonObjectMutable o = jf.createObjectMutable();
+                    o.add(DDotOutput.LIT_VALUE, object);
+                    o.add(DDotOutput.LIT_DATATYPE, pair.to());
+                    return o;
+                }
+                case DDotOutput.MARK_LANGUAGE: {
+                    IJsonObjectMutable o = jf.createObjectMutable();
+                    o.add(DDotOutput.LIT_VALUE, object);
+                    o.add(DDotOutput.LIT_LANGUAGE, pair.to());
+                    return o;
+                }
+                default:
+                    // not a literal marker; keep looking
             }
-            case DDotOutput.MARK_LANGUAGE: {
-                IJsonObjectMutable o = jf.createObjectMutable();
-                o.add(DDotOutput.LIT_VALUE, object);
-                o.add(DDotOutput.LIT_LANGUAGE, val);
-                return o;
-            }
-            default:
-                return null;
         }
+        return null;
     }
 
-    /** Extract the label language from an inline {@code ..lang.. xx} metadata entry, or {@code null}. */
-    private static @Nullable String labelLanguage(@Nullable String metaPart) {
-        if (metaPart == null) return null;
-        String body = metaPart.startsWith("..") ? metaPart.substring(2).trim() : metaPart;
-        String[] p = body.split(SEPARATOR_REGEX, -1);
-        return (p.length == 2 && "lang".equals(p[0].trim()) && !p[1].trim().isEmpty()) ? p[1].trim() : null;
+    /** The label language from a {@code ,, ..lang.. xx} metadata entry, or {@code null}. */
+    private static @Nullable String labelLanguage(List<DdotEvent.MetaPair> meta) {
+        for (DdotEvent.MetaPair pair : meta) {
+            if ("lang".equals(pair.type()) && !pair.to().isBlank()) return pair.to();
+        }
+        return null;
     }
 
     /** Create and buffer a directed edge {@code subject --predicate--> object} (empty predicate = untyped). */
-    private ICjEdgeChunkMutable emitEdge(ICjStream writer, java.util.Map<String, ICjNodeChunkMutable> nodeBuffer,
+    private ICjEdgeChunkMutable emitEdge(ICjStream writer, Map<String, ICjNodeChunkMutable> nodeBuffer,
                                          List<ICjEdgeChunkMutable> edgeBuffer, String subject, String predicate, String object) {
         ensureNodeChunk(subject, writer, nodeBuffer);
         ensureNodeChunk(object, writer, nodeBuffer);

@@ -75,13 +75,18 @@ class DDotBlockTest {
     }
 
     @Test
-    void openingLineMetadataFlagsLiteralBlock() throws IOException {
-        // a `,, ..rdf:datatype..` marker on the block line makes the multi-line value an RDF literal
+    void metadataAfterBlockFlagsLiteralBlock() throws IOException {
+        // A `,, ..rdf:datatype..` marker makes the multi-line value an RDF literal. It CANNOT sit on the
+        // opening line: a `!!block` opener must end its physical line (tokenizer BLOCK_OPENER: `… WS*$`;
+        // parse spec "block-as-field"), so `..addr.. ddot.it/block ,, …` would make `ddot.it/block` a
+        // literal object string, exactly as corpus case 30/34 put the block LAST on the line. The
+        // metadata goes on a continuation line instead (corpus case 32: `,, ..since.. 2016` after a block).
         ICjDocument doc = parse("""
-                john ..addr.. ddot.it/block ,, ..rdf:datatype.. http://www.w3.org/2001/XMLSchema#string
+                john ..addr.. ddot.it/block
                 123 Main
                 Apt 4
 
+                ,, ..rdf:datatype.. http://www.w3.org/2001/XMLSchema#string
                 """);
         IJsonValue lit = doc.graphs().findFirst().orElseThrow()
                 .nodes().filter(n -> "john".equals(n.id())).findFirst().orElseThrow()
