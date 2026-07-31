@@ -69,6 +69,15 @@ The reader:
 * Maps Neo4j node IDs to CJ node IDs
 * Maps Neo4j relationship labels to CJ edge labels
 * Preserves all properties on nodes and relationships
+* Accepts `node` and `relationship` objects in any order. `apoc.export.json.query` emits them interleaved,
+  row by row, whereas CJ requires all nodes of a graph before its edges — so relationships are buffered
+  and streamed out after the last node (memory is O(number of relationships)).
+
+The writer:
+
+* Emits every node before any relationship, as a Neo4j import expects: `apoc.import.json` resolves a
+  relationship's `start`/`end` against nodes it has already created
+* Flattens the CJ graph hierarchy, see <<Limitations>>
 
 == Neo4j Export Procedures
 
@@ -95,6 +104,13 @@ CALL apoc.export.json.query(
 
 * Currently supports JSON Lines format only (not array or nested JSON formats)
 * Requires APOC plugin to be installed in Neo4j for export functionality
+* A Neo4j property graph is one flat set of nodes and relationships. It has no notion of a subgraph, of a
+  graph nested under a node (compound node), or of several graphs in one document. Writing such a CJ
+  document therefore flattens everything into a single set: node and edge data survive, but graph-level
+  identity (graph `id`, `label`, graph data) and the nesting are lost. The writer reports that loss as a
+  warning-level `ContentError`; reading the result back yields one flat graph.
+* A document with no nodes and no edges (e.g. only document-level data) produces no output at all; this
+  too is reported as a `ContentError` rather than written as silence.
 
 == References
 

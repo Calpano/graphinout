@@ -15,7 +15,9 @@ import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -46,11 +48,24 @@ public class Neo4jReader implements GioReader, GioWriter {
             cjStream.documentStart(cjStream.createDocumentChunk());
             cjStream.graphStart(cjStream.createGraphChunk());
 
+            // Neo4j JSON Lines impose no order on 'node' and 'relationship' objects: apoc.export.json.query
+            // emits them interleaved, row by row, and concatenated exports mix them freely. The CJ stream
+            // protocol, however, requires all nodes of a graph before its edges — starting a node once the
+            // edges list is open throws "Cannot start nodes in ArrayOfEdges". So stream nodes as they arrive
+            // and hold relationships back until the input is exhausted. Memory is O(#relationships); the
+            // alternative (buffering nodes) would be O(#nodes) and could not stream anything at all, since
+            // more nodes may follow any relationship.
+            List<Map<String, Object>> pendingRelationships = new ArrayList<>();
+
             // Process JSON lines
             while (parser.nextToken() != null) {
                 if (parser.currentToken() == JsonToken.START_OBJECT) {
-                    processObject(parser, cjStream);
+                    processObject(parser, cjStream, pendingRelationships);
                 }
+            }
+
+            for (Map<String, Object> relationship : pendingRelationships) {
+                processRelationship(relationship, cjStream);
             }
 
             // End graph and document
@@ -61,7 +76,8 @@ public class Neo4jReader implements GioReader, GioWriter {
         }
     }
 
-    private void processObject(JsonParser parser, ICjStream cjStream) throws IOException {
+    private void processObject(JsonParser parser, ICjStream cjStream,
+                               List<Map<String, Object>> pendingRelationships) throws IOException {
         Map<String, Object> object = new HashMap<>();
 
         while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -93,7 +109,7 @@ public class Neo4jReader implements GioReader, GioWriter {
                 case "rel":
                     // Handle wrapped relationship format
                     if (parser.currentToken() == JsonToken.START_OBJECT) {
-                        processObject(parser, cjStream);
+                        processObject(parser, cjStream, pendingRelationships);
                         return;
                     }
                     break;
@@ -109,7 +125,8 @@ public class Neo4jReader implements GioReader, GioWriter {
         if ("node".equals(type)) {
             processNode(object, cjStream);
         } else if ("relationship".equals(type)) {
-            processRelationship(object, cjStream);
+            // deferred until all nodes have been streamed, see read(..)
+            pendingRelationships.add(object);
         }
     }
 

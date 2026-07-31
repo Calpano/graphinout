@@ -31,24 +31,6 @@ class Neo4jRoundTripTest {
 
     private static final Logger log = getLogger(Neo4jRoundTripTest.class);
 
-    /**
-     * Canonical CJ fixtures whose {@code CJ -> Neo4j JSON -> CJ} round-trip currently throws
-     * {@code Cannot start nodes in ArrayOfEdges} — every one of them a nested / compound graph shape the
-     * Neo4j writer cannot yet stream.
-     * <p>
-     * This list exists so the failures are <em>counted</em>. The parameterized test used to wrap the whole
-     * round-trip in {@code catch (Exception e) { log.warn("Skipping {} …") }}, which is worse than a skip:
-     * a crashing fixture reported green, JUnit recorded no skip, and the only trace was a WARN nobody
-     * reads. Now an unlisted fixture that crashes FAILS the build, and a listed one that starts passing
-     * also fails — so the waiver cannot silently grow, and it cannot rot once the writer is fixed.
-     */
-    private static final java.util.Set<String> KNOWN_FAILING = java.util.Set.of(
-            "baseuris.cj.json",
-            "compound-nodes.cj.json",
-            "full.cj.json",
-            "nested-graphs.cj.json",
-            "sample-1.cj.canonical.json");
-
     @Test
     void testRoundTrip() throws IOException {
         // Use our test file
@@ -130,25 +112,77 @@ class Neo4jRoundTripTest {
         }
     }
 
+    @Test
+    @DisplayName("Reader accepts nodes and relationships interleaved (apoc.export.json.query shape)")
+    void testInterleavedNodesAndRelationshipsAreRead() throws IOException {
+        // apoc.export.json.query emits one row at a time, so nodes and relationships alternate. CJ, in
+        // contrast, demands all nodes of a graph before its edges — the reader must bridge that, not crash
+        // with "Cannot start nodes in ArrayOfEdges".
+        String interleaved = """
+                {"type":"node","id":"a","labels":["User"]}
+                {"type":"node","id":"b","labels":["User"]}
+                {"type":"relationship","id":"r1","label":"KNOWS","start":{"id":"a"},"end":{"id":"b"}}
+                {"type":"node","id":"c","labels":["User"]}
+                {"type":"relationship","id":"r2","label":"KNOWS","start":{"id":"b"},"end":{"id":"c"}}
+                """;
+
+        CjWriter2CjDocumentWriter cj2document = new CjWriter2CjDocumentWriter();
+        new Neo4jReader().read(SingleInputSource.of("interleaved", interleaved),
+                new CjStream2CjWriter(cj2document, true));
+        ICjDocument doc = cj2document.resultDoc();
+
+        assertNotNull(doc);
+        assertEquals(3, doc.graphs().mapToInt(g -> g.nodes() != null ? (int) g.nodes().count() : 0).sum());
+        assertEquals(2, doc.graphs().mapToInt(g -> g.edges() != null ? (int) g.edges().count() : 0).sum());
+    }
+
+    @Test
+    @DisplayName("Writer emits every node before any relationship, even for nested graphs")
+    void testWriterEmitsAllNodesBeforeRelationships() throws IOException {
+        // A Neo4j import resolves a relationship against nodes it has already created, so the export must
+        // list nodes first. A nested CJ document interleaves them (parent nodes, parent edges, child
+        // nodes, ...) — the writer has to reorder.
+        Resource res = TestFileUtil.resource("json/connected-json/connected-json-7.0.0/nested-graphs.cj.json");
+        assertNotNull(res, "nested-graphs.cj.json not found");
+
+        CjWriter2CjDocumentWriter cj2document = new CjWriter2CjDocumentWriter();
+        new ConnectedJsonReader().read(SingleInputSource.of(res.getPath(), res.getContentAsString()),
+                new CjStream2CjWriter(cj2document, true));
+
+        Neo4jReader neo4j = new Neo4jReader();
+        InMemoryOutputSink sink = InMemoryOutputSink.create();
+        java.util.List<com.graphinout.foundation.pure.input.ContentError> writeErrors = new java.util.ArrayList<>();
+        neo4j.setContentErrorHandler(writeErrors::add);
+        cj2document.resultDoc().fire(new CjWriter2CjStream(neo4j.createCjStream(sink)), false);
+
+        // The 'world' + nested 'europe' graphs collapse into one flat set; that loss must be reported.
+        assertTrue(writeErrors.stream().anyMatch(e -> e.message.contains("flattened into one")),
+                "expected a ContentError about flattening, got " + writeErrors);
+
+        String[] lines = sink.getBufferAsUtf8String().split("\n");
+        int lastNode = -1;
+        int firstRelationship = Integer.MAX_VALUE;
+        for (int i = 0; i < lines.length; i++) {
+            if (lines[i].contains("\"type\":\"node\"")) {
+                lastNode = i;
+            } else if (lines[i].contains("\"type\":\"relationship\"") && i < firstRelationship) {
+                firstRelationship = i;
+            }
+        }
+        assertTrue(lastNode >= 0 && firstRelationship < Integer.MAX_VALUE, "expected nodes and relationships");
+        assertTrue(lastNode < firstRelationship,
+                "last node line (" + lastNode + ") must precede first relationship line ("
+                        + firstRelationship + ") in:\n" + sink.getBufferAsUtf8String());
+    }
+
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test CJ to Neo4j JSON round-trip - all files")
-    void testRoundTripAllCjResources(String displayPath, Resource resource) {
-        boolean knownToFail = KNOWN_FAILING.stream().anyMatch(displayPath::endsWith);
-        try {
-            testCjToNeo4jRoundTrip(resource);
-        } catch (Exception e) {
-            if (!knownToFail) {
-                throw new AssertionError("CJ -> Neo4j JSON -> CJ round-trip crashed for " + displayPath
-                        + ". If this is a genuine, accepted limitation, add the fixture to KNOWN_FAILING"
-                        + " with the reason — do not re-broaden the catch.", e);
-            }
-            return;
-        }
-        if (knownToFail) {
-            fail(displayPath + " is listed in KNOWN_FAILING but now round-trips cleanly. Remove it from"
-                    + " that list so the fixture stays covered.");
-        }
+    void testRoundTripAllCjResources(String displayPath, Resource resource) throws IOException {
+        // Strict: every canonical CJ fixture must survive CJ -> Neo4j JSON -> CJ. Nested, compound and
+        // multi-graph documents are flattened into Neo4j's single node/relationship set (reported as a
+        // ContentError by the writer), but they must not crash. No waiver list, no catch-and-log.
+        testCjToNeo4jRoundTrip(resource);
     }
 
     private void testCjToNeo4jRoundTrip(Resource res) throws IOException {

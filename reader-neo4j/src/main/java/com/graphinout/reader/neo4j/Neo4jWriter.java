@@ -21,6 +21,11 @@ public class Neo4jWriter extends BaseCjOutput implements ICjStream {
     private final OutputSink outputSink;
     private final ObjectMapper objectMapper;
     private boolean wroteAnything = false;
+    /**
+     * Relationship lines, held back until all nodes have been written — see {@link #documentEnd()}.
+     */
+    private final List<String> pendingRelationshipLines = new java.util.ArrayList<>();
+    private int graphCount = 0;
 
     public Neo4jWriter(OutputSink outputSink) {
         this.outputSink = outputSink;
@@ -34,16 +39,38 @@ public class Neo4jWriter extends BaseCjOutput implements ICjStream {
 
     @Override
     public void documentEnd() {
+        try {
+            // A Neo4j export lists every node before any relationship: apoc.import.json resolves a
+            // relationship's start/end against nodes it has already created. A CJ document with nested or
+            // compound graphs interleaves them (parent nodes, parent edges, child nodes, child edges), so
+            // relationships are buffered here and flushed once the last node has been written.
+            for (String line : pendingRelationshipLines) {
+                writeLine(line);
+            }
+            pendingRelationshipLines.clear();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write relationships", e);
+        }
+
         // A Neo4j property graph is nodes + relationships only. A document with no nodes/edges (e.g. only
         // document-level custom data) produces no output; report that loss instead of writing silence.
         if (!wroteAnything) {
             sendContentError_Warn("No nodes or edges to export to Neo4j; the document has no graph content");
+        } else if (graphCount > 1) {
+            // Neo4j JSON is a single flat node/relationship set: it has no notion of a subgraph, of a graph
+            // nested under a node (compound node), or of several sibling graphs in one document. Those all
+            // collapse into one flat set here, and the graph-level identity (id, label, data) is dropped.
+            sendContentError_Warn("Neo4j JSON is a flat set of nodes and relationships: " + graphCount
+                    + " CJ graphs (nested, compound or sibling) were flattened into one; their graph ids,"
+                    + " labels and graph-level data are not represented in the output");
         }
     }
 
     @Override
     public void graphStart(ICjGraphChunk graph) {
-        // No-op: Neo4j JSON Lines format has no graph wrapper
+        // No-op: Neo4j JSON Lines format has no graph wrapper — but count them, so the flattening of
+        // nested/compound/sibling graphs is reported as a loss in documentEnd() rather than done silently.
+        graphCount++;
     }
 
     @Override
@@ -94,50 +121,47 @@ public class Neo4jWriter extends BaseCjOutput implements ICjStream {
 
     @Override
     public void edgeStart(ICjEdgeChunk edge) {
-        try {
-            Map<String, Object> edgeMap = new HashMap<>();
-            edgeMap.put("type", "relationship");
+        Map<String, Object> edgeMap = new HashMap<>();
+        edgeMap.put("type", "relationship");
 
-            if (edge.id() != null) {
-                edgeMap.put("id", edge.id());
-            }
-
-            // Label
-            if (edge.label() != null && edge.label().entries() != null) {
-                List<ICjLabelEntry> entryList = edge.label().entries().toList();
-                if (!entryList.isEmpty()) {
-                    edgeMap.put("label", entryList.getFirst().value());
-                }
-            }
-
-            // Extract source and target from endpoints
-            List<ICjEndpoint> sources = edge.sources();
-            List<ICjEndpoint> targets = edge.targets();
-
-            if (!sources.isEmpty()) {
-                Map<String, String> start = new HashMap<>();
-                start.put("id", sources.getFirst().node());
-                edgeMap.put("start", start);
-            }
-
-            if (!targets.isEmpty()) {
-                Map<String, String> end = new HashMap<>();
-                end.put("id", targets.getFirst().node());
-                edgeMap.put("end", end);
-            }
-
-            // Properties from data
-            if (edge.data().jsonValue() != null) {
-                Map<String, Object> properties = extractProperties(edge.data().jsonValue());
-                if (!properties.isEmpty()) {
-                    edgeMap.put("properties", properties);
-                }
-            }
-
-            writeJsonLine(edgeMap);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to write edge", e);
+        if (edge.id() != null) {
+            edgeMap.put("id", edge.id());
         }
+
+        // Label
+        if (edge.label() != null && edge.label().entries() != null) {
+            List<ICjLabelEntry> entryList = edge.label().entries().toList();
+            if (!entryList.isEmpty()) {
+                edgeMap.put("label", entryList.getFirst().value());
+            }
+        }
+
+        // Extract source and target from endpoints
+        List<ICjEndpoint> sources = edge.sources();
+        List<ICjEndpoint> targets = edge.targets();
+
+        if (!sources.isEmpty()) {
+            Map<String, String> start = new HashMap<>();
+            start.put("id", sources.getFirst().node());
+            edgeMap.put("start", start);
+        }
+
+        if (!targets.isEmpty()) {
+            Map<String, String> end = new HashMap<>();
+            end.put("id", targets.getFirst().node());
+            edgeMap.put("end", end);
+        }
+
+        // Properties from data
+        if (edge.data().jsonValue() != null) {
+            Map<String, Object> properties = extractProperties(edge.data().jsonValue());
+            if (!properties.isEmpty()) {
+                edgeMap.put("properties", properties);
+            }
+        }
+
+        // Serialized now, written later: every node must precede every relationship, see documentEnd().
+        pendingRelationshipLines.add(objectMapper.writeValueAsString(edgeMap));
     }
 
     @Override
@@ -146,7 +170,10 @@ public class Neo4jWriter extends BaseCjOutput implements ICjStream {
     }
 
     private void writeJsonLine(Map<String, Object> object) throws IOException {
-        String json = objectMapper.writeValueAsString(object);
+        writeLine(objectMapper.writeValueAsString(object));
+    }
+
+    private void writeLine(String json) throws IOException {
         outputSink.write(json + "\n");
         wroteAnything = true;
     }
