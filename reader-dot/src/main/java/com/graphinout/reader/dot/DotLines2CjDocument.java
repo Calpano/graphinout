@@ -190,68 +190,37 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
 
         int position() {return pos;}
 
+        /**
+         * Read an HTML-like string {@code <...>} exactly the way Graphviz's lexer does: count raw
+         * {@code '<'} and {@code '>'} characters and stop at the {@code '>'} that brings the depth back
+         * to zero. The scanner is deliberately blind to both tag structure and quoting — a {@code '>'} in
+         * running text ({@code <<B>2 > 1</B>>}) or inside an attribute value ({@code <<B title=">">t</B>>})
+         * closes the string early, and a lone {@code '<'} ({@code <<B title="<">u</B>>}) leaves it
+         * unterminated. Graphviz reports all three as syntax errors, so we must too; being cleverer here
+         * would mean accepting input no Graphviz tool can read and, worse, round-tripping it back out.
+         * <p>
+         * Whether the resulting markup is well-formed HTML is a separate question that Graphviz answers
+         * later ("mismatched tag ... in label of node a"), not a DOT syntax error, and not checked here.
+         */
         String readAngleString() {
             skipWs();
             if (s.charAt(pos) != '<') throw new IllegalStateException("Expected '<' at pos " + pos);
             int start = pos;
             StringBuilder out = new StringBuilder();
-            // consume the outer opener
-            out.append(s.charAt(pos++));
-            int tagDepth = 0; // number of open inner tags (<tag> not yet closed)
+            int depth = 0;
             while (!eof()) {
-                char c = s.charAt(pos);
-                if (c == '<') {
-                    // Parse a tag: <...>
-                    int tagStart = pos;
-                    // Determine if this is closing or opening/self-closing
-                    pos++; // consume '<'
-                    out.append('<');
-                    boolean closing = false;
-                    if (!eof() && s.charAt(pos) == '/') {
-                        closing = true;
-                        out.append('/');
-                        pos++;
-                    }
-                    // read until '>'
-                    boolean selfClosing = false;
-                    while (!eof()) {
-                        char t = s.charAt(pos++);
-                        out.append(t);
-                        if (t == '>') {
-                            // end of tag
-                            if (!closing) {
-                                // check if previous char before '>' was '/'
-                                int prev = pos - 2;
-                                if (prev >= 0 && s.charAt(prev) == '/') selfClosing = true;
-                            }
-                            break;
-                        }
-                    }
-                    if (!closing && !selfClosing) tagDepth++;
-                    if (closing && tagDepth > 0) tagDepth--;
-                    continue;
-                }
-                if (c == '>') {
-                    // End of HTML string only if there are no open tags
-                    if (tagDepth == 0) {
-                        out.append('>');
-                        pos++;
-                        break;
-                    } else {
-                        // treat as plain text inside a tag context
-                        out.append('>');
-                        pos++;
-                        continue;
-                    }
-                }
-                // regular content character
+                char c = s.charAt(pos++);
                 out.append(c);
-                pos++;
+                if (c == '<') {
+                    depth++;
+                } else if (c == '>') {
+                    depth--;
+                    if (depth == 0) return out.toString();
+                }
             }
-            if (out.isEmpty() || out.charAt(out.length() - 1) != '>') {
-                throw new IllegalStateException("Unterminated HTML-like string starting at pos " + start);
-            }
-            return out.toString();
+            throw new IllegalStateException("Unterminated HTML-like string starting at pos " + start
+                    + ": " + depth + " unmatched '<' remain. Graphviz counts raw angle brackets here, so a '<'"
+                    + " in text or in an attribute value must be written as '&lt;'");
         }
 
         List<Attr> readAttrList(@Nullable List<Attr> reuse) {
@@ -286,15 +255,24 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             return list;
         }
 
-        String readEdgeOp() {
+        /**
+         * Read the edge operator, which must match the kind of the enclosing graph: {@code ->} in a
+         * {@code digraph}, {@code --} in a {@code graph}. DOT's grammar ties the two together
+         * ({@code edgeop : '->' | '--'} with the choice fixed by the graph kind), and Graphviz reports the
+         * mismatch as "syntax error near '--'". Subgraphs inherit the kind from the top-level graph, which
+         * is what {@code directed} carries down.
+         */
+        String readEdgeOp(boolean directed) {
             skipWs();
-            if (match("->")) {
+            String expected = directed ? "->" : "--";
+            String wrong = directed ? "--" : "->";
+            if (match(expected)) {
                 pos += 2;
-                return "->";
+                return expected;
             }
-            if (match("--")) {
-                pos += 2;
-                return "--";
+            if (match(wrong)) {
+                throw new IllegalStateException("Edge operator '" + wrong + "' at pos " + pos + " does not match the"
+                        + " graph kind: a '" + (directed ? DIGRAPH : GRAPH) + "' uses '" + expected + "' edges");
             }
             throw new IllegalStateException("Expected edge operator at pos " + pos);
         }
@@ -854,7 +832,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         while (true) {
             p.skipWs();
             if (!p.lookaheadEdgeOp()) break;
-            p.readEdgeOp();
+            p.readEdgeOp(directed);
             segments.add(readNodeRefOrGroup(p, g, directed, nodesById));
         }
         boolean sawAttrList = false;

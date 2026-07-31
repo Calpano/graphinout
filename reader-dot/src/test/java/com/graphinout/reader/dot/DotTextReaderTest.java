@@ -29,7 +29,7 @@ class DotTextReaderTest {
 
     public static final String EXAMPLE_DOT_PATH = "/text/dot/example.dot";
     public static final String SIMPLE_DOT = "/text/dot/synthetics/simple/simple.dot";
-    public static final String SIMPLE_2_DOT = "/text/dot/synthetics/simple/simple2.dot";
+    public static final String SIMPLE_2_DOT = "/text/dot/synthetics/simple/simple2--INVALIDdot.dot";
     public static final String SIMPLE_3_DOT = "/text/dot/synthetics/simple/simple3.dot";
     public static final String LABEL = "label";
     public static final String NODE_A = "Node A";
