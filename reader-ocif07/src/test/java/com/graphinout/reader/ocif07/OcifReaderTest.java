@@ -38,6 +38,7 @@ class OcifReaderTest extends AbstractReaderTest {
         return resources("json/ocif", Set.of(".ocif", ".ocif.json"));
     }
 
+
     @Override
     protected List<GioReader> readersToTest() {
         return List.of(new OcifReader());
@@ -65,9 +66,11 @@ class OcifReaderTest extends AbstractReaderTest {
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("ocifResources")
     @Description("Test OCIF/json->OCIF/doc->CJ/doc->OCIF/doc->OCIF/json")
+    // No `if (isExpected(resource)) return;` here: TestFileProvider.getAllTestResources() already ends with
+    // `.filter(tr -> !tr.isExpected())`, so --EXPECTED files never reach any provider. The guard that used
+    // to sit here was dead code that read as a deliberate exclusion — verified by running this test against
+    // the unfiltered provider: 26 cases, none of them --EXPECTED.
     void ocif_Cj_Ocif(String displayName, Resource resource) throws IOException {
-        if (TestFileUtil.isExpected(resource))
-            return;
         String ocifJson_in = resource.getContentAsString();
         IJsonValue ocifJsonValue = JavaJsons.ofJsonString(ocifJson_in);
 

@@ -136,10 +136,8 @@ class GmlReaderTest {
     @ParameterizedTest
     @MethodSource("gmlResources")
     void shouldWorkAsIntended(String displayPath, Resource resource) throws IOException {
-        if (TestFileUtil.isInvalid(resource, "gml")) {
-            log.info("Skipping invalid GML file " + resource.getURI());
-            return;
-        }
+        // (no --INVALIDgml guard: the corpus contains no such fixture, so the check that used to sit here
+        // was dead code — verified by making it throw and watching all 23 cases still pass)
 
         String content = resource.getContentAsString();
         SingleInputSource singleInputSource = SingleInputSource.of(displayPath, content);

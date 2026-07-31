@@ -6,6 +6,7 @@ import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import com.graphinout.base.xml.util.XmlTool;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -22,10 +23,13 @@ public class GraphmlTest {
     @MethodSource("com.graphinout.testdata.TestFileProvider#graphmlResources")
     @DisplayName("Test XML<->Graphml (all)")
     void testAllGraphmlFiles(String displayPath, Resource xmlResource) throws Exception {
-        if (TestFileUtil.isInvalid(xmlResource, "graphml", "xml")) {
-            log.debug("Skipping invalid Graphml file: {}", xmlResource.getURI());
-            return;
-        }
+        // Deliberately-malformed fixtures cannot round-trip, so this test does not apply to them. It used
+        // to `return`, which reported a PASS having asserted nothing and left no trace in the report; an
+        // abort records a real skip with a reason instead. No coverage is lost: that these fixtures are
+        // REJECTED is asserted in GraphmlReaderContentErrorTest#readAllGraphmlFiles.
+        Assumptions.assumeFalse(TestFileUtil.isInvalid(xmlResource, "graphml", "xml"),
+                () -> "fixture is tagged --INVALID; rejection is asserted in GraphmlReaderContentErrorTest: "
+                        + xmlResource.getPath());
 
         // == pre-flight check
         XmlTestTool.assertCanParseAsXml(xmlResource);
