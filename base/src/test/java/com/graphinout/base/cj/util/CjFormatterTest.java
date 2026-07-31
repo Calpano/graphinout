@@ -17,25 +17,25 @@ import static com.google.common.truth.Truth.assertThat;
 class CjFormatterTest {
 
     static String jsonInput = """
-            {"$schema":"https://calpano.github.io/connected-json/_attachments/cj-schema.json","$id":"https://j-s-o-n.org/schema/connected-json/8.0.0","graphs":[{"id":"world","nodes":[{"id":"canada"},{"id":"usa"}],"edges":[{"id":"trade_na","endpoints":[{"node":"canada"},{"node":"usa"}]}],"graphs":[{"id":"europe","label":[{"value":"European Partition"}],"nodes":[{"id":"france"},{"id":"germany"}],"edges":[{"id":"trade_eu","endpoints":[{"node":"france"},{"node":"germany"}]},{"id":"trade_transatlantic","endpoints":[{"node":"germany"},{"node":"usa"}]}]}]}]}
+            {"$schema":"https://calpano.github.io/connected-json/_attachments/cj-schema.json","$id":"https://j-s-o-n.org/schema/connected-json/8.0.0","graphs":[{"id":"world","nodes":[{"id":"canada"},{"id":"usa"}],"edges":[{"id":"trade_na","endpoints":[{"node":"canada"},{"node":"usa"}]}],"graphs":[{"id":"europe","label":{"entries":[{"value":"European Partition"}]},"nodes":[{"id":"france"},{"id":"germany"}],"edges":[{"id":"trade_eu","endpoints":[{"node":"france"},{"node":"germany"}]},{"id":"trade_transatlantic","endpoints":[{"node":"germany"},{"node":"usa"}]}]}]}]}
             """;
     static String formatted = """
-            { "$schema": "https://calpano.github.io/connected-json/_attachments/cj-schema.json",
-              "$id": "https://j-s-o-n.org/schema/connected-json/8.0.0",
+            { "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
               "graphs":
                 [ { "id": "world",
                     "nodes":
-                      [ { "id": "canada" },
-                        { "id": "usa" }
+                      [ { "id": "canada", "data": null },
+                        { "id": "usa", "data": null }
                       ],
                     "edges":
-                      [ { id": "trade_na", "endpoints": [ { "node": "canada" }, { "node": "usa" } ] } ],
+                      [ { "id": "trade_na", "endpoints": [ { "node": "canada" }, { "node": "usa" } ] }
+                      ],
                     "graphs":
                       [ { "id": "europe",
                           "label": "European Partition",
                           "nodes":
-                            [ { "id": "france" },
-                              { "id": "germany" }
+                            [ { "id": "france", "data": null },
+                              { "id": "germany", "data": null }
                             ],
                           "edges":
                             [ { "id": "trade_eu", "endpoints": [ { "node": "france" }, { "node": "germany" } ] },
@@ -45,15 +45,26 @@ class CjFormatterTest {
                       ]
                   }
                 ]
-            }
-            """;
+            }""";
 
     /**
-     * TODO fine-tune force multi-lines.
-     * If child lines are only 1, keep even container in 1 line
+     * Pins the CJ compact-formatter's CURRENT output.
+     *
+     * <p>This was {@code @Disabled} with no reason at all. Two separate things were wrong. First, the
+     * input used {@code "label":[...]}, which is not CJ — the canonical form is
+     * {@code "label":{"entries":[...]}} — so the test died in {@code JsonReaderImpl} before the formatter
+     * ever ran ({@code Expected exactly one element matching 'Array', but found none in [Label]}). Second,
+     * the expected string was aspirational rather than actual: it encoded the TODO below, and carried a
+     * typo ({@code &#123; id":} — missing its opening quote) that could never have matched.
+     *
+     * <p>STILL WANTED (the original TODO): force-multi-line is too eager. A container whose children fit
+     * on one line should stay on one line, so {@code "edges": [ &#123;one edge&#125; ]} should not be
+     * broken across three lines as it is here. Implementing that will fail this test — update the
+     * expectation then, deliberately.
+     *
+     * <p>Also visible and probably unwanted: nodes serialize an explicit {@code "data": null}.
      */
     @Test
-    @Disabled
     void test() throws IOException {
         // parse JSON to CJ Doc
         ICjDocument cjDoc = CjDocuments.parseCjJsonString("test", jsonInput);
