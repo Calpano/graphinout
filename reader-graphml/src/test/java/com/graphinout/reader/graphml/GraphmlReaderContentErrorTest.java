@@ -7,7 +7,6 @@ import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.input.Location;
 import io.github.classgraph.Resource;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -20,13 +19,11 @@ import java.util.List;
 import static com.google.common.truth.Truth.assertThat;
 import static com.graphinout.base.TestFileUtil2.inputSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GraphmlReaderContentErrorTest {
 
     private static final Logger log = LoggerFactory.getLogger(GraphmlReaderContentErrorTest.class);
-
-    private final List<String> invalidFiles = new ArrayList<>();
-
 
     @Test
     void elementsGraphmlDoesNotAllowCharacter_invalid_root() throws Exception {
@@ -63,43 +60,48 @@ class GraphmlReaderContentErrorTest {
         }
     }
 
+    /**
+     * Every GraphML fixture in the corpus is read, and BOTH outcomes are asserted.
+     *
+     * <p>A fixture tagged {@code --INVALIDgraphml} / {@code --INVALIDxml} must actually be rejected — it
+     * either fails to parse outright (a file that is not even well-formed XML) or yields at least one
+     * {@code Error}-level {@link ContentError}. Anything else is read strictly: recoverable warnings (e.g.
+     * {@code <data>} referencing an undeclared {@code <key>}, which the reader auto-recovers as a string
+     * key — issues.adoc I2) are tolerated, hard errors are not.
+     *
+     * <p>The invalid half used to be {@code if (isInvalid(...)) return;} — three stacked early returns that
+     * made the test report green having asserted nothing, and not even as a visible skip. Two of those
+     * three were provably unreachable: a {@code schema-1--INVALIDgraphml.graphml} special case "see #115"
+     * and a hand-maintained {@code invalidFiles} denylist, both listing files the {@code isInvalid} tag
+     * check above them had already excluded. They are gone; asserting the rejection is what the invalid
+     * fixtures are FOR.
+     */
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.testdata.TestFileProvider#graphmlResources")
     void readAllGraphmlFiles(String displayName, Resource graphmlResource) throws Exception {
-        if (TestFileUtil.isInvalid(graphmlResource, "graphml", "xml")) {
-            return;
-        }
-
-        // see #115
-        if (graphmlResource.getPath().endsWith("schema-1--INVALIDgraphml.graphml"))
-            return;
-
+        boolean markedInvalid = TestFileUtil.isInvalid(graphmlResource, "graphml", "xml");
         log.info("Start to parse file [{}]", graphmlResource.getPath());
 
-        if (invalidFiles.stream().anyMatch(s -> graphmlResource.getPath().endsWith(s))) {
-            log.info("This file is known as invalid.");
-            return;
-        }
+        List<ContentError> contentErrors = new ArrayList<>();
+        boolean threw = false;
         try (SingleInputSource singleInputSource = inputSource(graphmlResource)) {
             GraphmlReader graphmlReader = new GraphmlReader();
-            List<ContentError> contentErrors = new ArrayList<>();
             graphmlReader.setContentErrorHandler(contentErrors::add);
-            ICjStream cjStream = new NoopCjStream();
-            graphmlReader.read(singleInputSource, cjStream);
-            // Recoverable warnings (e.g. <data> referencing an undeclared <key>, which the reader auto-recovers as a
-            // string key — see issues.adoc I2) are tolerated; assert only that no hard Error-level content errors occur.
-            List<ContentError> hardErrors = contentErrors.stream()
-                    .filter(e -> e.level == ContentError.ErrorLevel.Error).toList();
+            graphmlReader.read(singleInputSource, new NoopCjStream());
+        } catch (Exception e) {
+            if (!markedInvalid) throw e;
+            threw = true;
+        }
+        List<ContentError> hardErrors = contentErrors.stream()
+                .filter(e -> e.level == ContentError.ErrorLevel.Error).toList();
+
+        if (markedInvalid) {
+            assertTrue(threw || !hardErrors.isEmpty(),
+                    "fixture is tagged --INVALID but the reader accepted it without a single Error: "
+                            + graphmlResource.getPath() + " (errors seen: " + contentErrors + ")");
+        } else {
             assertEquals(0, hardErrors.size(), "unexpected ERROR-level content errors: " + contentErrors);
         }
     }
-
-    @BeforeEach
-    void setUp() {
-        invalidFiles.add("xml/graphml/synthetic/root--INVALIDgraphml.graphml");
-        invalidFiles.add("xml/graphml/haitimap2--INVALIDgraphml.graphml");
-        invalidFiles.add("xml/graphml/greek2--INVALIDgraphml.graphml");
-    }
-
 
 }

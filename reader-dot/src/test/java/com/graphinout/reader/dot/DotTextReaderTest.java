@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class DotTextReaderTest {
@@ -71,11 +72,49 @@ class DotTextReaderTest {
         shouldWorkAsIntended(res.asPath(),res.resource());
     }
 
+    /**
+     * DOT fixtures tagged {@code --INVALIDdot} that {@link DotReader} currently accepts in silence — no
+     * exception, no {@code Error}-level {@link com.graphinout.foundation.pure.input.ContentError}. The
+     * corpus says these are malformed; the reader disagrees, and one of the two is wrong.
+     *
+     * <p>The list exists so the disagreement is COUNTED. This assertion used to be
+     * {@code if (isInvalid(...)) return;} — a green test that asserted nothing and hid the gap entirely.
+     * An unlisted invalid fixture that slips through now fails, and a listed one that starts being
+     * rejected also fails, so the waiver can neither grow nor rot unnoticed.
+     */
+    private static final java.util.Set<String> SILENTLY_ACCEPTED_INVALID = java.util.Set.of(
+            "text/dot/example4--INVALIDdot.dot",
+            "text/dot/generated/edge-mid-attrs--INVALIDdot.dot",
+            "text/dot/generated/edge-multi-mid-attrs--INVALIDdot.dot",
+            "text/dot/generated/group-with-subgraph--INVALIDdot.dot",
+            "text/dot/generated/node-attrs-before-edge--INVALIDdot.dot");
+
     @ParameterizedTest
     @MethodSource("dotResources")
     void shouldWorkAsIntended(String displayPath, Resource resource) throws IOException {
+        // A fixture tagged --INVALIDdot must be REJECTED, not skipped: the reader either throws or reports
+        // at least one Error-level ContentError. This was an early `return`, which made the case report
+        // green having asserted nothing — invisible even as a skip.
         if (TestFileUtil.isInvalid(resource, "dot")) {
-            log.info("Skipping invalid file " + resource.getURI());
+            java.util.List<com.graphinout.foundation.pure.input.ContentError> errors = new java.util.ArrayList<>();
+            underTest.setContentErrorHandler(errors::add);
+            boolean threw = false;
+            try {
+                underTest.read(SingleInputSource.of(displayPath, resource.getContentAsString()), new NoopCjStream());
+            } catch (Exception e) {
+                threw = true;
+            }
+            boolean rejected = threw || errors.stream()
+                    .anyMatch(e -> e.level == com.graphinout.foundation.pure.input.ContentError.ErrorLevel.Error);
+            boolean knownAccepted = SILENTLY_ACCEPTED_INVALID.stream().anyMatch(resource.getPath()::endsWith);
+            if (!rejected && !knownAccepted) {
+                throw new AssertionError("fixture is tagged --INVALIDdot but DotReader accepted it without"
+                        + " throwing and without a single Error-level ContentError: " + resource.getPath());
+            }
+            if (rejected && knownAccepted) {
+                throw new AssertionError(resource.getPath() + " is listed in SILENTLY_ACCEPTED_INVALID but"
+                        + " is now properly rejected — remove it from that list.");
+            }
             return;
         }
 

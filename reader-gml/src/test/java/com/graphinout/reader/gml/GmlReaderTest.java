@@ -81,10 +81,7 @@ class GmlReaderTest {
         Resource resource = TestFileUtil.resource(path);
         Assertions.assertNotNull(resource);
         String displayPath = resource.getPath();
-        if (TestFileUtil.isInvalid(resource, "gml")) {
-            log.info("Skipping invalid GML file " + resource.getURI());
-            return;
-        }
+        // (no --INVALID check: @ValueSource names two known-good files, so the guard here was dead code)
 
         String content = resource.getContentAsString();
         SingleInputSource singleInputSource = SingleInputSource.of(displayPath, content);
