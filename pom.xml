@@ -83,8 +83,16 @@
         <slf4j-version>2.0.17</slf4j-version>
         <logback-classic-version>1.5.33</logback-classic-version>
         <junit-jupiter.version>5.9.2</junit-jupiter.version>
-        <mockito-core-version>5.6.0</mockito-core-version>
-        <mockito-junit-jupiter-version>5.1.1</mockito-junit-jupiter-version>
+        <!--
+            Mockito's inline mock maker rewrites classes through Byte Buddy, so it has to understand the
+            running JVM's class file version. 5.6.0 (Byte Buddy 1.14.x) cannot, and on JDK 26 every test
+            with an @Mock died in @BeforeEach with
+              MockitoException: Could not modify all classes [...]
+            — 280 errors in reader-ddot alone, which read as a broken build rather than an unsupported JDK.
+            Keep these two in lockstep, and expect to bump them again for each new JDK.
+        -->
+        <mockito-core-version>5.20.0</mockito-core-version>
+        <mockito-junit-jupiter-version>5.20.0</mockito-junit-jupiter-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
         <!-- Aligned with Spring Boot 4.0.6 (jackson 2 BOM 2.21.2). jackson-annotations dropped patch versions from 2.20 onwards. -->
         <jackson-core-version>3.2.0</jackson-core-version>
