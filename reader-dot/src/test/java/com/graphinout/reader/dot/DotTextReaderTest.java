@@ -72,50 +72,17 @@ class DotTextReaderTest {
         shouldWorkAsIntended(res.asPath(),res.resource());
     }
 
-    /**
-     * Graphviz DOT fixtures tagged {@code --INVALIDdot} that {@link DotReader} accepts in silence — no
-     * exception, no {@code Error}-level {@link com.graphinout.foundation.pure.input.ContentError}.
-     *
-     * <p>The list exists so the gap is COUNTED. This assertion used to be
-     * {@code if (isInvalid(...)) return;} — a green test that asserted nothing and hid the gap entirely.
-     * An unlisted invalid fixture that slips through now fails, and a listed one that starts being
-     * rejected also fails, so the waiver can neither grow nor rot unnoticed.
-     *
-     * <p>All four were adjudicated by running <b>Graphviz 15.1.0</b> ({@code dot -Tcanon}) over them,
-     * rather than by reading the grammar: each exits non-zero with a syntax error, so the corpus is right
-     * and the reader is wrong in every remaining case. Three share one root cause — DOT's
-     * {@code edge_stmt} is {@code node_id (edgeop node_id)* [attr_list]}, so the attribute list
-     * TERMINATES the statement and {@code A -> B [color=red] -> C} cannot continue past it:
-     * <ul>
-     *   <li>{@code edge-mid-attrs} — {@code A -> B [color=red] -> C;} — {@code syntax error near '->'}</li>
-     *   <li>{@code edge-multi-mid-attrs} — {@code A -> B [label="x"] -> C [color=blue] -> D;} — same</li>
-     *   <li>{@code node-attrs-before-edge} — {@code A [label="x"] -> B;} — same</li>
-     *   <li>{@code group-with-subgraph} — {@code A -> } &#123;{@code B, subgraph } &#123;{@code C; D} &#125;&#125;{@code ;}
-     *       — {@code syntax error near 'subgraph'}. A comma is not a statement separator in DOT; it is
-     *       legal only inside an {@code a_list}.</li>
-     * </ul>
-     * Fixing them means making {@code DotReader} enforce statement termination, at which point the entry
-     * comes off this list (and the test will insist on it).
-     *
-     * <p>A fifth entry, {@code example4}, was removed rather than fixed: Graphviz parses it cleanly
-     * (exit 0), so the FIXTURE was mislabeled and the reader was right all along. Its tag was a fossil —
-     * {@code git log --follow} shows it renamed from {@code example4.dot} in "DOT: refactor jgraphT parser
-     * handling", i.e. tagged when the then-current JGraphT parser choked on it, recording "our parser
-     * cannot read this" rather than "this is not DOT". It was later moved into this module, where the tag
-     * asserted something untrue. It is now plain {@code example4.dot} and is covered as a valid fixture.
-     */
-    private static final java.util.Set<String> SILENTLY_ACCEPTED_INVALID = java.util.Set.of(
-            "text/dot/generated/edge-mid-attrs--INVALIDdot.dot",
-            "text/dot/generated/edge-multi-mid-attrs--INVALIDdot.dot",
-            "text/dot/generated/group-with-subgraph--INVALIDdot.dot",
-            "text/dot/generated/node-attrs-before-edge--INVALIDdot.dot");
-
     @ParameterizedTest
     @MethodSource("dotResources")
     void shouldWorkAsIntended(String displayPath, Resource resource) throws IOException {
         // A fixture tagged --INVALIDdot must be REJECTED, not skipped: the reader either throws or reports
         // at least one Error-level ContentError. This was an early `return`, which made the case report
         // green having asserted nothing — invisible even as a skip.
+        //
+        // There used to be a SILENTLY_ACCEPTED_INVALID waiver here, counting the four fixtures the reader
+        // swallowed in silence. All four are now rejected (DotLines2CjDocument enforces that an attr_list
+        // terminates its statement, and that a ',' chains node ids rather than separating statements), so
+        // the waiver is gone and this assertion applies unconditionally.
         if (TestFileUtil.isInvalid(resource, "dot")) {
             java.util.List<com.graphinout.foundation.pure.input.ContentError> errors = new java.util.ArrayList<>();
             underTest.setContentErrorHandler(errors::add);
@@ -127,14 +94,9 @@ class DotTextReaderTest {
             }
             boolean rejected = threw || errors.stream()
                     .anyMatch(e -> e.level == com.graphinout.foundation.pure.input.ContentError.ErrorLevel.Error);
-            boolean knownAccepted = SILENTLY_ACCEPTED_INVALID.stream().anyMatch(resource.getPath()::endsWith);
-            if (!rejected && !knownAccepted) {
+            if (!rejected) {
                 throw new AssertionError("fixture is tagged --INVALIDdot but DotReader accepted it without"
                         + " throwing and without a single Error-level ContentError: " + resource.getPath());
-            }
-            if (rejected && knownAccepted) {
-                throw new AssertionError(resource.getPath() + " is listed in SILENTLY_ACCEPTED_INVALID but"
-                        + " is now properly rejected — remove it from that list.");
             }
             return;
         }

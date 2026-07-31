@@ -10,6 +10,7 @@ import com.graphinout.base.text.TextReader;
 import com.graphinout.base.text.TextWriterOnStringBuilder;
 import io.github.classgraph.Resource;
 import jdk.jfr.Description;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -28,10 +29,11 @@ class DotCjTest {
     @MethodSource("com.graphinout.reader.dot.DotTests#dotResources")
     @Description("Test DOT->CjDoc->DOT (all)")
     void test_Dot_Cj_Dot(String displayName, Resource resource) throws IOException {
-        if(TestFileUtil.isInvalid(resource, "dot")) {
-            log.info("Skipping invalid resource "+resource.getURI());
-            return;
-        }
+        // A --INVALIDdot fixture is rejected by the parser, so there is no CJ document to round-trip here.
+        // An abort records a real skip with a reason; a bare `return` would report a PASS having asserted
+        // nothing. That the rejection HAPPENS is asserted by DotTextReaderTest#shouldWorkAsIntended.
+        Assumptions.assumeFalse(TestFileUtil.isInvalid(resource, "dot"),
+                () -> "fixture is tagged --INVALIDdot; rejection is asserted in DotTextReaderTest: " + resource.getPath());
 
         String dotText1 = resource.getContentAsString();
 
@@ -58,6 +60,11 @@ class DotCjTest {
     @MethodSource("com.graphinout.reader.dot.DotTests#dotResources")
     @Description("Test DOT->CjDoc->DOT (all)")
     void test_Dot_Cj_Dot_Cj(String displayName, Resource resource) throws IOException {
+        // A --INVALIDdot fixture is rejected by the parser, so there is no CJ document to round-trip here.
+        // An abort records a real skip with a reason; a bare `return` would report a PASS having asserted
+        // nothing. That the rejection HAPPENS is asserted by DotTextReaderTest#shouldWorkAsIntended.
+        Assumptions.assumeFalse(TestFileUtil.isInvalid(resource, "dot"),
+                () -> "fixture is tagged --INVALIDdot; rejection is asserted in DotTextReaderTest: " + resource.getPath());
         String dotText1 = resource.getContentAsString();
         SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", dotText1);
 

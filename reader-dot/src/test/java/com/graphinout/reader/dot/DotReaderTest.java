@@ -45,6 +45,11 @@ public class DotReaderTest extends AbstractReaderTest {
         GioReader gioReader = new DotReader();
         ReaderTests.forEachReadableResource(gioReader, resource -> {
             try {
+                if (TestFileUtil.isInvalid(resource, "dot")) {
+                    // Fixtures tagged --INVALIDdot are negative tests: the reader is supposed to reject them.
+                    // DotTextReaderTest#shouldWorkAsIntended asserts that it does.
+                    return;
+                }
                 String content = resource.getContentAsString();
                 InputSource inputSource = SingleInputSourceOfString.of(resource.getPath(), content);
                 DotReader.readToCjJson(inputSource);

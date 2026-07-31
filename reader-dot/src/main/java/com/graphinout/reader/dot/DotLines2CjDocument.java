@@ -67,9 +67,82 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             if (!kw.equals(got)) throw new IllegalStateException("Expected keyword '" + kw + "' but got '" + got + "'");
         }
 
+        /**
+         * Consume the optional separator that may follow a statement. A {@code ';'} genuinely separates
+         * statements. A {@code ','} does not: in DOT a comma only chains node ids into a nodelist
+         * ({@code a, b -> c}), so whatever follows it has to be another node id.
+         */
         void consumeOptionalSemicolon() {
             skipWs();
-            if (!eof() && (s.charAt(pos) == ';' || s.charAt(pos) == ',')) pos++;
+            if (eof()) return;
+            char c = s.charAt(pos);
+            if (c == ';') {
+                pos++;
+            } else if (c == ',') {
+                pos++;
+                requireNodeIdAfterComma();
+            }
+        }
+
+        /**
+         * Consume separators between the elements of an endpoint group / nodelist, applying the same
+         * comma rule as {@link #consumeOptionalSemicolon()}.
+         */
+        void consumeGroupSeparators() {
+            while (true) {
+                skipWs();
+                if (eof()) break;
+                char c = s.charAt(pos);
+                if (c == ',') {
+                    pos++;
+                    requireNodeIdAfterComma();
+                    continue;
+                }
+                if (c == ';') {
+                    pos++;
+                    continue;
+                }
+                break;
+            }
+        }
+
+        /**
+         * A comma chains node ids ({@code a, b}); it is not a general separator. Reject the constructs
+         * Graphviz rejects after one — {@code A -> } &#123;{@code B, subgraph } &#123;{@code C; D} &#125;&#125;
+         * is "syntax error near 'subgraph'".
+         */
+        void requireNodeIdAfterComma() {
+            int commaPos = pos - 1;
+            skipWs();
+            if (eof()) throw new IllegalStateException(
+                    "Unexpected end of input after ',' at pos " + commaPos + ": a comma chains node ids, so it must be followed by a node id");
+            char c = s.charAt(pos);
+            if (c == CURLY_BRACE_OPEN || c == CURLY_BRACE_CLOSE || c == ';' || c == ',' || c == '[' || c == ']' || c == '=') {
+                throw new IllegalStateException("Unexpected '" + c + "' at pos " + pos + " after the ',' at pos "
+                        + commaPos + ": a comma chains node ids (as in 'a, b -> c'), so it must be followed by a node id");
+            }
+            if (lookaheadKeyword(SUBGRAPH)) {
+                throw new IllegalStateException("Unexpected keyword '" + SUBGRAPH + "' at pos " + pos
+                        + " after the ',' at pos " + commaPos
+                        + ": a comma chains node ids (as in 'a, b -> c'), so it must be followed by a node id");
+            }
+        }
+
+        /**
+         * An {@code attr_list} terminates the statement it belongs to. DOT's grammar is
+         * {@code node_stmt : node_id [attr_list]} and {@code edge_stmt : (node_id|subgraph) edgeRHS [attr_list]},
+         * so a {@code ']'} can be followed by the next statement but never by another edge operator. This
+         * rejects {@code A -> B [color=red] -> C} and {@code A [label="x"] -> B}, both of which Graphviz
+         * reports as "syntax error near '->'".
+         */
+        void expectNoEdgeOpAfterAttrList(String stmtKind) {
+            skipWs();
+            if (!eof() && (match("->") || match("--"))) {
+                String op = s.substring(pos, Math.min(pos + 2, s.length()));
+                throw new IllegalStateException("Unexpected edge operator '" + op + "' at pos " + pos
+                        + ": an attribute list terminates the enclosing " + stmtKind + " statement, so '" + op
+                        + "' cannot continue it");
+            }
         }
 
         boolean eof() {return pos >= s.length();}
@@ -615,42 +688,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 if (edgeFollows && !hasEqualsInside) {
                     // Treat as endpoint group of ids and parse edge chain
                     List<NodeRef> firstSeg = readNodeRefOrGroup(p, g, directed, nodesById);
-                    p.skipWs();
-                    // Parse full edge chain starting from this group segment
-                    List<List<NodeRef>> segments = new ArrayList<>();
-                    segments.add(firstSeg);
-                    List<Attr> attrsAccum = new ArrayList<>();
-                    while (true) {
-                        p.skipWs();
-                        while (!p.eof() && p.peek() == '[') {
-                            attrsAccum.addAll(p.readAttrList(null));
-                            p.skipWs();
-                        }
-                        if (!p.lookaheadEdgeOp()) break;
-                        p.readEdgeOp();
-                        List<NodeRef> nextSeg = readNodeRefOrGroup(p, g, directed, nodesById);
-                        segments.add(nextSeg);
-                    }
-                    while (true) {
-                        p.skipWs();
-                        if (!p.eof() && p.peek() == '[') {
-                            attrsAccum.addAll(p.readAttrList(null));
-                            continue;
-                        }
-                        break;
-                    }
-                    // Emit edges for each adjacent pair of segments
-                    for (int j = 0; j + 1 < segments.size(); j++) {
-                        List<NodeRef> left = segments.get(j);
-                        List<NodeRef> right = segments.get(j + 1);
-                        for (NodeRef a : left)
-                            for (NodeRef b : right) {
-                                nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
-                                nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
-                                addEdge(g, a, b, directed, attrsAccum);
-                            }
-                    }
-                    p.consumeOptionalSemicolon();
+                    parseEdgeChainTail(p, g, directed, nodesById, firstSeg, new ArrayList<>());
                     continue;
                 } else {
                     // Anonymous subgraph block
@@ -692,41 +730,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 if (edgeAfterBody) {
                     // Parse as edge chain starting with a subgraph endpoint
                     List<NodeRef> firstSeg = readNodeRefOrGroup(p, g, directed, nodesById);
-                    p.skipWs();
-                    List<List<NodeRef>> segments = new ArrayList<>();
-                    segments.add(firstSeg);
-                    List<Attr> attrsAccum = new ArrayList<>();
-                    while (true) {
-                        p.skipWs();
-                        while (!p.eof() && p.peek() == '[') {
-                            attrsAccum.addAll(p.readAttrList(null));
-                            p.skipWs();
-                        }
-                        if (!p.lookaheadEdgeOp()) break;
-                        p.readEdgeOp();
-                        List<NodeRef> nextSeg = readNodeRefOrGroup(p, g, directed, nodesById);
-                        segments.add(nextSeg);
-                    }
-                    while (true) {
-                        p.skipWs();
-                        if (!p.eof() && p.peek() == '[') {
-                            attrsAccum.addAll(p.readAttrList(null));
-                            continue;
-                        }
-                        break;
-                    }
-                    // Emit edges for each adjacent pair of segments
-                    for (int j = 0; j + 1 < segments.size(); j++) {
-                        List<NodeRef> left = segments.get(j);
-                        List<NodeRef> right = segments.get(j + 1);
-                        for (NodeRef a : left)
-                            for (NodeRef b : right) {
-                                nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
-                                nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
-                                addEdge(g, a, b, directed, attrsAccum);
-                            }
-                    }
-                    p.consumeOptionalSemicolon();
+                    parseEdgeChainTail(p, g, directed, nodesById, firstSeg, new ArrayList<>());
                     continue;
                 }
             }
@@ -804,78 +808,79 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             }
             // Node or Edge statement
             NodeRef first = readNodeRef(p);
-            // collect attribute lists that may appear before the first edge operator
-            List<Attr> attrsPreEdge = new ArrayList<>();
+            // Collect the attr_list(s) that may directly follow the first node id. `a [x=1][y=2]` is one
+            // node_stmt; an attr_list here CLOSES the statement, so `A [label="x"] -> B` is malformed.
+            List<Attr> attrs = new ArrayList<>();
+            boolean sawAttrList = false;
             while (true) {
                 p.skipWs();
                 if (!p.eof() && p.peek() == '[') {
-                    attrsPreEdge.addAll(p.readAttrList(null));
+                    attrs.addAll(p.readAttrList(null));
+                    sawAttrList = true;
                     continue;
                 }
                 break;
             }
+            if (sawAttrList) p.expectNoEdgeOpAfterAttrList("node");
             p.skipWs();
             if (p.lookaheadEdgeOp()) {
-                // Edge statement: parse as a sequence of segments, each segment may be a single nodeRef or a {group}
-                List<List<NodeRef>> segments = new ArrayList<>();
-                segments.add(List.of(first));
-                // accumulate attributes that may appear between segments; they apply to edges from that point forward
-                List<Attr> attrsAccum = new ArrayList<>(attrsPreEdge);
-                while (true) {
-                    p.skipWs();
-                    // mid-edge attribute lists allowed here
-                    boolean consumedAttrs = false;
-                    while (!p.eof() && p.peek() == '[') {
-                        attrsAccum.addAll(p.readAttrList(null));
-                        consumedAttrs = true;
-                        p.skipWs();
-                    }
-                    if (!p.lookaheadEdgeOp()) break;
-                    p.readEdgeOp();
-                    List<NodeRef> nextSeg = readNodeRefOrGroup(p, g, directed, nodesById);
-                    segments.add(nextSeg);
-                }
-                // also allow trailing attribute lists
-                while (true) {
-                    p.skipWs();
-                    if (!p.eof() && p.peek() == '[') {
-                        attrsAccum.addAll(p.readAttrList(null));
-                        continue;
-                    }
-                    break;
-                }
-                // Emit edges for each adjacent pair of segments (DOT semantics)
-                for (int i = 0; i + 1 < segments.size(); i++) {
-                    List<NodeRef> left = segments.get(i);
-                    List<NodeRef> right = segments.get(i + 1);
-                    for (NodeRef a : left) {
-                        for (NodeRef b : right) {
-                            // ensure nodes exist
-                            nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
-                            nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
-                            addEdge(g, a, b, directed, attrsAccum);
-                        }
-                    }
-                }
-                p.consumeOptionalSemicolon();
+                // Edge statement: a sequence of segments, each a single nodeRef or a {group}.
+                // `attrs` is provably empty here — an attr_list before the edgeop was rejected above.
+                parseEdgeChainTail(p, g, directed, nodesById, List.of(first), attrs);
             } else {
-                // Node statement with optional multiple attr lists.
-                // Seed with attrsPreEdge: a pure node stmt like `a [label="Foo"]` has its attr list
-                // consumed into attrsPreEdge above, so it must be applied here too (issue #133).
-                List<Attr> attrs = new ArrayList<>(attrsPreEdge);
-                while (true) {
-                    p.skipWs();
-                    if (!p.eof() && p.peek() == '[') {
-                        attrs.addAll(p.readAttrList(null));
-                        continue;
-                    }
-                    break;
-                }
+                // Node statement. Its attr_list was consumed above, so apply it here (issue #133).
                 ICjNodeMutable node = nodesById.computeIfAbsent(first.nodeId, id -> createNode(g, id));
                 applyAttrsToHasDataAndLabel(attrs, node);
                 p.consumeOptionalSemicolon();
             }
         }
+    }
+
+    /**
+     * Parse the rest of an edge statement whose first endpoint has already been read, then emit one CJ edge per
+     * adjacent endpoint pair and consume the statement separator.
+     * <p>
+     * DOT: {@code edge_stmt : (node_id | subgraph) edgeRHS [attr_list]} — the {@code attr_list} comes LAST and
+     * terminates the statement, so an edge operator may never follow it. That is enforced here, which is what
+     * makes {@code A -> B [color=red] -> C} the syntax error Graphviz says it is.
+     *
+     * @param firstSeg the endpoint already parsed (a single node id, a group, or a subgraph)
+     * @param attrs    attributes collected before the chain; empty for a well-formed statement
+     */
+    private void parseEdgeChainTail(Parser p, ICjGraphMutable g, boolean directed,
+            Map<String, ICjNodeMutable> nodesById, List<NodeRef> firstSeg, List<Attr> attrs) {
+        List<List<NodeRef>> segments = new ArrayList<>();
+        segments.add(firstSeg);
+        while (true) {
+            p.skipWs();
+            if (!p.lookaheadEdgeOp()) break;
+            p.readEdgeOp();
+            segments.add(readNodeRefOrGroup(p, g, directed, nodesById));
+        }
+        boolean sawAttrList = false;
+        while (true) {
+            p.skipWs();
+            if (!p.eof() && p.peek() == '[') {
+                attrs.addAll(p.readAttrList(null));
+                sawAttrList = true;
+                continue;
+            }
+            break;
+        }
+        if (sawAttrList) p.expectNoEdgeOpAfterAttrList("edge");
+        for (int i = 0; i + 1 < segments.size(); i++) {
+            List<NodeRef> left = segments.get(i);
+            List<NodeRef> right = segments.get(i + 1);
+            for (NodeRef a : left) {
+                for (NodeRef b : right) {
+                    // ensure nodes exist
+                    nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
+                    nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
+                    addEdge(g, a, b, directed, attrs);
+                }
+            }
+        }
+        p.consumeOptionalSemicolon();
     }
 
     private NodeRef readNodeRef(Parser p) {
@@ -954,12 +959,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                     // add all nodes from subgraph to the group list
                     nestedRef[0].nodes().forEach(n -> list.add(new NodeRef(n.id(), null)));
                     // optional separators after subgraph block
-                    while (true) {
-                        p.skipWs();
-                        if (p.consumeIf(',')) continue;
-                        if (p.consumeIf(';')) continue;
-                        break;
-                    }
+                    p.consumeGroupSeparators();
                     continue;
                 }
                 String maybeKey = p.tryReadIdOrString();
@@ -968,12 +968,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                     if (p.consumeIf('=')) {
                         p.readIdOrString();
                         // consume separators after assignment
-                        while (true) {
-                            p.skipWs();
-                            if (p.consumeIf(',')) continue;
-                            if (p.consumeIf(';')) continue;
-                            break;
-                        }
+                        p.consumeGroupSeparators();
                         continue; // do not add a node for assignments
                     } else {
                         // not an assignment; rewind and read a node ref
@@ -983,12 +978,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 NodeRef nr = readNodeRef(p);
                 list.add(nr);
                 // optional separators: comma or semicolon; also allow plain whitespace between ids
-                while (true) {
-                    p.skipWs();
-                    if (p.consumeIf(',')) continue;
-                    if (p.consumeIf(';')) continue;
-                    break;
-                }
+                p.consumeGroupSeparators();
             }
             return list;
         }
