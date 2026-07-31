@@ -31,6 +31,24 @@ class Neo4jRoundTripTest {
 
     private static final Logger log = getLogger(Neo4jRoundTripTest.class);
 
+    /**
+     * Canonical CJ fixtures whose {@code CJ -> Neo4j JSON -> CJ} round-trip currently throws
+     * {@code Cannot start nodes in ArrayOfEdges} — every one of them a nested / compound graph shape the
+     * Neo4j writer cannot yet stream.
+     * <p>
+     * This list exists so the failures are <em>counted</em>. The parameterized test used to wrap the whole
+     * round-trip in {@code catch (Exception e) { log.warn("Skipping {} …") }}, which is worse than a skip:
+     * a crashing fixture reported green, JUnit recorded no skip, and the only trace was a WARN nobody
+     * reads. Now an unlisted fixture that crashes FAILS the build, and a listed one that starts passing
+     * also fails — so the waiver cannot silently grow, and it cannot rot once the writer is fixed.
+     */
+    private static final java.util.Set<String> KNOWN_FAILING = java.util.Set.of(
+            "baseuris.cj.json",
+            "compound-nodes.cj.json",
+            "full.cj.json",
+            "nested-graphs.cj.json",
+            "sample-1.cj.canonical.json");
+
     @Test
     void testRoundTrip() throws IOException {
         // Use our test file
@@ -116,10 +134,20 @@ class Neo4jRoundTripTest {
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test CJ to Neo4j JSON round-trip - all files")
     void testRoundTripAllCjResources(String displayPath, Resource resource) {
+        boolean knownToFail = KNOWN_FAILING.stream().anyMatch(displayPath::endsWith);
         try {
             testCjToNeo4jRoundTrip(resource);
         } catch (Exception e) {
-            log.warn("Skipping {} due to: {}", displayPath, e.getMessage());
+            if (!knownToFail) {
+                throw new AssertionError("CJ -> Neo4j JSON -> CJ round-trip crashed for " + displayPath
+                        + ". If this is a genuine, accepted limitation, add the fixture to KNOWN_FAILING"
+                        + " with the reason — do not re-broaden the catch.", e);
+            }
+            return;
+        }
+        if (knownToFail) {
+            fail(displayPath + " is listed in KNOWN_FAILING but now round-trips cleanly. Remove it from"
+                    + " that list so the fixture stays covered.");
         }
     }
 

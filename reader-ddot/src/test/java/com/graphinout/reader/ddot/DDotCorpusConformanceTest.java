@@ -10,17 +10,14 @@ import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -51,30 +48,15 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class DDotCorpusConformanceTest {
 
-    /** Override for a corpus checked out somewhere other than as a sibling of the graphinout checkout. */
-    private static final String DIR_PROP = "ddot.corpus.dir";
-
-    /**
-     * Sibling checkouts of https://github.com/calpano/ddot.it, relative to this module's working directory
-     * (surefire runs in {@code reader-ddot/}), covering both a sibling-of-the-module and a
-     * sibling-of-the-repo layout.
-     */
-    private static final List<Path> DEFAULT_CASES = List.of(
-            Path.of("..", "..", "ddot.it", "test-data", "cases"),
-            Path.of("..", "ddot.it", "test-data", "cases"));
-
-    /** The corpus has 35 cases; anything materially smaller means we are asserting against a stub. */
-    static final int MIN_CASES = 30;
-
     private static final String EVENT_KIND = "ddot";
     private static final String EVENT_SOURCE = "input.ddot";
 
     @Test
     void readerParsesWithTheCanonicalEventStream() throws IOException {
         List<String> failures = new ArrayList<>();
-        for (Path caseDir : cases()) {
-            String input = Files.readString(requireFile(caseDir, "input.ddot"));
-            String expected = Files.readString(requireFile(caseDir, "expected.events.jsonl"));
+        for (Path caseDir : DdotCorpus.caseDirs()) {
+            String input = Files.readString(DdotCorpus.requireFile(caseDir, "input.ddot"));
+            String expected = Files.readString(DdotCorpus.requireFile(caseDir, "expected.events.jsonl"));
             String actual = DdotEventExporter.toJsonl(DdotEventExporter.parse(input, EVENT_KIND, EVENT_SOURCE));
             if (!expected.stripTrailing().equals(actual.stripTrailing())) {
                 failures.add(caseDir.getFileName().toString());
@@ -93,9 +75,9 @@ class DDotCorpusConformanceTest {
     @Test
     void everyCaseImportsWithoutErrors() throws IOException {
         List<String> failures = new ArrayList<>();
-        for (Path caseDir : cases()) {
+        for (Path caseDir : DdotCorpus.caseDirs()) {
             List<ContentError> errors = new ArrayList<>();
-            read(Files.readString(requireFile(caseDir, "input.ddot")), caseDir.getFileName().toString(), errors);
+            read(Files.readString(DdotCorpus.requireFile(caseDir, "input.ddot")), caseDir.getFileName().toString(), errors);
             List<ContentError> fatal = errors.stream().filter(ContentError::isError).toList();
             if (!fatal.isEmpty()) failures.add(caseDir.getFileName() + " " + fatal);
         }
@@ -105,9 +87,9 @@ class DDotCorpusConformanceTest {
     @Test
     void everyEventBecomesExactlyOneCjFact() throws IOException {
         List<String> failures = new ArrayList<>();
-        for (Path caseDir : cases()) {
-            String input = Files.readString(requireFile(caseDir, "input.ddot"));
-            int expected = Files.readAllLines(requireFile(caseDir, "expected.events.jsonl")).stream()
+        for (Path caseDir : DdotCorpus.caseDirs()) {
+            String input = Files.readString(DdotCorpus.requireFile(caseDir, "input.ddot"));
+            int expected = Files.readAllLines(DdotCorpus.requireFile(caseDir, "expected.events.jsonl")).stream()
                     .filter(l -> !l.isBlank()).toList().size();
             ICjDocument doc = read(input, caseDir.getFileName().toString(), new ArrayList<>());
             int actual = cjFacts(doc);
@@ -137,9 +119,9 @@ class DDotCorpusConformanceTest {
     @Test
     void everyCaseRoundTripsThroughTheWriter() throws IOException {
         List<String> failures = new ArrayList<>();
-        for (Path caseDir : cases()) {
+        for (Path caseDir : DdotCorpus.caseDirs()) {
             String name = caseDir.getFileName().toString();
-            ICjDocument cj1 = read(Files.readString(requireFile(caseDir, "input.ddot")), name, new ArrayList<>());
+            ICjDocument cj1 = read(Files.readString(DdotCorpus.requireFile(caseDir, "input.ddot")), name, new ArrayList<>());
             String ddot2 = new DDotOutput(cj1).toDDot();
             ICjDocument cj2 = read(ddot2, name + ".roundtrip", new ArrayList<>());
             if (cjFacts(cj1) == 0) {
@@ -210,65 +192,4 @@ class DDotCorpusConformanceTest {
         return value.isArray() ? value.asArray().size() : 1;
     }
 
-    // --- corpus resolution ---------------------------------------------------
-
-    /**
-     * The case directories, or a loud skip when the corpus is not checked out. Never returns an empty or
-     * suspiciously short list: that fails instead, so a missing corpus can never masquerade as a pass.
-     */
-    private static List<Path> cases() throws IOException {
-        Path dir = resolveCasesDir();
-        if (dir == null || !Files.isDirectory(dir)) {
-            String looked = dir != null ? dir.toAbsolutePath().normalize().toString()
-                    : DEFAULT_CASES.stream().map(p -> p.toAbsolutePath().normalize().toString())
-                            .reduce((a, b) -> a + " , " + b).orElse("?");
-            System.err.println();
-            System.err.println("==================================================================");
-            System.err.println("  SKIPPING ddot.it CORPUS CONFORMANCE TESTS (reader-ddot)");
-            System.err.println("  looked for : " + looked);
-            System.err.println("  fix        : clone https://github.com/calpano/ddot.it as a sibling");
-            System.err.println("               of the graphinout checkout, or run with");
-            System.err.println("               -D" + DIR_PROP + "=/abs/path/to/ddot.it/test-data/cases");
-            System.err.println("  NOTE       : DDotReader is NOT being checked against the 35-case");
-            System.err.println("               shared corpus in this run.");
-            System.err.println("==================================================================");
-            System.err.println();
-            Assumptions.abort("ddot.it golden corpus not found — see the banner above. Override with -D"
-                    + DIR_PROP + "=<abs path>.");
-        }
-        List<Path> caseDirs;
-        try (Stream<Path> s = Files.list(dir)) {
-            caseDirs = s.filter(Files::isDirectory).sorted(Comparator.naturalOrder()).toList();
-        }
-        if (caseDirs.size() < MIN_CASES) {
-            fail("The ddot.it corpus at " + dir.toAbsolutePath().normalize() + " has only " + caseDirs.size()
-                    + " case(s); at least " + MIN_CASES + " are expected (the corpus has 35). A truncated"
-                    + " corpus would make this conformance test pass vacuously, so this is a failure, not a skip.");
-        }
-        return caseDirs;
-    }
-
-    /**
-     * {@code -Dddot.corpus.dir} if set (pointing either at {@code cases/} itself or at the {@code test-data/}
-     * directory containing it), else the first existing sibling checkout. Relative paths resolve against the
-     * working directory, which surefire sets to this module's directory.
-     */
-    private static @org.jspecify.annotations.Nullable Path resolveCasesDir() {
-        String configured = System.getProperty(DIR_PROP);
-        if (configured != null && !configured.isBlank()) {
-            Path p = Path.of(configured.trim());
-            Path nested = p.resolve("cases");
-            return Files.isDirectory(nested) ? nested : p;
-        }
-        return DEFAULT_CASES.stream().filter(Files::isDirectory).findFirst().orElse(null);
-    }
-
-    private static Path requireFile(Path caseDir, String name) {
-        Path p = caseDir.resolve(name);
-        if (!Files.isRegularFile(p)) {
-            fail("Corpus case " + caseDir.getFileName() + " is missing " + name + " (" + p + ")."
-                    + " An incomplete case would be silently skipped, so this is a failure.");
-        }
-        return p;
-    }
 }

@@ -108,12 +108,13 @@ class PgJsonRoundTripTest {
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
     @DisplayName("Test CJ to PG-JSON round-trip - all files")
-    void testRoundTripAllCjResources(String displayPath, Resource resource) {
-        try {
-            testCjToPgJsonRoundTrip(resource);
-        } catch (Exception e) {
-            log.warn("Skipping {} due to: {}", displayPath, e.getMessage());
-        }
+    void testRoundTripAllCjResources(String displayPath, Resource resource) throws IOException {
+        // No catch here on purpose. This used to be wrapped in
+        //   catch (Exception e) { log.warn("Skipping {} due to: {}", …) }
+        // which made a crashing fixture report GREEN — no failure, no skip marker, just a WARN. Every
+        // canonical CJ fixture currently round-trips through PG-JSON, so the strict form costs nothing
+        // today and is the whole point tomorrow: a regression must fail, not whisper.
+        testCjToPgJsonRoundTrip(resource);
     }
 
     private void testCjToPgJsonRoundTrip(Resource res) throws IOException {
