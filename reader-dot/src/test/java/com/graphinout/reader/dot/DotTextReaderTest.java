@@ -73,14 +73,30 @@ class DotTextReaderTest {
     }
 
     /**
-     * DOT fixtures tagged {@code --INVALIDdot} that {@link DotReader} currently accepts in silence — no
-     * exception, no {@code Error}-level {@link com.graphinout.foundation.pure.input.ContentError}. The
-     * corpus says these are malformed; the reader disagrees, and one of the two is wrong.
+     * Graphviz DOT fixtures tagged {@code --INVALIDdot} that {@link DotReader} currently accepts in
+     * silence — no exception, no {@code Error}-level
+     * {@link com.graphinout.foundation.pure.input.ContentError}.
      *
      * <p>The list exists so the disagreement is COUNTED. This assertion used to be
      * {@code if (isInvalid(...)) return;} — a green test that asserted nothing and hid the gap entirely.
      * An unlisted invalid fixture that slips through now fails, and a listed one that starts being
      * rejected also fails, so the waiver can neither grow nor rot unnoticed.
+     *
+     * <p><b>The entries do not all need the same fix.</b> Per-fixture verdict, so nobody goes hunting
+     * for a parser bug that isn't there:
+     * <ul>
+     *   <li>{@code edge-mid-attrs}, {@code edge-multi-mid-attrs}, {@code node-attrs-before-edge} —
+     *       genuinely malformed. DOT's {@code edge_stmt} is
+     *       {@code node_id (edgeop node_id)* [attr_list]}: the attribute list TERMINATES the statement,
+     *       so {@code A -> B [color=red] -> C} cannot continue past it. Real reader gaps; tighten the
+     *       parser.</li>
+     *   <li>{@code group-with-subgraph} — arguable. Anonymous subgraphs are legal DOT; the questionable
+     *       part is nesting one inside a {@code {...}} group with a comma separator. Wants checking
+     *       against Graphviz itself before either side is called wrong.</li>
+     *   <li>{@code example4} — the FIXTURE looks wrong, not the reader. Space-separated attributes in an
+     *       attr_list, {@code \l}/{@code \n}/{@code \r} label escapes and semicolon-free statements are
+     *       all legal DOT. This one probably wants retagging, not a parser change.</li>
+     * </ul>
      */
     private static final java.util.Set<String> SILENTLY_ACCEPTED_INVALID = java.util.Set.of(
             "text/dot/example4--INVALIDdot.dot",
