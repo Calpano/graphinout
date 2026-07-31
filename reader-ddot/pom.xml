@@ -21,7 +21,7 @@
           here: reader-ddot depends on com.graphinout:base, so a ddot-core that depended on graphinout
           would close a build cycle. See ddot-core's pom for the enforcer rules that keep it that way.
         -->
-        <dependency><groupId>com.calpano.ddot.it</groupId><artifactId>ddot-core</artifactId><version>0.1.0</version></dependency>
+        <dependency><groupId>com.calpano.ddot.it</groupId><artifactId>ddot-core</artifactId><version>0.1.1</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
         <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
 
