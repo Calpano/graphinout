@@ -225,7 +225,7 @@ The reader supports multiple RDF serialization formats:
 * **RDF/XML** (`.rdf`) - Default format
 * **Turtle** (`.ttl`) - Recommended for readability
 * **N-Triples** (`.nt`) - Simple line-based format
-* **N3** (`.n3`) - Superset of Turtle
+* **N3** (`.n3`) - Superset of Turtle. NOT supported: no Java N3 parser exists (Jena's `Lang.N3` is an alias for the Turtle parser), so `.n3` is not claimed by any reader. A `.n3` file holding only Turtle should be named `.ttl`.
 * **JSON-LD** (`.jsonld`) - JSON-based format
 
 Format detection is based on file extension.

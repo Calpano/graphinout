@@ -46,11 +46,26 @@ class GioEngineCoreTest {
      * We read some inputFormat X into GraphML, write GraphML (1), read that GraphML, write to GraphML again (2);
      * compare (1) and (2)
      */
+    /**
+     * Read every test resource with every reader that claims it, asserting only that nothing blows up.
+     *
+     * <p>Was {@code @Disabled("needs to fix the generic JsonReader")} — a misdiagnosis; nothing here
+     * involves a JsonReader. Collecting every failure instead of stopping at the first showed three, all
+     * of them deliberately-malformed fixtures this sweep simply never filtered:
+     * {@code dbpedia-Karlsruhe--INVALIDrdf-json.rj}, {@code easyrdf-foaf-triples--INVALIDrdf-json.rj}, and
+     * {@code w3c-timbl-card.n3} — the last not malformed at all but valid Notation3, which no Java parser
+     * can read and which {@code RdfTurtleReader} therefore no longer claims.
+     *
+     * <p>Filtering the {@code --INVALID} fixtures is correct rather than a workaround: this sweep asserts
+     * that VALID inputs read cleanly. That the malformed ones are REJECTED is asserted by the per-format
+     * readers' own tests.
+     */
     @Test
-    @Disabled("needs to fix the generic JsonReader")
     void test() {
-        // find all resources
-        TestFileProvider.getAllTestResources().forEach(this::testTheResource);
+        // fixtures tagged --INVALID are negative tests, owned by the per-format readers
+        TestFileProvider.getAllTestResources()
+                .filter(tr -> !tr.resource().getPath().contains("--INVALID"))
+                .forEach(this::testTheResource);
 
 
 //        byte[] graphmlBytes1;

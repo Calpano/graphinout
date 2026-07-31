@@ -33,7 +33,7 @@ jobs:
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: 'temurin'
-          java-version: '21' # v21 required for Mockito, newer fails
+          java-version: '21' # Mockito 5.20 also builds clean on JDK 26 (verified); 21 kept as the CI baseline
           cache: 'maven'
           server-id: github-graphinout # This ID must match the <id> in your pom.xml's <distributionManagement>
 
