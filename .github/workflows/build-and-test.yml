@@ -16,6 +16,11 @@ jobs:
       packages: write
     env:
       MAVEN_OPTS: "-Xmx6144m"
+      # The `secrets` context is NOT available in a step-level `if:` - a workflow using it is rejected
+      # outright ("workflow file issue") and NO job runs, so the build reports failure having executed
+      # nothing. Secrets may be read in `env:`, so the presence test is materialised here as a string
+      # ("true"/"false") and the steps below branch on that instead.
+      HAS_MAVEN_CENTRAL: ${{ secrets.MAVEN_CENTRAL_USER != '' }}
     steps:
       - name: ↙️ Check out repository code from git
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -38,7 +43,7 @@ jobs:
           server-id: github-graphinout # This ID must match the <id> in your pom.xml's <distributionManagement>
 
       - name: "⚙️ Configure settings.xml for Maven (without Central)"
-        if: ${{ secrets.MAVEN_CENTRAL_USER == '' }}
+        if: env.HAS_MAVEN_CENTRAL == 'false'
         uses: s4u/maven-settings-action@894661b3ddae382f1ae8edbeab60987e08cf0788 # v4.0.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -54,7 +59,7 @@ jobs:
             }]
 
       - name: "⚙️ Configure settings.xml for Maven (with Central)"
-        if: ${{ secrets.MAVEN_CENTRAL_USER != '' }}
+        if: env.HAS_MAVEN_CENTRAL == 'true'
         uses: s4u/maven-settings-action@894661b3ddae382f1ae8edbeab60987e08cf0788 # v4.0.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
