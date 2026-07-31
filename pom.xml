@@ -81,7 +81,8 @@
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j-version>2.0.17</slf4j-version>
-        <logback-classic-version>1.5.33</logback-classic-version>
+        <!-- logback: taken from origin/main (dependabot patch bump 1.5.33 -> 1.5.34) -->
+        <logback-classic-version>1.5.34</logback-classic-version>
         <junit-jupiter.version>5.9.2</junit-jupiter.version>
         <!--
             Mockito's inline mock maker rewrites classes through Byte Buddy, so it has to understand the
@@ -94,7 +95,14 @@
         <mockito-core-version>5.20.0</mockito-core-version>
         <mockito-junit-jupiter-version>5.20.0</mockito-junit-jupiter-version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
-        <!-- Aligned with Spring Boot 4.0.6 (jackson 2 BOM 2.21.2). jackson-annotations dropped patch versions from 2.20 onwards. -->
+        <!--
+            NOTE ON THE MERGE FROM main: dependabot bumped this property to 2.21.5 there, and that bump is
+            deliberately NOT taken. On main the property still named a com.fasterxml.jackson.core (Jackson 2)
+            artifact; on this line it was repurposed by the Jackson 3 migration and now drives
+            tools.jackson.core:jackson-core / :jackson-databind below. There is no tools.jackson 2.21.5, so
+            accepting the bump would point Jackson 3 coordinates at a version that does not exist.
+            Jackson 2 artifacts are pinned separately by jackson-annotations-version.
+        -->
         <jackson-core-version>3.2.0</jackson-core-version>
         <jackson-databind-version>3.2.0</jackson-databind-version>
         <jackson-annotations-version>2.21</jackson-annotations-version>
