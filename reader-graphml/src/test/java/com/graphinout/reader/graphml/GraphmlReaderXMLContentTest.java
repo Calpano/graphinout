@@ -3,7 +3,6 @@ package com.graphinout.reader.graphml;
 import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import com.graphinout.base.xml.util.XmlTool;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -32,36 +31,26 @@ class GraphmlReaderXMLContentTest {
     }
 
     /**
-     * SAX parser not HTML parser It does not understand HTML tags, and content containing HTML structures that do not
-     * comply with the XML standard will generate an error during initial rendering.
+     * HTML embedded in a {@code <data>} element, wrapped in {@code CDATA}.
+     *
+     * <p>GraphML allows arbitrary XML inside {@code <data>}/{@code <default>}, and authors put HTML there —
+     * but HTML with void tags ({@code <meta>}, {@code <link>}, {@code <img>}) is not well-formed XML, so it
+     * can only survive as character data. Issue #84 ("HTML in GraphML") is closed as WONTFIX for exactly
+     * that reason: emitting such content back as markup would produce a file no XML parser could read.
+     *
+     * <p>What this pins is therefore the CDATA round-trip: the payload comes back byte-for-byte, still
+     * wrapped, with the key declaration, node id and {@code edgedefault} intact. That already worked — the
+     * test sat {@code @Disabled} behind #84 since ~2023 while asserting an output that no conformant XML
+     * writer could ever emit (raw unbalanced markup), and which additionally dropped the {@code <key>}
+     * declaration, {@code id="a"}, {@code edgedefault} and the XML prolog, and pinned graphml.xsd 1.0
+     * where we emit 1.1. The expectation was wrong, not the behaviour.
      */
     @Test
-    @Disabled("See issue #84")
     void html_Content_Tag_test() throws IOException {
         String resourceName = "xml/plain-xml/HTML_Content_In_Data.xml";
         String result = parseGraphmlToString(resourceName);
-        String expected = """
-            <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-            <graph>
-            <node> <data> <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <link rel="stylesheet" href="css/main.css">
-            
-                    <!-- Add icon library -->
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-                    <!-- Fonts -->
-                    </head>
-                <body>
-                    <div class="ptext">
-                        <span class="border">
-                            <img src="./img/quote6-a.png" alt="Socrates Quote">
-                        </span>
-                    </div>
-                </body></html></data></node>
-            </graph></graphml>
-            """;
-        assertEquals(expected, result);
+        String expected = TestFileUtil.resource(resourceName).getContentAsString();
+        GraphmlAssert.xAssertThatIsSameGraphml(result, expected, null);
     }
 
     @Test
