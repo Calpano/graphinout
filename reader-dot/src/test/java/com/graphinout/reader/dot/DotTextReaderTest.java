@@ -73,33 +73,38 @@ class DotTextReaderTest {
     }
 
     /**
-     * Graphviz DOT fixtures tagged {@code --INVALIDdot} that {@link DotReader} currently accepts in
-     * silence — no exception, no {@code Error}-level
-     * {@link com.graphinout.foundation.pure.input.ContentError}.
+     * Graphviz DOT fixtures tagged {@code --INVALIDdot} that {@link DotReader} accepts in silence — no
+     * exception, no {@code Error}-level {@link com.graphinout.foundation.pure.input.ContentError}.
      *
-     * <p>The list exists so the disagreement is COUNTED. This assertion used to be
+     * <p>The list exists so the gap is COUNTED. This assertion used to be
      * {@code if (isInvalid(...)) return;} — a green test that asserted nothing and hid the gap entirely.
      * An unlisted invalid fixture that slips through now fails, and a listed one that starts being
      * rejected also fails, so the waiver can neither grow nor rot unnoticed.
      *
-     * <p><b>The entries do not all need the same fix.</b> Per-fixture verdict, so nobody goes hunting
-     * for a parser bug that isn't there:
+     * <p>All four were adjudicated by running <b>Graphviz 15.1.0</b> ({@code dot -Tcanon}) over them,
+     * rather than by reading the grammar: each exits non-zero with a syntax error, so the corpus is right
+     * and the reader is wrong in every remaining case. Three share one root cause — DOT's
+     * {@code edge_stmt} is {@code node_id (edgeop node_id)* [attr_list]}, so the attribute list
+     * TERMINATES the statement and {@code A -> B [color=red] -> C} cannot continue past it:
      * <ul>
-     *   <li>{@code edge-mid-attrs}, {@code edge-multi-mid-attrs}, {@code node-attrs-before-edge} —
-     *       genuinely malformed. DOT's {@code edge_stmt} is
-     *       {@code node_id (edgeop node_id)* [attr_list]}: the attribute list TERMINATES the statement,
-     *       so {@code A -> B [color=red] -> C} cannot continue past it. Real reader gaps; tighten the
-     *       parser.</li>
-     *   <li>{@code group-with-subgraph} — arguable. Anonymous subgraphs are legal DOT; the questionable
-     *       part is nesting one inside a {@code {...}} group with a comma separator. Wants checking
-     *       against Graphviz itself before either side is called wrong.</li>
-     *   <li>{@code example4} — the FIXTURE looks wrong, not the reader. Space-separated attributes in an
-     *       attr_list, {@code \l}/{@code \n}/{@code \r} label escapes and semicolon-free statements are
-     *       all legal DOT. This one probably wants retagging, not a parser change.</li>
+     *   <li>{@code edge-mid-attrs} — {@code A -> B [color=red] -> C;} — {@code syntax error near '->'}</li>
+     *   <li>{@code edge-multi-mid-attrs} — {@code A -> B [label="x"] -> C [color=blue] -> D;} — same</li>
+     *   <li>{@code node-attrs-before-edge} — {@code A [label="x"] -> B;} — same</li>
+     *   <li>{@code group-with-subgraph} — {@code A -> } &#123;{@code B, subgraph } &#123;{@code C; D} &#125;&#125;{@code ;}
+     *       — {@code syntax error near 'subgraph'}. A comma is not a statement separator in DOT; it is
+     *       legal only inside an {@code a_list}.</li>
      * </ul>
+     * Fixing them means making {@code DotReader} enforce statement termination, at which point the entry
+     * comes off this list (and the test will insist on it).
+     *
+     * <p>A fifth entry, {@code example4}, was removed rather than fixed: Graphviz parses it cleanly
+     * (exit 0), so the FIXTURE was mislabeled and the reader was right all along. Its tag was a fossil —
+     * {@code git log --follow} shows it renamed from {@code example4.dot} in "DOT: refactor jgraphT parser
+     * handling", i.e. tagged when the then-current JGraphT parser choked on it, recording "our parser
+     * cannot read this" rather than "this is not DOT". It was later moved into this module, where the tag
+     * asserted something untrue. It is now plain {@code example4.dot} and is covered as a valid fixture.
      */
     private static final java.util.Set<String> SILENTLY_ACCEPTED_INVALID = java.util.Set.of(
-            "text/dot/example4--INVALIDdot.dot",
             "text/dot/generated/edge-mid-attrs--INVALIDdot.dot",
             "text/dot/generated/edge-multi-mid-attrs--INVALIDdot.dot",
             "text/dot/generated/group-with-subgraph--INVALIDdot.dot",
