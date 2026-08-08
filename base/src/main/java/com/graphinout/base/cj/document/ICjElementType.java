@@ -8,12 +8,12 @@ import com.graphinout.foundation.pure.util.Comparables;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import javax.annotation.concurrent.Immutable;
+//import javax.annotation.concurrent.Immutable;
 
 /**
  * Immutable, string-backed type discriminator for a CJ element (e.g. a node, edge or endpoint type).
  */
-@Immutable
+//@Immutable
 public interface ICjElementType extends Comparable<ICjElementType> {
 
     static ICjElementType fromJsonString(String json) {
