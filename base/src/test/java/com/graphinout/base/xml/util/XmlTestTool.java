@@ -3,6 +3,7 @@ package com.graphinout.base.xml.util;
 import com.graphinout.foundation.pure.xml.writer.Xml2AppendableWriter;
 import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 import io.github.classgraph.Resource;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
