@@ -4,6 +4,8 @@ import com.graphinout.foundation.pure.xml.writer.Xml2AppendableWriter;
 import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 import io.github.classgraph.Resource;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 public class XmlTestTool {
@@ -18,12 +20,17 @@ public class XmlTestTool {
      * {@link XmlTestTool#assertCanParseAsXml(Resource)}
      */
     public static void assertCanParseAsXml(Path xmlFilePath) throws Exception {
-        XmlTool.parseAndWriteXml(xmlFilePath.toFile(), Xml2AppendableWriter.createNoop());
+        parseAndWriteXml(xmlFilePath.toFile(), Xml2AppendableWriter.createNoop());
     }
 
     public static void parseAndWriteXml(Resource xmlResource, XmlWriter xmlWriter) throws Exception {
         String xmlString = xmlResource.getContentAsString();
         XmlTool.parseAndWriteXml(xmlResource.getURI().toString(), xmlString, xmlWriter);
+    }
+
+    public static void parseAndWriteXml(File xmlFile, XmlWriter xmlWriter) throws Exception {
+        String xmlString = FileUtils.readFileToString(xmlFile, StandardCharsets.UTF_8);
+        XmlTool.parseAndWriteXml(xmlFile.getAbsolutePath(), xmlString, xmlWriter);
     }
 
 }

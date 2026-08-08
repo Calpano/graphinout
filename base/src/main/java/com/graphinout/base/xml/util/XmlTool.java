@@ -6,7 +6,6 @@ import com.graphinout.base.xml.sax.Sax2XmlWriter;
 import com.graphinout.foundation.pure.xml.XML;
 import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 import com.graphinout.foundation.jvm.xml.XmlFoundation;
-import org.apache.commons.io.FileUtils;
 import org.jspecify.annotations.Nullable;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -16,17 +15,14 @@ import org.xml.sax.ext.LexicalHandler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.graphinout.foundation.pure.text.Texts.LF_10_N;
-import static org.slf4j.LoggerFactory.getLogger;
 
 public class XmlTool {
 
@@ -140,11 +136,6 @@ public class XmlTool {
         Sax2XmlWriter handler2XmlWriter = new Sax2XmlWriter(xmlWriter);
         XMLReader reader = XmlTool.createXmlReaderOn(handler2XmlWriter);
         reader.parse(saxInputSource);
-    }
-
-    public static void parseAndWriteXml(File xmlFile, XmlWriter xmlWriter) throws Exception {
-        String xmlString = FileUtils.readFileToString(xmlFile, StandardCharsets.UTF_8);
-        parseAndWriteXml(xmlFile.getAbsolutePath(), xmlString, xmlWriter);
     }
 
     public static void parseAndWriteXml(String inputName, String xmlString, XmlWriter xmlWriter) throws Exception {
