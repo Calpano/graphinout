@@ -1,7 +1,5 @@
 package com.graphinout.base.cj.data;
 
-import com.graphinout.base.cj.document.impl.CjDocumentElement;
-
 /** Represent a property in the CJ "data" object */
 public enum CjDataProperty {
     /**
@@ -47,7 +45,7 @@ public enum CjDataProperty {
     /**
      * Transient marker for synthetic nodes which had been created in the first place in GraphML to represent
      * graph-graph nesting, which GraphMl does not allow, so graph-synthNode-graph is needed. Usually removed in
-     * post-processing a {@link CjDocumentElement}. Type: boolean.
+     * post-processing a {@code CjDocumentElement}. Type: boolean.
      */
     SyntheticNode("graphml:syntheticNode");
 
