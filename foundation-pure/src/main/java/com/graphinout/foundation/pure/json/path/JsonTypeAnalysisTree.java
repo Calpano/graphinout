@@ -3,8 +3,8 @@ package com.graphinout.foundation.pure.json.path;
 import com.graphinout.foundation.pure.json.JsonType;
 import com.graphinout.foundation.pure.json.document.IJsonPrimitive;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-
 import org.jspecify.annotations.Nullable;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -27,8 +27,8 @@ public class JsonTypeAnalysisTree {
          * thrown. null represents that NO container is required because all values are primitives.
          */
         public @Nullable JsonType containerJsonType() {
-            boolean containsObjectSteps = children.keySet().stream().anyMatch(s -> s instanceof IJsonArrayNavigationStep);
-            boolean containsArraySteps = children.keySet().stream().anyMatch(s -> s instanceof IJsonObjectNavigationStep);
+            boolean containsObjectSteps = children.keySet().stream().anyMatch(s -> s instanceof IJsonObjectNavigationStep);
+            boolean containsArraySteps = children.keySet().stream().anyMatch(s -> s instanceof IJsonArrayNavigationStep);
             if (containsObjectSteps && containsArraySteps)
                 throw new IllegalStateException("Cannot have both object and array steps in the same container.");
             if (containsObjectSteps) return JsonType.Object;
