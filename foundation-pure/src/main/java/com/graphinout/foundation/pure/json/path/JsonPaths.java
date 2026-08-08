@@ -12,7 +12,6 @@ import java.util.stream.Stream;
  * JSON paths address object/array structures via steps. Each step is a String (property key) or Integer (array index).
  * Multiple steps are a path. The paths can be used in {@link IJsonValue#resolve(Object)}.
  */
-@SuppressWarnings("IfCanBeSwitch")
 public class JsonPaths {
 
     @SafeVarargs
