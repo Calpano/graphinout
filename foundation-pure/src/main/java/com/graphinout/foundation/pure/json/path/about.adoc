@@ -1,0 +1,194 @@
+= JSON Navigation Paths
+:toc:
+
+This package addresses individual entries inside a JSON tree (`IJsonValue`).
+
+A path is a sequence of steps, where each step descends either into an object by property key or into an array by integer index.
+Paths here are purely positional: there are no wildcards, no predicates and no filters.
+Resolving a path yields at most one value.
+
+If you need wildcards or want to test a document against expectations rather than address one entry, see the <<relation-to-query,`query` package>>.
+
+[[two-representations]]
+== Two Representations
+
+The package carries two parallel encodings of the same idea.
+Both are in active use and neither is deprecated, so pick by which API you need to call.
+
+.The two path encodings
+[cols="1,2,2",options="header"]
+|===
+| Encoding
+| Type
+| Consumed by
+
+| Typed steps
+| `List<IJsonContainerNavigationStep>`
+| `IJsonValue.get`, `IJsonValue.has`, `IJsonValue.forEachLeaf`, `JsonMaker`, `ICjData`
+
+| Untyped steps
+| `List<Object>` holding `String` and `Integer`
+| `IJsonValue.resolve`, `CjNormalizer`
+|===
+
+[[typed-steps]]
+== Typed Steps
+
+`IJsonContainerNavigationStep` is one step, refined by two subtypes.
+
+`IJsonObjectNavigationStep`:: Descends into an object by property key; exposes `propertyKey()`; prints as `'key'`.
+`IJsonArrayNavigationStep`:: Descends into an array by index; exposes `index()`; prints as `[3]`.
+
+Every step reports a `containerType()` of either `Object` or `Array`, and can be narrowed with `asObjectStep()` or `asArrayStep()`.
+
+Build a path with the `pathOf` varargs factory, which maps each `String` to an object step and each `Integer` to an array step.
+
+[source,java]
+----
+List<IJsonContainerNavigationStep> path = IJsonContainerNavigationStep.pathOf("rdf", "label", 0);
+
+IJsonValue value = json.get(path);   // null when the path does not resolve <1>
+boolean present  = json.has(path);
+----
+<1> `get` returns `null` both for an absent entry and for a step whose container type does not match.
+
+`IJsonNavigationPath` wraps such a list as an immutable value object.
+It offers the constant `EMPTY`, an `of(List)` factory, `steps()`, and `withAppend(step)` which returns a new path rather than mutating.
+Its `toString()` joins the steps with `/`, so the path above prints as `'rdf'/'label'/[0]`, and the empty path prints as `--`.
+
+`IJsonNavigationPath` is the accumulator used by `IJsonValue.forEachLeaf`, which visits every primitive in a document together with the path that reaches it.
+
+[source,java]
+----
+json.forEachLeaf((path, primitive) ->
+        System.out.println(path + " = " + primitive.toJsonString()));
+----
+
+[[untyped-steps]]
+== Untyped Steps
+
+`JsonPaths` is the untyped counterpart: a path is a plain `List<Object>` whose elements are `String` property keys and `Integer` array indices.
+It exists because `IJsonValue.resolve(Object)` accepts this looser form, and because predicate matching over raw steps is easier without the wrapper types.
+
+.`JsonPaths` factories and helpers
+`ofList(Object...)`:: The direct constructor, e.g. `JsonPaths.ofList("graph", "edges", 0)`.
+`ofPathWithDots(String)`:: Splits on `.` and coerces every all-digit segment to an `Integer`, so `"a.3.b"` becomes `[a, 3, b]` with `3` typed as `Integer`.
+`ofStream(Stream<Object>)`:: Collects a stream of steps into a list.
+`of(Object)`:: Dispatches on the runtime type, accepting a `List` (returned as-is) or a `String` (parsed by `ofPathWithDots`); see <<caveats>> before passing a `Stream`.
+`toPathString(List<Object>)`:: Joins steps back with `.`, the inverse of `ofPathWithDots`.
+`endsWith(List<Object>, Predicate<Object>...)`:: Tests whether the last _n_ steps satisfy _n_ predicates, matching a path suffix without building one.
+
+The suffix test is how `CjNormalizer` recognises structural positions independent of where they occur.
+
+[source,java]
+----
+if (JsonPaths.endsWith(steps,
+        s -> s.equals(CjConstants.GRAPH__EDGES),
+        s -> s instanceof Integer,
+        s -> s.equals(CjConstants.EDGE__ENDPOINTS))) {
+    // matched .../edges/<any index>/endpoints
+}
+----
+
+[[type-analysis]]
+== Type Analysis Tree
+
+`JsonTypeAnalysisTree` infers a schema from instance data.
+Feed it documents and it aggregates every leaf into a trie of steps, counting how often each path and each distinct primitive value occurs.
+
+[source,java]
+----
+JsonTypeAnalysisTree tree = new JsonTypeAnalysisTree();
+tree.index(jsonValue);            // repeatable; see the merging caveat below
+
+for (IJsonContainerNavigationStep step : tree.rootSteps()) {
+    JsonTypeAnalysisTree.Node node = tree.get(step);
+    node.count();                       // how many leaves passed through here
+    node.valueCounts();                 // observed primitive -> occurrence count
+    node.distinctJsonPrimitiveValues(); // the value domain
+    node.isMapOfPrimitives();           // true when this node has no children
+    node.containerJsonType();           // Object, Array, or null <1>
+}
+----
+<1> `null` means no container is required because every value below this node is a primitive.
+An `IllegalStateException` is raised if the node mixes object and array steps, which no well-formed JSON tree does.
+
+The value counts are what make the tree useful for schema derivation: a small distinct-value domain suggests an enumeration, and the primitive types observed at a leaf suggest a declared type.
+`CjGraphmlMapping.toGraphmlDataTypes` uses exactly this to synthesise GraphML `<key>` declarations, and `CjDataSchema` keeps one tree per CJ element type.
+
+`Node.toString()` renders the tree as indented text, which is convenient when inspecting a corpus by hand.
+
+[[consumers]]
+== Consumers
+
+The typed step API is the load-bearing one across the codebase.
+
+* `IJsonValue.get`, `has` and `forEachLeaf` in the sibling link:../document[`document` package] are defined in terms of it.
+* `ICjData` and `ICjDataMutable` expose `get(path)`, `has(path)` and `add(path, value)` as the public CJ data API.
+* `JsonMaker` walks a path step by step to create or merge nested structure.
+* The DDot, RDF and GraphML readers write nested data via `pathOf(...)`, for example `d.add(pathOf(RDF_DATA_KEY, predicate), literal)`.
+
+`JsonPaths` is used by `IJsonValue.resolve` and by `CjNormalizer`.
+
+[[caveats]]
+== Known Caveats
+
+These are properties of the current implementation, each verified against the compiled code.
+They are documented rather than fixed because callers already depend on the surrounding behaviour.
+
+[[caveat-step-identity]]
+=== Steps use identity equality
+
+Neither step factory overrides `equals` or `hashCode`, so two steps built from the same key are unequal.
+
+[source,java]
+----
+IJsonObjectNavigationStep.of("foo").equals(IJsonObjectNavigationStep.of("foo")); // false
+----
+
+This matters for `JsonTypeAnalysisTree`, whose nodes are keyed by step in a `LinkedHashMap`.
+Within a single `index(value)` call it is harmless, because `forEachLeaf` creates one step instance per key and shares it across the whole subtree.
+Across calls it is not: indexing two separate documents that share a key produces *two* sibling nodes for that key, each with its own counts.
+
+[source,java]
+----
+tree.index(docWithColorRed);
+tree.index(docWithColorBlue);
+tree.rootSteps();   // ['color', 'color'] -- two nodes, not one merged node
+----
+
+Consumers that aggregate by `propertyKey()` into a `Map<String, ...>` — as `CjGraphmlMapping` does — collapse the duplicates again and are unaffected.
+Consumers that read `count()` or `valueCounts()` off a single node see only the leaves from one document.
+
+[[caveat-of-stream]]
+=== `JsonPaths.of` does not accept a `Stream`
+
+The `Stream` branch calls `ofStream(Stream.of(jsonPath))`, wrapping the argument in a further single-element stream instead of consuming it.
+The result is a one-element list holding the `Stream` object itself.
+Call `JsonPaths.ofStream(stream)` directly.
+
+[[caveat-resolution-asymmetry]]
+=== Type mismatches are reported inconsistently
+
+Applying a step whose container type does not match the value is handled three different ways, depending on the entry point.
+
+`IJsonValue.get` / `has`:: The `switch` on `containerType()` has no `break`, so an array step against an object value falls through into the object branch and `asObjectStep()` throws `ClassCastException`.
+`IJsonValue.resolve`:: A `String` step against a non-object throws `IllegalArgumentException`, while an `Integer` step against a non-array quietly returns `null`.
+`ofPathWithDots`:: A numeric-looking object key is coerced to an `Integer` and then addresses an array index, and keys containing `.` cannot be expressed at all.
+
+Prefer `has(path)` before `get(path)` when the shape of the document is not guaranteed.
+
+[[caveat-coverage]]
+=== Test coverage is thin
+
+Only `JsonPaths.endsWith` is directly tested, in link:../../../../../../../../test/java/com/graphinout/foundation/pure/json/value/JsonPathsTest.java[`JsonPathsTest`].
+`JsonTypeAnalysisTree` is exercised indirectly through the GraphML reader tests.
+
+[[relation-to-query]]
+== Relation to the `query` Package
+
+The sibling xref:../query/about.adoc[`query` package] is a second, independent implementation that solves an adjacent problem.
+It parses slash-separated path strings, supports a `*` wildcard, and evaluates expectations against a document rather than returning a value.
+
+The two should one day be consolidated.
+Until then, use this package to *address and read* an entry, and `query` to *test* whether a document satisfies a condition.

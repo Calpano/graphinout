@@ -1,5 +1,6 @@
 package com.graphinout.base.json;
 
+import com.graphinout.base.cj.util.Utils;
 import tools.jackson.core.json.JsonFactory;
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.JsonToken;
@@ -11,7 +12,6 @@ import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
 import com.graphinout.foundation.pure.json.json5.Json5Preprocessor;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -56,7 +56,7 @@ public class JsonReaderImpl implements JsonReader {
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
 
         // Read the entire content as string for JSON5 preprocessing
-        String json5content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
+        String json5content = Utils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
         readJson5String(json5content, stream);
     }
 

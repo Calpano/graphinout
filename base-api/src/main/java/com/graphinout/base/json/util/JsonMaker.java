@@ -159,9 +159,9 @@ public class JsonMaker {
 
     /**
      *
-     * @param value
-     * @param propertyKey
-     * @return
+     * @param value       is mutated in-place or a copy is created if type needs to be changed
+     * @param propertyKey to remove
+     * @return the mutated value or a copy, if type needs to be changed
      * @throws IllegalStateException if not a {@link IJsonObject}
      */
     public static IJsonValue removeProperty(IJsonValue value, String propertyKey) throws IllegalStateException {

@@ -1,0 +1,182 @@
+= JSON Query
+:toc:
+
+This package answers one question about a JSON document: does it satisfy a set of expectations?
+
+A query is a conjunction of _path tests_.
+Each path test pairs a path — which may contain wildcards and so may address several entries — with an expectation about the value found there.
+`JsonQueryEngine` evaluates the whole query to a single `boolean`.
+
+This is a *matcher, not an extractor*.
+The engine never returns the values it visited, so it suits format detection, validation and dispatch rather than data retrieval.
+To read a value out of a document, use the sibling xref:../path/about.adoc[`path` package] instead.
+
+IMPORTANT: The package is currently unused and has no tests.
+Everything below was verified by running the compiled code, but nothing in the repository depends on it yet, so the semantics described in <<semantics>> have not been pinned down by a test suite.
+
+[[types]]
+== Types
+
+`JsonPath`:: An immutable wrapper around a path string. It performs no parsing or validation at construction; the engine parses it on evaluation.
+`IJsonExpect`:: A predicate over a nullable `IJsonValue`, with combinators and a set of ready-made factories.
+`JsonPathCheck`:: A `(JsonPath, IJsonExpect)` pair — one path, one expectation.
+`JsonQuery`:: An array of path tests that must *all* hold.
+`JsonQueryEngine`:: The stateless evaluator; its only entry point is `matches(JsonQuery, IJsonValue)`.
+
+WARNING: `JsonPathCheck` lives in `src/main`, not `src/test`, despite its `Test` suffix.
+It is a production type, not a JUnit class, and the name also collides with an unrelated JUnit class of the same simple name in the `base` module.
+
+[[path-syntax]]
+== Path Syntax
+
+A path is a slash-separated string that *must* start with `/`; anything else raises `IllegalArgumentException` at evaluation time.
+`/` alone addresses the document root.
+
+.Segment kinds
+* A segment of digits addresses an array index, but only when the current value is an array.
+* Any other segment addresses an object property key.
+* `+*+` is a wildcard matching any object key or any array index.
+
+.Example paths
+[cols="1,2",options="header"]
+|===
+| Path
+| Addresses
+
+| `/`
+| the root value
+
+| `/name`
+| property `name` of the root object
+
+| `/tags/0`
+| first element of the `tags` array
+
+| `+/tags/*+`
+| any element of the `tags` array
+
+| `+/*/id+`
+| property `id` of any child of the root
+
+| `+/graph/edges/*/source+`
+| `source` of any edge
+|===
+
+Because the separator is `/`, a property key containing a slash cannot be addressed.
+An empty segment, as in `/a//b`, addresses the property whose key is the empty string.
+
+[[expectations]]
+== Expectations
+
+`IJsonExpect.matches` receives the resolved value, or `null` when the path did not resolve.
+
+[[absence-vs-null]]
+=== Absence versus JSON null
+
+The two are distinct and the distinction is deliberate.
+
+`null` argument:: The path is *absent* from the document.
+Non-null argument with `jsonType() == JsonType.Null`:: The path is present and holds a JSON `null`.
+
+So `expectPresent()` is satisfied by an explicit JSON `null`, whereas `expectAbsent()` is not.
+
+.Factories
+`expectPresent()`:: The path resolves to something.
+`expectAbsent()`:: The path does not resolve.
+`expectType(JsonType)`:: Present and of the given type.
+`expectValue(IJsonValue)`:: Present and equal to the given value.
+`expectStringValue(String)`:: Present and equal to that JSON string.
+
+Expectations compose with `and`, `or` and `negate`, all of which return a new expectation.
+
+[source,java]
+----
+IJsonExpect nonEmptyString = IJsonExpect.expectType(JsonType.String)
+        .and(IJsonExpect.expectStringValue("").negate());
+----
+
+[[building-queries]]
+== Building a Query
+
+The convenience factories cover the common single-path cases.
+
+[source,java]
+----
+JsonQuery q = JsonQuery.requireString("/format", "connected-json");
+JsonQuery p = JsonQuery.requirePresent("/graph/nodes");
+JsonQuery c = JsonQuery.of("/version", IJsonExpect.expectType(JsonType.Number));
+----
+
+Pass several path tests to the constructor to require all of them at once.
+
+[source,java]
+----
+JsonQuery looksLikeCj = new JsonQuery(
+        JsonPathTest.of("/graph", IJsonExpect.expectType(JsonType.Object)),
+        JsonPathTest.of("/graph/nodes", IJsonExpect.expectPresent()),
+        JsonPathTest.of("/graph/edges/*/source", IJsonExpect.expectType(JsonType.String)));
+
+if (JsonQueryEngine.matches(looksLikeCj, document)) {
+    // dispatch to the CJ reader
+}
+----
+
+[[semantics]]
+== Evaluation Semantics
+
+The engine walks each path segment by segment and applies the expectation once the path is exhausted.
+Three rules govern the cases where a path cannot be followed.
+
+Absence propagates:: Once navigation hits a missing entry, the remaining segments are skipped and the expectation is applied to `null`. `/a/b/c` on a document without `a` therefore satisfies `expectAbsent()`.
+A wrong container type reads as absence:: A literal segment applied to a primitive, or an object key applied to an array, yields `null` rather than an error. Both `/leaf/x` where `leaf` is a string, and `/tags/name` where `tags` is an array, satisfy `expectAbsent()`.
+Wildcards are existential:: `+/tags/*+` holds when *at least one* element satisfies the expectation.
+
+The existential rule is worth dwelling on, because it does not distribute over negation.
+
+[source,java]
+----
+JsonQuery.of("/tags/*", IJsonExpect.expectStringValue("x").negate())
+----
+
+This asks whether *some* tag differs from `x`, not whether *no* tag equals `x`.
+There is no universal quantifier in the path language, so "all children satisfy P" cannot be expressed.
+
+[[caveats]]
+== Known Caveats
+
+[[caveat-wildcard-absence]]
+=== A wildcard on a non-container never consults the expectation
+
+The wildcard branch returns `false` outright when the current value is neither an object nor an array, instead of applying the expectation to `null` the way every other branch does.
+The result is an asymmetry between a wildcard segment and a literal one at the same position.
+
+[source,java]
+----
+// leaf is a primitive string
+JsonQuery.of("/leaf/x", IJsonExpect.expectAbsent())   // -> true
+JsonQuery.of("/leaf/*", IJsonExpect.expectAbsent())   // -> false
+----
+
+The same applies to an empty container: `expectAbsent()` under a wildcard is unsatisfiable, because the branch has no children to iterate and falls through to `false`.
+Express "this path has no children" with `expectAbsent()` on the parent path instead.
+
+[[caveat-array-wildcard]]
+=== Wildcard iteration over arrays visits every element
+
+The object branch returns as soon as a child matches, but the array branch iterates the full array and records the result in a flag, because `IJsonArray.forEach` cannot be broken out of.
+This is a performance characteristic only; the result is identical.
+
+[[caveat-no-tests]]
+=== No tests, no callers
+
+Nothing in the repository constructs a `JsonQuery`.
+Before relying on this package, add tests covering at least the cases in <<semantics>> — they are currently guaranteed only by the implementation.
+
+[[relation-to-path]]
+== Relation to the `path` Package
+
+The xref:../path/about.adoc[`path` package] is a second, independent implementation covering the adjacent problem of addressing and reading a single entry.
+Its paths are step lists rather than strings and carry no wildcards.
+
+The two should one day be consolidated.
+Until then, use `path` to *address and read* an entry, and this package to *test* whether a document satisfies a condition.

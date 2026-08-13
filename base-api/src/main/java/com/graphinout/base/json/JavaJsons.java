@@ -7,7 +7,7 @@ import com.graphinout.foundation.pure.json.writer.impl.Json2JavaJsonWriter;
 import java.io.IOException;
 
 /**
- * Java-based implementation of {@link IJsonValue} API, as opposed ot the Jackson-basewd implementation.
+ * Java-based implementation of {@link IJsonValue} API, as opposed to the Jackson-based implementation.
  * Do not confuse with the {@link JaJson} API.
  */
 public class JavaJsons {
