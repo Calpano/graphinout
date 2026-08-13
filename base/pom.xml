@@ -14,6 +14,9 @@
     <dependencies>
         <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>foundation-jvm</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base-api</artifactId>
+            <version>0.2.2-SNAPSHOT</version>
+        </dependency>
         <!-- Logging API only. Consumers (e.g. the IntelliJ plugin) supply the binding;
              logback is a test-scope binding below, never imposed on downstream. -->
         <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></dependency>

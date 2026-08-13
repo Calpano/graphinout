@@ -118,64 +118,64 @@ public enum CjType {
     static {
         RootObject.property(JsonConstants.DOLLAR_ID).is(JsonSchemaId);
         RootObject.property(JsonConstants.DOLLAR_SCHEMA).is(JsonSchemaLocation);
-        RootObject.property(ROOT__CONNECTED_JSON).is(ConnectedJson);
+        RootObject.property(CjConstants.ROOT__CONNECTED_JSON).is(ConnectedJson);
         ConnectedJson.property(CjConstants.CONNECTED_JSON__VERSION_NUMBER).is(ConnectedJson__VersionNumber);
         ConnectedJson.property(CjConstants.CONNECTED_JSON__VERSION_DATE).is(ConnectedJson__VersionDate);
         ConnectedJson.property(CjConstants.CONNECTED_JSON__CANONICAL).is(ConnectedJson__Canonical);
-        RootObject.property(CONTEXT).is(Context);
-        RootObject.property(GRAPHS).is(ArrayOfGraphs);
-        RootObject.property(DATA).is(Data);
+        RootObject.property(CjConstants.CONTEXT).is(Context);
+        RootObject.property(CjConstants.GRAPHS).is(ArrayOfGraphs);
+        RootObject.property(CjConstants.DATA).is(Data);
 
         ArrayOfGraphs.item(Graph);
-        Graph.property(ID).is(Id);
-        Graph.property(LABEL).is(Label);
-        Graph.property(GRAPH__META).is(Meta);
-        Graph.property(DATA).is(Data);
-        Graph.property(GRAPH__NODES).is(ArrayOfNodes);
-        Graph.property(GRAPH__EDGES).is(ArrayOfEdges);
-        Graph.property(GRAPHS).is(ArrayOfGraphs);
+        Graph.property(CjConstants.ID).is(Id);
+        Graph.property(CjConstants.LABEL).is(Label);
+        Graph.property(CjConstants.GRAPH__META).is(Meta);
+        Graph.property(CjConstants.DATA).is(Data);
+        Graph.property(CjConstants.GRAPH__NODES).is(ArrayOfNodes);
+        Graph.property(CjConstants.GRAPH__EDGES).is(ArrayOfEdges);
+        Graph.property(CjConstants.GRAPHS).is(ArrayOfGraphs);
 
         ArrayOfNodes.item(Node);
-        Node.property(ID).is(Id);
-        Node.property(NODE_TYPES).is(ArrayOfTypes);
-        Node.property(PORTS).is(ArrayOfPorts);
+        Node.property(CjConstants.ID).is(Id);
+        Node.property(CjConstants.NODE_TYPES).is(ArrayOfTypes);
+        Node.property(CjConstants.PORTS).is(ArrayOfPorts);
         Node.property(CjConstants.NODE_TYPES).is(ArrayOfNodeTypes);
-        Node.property(GRAPHS).is(ArrayOfGraphs);
-        Node.property(LABEL).is(Label);
-        Node.property(DATA).is(Data);
-        Node.property(GRAPHS).is(ArrayOfGraphs);
+        Node.property(CjConstants.GRAPHS).is(ArrayOfGraphs);
+        Node.property(CjConstants.LABEL).is(Label);
+        Node.property(CjConstants.DATA).is(Data);
+        Node.property(CjConstants.GRAPHS).is(ArrayOfGraphs);
 
         ArrayOfNodeTypes.item(ElementType);
 
         ArrayOfPorts.item(Port);
-        Port.property(ID).is(Id);
-        Port.property(PORTS).is(ArrayOfPorts);
-        Port.property(LABEL).is(Label);
-        Port.property(DATA).is(Data);
+        Port.property(CjConstants.ID).is(Id);
+        Port.property(CjConstants.PORTS).is(ArrayOfPorts);
+        Port.property(CjConstants.LABEL).is(Label);
+        Port.property(CjConstants.DATA).is(Data);
 
         ArrayOfEdges.item(Edge);
-        Edge.property(ID).is(Id);
-        Edge.property(GRAPHS).is(ArrayOfGraphs);
-        Edge.property(LABEL).is(Label);
+        Edge.property(CjConstants.ID).is(Id);
+        Edge.property(CjConstants.GRAPHS).is(ArrayOfGraphs);
+        Edge.property(CjConstants.LABEL).is(Label);
         // In v8.0.0, unified "type" key - treated as string (semantic distinction between String/Node/URI is handled at application level)
-        Edge.property(EDGE_OR_ENDPOINT__TYPE).is(ElementType);
-        Edge.property(EDGE__ENDPOINTS).is(ArrayOfEndpoints);
-        Edge.property(DATA).is(Data);
+        Edge.property(CjConstants.EDGE_OR_ENDPOINT__TYPE).is(ElementType);
+        Edge.property(CjConstants.EDGE__ENDPOINTS).is(ArrayOfEndpoints);
+        Edge.property(CjConstants.DATA).is(Data);
 
         ArrayOfEndpoints.item(Endpoint);
-        Endpoint.property(ENDPOINT__NODE).is(NodeId);
-        Endpoint.property(ENDPOINT__PORT).is(PortId);
-        Endpoint.property(ENDPOINT__DIRECTION).is(Direction);
+        Endpoint.property(CjConstants.ENDPOINT__NODE).is(NodeId);
+        Endpoint.property(CjConstants.ENDPOINT__PORT).is(PortId);
+        Endpoint.property(CjConstants.ENDPOINT__DIRECTION).is(Direction);
         // In v8.0.0, unified "type" key - treated as string (semantic distinction between String/Node/URI is handled at application level)
-        Endpoint.property(EDGE_OR_ENDPOINT__TYPE).is(ElementType);
-        Endpoint.property(DATA).is(Data);
+        Endpoint.property(CjConstants.EDGE_OR_ENDPOINT__TYPE).is(ElementType);
+        Endpoint.property(CjConstants.DATA).is(Data);
 
-        Label.property(LABEL_ENTRIES).is(ArrayOfLabelEntries);
-        Label.property(DATA).is(Data);
+        Label.property(CjConstants.LABEL_ENTRIES).is(ArrayOfLabelEntries);
+        Label.property(CjConstants.DATA).is(Data);
         ArrayOfLabelEntries.item(LabelEntry);
-        LabelEntry.property(VALUE).is(Value);
-        LabelEntry.property(LANGUAGE).is(Language);
-        LabelEntry.property(DATA).is(Data);
+        LabelEntry.property(CjConstants.VALUE).is(Value);
+        LabelEntry.property(CjConstants.LANGUAGE).is(Language);
+        LabelEntry.property(CjConstants.DATA).is(Data);
     }
 
     /** which properties are allowed in this type (if it is an object) */

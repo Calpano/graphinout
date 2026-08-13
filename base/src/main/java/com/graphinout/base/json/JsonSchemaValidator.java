@@ -2,20 +2,19 @@ package com.graphinout.base.json;
 
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.input.Location;
+import com.networknt.schema.Error;
 import com.networknt.schema.InputFormat;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.Schema;
 import com.networknt.schema.SchemaLocation;
-import com.networknt.schema.SchemaValidatorsConfig;
-import com.networknt.schema.SpecVersion;
-import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.SchemaRegistry;
+import com.networknt.schema.SchemaRegistryConfig;
+import com.networknt.schema.SpecificationVersion;
 import com.networknt.schema.regex.JoniRegularExpressionFactory;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -30,36 +29,35 @@ public class JsonSchemaValidator {
     private static final Logger log = getLogger(JsonSchemaValidator.class);
 
     public static boolean isValid(String json, JsonSchemaDef schemaDef, @Nullable Consumer<ContentError> errorConsumer) {
-        // This creates a schema factory that will use Draft 2020-12 as the default if $schema is not specified
-        // in the schema data. If $schema is specified in the schema data then that schema dialect will be used
-        // instead and this version is ignored.
-        JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012, builder ->
-                // This creates a mapping from $id which starts with https://www.example.org/ to the retrieval URI classpath:schema/
-                builder.schemaMappers(schemaMappers -> {
-                    for (JsonSchemaDef jsonSchema : List.of(CJ, OCIF_06)) {
-                        if (jsonSchema.resourcePath != null) {
-                            schemaMappers.mapPrefix(jsonSchema.id, "classpath:" + jsonSchema.resourcePath);
-                            schemaMappers.mapPrefix(jsonSchema.url, "classpath:" + jsonSchema.resourcePath);
-                        }
-                    }
-                }));
-
-        SchemaValidatorsConfig.Builder builder = SchemaValidatorsConfig.builder();
+        SchemaRegistryConfig.Builder builder = SchemaRegistryConfig.builder();
         // By default the JDK regular expression implementation which is not ECMA 262 compliant is used
         // Note that setting this requires including optional dependencies
         // builder.regularExpressionFactory(GraalJSRegularExpressionFactory.getInstance());
         builder.regularExpressionFactory(JoniRegularExpressionFactory.getInstance());
-        SchemaValidatorsConfig config = builder.build();
+        // By default since Draft 2019-09 the format keyword only generates annotations and not assertions
+        builder.formatAssertionsEnabled(true);
+        SchemaRegistryConfig config = builder.build();
+
+        // This creates a schema registry that will use Draft 2020-12 as the default if $schema is not specified
+        // in the schema data. If $schema is specified in the schema data then that schema dialect will be used
+        // instead and this version is ignored.
+        SchemaRegistry schemaRegistry = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_2020_12, registryBuilder ->
+                // This creates a mapping from $id which starts with https://www.example.org/ to the retrieval URI classpath:schema/
+                registryBuilder.schemaIdResolvers(schemaIdResolvers -> {
+                    for (JsonSchemaDef jsonSchema : List.of(CJ, OCIF_06)) {
+                        if (jsonSchema.resourcePath != null) {
+                            schemaIdResolvers.mapPrefix(jsonSchema.id, "classpath:" + jsonSchema.resourcePath);
+                            schemaIdResolvers.mapPrefix(jsonSchema.url, "classpath:" + jsonSchema.resourcePath);
+                        }
+                    }
+                }).schemaRegistryConfig(config));
 
         // Due to the mapping the schema will be retrieved from the classpath at classpath:schema/example-main.json.
         // If the schema data does not specify an $id the absolute IRI of the schema location will be used as the $id.
-        JsonSchema schema = jsonSchemaFactory.getSchema(SchemaLocation.of(schemaDef.url()), config);
+        Schema schema = schemaRegistry.getSchema(SchemaLocation.of(schemaDef.url()));
 
         try {
-            Set<ValidationMessage> assertions = schema.validate(json, InputFormat.JSON, executionContext -> {
-                // By default since Draft 2019-09 the format keyword only generates annotations and not assertions
-                executionContext.getExecutionConfig().setFormatAssertionsEnabled(true);
-            });
+            List<Error> assertions = schema.validate(json, InputFormat.JSON);
             if (!assertions.isEmpty()) {
                 if (errorConsumer != null) {
                     assertions.stream().map(a -> {
@@ -80,7 +78,7 @@ public class JsonSchemaValidator {
                 } else {
                     // FIXME too verbose & insecure?
                     log.warn("Failed to validate:\n----\n" + json + "\n----\n");
-                    for (ValidationMessage assertion : assertions) {
+                    for (Error assertion : assertions) {
                         System.err.println(assertion);
                     }
                 }

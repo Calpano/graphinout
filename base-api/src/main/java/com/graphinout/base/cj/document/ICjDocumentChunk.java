@@ -1,8 +1,8 @@
 package com.graphinout.base.cj.document;
 
 import com.graphinout.base.cj.CjConstants;
-import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.cj.writer.ICjWriter;
+import com.graphinout.foundation.pure.functional.Nullables;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -40,11 +40,11 @@ public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
      */
     @Nullable Map<String, String> context();
 
-    default ICjDocumentChunkMutable copyMutable() {
-        CjDocumentElement copy = new CjDocumentElement();
-        copyTo(copy);
-        return copy;
-    }
+//    default ICjDocumentChunkMutable copyMutable() {
+//        CjDocumentElement copy = new CjDocumentElement();
+//        copyTo(copy);
+//        return copy;
+//    }
 
     default void copyTo(ICjDocumentChunkMutable doc) {
         ifPresentAccept(context(), doc::context);
@@ -54,7 +54,7 @@ public interface ICjDocumentChunk extends ICjChunkMutable, ICjHasData {
     default void fireStartChunk(ICjWriter cjWriter, boolean sort) {
         cjWriter.documentStart();
         cjWriter.maybe(context(), cjWriter::context);
-        ICjDocumentMeta connectedJson = nonNullOrDefault(connectedJson(), CjConstants.DEFAULT_META);
+        ICjDocumentMeta connectedJson = Nullables.nonNullOrDefault(connectedJson(), CjConstants.DEFAULT_META);
         cjWriter.maybe(connectedJson, cj -> cj.fire(cjWriter, sort));
         fireDataMaybe(cjWriter);
     }

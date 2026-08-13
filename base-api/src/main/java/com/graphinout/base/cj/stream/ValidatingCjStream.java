@@ -1,7 +1,5 @@
 package com.graphinout.base.cj.stream;
 
-import com.google.common.collect.Sets;
-import com.graphinout.base.cj.factory.CjFactory;
 import com.graphinout.base.cj.document.ICjDocumentChunk;
 import com.graphinout.base.cj.document.ICjDocumentChunkMutable;
 import com.graphinout.base.cj.document.ICjEdgeChunk;
@@ -12,10 +10,12 @@ import com.graphinout.base.cj.document.ICjGraphChunkMutable;
 import com.graphinout.base.cj.document.ICjNodeChunk;
 import com.graphinout.base.cj.document.ICjNodeChunkMutable;
 import com.graphinout.base.cj.document.ICjPort;
-import com.graphinout.foundation.pure.json.writer.impl.ValidatingJsonWriter;
+import com.graphinout.base.cj.factory.CjFactory;
+import com.graphinout.base.cj.util.Utils;
 import com.graphinout.foundation.pure.json.document.IJsonFactory;
-
+import com.graphinout.foundation.pure.json.writer.impl.ValidatingJsonWriter;
 import org.jspecify.annotations.Nullable;
+
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,15 +31,32 @@ public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStrea
 
     private final CjFactory factory = new CjFactory();
 
-    private void resetGraphScope() {
-        nodeIds.clear();
-        edgeIds.clear();
-        portIds.clear();
-        endpointNodeIds.clear();
-        endpointPortIds.clear();
+    @Override
+    public ICjDocumentChunkMutable createDocumentChunk() {
+        return factory.createDocumentChunk();
     }
 
     // ========== ICjStream events ==========
+
+    @Override
+    public ICjEdgeChunkMutable createEdgeChunk() {
+        return factory.createEdgeChunk();
+    }
+
+    @Override
+    public ICjGraphChunkMutable createGraphChunk() {
+        return factory.createGraphChunk();
+    }
+
+    @Override
+    public ICjNodeChunkMutable createNodeChunk() {
+        return factory.createNodeChunk();
+    }
+
+    @Override
+    public void documentEnd() {
+        // no-op
+    }
 
     @Override
     public void documentStart(ICjDocumentChunk document) {
@@ -60,44 +77,7 @@ public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStrea
     }
 
     @Override
-    public void documentEnd() {
-        // no-op
-    }
-
-    @Override
-    public void graphStart(ICjGraphChunk graph) {
-        // Each graph has its own id space for nodes/edges/ports
-        resetGraphScope();
-    }
-
-    @Override
-    public void graphEnd() {
-        Set<String> missingNodeIds = Sets.difference(endpointNodeIds, nodeIds);
-        if (!missingNodeIds.isEmpty()) {
-            throw new IllegalStateException("Edge endpoint references non-existent node ID(s): " + missingNodeIds);
-        }
-
-        Set<String> missingPortIds = Sets.difference(endpointPortIds, portIds);
-        if (!missingPortIds.isEmpty()) {
-            throw new IllegalStateException("Edge endpoint references non-existent port ID(s): " + missingPortIds);
-        }
-    }
-
-    @Override
-    public void nodeStart(ICjNodeChunk node) {
-        // Track node id duplicates
-        @Nullable String id = node.id();
-        if (id != null) {
-            if (!nodeIds.add(id)) {
-                throw new IllegalStateException("Duplicate node ID: " + id);
-            }
-        }
-        // Collect port IDs recursively
-        node.ports().forEach(this::collectPortIdsRecursively);
-    }
-
-    @Override
-    public void nodeEnd() {
+    public void edgeEnd() {
         // no-op
     }
 
@@ -114,35 +94,54 @@ public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStrea
     }
 
     @Override
-    public void edgeEnd() {
-        // no-op
+    public void graphEnd() {
+        Set<String> missingNodeIds = Utils.setsDifference(endpointNodeIds, nodeIds);
+        if (!missingNodeIds.isEmpty()) {
+            throw new IllegalStateException("Edge endpoint references non-existent node ID(s): " + missingNodeIds);
+        }
+
+        Set<String> missingPortIds = Utils.setsDifference(endpointPortIds, portIds);
+        if (!missingPortIds.isEmpty()) {
+            throw new IllegalStateException("Edge endpoint references non-existent port ID(s): " + missingPortIds);
+        }
     }
 
     // ========== ICjFactory delegation ==========
 
     @Override
-    public ICjDocumentChunkMutable createDocumentChunk() {
-        return factory.createDocumentChunk();
-    }
-
-    @Override
-    public ICjEdgeChunkMutable createEdgeChunk() {
-        return factory.createEdgeChunk();
-    }
-
-    @Override
-    public ICjGraphChunkMutable createGraphChunk() {
-        return factory.createGraphChunk();
-    }
-
-    @Override
-    public ICjNodeChunkMutable createNodeChunk() {
-        return factory.createNodeChunk();
+    public void graphStart(ICjGraphChunk graph) {
+        // Each graph has its own id space for nodes/edges/ports
+        resetGraphScope();
     }
 
     @Override
     public IJsonFactory jsonFactory() {
         return factory.jsonFactory();
+    }
+
+    @Override
+    public void nodeEnd() {
+        // no-op
+    }
+
+    @Override
+    public void nodeStart(ICjNodeChunk node) {
+        // Track node id duplicates
+        @Nullable String id = node.id();
+        if (id != null) {
+            if (!nodeIds.add(id)) {
+                throw new IllegalStateException("Duplicate node ID: " + id);
+            }
+        }
+        // Collect port IDs recursively
+        node.ports().forEach(this::collectPortIdsRecursively);
+    }
+
+    private void collectEndpointRefs(ICjEndpoint ep) {
+        String node = ep.node();
+        if (node != null) endpointNodeIds.add(node);
+        String port = ep.port();
+        if (port != null) endpointPortIds.add(port);
     }
 
     // ========== helpers ==========
@@ -155,10 +154,12 @@ public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStrea
         port.ports().forEach(this::collectPortIdsRecursively);
     }
 
-    private void collectEndpointRefs(ICjEndpoint ep) {
-        String node = ep.node();
-        if (node != null) endpointNodeIds.add(node);
-        String port = ep.port();
-        if (port != null) endpointPortIds.add(port);
+    private void resetGraphScope() {
+        nodeIds.clear();
+        edgeIds.clear();
+        portIds.clear();
+        endpointNodeIds.clear();
+        endpointPortIds.clear();
     }
+
 }
