@@ -18,7 +18,7 @@
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
         <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
         <!-- Structurizr DSL parser (Apache-2.0); pulls in structurizr-core with the C4 model -->
-        <dependency><groupId>com.structurizr</groupId><artifactId>structurizr-dsl</artifactId><version>6.2.1</version></dependency>
+        <dependency><groupId>com.structurizr</groupId><artifactId>structurizr-dsl</artifactId><version>6.2.2</version></dependency>
 
         <!-- Test Dependencies -->
         <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>
