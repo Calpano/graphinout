@@ -5,7 +5,8 @@ import com.graphinout.foundation.pure.collections.jajson.JaJson;
 import com.graphinout.foundation.pure.json.formatter.JsonCompactFormatter;
 
 /**
- * A string-to-string formatter which also works with invalid JSON input.
+ * A string-to-string formatter that also works with invalid JSON input.
+ * See also {@link JsonCompactFormatter}, which is used underneath.
  */
 public class JsonFormatting {
 
