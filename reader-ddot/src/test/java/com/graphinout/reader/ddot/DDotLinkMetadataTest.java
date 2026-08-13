@@ -3,6 +3,7 @@ package com.graphinout.reader.ddot;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
 import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.foundation.pure.json.document.IJsonArray;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Per-link metadata (the {@code ,,} syntax, see https://ddot.it) must survive ddot &rarr; CJ as edge data:
@@ -88,5 +90,48 @@ class DDotLinkMetadataTest {
         IJsonObject props = props(firstEdge("22-inline-meta-separator"));
         assertEquals("2025", props.get("since").asString());
         assertEquals("2027", props.get("until").asString());
+    }
+
+    private static ICjEdge firstEdgeOf(String ddot) throws IOException {
+        ICjDocument doc = DDotReader.parseDDotToCjDocument(SingleInputSource.of("in.ddot", ddot));
+        return doc.graphs().findFirst().orElseThrow().edges().findFirst().orElseThrow();
+    }
+
+    /**
+     * Nothing makes a link's relation unique: {@code ,, ..author.. Ann ;; ..author.. Bob} is TWO pairs. A JSON
+     * object cannot hold {@code author} twice, so both values land in an array under the one key — dropping
+     * either of them (which a {@code Map<String,String>} anywhere in the chain does) loses data the source
+     * spelled out.
+     */
+    @Test
+    void aRepeatedRelationKeepsEveryValue() throws IOException {
+        IJsonObject props = props(firstEdgeOf("Ann ..wrote.. Book ,, ..author.. Ann ;; ..author.. Bob\n"));
+
+        IJsonArray authors = props.get("author").asArray();
+        assertEquals(2, authors.size(), "both ..author.. pairs must survive");
+        assertEquals("Ann", authors.get(0).asString());
+        assertEquals("Bob", authors.get(1).asString());
+    }
+
+    /** …and the write-back spells them out again as two {@code ;;}-separated pairs, so they survive a round trip. */
+    @Test
+    void aRepeatedRelationRoundTrips() throws IOException {
+        String ddot = "Ann ..wrote.. Book ,, ..author.. Ann ;; ..author.. Bob\n";
+        ICjDocument cj1 = DDotReader.parseDDotToCjDocument(SingleInputSource.of("in.ddot", ddot));
+
+        String written = new DDotOutput(cj1).toDDot();
+        assertTrue(written.contains(",, ..author.. Ann ;; ..author.. Bob"),
+                "both values must be written back, `;;`-separated, but got:\n" + written);
+
+        IJsonArray authors = props(firstEdgeOf(written)).get("author").asArray();
+        assertEquals(2, authors.size());
+        assertEquals("Bob", authors.get(1).asString());
+    }
+
+    /** A relation written once stays a plain string — the array form is only for the repeated case. */
+    @Test
+    void aSingleValuedRelationStaysAScalar() throws IOException {
+        IJsonObject props = props(firstEdgeOf("Ann ..wrote.. Book ,, ..author.. Ann\n"));
+        assertEquals("Ann", props.get("author").asString());
     }
 }

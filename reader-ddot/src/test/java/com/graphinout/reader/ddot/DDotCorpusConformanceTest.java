@@ -1,6 +1,6 @@
 package com.graphinout.reader.ddot;
 
-import com.calpano.ddot.it.event.DdotEventExporter;
+import it.ddot.core.io.DdotEventExporter;
 import com.graphinout.base.cj.document.CjDocuments;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjGraph;
@@ -10,6 +10,7 @@ import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
+import it.ddot.core.io.DdotParser;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Conformance of this reader against the cross-implementation ddot.it golden corpus
- * ({@code ddot.it/test-data/cases}, 35 cases) — the contract every ddot.it implementation shares.
+ * ({@code ddot.it/test-data/cases}, 42 cases) — the contract every ddot.it implementation shares.
  *
  * <p>Three things are asserted per case:
  * <ol>
@@ -36,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  *   <li><strong>every event becomes exactly one CJ fact</strong> — an edge, a node type, a node label, a
  *       node data/{@code rdf:data} property, a document property or an {@code @context} entry. This is the
  *       assertion that actually binds the CJ importer to the corpus: it fails if the vocabulary fold drops
- *       an event (an edge that never materialises) or invents one, for all 35 cases at once. It does not
+ *       an event (an edge that never materialises) or invents one, for all 42 cases at once. It does not
  *       re-derive <em>which</em> fact each event should become — that is what the hand-written unit tests
  *       in this package are for — it only holds the fold total-and-injective.</li>
  * </ol>
@@ -44,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * <p><strong>This test refuses to pass vacuously.</strong> The corpus lives in a sibling repository, so it
  * may legitimately be absent — then the test skips and prints a loud banner naming the path and the
  * {@code -D} override. A corpus that is present but <em>truncated</em> is a bug, not a configuration:
- * fewer than {@value #MIN_CASES} cases, or a case missing a file, is a FAILURE.
+ * fewer than {@code #MIN_CASES} cases, or a case missing a file, is a FAILURE.
  */
 class DDotCorpusConformanceTest {
 
@@ -57,7 +58,7 @@ class DDotCorpusConformanceTest {
         for (Path caseDir : DdotCorpus.caseDirs()) {
             String input = Files.readString(DdotCorpus.requireFile(caseDir, "input.ddot"));
             String expected = Files.readString(DdotCorpus.requireFile(caseDir, "expected.events.jsonl"));
-            String actual = DdotEventExporter.toJsonl(DdotEventExporter.parse(input, EVENT_KIND, EVENT_SOURCE));
+            String actual = DdotEventExporter.toJsonl(DdotParser.parse(input, EVENT_KIND, EVENT_SOURCE));
             if (!expected.stripTrailing().equals(actual.stripTrailing())) {
                 failures.add(caseDir.getFileName().toString());
                 System.err.println("[corpus] EVENT MISMATCH " + caseDir.getFileName());
@@ -68,7 +69,7 @@ class DDotCorpusConformanceTest {
         if (!failures.isEmpty()) {
             fail(failures.size() + " case(s) diverged from expected.events.jsonl: " + String.join(", ", failures)
                     + ". The event stream is the shared cross-implementation contract; fix ddot-core"
-                    + " (com.calpano.ddot.it:ddot-core), never the corpus.");
+                    + " (it.ddot:ddotit-core), never the corpus.");
         }
     }
 

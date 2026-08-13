@@ -12,13 +12,13 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * ddot.it's suggested relation aliases are normalized to their canonical names; the untyped link
- * {@code ....} stays untyped; and the rdf:type-like relation {@code has type} (aliases {@code is a}/{@code type})
- * sets a node type rather than an edge. See https://ddot.it/relations.
+ * ddot.it's suggested relation aliases are normalized to their canonical names; the dotted link
+ * {@code ....} carries ddot.it's default predicate {@code links to}; and the rdf:type-like relation
+ * {@code has type} (aliases {@code is a}/{@code type}) sets a node type rather than an edge.
+ * See https://ddot.it/relations.
  */
 class DDotRelationAliasTest {
 
@@ -38,11 +38,15 @@ class DDotRelationAliasTest {
         assertEquals(List.of("has tag", "links to", "related"), types);
     }
 
+    /**
+     * ddot-core fills the empty type slot with the format's default predicate, so {@code ....} is exactly
+     * {@code ..links to..} — the reader never sees a null/empty relation and never emits an untyped edge.
+     */
     @Test
-    void untypedLinkStaysUntyped() throws IOException {
+    void dottedLinkGetsDefaultPredicate() throws IOException {
         ICjGraph g = graph("a .... b\n");
         ICjEdge e = g.edges().findFirst().orElseThrow();
-        assertNull(e.type(), "`....` must remain an untyped edge (no relation)");
+        assertEquals("links to", e.type(), "`....` is ddot.it's default predicate `links to`");
     }
 
     @Test

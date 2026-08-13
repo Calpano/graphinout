@@ -9,19 +9,15 @@ import java.util.List;
  * Spells a list of triples back out as ddot.it source — the write half of the round-trip that
  * {@link DDotReader} reads back in.
  *
- * <p><strong>Why this is not ddot-core's {@code DdotLineSerializer}.</strong> The parsing side moved
- * wholesale to {@code com.calpano.ddot.it:ddot-core}, but its line serializer is not a substitute for this
- * class, on three counts that would each lose data here:
+ * <p><strong>Why this is not ddot-core's {@code DdotWriter}.</strong> The parsing side moved
+ * wholesale to {@code it.ddot:ddotit-core}, but its writer is not a substitute for this
+ * class, on two counts that would each lose data here:
  * <ul>
- *   <li>it emits only the <em>first</em> metadata entry ("extra keys are dropped", its own javadoc), while
- *       graphinout round-trips a whole property bag plus free text per link;</li>
- *   <li>it spells both a {@code null} type and the literal type {@code links to} as the untyped
- *       {@code from .... to}, so an edge genuinely typed {@code links to} — which is what the
- *       {@code link} / {@code see also} aliases canonicalise to — would come back untyped;</li>
- *   <li>its block form puts the metadata on the {@code !!block?end=…} opening line, which the corpus-pinned
- *       tokenizer no longer accepts: a block opener must END its physical line, so the metadata would turn
- *       the opener into a plain object string. (That is a bug in ddot-core's serializer, reported
- *       separately; it is not exercised by this reader.)</li>
+ *   <li>it writes a value spanning lines raw, so everything after its first line falls out of the triple and
+ *       is read back as prose; graphinout wraps such a value in the {@code !!block} that is the only form
+ *       able to carry it (corpus 30/34);</li>
+ *   <li>its metadata is a map, one value per key, while graphinout round-trips a property bag <em>plus</em>
+ *       an ordered list of free-text notes per link.</li>
  * </ul>
  * The <em>grammar</em> constraints it must respect are nevertheless ddot-core's, and are cited inline below.
  */
@@ -67,21 +63,19 @@ public class DDotDoc {
         }
 
         /**
-         * True when this payload can never be written inline, alone or not: a typed value containing
-         * {@code ;;} would be cut in two by the very separator that joins pairs, since {@code ;;} after a
-         * meta object starts the next pair. Inside a {@code ,,} block the same {@code ;;} is ordinary
+         * True when this payload can never be written inline, alone or not: a value containing {@code ;;}
+         * would be cut in two by the very separator that parts the entries, since inline a {@code ;;} ends
+         * the entry it stands in unconditionally — a pair's object and a free-text note alike
+         * ({@code EntryWord := Word - SC2}). Inside a {@code ,,} block the same {@code ;;} is ordinary
          * content, which is the form to use instead (corpus {@code 28-semicolon-in-meta-block}).
          */
         boolean splitsInline() {
-            return key != null && value.contains(META_PAIR_SEPARATOR);
+            return value.contains(META_PAIR_SEPARATOR);
         }
 
-        /**
-         * True when nothing may follow this payload on its line: free text runs to end of line, so a
-         * {@code ;;} after it is swallowed as part of the note rather than starting the next pair.
-         */
-        boolean blocksFollowers() {
-            return key == null;
+        /** True when this payload is spellable only as a {@code !!block} of its own, whatever its role. */
+        boolean needsOwnBlock() {
+            return needsBlock() || splitsInline();
         }
     }
 
@@ -177,9 +171,8 @@ public class DDotDoc {
      * <ul>
      *   <li><strong>inline</strong> {@code ,, ..k.. v ;; ..k2.. v2} — the compact form. Only ONE {@code ,,}
      *       per line is a delimiter, so further pairs need {@code ;;} (corpus 22).</li>
-     *   <li><strong>a {@code ,,} block</strong> — needed as soon as free text shares the link with another
-     *       payload (text runs to end of line and would swallow a following {@code ;;}), and for a value
-     *       containing {@code ;;}, which is ordinary content inside a block (corpus 28).</li>
+     *   <li><strong>a {@code ,,} block</strong> — needed for a value containing {@code ;;}, which is
+     *       ordinary content inside a block but ends the entry inline (corpus 28).</li>
      *   <li><strong>a {@code !!block} payload</strong> {@code ,, ..k.. !!block} — the only form that can
      *       carry a value spanning lines (corpus 30/34), continued by {@code ;;} on the next line
      *       (corpus 33).</li>
@@ -195,11 +188,12 @@ public class DDotDoc {
             appendMetaChain(b, metas, headOpen);
             return;
         }
-        boolean inlineable = metas.size() == 1
-                // alone, free text is fine inline — nothing has to follow it — but a continuation line
-                // must start `,,`/`;;` followed by `..`, so there it must be a typed pair
-                ? !metas.getFirst().splitsInline() && (headOpen || metas.getFirst().key != null)
-                : metas.stream().noneMatch(m -> m.splitsInline() || m.blocksFollowers());
+        // Pairs and notes mix freely inline, in written order, parted by `;;` (ddot.it 1.3.0) — the only
+        // payload that cannot go there is one whose own value holds a `;;`. A continuation line is the one
+        // exception to "anything may follow the `,,`": it must start `,,`/`;;` followed by `..`, so the
+        // FIRST payload there has to be a typed pair.
+        boolean inlineable = metas.stream().noneMatch(Meta::splitsInline)
+                && (headOpen || metas.getFirst().key != null);
         if (inlineable) {
             if (!headOpen) b.append(META_SEPARATOR).append(' ');
             for (int i = 0; i < metas.size(); i++) {
@@ -220,15 +214,15 @@ public class DDotDoc {
     }
 
     /**
-     * The {@code !!block} chain: inline-safe pairs ride along, and every payload whose value spans lines
-     * ends its line with a {@code !!block} opener whose body is that value. Free text is always blockified
-     * here, because inline text would swallow the separator that has to follow it.
+     * The {@code !!block} chain: inline-safe payloads ride along, and every payload that is spellable only
+     * as a block — a value spanning lines, or one holding a {@code ;;} — ends its line with a
+     * {@code !!block} opener whose body is that value.
      */
     private static void appendMetaChain(StringBuilder b, List<Meta> metas, boolean headOpen) {
         // A payload that must open a block cannot start a continuation line (that requires `,,`/`;;`
         // followed by `..`), so anything blockified has to be reachable while the line is still open.
         List<Meta> ordered = new ArrayList<>(metas);
-        ordered.sort((x, y) -> Boolean.compare(x.key != null, y.key != null)); // free text first, stable
+        ordered.sort((x, y) -> Boolean.compare(y.needsOwnBlock(), x.needsOwnBlock())); // blocks first, stable
         boolean lineOpen = headOpen;
         boolean opened = false;
         for (Meta m : ordered) {
@@ -237,7 +231,7 @@ public class DDotDoc {
             else b.append(separator).append(' ');
             opened = true;
             if (m.key != null) b.append("..").append(m.key).append(".. ");
-            if (m.needsBlock() || m.key == null) {
+            if (m.needsOwnBlock()) {
                 appendBlock(b, m.value, DDotOutput.OBJECT_BLOCK);
                 lineOpen = false;
             } else {

@@ -167,7 +167,15 @@ public class DDotOutput {
                     List<String> keys = new ArrayList<>(props.asObject().keys());
                     Collections.sort(keys); // deterministic order
                     for (String key : keys) {
-                        meta.add(DDotDoc.Meta.pair(key, jsonAsScalar(props.asObject().get(key))));
+                        // An ARRAY value is a relation written more than once on this link — a JSON object cannot
+                        // hold the key twice — and is spelled back out as one `,, ..key.. value` pair per element
+                        // (further pairs separated by `;;`). See DDotReader#writeMeta.
+                        IJsonValue value = props.asObject().get(key);
+                        if (value != null && value.isArray()) {
+                            value.asArray().forEach(v -> meta.add(DDotDoc.Meta.pair(key, jsonAsScalar(v))));
+                        } else {
+                            meta.add(DDotDoc.Meta.pair(key, jsonAsScalar(value)));
+                        }
                     }
                 }
                 IJsonValue text = edgeJson.asObject().get(LINK_TEXT_KEY);

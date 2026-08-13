@@ -7,16 +7,18 @@ import com.graphinout.base.cj.document.ICjEdge;
 import com.graphinout.base.cj.document.ICjGraph;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The spec-conformant behaviours the reader gained when it stopped hand-rolling the ddot.it grammar and
- * started folding {@code com.calpano.ddot.it:ddot-core}'s event stream. Each test below is a case the old
+ * started folding {@code it.ddot:ddotit-core}'s event stream. Each test below is a case the old
  * line-splitting parser got wrong; the corresponding shared-corpus case is named on each.
  *
  * @see DDotCorpusConformanceTest
@@ -139,10 +141,10 @@ class DDotSpecBehaviourTest {
     }
 
     /**
-     * Several typed pairs ride on one line separated by {@code ;;} (only the first {@code ,,} is a
-     * delimiter); but as soon as free text shares the link with another payload, the {@code ,,} block is
-     * the only readable form — free text runs to end of line and would swallow a following {@code ;;}.
-     * Both spellings must round-trip losslessly.
+     * Payloads ride on one line separated by {@code ;;} (only the first {@code ,,} is a delimiter), and
+     * since ddot.it 1.3.0 that holds for a free-text note as much as for a typed pair: {@code ;;} ends the
+     * entry it stands in whatever that entry is, so pairs and notes mix inline in any order. Both must
+     * round-trip losslessly.
      */
     @Test
     void severalPayloadsPickTheReadableSpelling() throws IOException {
@@ -156,10 +158,50 @@ class DDotSpecBehaviourTest {
         String ddot2 = new DDotOutput(cj1).toDDot();
         assertTrue(ddot2.contains(",, ..since.. 2010 ;; ..until.. 2020"),
                 () -> "two typed pairs belong inline, separated by `;;`:\n" + ddot2);
-        assertTrue(ddot2.contains("\n,,\n..k.. v\na free note\n,,\n"),
-                () -> "a pair mixed with free text needs the `,,` block:\n" + ddot2);
+        assertTrue(ddot2.contains(",, ..k.. v ;; a free note"),
+                () -> "a pair and a note mix inline, parted by `;;`:\n" + ddot2);
         ICjDocument cj2 = parse(ddot2);
         assertEquals(CjDocuments.toJsonString(cj1), CjDocuments.toJsonString(cj2), () -> ddot2);
+    }
+
+    /**
+     * Several notes on one link stay SEVERAL. A link may carry more than one note — inline they are parted
+     * by {@code ;;}, in a block by any pair line between them — so they are held apart in CJ (an array under
+     * {@code ddot-it:text}, the same string-or-array shape the repeated keys under {@code ddot-it:props}
+     * use) and written back apart. Joining them into one value made three notes come back as one.
+     */
+    @Test
+    void severalNotesOnOneLinkStayApart() throws IOException {
+        String src = "Dirk ..works at.. SAP ,, first note ;; second note ;; third note\n";
+        ICjDocument cj1 = parse(src);
+        ICjEdge edge = cj1.graphs().findFirst().orElseThrow().edges().findFirst().orElseThrow();
+        IJsonValue text = edge.data().jsonValue().asObject().get(DDotOutput.LINK_TEXT_KEY);
+        assertNotNull(text);
+        assertTrue(text.isArray(), () -> "three notes are three entries, not one joined value: " + text);
+        assertEquals(3, text.asArray().size());
+        // …and they are written back as three entries on one line, which the joined form could not do:
+        // it produced a single `!!block` whose three lines read back in as ONE note.
+        String ddot2 = new DDotOutput(cj1).toDDot();
+        assertTrue(ddot2.contains(",, first note ;; second note ;; third note"), () -> ddot2);
+        assertEquals(CjDocuments.toJsonString(cj1), CjDocuments.toJsonString(parse(ddot2)), () -> ddot2);
+    }
+
+    /**
+     * A note whose own text holds a {@code ;;} cannot go inline any more than a typed value can: inline the
+     * separator would cut it into two notes. The {@code ,,} block, where {@code ;;} is ordinary content, is
+     * the form for it (corpus 28-semicolon-in-meta-block).
+     */
+    @Test
+    void aNoteContainingSemicolonsUsesTheBlockForm() throws IOException {
+        ICjDocument cj1 = parse("""
+                Dirk ..works at.. SAP ,,
+                one ;; two
+                ,,
+                """);
+        String ddot2 = new DDotOutput(cj1).toDDot();
+        assertTrue(ddot2.contains("\n,,\none ;; two\n,,\n"),
+                () -> "a `;;`-bearing note must be written in a `,,` block:\n" + ddot2);
+        assertEquals(CjDocuments.toJsonString(cj1), CjDocuments.toJsonString(parse(ddot2)), () -> ddot2);
     }
 
     /**

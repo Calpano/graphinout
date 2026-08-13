@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Resolves the cross-implementation ddot.it golden corpus ({@code ddot.it/test-data/cases}, 35 cases) for
+ * Resolves the cross-implementation ddot.it golden corpus ({@code ddot.it/test-data/cases}, 42 cases) for
  * the tests in this package.
  *
  * <p><strong>Absent is a skip; present-but-wrong is a failure.</strong> The corpus lives in a sibling
@@ -38,7 +38,7 @@ final class DdotCorpus {
             Path.of("..", "..", "ddot.it", "test-data", "cases"),
             Path.of("..", "ddot.it", "test-data", "cases"));
 
-    /** The corpus has 35 cases; anything materially smaller means we are asserting against a stub. */
+    /** The corpus has 42 cases; anything materially smaller means we are asserting against a stub. */
     static final int MIN_CASES = 30;
 
     private DdotCorpus() {}
@@ -52,7 +52,7 @@ final class DdotCorpus {
         }
         if (caseDirs.size() < MIN_CASES) {
             fail("The ddot.it corpus at " + dir.toAbsolutePath().normalize() + " has only " + caseDirs.size()
-                    + " case(s); at least " + MIN_CASES + " are expected (the corpus has 35). A truncated"
+                    + " case(s); at least " + MIN_CASES + " are expected (the corpus has 42). A truncated"
                     + " corpus would make conformance tests pass vacuously, so this is a failure, not a skip.");
         }
         return caseDirs;
