@@ -38,6 +38,7 @@
         <module>foundation-shared</module>
         <module>foundation-jvm</module>
         <module>testdata</module>
+        <module>base-api</module>
         <module>base</module>
         <module>reader-cj</module>
         <module>reader-jgef</module>
@@ -76,9 +77,9 @@
     </scm>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j-version>2.0.17</slf4j-version>
         <!-- logback: taken from origin/main (dependabot patch bump 1.5.33 -> 1.5.34) -->
@@ -103,9 +104,10 @@
             accepting the bump would point Jackson 3 coordinates at a version that does not exist.
             Jackson 2 artifacts are pinned separately by jackson-annotations-version.
         -->
-        <jackson-core-version>3.2.0</jackson-core-version>
-        <jackson-databind-version>3.2.0</jackson-databind-version>
-        <jackson-annotations-version>2.21</jackson-annotations-version>
+        <jackson-core-version>3.2.1</jackson-core-version>
+        <jackson-databind-version>3.2.1</jackson-databind-version>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+        <jackson-annotations-version>2.22</jackson-annotations-version>
 
         <j2cl-mp-version>0.22.0</j2cl-mp-version>
         <j2cl-mp-group>com.vertispan.j2cl</j2cl-mp-group>
@@ -152,7 +154,7 @@
             <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-core</artifactId><version>${logback-classic-version}</version></dependency>
             <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId><version>${jackson-annotations-version}</version></dependency>
             <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-core</artifactId><version>${jackson-core-version}</version></dependency>
-            <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-core-version}</version></dependency>
+            <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-databind-version}</version></dependency>
             <dependency><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>4.7.3</version></dependency>
             <dependency><groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId><version>3.0.2</version></dependency>
             <!-- Truth should not use guava xxx-android ... but the xxx-jre variant -->
@@ -161,7 +163,7 @@
                 <!-- Truth should not use guava xxx-android ... but the xxx-jre variant -->
                 <exclusions><exclusion><groupId>com.google.guava</groupId><artifactId>guava</artifactId></exclusion></exclusions>
             </dependency>
-            <dependency><groupId>com.networknt</groupId><artifactId>json-schema-validator</artifactId><version>1.5.9</version>
+            <dependency><groupId>com.networknt</groupId><artifactId>json-schema-validator</artifactId><version>3.0.6</version>
                 <exclusions><exclusion><groupId>tools.jackson.dataformat</groupId><artifactId>jackson-dataformat-yaml</artifactId></exclusion></exclusions>
             </dependency>
             <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.20.0</version></dependency>
@@ -202,8 +204,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>25</source>
+                    <target>25</target>
                 </configuration>
             </plugin>
             <plugin>
