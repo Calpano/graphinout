@@ -21,7 +21,7 @@
           here: reader-ddot depends on com.graphinout:base, so a ddotit-core that depended on graphinout
           would close a build cycle. See ddotit-core's pom for the enforcer rules that keep it that way.
         -->
-        <dependency><groupId>it.ddot</groupId><artifactId>ddotit-core</artifactId><version>0.2.1</version></dependency>
+        <dependency><groupId>it.ddot</groupId><artifactId>ddotit-core</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
         <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
 
