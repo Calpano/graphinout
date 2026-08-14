@@ -29,7 +29,10 @@
         </dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>foundation-shared</artifactId>
             <!-- avoid stripped down third party dependencies -->
-            <exclusions><exclusion><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId></exclusion></exclusions>
+            <exclusions>
+<exclusion><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId></exclusion>
+<exclusion><groupId>org.gwtproject.regexp</groupId><artifactId>gwt-regexp</artifactId></exclusion>
+            </exclusions>
         </dependency>
         <!-- use real dependencies instead -->
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId><optional>true</optional></dependency>

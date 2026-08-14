@@ -12,8 +12,17 @@
     <name>base-api</name>
 
     <dependencies>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>foundation-jvm</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId>
+            <exclusions>
+<exclusion><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId></exclusion>
+            </exclusions>
+        </dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation-jvm</artifactId>
+            <exclusions>
+<exclusion><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId></exclusion>
+<exclusion><groupId>org.gwtproject.regexp</groupId><artifactId>gwt-regexp</artifactId></exclusion>
+            </exclusions>
+        </dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <!-- Logging API only. Consumers (e.g. the IntelliJ plugin) supply the binding;
              logback is a test-scope binding below, never imposed on downstream. -->
