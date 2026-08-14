@@ -11,6 +11,10 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Instead of depending on Guava just for {@link #setsDifference(Set, Set)} and on IOUtils just for
+ * {@link #toString(InputStream, Charset)} we re-implemented both methods here.
+ */
 public class Utils {
 
     /** As in IOUtils: 8 KiB. */
@@ -20,9 +24,9 @@ public class Utils {
     private static final int EOF = -1;
 
     /**
-     * Modelled after Guavas impl: an unmodifiable, lazily evaluated <em>view</em> of the elements
-     * contained in {@code setA} but not in {@code setB}. The view reflects later changes of the
-     * backing sets; iteration order is that of {@code setA}.
+     * Modelled after Guavas impl: an unmodifiable, lazily evaluated <em>view</em> of the elements contained in
+     * {@code setA} but not in {@code setB}. The view reflects later changes of the backing sets; iteration order is
+     * that of {@code setA}.
      *
      * @param setA elements to keep, unless they also occur in {@code setB}
      * @param setB elements to subtract
@@ -55,19 +59,6 @@ public class Utils {
                         advance();
                     }
 
-                    private void advance() {
-                        while (backing.hasNext()) {
-                            T candidate = backing.next();
-                            if (!setB.contains(candidate)) {
-                                next = candidate;
-                                hasNext = true;
-                                return;
-                            }
-                        }
-                        next = null;
-                        hasNext = false;
-                    }
-
                     @Override
                     public boolean hasNext() {
                         return hasNext;
@@ -81,6 +72,19 @@ public class Utils {
                         T result = next;
                         advance();
                         return result;
+                    }
+
+                    private void advance() {
+                        while (backing.hasNext()) {
+                            T candidate = backing.next();
+                            if (!setB.contains(candidate)) {
+                                next = candidate;
+                                hasNext = true;
+                                return;
+                            }
+                        }
+                        next = null;
+                        hasNext = false;
                     }
                 };
             }
@@ -99,9 +103,8 @@ public class Utils {
     }
 
     /**
-     * Modelled after Apache Commons IOUtils.toString(InputStream, Charset): reads the stream to its
-     * end and decodes it with the given charset. The stream is <em>not</em> closed, that stays the
-     * caller's job.
+     * Modelled after Apache Commons IOUtils.toString(InputStream, Charset): reads the stream to its end and decodes it
+     * with the given charset. The stream is <em>not</em> closed, that stays the caller's job.
      *
      * @param inputStream the stream to read, must not be null
      * @param charset     the charset to decode with, null means {@link Charset#defaultCharset()}
@@ -110,8 +113,7 @@ public class Utils {
      */
     public static String toString(InputStream inputStream, Charset charset) throws IOException {
         Objects.requireNonNull(inputStream, "inputStream");
-        Reader reader = new InputStreamReader(inputStream,
-                charset == null ? Charset.defaultCharset() : charset);
+        Reader reader = new InputStreamReader(inputStream, charset == null ? Charset.defaultCharset() : charset);
         StringBuilder result = new StringBuilder();
         char[] buffer = new char[DEFAULT_BUFFER_SIZE];
         int read;
