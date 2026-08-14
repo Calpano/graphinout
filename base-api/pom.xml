@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>graphinout</artifactId>
         <groupId>com.graphinout</groupId>
+        <artifactId>graphinout</artifactId>
         <version>0.2.2-SNAPSHOT</version>
     </parent>
 
