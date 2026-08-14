@@ -1,0 +1,1 @@
+Could later be moved up to foundation-pure, but is currently only used in graphinout
