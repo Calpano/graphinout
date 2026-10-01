@@ -81,9 +81,11 @@
         <maven.compiler.target>25</maven.compiler.target>
         <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j-version>2.0.17</slf4j-version>
-        <!-- logback: taken from origin/main (dependabot patch bump 1.5.33 -> 1.5.34) -->
-        <logback-classic-version>1.5.34</logback-classic-version>
+        <!-- keep in step with the slf4j.version that logback-parent declares -->
+        <slf4j-version>2.0.19</slf4j-version>
+        <!-- logback >= 1.6.5: fixes CVE-2026-19880 (MDCBasedDiscriminator path traversal, <= 1.6.2) and the
+             follow-up bypass of the incomplete 1.6.3 fix. https://logback.qos.ch/news.html -->
+        <logback-classic-version>1.6.5</logback-classic-version>
         <junit-jupiter.version>5.9.2</junit-jupiter.version>
         <!--
             Mockito's inline mock maker rewrites classes through Byte Buddy, so it has to understand the
@@ -104,7 +106,7 @@
             accepting the bump would point Jackson 3 coordinates at a version that does not exist.
             Jackson 2 artifacts are pinned separately by jackson-annotations-version.
         -->
-        <jackson-core-version>3.2.1</jackson-core-version>
+        <jackson-core-version>3.2.3</jackson-core-version>
         <jackson-databind-version>3.2.3</jackson-databind-version>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
         <jackson-annotations-version>2.22</jackson-annotations-version>
