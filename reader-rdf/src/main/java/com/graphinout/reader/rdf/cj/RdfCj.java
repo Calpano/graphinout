@@ -12,11 +12,11 @@ public class RdfCj {
 
         public static String rdfData = "rdf:data";
 
-        /** Edge-data key for structured per-link props (ddot {@code ,, ..key.. value}); a nested key→value object. */
-        public static final String LINK_PROPS = "ddot-it:props";
-
-        /** Edge-data key for free-text per-link notes (ddot {@code ,, note}); a string or array of strings. */
-        public static final String LINK_TEXT = "ddot-it:text";
+        /**
+         * Edge-data key for free-text per-link notes (ddot {@code ,, note}, ddot.it's built-in {@code text} relation);
+         * a string or array of strings. All other per-link props are plain edge-data keys next to it.
+         */
+        public static final String LINK_TEXT = "text";
 
     }
 
@@ -44,7 +44,7 @@ public class RdfCj {
         public static final String CJ_EDGE = VOC + "Edge";
 
         /**
-         * Predicate carrying a free-text note (ddot {@code ddot-it:text}) for a statement, used as the
+         * Predicate carrying a free-text note (edge-data key {@code text}) for a statement, used as the
          * metadata predicate on the RDF-star reifier of the annotated base triple.
          */
         public static final String HAS_NOTE = VOC + "hasNote";

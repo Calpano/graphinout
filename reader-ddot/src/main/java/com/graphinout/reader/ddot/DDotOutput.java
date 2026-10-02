@@ -36,12 +36,11 @@ public class DDotOutput {
     static final String PRED_DATA_PREFIX = "ddot:data:";
 
     /**
-     * Per-link metadata is namespaced on the edge's CJ data so it never collides with arbitrary keys:
-     * structured {@code ,, ..key.. value} entries live under {@link #LINK_PROPS_KEY}, free-text
-     * {@code ,, note} entries under {@link #LINK_TEXT_KEY}.
+     * ddot.it's built-in relation for free metadata text: {@code ,, a note} is the pair {@code text -> a note}. Per-link
+     * metadata is stored flat on the edge's CJ data, so a note is the edge-data key {@code text}, written back in the
+     * free-text form.
      */
-    static final String LINK_PROPS_KEY = "ddot-it:props";
-    static final String LINK_TEXT_KEY = "ddot-it:text";
+    static final String META_TEXT = "text";
 
     /** Subject naming the current document; its triples are document-level metadata. See https://ddot.it/this. */
     static final String SUBJECT_THIS = "ddot.it/this";
@@ -157,44 +156,36 @@ public class DDotOutput {
             String predicate = edgeType(e);
             if (predicate == null) predicate = firstLabelOrDesc(e, e.labelEntries());
             if (predicate == null) predicate = "";
-            // Per-link metadata round-trips from the edge's namespaced CJ data (see LINK_PROPS_KEY/LINK_TEXT_KEY):
-            // structured props as ",, ..key.. value", free text as ",, note".
+            // Per-link metadata round-trips from the edge's flat CJ data (see DDotReader#writeMeta): every scalar key
+            // as ",, ..key.. value", the built-in `text` key in the free-text form ",, note" after the pairs. This
+            // includes keys other formats put on the edge (e.g. `line` from PlantUML), which ddot reads back to the
+            // same place.
             List<DDotDoc.Meta> meta = new ArrayList<>();
+            List<DDotDoc.Meta> notes = new ArrayList<>();
             IJsonValue edgeJson = e.data().jsonValue();
             if (edgeJson != null && edgeJson.isObject()) {
-                IJsonValue props = edgeJson.asObject().get(LINK_PROPS_KEY);
-                if (props != null && props.isObject()) {
-                    List<String> keys = new ArrayList<>(props.asObject().keys());
-                    Collections.sort(keys); // deterministic order
-                    for (String key : keys) {
-                        // An ARRAY value is a relation written more than once on this link — a JSON object cannot
-                        // hold the key twice — and is spelled back out as one `,, ..key.. value` pair per element
-                        // (further pairs separated by `;;`). See DDotReader#writeMeta.
-                        IJsonValue value = props.asObject().get(key);
-                        if (value != null && value.isArray()) {
-                            value.asArray().forEach(v -> meta.add(DDotDoc.Meta.pair(key, jsonAsScalar(v))));
-                        } else {
-                            meta.add(DDotDoc.Meta.pair(key, jsonAsScalar(value)));
-                        }
+                List<String> keys = new ArrayList<>(edgeJson.asObject().keys());
+                Collections.sort(keys); // deterministic order
+                for (String key : keys) {
+                    IJsonValue value = edgeJson.asObject().get(key);
+                    // An ARRAY of scalars is a relation written more than once on this link — a JSON object cannot
+                    // hold the key twice — and is spelled back out as one entry per element (further entries
+                    // separated by `;;`). Nested objects, and arrays holding them, have no ddot.it form; skipped.
+                    List<IJsonValue> values = new ArrayList<>();
+                    if (value == null || value.isNull() || value.isObject()) continue;
+                    if (value.isArray()) {
+                        value.asArray().forEach(v -> values.add(v));
+                        if (values.stream().anyMatch(v -> v.isObject() || v.isArray() || v.isNull())) continue;
+                    } else {
+                        values.add(value);
                     }
-                }
-                IJsonValue text = edgeJson.asObject().get(LINK_TEXT_KEY);
-                if (text != null) {
-                    if (text.isArray()) text.asArray().forEach(v -> meta.add(DDotDoc.Meta.text(jsonAsScalar(v))));
-                    else if (!text.isNull()) meta.add(DDotDoc.Meta.text(jsonAsScalar(text)));
-                }
-                // Generic scalar edge properties (e.g. `uml:rel` carrying the source format's arrow/relation kind)
-                // round-trip as `,, ..key.. value` metadata. The reserved keys above are already handled.
-                List<String> genericKeys = new ArrayList<>(edgeJson.asObject().keys());
-                Collections.sort(genericKeys);
-                for (String key : genericKeys) {
-                    if (LINK_PROPS_KEY.equals(key) || LINK_TEXT_KEY.equals(key)) continue;
-                    IJsonValue v = edgeJson.asObject().get(key);
-                    if (v != null && !v.isObject() && !v.isArray() && !v.isNull()) {
-                        meta.add(DDotDoc.Meta.pair(key, jsonAsScalar(v)));
+                    for (IJsonValue v : values) {
+                        if (META_TEXT.equals(key)) notes.add(DDotDoc.Meta.text(jsonAsScalar(v)));
+                        else meta.add(DDotDoc.Meta.pair(key, jsonAsScalar(v)));
                     }
                 }
             }
+            meta.addAll(notes);
             out.triples.add(new DDotDoc.DDotTriple(subject, predicate, object, meta));
         });
 

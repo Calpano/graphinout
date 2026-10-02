@@ -66,7 +66,8 @@ import java.util.function.Consumer;
 public class DDotReader implements GioReader {
 
     /**
-     * Accumulator for one link's metadata: structured pairs and free-text notes.
+     * Accumulator for one link's metadata pairs. A free-text note ({@code ,, a note}) is no special case: ddot.it gives
+     * it the built-in relation {@code text}, so it is the pair {@code text -> a note}.
      *
      * <p>The pairs are a LIST, not a map: ddot.it lets a relation repeat on one link
      * ({@code ,, ..author.. Ann ;; ..author.. Bob}), and a map kept only the last of them. See {@link IMeta}.
@@ -74,10 +75,9 @@ public class DDotReader implements GioReader {
     private static final class LinkMeta {
 
         final List<IMetaPair> props = new ArrayList<>();
-        final List<String> texts = new ArrayList<>();
 
         boolean isEmpty() {
-            return props.isEmpty() && texts.isEmpty();
+            return props.isEmpty();
         }
 
         /** The values written for {@code key}, in written order. */
@@ -99,11 +99,6 @@ public class DDotReader implements GioReader {
      * href="https://ddot.it/developer-guide.html#events">...</a>).
      */
     private static final String EVENT_KIND = "ddot";
-    /**
-     * The built-in relation ddot.it gives to free metadata text ({@code ,, a note}), as opposed to a structured pair
-     * ({@code ,, ..key.. value}). See the Parse Spec, Information Model.
-     */
-    private static final String META_TEXT_RELATION = "text";
     /**
      * ddot.it's suggested standard relation aliases → canonical names (see <a
      * href="https://ddot.it/relations">...</a>).
@@ -129,18 +124,16 @@ public class DDotReader implements GioReader {
     private @Nullable Consumer<ContentError> errorHandler;
 
     /**
-     * Route one link's metadata entries into {@code edge}'s accumulator. A typed pair ({@code ,, ..key.. value})
-     * becomes a property; the built-in {@code text} relation — which ddot.it gives to free metadata text — becomes a
-     * note; an untyped pair ({@code ,, .... value}) gets ddot.it's
+     * Route one link's metadata entries into {@code edge}'s accumulator. Every entry is a pair: a typed one
+     * ({@code ,, ..key.. value}) as written, free text ({@code ,, a note}) under ddot.it's built-in {@code text}
+     * relation, and an untyped one ({@code ,, .... value}) under ddot.it's
      * {@linkplain DdotVocabulary#LINKS_TO default predicate}, which is also how it is written back out.
      */
     private static void attachMeta(ICjEdgeChunkMutable edge, Map<ICjEdgeChunkMutable, LinkMeta> edgeMeta, IMeta meta) {
         if (meta.isEmpty()) return;
         LinkMeta acc = edgeMeta.computeIfAbsent(edge, e -> new LinkMeta());
         for (IMetaPair pair : meta) {
-            String type = pair.type();
-            if (META_TEXT_RELATION.equals(type)) acc.texts.add(pair.to());
-            else acc.props.add(pair);
+            acc.props.add(pair);
         }
     }
 
@@ -336,7 +329,7 @@ public class DDotReader implements GioReader {
         writer.documentStart(docChunk);
         writer.graphStart(graphChunk);
         nodeBuffer.values().forEach(writer::node);
-        // attach accumulated per-link metadata, namespaced under "ddot-it:props" / "ddot-it:text"
+        // attach accumulated per-link metadata as the edge's data, one key per relation
         edgeBuffer.forEach(edge -> writeMeta(edge, edgeMeta.get(edge), writer.jsonFactory()));
         edgeBuffer.forEach(writer::edge);
 
@@ -384,7 +377,12 @@ public class DDotReader implements GioReader {
     }
 
     /**
-     * Write a link's accumulated metadata onto the edge as {@code {"ddot-it:props": {...}, "ddot-it:text": ...}}.
+     * Write a link's accumulated metadata onto the edge as its data, one key per relation:
+     * {@code ,, ..since.. 2025 ;; a note} becomes {@code {"since": "2025", "text": "a note"}}.
+     * <p>
+     * The keys need no namespace: a ddot.it edge carries nothing but its {@code ,,} metadata, and everything else about
+     * it (relation, label, endpoints) is CJ structure outside {@code data}. {@link DDotOutput} writes every scalar
+     * edge-data key back as a {@code ,,} pair, so this shape round-trips.
      * <p>
      * A JSON object cannot hold one key twice, so a relation written more than once on the link
      * ({@code ,, ..author.. Ann ;; ..author.. Bob}) becomes an ARRAY value — the shape {@link DDotOutput} expands
@@ -392,32 +390,18 @@ public class DDotReader implements GioReader {
      * <p>
      * <strong>Written ORDER is deliberately not preserved, and that is not a bug to fix.</strong> The ddot.it event
      * stream is a list because the SYNTAX has an order; the information model it feeds does not. The facts extracted
-     * from one link are a set of properties plus a set of notes, and nothing downstream may depend on which was
-     * written first — so a key-sorted object is the honest shape for them, and re-reading what this writes yields the
-     * same document (CJ round-trip is stable, only the spelling is renormalised). Multiplicity is a different matter
-     * and IS preserved: three notes are three facts, hence the array below rather than one joined value.
+     * from one link are a set of pairs, and nothing downstream may depend on which was written first — so a
+     * key-sorted object is the honest shape for them, and re-reading what this writes yields the same document (CJ
+     * round-trip is stable, only the spelling is renormalised). Multiplicity is a different matter and IS preserved:
+     * three notes are three facts ({@code ,, one ;; two ;; three}), hence an array rather than one joined value.
      */
     private void writeMeta(ICjEdgeChunkMutable edge, @Nullable LinkMeta meta, IJsonFactory jf) {
         if (meta == null || meta.isEmpty()) return;
         IJsonObjectMutable data = jf.createObjectMutable();
-        if (!meta.props.isEmpty()) {
-            IJsonObjectMutable props = jf.createObjectMutable();
-            for (String key : meta.keys()) {
-                List<String> values = meta.valuesOf(key);
-                if (values.size() == 1) props.add(key, values.getFirst());
-                else props.addArray(key, array -> values.forEach(array::add));
-            }
-            data.addProperty(DDotOutput.LINK_PROPS_KEY, props);
-        }
-        // Free notes are kept APART, under the same string-or-array convention as the props above: ddot.it
-        // 1.3.0 makes several notes per link a first-class construct (`,, one ;; two` is two notes, and a
-        // block's notes are parted by any pair line between them), so joining them here would collapse
-        // three notes into one on the way back out. A single note stays a plain string; `reader-rdf`
-        // already reads and writes both shapes (one `cj:hasNote` per entry).
-        if (meta.texts.size() == 1) {
-            data.add(DDotOutput.LINK_TEXT_KEY, meta.texts.getFirst());
-        } else if (!meta.texts.isEmpty()) {
-            data.addArray(DDotOutput.LINK_TEXT_KEY, array -> meta.texts.forEach(array::add));
+        for (String key : meta.keys()) {
+            List<String> values = meta.valuesOf(key);
+            if (values.size() == 1) data.add(key, values.getFirst());
+            else data.addArray(key, array -> values.forEach(array::add));
         }
         edge.dataMutable(d -> d.setJsonValue(data));
     }

@@ -67,8 +67,8 @@ Source of truth: `reader-rdf` (`RdfModel2CjDoc`, `CjDoc2RdfModel`, `RdfLiteral`,
    are elided — they are the defaults);
 ** repeated predicate → array.
 * Statement-level annotations (RDF-star `rdf:reifies` triple terms, or classic `rdf:Statement`
-  reification) → the annotated edge's `data` (`ddot-it:props` for keyed entries, `ddot-it:text` for free
-  text — single value ⇒ string, multiple ⇒ array).
+  reification) → the annotated edge's `data`, one key per annotation predicate, free text (`cj:hasNote`) under
+  `text` — single value ⇒ string, multiple ⇒ array.
 * Triples whose subject is the sentinel `cj:thisDocument` → the document's `data` (repeated key ⇒ array).
 * Blank node → node id `"_:" + <label>`.
 
@@ -115,7 +115,8 @@ Source of truth: `reader-ddot` (`DDotReader`, `DDotOutput`, `DDotDoc`); feature 
   (`ddot.it/block?end=MARKER`). Content lines are literal (a `..` line is content, not a statement). A `,,`
   on the opening line is the block's metadata, and may flag the value an RDF literal (see <<literals>>).
 * `A ..prefix.. B` → `@context` entry `A → B` (ids left verbatim).
-* Inline/block `,, ..k.. v` / `,, note` → edge `data` under `ddot-it:props` / `ddot-it:text`.
+* Inline/block `,, ..k.. v` / `,, note` → edge `data` key `k` / `text` (ddot.it's built-in relation for free
+  metadata text).
 * `ddot.it/off`/`!!off` … `ddot.it/on`/`!!on` mute/resume; `#` lines are comments.
 
 ==== CJ → ddot.it (write)
@@ -185,7 +186,8 @@ ddot per-link `,, ..k.. v` ⇄ CJ edge `data` ⇄ an RDF statement annotation, c
 * RDF/XML, JSON-LD, RDF-JSON, TriX → classic *reification*: `r rdf:type rdf:Statement; rdf:subject s;
   rdf:predicate p; rdf:object o` + the same metadata predicates (plain triples, serialise everywhere).
 
-The reader recognises both encodings and rebuilds `ddot-it:props` / `ddot-it:text`.
+The reader recognises both encodings and rebuilds the flat edge `data`. Every edge-data key is written as an
+annotation, whichever format put it on the edge; `text` becomes `cj:hasNote`.
 
 [#document-metadata]
 ==== Document metadata

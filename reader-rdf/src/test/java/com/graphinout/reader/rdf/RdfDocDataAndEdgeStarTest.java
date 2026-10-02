@@ -105,7 +105,7 @@ class RdfDocDataAndEdgeStarTest {
                       "endpoints": [ { "node": "ex:alice", "direction": "in" },
                                      { "node": "ex:bob", "direction": "out" } ],
                       "type": "ex:knows",
-                      "data": { "ddot-it:props": { "ex:since": "2020" }, "ddot-it:text": "a note" }
+                      "data": { "ex:since": "2020", "text": "a note" }
                     } ]
                   } ]
                 }
@@ -119,12 +119,12 @@ class RdfDocDataAndEdgeStarTest {
         assertNotNull(edgeData, "edge data must survive the RDF-star round-trip");
         assertThat(edgeData.isObject()).isTrue();
 
-        IJsonValue props = edgeData.asObject().get("ddot-it:props");
-        assertNotNull(props, "ddot-it:props must round-trip");
-        assertThat(props.asObject().get("ex:since").asString()).isEqualTo("2020");
+        IJsonValue since = edgeData.asObject().get("ex:since");
+        assertNotNull(since, "edge prop ex:since must round-trip");
+        assertThat(since.asString()).isEqualTo("2020");
 
-        IJsonValue text = edgeData.asObject().get("ddot-it:text");
-        assertNotNull(text, "ddot-it:text must round-trip");
+        IJsonValue text = edgeData.asObject().get("text");
+        assertNotNull(text, "edge note (text) must round-trip");
         assertThat(text.asString()).isEqualTo("a note");
     }
 
@@ -139,7 +139,7 @@ class RdfDocDataAndEdgeStarTest {
                       "endpoints": [ { "node": "ex:alice", "direction": "in" },
                                      { "node": "ex:bob", "direction": "out" } ],
                       "type": "ex:knows",
-                      "data": { "ddot-it:text": [ "note one", "note two" ] }
+                      "data": { "text": [ "note one", "note two" ] }
                     } ]
                   } ]
                 }
@@ -147,7 +147,7 @@ class RdfDocDataAndEdgeStarTest {
         ICjDocument cjDoc = CjDocuments.parseCjJsonString("in.cj.json", cjJson);
         ICjDocument result = roundTrip(cjDoc);
 
-        IJsonValue text = firstEdge(result).data().jsonValue().asObject().get("ddot-it:text");
+        IJsonValue text = firstEdge(result).data().jsonValue().asObject().get("text");
         assertNotNull(text);
         assertThat(text.isArray()).isTrue();
         assertThat(text.asArray().stream().map(IJsonValue::asString).toList())

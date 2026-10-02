@@ -15,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Per-link metadata (the {@code ,,} syntax, see https://ddot.it) must survive ddot &rarr; CJ as edge data:
- * structured {@code ..key.. value} pairs under {@code ddot-it:props}, free text under {@code ddot-it:text}.
+ * one key per relation, structured {@code ..key.. value} pairs as written, free text under ddot.it's built-in
+ * {@code text} relation.
  *
  * <p>These read the metadata cases straight from the canonical ddot.it corpus. They used to read a
  * <em>mirror</em> of it in graph-test-data, resolved off the classpath, and skipped themselves with a bare
@@ -33,16 +34,16 @@ class DDotLinkMetadataTest {
         return doc.graphs().findFirst().orElseThrow().edges().findFirst().orElseThrow();
     }
 
-    /** Structured properties live under {@code ddot-it:props}. */
+    /** Structured properties are the edge's data keys. */
     private static IJsonObject props(ICjEdge edge) {
         assertNotNull(edge.data().jsonValue(), "edge should carry metadata as data");
-        return edge.data().jsonValue().asObject().get(DDotOutput.LINK_PROPS_KEY).asObject();
+        return edge.data().jsonValue().asObject();
     }
 
-    /** Free-text notes live under {@code ddot-it:text}. */
+    /** Free-text notes live under the edge-data key {@code text}. */
     private static String text(ICjEdge edge) {
         assertNotNull(edge.data().jsonValue(), "edge should carry metadata as data");
-        return edge.data().jsonValue().asObject().get(DDotOutput.LINK_TEXT_KEY).asString();
+        return edge.data().jsonValue().asObject().get(DDotOutput.META_TEXT).asString();
     }
 
     @Test

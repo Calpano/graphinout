@@ -188,13 +188,13 @@ public class CjDoc2RdfModel {
     /**
      * E8 — serialise per-edge CJ {@code data} as RDF-star annotations on the base triple {@code s p o}.
      * <p>
-     * Edge data follows the ddot convention: structured props under {@code ddot-it:props} (a nested
-     * key→value object) and free text under {@code ddot-it:text} (a string or array of strings). Each entry
-     * is attached to a fresh reifier blank node {@code r} via RDF 1.2 / RDF-star:
+     * Every edge-data key is a statement annotation, as in ddot's flat per-link metadata: the key {@code text} is a
+     * free-text note (a string or array of strings), any other key a structured prop. Each entry is attached to a
+     * fresh reifier blank node {@code r} via RDF 1.2 / RDF-star:
      * <pre>
      *   r  rdf:reifies  &lt;&lt; s p o &gt;&gt;
-     *   r  &lt;key&gt;        value           # one per ddot-it:props entry
-     *   r  cj:hasNote    "text"          # one per ddot-it:text entry
+     *   r  &lt;key&gt;        value           # one per edge-data key
+     *   r  cj:hasNote    "text"          # one per entry under the key text
      * </pre>
      * The quoted triple {@code << s p o >>} is a Jena triple-term node ({@code NodeFactory.createTripleTerm}).
      * This serialises in star-capable Turtle (the syntax {@code RdfReader} uses) and reads back via the same.
@@ -206,6 +206,7 @@ public class CjDoc2RdfModel {
             IJsonValue value = cjData.jsonValue();
             if (value == null || !value.isObject()) return;
             IJsonObject dataObject = value.asObject();
+            if (dataObject.keys().isEmpty()) return;
 
             // Star-capable syntaxes: one fresh reifier bnode per annotation, referring to the triple term.
             // Other syntaxes: a single rdf:Statement resource carrying all metadata predicates as plain triples.
@@ -214,21 +215,14 @@ public class CjDoc2RdfModel {
                     : null;
             Resource statement = rdfStar ? null : newReificationStatement(rdfModel, subject, baseProperty, object);
 
-            IJsonValue props = dataObject.get(RdfCj.RdfInCj.LINK_PROPS);
-            if (props != null && props.isObject()) {
-                IJsonObject propsObject = props.asObject();
-                for (String key : propsObject.keys()) {
-                    Property predicate = rdfModel.createProperty(CjUris.expandId(context, key));
-                    metadataValue2rdfLiterals(context, rdfModel, propsObject.get(key), literal ->
-                            addMetadata(rdfModel, rdfStar, tripleTerm, statement, predicate.asNode(), literal.asNode()));
-                }
-            }
-
-            IJsonValue text = dataObject.get(RdfCj.RdfInCj.LINK_TEXT);
-            if (text != null && !text.isNull()) {
-                Property notePredicate = rdfModel.createProperty(RdfCj.CjInRdf.HAS_NOTE);
-                metadataValue2rdfLiterals(context, rdfModel, text, literal ->
-                        addMetadata(rdfModel, rdfStar, tripleTerm, statement, notePredicate.asNode(), literal.asNode()));
+            for (String key : dataObject.keys()) {
+                IJsonValue entry = dataObject.get(key);
+                if (entry == null || entry.isNull()) continue;
+                Property predicate = RdfCj.RdfInCj.LINK_TEXT.equals(key)
+                        ? rdfModel.createProperty(RdfCj.CjInRdf.HAS_NOTE)
+                        : rdfModel.createProperty(CjUris.expandId(context, key));
+                metadataValue2rdfLiterals(context, rdfModel, entry, literal ->
+                        addMetadata(rdfModel, rdfStar, tripleTerm, statement, predicate.asNode(), literal.asNode()));
             }
         });
     }

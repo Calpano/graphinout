@@ -79,7 +79,7 @@ class RdfPerSyntaxMetadataTest {
                       "endpoints": [ { "node": "ex:alice", "direction": "in" },
                                      { "node": "ex:bob", "direction": "out" } ],
                       "type": "ex:knows",
-                      "data": { "ddot-it:props": { "ex:since": "2020" }, "ddot-it:text": "a note" }
+                      "data": { "ex:since": "2020", "text": "a note" }
                     } ]
                   } ]
                 }
@@ -99,11 +99,11 @@ class RdfPerSyntaxMetadataTest {
 
         IJsonValue edgeData = edge.data().jsonValue();
         assertNotNull(edgeData, label + ": edge data must survive the round-trip");
-        IJsonValue props = edgeData.asObject().get("ddot-it:props");
-        assertNotNull(props, label + ": ddot-it:props must round-trip");
-        assertThat(props.asObject().get(sinceKey).asString()).isEqualTo("2020");
-        IJsonValue text = edgeData.asObject().get("ddot-it:text");
-        assertNotNull(text, label + ": ddot-it:text must round-trip");
+        IJsonValue since = edgeData.asObject().get(sinceKey);
+        assertNotNull(since, label + ": edge prop " + sinceKey + " must round-trip");
+        assertThat(since.asString()).isEqualTo("2020");
+        IJsonValue text = edgeData.asObject().get("text");
+        assertNotNull(text, label + ": edge note (text) must round-trip");
         assertThat(text.asString()).isEqualTo("a note");
     }
 

@@ -239,49 +239,24 @@ public class PlantUmlWriter implements GioWriter {
         return value.toJsonString();
     }
 
-    /** The plain-link line token preserved as the edge's {@code line} property, read from a top-level property or from
-     * the DDot {@code ddot-it:props} metadata bag (so it survives a PlantUML→ddot→PlantUML round-trip). */
+    /** The plain-link line token preserved as the edge's {@code line} property. A PlantUML→ddot→PlantUML round-trip
+     * keeps it there: ddot writes edge data as {@code ,, ..line.. …} and reads it back to the same key. */
     private static @Nullable String lineProp(ICjEdge e) {
-        IJsonValue json = e.data() != null ? e.data().jsonValue() : null;
-        if (json == null || !json.isObject()) {
-            return null;
-        }
-        String top = stringProperty(json, "line");
-        if (top != null) {
-            return top;
-        }
-        IJsonValue props = json.resolve("ddot-it:props");
-        return stringProperty(props, "line");
+        return edgeProperty(e, "line");
     }
 
-    /** The navigability ({@code to}|{@code from}|{@code both}) of a decorated relation, read from a top-level {@code
-     * nav} property or the DDot {@code ddot-it:props} metadata bag. */
+    /** The navigability ({@code to}|{@code from}|{@code both}) of a decorated relation, from its {@code nav} property. */
     private static @Nullable String navProp(ICjEdge e) {
-        IJsonValue json = e.data() != null ? e.data().jsonValue() : null;
-        if (json == null || !json.isObject()) {
-            return null;
-        }
-        String top = stringProperty(json, "nav");
-        if (top != null) {
-            return top;
-        }
-        IJsonValue props = json.resolve("ddot-it:props");
-        return stringProperty(props, "nav");
+        return edgeProperty(e, "nav");
     }
 
-    /** The presentation styling ({@code dotted}|{@code bold}) of a relationship, read from a top-level {@code style}
-     * property or the DDot {@code ddot-it:props} metadata bag. */
+    /** The presentation styling ({@code dotted}|{@code bold}) of a relationship, from its {@code style} property. */
     private static @Nullable String styleProp(ICjEdge e) {
-        IJsonValue json = e.data() != null ? e.data().jsonValue() : null;
-        if (json == null || !json.isObject()) {
-            return null;
-        }
-        String top = stringProperty(json, "style");
-        if (top != null) {
-            return top;
-        }
-        IJsonValue props = json.resolve("ddot-it:props");
-        return stringProperty(props, "style");
+        return edgeProperty(e, "style");
+    }
+
+    private static @Nullable String edgeProperty(ICjEdge e, String key) {
+        return stringProperty(e.data() != null ? e.data().jsonValue() : null, key);
     }
 
     private static @Nullable String stringProperty(@Nullable IJsonValue json, String key) {

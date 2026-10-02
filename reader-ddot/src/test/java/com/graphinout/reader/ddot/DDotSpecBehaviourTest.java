@@ -39,7 +39,7 @@ class DDotSpecBehaviourTest {
     }
 
     private static IJsonObject props(ICjEdge edge) {
-        return edge.data().jsonValue().asObject().get(DDotOutput.LINK_PROPS_KEY).asObject();
+        return edge.data().jsonValue().asObject();
     }
 
     /** {@code ;;} separates further inline metadata pairs (corpus 22-inline-meta-separator). */
@@ -167,15 +167,15 @@ class DDotSpecBehaviourTest {
     /**
      * Several notes on one link stay SEVERAL. A link may carry more than one note — inline they are parted
      * by {@code ;;}, in a block by any pair line between them — so they are held apart in CJ (an array under
-     * {@code ddot-it:text}, the same string-or-array shape the repeated keys under {@code ddot-it:props}
-     * use) and written back apart. Joining them into one value made three notes come back as one.
+     * the edge-data key {@code text}, the same string-or-array shape any repeated relation uses) and written back
+     * apart. Joining them into one value made three notes come back as one.
      */
     @Test
     void severalNotesOnOneLinkStayApart() throws IOException {
         String src = "Dirk ..works at.. SAP ,, first note ;; second note ;; third note\n";
         ICjDocument cj1 = parse(src);
         ICjEdge edge = cj1.graphs().findFirst().orElseThrow().edges().findFirst().orElseThrow();
-        IJsonValue text = edge.data().jsonValue().asObject().get(DDotOutput.LINK_TEXT_KEY);
+        IJsonValue text = edge.data().jsonValue().asObject().get(DDotOutput.META_TEXT);
         assertNotNull(text);
         assertTrue(text.isArray(), () -> "three notes are three entries, not one joined value: " + text);
         assertEquals(3, text.asArray().size());
@@ -258,5 +258,34 @@ class DDotSpecBehaviourTest {
         assertTrue(ddot2.contains(",, ..note.. " + DDotOutput.OBJECT_BLOCK + "\nline one\nline two\n"),
                 () -> "a multi-line meta value must open a block:\n" + ddot2);
         assertEquals(CjDocuments.toJsonString(cj1), CjDocuments.toJsonString(parse(ddot2)), () -> ddot2);
+    }
+
+    /**
+     * Edge data another format put on an edge comes back from ddot at the SAME key. PlantUML stores a link's line
+     * token as {@code {"line": "-->"}}; ddot writes it as {@code ,, ..line.. -->}, and reading that back must give
+     * {@code {"line": "-->"}} again, not move it one level down into a metadata bag. Every round trip through ddot
+     * used to do exactly that.
+     */
+    @Test
+    void foreignEdgeDataRoundTripsAtTheSameKey() throws IOException {
+        ICjDocument cj1 = CjDocuments.parseCjJsonString("in.cj.json", """
+                {
+                  "graphs": [ {
+                    "nodes": [ { "id": "a" }, { "id": "b" } ],
+                    "edges": [ {
+                      "endpoints": [ { "node": "a", "direction": "in" }, { "node": "b", "direction": "out" } ],
+                      "type": "uses",
+                      "data": { "line": "-->", "text": "a note" }
+                    } ]
+                  } ]
+                }
+                """);
+        String ddot = new DDotOutput(cj1).toDDot();
+        assertTrue(ddot.contains(",, ..line.. --> ;; a note"), () -> ddot);
+
+        IJsonObject data = parse(ddot).graphs().findFirst().orElseThrow()
+                .edges().findFirst().orElseThrow().data().jsonValue().asObject();
+        assertEquals("-->", data.get("line").asString(), () -> ddot);
+        assertEquals("a note", data.get(DDotOutput.META_TEXT).asString(), () -> ddot);
     }
 }

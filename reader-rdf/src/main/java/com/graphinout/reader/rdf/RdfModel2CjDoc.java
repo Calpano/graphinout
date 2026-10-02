@@ -188,20 +188,22 @@ public class RdfModel2CjDoc {
                 .orElse(null);
         if (edge == null) return;
         IJsonFactory jf = IJsonFactory.INSTANCE;
+        // flat, as ddot's per-link metadata: one edge-data key per annotation predicate, notes under `text`
         IJsonObjectMutable data = jf.createObjectMutable();
-        if (!meta.props.isEmpty()) {
-            IJsonObjectMutable props = jf.createObjectMutable();
-            meta.props.forEach(props::addProperty);
-            data.addProperty(RdfCj.RdfInCj.LINK_PROPS, props);
-        }
-        if (!meta.texts.isEmpty()) {
-            if (meta.texts.size() == 1) {
-                data.addProperty(RdfCj.RdfInCj.LINK_TEXT, meta.texts.get(0));
-            } else {
-                IJsonArrayMutable arr = jf.createArrayMutable();
-                meta.texts.forEach(arr::add);
-                data.addProperty(RdfCj.RdfInCj.LINK_TEXT, arr);
-            }
+        meta.props.forEach((k, v) -> {
+            if (!RdfCj.RdfInCj.LINK_TEXT.equals(k)) data.addProperty(k, v);
+        });
+        // a predicate that abbreviates to `text` is a note too: same key, so its value joins the notes
+        List<IJsonValue> texts = new ArrayList<>();
+        IJsonValue textProp = meta.props.get(RdfCj.RdfInCj.LINK_TEXT);
+        if (textProp != null) texts.add(textProp);
+        texts.addAll(meta.texts);
+        if (texts.size() == 1) {
+            data.addProperty(RdfCj.RdfInCj.LINK_TEXT, texts.getFirst());
+        } else if (!texts.isEmpty()) {
+            IJsonArrayMutable arr = jf.createArrayMutable();
+            texts.forEach(arr::add);
+            data.addProperty(RdfCj.RdfInCj.LINK_TEXT, arr);
         }
         edge.dataMutable(d -> d.setJsonValue(data));
     }
