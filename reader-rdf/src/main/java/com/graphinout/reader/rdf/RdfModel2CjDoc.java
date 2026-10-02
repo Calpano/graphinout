@@ -118,10 +118,17 @@ public class RdfModel2CjDoc {
     private record EdgeMetaKey(String subjectId, String objectId, @org.jspecify.annotations.Nullable String edgeType) {
     }
 
-    /** Accumulated per-edge metadata: structured props (key→value) and free-text notes, mirroring the ddot reader. */
+    /**
+     * Accumulated per-edge metadata, mirroring the ddot reader: every value per edge-data key, free-text notes
+     * ({@code cj:hasNote}) under {@code text}. A LIST per key, because a predicate may annotate one statement more
+     * than once ({@code ,, ..author.. Ann ;; ..author.. Bob} becomes two annotations) and a plain map kept only one.
+     */
     private static final class EdgeMeta {
-        final LinkedHashMap<String, IJsonValue> props = new LinkedHashMap<>();
-        final List<IJsonValue> texts = new ArrayList<>();
+        final LinkedHashMap<String, List<IJsonValue>> values = new LinkedHashMap<>();
+
+        void add(String key, IJsonValue value) {
+            values.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+        }
     }
 
     private static EdgeMetaKey baseTripleKey(ICjDocumentChunk cjDoc, Triple base) {
@@ -171,16 +178,15 @@ public class RdfModel2CjDoc {
         IJsonValue jsonValue = rdfLit.isPlain()
                 ? IJsonFactory.INSTANCE.createString(literal.getLexicalForm())
                 : rdfLit.jsonObject();
-        if (RdfCj.CjInRdf.HAS_NOTE.equals(stmt.getPredicate().getURI())) {
-            meta.texts.add(jsonValue);
-        } else {
-            String key = cjDoc.asId_(stmt.getPredicate().getURI());
-            meta.props.put(key, jsonValue);
-        }
+        // a predicate that abbreviates to `text` lands on the same key as the notes, and joins them
+        String key = RdfCj.CjInRdf.HAS_NOTE.equals(stmt.getPredicate().getURI())
+                ? RdfCj.RdfInCj.LINK_TEXT
+                : cjDoc.asId_(stmt.getPredicate().getURI());
+        meta.add(key, jsonValue);
     }
 
     private static void attachEdgeMeta(ICjGraphMutable cjGraph, EdgeMetaKey key, EdgeMeta meta) {
-        if (meta.props.isEmpty() && meta.texts.isEmpty()) return;
+        if (meta.values.isEmpty()) return;
         ICjEdgeMutable edge = cjGraph.edges()
                 .filter(e -> matchesBaseTriple(e, key))
                 .map(e -> e.asEdge())
@@ -188,23 +194,18 @@ public class RdfModel2CjDoc {
                 .orElse(null);
         if (edge == null) return;
         IJsonFactory jf = IJsonFactory.INSTANCE;
-        // flat, as ddot's per-link metadata: one edge-data key per annotation predicate, notes under `text`
+        // flat, as ddot's per-link metadata: one edge-data key per annotation predicate, notes under `text`;
+        // a single value stays a plain value, several become an array (RDF has no order, so neither has the array)
         IJsonObjectMutable data = jf.createObjectMutable();
-        meta.props.forEach((k, v) -> {
-            if (!RdfCj.RdfInCj.LINK_TEXT.equals(k)) data.addProperty(k, v);
+        meta.values.forEach((k, vs) -> {
+            if (vs.size() == 1) {
+                data.addProperty(k, vs.getFirst());
+            } else {
+                IJsonArrayMutable arr = jf.createArrayMutable();
+                vs.forEach(arr::add);
+                data.addProperty(k, arr);
+            }
         });
-        // a predicate that abbreviates to `text` is a note too: same key, so its value joins the notes
-        List<IJsonValue> texts = new ArrayList<>();
-        IJsonValue textProp = meta.props.get(RdfCj.RdfInCj.LINK_TEXT);
-        if (textProp != null) texts.add(textProp);
-        texts.addAll(meta.texts);
-        if (texts.size() == 1) {
-            data.addProperty(RdfCj.RdfInCj.LINK_TEXT, texts.getFirst());
-        } else if (!texts.isEmpty()) {
-            IJsonArrayMutable arr = jf.createArrayMutable();
-            texts.forEach(arr::add);
-            data.addProperty(RdfCj.RdfInCj.LINK_TEXT, arr);
-        }
         edge.dataMutable(d -> d.setJsonValue(data));
     }
 

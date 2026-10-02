@@ -10,6 +10,7 @@ import com.graphinout.base.cj.writer.CjWriter2CjStream;
 import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.output.InMemoryOutputSink;
+import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -152,6 +153,38 @@ class RdfDocDataAndEdgeStarTest {
         assertThat(text.isArray()).isTrue();
         assertThat(text.asArray().stream().map(IJsonValue::asString).toList())
                 .containsExactly("note one", "note two");
+    }
+
+    /**
+     * A predicate annotating one statement twice keeps BOTH values. {@code ,, ..author.. Ann ;; ..author.. Bob} is
+     * the CJ array {@code ["Ann", "Bob"]}, written as two annotations; reading them back into a key→value map kept
+     * only one of them. RDF has no order, so neither has the array that comes back.
+     */
+    @Test
+    void edgePropWithRepeatedValuesRoundTrips() throws IOException {
+        String cjJson = """
+                {
+                  "@context": { "ex": "http://example.org/" },
+                  "graphs": [ {
+                    "nodes": [ { "id": "ex:alice" }, { "id": "ex:book" } ],
+                    "edges": [ {
+                      "endpoints": [ { "node": "ex:alice", "direction": "in" },
+                                     { "node": "ex:book", "direction": "out" } ],
+                      "type": "ex:wrote",
+                      "data": { "ex:author": [ "Ann", "Bob" ], "ex:since": "2020" }
+                    } ]
+                  } ]
+                }
+                """;
+        ICjDocument result = roundTrip(CjDocuments.parseCjJsonString("in.cj.json", cjJson));
+
+        IJsonObject edgeData = firstEdge(result).data().jsonValue().asObject();
+        IJsonValue authors = edgeData.get("ex:author");
+        assertNotNull(authors);
+        assertThat(authors.isArray()).isTrue();
+        assertThat(authors.asArray().stream().map(IJsonValue::asString).toList()).containsExactly("Ann", "Bob");
+        // a single value stays a plain value
+        assertThat(edgeData.get("ex:since").asString()).isEqualTo("2020");
     }
 
     @Test
