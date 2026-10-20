@@ -104,7 +104,7 @@
             accepting the bump would point Jackson 3 coordinates at a version that does not exist.
             Jackson 2 artifacts are pinned separately by jackson-annotations-version.
         -->
-        <jackson-core-version>3.2.1</jackson-core-version>
+        <jackson-core-version>3.2.3</jackson-core-version>
         <jackson-databind-version>3.2.3</jackson-databind-version>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
         <jackson-annotations-version>2.22</jackson-annotations-version>
