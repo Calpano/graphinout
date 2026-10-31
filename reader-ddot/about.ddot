@@ -6,3 +6,9 @@ graphinout-reader-ddot ..has type.. tool
 graphinout-reader-ddot ..label.. GraphInOut DDot Reader
 graphinout-reader-ddot ..reads.. ddot
 graphinout-reader-ddot ..writes.. ddot
+
+
+
+com.graphinoutit:reader-ddot ..has type.. Adir Project
+..uses.. it.ddot:ddotit-core
+..uses..com.graphinoutit:base
