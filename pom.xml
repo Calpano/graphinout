@@ -6,7 +6,7 @@
     <artifactId>graphinout</artifactId>
     <name>graphinout</name>
     <packaging>pom</packaging>
-    <version>0.2.3-SNAPSHOT</version>
+    <version>0.2.2-SNAPSHOT</version>
 
     <description> &#x1f98b; Graphinout reads many common graph file formats and converts them to Connected JSON or GraphML.</description>
     <url>https://graphinout.com</url>
@@ -83,7 +83,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- keep in step with the slf4j.version that logback-parent declares -->
         <slf4j-version>2.0.19</slf4j-version>
-        <!-- logback >= 1.6.5: fixes CVE-2026-19880 (MDCBasedDiscriminator path traversal, <= 1.6.2) and the follow-up bypass of the incomplete 1.6.3 fix. https://logback.qos.ch/news.html -->
+        <!-- logback >= 1.6.5: fixes CVE-2026-19880 (MDCBasedDiscriminator path traversal, <= 1.6.2) and the
+             follow-up bypass of the incomplete 1.6.3 fix. https://logback.qos.ch/news.html -->
         <logback-classic-version>1.6.5</logback-classic-version>
         <junit-jupiter.version>5.9.2</junit-jupiter.version>
         <!--
@@ -120,34 +121,34 @@
     <dependencyManagement>
         <dependencies>
             <!-- GraphInOut Dependencies -->
-            <dependency><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId><version>0.2.3-SNAPSHOT</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId><version>0.2.3-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId>
-                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.3-SNAPSHOT</version>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.2-SNAPSHOT</version>
             </dependency>
-           <dependency><groupId>com.graphinout</groupId><artifactId>foundation-shared</artifactId><version>0.2.3-SNAPSHOT</version></dependency>
+           <dependency><groupId>com.graphinout</groupId><artifactId>foundation-shared</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>foundation-shared</artifactId>
-                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.3-SNAPSHOT</version>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.2-SNAPSHOT</version>
             </dependency>
-           <dependency><groupId>com.graphinout</groupId><artifactId>foundation-jvm</artifactId><version>0.2.3-SNAPSHOT</version></dependency>
+           <dependency><groupId>com.graphinout</groupId><artifactId>foundation-jvm</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>foundation-jvm</artifactId>
-                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.3-SNAPSHOT</version>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.2-SNAPSHOT</version>
             </dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.3-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId>
-                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.3-SNAPSHOT</version>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.2-SNAPSHOT</version>
             </dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.3-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
-                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.3-SNAPSHOT</version>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.2-SNAPSHOT</version>
             </dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.2.3-SNAPSHOT</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.2.3-SNAPSHOT</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.2.3-SNAPSHOT</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif</artifactId><version>0.2.3-SNAPSHOT</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.2.3-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId><version>0.2.2-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>reader-textbased</artifactId>
-                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.3-SNAPSHOT</version>
+                <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.2-SNAPSHOT</version>
             </dependency>
 
             <!-- Third Party Main and Test Dependencies -->
