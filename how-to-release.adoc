@@ -56,8 +56,12 @@ Using local profiles.
 
 .Step 2: Perform the release with
 ----
-mvn release:perform -DlocalCheckout=true -DdeployAtEnd=true -P central-deploy,sign-for-sonar
+mvn release:perform -DlocalCheckout=true -DdeployAtEnd=true -P central-deploy,sign-for-sonar \
+    -Darguments="-Dgraph.test.data.dir=$(cd ../graph-test-data && pwd)"
 ----
+`release:perform` builds the tag in a fresh checkout under `target/checkout`, where the
+sibling `../graph-test-data` corpus is out of reach, and `ExternalCorpusPresenceTest` fails
+the build. `-Darguments` hands the corpus' absolute path to that inner build.
 
 * Step 3: Push the release tag and commits into the GitHub project.
 +

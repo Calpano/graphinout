@@ -303,6 +303,9 @@
                 <doclint>none</doclint>
                 <!-- Ensure consistent language to avoid locale-specific doclint behavior -->
                 <locale>en</locale>
+                <!-- JDK 23+ copies the DejaVu web fonts (~3.5 MB) into every javadoc jar: 128 MB over all modules,
+                     and the Central upload of that bundle broke off ("Broken pipe"). Browsers fall back to system fonts. -->
+                <additionalOptions>--no-fonts</additionalOptions>
               </configuration>
               <executions>
                 <execution>
