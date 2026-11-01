@@ -9,6 +9,33 @@ bumps and "minor/doc/WIP" commits are omitted.
 
 == Unreleased
 
+== 0.2.2 — 2026-11-01
+
+Added::
+* `base-api` — one dependency for consumers that only need graphinout's core APIs
+  (the JSON document types and query interfaces) without the readers.
+* `SelfCheck` utility listing the formats every `GioReader` and `GioWriter` supports.
+* GXL DTD bundled with `reader-gxl`; `PgJsonReader` warns about unknown fields.
+
+Changed::
+* `reader-ddot` parses with `it.ddot:ddotit-core` 0.3.1 (Maven Central) instead of its own grammar,
+  and writes only forms the conformant reader can read back (round-trip over the canonical corpus:
+  34 of 35, up from 30; the one left is benign).
+* `reader-ddot`: per-link metadata is stored flat in CJ edge data. `,, ..since.. 2025 ;; a note`
+  becomes `{"since": "2025", "text": "a note"}`, no longer
+  `{"ddot-it:props": {"since": "2025"}, "ddot-it:text": "a note"}`.
+* `reader-dot` scans HTML strings the way Graphviz does (depth-counting `<` and `>`) and
+  rejects edge chains that continue after an attribute list, with Graphviz's line:col.
+* `reader-rdf`: the Turtle reader no longer claims `.n3`.
+* JSON query APIs refactored; TripleText annotations removed.
+* Jackson 3.2.4, logback and Structurizr upgraded; builds on JDK 25 and 26.
+
+Fixed::
+* `reader-neo4j` reads files that interleave nodes and relationships.
+* Repeated RDF statement annotations keep every value (`,, ..author.. Ann ;; ..author.. Bob`
+  lost one author on the way back from RDF).
+* Several invalid-fixture and round-trip tests no longer pass by returning early or swallowing failures.
+
 == 0.2.1 — 2026-07-06
 
 Added::
