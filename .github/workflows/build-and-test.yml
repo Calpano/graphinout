@@ -108,7 +108,10 @@ jobs:
       #        run: mvn clean -pl engine install
 
       - name: ↗️ Deploy to Github Package Registry
-        # TODO enable when deploy works
-        # if: github.ref == 'refs/heads/main'
+        # main only. On main the version is a snapshot, which goes to GitHub Packages (snapshotRepository).
+        # On a release tag the version is a release, which the central-publishing plugin uploads to Maven
+        # Central instead: it re-uploaded the just-published release unsigned, and Central refused it
+        # ("already exists"; graphinout-0.2.2). Releases come from release:perform, see how-to-release.adoc.
+        if: github.ref == 'refs/heads/main'
         working-directory: graphinout
         run: mvn deploy --batch-mode -DskipTests
