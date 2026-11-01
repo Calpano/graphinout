@@ -17,8 +17,8 @@
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
         <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
-        <dependency><groupId>org.apache.jena</groupId><artifactId>jena-core</artifactId><version>5.6.0</version></dependency>
-        <dependency><groupId>org.apache.jena</groupId><artifactId>jena-arq</artifactId><version>5.6.0</version></dependency>
+        <dependency><groupId>org.apache.jena</groupId><artifactId>jena-core</artifactId><version>6.2.0</version></dependency>
+        <dependency><groupId>org.apache.jena</groupId><artifactId>jena-arq</artifactId><version>6.2.0</version></dependency>
 
         <!-- Test Dependencies -->
         <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>

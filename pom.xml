@@ -84,8 +84,8 @@
         <!-- keep in step with the slf4j.version that logback-parent declares -->
         <slf4j-version>2.0.19</slf4j-version>
         <!-- logback >= 1.6.5: fixes CVE-2026-19880 (MDCBasedDiscriminator path traversal, <= 1.6.2) and the follow-up bypass of the incomplete 1.6.3 fix. https://logback.qos.ch/news.html -->
-        <logback-classic-version>1.6.5</logback-classic-version>
-        <junit-jupiter.version>5.9.2</junit-jupiter.version>
+        <logback-classic-version>1.6.6</logback-classic-version>
+        <junit-jupiter.version>6.1.3</junit-jupiter.version>
         <!--
             Mockito's inline mock maker rewrites classes through Byte Buddy, so it has to understand the
             running JVM's class file version. 5.6.0 (Byte Buddy 1.14.x) cannot, and on JDK 26 every test
@@ -94,9 +94,9 @@
             — 280 errors in reader-ddot alone, which read as a broken build rather than an unsupported JDK.
             Keep these two in lockstep, and expect to bump them again for each new JDK.
         -->
-        <mockito-core-version>5.20.0</mockito-core-version>
-        <mockito-junit-jupiter-version>5.20.0</mockito-junit-jupiter-version>
-        <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
+        <mockito-core-version>5.24.0</mockito-core-version>
+        <mockito-junit-jupiter-version>5.24.0</mockito-junit-jupiter-version>
+        <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
         <!--
             NOTE ON THE MERGE FROM main: dependabot bumped this property to 2.21.5 there, and that bump is
             deliberately NOT taken. On main the property still named a com.fasterxml.jackson.core (Jackson 2)
@@ -156,39 +156,39 @@
             <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId><version>${jackson-annotations-version}</version></dependency>
             <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-core</artifactId><version>${jackson-core-version}</version></dependency>
             <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-databind-version}</version></dependency>
-            <dependency><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>4.7.3</version></dependency>
+            <dependency><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>4.10.5</version></dependency>
             <dependency><groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId><version>3.0.2</version></dependency>
             <!-- Truth should not use guava xxx-android ... but the xxx-jre variant -->
-            <dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>33.2.0-jre</version></dependency>
-            <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><version>1.4.4</version><scope>test</scope>
+            <dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>33.7.2-jre</version></dependency>
+            <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><version>1.4.5</version><scope>test</scope>
                 <!-- Truth should not use guava xxx-android ... but the xxx-jre variant -->
                 <exclusions><exclusion><groupId>com.google.guava</groupId><artifactId>guava</artifactId></exclusion></exclusions>
             </dependency>
-            <dependency><groupId>com.networknt</groupId><artifactId>json-schema-validator</artifactId><version>3.0.6</version>
+            <dependency><groupId>com.networknt</groupId><artifactId>json-schema-validator</artifactId><version>3.0.8</version>
                 <exclusions><exclusion><groupId>tools.jackson.dataformat</groupId><artifactId>jackson-dataformat-yaml</artifactId></exclusion></exclusions>
             </dependency>
-            <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.20.0</version></dependency>
-            <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><version>4.8.157</version></dependency>
-            <dependency><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId><version>1.14.0</version></dependency>
+            <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.22.0</version></dependency>
+            <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><version>4.8.199</version></dependency>
+            <dependency><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId><version>1.15.0</version></dependency>
             <dependency><groupId>org.gwtproject.regexp</groupId><artifactId>gwt-regexp</artifactId><version>1.0.0-RC1</version></dependency>
-            <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId><version>1.0.0</version></dependency>
+            <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId><version>1.0.1</version></dependency>
             <!-- Used to validate ECMA 262 regular expressions. Approx. 2 MB. JoniRegularExpressionFactory -->
-            <dependency><groupId>org.jruby.joni</groupId><artifactId>joni</artifactId><version>2.2.6</version></dependency>
+            <dependency><groupId>org.jruby.joni</groupId><artifactId>joni</artifactId><version>2.2.9</version></dependency>
             <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>${junit-jupiter.version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><version>${mockito-core-version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><version>${mockito-junit-jupiter-version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>${slf4j-version}</version></dependency>
 
             <!-- Harmonize transitive version conflicts: pin each to the highest version already in use -->
-            <dependency><groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.20.0</version></dependency>
-            <dependency><groupId>com.google.errorprone</groupId><artifactId>error_prone_annotations</artifactId><version>2.28.0</version></dependency>
+            <dependency><groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.21.0</version></dependency>
+            <dependency><groupId>com.google.errorprone</groupId><artifactId>error_prone_annotations</artifactId><version>2.51.0</version></dependency>
             <!-- JUnit BOM keeps junit-jupiter-api / junit-platform-commons aligned with junit-jupiter -->
             <dependency><groupId>org.junit</groupId><artifactId>junit-bom</artifactId><version>${junit-jupiter.version}</version><type>pom</type><scope>import</scope></dependency>
 
 
             <!-- Maven Dependencies -->
-            <dependency><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.14.0</version></dependency>
-            <dependency><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.4.2</version></dependency>
+            <dependency><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.16.0</version></dependency>
+            <dependency><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.5.1</version></dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -203,7 +203,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.0</version>
+                <version>3.16.0</version>
                 <configuration>
                     <source>25</source>
                     <target>25</target>
@@ -234,7 +234,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -259,7 +259,7 @@
                      project metadata (url/scm/licenses/developers/description) and drops test-scope deps. -->
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>1.8.0</version>
                 <configuration>
                     <flattenMode>ossrh</flattenMode>
                 </configuration>
@@ -280,7 +280,7 @@
                 <!-- create "-sources.jar" at verify-phase just before install-phase -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -295,7 +295,7 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-javadoc-plugin</artifactId>
-              <version>3.11.2</version>
+              <version>3.12.0</version>
               <configuration>
                 <!-- Relax doclint to allow generation even with minor HTML issues while we improve source Javadoc -->
                 <failOnError>false</failOnError>

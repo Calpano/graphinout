@@ -14,7 +14,6 @@ import com.graphinout.reader.graphml.cj.CjGraphmlMapping;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;

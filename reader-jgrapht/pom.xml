@@ -25,8 +25,8 @@
             <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
         </dependency>
 
-        <dependency><groupId>org.jgrapht</groupId><artifactId>jgrapht-core</artifactId><version>1.5.2</version></dependency>
-        <dependency><groupId>org.jgrapht</groupId><artifactId>jgrapht-io</artifactId><version>1.5.2</version>
+        <dependency><groupId>org.jgrapht</groupId><artifactId>jgrapht-core</artifactId><version>1.5.3</version></dependency>
+        <dependency><groupId>org.jgrapht</groupId><artifactId>jgrapht-io</artifactId><version>1.5.3</version>
             <exclusions>
                 <exclusion><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId></exclusion>
             </exclusions>
