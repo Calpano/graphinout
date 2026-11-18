@@ -9,6 +9,8 @@ bumps and "minor/doc/WIP" commits are omitted.
 
 == Unreleased
 
+== 0.2.3 — 2026-11-18
+
 Changed::
 * Dependencies to their newest releases: Jena 6.2.0, Guava 33.7.2, commons-io 2.22.0,
   commons-lang3 3.21.0, commons-text 1.15.0, json-schema-validator 3.0.8, joni 2.2.9,
