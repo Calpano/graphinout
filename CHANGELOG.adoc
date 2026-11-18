@@ -15,6 +15,9 @@ Changed::
   Structurizr DSL 6.2.4, PlantUML 1.2026.9, JGraphT 1.5.3, logback 1.6.6, jspecify 1.0.1;
   ClassGraph 4.8.199 (6.x changes the classpath-override API `testdata` uses).
 * Tests on JUnit 6.1.3, Mockito 5.24.0, Truth 1.4.5, surefire 3.6.1; build plugins updated.
+* Then: Jackson 3.3.0, Guava 33.8.0, logback 1.6.7, slf4j 2.0.20, commons-lang3 3.22.0,
+  json-schema-validator 3.0.9, joni 2.2.10, PlantUML 1.2026.10, error_prone_annotations 2.53.0;
+  flatten-maven-plugin 1.9.0, and every module on maven-jar-plugin 3.5.1 (five still pinned 3.0.2).
 * `reader-jgef` renamed to `reader-cj-gef` (package `com.graphinout.reader.cjgef`, classes
   `CjGefReader`/`CjGefService`): it reads Connected JSON's Graph Entry Format, not a separate format.
   Format id `json-gef` and file extensions are unchanged.
