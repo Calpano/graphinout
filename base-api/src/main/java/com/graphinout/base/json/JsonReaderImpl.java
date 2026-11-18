@@ -72,7 +72,9 @@ public class JsonReaderImpl implements JsonReader {
 
     public void readStandardJsonString(String preprocessedContent, JsonWriter stream) throws IOException {
         // Create Jackson parser for JSON parsing
-        try (JsonParser parser = JSON_FACTORY.createParser(preprocessedContent)) {
+        JsonParser parser = null;
+        try (JsonParser p = JSON_FACTORY.createParser(preprocessedContent)) {
+            parser = p;
             // Parse the JSON content
             stream.documentStart();
             JsonToken token = parser.nextToken();
@@ -82,7 +84,16 @@ public class JsonReaderImpl implements JsonReader {
             }
         } catch (Throwable t) {
             StringBuilder msg = new StringBuilder();
-            msg.append("Failed reading JSON. '"+t.getMessage()+"'");
+            msg.append("Failed reading JSON");
+            if (parser != null) {
+                var loc = parser.currentLocation();
+                msg.append(" at line ").append(loc.getLineNr()).append(", column ").append(loc.getColumnNr());
+            }
+            msg.append(": ").append(t.getClass().getSimpleName());
+            if (t.getMessage() != null) {
+                msg.append(": ").append(t.getMessage());
+            }
+            msg.append('.');
             if(preprocessedContent.length() < 8 * 1024) {
                 msg.append(" Failed on\n----\n").append(preprocessedContent).append("\n----");
             }

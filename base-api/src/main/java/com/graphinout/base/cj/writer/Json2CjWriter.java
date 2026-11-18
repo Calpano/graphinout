@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -113,6 +114,22 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
     private String contextKey;
     /** Count of unknown properties seen; once it exceeds the cap, individual reports are suppressed. */
     private int unknownProperties = 0;
+    /**
+     * While > 0 we are skipping the value of an unknown property: the nesting depth inside that value. The value's
+     * events are swallowed whole, whatever its shape, so it can neither leak into the CJ stream nor unbalance the stack.
+     */
+    private int skipDepth = 0;
+    /** Path of the CJ containers we are in (outside {@code data}), for error messages like {@code graphs[0].nodes[3]}. */
+    private final List<PathFrame> path = new ArrayList<>();
+
+    /** One CJ container on the path: an array with its current item index, or an object with its current key. */
+    private static final class PathFrame {
+        final boolean array;
+        int index = -1;
+        @Nullable String key;
+
+        PathFrame(boolean array) {this.array = array;}
+    }
 
     public Json2CjWriter(ICjWriter cjWriter) {
         this.cjWriter = cjWriter;
@@ -124,18 +141,21 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void arrayEnd() throws JsonException {
+        if (skipContainerEnd()) return;
         if (parseStack.isInJson()) {
             cjWriter.arrayEnd();
             maybeEndData();
         } else {
             CjType cjType = parseStack.peekCjType();
             cjWriter.listEnd(cjType);
+            popPath();
         }
         parseStack.containerEnd();
     }
 
     @Override
     public void arrayStart() throws JsonException {
+        if (skipContainerStart()) return;
         if (parseStack.isInJson()) {
             parseStack.push(JsonType.Array);
             cjWriter.arrayStart();
@@ -146,6 +166,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
             }
             CjType cjType = CjType.findExactlyOne(expected, JsonType.Array);
             parseStack.push(cjType);
+            pushPath(true);
             cjWriter.listStart(cjType);
         }
     }
@@ -163,6 +184,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void objectEnd() throws JsonException {
+        if (skipContainerEnd()) return;
         if (parseStack.isInJson()) {
             // might also pop a Data object itself
             parseStack.containerEnd();
@@ -195,11 +217,13 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
                 default -> throw new IllegalStateException("Unexpected CJ type " + cjType + " on stack.");
             }
             parseStack.containerEnd();
+            popPath();
         }
     }
 
     @Override
     public void objectStart() throws JsonException {
+        if (skipContainerStart()) return;
         if (parseStack.isInJson()) {
             parseStack.push(JsonType.Object);
             cjWriter.objectStart();
@@ -210,6 +234,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
             }
             CjType cjType = CjType.findExactlyOne(expected, JsonType.Object);
             parseStack.push(cjType);
+            pushPath(false);
             switch (cjType) {
                 case Graph -> cjWriter.graphStart();
                 case Node -> cjWriter.nodeStart();
@@ -233,6 +258,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void onBigDecimal(BigDecimal bigDecimal) {
+        if (skipScalar()) return;
         if (parseStack.isInJson()) {
             cjWriter.onBigDecimal(bigDecimal);
             parseStack.popJsonPropertyMaybe();
@@ -244,6 +270,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void onBigInteger(BigInteger bigInteger) {
+        if (skipScalar()) return;
         if (parseStack.isInJson()) {
             cjWriter.onBigInteger(bigInteger);
             parseStack.popJsonPropertyMaybe();
@@ -255,6 +282,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void onBoolean(boolean b) throws JsonException {
+        if (skipScalar()) return;
         if (parseStack.isInJson()) {
             cjWriter.onBoolean(b);
             parseStack.popJsonPropertyMaybe();
@@ -271,6 +299,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void onDouble(double d) throws JsonException {
+        if (skipScalar()) return;
         if (parseStack.isInJson()) {
             cjWriter.onDouble(d);
             parseStack.popJsonPropertyMaybe();
@@ -282,6 +311,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void onFloat(float f) throws JsonException {
+        if (skipScalar()) return;
         if (parseStack.isInJson()) {
             cjWriter.onFloat(f);
             parseStack.popJsonPropertyMaybe();
@@ -293,6 +323,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void onInteger(int i) throws JsonException {
+        if (skipScalar()) return;
         if (parseStack.isInJson()) {
             cjWriter.onInteger(i);
             parseStack.popJsonPropertyMaybe();
@@ -304,6 +335,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void onKey(String key) throws JsonException {
+        if (skipDepth > 0) return;
         if (parseStack.isInJson()) {
             cjWriter.onKey(key);
         } else if (contextBuffer != null) {
@@ -312,6 +344,9 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
         } else {
             CjType cjType = parseStack.peekCjType();
             assert cjType != null;
+            if (!path.isEmpty() && !path.get(path.size() - 1).array) {
+                path.get(path.size() - 1).key = key;
+            }
             CjType.CjProperty prop = cjType.properties.get(key);
             if (prop == null) {
                 // Unknown property for this CJ type: report it (the value is skipped, so this is potential data loss)
@@ -319,12 +354,13 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
                 // probes this reader against every input, so a non-CJ file (grale/JSON-LD/JGF) would otherwise emit one
                 // warning per foreign key; cap the reports and emit a single "not CJ" note once it is clearly not CJ.
                 if (unknownProperties < MAX_UNKNOWN_PROPERTIES) {
-                    sendContentError_Warn("Unknown property '" + key + "' on CJ " + cjType + " — value ignored");
+                    sendContentError_Warn("Unknown property '" + key + "' at " + currentPath() + " (CJ " + cjType + ") — value ignored");
                 } else if (unknownProperties == MAX_UNKNOWN_PROPERTIES) {
                     sendContentError_Warn("Too many unknown properties — input does not look like Connected JSON; suppressing further unknown-property warnings");
                 }
                 unknownProperties++;
-                parseStack.stack.push(JsonType.Property);
+                // skip the whole value, whatever its shape
+                skipDepth = 1;
             } else {
                 if (key.equals("data")) {
                     cjWriter.jsonDataStart();
@@ -337,6 +373,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void onLong(long l) throws JsonException {
+        if (skipScalar()) return;
         if (parseStack.isInJson()) {
             cjWriter.onLong(l);
             parseStack.popJsonPropertyMaybe();
@@ -348,6 +385,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void onNull() throws JsonException {
+        if (skipScalar()) return;
         if (parseStack.isInJson()) {
             cjWriter.onNull();
             parseStack.popJsonPropertyMaybe();
@@ -359,6 +397,7 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
 
     @Override
     public void onString(String s) throws JsonException {
+        if (skipScalar()) return;
         if (parseStack.isInJson()) {
             cjWriter.onString(s);
             parseStack.popJsonPropertyMaybe();
@@ -412,9 +451,69 @@ public class Json2CjWriter extends BaseOutput implements JsonWriter {
     }
 
     public void reset() {
+        skipDepth = 0;
+        path.clear();
         parseStack.clear();
         parseStack.expectedCjTypes.clear();
         parseStack.expectedCjTypes.add(CjType.RootObject);
+    }
+
+    /** The path of the current CJ position, e.g. {@code graphs[0].nodes[3].foo}. */
+    String currentPath() {
+        StringBuilder sb = new StringBuilder();
+        for (PathFrame f : path) {
+            if (f.array) {
+                sb.append('[').append(f.index).append(']');
+            } else if (f.key != null) {
+                if (sb.length() > 0) sb.append('.');
+                sb.append(f.key);
+            }
+        }
+        return sb.length() == 0 ? "(root)" : sb.toString();
+    }
+
+    private void popPath() {
+        if (!path.isEmpty()) path.remove(path.size() - 1);
+    }
+
+    /** A new CJ container starts; if it is an item of a CJ array, advance that array's index first. */
+    private void pushPath(boolean array) {
+        advanceArrayIndex();
+        path.add(new PathFrame(array));
+    }
+
+    private void advanceArrayIndex() {
+        if (!path.isEmpty() && path.get(path.size() - 1).array && !parseStack.isInJson()) {
+            path.get(path.size() - 1).index++;
+        }
+    }
+
+    /** @return true if the container end belongs to a skipped value */
+    private boolean skipContainerEnd() {
+        if (skipDepth == 0) return false;
+        skipDepth--;
+        if (skipDepth == 1) {
+            // the skipped value itself ended
+            skipDepth = 0;
+        }
+        return true;
+    }
+
+    /** @return true if the container start belongs to a skipped value */
+    private boolean skipContainerStart() {
+        if (skipDepth == 0) return false;
+        skipDepth++;
+        return true;
+    }
+
+    /** @return true if the scalar belongs to a skipped value */
+    private boolean skipScalar() {
+        if (skipDepth == 0) return false;
+        if (skipDepth == 1) {
+            // the skipped value was this scalar
+            skipDepth = 0;
+        }
+        return true;
     }
 
     private void maybeEndData() {
