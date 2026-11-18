@@ -8,7 +8,9 @@ import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.reader.cj.ConnectedJsonReader;
+import com.graphinout.foundation.pure.input.ContentError;
 import org.apache.commons.io.IOUtils;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,6 +28,7 @@ public class CjGefReader implements GioReader {
             ".gef.json", ".gef", ".jgef");
 
     private final ConnectedJsonReader cjReader = new ConnectedJsonReader();
+    private @Nullable Consumer<ContentError> errorHandler;
 
     @Override
     public GioFileFormat fileFormat() {
@@ -34,6 +37,7 @@ public class CjGefReader implements GioReader {
 
     @Override
     public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        this.errorHandler = errorHandler;
         cjReader.setContentErrorHandler(errorHandler);
     }
 
@@ -47,7 +51,11 @@ public class CjGefReader implements GioReader {
         if (content.isBlank()) {
             return;
         }
-        String cjJson = Gef.toConnectedJson(content);
+        String cjJson = Gef.toConnectedJson(content, msg -> {
+            if (errorHandler != null) {
+                errorHandler.accept(ContentError.warn(msg));
+            }
+        });
         cjReader.read(SingleInputSourceOfString.of(inputSource.name() + "-gef2cj", cjJson), writer);
     }
 }

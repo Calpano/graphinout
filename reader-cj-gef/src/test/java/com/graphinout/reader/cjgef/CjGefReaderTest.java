@@ -7,7 +7,11 @@ import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.input.SingleInputSource;
 import org.junit.jupiter.api.Test;
 
+import com.graphinout.foundation.pure.input.ContentError;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -77,5 +81,44 @@ class CjGefReaderTest {
                 """);
         assertThat(a.nodeCount()).isEqualTo(2);
         assertThat(a.edgeCount()).isEqualTo(1);
+    }
+
+    private static List<String> warnings(String gef) throws IOException {
+        List<ContentError> errors = new ArrayList<>();
+        CjGefReader reader = new CjGefReader();
+        reader.setContentErrorHandler(errors::add);
+        reader.readToCjDocument(SingleInputSource.of("t.gef.json", gef));
+        return errors.stream().map(ContentError::getMessage).toList();
+    }
+
+    /** Paths are in the GEF input: graph-at-root input has no {@code graphs[0]}. */
+    @Test
+    void unknownKeysAreReportedWithPath() throws IOException {
+        List<String> w = warnings("""
+                { "baseUri": "x",
+                  "nodes": [ { "id": "a" }, { "id": "b", "foo": "bar" } ],
+                  "edges": [ { "source": "a", "target": "b", "weight": 3 },
+                             { "endpoints": [ { "node": "a", "role": "x" } ] } ] }
+                """);
+        assertThat(w).containsExactly( //
+                "Unknown key 'foo' at nodes[1].foo moved to data", //
+                "Unknown key 'weight' at edges[0].weight moved to data", //
+                "Unknown key 'role' at edges[1].endpoints[0].role moved to data", //
+                "Unknown key 'baseUri' at baseUri moved to data");
+    }
+
+    @Test
+    void unknownKeyNextToNonObjectDataIsReportedAsDropped() throws IOException {
+        List<String> w = warnings("""
+                { "graphs": [ { "nodes": [ { "id": "a", "data": "s", "foo": 1 } ] } ] }
+                """);
+        assertThat(w).containsExactly("Unknown key 'foo' at graphs[0].nodes[0].foo dropped: 'data' is not an object");
+    }
+
+    @Test
+    void cleanGefHasNoWarnings() throws IOException {
+        assertThat(warnings("""
+                { "nodes": [ { "id": 1, "label": "x", "data": { "a": 1 } } ], "edges": [ { "source": 1, "target": 1 } ] }
+                """)).isEmpty();
     }
 }

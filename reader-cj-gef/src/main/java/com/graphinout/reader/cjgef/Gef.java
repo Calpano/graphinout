@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -19,6 +20,10 @@ import java.util.function.Consumer;
  * ({@code node}/{@code edge}/{@code graph}), string/array <b>label shorthand</b> → {@code {entries:[…]}}, numeric
  * ids/refs → strings, string ports → {@code {id}}, and unknown keys → {@code data}.
  *
+ * <p>Each key moved into {@code data} is reported as a warning with its path (e.g. {@code graphs[0].nodes[3].foo}),
+ * so the caller can see where the input deviates from CJ. Keys GEF does not cover (on ports, label entries or the
+ * document) are left in place for the CJ reader, which warns and drops them.
+ *
  * <p>Not yet handled: per-edge {@code directed}/{@code edgeDefault} (a {@code source}/{@code target} pair is read as a
  * directed out→in edge).
  */
@@ -30,17 +35,29 @@ public final class Gef {
     private static final Set<String> EDGE_RESERVED = Set.of("id", "label", "data", "type", "endpoints", "graphs");
     private static final Set<String> ENDPOINT_RESERVED = Set.of("node", "port", "direction", "type", "data");
 
-    private Gef() {}
+    /** Receives one message per key moved into data (or dropped). */
+    private final Consumer<String> warnings;
 
-    /** GEF JSON text → canonical Connected JSON text. */
+    private Gef(Consumer<String> warnings) {this.warnings = warnings;}
+
+    /** GEF JSON text → canonical Connected JSON text. Moved keys are not reported. */
     public static String toConnectedJson(String gefJson) {
-        return JaJson.toJsonString(normalizeRoot(JaJson.parse(gefJson)));
+        return toConnectedJson(gefJson, w -> {});
+    }
+
+    /**
+     * GEF JSON text → canonical Connected JSON text.
+     *
+     * @param warnings receives one message per unknown key, with its path in the GEF input
+     */
+    public static String toConnectedJson(String gefJson, Consumer<String> warnings) {
+        return JaJson.toJsonString(new Gef(warnings).normalizeRoot(JaJson.parse(gefJson)));
     }
 
     @SuppressWarnings("unchecked")
-    static Object normalizeRoot(Object root) {
+    Object normalizeRoot(Object root) {
         if (root instanceof List) { // a bare array of graphs
-            forEachMap(root, Gef::normalizeGraph);
+            forEachMap(root, "", this::normalizeGraph);
             Map<String, Object> doc = new LinkedHashMap<>();
             doc.put("graphs", root);
             return doc;
@@ -54,36 +71,36 @@ public final class Gef {
             Map<String, Object> doc = new LinkedHashMap<>();
             Map<String, Object> graph = new LinkedHashMap<>();
             r.forEach((k, v) -> (DOC_KEYS.contains(k) ? doc : graph).put(k, v));
-            normalizeGraph(graph);
+            normalizeGraph(graph, "");
             List<Object> graphs = new ArrayList<>();
             graphs.add(graph);
             doc.put("graphs", graphs);
             return doc;
         }
-        forEachMap(r.get("graphs"), Gef::normalizeGraph); // already a CJ-shaped document
+        forEachMap(r.get("graphs"), "graphs", this::normalizeGraph); // already a CJ-shaped document
         return r;
     }
 
-    private static void normalizeGraph(Map<String, Object> g) {
+    private void normalizeGraph(Map<String, Object> g, String path) {
         pluralize(g);
         coerceId(g, "id");
         normalizeLabel(g);
-        forEachMap(g.get("nodes"), Gef::normalizeNode);
-        forEachMap(g.get("edges"), Gef::normalizeEdge);
-        forEachMap(g.get("graphs"), Gef::normalizeGraph);
-        moveUnknownToData(g, GRAPH_RESERVED);
+        forEachMap(g.get("nodes"), child(path, "nodes"), this::normalizeNode);
+        forEachMap(g.get("edges"), child(path, "edges"), this::normalizeEdge);
+        forEachMap(g.get("graphs"), child(path, "graphs"), this::normalizeGraph);
+        moveUnknownToData(g, GRAPH_RESERVED, path);
     }
 
-    private static void normalizeNode(Map<String, Object> n) {
+    private void normalizeNode(Map<String, Object> n, String path) {
         pluralize(n);
         coerceId(n, "id");
         normalizeLabel(n);
         normalizePorts(n.get("ports"));
-        forEachMap(n.get("graphs"), Gef::normalizeGraph);
-        moveUnknownToData(n, NODE_RESERVED);
+        forEachMap(n.get("graphs"), child(path, "graphs"), this::normalizeGraph);
+        moveUnknownToData(n, NODE_RESERVED, path);
     }
 
-    private static void normalizeEdge(Map<String, Object> e) {
+    private void normalizeEdge(Map<String, Object> e, String path) {
         pluralize(e);
         List<Object> endpoints = asMutableList(e.get("endpoints"));
         addEndpoints(endpoints, e.remove("source"), "out");
@@ -93,17 +110,17 @@ public final class Gef {
         if (!endpoints.isEmpty()) {
             e.put("endpoints", endpoints);
         }
-        forEachMap(e.get("endpoints"), Gef::normalizeEndpoint);
+        forEachMap(e.get("endpoints"), child(path, "endpoints"), this::normalizeEndpoint);
         coerceId(e, "id");
         normalizeLabel(e);
-        forEachMap(e.get("graphs"), Gef::normalizeGraph);
-        moveUnknownToData(e, EDGE_RESERVED);
+        forEachMap(e.get("graphs"), child(path, "graphs"), this::normalizeGraph);
+        moveUnknownToData(e, EDGE_RESERVED, path);
     }
 
-    private static void normalizeEndpoint(Map<String, Object> ep) {
+    private void normalizeEndpoint(Map<String, Object> ep, String path) {
         coerceId(ep, "node");
         coerceId(ep, "port");
-        moveUnknownToData(ep, ENDPOINT_RESERVED);
+        moveUnknownToData(ep, ENDPOINT_RESERVED, path);
     }
 
     // -- shortcuts ---------------------------------------------------------------------------------------------------
@@ -203,7 +220,7 @@ public final class Gef {
     }
 
     @SuppressWarnings("unchecked")
-    private static void moveUnknownToData(Map<String, Object> m, Set<String> reserved) {
+    private void moveUnknownToData(Map<String, Object> m, Set<String> reserved, String path) {
         List<String> unknown = new ArrayList<>();
         for (String k : m.keySet()) {
             if (!reserved.contains(k)) {
@@ -214,8 +231,21 @@ public final class Gef {
             return;
         }
         Object existing = m.get("data");
+        if (existing != null && !(existing instanceof Map)) {
+            // data is a string/number/array: there is no object to move into, so the keys are lost
+            for (String k : unknown) {
+                m.remove(k);
+                warnings.accept("Unknown key '" + k + "' at " + child(path, k) + " dropped: 'data' is not an object");
+            }
+            return;
+        }
         Map<String, Object> data = existing instanceof Map ? (Map<String, Object>) existing : new LinkedHashMap<>();
         for (String k : unknown) {
+            if (data.containsKey(k)) {
+                warnings.accept("Unknown key '" + k + "' at " + child(path, k) + " moved to data, replacing data." + k);
+            } else {
+                warnings.accept("Unknown key '" + k + "' at " + child(path, k) + " moved to data");
+            }
             data.put(k, m.remove(k));
         }
         if (!data.isEmpty()) {
@@ -236,12 +266,19 @@ public final class Gef {
         return l;
     }
 
+    /** {@code path} + {@code .key}; the root path is empty. */
+    private static String child(String path, String key) {
+        return path.isEmpty() ? key : path + "." + key;
+    }
+
+    /** Calls {@code fn} with each object in the list and its path {@code listPath[i]}. */
     @SuppressWarnings("unchecked")
-    private static void forEachMap(Object listObj, Consumer<Map<String, Object>> fn) {
+    private static void forEachMap(Object listObj, String listPath, BiConsumer<Map<String, Object>, String> fn) {
         if (listObj instanceof List) {
-            for (Object item : (List<?>) listObj) {
-                if (item instanceof Map) {
-                    fn.accept((Map<String, Object>) item);
+            List<?> list = (List<?>) listObj;
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i) instanceof Map) {
+                    fn.accept((Map<String, Object>) list.get(i), listPath + "[" + i + "]");
                 }
             }
         }

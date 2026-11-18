@@ -18,6 +18,8 @@ Changed::
 * `reader-jgef` renamed to `reader-cj-gef` (package `com.graphinout.reader.cjgef`, classes
   `CjGefReader`/`CjGefService`): it reads Connected JSON's Graph Entry Format, not a separate format.
   Format id `json-gef` and file extensions are unchanged.
+* `reader-cj-gef` warns for every unknown key it moves into `data`, with its path in the input
+  (`nodes[1].foo moved to data`), and for one it must drop because `data` is not an object.
 * `CjDocuments.parseCjJsonString(name, content, contentErrorHandler)` reports content problems;
   unknown-key warnings now name the path (`graphs[0].nodes[3].foo`).
 * JSON read failures name the line, column and exception type.
