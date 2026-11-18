@@ -1,4 +1,4 @@
-package com.graphinout.reader.jgef;
+package com.graphinout.reader.cjgef;
 
 import com.graphinout.base.cj.stream.ICjStream;
 import com.graphinout.base.gio.GioFileFormat;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  * (see {@link Gef}) and delegates parsing to {@link ConnectedJsonReader}, the same way {@code ConnectedJson5Reader}
  * delegates after a JSON5 → JSON preprocess. Buffers the whole input in memory.
  */
-public class JGefReader implements GioReader {
+public class CjGefReader implements GioReader {
 
     public static final String FORMAT_ID = "json-gef";
     public static final GioFileFormat FORMAT = new GioFileFormat(FORMAT_ID, "JSON Graph Entry Format", //

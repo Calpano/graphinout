@@ -8,8 +8,8 @@
         <version>0.2.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>reader-jgef</artifactId>
-    <name>reader-jgef</name>
+    <artifactId>reader-cj-gef</artifactId>
+    <name>reader-cj-gef</name>
     <description>Reader for the JSON Graph Entry Format (GEF), a lenient superset of Connected JSON</description>
 
     <dependencies>

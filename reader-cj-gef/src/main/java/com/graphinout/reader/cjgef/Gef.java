@@ -1,4 +1,4 @@
-package com.graphinout.reader.jgef;
+package com.graphinout.reader.cjgef;
 
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
 

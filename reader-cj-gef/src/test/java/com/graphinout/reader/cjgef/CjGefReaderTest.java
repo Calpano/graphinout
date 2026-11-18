@@ -1,4 +1,4 @@
-package com.graphinout.reader.jgef;
+package com.graphinout.reader.cjgef;
 
 import com.graphinout.base.cj.analyze.CjAnalysis;
 import com.graphinout.base.cj.analyze.CjAnalyzer;
@@ -12,10 +12,10 @@ import java.io.IOException;
 import static com.google.common.truth.Truth.assertThat;
 
 /** Unit tests for the GEF reader: each GEF leniency must round-trip through the CJ model. */
-class JGefReaderTest {
+class CjGefReaderTest {
 
     private static CjAnalysis analyze(String gef) throws IOException {
-        ICjDocument doc = new JGefReader().readToCjDocument(SingleInputSource.of("t.gef.json", gef));
+        ICjDocument doc = new CjGefReader().readToCjDocument(SingleInputSource.of("t.gef.json", gef));
         return CjAnalyzer.analyze(doc);
     }
 
