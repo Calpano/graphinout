@@ -9,6 +9,11 @@ bumps and "minor/doc/WIP" commits are omitted.
 
 == Unreleased
 
+Fixed::
+* `reader-cj-gef` read GEF `source`/`target` (and `sources`/`targets`) with reversed endpoint
+  directions, so every such edge came out backwards. Now `source` → `in`, `target` → `out`, as the
+  GEF spec defines (https://github.com/Calpano/graphinout/issues/156[#156]).
+
 == 0.2.3 — 2026-11-18
 
 Changed::

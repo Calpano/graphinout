@@ -25,7 +25,8 @@ import java.util.function.Consumer;
  * document) are left in place for the CJ reader, which warns and drops them.
  *
  * <p>Not yet handled: per-edge {@code directed}/{@code edgeDefault} (a {@code source}/{@code target} pair is read as a
- * directed out→in edge).
+ * directed edge: {@code source}/{@code sources} → endpoint direction {@code in}, {@code target}/{@code targets} →
+ * {@code out}, as the GEF spec defines).
  */
 public final class Gef {
 
@@ -103,10 +104,11 @@ public final class Gef {
     private void normalizeEdge(Map<String, Object> e, String path) {
         pluralize(e);
         List<Object> endpoints = asMutableList(e.get("endpoints"));
-        addEndpoints(endpoints, e.remove("source"), "out");
-        addEndpoints(endpoints, e.remove("sources"), "out");
-        addEndpoints(endpoints, e.remove("target"), "in");
-        addEndpoints(endpoints, e.remove("targets"), "in");
+        // seen from the edge: a source node comes *into* the edge, the edge goes *out* to a target node
+        addEndpoints(endpoints, e.remove("source"), "in");
+        addEndpoints(endpoints, e.remove("sources"), "in");
+        addEndpoints(endpoints, e.remove("target"), "out");
+        addEndpoints(endpoints, e.remove("targets"), "out");
         if (!endpoints.isEmpty()) {
             e.put("endpoints", endpoints);
         }

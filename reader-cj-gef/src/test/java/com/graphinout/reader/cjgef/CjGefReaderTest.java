@@ -36,6 +36,19 @@ class CjGefReaderTest {
     }
 
     @Test
+    void sourceTargetMapToInOutEndpoints() {
+        // GEF spec: source → direction "in", target → direction "out" (seen from the edge), see issue #156
+        String cj = Gef.toConnectedJson("""
+                { "edges": [ { "source": "Alice", "target": "Bob", "type": "knows" },
+                             { "sources": [ "a", "b" ], "targets": [ "c" ] } ] }
+                """);
+        assertThat(cj).contains("""
+                [{"direction":"in","node":"Alice"},{"direction":"out","node":"Bob"}]""");
+        assertThat(cj).contains("""
+                [{"direction":"in","node":"a"},{"direction":"in","node":"b"},{"direction":"out","node":"c"}]""");
+    }
+
+    @Test
     void stringAndMultilangLabelShorthand() throws IOException {
         CjAnalysis a = analyze("""
                 { "nodes": [
