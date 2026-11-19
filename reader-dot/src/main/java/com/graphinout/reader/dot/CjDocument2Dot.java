@@ -9,7 +9,9 @@ import com.graphinout.base.text.ITextWriter;
 import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,7 +33,7 @@ public class CjDocument2Dot {
             return;
         }
         // Otherwise, render structure
-        DotEmitter emitter = new DotEmitter(textWriter);
+        DotEmitter emitter = new DotEmitter(textWriter, nodesById(cjDoc));
         cjDoc.graphs().forEach(emitter::writeTopLevelGraph);
         // Ensure final newline for stability
         emitter.blankLine();
@@ -47,6 +49,37 @@ public class CjDocument2Dot {
         if (raw == null) return null;
         String dot = raw.asString();
         return dot.isEmpty() ? null : dot;
+    }
+
+    /** All nodes by id, document-wide: DOT node ids are global, and an edge may reference a node in another graph. */
+    private static Map<String, ICjNode> nodesById(ICjDocument cjDoc) {
+        Map<String, ICjNode> map = new HashMap<>();
+        cjDoc.graphs().forEach(g -> collectNodes(g, map));
+        return map;
+    }
+
+    private static void collectNodes(ICjGraph g, Map<String, ICjNode> map) {
+        g.nodes().forEach(n -> {
+            if (n.id() != null) map.putIfAbsent(n.id(), n);
+            n.graphs().forEach(inner -> collectNodes(inner, map));
+        });
+        g.graphs().forEach(sub -> collectNodes(sub, map));
+    }
+
+    private static @Nullable String dataString(ICjHasData hasData, String key) {
+        IJsonValue data = hasData.jsonValue();
+        IJsonObject obj = data == null ? null : data.asObjectOrNull();
+        IJsonValue v = obj == null ? null : obj.get(key);
+        return v != null && v.isPrimitive() ? v.asString() : null;
+    }
+
+    private static boolean dataBoolean(ICjHasData hasData, String key) {
+        IJsonValue data = hasData.jsonValue();
+        IJsonObject obj = data == null ? null : data.asObjectOrNull();
+        IJsonValue v = obj == null ? null : obj.get(key);
+        if (v == null || !v.isPrimitive()) return false;
+        Object base = v.asPrimitive().base();
+        return Boolean.TRUE.equals(base) || "true".equals(base);
     }
 
     /** Order endpoints for a directed DOT edge: source (IN) first, undirected middle, target (OUT) last. */
@@ -66,9 +99,13 @@ public class CjDocument2Dot {
 
     private static final class DotEmitter {
         private final ITextWriter out;
+        private final Map<String, ICjNode> nodesById;
         private int indent = 0;
 
-        DotEmitter(ITextWriter out) { this.out = out; }
+        DotEmitter(ITextWriter out, Map<String, ICjNode> nodesById) {
+            this.out = out;
+            this.nodesById = nodesById;
+        }
 
         void indent(Runnable r) {
             indent++;
@@ -134,8 +171,22 @@ public class CjDocument2Dot {
                 if (id == null) return; // cannot emit unnamed node
                 List<String> attrs = toAttrList(n);
                 // label from ICjLabel
-                String lbl = firstLabel(n);
-                if (lbl != null) attrs.add("label=" + quote(lbl));
+                ICjLabelEntry labelEntry = firstLabelEntry(n);
+                String lbl = labelEntry == null ? null : labelEntry.value();
+                boolean html = lbl != null && isHtmlLabel(labelEntry);
+                String labelDot = lbl == null ? null : html ? lbl : quote(lbl);
+                // Graphviz only knows ports a record or HTML label declares; make the node declare its ports
+                List<String> declared = declaredPorts(n);
+                if (!declared.isEmpty() && !html) {
+                    if (!DotPorts.isRecordShape(dataString(n, "shape"))) {
+                        attrs.removeIf(a -> a.startsWith("shape="));
+                        attrs.add("shape=record");
+                    }
+                    if (lbl == null || !DotPorts.recordPorts(lbl).containsAll(declared)) {
+                        labelDot = recordLabel(lbl, declared);
+                    }
+                }
+                if (labelDot != null) attrs.add("label=" + labelDot);
                 String stmt = id + (attrs.isEmpty() ? "" : " [" + String.join(", ", attrs) + "]") + ";";
                 stmts.add(stmt);
                 // If synthetic duplicate flag is present, schedule an extra emission after all nodes
@@ -209,8 +260,27 @@ public class CjDocument2Dot {
             String node = safeId(ep.node());
             if (node == null) node = "_"; // placeholder
             String port = ep.port();
-            if (port == null || port.isEmpty()) return node;
-            return node + ":" + idOrString(port);
+            if (port != null && !port.isEmpty()) return node + ":" + portRef(ep.node(), port);
+            // a port Graphviz ignores (see DotLines2CjDocument): write it back as it was
+            String ignored = dataString(ep, DotPorts.DATA_PORT);
+            if (ignored == null) return node;
+            String compass = dataString(ep, DotPorts.DATA_COMPASS);
+            return node + ":" + idOrString(ignored) + (compass == null ? "" : ":" + idOrString(compass));
+        }
+
+        /** DOT syntax for CJ port {@code portId}: a compass port nested in port {@code p} is written {@code p:compass}. */
+        private String portRef(@Nullable String nodeId, String portId) {
+            ICjNode node = nodeId == null ? null : nodesById.get(nodeId);
+            if (node != null) {
+                for (ICjPort parent : node.ports().toList()) {
+                    for (ICjPort child : parent.ports().toList()) {
+                        if (!portId.equals(child.id())) continue;
+                        String compass = dataString(child, DotPorts.DATA_COMPASS);
+                        if (compass != null && parent.id() != null) return idOrString(parent.id()) + ":" + idOrString(compass);
+                    }
+                }
+            }
+            return idOrString(portId);
         }
 
         private boolean isDirectedGraph(ICjGraph g) {
@@ -281,6 +351,41 @@ public class CjDocument2Dot {
         private String quote(String s) {
             String esc = s.replace("\\", "\\\\").replace("\"", "\\\"");
             return '"' + esc + '"';
+        }
+
+        private boolean isHtmlLabel(ICjLabelEntry entry) {
+            String v = entry.value();
+            return dataBoolean(entry, DotPorts.DATA_HTML) && v.startsWith("<") && v.endsWith(">");
+        }
+
+        /** The ports a node declares, i.e. all its ports except compass points, flattened. */
+        private List<String> declaredPorts(ICjNode n) {
+            List<String> ids = new ArrayList<>();
+            n.ports().forEach(p -> collectDeclaredPorts(p, ids));
+            return ids;
+        }
+
+        private void collectDeclaredPorts(ICjPort p, List<String> ids) {
+            if (p.id() != null && dataString(p, DotPorts.DATA_COMPASS) == null) ids.add(p.id());
+            p.ports().forEach(child -> collectDeclaredPorts(child, ids));
+        }
+
+        /** A quoted record label: the given label text, then one field per port. */
+        private String recordLabel(@Nullable String label, List<String> ports) {
+            List<String> fields = new ArrayList<>();
+            if (label != null && !label.isEmpty()) fields.add(escapeRecord(label));
+            for (String p : ports) fields.add("<" + escapeRecord(p) + "> " + escapeRecord(p));
+            // not quote(): the record escapes must reach Graphviz as single backslashes
+            return '"' + String.join("|", fields).replace("\"", "\\\"") + '"';
+        }
+
+        private String escapeRecord(String s) {
+            return s.replaceAll("([{}|<>\\\\])", "\\\\$1");
+        }
+
+        private @Nullable ICjLabelEntry firstLabelEntry(ICjHasLabel hasLabel) {
+            List<ICjLabelEntry> entries = hasLabel.labelEntries();
+            return entries.isEmpty() ? null : entries.get(0);
         }
 
         private @Nullable String firstLabel(ICjHasLabel hasLabel) {

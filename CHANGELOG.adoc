@@ -9,7 +9,18 @@ bumps and "minor/doc/WIP" commits are omitted.
 
 == Unreleased
 
+Added::
+* `reader-dot` resolves ports the way Graphviz does. Ports declared by `record`/`Mrecord` labels and
+  HTML `PORT` attributes become CJ node ports; compass points (`A:n`, `A:p:e`) are built-in ports; the
+  `tailport`/`headport` edge attributes and `edge [...]` defaults set endpoint ports. A port that is
+  neither declared nor a compass point is reported as a warning with its location, as Graphviz does,
+  and kept in endpoint data so DOT output writes it back.
+* The DOT writer makes CJ node ports mean something to Graphviz: `shape=record` and, if needed, a record
+  label with one field per port. HTML labels are written as `<...>` again, not as quoted strings.
+
 Fixed::
+* `reader-dot`: a quoted attribute value starting with `<` (such as the record label `"<f0> a|<f1> b"`)
+  is a plain string, not an HTML label.
 * `reader-cj-gef` read GEF `source`/`target` (and `sources`/`targets`) with reversed endpoint
   directions, so every such edge came out backwards. Now `source` → `in`, `target` → `out`, as the
   GEF spec defines (https://github.com/Calpano/graphinout/issues/156[#156]).

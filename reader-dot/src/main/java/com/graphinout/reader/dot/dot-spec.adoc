@@ -16,9 +16,34 @@ https://github.com/dbt4u/awesome-graphviz
 | node | ICjNode
 | edge | ICjEdge
 | attr_list | CjData of corresponding graph/node/edge
-| port | ICjPort
-| compass_pt | ICjPort.name
+| port declared by a node (record field `<p>`, HTML `PORT="p"`) | ICjPort on the node, `id` = port name
+| compass_pt used as `A:n` | ICjPort `n` on the node, data `dot.compass: n`
+| compass_pt used as `A:p:e` | ICjPort `p:e` nested in port `p`, data `dot.compass: e`
+| `A:p`, `tailport`, `headport` | ICjEndpoint.port
 | subgraph | ICjGraph (nested)
 |===
+
+== Ports
+
+We follow Graphviz semantics; DOT syntax alone accepts any port name.
+
+. *Declared ports.* `A:p` means something only if node `A` declares port `p`:
+as a field `<p>` of a `shape=record` or `shape=Mrecord` label, or as a `PORT="p"` attribute in an HTML label.
+A record-style label on any other shape declares nothing.
+Declaration may come after use, so ports are resolved once the whole document is read.
+. *Compass points* (`n`, `ne`, `e`, `se`, `s`, `sw`, `w`, `nw`, `c`, `_`, lowercase only) are built-in ports every node has.
+`A:n` is a compass point unless `A` declares a port `n` -- a declared port wins.
+`A:p:e` is the east side of declared port `p`.
+Only the compass points that are used become CJ ports.
+. *`tailport` / `headport`* edge attributes, also as `edge [...]` defaults, set the tail (left) and head (right) endpoint port.
+They override a port written on the node id, as in Graphviz, and are not kept as edge data.
+. *Anything else is ignored* by Graphviz ("port unrecognized").
+The reader warns, with the location of the node id, and keeps the port only in endpoint data
+(`dot.port`, `dot.compass`) so the DOT writer can write it back unchanged.
+
+Writing CJ to DOT, a port is written as `A:p`, and a compass port nested in port `p` as `A:p:e`.
+A node with declared ports and no HTML label gets `shape=record`, and, if its label does not declare all its ports,
+a record label with one field per port. So ports from other formats, such as GraphML, mean something to Graphviz.
+An HTML label (label entry data `dot.html: true`) is written back as `<...>`.
 
 == Example

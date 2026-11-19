@@ -1,10 +1,12 @@
 package com.graphinout.reader.dot;
 
 import com.graphinout.base.cj.document.CjDirection;
+import com.graphinout.base.cj.document.ICjEndpointMutable;
 import com.graphinout.base.cj.document.ICjGraphMutable;
 import com.graphinout.base.cj.document.ICjHasDataMutable;
 import com.graphinout.base.cj.document.ICjHasLabelMutable;
 import com.graphinout.base.cj.document.ICjNodeMutable;
+import com.graphinout.base.cj.document.ICjPortMutable;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.text.ITextWriter;
 import com.graphinout.foundation.pure.input.BaseOutput;
@@ -14,34 +16,147 @@ import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
  * DOT → CJ parser. Implements a practical subset of the DOT grammar sufficient for the bundled tests:
  * <li>[strict]? (di)graph [id]? '{' stmt_list '}'</li>
  * <li>stmt: node stmt, edge chain, subgraph (named/anonymous), assignment (id '=' id), attr lists [k=v,...]</li>
- * <li>default attribute statements (node[..], edge[..], graph[..]) and rank groups are parsed leniently TODO but
- * ignored</li>
+ * <li>default attribute statements (node[..], edge[..], graph[..]) and rank groups are parsed leniently. TODO
+ * node/edge defaults are not copied into data; they are only used to resolve ports ({@code shape}, {@code label},
+ * {@code headport}, {@code tailport})</li>
  * <li>TODO comments (//, /* * /, #) are stripped</li>
  * <p>
  * Mapping used:
+ * <ul>
  * <li>graph/subgraph → ICjGraph (nested)</li>
  * <li>node → ICjNode</li>
  * <li>edge chain → ICjEdge with ordered endpoints (TODO direction left unspecified)</li>
  * <li>attr_list → CjData on the corresponding element; label → ICjLabel (not duplicated in data)</li>
- * <li>port → endpoint.port (TODO compass point, if present, is ignored)</li>
+ * <li>ports: see below</li>
+ * </ul>
+ * <p>
+ * Ports follow Graphviz semantics (see {@link DotPorts}), resolved after the whole document is parsed, since a node
+ * may be declared after an edge uses its port:
+ * <ul>
+ * <li>Ports a node declares (fields {@code <p>} of a {@code record}/{@code Mrecord} label, {@code PORT="p"} in an
+ * HTML label) → {@link com.graphinout.base.cj.document.ICjPort} on the node, id = port name.</li>
+ * <li>A compass point is a built-in port: {@code A:n} → port {@code n} on {@code A}, {@code A:p:e} → port
+ * {@code p:e} nested in port {@code p}. Both carry data {@code dot.compass}. Only compass points that are used are
+ * added. A declared port wins over a compass point of the same name.</li>
+ * <li>{@code A:p}, the {@code tailport}/{@code headport} edge attributes and {@code edge [tailport=…]} defaults →
+ * {@code endpoint.port}. As in Graphviz, the attribute overrides the port written on the node id.</li>
+ * <li>A port that is neither declared nor a compass point is ignored, as Graphviz does: it is reported as a warning
+ * and kept only in endpoint data ({@code dot.port}, {@code dot.compass}), so the DOT writer can write it back.</li>
+ * <li>If subgraphs repeat a node (so it becomes several CJ nodes), only the one whose statement set the label gets
+ * the ports. If its record shape came from {@code node [shape=…]} defaults, that shape is copied into its data, since
+ * the ports depend on it.</li>
+ * </ul>
  */
 public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
 
     private record TopLevel(boolean directed, @Nullable String id) {}
 
-    private record NodeRef(String nodeId, @Nullable String port) {}
+    /**
+     * @param port    the port name after the first ':', or null
+     * @param compass the compass point after the second ':', or null
+     * @param pos     input position of the node id, for warnings; -1 if unknown
+     */
+    private record NodeRef(String nodeId, @Nullable String port, @Nullable String compass, int pos) {
 
-    private record Attr(String key, String value, boolean html) {}
+        static NodeRef of(String nodeId) {
+            return new NodeRef(nodeId, null, null, -1);
+        }
+    }
+
+    /**
+     * @param value the value with all backslash escapes removed (legacy; used for data and labels)
+     * @param html  true if the value was written as an HTML-like string {@code <...>}
+     * @param raw   the value as written, without surrounding quotes and with only {@code \"} unescaped, so that
+     *              record-label escapes such as {@code \<} survive
+     */
+    private record Attr(String key, String value, boolean html, String raw) {}
+
+    /** Port reference as written: {@code port[:compass]}. */
+    private record PortRef(String port, @Nullable String compass) {
+
+        /** Parse a {@code headport}/{@code tailport} value such as {@code f0:e}; null if empty. */
+        static @Nullable PortRef parse(String value) {
+            if (value.isEmpty()) return null;
+            int i = value.indexOf(':');
+            return i < 0 ? new PortRef(value, null) : new PortRef(value.substring(0, i), value.substring(i + 1));
+        }
+
+        @Override
+        public String toString() {
+            return compass == null ? port : port + DotPorts.COMPASS_SEP + compass;
+        }
+    }
+
+    /** An endpoint whose port is resolved once the whole document is known. */
+    private record PendingPort(ICjEndpointMutable endpoint, String nodeId, PortRef ref, int pos) {}
+
+    /** What port resolution needs to know about a DOT node; DOT node ids are document-wide. */
+    private static final class NodeInfo {
+
+        /** CJ nodes for this DOT node (more than one if it appears in several subgraphs). */
+        final List<ICjNodeMutable> cjNodes = new ArrayList<>();
+        @Nullable String shape;
+        @Nullable Attr label;
+        /** The CJ node whose node statement set the label, which declares the ports; null if none did. */
+        @Nullable ICjNodeMutable labelNode;
+        /** True if a node statement set the shape; false if it is a default or unset. */
+        boolean explicitShape;
+
+        void applyDefaults(Collection<Attr> attrs) {
+            for (Attr a : attrs) {
+                if ("shape".equals(a.key)) shape = a.value;
+                else if ("label".equals(a.key)) label = a;
+            }
+        }
+
+        void applyNodeStatement(Collection<Attr> attrs, ICjNodeMutable node) {
+            applyDefaults(attrs);
+            for (Attr a : attrs) {
+                if ("shape".equals(a.key)) explicitShape = true;
+                else if ("label".equals(a.key)) labelNode = node;
+            }
+        }
+
+        /** The one CJ node that gets the ports: the one with the label, else the first. */
+        ICjNodeMutable portOwner() {
+            return labelNode != null ? labelNode : cjNodes.get(0);
+        }
+    }
+
+    /** {@code node [...]} / {@code edge [...]} defaults in scope; a subgraph starts with a copy of its parent's. */
+    private static final class Defaults {
+
+        final Map<String, Attr> node;
+        final Map<String, Attr> edge;
+
+        Defaults() {
+            this(new LinkedHashMap<>(), new LinkedHashMap<>());
+        }
+
+        private Defaults(Map<String, Attr> node, Map<String, Attr> edge) {
+            this.node = node;
+            this.edge = edge;
+        }
+
+        Defaults child() {
+            return new Defaults(new LinkedHashMap<>(node), new LinkedHashMap<>(edge));
+        }
+    }
+
+    private static final String TAILPORT = "tailport";
+    private static final String HEADPORT = "headport";
 
     @SuppressWarnings("SameParameterValue")
     private static final class Parser {
@@ -237,12 +352,16 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 String key = readIdOrString();
                 skipWs();
                 if (consumeIf('=')) {
+                    skipWs();
+                    int valStart = pos;
                     String val = readIdOrString();
-                    boolean isHtml = val.startsWith("<");
-                    list.add(new Attr(key, val, isHtml));
+                    String token = s.substring(valStart, pos);
+                    // only an unquoted <...> is HTML; a quoted "<f0> a|<f1> b" is a plain (record) string
+                    boolean isHtml = token.startsWith("<");
+                    list.add(new Attr(key, val, isHtml, token.startsWith("\"") ? rawQuoted(token) : val));
                 } else {
                     // attributes without value -> store as key=true
-                    list.add(new Attr(key, "true", false));
+                    list.add(new Attr(key, "true", false, "true"));
                 }
                 // separators: comma or semicolon, optionally mixed and with whitespace/newlines
                 while (true) {
@@ -336,6 +455,12 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 }
             }
             return readId();
+        }
+
+        /** The content of a quoted string token with only {@code \"} unescaped, as DOT defines it. */
+        private static String rawQuoted(String token) {
+            String inner = token.length() >= 2 && token.endsWith("\"") ? token.substring(1, token.length() - 1) : token.substring(1);
+            return inner.replace("\\\"", "\"");
         }
 
         String readKeyword() {
@@ -432,6 +557,9 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
 
     private final int syntheticIdCounter = 1;
 
+    private final Map<String, NodeInfo> nodeInfos = new LinkedHashMap<>();
+    private final List<PendingPort> pendingPorts = new ArrayList<>();
+
     public DotLines2CjDocument(@Nullable Consumer<ContentError> contentErrorHandler) {
         super.setContentErrorHandler(contentErrorHandler);
         this.cjDocument = new CjDocumentElement();
@@ -453,7 +581,11 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                     putAttr(hasData, a);
                 } else if (labelTarget != null) {
                     String val = a.value;
-                    labelTarget.setLabel(l -> l.addEntry(le -> le.value(val)));
+                    labelTarget.setLabel(l -> l.addEntry(le -> {
+                        le.value(val);
+                        // so the writer can write it back as <...>, not as a quoted string
+                        if (a.html) le.dataMutable(d -> d.add(DotPorts.DATA_HTML, true));
+                    }));
                 } else {
                     putAttr(hasData, a);
                 }
@@ -493,20 +625,129 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
      * source (direction {@code in}) and the right endpoint is the target (direction {@code out}), matching the CJ
      * convention. In an undirected graph both endpoints are {@code undir}.
      */
-    private static void addEdge(ICjGraphMutable g, NodeRef a, NodeRef b, boolean directed, List<Attr> attrsAccum) {
+    private void addEdge(ICjGraphMutable g, NodeRef a, NodeRef b, boolean directed, List<Attr> attrsAccum, Defaults defaults) {
+        // The tail is the left node, the head the right one. tailport/headport override a port on the node id.
+        PortRef tail = portOf(a, TAILPORT, attrsAccum, defaults);
+        PortRef head = portOf(b, HEADPORT, attrsAccum, defaults);
+        List<Attr> dataAttrs = attrsAccum.stream().filter(x -> !TAILPORT.equals(x.key) && !HEADPORT.equals(x.key)).toList();
         g.addEdge(e -> {
             e.addEndpoint(ep -> {
                 ep.node(a.nodeId);
-                if (a.port != null) ep.port(a.port);
+                if (tail != null) pendingPorts.add(new PendingPort(ep, a.nodeId, tail, a.pos));
                 ep.direction(directed ? CjDirection.IN : CjDirection.UNDIR);
             });
             e.addEndpoint(ep -> {
                 ep.node(b.nodeId);
-                if (b.port != null) ep.port(b.port);
+                if (head != null) pendingPorts.add(new PendingPort(ep, b.nodeId, head, b.pos));
                 ep.direction(directed ? CjDirection.OUT : CjDirection.UNDIR);
             });
-            applyAttrsToHasDataAndLabel(attrsAccum, e);
+            applyAttrsToHasDataAndLabel(dataAttrs, e);
         });
+    }
+
+    /** The edge's {@code tailport}/{@code headport} (statement, then defaults), else the port on the node id. */
+    private static @Nullable PortRef portOf(NodeRef ref, String attrKey, List<Attr> attrs, Defaults defaults) {
+        Attr attr = null;
+        for (Attr x : attrs) if (attrKey.equals(x.key)) attr = x;
+        if (attr == null) attr = defaults.edge.get(attrKey);
+        if (attr != null) return PortRef.parse(attr.value);
+        return ref.port == null ? null : new PortRef(ref.port, ref.compass);
+    }
+
+    /** Get or create the CJ node {@code id} in graph {@code g}; a new DOT node takes the node defaults in scope. */
+    private ICjNodeMutable ensureNode(ICjGraphMutable g, Map<String, ICjNodeMutable> nodesById, String id, Defaults defaults) {
+        return nodesById.computeIfAbsent(id, k -> {
+            ICjNodeMutable n = createNode(g, k);
+            NodeInfo info = nodeInfos.get(k);
+            if (info == null) {
+                info = new NodeInfo();
+                info.applyDefaults(defaults.node.values());
+                nodeInfos.put(k, info);
+            }
+            info.cjNodes.add(n);
+            return n;
+        });
+    }
+
+    /**
+     * Resolve all port references the way Graphviz does: a port the node declares, else a compass point, else
+     * warn and ignore. Adds the declared ports and the used compass points to the CJ nodes.
+     */
+    private void resolvePorts() {
+        Map<String, Map<String, ICjPortMutable>> portsByNode = new LinkedHashMap<>();
+        Map<String, Set<String>> declaredByNode = new LinkedHashMap<>();
+        nodeInfos.forEach((id, info) -> {
+            Attr label = info.label;
+            boolean html = label != null && label.html;
+            Set<String> declared = DotPorts.declaredPorts(label == null ? null : label.raw, html, info.shape);
+            declaredByNode.put(id, declared);
+            ICjNodeMutable owner = info.portOwner();
+            Map<String, ICjPortMutable> ports = new LinkedHashMap<>();
+            for (String portId : declared) owner.addPort(port -> {
+                port.id(portId);
+                ports.put(portId, port);
+            });
+            portsByNode.put(id, ports);
+            // the ports exist only because of a default shape=record: keep that shape with them
+            if (!declared.isEmpty() && !html && !info.explicitShape) {
+                String shape = info.shape;
+                owner.dataMutable(d -> {
+                    if (d.jsonValue() != null) d.remove("shape");
+                    d.add("shape", shape);
+                });
+            }
+        });
+        for (PendingPort pp : pendingPorts) {
+            NodeInfo info = nodeInfos.get(pp.nodeId);
+            Set<String> declared = declaredByNode.getOrDefault(pp.nodeId, Set.of());
+            String port = pp.ref.port;
+            String compass = pp.ref.compass;
+            String portId = null;
+            String problem;
+            if (declared.contains(port)) {
+                if (compass == null) {
+                    portId = port;
+                    problem = null;
+                } else if (DotPorts.isCompassPoint(compass)) {
+                    portId = ensureCompassPort(portsByNode.get(pp.nodeId), info.portOwner(), port, compass);
+                    problem = null;
+                } else {
+                    problem = "'" + compass + "' is no compass point (" + String.join(", ", DotPorts.COMPASS_POINTS) + ")";
+                }
+            } else if (compass == null && DotPorts.isCompassPoint(port)) {
+                portId = ensureCompassPort(portsByNode.get(pp.nodeId), info.portOwner(), null, port);
+                problem = null;
+            } else {
+                problem = "the node declares " + (declared.isEmpty() ? "no ports" : "only ports " + String.join(", ", declared))
+                        + (DotPorts.isCompassPoint(port) ? "" : ", and '" + port + "' is no compass point");
+            }
+            if (portId != null) {
+                pp.endpoint.port(portId);
+            } else {
+                onContentError(new ContentError(ContentError.ErrorLevel.Warn,
+                        "Port '" + pp.ref + "' of node '" + pp.nodeId + "' unrecognized and ignored: " + problem,
+                        pp.pos < 0 ? Location.UNAVAILABLE : mapPosToLocation(pp.pos)));
+                pp.endpoint.dataMutable(d -> {
+                    d.add(DotPorts.DATA_PORT, port);
+                    if (compass != null) d.add(DotPorts.DATA_COMPASS, compass);
+                });
+            }
+        }
+    }
+
+    /** Add compass port {@code compass} (nested in port {@code parent}, if given) to {@code owner}, once. */
+    private static String ensureCompassPort(Map<String, ICjPortMutable> ports, ICjNodeMutable owner, @Nullable String parent,
+            String compass) {
+        String portId = DotPorts.compassPortId(parent, compass);
+        if (ports.containsKey(portId)) return portId;
+        Consumer<ICjPortMutable> init = port -> {
+            port.id(portId);
+            port.dataMutable(d -> d.add(DotPorts.DATA_COMPASS, compass));
+            ports.put(portId, port);
+        };
+        if (parent == null) owner.addPort(init);
+        else ports.get(parent).addPort(init);
+        return portId;
     }
 
     private static ICjNodeMutable createNode(ICjGraphMutable g, String id) {
@@ -611,10 +852,11 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 g.dataMutable(d -> d.add(DOT_TYPE_KEY, tl.directed ? "digraph" : "graph"));
                 // parse graph body
                 p.expect(CURLY_BRACE_OPEN);
-                parseStatements(p, g, tl.directed);
+                parseStatements(p, g, tl.directed, new Defaults());
                 p.skipWs();
                 p.expect(CURLY_BRACE_CLOSE);
             });
+            resolvePorts();
             return cjDocument;
         } catch (RuntimeException ex) {
             // Emit a content error with precise location
@@ -637,7 +879,7 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
         return new Location(lineNo, col);
     }
 
-    private void parseStatements(Parser p, ICjGraphMutable g, boolean directed) {
+    private void parseStatements(Parser p, ICjGraphMutable g, boolean directed, Defaults defaults) {
         Map<String, ICjNodeMutable> nodesById = new LinkedHashMap<>();
         while (true) {
             p.skipWs();
@@ -665,14 +907,14 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 p.pos = oldPos;
                 if (edgeFollows && !hasEqualsInside) {
                     // Treat as endpoint group of ids and parse edge chain
-                    List<NodeRef> firstSeg = readNodeRefOrGroup(p, g, directed, nodesById);
-                    parseEdgeChainTail(p, g, directed, nodesById, firstSeg, new ArrayList<>());
+                    List<NodeRef> firstSeg = readNodeRefOrGroup(p, g, directed, nodesById, defaults);
+                    parseEdgeChainTail(p, g, directed, nodesById, firstSeg, new ArrayList<>(), defaults);
                     continue;
                 } else {
                     // Anonymous subgraph block
                     ICjGraphMutable sub = createSubgraph(g, null);
                     p.expect(CURLY_BRACE_OPEN);
-                    parseStatements(p, sub, directed);
+                    parseStatements(p, sub, directed, defaults.child());
                     p.skipWs();
                     p.expect(CURLY_BRACE_CLOSE);
                     p.consumeOptionalSemicolon();
@@ -707,8 +949,8 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 p.pos = savePos;
                 if (edgeAfterBody) {
                     // Parse as edge chain starting with a subgraph endpoint
-                    List<NodeRef> firstSeg = readNodeRefOrGroup(p, g, directed, nodesById);
-                    parseEdgeChainTail(p, g, directed, nodesById, firstSeg, new ArrayList<>());
+                    List<NodeRef> firstSeg = readNodeRefOrGroup(p, g, directed, nodesById, defaults);
+                    parseEdgeChainTail(p, g, directed, nodesById, firstSeg, new ArrayList<>(), defaults);
                     continue;
                 }
             }
@@ -724,13 +966,13 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                     ICjGraphMutable sub;
                     if (nc != null) {
                         // nested-graphs-in-nodes: attach this subgraph to the owning node, not to the parent graph
-                        ICjNodeMutable owner = nodesById.computeIfAbsent(nc.nodeId, id -> createNode(g, id));
+                        ICjNodeMutable owner = ensureNode(g, nodesById, nc.nodeId, defaults);
                         sub = createNodeSubgraph(owner, nc.innerId.isEmpty() ? null : nc.innerId);
                     } else {
                         sub = createSubgraph(g, subId);
                     }
                     p.expect(CURLY_BRACE_OPEN);
-                    parseStatements(p, sub, directed);
+                    parseStatements(p, sub, directed, defaults.child());
                     p.skipWs();
                     p.expect(CURLY_BRACE_CLOSE);
                     p.consumeOptionalSemicolon();
@@ -755,10 +997,11 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                 p.consumeOptionalSemicolon();
                 continue;
             } else if (p.lookaheadKeyword(NODE) || p.lookaheadKeyword(EDGE)) {
-                p.readKeyword();
+                Map<String, Attr> target = NODE.equals(p.readKeyword()) ? defaults.node : defaults.edge;
                 p.skipWs();
                 if (p.peek() == '[') {
-                    p.readAttrList(null); // ignore defaults for now
+                    // not copied into data yet; kept in scope to resolve ports (shape, label, headport, tailport)
+                    for (Attr a : p.readAttrList(null)) target.put(a.key, a);
                 }
                 p.consumeOptionalSemicolon();
                 continue;
@@ -804,11 +1047,12 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             if (p.lookaheadEdgeOp()) {
                 // Edge statement: a sequence of segments, each a single nodeRef or a {group}.
                 // `attrs` is provably empty here — an attr_list before the edgeop was rejected above.
-                parseEdgeChainTail(p, g, directed, nodesById, List.of(first), attrs);
+                parseEdgeChainTail(p, g, directed, nodesById, List.of(first), attrs, defaults);
             } else {
                 // Node statement. Its attr_list was consumed above, so apply it here (issue #133).
-                ICjNodeMutable node = nodesById.computeIfAbsent(first.nodeId, id -> createNode(g, id));
+                ICjNodeMutable node = ensureNode(g, nodesById, first.nodeId, defaults);
                 applyAttrsToHasDataAndLabel(attrs, node);
+                nodeInfos.get(first.nodeId).applyNodeStatement(attrs, node);
                 p.consumeOptionalSemicolon();
             }
         }
@@ -826,14 +1070,14 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
      * @param attrs    attributes collected before the chain; empty for a well-formed statement
      */
     private void parseEdgeChainTail(Parser p, ICjGraphMutable g, boolean directed,
-            Map<String, ICjNodeMutable> nodesById, List<NodeRef> firstSeg, List<Attr> attrs) {
+            Map<String, ICjNodeMutable> nodesById, List<NodeRef> firstSeg, List<Attr> attrs, Defaults defaults) {
         List<List<NodeRef>> segments = new ArrayList<>();
         segments.add(firstSeg);
         while (true) {
             p.skipWs();
             if (!p.lookaheadEdgeOp()) break;
             p.readEdgeOp(directed);
-            segments.add(readNodeRefOrGroup(p, g, directed, nodesById));
+            segments.add(readNodeRefOrGroup(p, g, directed, nodesById, defaults));
         }
         boolean sawAttrList = false;
         while (true) {
@@ -852,9 +1096,9 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             for (NodeRef a : left) {
                 for (NodeRef b : right) {
                     // ensure nodes exist
-                    nodesById.computeIfAbsent(a.nodeId, id -> createNode(g, id));
-                    nodesById.computeIfAbsent(b.nodeId, id -> createNode(g, id));
-                    addEdge(g, a, b, directed, attrs);
+                    ensureNode(g, nodesById, a.nodeId, defaults);
+                    ensureNode(g, nodesById, b.nodeId, defaults);
+                    addEdge(g, a, b, directed, attrs, defaults);
                 }
             }
         }
@@ -862,18 +1106,20 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
     }
 
     private NodeRef readNodeRef(Parser p) {
+        p.skipWs();
+        int pos = p.position();
         String id = p.readIdOrString();
         String port = null;
+        String compass = null;
         p.skipWs();
         if (p.consumeIf(':')) {
             port = p.readIdOrString();
-            // optional compass after another ':' is ignored
             p.skipWs();
             if (p.consumeIf(':')) {
-                p.readIdOrString();
+                compass = p.readIdOrString();
             }
         }
-        return new NodeRef(id, port);
+        return new NodeRef(id, port, compass, pos);
     }
 
     /**
@@ -881,7 +1127,8 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
      * keyword is used as an endpoint followed by an optional id and/or body, we create that subgraph on the current
      * graph and return a single NodeRef to a node literally named 'subgraph' to preserve DOT round-trip.
      */
-    private List<NodeRef> readNodeRefOrGroup(Parser p, ICjGraphMutable g, boolean directed, Map<String, ICjNodeMutable> nodesById) {
+    private List<NodeRef> readNodeRefOrGroup(Parser p, ICjGraphMutable g, boolean directed, Map<String, ICjNodeMutable> nodesById,
+            Defaults defaults) {
         p.skipWs();
         // Special: 'subgraph' as endpoint in an edge chain
         if (p.lookaheadKeyword(SUBGRAPH)) {
@@ -897,13 +1144,13 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
             p.skipWs();
             if (!p.eof() && p.peek() == CURLY_BRACE_OPEN) {
                 p.expect(CURLY_BRACE_OPEN);
-                parseStatements(p, nestedRef[0], directed);
+                parseStatements(p, nestedRef[0], directed, defaults.child());
                 p.skipWs();
                 p.expect(CURLY_BRACE_CLOSE);
             }
             // Collect node ids inside the subgraph to expand the edge
             List<NodeRef> result = new ArrayList<>();
-            nestedRef[0].nodes().forEach(n -> result.add(new NodeRef(n.id(), null)));
+            nestedRef[0].nodes().forEach(n -> result.add(NodeRef.of(n.id())));
             return result;
         }
         if (!p.eof() && p.peek() == CURLY_BRACE_OPEN) {
@@ -930,12 +1177,12 @@ public class DotLines2CjDocument extends BaseOutput implements ITextWriter {
                     p.skipWs();
                     if (!p.eof() && p.peek() == CURLY_BRACE_OPEN) {
                         p.expect(CURLY_BRACE_OPEN);
-                        parseStatements(p, nestedRef[0], directed);
+                        parseStatements(p, nestedRef[0], directed, defaults.child());
                         p.skipWs();
                         p.expect(CURLY_BRACE_CLOSE);
                     }
                     // add all nodes from subgraph to the group list
-                    nestedRef[0].nodes().forEach(n -> list.add(new NodeRef(n.id(), null)));
+                    nestedRef[0].nodes().forEach(n -> list.add(NodeRef.of(n.id())));
                     // optional separators after subgraph block
                     p.consumeGroupSeparators();
                     continue;
