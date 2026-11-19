@@ -1,6 +1,6 @@
 = Using GraphInOut as a Java Library
 :toc:
-:gio-version: 0.2.3
+:gio-version: 0.2.4
 
 How to read, write, convert and detect graph files from Java code.
 To add a new file format instead, see link:writing-a-converter.adoc[Writing a Reader or Writer].

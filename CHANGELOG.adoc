@@ -9,7 +9,14 @@ bumps and "minor/doc/WIP" commits are omitted.
 
 == Unreleased
 
+== 0.2.4 — 2026-11-19
+
 Added::
+* `gio detect <input>` probes every reader and ranks format candidates by file name, content kind, vocabulary
+  and parse quality; prints one JSON line with the best format, a confidence tier (`CONFIDENT` / `AMBIGUOUS` /
+  `UNKNOWN`) and per-reader signals, stats and errors.
+* Developer guides: `doc/usage.adoc` (using GraphInOut as a library), `doc/writing-a-converter.adoc` (adding a
+  format), an up-to-date `doc/architecture.adoc`. Their code examples are tests.
 * `reader-gxl` reads and writes GXL 1.0 (Graph eXchange Language): nested graphs in nodes and edges, hyperedges
   (`<rel>`), node and edge types, typed attribute values, mixed edge directions (`defaultdirected`). It never fetches
   the DTD GXL files reference and resolves no external entities. All 393 GXL files in graph-test-data round-trip
@@ -30,7 +37,15 @@ Added::
 * The DOT writer makes CJ node ports mean something to Graphviz: `shape=record` and, if needed, a record
   label with one field per port. HTML labels are written as `<...>` again, not as quoted strings.
 
+Changed::
+* `reader-ocif` implements OCIF v0.7 (it still reads v0.6 files). The former `reader-ocif07` module is now
+  `reader-ocif` (Maven artifact and Java package `com.graphinout.reader.ocif`); the v0.6 implementation is gone.
+  CJ round trips keep multiple graphs, nested graphs, graph data and edge labels.
+* `engine` depends on `reader-example` in test scope only, so its placeholder `example` format is no longer
+  registered (it ranked high in format detection).
+
 Security::
+* Vulnerabilities can be reported privately via GitHub; see `SECURITY.md` (supported versions, scope, response time).
 * `reader-graphml` no longer resolves XML external entities (XXE) during GraphML validation. Format
   detection (`GraphmlReader.isValid`, used by the engine and the CLI to pick a reader) and
   `GraphmlValidator` parsed input with an unhardened parser, so a crafted file could make them open local
@@ -49,6 +64,7 @@ Security::
    `%load_json` and `%file_exists` no longer touch the file system.
 
 Fixed::
+* `reader-rdf` registered N-Quads, TriG and TriX twice, so the engine listed them twice.
 * `reader-graphml` keeps GraphML 1.1 time-stamped data (`<data key="k" time="1">`). In CJ, such a
   property is a time series `[{"time": 1, "value": …}, …]`, written back as one typed `<data time="…">`
   each; before, the times were lost and the values merged into an untyped array

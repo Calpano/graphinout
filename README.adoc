@@ -1,6 +1,6 @@
 = 🐛 GraphInOut: Graph In -> Graph Out
 :gio: GraphInOut
-:gio-version: 0.2.3
+:gio-version: 0.2.4
 :toc:
 
 * Convert between graph formats
