@@ -1,43 +1,43 @@
 = 🐛 GraphInOut: Graph In -> Graph Out
 :gio: GraphInOut
+:gio-version: 0.2.3
 :toc:
 
 * Convert between graph formats
 * Advanced converters usually include support for graph/node/edge labels/attributes, nested graphs, hyper-edges, ...
 * As intermediate formate the modern GraphML successor *Connected JSON (CJ)* (spec: https://j-s-o-n.org) is used. It has all features of GraphML, but even more extensible JSON data support on all entities.
 
-.Input Formats
-Graphinout *reads* many common graph file formats
+.Read and Write
+- https://j-s-o-n.org[Connected JSON (CJ)]
+- GraphML, GEXF, GML (Graph Modelling Language)
+- Graphviz DOT, D2, Mermaid, PlantUML (class diagrams), https://ddot.it[DDot]
+- OCIF (Open Canvas Interchange Format)
+- graph6
+- RDF: Turtle, RDF/XML, N-Triples, N-Quads, TriG, TriX, RDF/JSON, JSON-LD
+- Adjacency list (NetworkX), edge list, Trivial Graph Format (TGF), Pajek
+- grale
 
-- GraphML,
-- https://j-s-o-n.org[Connected JSON],
-- GML,
-- GraphViz/DOT,
-- Graph6,
-- Trivial Graph Format,
-- Adjacency List Format of NetworkX,
-- https://gtfs.org/[GTFS] transit feeds (stations and adjacencies as a graph))
+.Read Only
+- Connected JSON5, JSON Graph Entry Format (GEF)
+- sparse6, digraph6
+- Structurizr DSL (C4 model)
+- https://gtfs.org/[GTFS] transit feeds (stations and adjacencies as a graph)
+- TripleText
 
-into *CJ* and *writes* losslessly to many output graph file formats.
-
-.Output Formats
-- GraphML,
-- https://j-s-o-n.org[Connected JSON],
-- GML,
-- GraphViz/DOT, and
-- Trivial Graph Format.
+The engine lists the current set with `GioEngineCore.formats()`, the CLI with `formats`.
+link:doc/format-features.adoc[Format Features] shows which graph features each format can represent.
 
 NOTE: Earlier versions of {gio} used GraphML as the lingua franca, but we since then switched to https://j-s-o-n.org[Connected JSON].
 
 == Maven Coordinates
 Check the latest version at https://central.sonatype.com/artifact/com.graphinout/engine[]
 
-[source.xml]
+[source,xml,subs="attributes+"]
 ----
 <dependency>
     <groupId>com.graphinout</groupId>
     <artifactId>engine</artifactId>
-    <version>0.1.6</version>
+    <version>{gio-version}</version>
 </dependency>
 ----
 
@@ -69,7 +69,20 @@ Users:: can re-use their existing data effortlessly using almost any format thei
 
 == Usage
 {gio} can be used as a Java library to read format X (`GioReader`) and write format Y (`GioWriter`).
-See `GioEngineCore` as currently the best entry point.
+
+[source,java]
+----
+GioEngineCore engine = new GioEngineCore();
+ICjDocument cjDoc = engine.getReader("tgf").readToCjDocument(SingleInputSource.of("example.tgf", tgfText));
+engine.getWriter("graphml").writeCjDocument(cjDoc, new FileOutputSink(outputFile));
+----
+
+.Developer Documentation
+* link:doc/usage.adoc[Using GraphInOut as a Java Library]: convert, stream, handle errors, detect formats
+* link:doc/writing-a-converter.adoc[Writing a Reader or Writer]: add a new file format
+* link:doc/architecture.adoc[Architecture]: modules and data flow
+* https://javadoc.io/doc/com.graphinout/engine[Javadoc] (also for https://javadoc.io/doc/com.graphinout/base[base] and https://javadoc.io/doc/com.graphinout/base-api[base-api])
+* link:cli/README.adoc[Command-line tool]
 
 You can use this lib in the free online service for graph conversion running at https://graphinout.com
 
@@ -79,7 +92,6 @@ You can use this lib in the free online service for graph conversion running at 
 - Clarify underspecified edge cases such as https://github.com/Calpano/graphinout/issues/105[#105]
 - Fix minor bugs such as https://github.com/Calpano/graphinout/issues/133[#133]
 - Add https://github.com/Calpano/graphinout/issues?q=is%3Aissue%20state%3Aopen%20label%3AFormat-Specific%20type%3AFeature[more readers and writers]
-- Document better for converter authors
 
 == Issues
 You found a bug or want a feature? Please https://github.com/Calpano/graphinout/issues[file an issue].

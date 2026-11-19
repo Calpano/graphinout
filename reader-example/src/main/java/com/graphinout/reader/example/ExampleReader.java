@@ -18,11 +18,13 @@ import java.util.function.Consumer;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+// tag::reader[]
 public class ExampleReader implements GioReader {
 
     public static final GioFileFormat FORMAT = new GioFileFormat("example", "Example Graph Format", ".example");
     private static final Logger log = getLogger(ExampleReader.class);
-    private Consumer<ContentError> errorHandler;
+    /** No-op until the caller sets one, so {@link #readToCjDocument} works without a handler. */
+    private Consumer<ContentError> errorHandler = error -> {};
 
     @Override
     public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
@@ -71,3 +73,4 @@ public class ExampleReader implements GioReader {
     }
 
 }
+// end::reader[]

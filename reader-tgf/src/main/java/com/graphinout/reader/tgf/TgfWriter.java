@@ -22,6 +22,7 @@ public class TgfWriter implements GioWriter {
         this.errorHandler = contentErrorHandler;
     }
 
+    // tag::writer[]
     @Override
     public ICjStream createCjStream(OutputSink outputSink) {
         // collect into CjDocument
@@ -45,5 +46,6 @@ public class TgfWriter implements GioWriter {
         String tgf = new TgfOutput(cjDoc, errorHandler).toTgf();
         outputSink.write(tgf);
     }
+    // end::writer[]
 
 }

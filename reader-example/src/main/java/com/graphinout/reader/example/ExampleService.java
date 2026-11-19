@@ -7,6 +7,7 @@ import com.graphinout.base.gio.GioWriter;
 import java.util.Arrays;
 import java.util.List;
 
+// tag::service[]
 public class ExampleService implements GioService {
 
     @Override
@@ -25,3 +26,4 @@ public class ExampleService implements GioService {
     }
 
 }
+// end::service[]

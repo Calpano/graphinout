@@ -1,0 +1,148 @@
+= Using GraphInOut as a Java Library
+:toc:
+:gio-version: 0.2.3
+
+How to read, write, convert and detect graph files from Java code.
+To add a new file format instead, see link:writing-a-converter.adoc[Writing a Reader or Writer].
+
+TIP: Every code example on this page is a runnable test in
+link:../engine/src/test/java/com/graphinout/engine/doc/ApiUsageExamplesTest.java[ApiUsageExamplesTest].
+`DocSnippetsTest` fails the build if this page and that test drift apart.
+
+[[dependency]]
+== Dependency
+The `engine` artifact bundles every reader and writer.
+Check https://central.sonatype.com/artifact/com.graphinout/engine[Maven Central] for the latest version.
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>com.graphinout</groupId>
+    <artifactId>engine</artifactId>
+    <version>{gio-version}</version>
+</dependency>
+----
+
+If you need only one format, depend on its module instead, e.g. `reader-graphml` or `reader-dot`.
+Each module contains the reader and (where available) the writer of its format; see <<without-engine>>.
+
+[[concepts]]
+== Concepts
+
+.Main Types
+`GioEngineCore`:: Finds all readers and writers on the classpath via `java.util.ServiceLoader` and looks them up by format id.
+`GioReader`:: Reads one file format. Sends the graph as a stream of *Connected JSON (CJ)* events to an `ICjStream`, or builds an in-memory `ICjDocument`.
+`GioWriter`:: Writes one file format. Provides an `ICjStream` that turns CJ events into that format.
+`GioFileFormat`:: A format's `id()` (e.g. `graphml`), human-readable `label()` and `fileExtensions()`.
+`InputSource` / `SingleInputSource`:: What a reader reads: a string, bytes or a file (`FileSingleInputSource`).
+`OutputSink`:: Where a writer writes: in memory (`InMemoryOutputSink`), a file (`FileOutputSink`) or a `java.io.Writer` (`WriterOutputSink`).
+`ContentError`:: A problem in the graph data (not an I/O failure), with a level, a message and an optional line/column location.
+
+Every conversion goes through CJ: *format X → CJ → format Y*.
+CJ is the lossless in-between model, specified at https://j-s-o-n.org.
+
+[[convert]]
+== Convert a Graph
+Read into an in-memory CJ document, then write it out:
+
+[source,java]
+----
+GioEngineCore engine = new GioEngineCore(); // finds all readers & writers on the classpath
+GioReader reader = engine.getReader("tgf");
+GioWriter writer = engine.getWriter("graphml");
+
+SingleInputSource input = SingleInputSource.of("example.tgf", "1 Alice\n2 Bob\n#\n1 2 knows\n");
+ICjDocument cjDoc = reader.readToCjDocument(input);
+
+InMemoryOutputSink output = InMemoryOutputSink.create();
+writer.writeCjDocument(cjDoc, output);
+String graphml = output.getBufferAsUtf8String();
+----
+
+`getReader` and `getWriter` return `null` when no reader or writer is registered for that id.
+Use <<formats>> to see which ids exist.
+
+The `ICjDocument` is also useful on its own: inspect or change the graph before writing it, e.g. `cjDoc.nodesAll()`.
+
+[[stream]]
+== Convert by Streaming
+For large inputs, connect the reader directly to the writer.
+No complete document is built in between:
+
+[source,java]
+----
+GioReader reader = engine.getReader("tgf");
+GioWriter writer = engine.getWriter("connected-json");
+
+InMemoryOutputSink output = InMemoryOutputSink.create();
+// the reader pushes CJ events straight into the writer -- no in-memory document is built
+reader.read(SingleInputSource.of("example.tgf", TGF), writer.createCjStream(output));
+----
+
+NOTE: Whether memory use stays low depends on the writer.
+Formats that need the whole graph before writing (e.g. TGF, which lists all nodes before all edges) collect a document internally.
+
+[[errors]]
+== Handle Errors
+There are two kinds of failure:
+
+.Failure Kinds
+`IOException`:: The input or output could not be accessed. Thrown as usual.
+`ContentError`:: The data itself has a problem, e.g. an edge pointing to an unknown node. Reported to the content error handler; the reader keeps going where it can.
+
+[source,java]
+----
+GioReader reader = new TgfReader(); // readers can also be used without the engine
+List<ContentError> errors = new ArrayList<>();
+reader.setContentErrorHandler(errors::add);
+
+ICjDocument cjDoc = reader.readToCjDocument(SingleInputSource.of("broken.tgf", "1 Alice\n#\n1\n"));
+for (ContentError error : errors) {
+    System.out.println(error.level + " at " + error.location + ": " + error.message);
+}
+----
+
+Writers report data the target format cannot represent (e.g. hyper-edges in a format without them) the same way, via `GioWriter.setContentErrorHandler`.
+
+[[detect]]
+== Detect the Format
+When the format is unknown, `GioInputAnalyzer` tries every reader and ranks them by file name, content kind (JSON/XML/text), format vocabulary and how cleanly each reader parses the input:
+
+[source,java]
+----
+GioInputAnalyzer analyzer = new GioInputAnalyzer(engine.readers());
+GioInputAnalysis analysis = analyzer.analyze(SingleInputSource.of("unknown.txt", "digraph { a -> b }"));
+
+Optional<GioInputAnalysis.Candidate> best = analysis.best();
+best.ifPresent(c -> System.out.println(c.format().id() + " (" + analysis.tier() + "): " + c.explanation()));
+----
+
+`analysis.candidates()` lists all readers with their outcome, confidence and the signals behind it.
+`analysis.tier()` says how sure the result is.
+The CLI command `detect <input>` runs the same analysis (link:../cli/README.adoc[cli/README]).
+
+[[formats]]
+== List Supported Formats
+
+[source,java]
+----
+engine.formats().forEach((format, support) ->
+        System.out.println(format.id() + "\t" + support + "\t" + format.fileExtensions()));
+----
+
+`support` is `Read`, `Write` or `ReadAndWrite`.
+link:format-features.adoc[Format Features] describes which graph features each format can represent.
+
+[[without-engine]]
+== Use a Single Format Without the Engine
+Every reader and writer is a plain class with a no-argument constructor, e.g. `new TgfReader()` or `new TgfWriter()`.
+Depend only on its module (`reader-tgf`) and skip `GioEngineCore` entirely.
+The <<errors>> example works this way.
+
+[[javadoc]]
+== API Reference (Javadoc)
+
+.Javadoc per Artifact
+* https://javadoc.io/doc/com.graphinout/engine[engine]: `GioEngineCore`
+* https://javadoc.io/doc/com.graphinout/base-api[base-api]: `GioFileFormat`, `InputSource`, `ICjStream`, `ICjDocument`
+* https://javadoc.io/doc/com.graphinout/base[base]: `GioReader`, `GioWriter`, `GioService`, `GioInputAnalyzer`, `OutputSink`

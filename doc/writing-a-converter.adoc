@@ -1,0 +1,207 @@
+= Writing a Reader or Writer
+:toc:
+
+How to add support for a new graph file format.
+To _use_ existing formats from Java, see link:usage.adoc[Using GraphInOut as a Java Library].
+
+[[overview]]
+== Overview
+Each format lives in its own Maven module `reader-__xyz__` (the name is historical: most modules also contain a writer).
+
+.What a Format Module Contains
+`GioService`:: Lists the module's readers and writers. Found at runtime by `java.util.ServiceLoader`.
+`GioReader`:: Parses the format and sends the graph as *Connected JSON (CJ)* events to an `ICjStream`.
+`GioWriter`:: Optional. Returns an `ICjStream` that turns CJ events into the format.
+`GioFileFormat`:: Shared by reader and writer: the format id, label and file extensions.
+Service registration:: The file `src/main/resources/META-INF/services/com.graphinout.base.gio.GioService`, containing the fully qualified name of the `GioService` class.
+
+The module link:../reader-example[reader-example] is a minimal template to copy.
+
+[[steps]]
+== Steps
+
+.Adding a Format
+. Copy `reader-example` to `reader-__xyz__` and rename packages and classes.
+. Define the `GioFileFormat` (<<format>>).
+. Implement the reader (<<reader>>).
+. Optionally implement the writer (<<writer>>).
+. Register the service (<<service>>).
+. Add the module to the root `pom.xml` `<modules>` and as a dependency of `engine/pom.xml`, so `GioEngineCore` and the CLI pick it up.
+. Add test files and tests (<<testing>>).
+. Add the format to link:format-features.adoc[Format Features] and link:formats.adoc[Formats].
+
+[[format]]
+== File Format
+[source,java]
+----
+public static final GioFileFormat FORMAT = new GioFileFormat("xyz", "XYZ Graph Format", ".xyz", ".xyz.txt");
+----
+
+.Arguments
+id:: Unique across GraphInOut and made of lowercase letters, digits, `_` and `-` (`GioFileFormat.ID_PATTERN`), e.g. `graphml`, `connected-json`. Users and the CLI select formats by this id. `FormatIdTest` in `engine` checks all registered formats.
+label:: Human-readable name.
+extensions:: The first one is used to name output files; all of them are used to match input file names. Include the dot.
+
+[[reader]]
+== Reader
+A reader sends CJ events in this order:
+
+.Event Order
+. `documentStart(doc)`
+. `graphStart(graph)`
+. `node(...)` and `edge(...)`, any number, in any order
+. `graphEnd()`
+. `documentEnd()`
+
+Create the chunks (`ICjDocumentChunkMutable`, `ICjNodeChunkMutable`, ...) with the stream's `create...Chunk()` methods, fill them, then send them.
+The example reader shows the full sequence:
+
+[source,java]
+----
+public class ExampleReader implements GioReader {
+
+    public static final GioFileFormat FORMAT = new GioFileFormat("example", "Example Graph Format", ".example");
+    private static final Logger log = getLogger(ExampleReader.class);
+    /** No-op until the caller sets one, so {@link #readToCjDocument} works without a handler. */
+    private Consumer<ContentError> errorHandler = error -> {};
+
+    @Override
+    public void setContentErrorHandler(Consumer<ContentError> errorHandler) {
+        this.errorHandler = errorHandler;
+    }
+
+    @Override
+    public GioFileFormat fileFormat() {
+        return FORMAT;
+    }
+
+    @Override
+    public void read(InputSource inputSource, ICjStream writer) throws IOException {
+        if (inputSource.isMulti()) {
+            throw new IllegalArgumentException("Cannot handle multi-sources");
+        }
+        assert inputSource instanceof SingleInputSource;
+        SingleInputSource sis = (SingleInputSource) inputSource;
+        // here we read the inputStream of sis ...
+
+        // and write the graph to our GioWriter
+        ICjDocumentChunkMutable doc = writer.createDocumentChunk();
+        writer.documentStart(doc);
+
+        ICjGraphChunkMutable graph = writer.createGraphChunk();
+        writer.graphStart(graph);
+
+        ICjNodeChunkMutable node = writer.createNodeChunk();
+        node.id("myNode1");
+        writer.node(node);
+
+        ICjNodeChunkMutable node2 = writer.createNodeChunk();
+        node2.id("myNode2");
+        writer.node(node2);
+
+        ICjEdgeChunkMutable edge = writer.createEdgeChunk();
+        edge.addEndpoint(ep -> ep.node("myNode1"));
+        edge.addEndpoint(ep -> ep.node("myNode2"));
+        writer.edge(edge);
+
+        // content errors can be signaled like this
+        errorHandler.accept(new ContentError(ContentError.ErrorLevel.Warn, " To be honest, we did not really read the input :-)", new Location(1, 1)));
+
+        writer.graphEnd();
+        writer.documentEnd();
+    }
+
+}
+----
+
+.Reader Rules
+Report problems in the data as `ContentError`:: Use `Warn` when you can recover (skip an element, guess a value) and `Error` when the data is broken. Include a `Location` (line, column) when you know it. Throw `IOException` only for I/O failures.
+Start with a no-op error handler:: Callers may not set one, e.g. when calling `readToCjDocument`.
+Reject what is not your format:: Format detection (`GioInputAnalyzer`, `GioReader.isValid`) runs _every_ reader on the input and ranks them by the errors they report. A reader that quietly accepts anything spoils detection for all other formats.
+Keep the format's own data:: Put format-specific attributes that have no CJ equivalent into the `data` of the CJ element, so a writer of the same format can restore them.
+
+[[writer]]
+== Writer
+A writer implements `createCjStream(OutputSink)`.
+There are two ways:
+
+.Writer Styles
+Streaming:: Implement `ICjStream` directly and write output as the events arrive. Best for large graphs. Example: `CjStream2GraphmlWriter` in `reader-graphml`.
+Document-based:: Collect the events into an `ICjDocument` and write everything at the end. Easier when the format needs the whole graph first, e.g. all nodes before all edges.
+
+The document-based style, from `TgfWriter`:
+
+[source,java]
+----
+@Override
+public ICjStream createCjStream(OutputSink outputSink) {
+    // collect into CjDocument
+    CjWriter2CjDocumentWriter cjWriter2CjDocumentWriter = new CjWriter2CjDocumentWriter(cjDoc -> {
+        try {
+            writeCjDocument(cjDoc, outputSink);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    });
+    return new CjStream2CjWriter(cjWriter2CjDocumentWriter, true);
+}
+
+@Override
+public GioFileFormat fileFormat() {
+    return TgfReader.FORMAT;
+}
+
+@Override
+public void writeCjDocument(ICjDocument cjDoc, OutputSink outputSink) throws IOException {
+    String tgf = new TgfOutput(cjDoc, errorHandler).toTgf();
+    outputSink.write(tgf);
+}
+----
+
+When the target format cannot represent something (hyper-edges, nested graphs, missing ids), report a `ContentError` to the handler given in `setContentErrorHandler` instead of silently dropping it.
+
+WARNING: Don't copy `ExampleWriter`: its `createCjStream` returns `null`. Use `TgfWriter` as the writer template.
+
+[[service]]
+== Service Registration
+
+[source,java]
+----
+public class ExampleService implements GioService {
+
+    @Override
+    public String id() {
+        return "reader-example";
+    }
+
+    @Override
+    public List<GioReader> readers() {
+        return Arrays.asList(new ExampleReader());
+    }
+
+    @Override
+    public List<GioWriter> writers() {
+        return Arrays.asList(new ExampleWriter());
+    }
+
+}
+----
+
+Then list the class in `src/main/resources/META-INF/services/com.graphinout.base.gio.GioService`:
+
+[source]
+----
+com.graphinout.reader.example.ExampleService
+----
+
+`GioEngineCore` logs every service, reader and writer it finds at `INFO` level, which helps when a format does not show up.
+
+[[testing]]
+== Testing
+
+.Test Helpers
+`testdata`:: Shared test files and the `TestFileProvider` to find them on the classpath. Large datasets live in the external https://github.com/Calpano/graph-test-data[graph-test-data] repository, see link:../testdata/README.adoc[testdata/README].
+`ReaderTests` (in the `base` test-jar):: Reads every matching test resource with your reader, e.g. `ReaderTests.testWithAllResource(reader, ...)`.
+Round trips:: Read a file, write it in the same format, read again and compare. `TgfRoundtripTest` is an example.
+
+link:test-patterns.adoc[Test Patterns] describes the full strategy: parser stability, normalizer and round-trip tests.

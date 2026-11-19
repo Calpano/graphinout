@@ -6,8 +6,12 @@ import java.util.Set;
 
 public class GioFileFormat {
 
+    /** Allowed syntax of {@link #id()}. */
+    public static final String ID_PATTERN = "[a-z0-9_-]+";
+
     /**
-     * an ID unique in GIO; Only [a-z0-9_] in the id String.
+     * An ID unique in GIO, matching {@link #ID_PATTERN}: lowercase letters, digits, {@code _} and {@code -}, e.g.
+     * {@code graphml} or {@code connected-json}. Users and the CLI select formats by this id.
      */
     private final String id;
     /**

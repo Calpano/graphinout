@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * One of the most central interfaces in Graphinout. Defines the contract for reading graph data from a file.
+ * One of the most central interfaces in Graphinout. Defines the contract for writing graph data in one file format.
  */
 public interface GioWriter {
 
