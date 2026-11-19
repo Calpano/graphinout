@@ -55,27 +55,28 @@ See also: link:formats-triple.adoc#rdf_xml[RDF/XML].
 
 == GXL (Graph eXchange Language)
 * Type: XML-based
-* Specification: https://en.wikipedia.org/wiki/GXL[Wikipedia]
+* Specification: http://www.gupro.de/GXL/[gupro.de/GXL], DTD in link:../reader-gxl/gxl.dtd[reader-gxl/gxl.dtd], https://en.wikipedia.org/wiki/GXL[Wikipedia]
+* GraphInOut: read and write, see link:../reader-gxl/README.adoc[reader-gxl]
 
 [cols='3d,^1d,2d']
 |===
 | Feature | Present? | Notes
 | Multiple Graphs per Document | + |
 | Nodes | + |
-| Undirected Edges | + |
-| Directed Edges | + |
-| Hyperedges | + |
-| Mixed-directionality Edges | -- |
+| Undirected Edges | + | `edgemode="undirected"` or `isdirected="false"`
+| Directed Edges | + | `edgemode="directed"` (the default) or `isdirected="true"`
+| Hyperedges | + | `<rel>` with one `<relend>` per end
+| Mixed-directionality Edges | + | `edgemode="defaultdirected"`/`"defaultundirected"` with per-edge `isdirected`
 | Edges on Edges | -- |
 | Nested Graphs in Nodes | + | Hierarchical graphs
-| Nested Graphs in Edges | -- |
-| Nested Graphs in Graphs | + | Hierarchical graphs
-| Node Labels | + |
-| Edge Labels | + |
-| Attributes on Nodes | + |
+| Nested Graphs in Edges | + | `<edge>` and `<rel>` can contain `<graph>`
+| Nested Graphs in Graphs | -- | Graphs nest only in nodes, edges and rels
+| Node Labels | (+) | No label element; by convention an `<attr name="label">`
+| Edge Labels | (+) | As for nodes
+| Attributes on Nodes | + | `<attr>` with typed values (bool, int, float, string, enum, locator, seq, set, bag, tup)
 | Attributes on Edges | + |
 | Attributes on Graphs | + |
-| Typed Edges | + | User-defined edge types
+| Typed Edges | + | `<type xlink:href>`, usually pointing into a GXL schema graph; nodes and graphs are typed the same way
 |===
 
 == XGMML

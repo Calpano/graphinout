@@ -10,6 +10,11 @@ bumps and "minor/doc/WIP" commits are omitted.
 == Unreleased
 
 Added::
+* `reader-gxl` reads and writes GXL 1.0 (Graph eXchange Language): nested graphs in nodes and edges, hyperedges
+  (`<rel>`), node and edge types, typed attribute values, mixed edge directions (`defaultdirected`). It never fetches
+  the DTD GXL files reference and resolves no external entities. All 393 GXL files in graph-test-data round-trip
+  GXL → CJ → GXL → CJ unchanged, apart from graph ids that GXL requires and the writer generates where missing; the reader also accepts the `source`/`target` edge attributes and the stray
+  whitespace before `<?xml` found there. Format detection recognises GXL.
 * `reader-dot` resolves ports the way Graphviz does. Ports declared by `record`/`Mrecord` labels and
   HTML `PORT` attributes become CJ node ports; compass points (`A:n`, `A:p:e`) are built-in ports; the
   `tailport`/`headport` edge attributes and `edge [...]` defaults set endpoint ports. A port that is

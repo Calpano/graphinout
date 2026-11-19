@@ -1,0 +1,91 @@
+= reader-gxl
+:toc:
+
+Reads and writes GXL 1.0 (Graph eXchange Language), format id `gxl`, file extensions `.gxl` and `.gxl.xml`.
+
+GXL is an XML exchange format from software reengineering.
+The grammar is the DTD link:gxl.dtd[gxl.dtd]; the specification is at http://www.gupro.de/GXL/.
+
+[[mapping]]
+== Mapping GXL ↔ CJ
+
+[cols="1,2"]
+|===
+| GXL | CJ
+
+| `<graph>` (top level, or nested in `<node>`, `<edge>`, `<rel>`)
+| graph, nested the same way.
+`<type>`, `role` and an explicit `edgemode` are kept in data as `gxl.type`, `gxl.role`, `gxl.edgemode`.
+
+| `<node>`, `<type xlink:href>`
+| node, node type
+
+| `<edge from to>`
+| binary edge. Directed: endpoints `in` (from) and `out` (to); undirected: both `undir`.
+Directedness is `isdirected` if given, else the graph's `edgemode`.
+`<type>` becomes the edge type; `fromorder`/`toorder` are kept in endpoint data as `gxl.order`.
+
+| `<rel>` with `<relend>`
+| n-ary edge (hyperedge), one endpoint per relend. Relend `direction="out"` (the relation leaves this end) becomes `in`
+(source), `"in"` becomes `out` (target), `"none"` or missing becomes `undir`. The relend `role` becomes the endpoint
+type; `startorder`, `endorder` and relend attrs go to endpoint data. The edge gets `gxl.rel: true`, so a binary rel is
+written back as a rel.
+
+| `<attr name>` with `<bool>`, `<int>`, `<float>`, `<string>`
+| data property: JSON boolean, integer, number, string
+
+| `<attr>` with `<seq>`, `<set>`, `<bag>`, `<tup>`
+| JSON array
+
+| `<attr>` with `<enum>`, `<locator xlink:href>`
+| JSON string (the enum value, the href)
+
+| `<attr name="label">` with a `<string>` on a node or edge
+| the CJ label
+|===
+
+Value kinds that JSON cannot tell apart (enum, locator, set, bag, tup) are kept in data as `gxl.kinds`
+(attr name → kind), so the writer restores them. Kinds of values inside a composite value are not kept: they come back
+as bool, int, float, string or seq.
+
+[[writing]]
+== Writing
+
+A CJ edge is written as `<edge>` if it has two endpoints, `in`/`out` or `undir`/`undir`, and no endpoint types;
+otherwise as `<rel>`. The graph's `edgemode` is the stored `gxl.edgemode` if it still fits the edges, else `directed`,
+`undirected`, or `defaultdirected` for a mix, with `isdirected` only on the exceptions. `hypergraph="true"` and
+`edgeids="true"` are set when needed.
+
+.What GXL cannot hold (reported as content warnings)
+* Ports.
+* More than one node type; only the first is written.
+* More than one label entry, and label languages; only the first entry's text is written.
+* A graph nested directly in a graph. GXL nests graphs only in nodes, edges and rels, so the graph is wrapped in a new
+  node.
+* Document-level data.
+* A JSON object as a value; it is written as its JSON string.
+
+Missing graph ids, which GXL requires, are generated as `_graph1`, `_graph2`, …
+
+[[lenient-reading]]
+== Lenient Reading
+
+Real GXL files deviate from the DTD in a few ways. The reader accepts these, with one warning per document and kind:
+
+* `source`/`target` instead of `from`/`to` on `<edge>` (e.g. the Kite graphs in graph-test-data).
+* A `type` attribute instead of a `<type>` element on `<edge>` (e.g. `RBGL/demo.gxl`).
+* Whitespace before the XML declaration (e.g. `RBGL/snacoreex.gxl`).
+
+[[security]]
+== Security
+
+GXL files usually reference a remote DTD (`<!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.dtd">`).
+The reader never fetches it and never resolves external entities. It parses without namespace awareness, so
+`xlink:href` also works when the `xmlns:xlink` declaration would only come from that DTD.
+
+[[tests]]
+== Tests
+
+* `GxlReaderTest`: mapping details, errors, non-standard input, no DTD fetching, no XXE.
+* `GxlRoundtripTest`: GXL → CJ → GXL → CJ for every `.gxl` file in graph-test-data (393 files) and a document using
+  every construct; CJ → GXL → CJ for the graph features GXL claims.

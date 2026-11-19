@@ -9,7 +9,7 @@
 
 .Read and Write
 - https://j-s-o-n.org[Connected JSON (CJ)]
-- GraphML, GEXF, GML (Graph Modelling Language)
+- GraphML, GEXF, GXL, GML (Graph Modelling Language)
 - Graphviz DOT, D2, Mermaid, PlantUML (class diagrams), https://ddot.it[DDot]
 - OCIF (Open Canvas Interchange Format)
 - graph6

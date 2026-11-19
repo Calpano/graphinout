@@ -235,6 +235,7 @@ public class GioInputAnalyzer {
     private static final Map<String, List<String>> VOCABULARY = Map.ofEntries(
             Map.entry("graphml", List.of("graphdrawing.org", "<graphml")),
             Map.entry("gexf", List.of("<gexf", "gexf.net")),
+            Map.entry("gxl", List.of("<gxl", "gupro.de/gxl")),
             Map.entry("connected-json", List.of("connectedjson", "\"endpoints\"")),
             Map.entry("connected-json5", List.of("connectedjson", "\"endpoints\"")),
             Map.entry("grale", List.of("rankdir", "multigraph", "compound", "\"options\"")),
@@ -270,6 +271,7 @@ public class GioInputAnalyzer {
     private static final Map<String, List<String>> SIGNATURES = Map.of(
             "graphml", List.of("graphdrawing.org", "<graphml"),
             "gexf", List.of("gexf.net", "<gexf"),
+            "gxl", List.of("<gxl"),
             "trix", List.of("<trix"),
             "rdf-xml", List.of("rdf:rdf"));
 

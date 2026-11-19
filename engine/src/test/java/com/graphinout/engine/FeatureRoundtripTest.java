@@ -74,6 +74,12 @@ class FeatureRoundtripTest {
                     "nodes", "undirected-edges", "directed-edges", "multiple-graphs-per-document",
                     "nested-graphs-in-nodes", "nested-graphs-in-graphs", "node-labels", "edge-labels",
                     "attributes-on-nodes", "attributes-on-edges", "attributes-on-graphs"), of("typed-edges")),
+            // gxl-1.0
+            new Claims("gxl", of(
+                    "nodes", "undirected-edges", "directed-edges", "hyperedges", "mixed-directionality-edges",
+                    "multiple-graphs-per-document", "nested-graphs-in-nodes", "nested-graphs-in-edges", "node-labels",
+                    "edge-labels", "attributes-on-nodes", "attributes-on-edges", "attributes-on-graphs", "typed-edges"),
+                    of()),
             // graphml-1.1
             new Claims("graphml", of(
                     "nodes", "undirected-edges", "directed-edges", "hyperedges", "mixed-directionality-edges",
