@@ -10,6 +10,8 @@ import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.pure.input.ContentError;
 import net.sourceforge.plantuml.BlockUml;
 import net.sourceforge.plantuml.SourceStringReader;
+import net.sourceforge.plantuml.security.SecurityProfile;
+import net.sourceforge.plantuml.security.SecurityUtils;
 import net.sourceforge.plantuml.abel.Entity;
 import net.sourceforge.plantuml.abel.LeafType;
 import net.sourceforge.plantuml.abel.Link;
@@ -89,6 +91,7 @@ public class PlantUmlReader implements GioReader {
             content = "@startuml\n" + content + "\n@enduml\n";
         }
 
+        sandbox();
         SourceStringReader reader = new SourceStringReader(content);
         List<ClassDiagram> diagrams = new ArrayList<>();
         for (BlockUml block : reader.getBlocks()) {
@@ -452,6 +455,20 @@ public class PlantUmlReader implements GioReader {
         if (errorHandler != null) {
             errorHandler.accept(ContentError.of(ContentError.ErrorLevel.Warn, message));
         }
+    }
+
+
+    /**
+     * Puts PlantUML into its {@code SANDBOX} security profile: no local files ({@code !include}, {@code !includesub},
+     * {@code !import}, {@code %load_json}, {@code %file_exists}), no URLs, no environment variables. An input must not
+     * make us read any of those.
+     * <p>
+     * PlantUML keeps its profile JVM-wide, and a value set here takes precedence over the
+     * {@code PLANTUML_SECURITY_PROFILE} system property and environment variable. It is set again before every read,
+     * in case other code in the JVM changed it.
+     */
+    static void sandbox() {
+        SecurityUtils.setCommandLineProperty("PLANTUML_SECURITY_PROFILE", SecurityProfile.SANDBOX.name());
     }
 
 }

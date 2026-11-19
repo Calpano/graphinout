@@ -29,6 +29,13 @@ Security::
   `GraphmlValidator` parsed input with an unhardened parser, so a crafted file could make them open local
   files or URLs. `XmlFactory` now offers one hardened parser factory that fails rather than run unhardened.
   Compiling the bundled GraphML schemas may not access external files or URLs either.
+* No reader opens local files, fetches URLs or reads environment variables because an input says so:
+** `reader-structurizr-dsl`: `!include`, `workspace extends`, `!docs`, `!adrs`, `!script`, `!plugin` and
+   `${NAME}` environment variables are disabled; such input is reported as an error. Before, local files were
+   included and environment variables substituted.
+** `reader-plantuml`: PlantUML runs in its `SANDBOX` security profile, so `!include`, `!includesub`, `!import`,
+   `%load_json` and `%file_exists` no longer touch the file system.
+
 Fixed::
 * `reader-graphml` keeps GraphML 1.1 time-stamped data (`<data key="k" time="1">`). In CJ, such a
   property is a time series `[{"time": 1, "value": …}, …]`, written back as one typed `<data time="…">`

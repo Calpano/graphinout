@@ -9,6 +9,7 @@ import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.structurizr.Workspace;
+import com.structurizr.dsl.Features;
 import com.structurizr.dsl.StructurizrDslParser;
 import com.structurizr.model.Component;
 import com.structurizr.model.Container;
@@ -20,6 +21,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -60,7 +62,7 @@ public class StructurizrDslReader implements GioReader {
             return;
         }
 
-        StructurizrDslParser parser = new StructurizrDslParser();
+        StructurizrDslParser parser = sandboxedParser();
         Workspace workspace;
         try {
             parser.parse(content);
@@ -153,5 +155,23 @@ public class StructurizrDslReader implements GioReader {
             errorHandler.accept(ContentError.of(ContentError.ErrorLevel.Error, message));
         }
     }
+
+
+    /**
+     * Every DSL feature that reaches outside the input is off: an input must not make us read files ({@code !include},
+     * {@code !docs}, {@code !adrs}, {@code workspace extends}), fetch URLs, read environment variables ({@code ${NAME}}),
+     * or run code ({@code !script}, {@code !plugin}, {@code !components}). Such a directive fails the parse.
+     */
+    static StructurizrDslParser sandboxedParser() {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        for (String feature : SANDBOXED_FEATURES) {
+            parser.getFeatures().configure(feature, false);
+        }
+        return parser;
+    }
+
+    static final List<String> SANDBOXED_FEATURES = List.of(
+            Features.INCLUDE, Features.FILE_SYSTEM, Features.HTTP, Features.HTTPS, Features.ENVIRONMENT,
+            Features.SCRIPTS, Features.PLUGINS, Features.COMPONENT_FINDER, Features.DOCUMENTATION, Features.DECISIONS);
 
 }
