@@ -22,11 +22,8 @@ public class RdfService implements GioService {
                 new RdfNQuadsReader(), //
                 new RdfTriGReader(), //
                 new RdfTriXReader(), //
-                new RdfNQuadsReader(), //
-                new RdfTriGReader(), //
-                new RdfTriXReader(),
-                new RdfJsonReader(),
-                new JsonLdReader()
+                new RdfJsonReader(), //
+                new JsonLdReader() //
         );
     }
 
