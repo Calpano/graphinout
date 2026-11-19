@@ -23,6 +23,12 @@ Added::
 * The DOT writer makes CJ node ports mean something to Graphviz: `shape=record` and, if needed, a record
   label with one field per port. HTML labels are written as `<...>` again, not as quoted strings.
 
+Security::
+* `reader-graphml` no longer resolves XML external entities (XXE) during GraphML validation. Format
+  detection (`GraphmlReader.isValid`, used by the engine and the CLI to pick a reader) and
+  `GraphmlValidator` parsed input with an unhardened parser, so a crafted file could make them open local
+  files or URLs. `XmlFactory` now offers one hardened parser factory that fails rather than run unhardened.
+  Compiling the bundled GraphML schemas may not access external files or URLs either.
 Fixed::
 * `reader-graphml` keeps GraphML 1.1 time-stamped data (`<data key="k" time="1">`). In CJ, such a
   property is a time series `[{"time": 1, "value": …}, …]`, written back as one typed `<data time="…">`

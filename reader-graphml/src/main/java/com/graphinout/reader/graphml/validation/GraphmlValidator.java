@@ -2,6 +2,7 @@ package com.graphinout.reader.graphml.validation;
 
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
+import com.graphinout.base.xml.factory.XmlFactory;
 import com.graphinout.base.xml.sax.SaxErrors2Log;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -10,8 +11,10 @@ import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
@@ -58,7 +61,10 @@ public class GraphmlValidator {
                 factory.setErrorHandler(new SaxErrors2Log(log));
                 // resolve the GraphML sub-schemas (referenced by absolute graphdrawing.org URLs) to bundled local
                 // resources, so validation works offline (e.g. in CI) instead of fetching them over the network
-                factory.setResourceResolver(new BundledSchemaResolver());
+                // schemas come only from bundled resources (via the resolver below), never from files or the network
+        factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setResourceResolver(new BundledSchemaResolver());
                 Source schemaFile = new StreamSource(new StringReader(schemaAsString));
                 schema = factory.newSchema(schemaFile);
             } catch (IOException e) {
@@ -87,7 +93,11 @@ public class GraphmlValidator {
             CountingSaxErrorHandler errorHandler = new CountingSaxErrorHandler();
             Validator validator = SchemaHolder.SCHEMA.newValidator();
             validator.setErrorHandler(errorHandler);
-            Source source = new SAXSource(new org.xml.sax.InputSource(singleInputSource.inputStream()));
+            // the input is untrusted: parse it with an XXE-hardened reader, and let the validator fetch nothing either
+            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            XMLReader xmlReader = XmlFactory.hardenedSaxParserFactory().newSAXParser().getXMLReader();
+            Source source = new SAXSource(xmlReader, new org.xml.sax.InputSource(singleInputSource.inputStream()));
             validator.validate(source);
 
             boolean hasErrors = errorHandler.errors() > 0;
@@ -98,6 +108,8 @@ public class GraphmlValidator {
         } catch (SAXException e) {
             log.warn("SAX Exception", e);
             return false;
+        } catch (ParserConfigurationException e) {
+            throw new IllegalStateException("Cannot create a hardened XML parser", e);
         }
     }
 

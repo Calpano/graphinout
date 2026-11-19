@@ -24,6 +24,7 @@ import org.jspecify.annotations.Nullable;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.validation.Schema;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -78,10 +79,6 @@ public class GraphmlReader extends BaseOutput implements GioReader {
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
         try {
             validateWellFormed(singleInputSource);
-            //TODO There is no internal DTD in any of the files that have been processed so far.
-            //If it exists, it can be verified with this method
-            //validateInternalDTD(singleInputSource);
-            //ValidateInternalXSD(singleInputSource);
             validateExternalSchema(singleInputSource);
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
@@ -154,43 +151,19 @@ public class GraphmlReader extends BaseOutput implements GioReader {
             throw sendContentError_Error(null, new IllegalStateException("Required schema 'graphml.xsd.xml' not loaded"), null);
         }
 
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        factory.setValidating(false);
-        factory.setNamespaceAware(true);
         // The compiled GraphML 1.1 schema is immutable and thread-safe; it is built once per JVM (see SchemaCache) and
         // reused here, instead of re-scanning the classpath and re-compiling the XSD on every read.
+        Schema schema;
         try {
-            factory.setSchema(SchemaCache.graphmlSchema());
+            schema = SchemaCache.graphmlSchema();
         } catch (SAXException e) {
             throw sendContentError_Error(null, e, null);
         }
 
+        // hardened against XXE: the input is untrusted
+        SAXParserFactory factory = XmlFactory.hardenedSaxParserFactory();
+        factory.setSchema(schema);
         SAXParser parser = factory.newSAXParser();
-        XMLReader reader = parser.getXMLReader();
-        reader.setErrorHandler(new SimpleSaxErrorHandler(ContentErrors.SIMPLE_LOGGING));
-        reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));
-    }
-
-    void validateInternalDTD(SingleInputSource inputSource) throws ParserConfigurationException, SAXException, IOException {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        factory.setValidating(true);
-        factory.setNamespaceAware(true);
-
-        SAXParser parser = factory.newSAXParser();
-
-        XMLReader reader = parser.getXMLReader();
-        reader.setErrorHandler(new SimpleSaxErrorHandler(ContentErrors.SIMPLE_LOGGING));
-        reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));
-    }
-
-    void validateInternalXSD(SingleInputSource inputSource) throws ParserConfigurationException, SAXException, IOException {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        factory.setValidating(true);
-        factory.setNamespaceAware(true);
-
-        SAXParser parser = factory.newSAXParser();
-        parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
-
         XMLReader reader = parser.getXMLReader();
         reader.setErrorHandler(new SimpleSaxErrorHandler(ContentErrors.SIMPLE_LOGGING));
         reader.parse(new org.xml.sax.InputSource(inputSource.inputStream()));

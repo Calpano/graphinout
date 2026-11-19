@@ -137,6 +137,8 @@ public final class LogbackLoggerCheck {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(false);
+            // logback configs need no DOCTYPE; refusing it rules out XXE
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             Document doc = factory.newDocumentBuilder().parse(xml.toFile());
             NodeList loggers = doc.getElementsByTagName("logger");
             List<String> names = new ArrayList<>();

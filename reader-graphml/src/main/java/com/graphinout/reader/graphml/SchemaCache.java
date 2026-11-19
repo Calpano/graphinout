@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
+import javax.xml.XMLConstants;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.StringReader;
@@ -115,6 +116,9 @@ final class SchemaCache {
     private static Schema compileGraphmlSchema() throws SAXException {
         Map<String, String> schemaMap = MapHolder.MAP;
         SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+        // schemas come only from bundled resources (via the resolver below), never from files or the network
+        schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
         schemaFactory.setResourceResolver((type, namespaceURI, publicId, systemId, baseURI) -> {
             log.info("Requesting resource: type=" + type + ", namespaceURI=" + namespaceURI + ", publicId=" + publicId + ", systemId=" + systemId + ", baseURI=" + baseURI);
             String content = schemaMap.get(systemId);
