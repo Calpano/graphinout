@@ -1,5 +1,14 @@
 package com.graphinout.reader.rdf;
 
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.graphinout.base.fetch.RemoteContentPolicy;
+import com.graphinout.base.fetch.RemoteDocument;
+import com.graphinout.base.fetch.RemoteDocuments;
+import com.graphinout.base.http.Hc5UrlFetcher;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFParser;
+import org.apache.jena.riot.system.jsonld.TitaniumJsonLdOptions;
+import org.apache.jena.sparql.util.Context;
 import com.graphinout.base.cj.CjConstants;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
@@ -28,10 +37,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.graphinout.foundation.pure.functional.Nullables.nonNullOrDefault;
+import static com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep.pathOf;
 
 public class RdfReader implements GioReader, GioWriter {
 
@@ -39,7 +50,11 @@ public class RdfReader implements GioReader, GioWriter {
     private static final Logger log = LoggerFactory.getLogger(RdfReader.class);
     public final GioFileFormat format; // = new GioFileFormat(FORMAT_ID, "RDF (Resource Description Framework)", ".rdf", ".rdf.xml", ".ttl", ".nt", ".n3");
     private final RdfFormats.RdfSyntax rdfSyntax;
+    /** CJ document data key listing the remote JSON-LD contexts used, one entry each. */
+    public static final String DATA_REMOTE_CONTEXT = "jsonld:remoteContext";
+
     private @Nullable Consumer<ContentError> errorHandler;
+    private @Nullable RemoteContentPolicy remoteContentPolicy;
 
     public RdfReader(GioFileFormat format, RdfFormats.RdfSyntax rdfSyntax) {
         this.format = format;
@@ -81,14 +96,26 @@ public class RdfReader implements GioReader, GioWriter {
 
             // Detect RDF format from file extension
             RdfFormats.RdfSyntax lang = RdfFormats.detectRdfLanguage(singleInputSource.name(), rdfSyntax);
-            model.read(is, null, lang.jenaName);
+            List<RemoteDocument> remoteContexts = List.of();
+            if (lang == RdfFormats.RdfSyntax.JSON_LD) {
+                // remote @context only through RemoteDocuments: snapshots, cache, then public addresses if allowed
+                RemoteDocuments remote = RemoteDocuments.of(remoteContentPolicy(), Hc5UrlFetcher::shared);
+                try {
+                    RDFParser.source(is).lang(Lang.JSONLD).context(jsonLdContext(remote)).parse(model);
+                } finally {
+                    remoteContexts = remote.loaded();
+                    reportRemoteContexts(remoteContexts);
+                }
+            } else {
+                model.read(is, null, lang.jenaName);
+            }
 
             String baseUri = "";
             if (inputSource.isParameterized()) {
                 baseUri = inputSource.asParameterized().getValue(BASE_URI);
             }
             // Convert RDF to CJ
-            convertRdfToCj(model, cjStream, baseUri);
+            convertRdfToCj(model, cjStream, baseUri, remoteContexts);
         } catch (Exception e) {
             if (errorHandler != null) {
                 errorHandler.accept(ContentError.error(e.getMessage()));
@@ -214,12 +241,41 @@ public class RdfReader implements GioReader, GioWriter {
         };
     }
 
-    private void convertRdfToCj(Model model, ICjStream cjStream, String baseUri) {
+    private void convertRdfToCj(Model model, ICjStream cjStream, String baseUri, List<RemoteDocument> remoteContexts) {
         CjDocumentElement cjDoc = new CjDocumentElement();
         RdfModel2CjDoc.rdfModel2cjDoc(model, cjDoc, baseUri);
+        // provenance: which remote contexts shaped this document (repeated keys accumulate into an array)
+        if (!remoteContexts.isEmpty()) {
+            cjDoc.dataMutable(cjData -> remoteContexts.forEach(doc -> cjData.add(pathOf(DATA_REMOTE_CONTEXT), doc.describe())));
+        }
         ICjWriter cjWriter = new CjWriter2CjStream(cjStream);
         cjDoc.fire(cjWriter, false);
     }
 
+
+
+    /** Jena parser context making Titanium load remote JSON-LD contexts only via {@link JsonLdContextLoader}. */
+    static Context jsonLdContext(RemoteDocuments remote) {
+        Context context = new Context();
+        context.set(TitaniumJsonLdOptions.JSONLD_OPTIONS, new JsonLdOptions(new JsonLdContextLoader(remote)));
+        return context;
+    }
+
+    /** The policy for remote JSON-LD contexts: set on this reader, else {@link RemoteContentPolicy#getDefault()}. */
+    public RemoteContentPolicy remoteContentPolicy() {
+        return remoteContentPolicy != null ? remoteContentPolicy : RemoteContentPolicy.getDefault();
+    }
+
+    /** Sets the policy for remote JSON-LD contexts for this reader; null = the JVM-wide default. */
+    public void setRemoteContentPolicy(@Nullable RemoteContentPolicy policy) {
+        this.remoteContentPolicy = policy;
+    }
+
+    private void reportRemoteContexts(List<RemoteDocument> docs) {
+        if (errorHandler == null) return;
+        for (RemoteDocument doc : docs) {
+            errorHandler.accept(ContentError.of(ContentError.ErrorLevel.Info, "JSON-LD context " + doc.describe()));
+        }
+    }
 
 }

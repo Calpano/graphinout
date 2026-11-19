@@ -1,0 +1,140 @@
+= Popular Vocabularies
+:toc:
+
+[[purpose]]
+== Purpose
+
+JSON-LD documents name their vocabularies by context URL, for example `"@context": "https://schema.org/"`.
+This page lists widely used JSON-LD context URLs, grouped by community.
+All of them were checked to return a JSON-LD context (November 2026).
+
+Use the list to pre-warm GraphInOut's cache (<<prewarm>>), so that a server can then run without any network access.
+How GraphInOut loads remote contexts, and why it is safe, is described in xref:url-fetching-safe.adoc#purpose[Fetching URLs Safely].
+
+Contexts marked *bundled* ship with GraphInOut and work without network access and without pre-warming.
+
+[[prewarm]]
+== Pre-Warming the Cache
+
+By default (`PUBLIC_WEB`), GraphInOut fetches a context when an input first names it, from public internet addresses only.
+On a server, it is better to fetch the expected contexts once at startup and then refuse all network access:
+
+[source,java]
+----
+Map<URI, String> failures = JsonLdContexts.prewarm(urls); // <1>
+failures.forEach((url, reason) -> log.warn("Not pre-warmed: {}: {}", url, reason));
+RemoteContentPolicy.setDefault(RemoteContentPolicy.OFFLINE); // <2>
+----
+<1> `urls`: the context URLs from the lists below, or your own selection.
+Each URL is fetched with the same checks as during reading, and held for the life of the process.
+<2> From now on, inputs can only use bundled, pre-warmed or already cached contexts.
+
+`JsonLdContexts.prewarm(urls, fetcher)` uses your own `UrlFetcher` instead, for example one that goes through a corporate proxy.
+
+The `gio` CLI is a short-lived process, so pre-warming does not apply there: it uses the bundled contexts and fetches others as needed, or runs with `--offline`.
+
+[[schema-org]]
+== Schema.org
+
+.Schema.org
+* `https://schema.org/` — bundled, also as `http://schema.org/`
+* `https://schema.org/docs/jsonldcontext.jsonld` — bundled
+
+[[w3c]]
+== W3C
+
+.W3C vocabularies
+* `https://www.w3.org/ns/activitystreams` — bundled (ActivityPub, Fediverse)
+* `https://www.w3.org/ns/did/v1` — bundled (Decentralized Identifiers)
+* `https://www.w3.org/ns/anno.jsonld` (Web Annotation)
+* `https://www.w3.org/ns/oa.jsonld` (Open Annotation)
+* `https://www.w3.org/ns/odrl.jsonld` (ODRL policies)
+* `https://www.w3.org/ns/hydra/context.jsonld` (Hydra)
+* `https://www.w3.org/ns/csvw` (CSV on the Web)
+* `https://www.w3.org/ns/json-ld` (JSON-LD vocabulary)
+* `https://www.w3.org/ns/ldp.jsonld` (Linked Data Platform)
+* `https://www.w3.org/ns/dcat.jsonld` (DCAT)
+* `https://www.w3.org/ns/solid/oidc-context.jsonld` (Solid OIDC)
+* `https://www.w3.org/2019/wot/td/v1` and `https://www.w3.org/2022/wot/td/v1.1` (Web of Things)
+
+[[credentials]]
+== Verifiable Credentials and Security
+
+.Credentials
+* `https://www.w3.org/2018/credentials/v1` — bundled
+* `https://www.w3.org/ns/credentials/v2` — bundled
+* `https://www.w3.org/ns/credentials/status/v1`
+* `https://www.w3.org/2018/credentials/examples/v1` and `https://www.w3.org/ns/credentials/examples/v2`
+* `https://w3id.org/vc/status-list/2021/v1`
+* `https://w3id.org/vc-revocation-list-2020/v1`
+* `https://w3id.org/vc/render-method/v2rc1`
+* `https://w3id.org/vc-barcodes/v1`
+* `https://w3id.org/citizenship/v1`, `https://w3id.org/vaccination/v1`, `https://w3id.org/vdl/v1`, `https://w3id.org/age/v1`
+* `https://w3id.org/traceability/v1`
+
+.Security and proof suites
+* `https://w3id.org/security/v1` and `https://w3id.org/security/v2` — bundled
+* `https://w3id.org/security/data-integrity/v2` — bundled
+* `https://w3id.org/security/multikey/v1` — bundled
+* `https://w3id.org/security/data-integrity/v1`
+* `https://w3id.org/security/suites/ed25519-2018/v1` and `https://w3id.org/security/suites/ed25519-2020/v1`
+* `https://w3id.org/security/suites/jws-2020/v1`
+* `https://w3id.org/security/suites/secp256k1-2019/v1`
+* `https://w3id.org/security/suites/x25519-2019/v1` and `https://w3id.org/security/suites/x25519-2020/v1`
+* `https://w3id.org/security/bbs/v1` and `https://w3id.org/security/suites/bls12381-2020/v1`
+* `https://w3id.org/pgp/v1`
+
+.Decentralized Identity Foundation
+* `https://identity.foundation/.well-known/did-configuration/v1`
+* `https://identity.foundation/presentation-exchange/submission/v1`
+
+[[education]]
+== Education
+
+.Open Badges and learner records
+* `https://w3id.org/openbadges/v2`
+* `https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json`
+* `https://purl.imsglobal.org/spec/clr/v2p0/context-2.0.1.json`
+
+[[research]]
+== Research Data and Software
+
+.Research objects and software metadata
+* `https://w3id.org/ro/crate/1.0/context`, `https://w3id.org/ro/crate/1.1/context`, `https://w3id.org/ro/crate/1.2/context` (RO-Crate)
+* `https://w3id.org/ro/terms/` and its sub-vocabularies, e.g. `https://w3id.org/ro/terms/workflow-run/context`
+* `https://doi.org/10.5063/schema/codemeta-2.0` and `https://w3id.org/codemeta/3.0` (CodeMeta)
+* `https://w3id.org/okn/o/sd` (Software Description Ontology)
+* `https://w3id.org/nfdi4ing/metadata4ing/` (Metadata4Ing)
+
+[[heritage]]
+== Cultural Heritage
+
+.IIIF and Linked Art
+* `https://iiif.io/api/presentation/3/context.json` and `https://iiif.io/api/presentation/2/context.json`
+* `https://iiif.io/api/image/3/context.json` and `https://iiif.io/api/image/2/context.json`
+* `https://iiif.io/api/search/1/context.json`, `https://iiif.io/api/auth/2/context.json`
+* `https://linked.art/ns/v1/linked-art.json`
+
+[[geo-data-spaces]]
+== Geodata and Data Spaces
+
+.Geodata and data spaces
+* `https://geojson.org/geojson-ld/geojson-context.jsonld` (GeoJSON-LD)
+* `https://w3id.org/ldes/context` (Linked Data Event Streams)
+* `https://w3id.org/dspace/2024/1/context.json` (Dataspace Protocol)
+* `https://w3id.org/gaia-x/development` (Gaia-X)
+
+[[fediverse]]
+== Fediverse
+
+.Fediverse extensions
+* `https://gotosocial.org/ns`
+* `https://w3id.org/fep/c390`
+* `https://purl.archive.org/socialweb/webfinger`
+* `https://purl.archive.org/miscellany`
+
+[[examples]]
+== JSON-LD Examples
+
+.Examples from the JSON-LD specification site
+* `https://json-ld.org/contexts/person.jsonld`

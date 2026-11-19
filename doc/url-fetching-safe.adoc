@@ -1,0 +1,378 @@
+= Fetching URLs Safely
+:toc:
+:sectnums:
+:url-jep418: https://openjdk.org/jeps/418
+:url-owasp-ssrf: https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+:url-iana-v4: https://www.iana.org/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.xhtml
+:url-iana-v6: https://www.iana.org/assignments/iana-ipv6-special-registry/iana-ipv6-special-registry.xhtml
+:url-jsonld-api: https://www.w3.org/TR/json-ld11-api/
+:url-hc5-dns: https://hc.apache.org/httpcomponents-client-5.4.x/current/httpclient5/apidocs/org/apache/hc/client5/http/DnsResolver.html
+
+[[status]]
+== Status
+
+Implemented.
+This design replaced a short-lived JSON-LD context allowlist that came with the XXE fix (<<why-not-allowlist>>).
+<<implementation>> maps the design to the code.
+
+[[purpose]]
+== Purpose and Scope
+
+GraphInOut reads graph files from untrusted sources.
+Some formats let a file name *other* resources: JSON-LD names remote `@context` documents, XML names DTDs and entities, Structurizr DSL and PlantUML have `!include`.
+
+.The rule
+* An input must never make a reader open a local file, read an environment variable, or run code.
+* An input may make a reader fetch a URL from the public web only through the safe fetcher described here, and only if the embedding application allows it (<<policy>>).
+* Paths and URLs that the *operator* passes in (CLI arguments, API calls) are not affected: the rule is about content-driven access.
+
+Today only JSON-LD needs remote content.
+The fetcher is designed as a shared component, so that any future reader that must follow a URL uses the same guarantees.
+
+[[why-not-allowlist]]
+== Why Not an Allowlist
+
+The first fix allowed only listed URL prefixes, each trusted until its domain's registration expired.
+That is safe, but it is the wrong fit for an open semantic web:
+
+.Problems with an allowlist
+* Every vocabulary not on the list breaks, including legitimate niche and newly published ones.
+* Maintaining the list (prefixes, redirect targets, domain expiry dates) is ongoing work that never catches up.
+* Registries such as `.de` and `.eu` publish no expiry date, so their domains can not be listed at all under the domain-lifetime rule.
+* It mixes two separate concerns: *where we may connect* (a security question) and *which content we trust* (an integrity question).
+
+The rest of this document separates those concerns.
+The allowlist's content survives as xref:popular-vocabularies.adoc#purpose[Popular Vocabularies], a list for pre-warming caches (<<snapshots>>).
+
+[[threats]]
+== Threat Model
+
+[cols="2,1,3",options="header"]
+|===
+|Threat
+|Severity
+|Mitigation
+
+|Server-side request forgery (SSRF): the input names `http://169.254.169.254/` (cloud metadata), `localhost`, an intranet host, or `file:`/`jar:` URLs
+|High
+|<<network>>: only public addresses, checked per connection and per redirect hop
+
+|Resource exhaustion: huge or slow responses, redirect loops, long `@import` chains, compression bombs
+|Medium
+|<<budgets>>
+
+|Tracking: fetching tells the URL's owner that, when, and from which IP address a file was processed
+|Low (privacy)
+|<<policy>>: `OFFLINE` mode; <<snapshots>> make most fetches unnecessary
+
+|A malicious context redefines terms, so the output contains different IRIs
+|Low
+|None needed: the input's author could have written the same context inline. <<transparency>> shows what was loaded.
+
+|A legitimate context changes, or its domain changes hands
+|Low (integrity, reproducibility)
+|<<snapshots>> with hashes; <<transparency>>
+|===
+
+Only the first two rows are security problems.
+Neither needs a list of trusted content: they need control over *where we connect* and *how much we consume*.
+
+[[layers]]
+== Design Overview
+
+.Layers, from the input inwards
+. *Policy* (<<policy>>) decides whether remote content may be used at all.
+. *Snapshots and cache* (<<snapshots>>) answer most requests without any network access.
+. *Budgets* (<<budgets>>) bound what one input can cost.
+. *The network layer* (<<network>>) connects only to public addresses.
+. *Transparency* (<<transparency>>) reports what external content shaped the result.
+
+Each layer is useful on its own; together they let us follow arbitrary public URLs.
+
+[[network]]
+== Network Layer: SSRF-Safe Fetching
+
+[[schemes]]
+=== Schemes and Ports
+
+Only `https` and `http` are fetched.
+Everything else (`file`, `jar`, `ftp`, `data`, …) is refused before any I/O.
+URLs with user info (`https://user@host/`) are refused, because they are a common way to disguise the real host.
+
+By default only ports 443 and 80 are allowed.
+Other ports are rarely used for vocabularies, and refusing them stops an input from using us to probe services on arbitrary ports of public hosts.
+The port list is configurable.
+
+[[addresses]]
+=== Check Addresses, Not Names
+
+The decision is made on the *resolved IP addresses*, never on the host name.
+Host names can not be judged safely: `2130706433`, `0x7f.1`, `127.1`, `localtest.me` and `[::ffff:127.0.0.1]` all reach the loopback interface, and any public DNS name can point to a private address.
+
+A host is fetched only if *every* address it resolves to is globally reachable.
+The source of truth is the IANA special-purpose address registries (link:{url-iana-v4}[IPv4], link:{url-iana-v6}[IPv6]): an address in a block whose "Globally Reachable" column is not `True` is refused.
+Java's `InetAddress.isSiteLocal()` and friends are not enough; they miss, for example, `100.64.0.0/10` and `fc00::/7`.
+
+.Refused IPv4 blocks (main entries)
+* `0.0.0.0/8`, `127.0.0.0/8`, `255.255.255.255/32`
+* `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16` (private)
+* `100.64.0.0/10` (carrier-grade NAT)
+* `169.254.0.0/16` (link-local, including the cloud metadata address `169.254.169.254`)
+* `192.0.0.0/24`, `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`, `198.18.0.0/15` (protocol, documentation, benchmarking)
+* `224.0.0.0/4`, `240.0.0.0/4` (multicast, reserved)
+
+.Refused IPv6 blocks (main entries)
+* `::/128`, `::1/128`
+* `fc00::/7` (unique local), `fe80::/10` (link-local), `fec0::/10` (old site-local), `ff00::/8` (multicast)
+* `2001:db8::/32`, `100::/64` (documentation, discard)
+* Addresses that embed an IPv4 address are judged by that IPv4 address: `::ffff:0:0/96` (IPv4-mapped), `64:ff9b::/96` (NAT64), `2002::/16` (6to4).
+
+[[dns-pinning]]
+=== DNS Pinning
+
+Checking the addresses and then letting the HTTP client resolve the name again leaves a gap: a hostile DNS server can answer with a public address for the check and with `127.0.0.1` for the connection (DNS rebinding).
+So the connection must go to *exactly the address that was checked*.
+
+The JDK's `java.net.http.HttpClient` resolves names itself and offers no per-client hook.
+The options:
+
+[[jep-418]]
+==== JEP 418: Internet-Address Resolution SPI
+
+link:{url-jep418}[JEP 418] (JDK 18, so available on our Java 25 baseline) lets a `java.net.spi.InetAddressResolverProvider` replace name resolution.
+We could install a resolver that refuses non-public addresses, and the JDK `HttpClient` would then connect only to checked addresses.
+
+It is the wrong tool for a library, though:
+
+.Why not JEP 418 in the library
+* The resolver is *JVM-wide*: it would filter every lookup of the embedding application, including its database and intranet connections.
+* It is found via `ServiceLoader` and installed on the *first* name lookup of the JVM; later changes are impossible, and if several providers are on the class path, the first one found wins.
+* A per-request switch does not work reliably: `HttpClient` resolves on its own internal threads, so a `ThreadLocal` or `ScopedValue` set by the caller is not visible to the resolver.
+
+It must not be registered by a library jar.
+
+We do not install one in the `gio` CLI either.
+The per-client pinning (<<hc5>>) already covers every connection made for input content, so a JVM-wide resolver would add little; and it would also block legitimate connections the CLI's operator asks for, such as a future option to read from `localhost`.
+A server built on GraphInOut may still add one as defence in depth, if nothing else in that JVM needs private addresses.
+
+[[jvm-dns-cache]]
+==== Relying on the JVM DNS Cache
+
+Resolving and checking with `InetAddress.getAllByName` usually fills the JVM's address cache, so the client's own lookup a moment later usually gets the same answer.
+"Usually" is not a guarantee: the cache lifetime is configurable by the application (`networkaddress.cache.ttl`, possibly `0`), and an entry can expire between check and connect.
+Rejected as the only mechanism.
+
+[[own-client]]
+==== A Minimal Client on Plain Sockets
+
+Connect a `Socket` to the checked `InetAddress`, then layer TLS over it with `SSLSocketFactory.createSocket(socket, host, port, true)` and `SSLParameters.setEndpointIdentificationAlgorithm("HTTPS")`.
+SNI and certificate validation then use the original host name, while the TCP connection goes to the pinned address.
+This needs no dependency, but we would have to write and maintain HTTP/1.1 response parsing (status line, headers, chunked transfer encoding).
+Hand-written protocol code in a security component is a risk of its own.
+
+[[hc5]]
+==== Apache HttpClient 5 with a Custom `DnsResolver` (recommended)
+
+Apache HttpClient 5 takes a link:{url-hc5-dns}[`DnsResolver`] per connection manager, and connects to the addresses it returns.
+A resolver that delegates to the system resolver and refuses non-public results gives exact pinning per client, without touching the rest of the JVM.
+Redirect handling can be switched off (`disableRedirectHandling()`), so every hop goes through our checks, and the client ignores system proxy properties unless told otherwise.
+
+The cost is a dependency (`httpclient5` and `httpcore5`).
+To keep it out of modules that never fetch, the fetcher *interface* and the address policy live in `base` (no dependencies), and the implementation lives in a small module that only fetching readers depend on.
+
+[[redirects]]
+=== Redirects
+
+Redirects are followed by our code, never by the HTTP client.
+Every hop goes through the full check (scheme, port, resolved addresses).
+A redirect from `https` to `http` is allowed only for the same host, so a trusted `https` URL can not be bounced to a plain-text third party.
+At most 5 redirects per fetch.
+
+JSON-LD's `Link: <…>; rel="alternate"; type="application/ld+json"` header (link:{url-jsonld-api}[JSON-LD 1.1 API], remote document loading) is treated like a redirect: its target goes through the same checks.
+
+[[proxies]]
+=== Proxies
+
+If the application routes traffic through an HTTP proxy, the proxy resolves the names, and our address check sees only the proxy.
+SSRF protection then has to happen *at the proxy*.
+The fetcher therefore ignores system proxy settings by default; an application that needs a proxy configures it explicitly and accepts that responsibility.
+
+[[budgets]]
+== Budgets
+
+Limits apply per fetch and per input document, so one file can not make us download without bound.
+
+[cols="2,1,3",options="header"]
+|===
+|Limit
+|Default
+|Reason
+
+|Response size
+|4 MiB
+|The largest common context (schema.org's full vocabulary) is about 1.5 MiB.
+
+|Total bytes per input
+|16 MiB
+|Many small contexts can add up.
+
+|Remote documents per input
+|32
+|Real documents use a handful; `@import` chains and context arrays can be abused.
+
+|Redirects per fetch
+|5
+|Real chains (`w3id.org`, `purl.org`, DOI) need up to about 4.
+
+|Connect timeout / response timeout
+|5 s / 15 s
+|Slow servers must not stall a conversion.
+
+|Wall-clock time per input
+|60 s
+|Bounds the sum of slow fetches.
+
+|Content encoding
+|identity, gzip, deflate
+|We send `Accept-Encoding: identity`, but some servers (schema.org among them) compress anyway.
+gzip and deflate are decoded by us, and the response size limit applies to the *decoded* bytes, which rules out decompression bombs.
+Other encodings are refused.
+|===
+
+Recursive contexts are already reported by the JSON-LD processor (`context overflow`).
+All limits are configurable.
+
+[[snapshots]]
+== Snapshots, Cache and Popular Vocabularies
+
+Most JSON-LD files use a few well-known contexts.
+Answering those without the network removes the privacy and availability concerns for the common case, and makes results reproducible.
+
+.Three sources, consulted in this order
+. *Bundled snapshots*: a small set of very common contexts (schema.org, W3C Verifiable Credentials, ActivityStreams, …) shipped inside the jar, each with its source URL, retrieval date and SHA-256 hash.
+A maintenance tool refreshes them; a changed hash shows up in review.
+. *The process-wide cache*: documents fetched earlier, keyed by requested URL, bounded by total size, with a time to live (default 24 h).
+Failures are cached briefly (5 min), so a broken URL in many files is not fetched again and again.
+. *The network*, through the safe fetcher, if the policy allows it.
+
+The former allowlist became the documentation page xref:popular-vocabularies.adoc#purpose[Popular Vocabularies]: widely used context URLs, grouped by community.
+Its advice for operators: pre-warm the cache from that list at startup (`JsonLdContexts.prewarm`), then run in `OFFLINE` mode.
+Pre-warmed documents are held for the life of the process, like snapshots, and reported with source `prewarmed`.
+That gives servers the benefits of the old allowlist without its maintenance burden in the code.
+
+[[policy]]
+== Policy Modes
+
+The embedding application chooses how remote content is used.
+
+`OFFLINE`:: Bundled snapshots and the (pre-warmed) cache only; no network access.
+Recommended for servers and CI.
+`PUBLIC_WEB`:: Snapshots, cache, then the safe fetcher for public URLs.
+Default for the library and the `gio` CLI, so that converting a file just works.
+`CUSTOM`:: The application supplies its own fetcher, for example one that goes through a corporate proxy or an internal mirror.
+The budgets still apply.
+
+.Choosing the default
+`PUBLIC_WEB` is the default because the network layer already makes it safe against SSRF, and a CLI user converting a file expects it to work.
+The privacy cost (the context's owner sees the request) is documented, and `OFFLINE` is one switch away (`--offline` in the CLI, a reader option in the API).
+
+[[transparency]]
+== Transparency
+
+Every remote document that influenced a result is reported:
+
+.What is reported
+* As a `ContentError` at level `Info`: URL, final URL after redirects, source (`snapshot`, `prewarmed`, `cache`, `network`), SHA-256.
+* As document data in the CJ output (key `jsonld:remoteContext`, one entry per context), so the provenance survives conversion.
+
+Refused or failed fetches are reported as `Warn` or `Error` with the reason (blocked address, budget exceeded, policy `OFFLINE`).
+
+[[degradation]]
+== When a Context Can Not Be Loaded
+
+Without its context, a JSON-LD document can not be expanded into RDF: unmapped keys are dropped by the JSON-LD algorithms.
+The read therefore fails with a clear error that names the URL, the reason, and the way out (`PUBLIC_WEB`, or pre-warming the cache).
+
+A later improvement could fall back to reading the document as plain JSON, keeping its structure as a graph with a warning.
+GraphInOut has no plain-JSON reader yet, so this is not part of the first step.
+
+[[other-formats]]
+== Other Formats
+
+The same rule is enforced for formats that never need the network.
+
+[cols="1,3",options="header"]
+|===
+|Format
+|Measure
+
+|XML (GraphML, GEXF, GXL, …)
+|Parsers come only from `XmlFactory`: no external DTDs, no external entities, secure processing on.
+Schema compilation may not load external resources.
+
+|Structurizr DSL
+|`!include`, `workspace extends`, `!docs`, `!adrs`, `!script`, `!plugin` and `${NAME}` environment variables are disabled.
+
+|PlantUML
+|The `SANDBOX` security profile: no `!include`, `!includesub`, `!import`, `%load_json`, `%file_exists`, URLs or environment variables.
+|===
+
+Should one of these ever need remote content, it uses the safe fetcher and the policy described here, never its library's own loader.
+
+[[implementation]]
+== Implementation
+
+[cols="1,3",options="header"]
+|===
+|Part
+|Where
+
+|Address policy (<<addresses>>)
+|`PublicAddresses` in `base`, package `com.graphinout.base.fetch`
+
+|Policy modes (<<policy>>), budgets (<<budgets>>)
+|`RemoteContentPolicy`, `FetchLimits`; default from `RemoteContentPolicy.setDefault`, else the system property `graphinout.remoteContent` (`offline` or `public-web`), else `PUBLIC_WEB`
+
+|Session per input: URL checks, snapshots, cache, redirects, budgets, provenance
+|`RemoteDocuments`, `RemoteDocumentCache`
+
+|Network layer with DNS pinning (<<hc5>>)
+|`Hc5UrlFetcher`, `PublicOnlyDnsResolver` in the module `base-http`, which only fetching readers depend on.
+Apache HttpClient 5.6 was already part of the distribution through Structurizr.
+
+|JSON-LD contexts, `Link rel="alternate"`
+|`JsonLdContextLoader` in `reader-rdf`; `RdfReader.setRemoteContentPolicy` per reader
+
+|Snapshots (<<snapshots>>)
+|`reader-rdf` resource folder `jsonld-snapshots/` with `index.txt` (hashes) and `NOTICE.txt` (sources, licenses); refreshed by `JsonLdSnapshotRefresh` (test sources)
+
+|Pre-warming
+|`JsonLdContexts.prewarm`
+
+|CLI
+|`--offline`, accepted anywhere on the command line.
+When format detection fails for a file whose name matches a format, the CLI also prints that reader's error, so a refused context does not look like an unknown format.
+|===
+
+[[testing]]
+== Testing
+
+.What the tests must show
+* Every refused address class is refused, including the encodings in <<addresses>>, with a fake resolver; no socket is opened.
+* DNS rebinding fails: a resolver that answers public first and private second never yields a connection to the private address.
+* Every redirect and `Link` alternate hop is checked; a public URL redirecting to `169.254.169.254` is refused without fetching it.
+* Each budget triggers, with a fake fetcher.
+* `OFFLINE` makes no network access at all.
+* Snapshots are used before the network, and their hashes match their content.
+
+Network-free tests use fake resolvers and fetchers; a small, separately run test checks the real popular contexts.
+
+[[references]]
+== References
+
+.Further reading
+* link:{url-owasp-ssrf}[OWASP Server-Side Request Forgery Prevention Cheat Sheet]
+* link:{url-jep418}[JEP 418: Internet-Address Resolution SPI]
+* link:{url-iana-v4}[IANA IPv4 Special-Purpose Address Registry] and link:{url-iana-v6}[IPv6 registry]
+* link:{url-jsonld-api}[JSON-LD 1.1 Processing Algorithms and API], remote document and context retrieval
+* link:{url-hc5-dns}[Apache HttpClient 5 `DnsResolver`]

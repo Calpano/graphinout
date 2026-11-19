@@ -40,6 +40,7 @@
         <module>testdata</module>
         <module>base-api</module>
         <module>base</module>
+        <module>base-http</module>
         <module>reader-cj</module>
         <module>reader-cj-gef</module>
         <module>reader-dot</module>
@@ -141,6 +142,8 @@
             <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
                 <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.4-SNAPSHOT</version>
             </dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>base-http</artifactId><version>0.2.4-SNAPSHOT</version></dependency>
+            <dependency><groupId>org.apache.httpcomponents.client5</groupId><artifactId>httpclient5</artifactId><version>5.6.4</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.2.4-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.2.4-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.2.4-SNAPSHOT</version></dependency>

@@ -1,0 +1,12 @@
+# Bundled JSON-LD context snapshots: served for these URLs without network access.
+# <file> <sha256> <retrieved> <content-type> <url> [<url>...]
+# The first URL is the one fetched by JsonLdSnapshotRefresh (reader-rdf test sources); sources and licenses: NOTICE.txt
+schema.org.jsonld 65d0c5d17def9b171b7697bb0929eed17aa32f19af539e15302b6c20479b8930 2026-11-19 application/ld+json https://schema.org/ http://schema.org/ https://schema.org/docs/jsonldcontext.jsonld http://schema.org/docs/jsonldcontext.jsonld https://schema.org/docs/jsonldcontext.json http://schema.org/docs/jsonldcontext.json
+w3.org-2018-credentials-v1.jsonld ab4ddd9a531758807a79a5b450510d61ae8d147eab966cc9a200c07095b0cdcc 2026-11-19 application/ld+json https://www.w3.org/2018/credentials/v1 http://www.w3.org/2018/credentials/v1
+w3.org-ns-credentials-v2.jsonld 59955ced6697d61e03f2b2556febe5308ab16842846f5b586d7f1f7adec92734 2026-11-19 application/ld+json https://www.w3.org/ns/credentials/v2 http://www.w3.org/ns/credentials/v2
+w3.org-ns-activitystreams.jsonld a27b78b82f4980963127140d0cb74f0e8f21c0e2b8efd0368232bf9823edff5a 2026-11-19 application/ld+json https://www.w3.org/ns/activitystreams http://www.w3.org/ns/activitystreams https://www.w3.org/ns/activitystreams.jsonld http://www.w3.org/ns/activitystreams.jsonld
+w3.org-ns-did-v1.jsonld 4f3eae5568c9c5f036a082088f9e192019ee06faa78973c87ff91d5421b88dad 2026-11-19 application/ld+json https://www.w3.org/ns/did/v1 http://www.w3.org/ns/did/v1 https://w3id.org/did/v1 http://w3id.org/did/v1
+w3id.org-security-v1.jsonld abaf97e107d1925503c433dcaf3ffd2831697cacc1ed2a293e1bc8030d5bcb47 2026-11-19 application/ld+json https://w3id.org/security/v1 http://w3id.org/security/v1
+w3id.org-security-v2.jsonld 611bd81151d5efe53ec9aed78f5a813e577287bc9451ee26d6879b1b8b46bc3b 2026-11-19 application/ld+json https://w3id.org/security/v2 http://w3id.org/security/v2
+w3id.org-security-data-integrity-v2.jsonld 67f21e6e33a6c14e5ccfd2fc7865f7474fb71a04af7e94136cb399dfac8ae8f4 2026-11-19 application/ld+json https://w3id.org/security/data-integrity/v2 http://w3id.org/security/data-integrity/v2
+w3id.org-security-multikey-v1.jsonld ba2c182de2d92f7e47184bcca8fcf0beaee6d3986c527bf664c195bbc7c58597 2026-11-19 application/ld+json https://w3id.org/security/multikey/v1 http://w3id.org/security/multikey/v1

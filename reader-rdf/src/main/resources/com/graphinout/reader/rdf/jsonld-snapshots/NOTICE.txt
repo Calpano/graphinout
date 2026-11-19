@@ -1,0 +1,21 @@
+Bundled JSON-LD context snapshots
+=================================
+
+The files in this folder are unmodified copies of published JSON-LD context documents, bundled so that JSON-LD input
+using them can be read without network access. index.txt lists, per file, its SHA-256 hash, retrieval date, and the
+URLs it is served for. They remain under their publishers' licenses:
+
+schema.org.jsonld
+  Source:  https://schema.org/docs/jsonldcontext.jsonld
+  License: Creative Commons Attribution-ShareAlike 3.0 (CC BY-SA 3.0), https://schema.org/docs/terms.html
+
+w3.org-2018-credentials-v1.jsonld, w3.org-ns-credentials-v2.jsonld, w3.org-ns-activitystreams.jsonld,
+w3.org-ns-did-v1.jsonld, w3id.org-security-data-integrity-v2.jsonld, w3id.org-security-multikey-v1.jsonld
+  Source:  World Wide Web Consortium (W3C), https://www.w3.org/ (URLs in index.txt)
+  License: W3C Software and Document License, https://www.w3.org/copyright/software-license-2023/
+  Copyright (c) World Wide Web Consortium.
+
+w3id.org-security-v1.jsonld, w3id.org-security-v2.jsonld
+  Source:  W3C Credentials Community Group, https://w3c-ccg.github.io/security-vocab/
+  License: W3C Software and Document License, https://www.w3.org/copyright/software-license-2023/
+  Copyright (c) World Wide Web Consortium.

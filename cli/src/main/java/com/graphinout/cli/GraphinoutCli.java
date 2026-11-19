@@ -30,6 +30,8 @@ import org.jspecify.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import com.graphinout.base.fetch.RemoteContentPolicy;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -59,6 +61,11 @@ public final class GraphinoutCli {
     private final PrintStream out;
     private final PrintStream err;
 
+    static final String OPTION_OFFLINE = "--offline";
+
+    /** Set by {@link #selectReader} when detection fails: why the reader matching the file name failed. */
+    private @Nullable String lastDetectionFailure;
+
     GraphinoutCli(GioEngineCore engine, PrintStream out, PrintStream err) {
         this.engine = engine;
         this.out = out;
@@ -78,6 +85,19 @@ public final class GraphinoutCli {
      * @return process exit code: 0 on success, non-zero on usage or conversion errors.
      */
     int run(String[] args) {
+        // global option, allowed anywhere: no network access for remote content (e.g. JSON-LD contexts)
+        List<String> argList = new ArrayList<>(List.of(args));
+        boolean offline = argList.removeIf(OPTION_OFFLINE::equals);
+        if (!offline) return runCommand(args);
+        RemoteContentPolicy.setDefault(RemoteContentPolicy.OFFLINE);
+        try {
+            return runCommand(argList.toArray(String[]::new));
+        } finally {
+            RemoteContentPolicy.setDefault(null);
+        }
+    }
+
+    private int runCommand(String[] args) {
         if (args.length == 0) {
             printUsage(err);
             return 2;
@@ -213,7 +233,7 @@ public final class GraphinoutCli {
                     err.println("No input reader for format '" + fromFormat + "'.");
                     err.println("Available input formats: " + availableReaderIds());
                 } else {
-                    err.println("Could not detect the input format of " + inputFile.getPath() + ".");
+                    printDetectionFailure(inputFile);
                     err.println("Specify it explicitly with --from <id>. Available input formats: " + availableReaderIds());
                 }
                 return 1;
@@ -340,8 +360,8 @@ public final class GraphinoutCli {
                 if (fromFormat != null) {
                     err.println("No input reader for format '" + fromFormat + "'.");
                 } else {
-                    err.println("Could not detect the input format of " + inputFile.getPath()
-                            + ". Specify it explicitly with --from <id>.");
+                    printDetectionFailure(inputFile);
+                    err.println("Specify it explicitly with --from <id>.");
                 }
                 err.println("Available input formats: " + availableReaderIds());
                 return 1;
@@ -423,8 +443,8 @@ public final class GraphinoutCli {
                 if (fromFormat != null) {
                     err.println("No input reader for format '" + fromFormat + "'.");
                 } else {
-                    err.println("Could not detect the input format of " + inputFile.getPath()
-                            + ". Specify it explicitly with --from <id>.");
+                    printDetectionFailure(inputFile);
+                    err.println("Specify it explicitly with --from <id>.");
                 }
                 err.println("Available input formats: " + availableReaderIds());
                 return 1;
@@ -511,9 +531,11 @@ public final class GraphinoutCli {
                 candidates.add(r);
             }
         }
+        boolean byName = !candidates.isEmpty();
         if (candidates.isEmpty()) {
             candidates.addAll(engine.readers());
         }
+        lastDetectionFailure = null;
 
         List<GioReader> valid = new ArrayList<>();
         for (GioReader r : candidates) {
@@ -526,6 +548,7 @@ public final class GraphinoutCli {
             }
         }
         if (valid.isEmpty()) {
+            if (byName) lastDetectionFailure = readFailure(candidates.getFirst(), inputSource);
             return null;
         }
         if (valid.size() > 1) {
@@ -538,6 +561,31 @@ public final class GraphinoutCli {
                     + "' (also: " + others + "). Use --from to override.");
         }
         return valid.get(0);
+    }
+
+    /**
+     * Why {@code reader}, which matches the file name, can not read the input: its first error, or null. Probing only
+     * says yes or no; without the reason, a refused remote resource (e.g. a JSON-LD context in {@code --offline})
+     * would look like an unknown format.
+     */
+    private @Nullable String readFailure(GioReader reader, SingleInputSource inputSource) {
+        List<String> errors = new ArrayList<>();
+        reader.setContentErrorHandler(e -> {
+            if (e.level == ContentError.ErrorLevel.Error) errors.add(e.message);
+        });
+        try {
+            reader.read(inputSource, new CjStream2CjWriter(new CjWriter2CjDocumentWriter(), true));
+        } catch (Exception e) {
+            errors.add(e.getMessage());
+        }
+        return errors.isEmpty() ? null : reader.fileFormat().id() + ": " + errors.getFirst();
+    }
+
+    private void printDetectionFailure(File inputFile) {
+        err.println("Could not detect the input format of " + inputFile.getPath() + ".");
+        if (lastDetectionFailure != null) {
+            err.println("Its name suggests " + lastDetectionFailure);
+        }
     }
 
     // ---------------------------------------------------------------------- helpers
@@ -585,6 +633,10 @@ public final class GraphinoutCli {
         s.println("  detect <input>                   Probe all readers; print ranked format candidates as JSON");
         s.println("  version                          Print the version");
         s.println("  help                             Show this help");
+        s.println();
+        s.println("Global options:");
+        s.println("  --offline            Use no network: remote content (JSON-LD contexts) only from the bundled");
+        s.println("                       snapshots. By default, public URLs are fetched; private addresses never are.");
         s.println();
         s.println("convert options:");
         s.println("  -t, --to <id>        Output format id (default: " + DEFAULT_OUTPUT_FORMAT + ")");

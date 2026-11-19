@@ -122,4 +122,34 @@ class GraphinoutCliTest {
         assertTrue(r.out.contains("\"best\":\"tgf\""), r.out);
         assertTrue(r.out.contains("\"outcome\":\"RECOVERED\""), r.out);
     }
+
+    @Test
+    void offlineUsesBundledJsonLdContexts(@TempDir Path dir) throws Exception {
+        File in = dir.resolve("person.jsonld").toFile();
+        Files.writeString(in.toPath(), "{\"@context\": \"https://schema.org/\", \"@id\": \"http://ex/a\", \"name\": \"Ada\"}");
+        Result r = run("--offline", "convert", in.getPath(), "--to", "connected-json");
+        assertEquals(0, r.exitCode, r.err);
+        assertTrue(r.out.contains("http://schema.org/name"), r.out);
+        assertEquals(com.graphinout.base.fetch.RemoteContentPolicy.Mode.PUBLIC_WEB,
+                com.graphinout.base.fetch.RemoteContentPolicy.getDefault().mode(), "--offline must not outlive the run");
+    }
+
+    @Test
+    void offlineRefusesUnknownJsonLdContexts(@TempDir Path dir) throws Exception {
+        File in = dir.resolve("thing.jsonld").toFile();
+        Files.writeString(in.toPath(), "{\"@context\": \"https://example.org/unknown-context.jsonld\", \"@id\": \"http://ex/a\", \"p\": \"v\"}");
+        Result r = run("convert", in.getPath(), "--offline", "--from", "json-ld", "--to", "connected-json");
+        assertTrue(r.exitCode != 0, r.out);
+        assertTrue(r.err.contains("OFFLINE"), r.err);
+    }
+
+    @Test
+    void detectionFailureNamesTheReason(@TempDir Path dir) throws Exception {
+        File in = dir.resolve("thing.jsonld").toFile();
+        Files.writeString(in.toPath(), "{\"@context\": \"https://example.org/unknown-context.jsonld\", \"@id\": \"http://ex/a\", \"p\": \"v\"}");
+        Result r = run("--offline", "convert", in.getPath(), "--to", "connected-json");
+        assertTrue(r.exitCode != 0, r.out);
+        assertTrue(r.err.contains("Could not detect"), r.err);
+        assertTrue(r.err.contains("json-ld") && r.err.contains("OFFLINE"), r.err);
+    }
 }

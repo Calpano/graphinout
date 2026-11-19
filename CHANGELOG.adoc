@@ -15,6 +15,13 @@ Added::
   the DTD GXL files reference and resolves no external entities. All 393 GXL files in graph-test-data round-trip
   GXL → CJ → GXL → CJ unchanged, apart from graph ids that GXL requires and the writer generates where missing; the reader also accepts the `source`/`target` edge attributes and the stray
   whitespace before `<?xml` found there. Format detection recognises GXL.
+* Remote content policy: `OFFLINE` (no network), `PUBLIC_WEB` (default) or `CUSTOM` (own fetcher), per reader
+  (`RdfReader.setRemoteContentPolicy`), JVM-wide (`RemoteContentPolicy.setDefault`, system property
+  `graphinout.remoteContent`) or per CLI run (`gio --offline`). Popular JSON-LD contexts (schema.org, W3C
+  credentials, ActivityStreams, DID, security) are bundled as hash-pinned snapshots and work offline; servers can
+  pre-warm more (`JsonLdContexts.prewarm`, list in `doc/popular-vocabularies.adoc`). Every remote context used is
+  reported as an info message and in the CJ document data (`jsonld:remoteContext`).
+* `gio`: when format detection fails for a file whose name matches a format, the reader's error is shown.
 * `reader-dot` resolves ports the way Graphviz does. Ports declared by `record`/`Mrecord` labels and
   HTML `PORT` attributes become CJ node ports; compass points (`A:n`, `A:p:e`) are built-in ports; the
   `tailport`/`headport` edge attributes and `edge [...]` defaults set endpoint ports. A port that is
@@ -30,6 +37,11 @@ Security::
   files or URLs. `XmlFactory` now offers one hardened parser factory that fails rather than run unhardened.
   Compiling the bundled GraphML schemas may not access external files or URLs either.
 * No reader opens local files, fetches URLs or reads environment variables because an input says so:
+** `reader-rdf`: JSON-LD remote `@context` URLs are loaded only through a new safe-fetching layer (`base`
+   package `com.graphinout.base.fetch`, new module `base-http`): `http(s)` only, ports 80/443, connections only to
+   public internet addresses (checked on the resolved address, pinned against DNS rebinding), every redirect and
+   `Link rel="alternate"` hop checked again, size/time/count budgets per input, gzip bombs capped. Before, Jena loaded
+   any context URL, including local files. See `doc/url-fetching-safe.adoc`.
 ** `reader-structurizr-dsl`: `!include`, `workspace extends`, `!docs`, `!adrs`, `!script`, `!plugin` and
    `${NAME}` environment variables are disabled; such input is reported as an error. Before, local files were
    included and environment variables substituted.

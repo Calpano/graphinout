@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.graphinout</groupId>
+        <artifactId>graphinout</artifactId>
+        <version>0.2.4-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>base-http</artifactId>
+    <name>base-http</name>
+    <description>Fetches remote documents over HTTP(S), connecting only to public internet addresses (SSRF-safe).
+        Only readers that follow URLs named by their input depend on this module.</description>
+
+    <dependencies>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
+        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
+        <!-- same version Structurizr already brings, so the distribution gains no new library -->
+        <dependency><groupId>org.apache.httpcomponents.client5</groupId><artifactId>httpclient5</artifactId></dependency>
+
+        <!-- Test Dependencies -->
+        <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope></dependency>
+    </dependencies>
+</project>
