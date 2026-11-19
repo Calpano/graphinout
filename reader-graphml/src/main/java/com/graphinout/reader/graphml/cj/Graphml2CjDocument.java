@@ -356,9 +356,19 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
         GraphmlDataType declaredGraphmlDataType = GraphmlDataType.fromString(key.attrType());
         assert graphmlData != null;
 
+        // GraphML 1.1: several <data> per key, one per time
+        String time = graphmlData.customXmlAttributes().get(GraphmlTimeValues.ATTRIBUTE_TIME);
         cjHasData.dataMutable(m -> {
             IJsonPrimitive jsonPrimitive = CjGraphmlMapping.toJsonPrimitive(m.factory(), declaredGraphmlDataType, graphmlData.xmlValue());
-            m.add(propertyKey, jsonPrimitive);
+            IJsonValue data = m.jsonValue();
+            IJsonValue existing = data != null && data.isObject() ? data.asObject().get(propertyKey) : null;
+            IJsonValue timeSeries = GraphmlTimeValues.add(m.factory(), existing, time, jsonPrimitive);
+            if (timeSeries != null) {
+                if (existing != null) m.remove(propertyKey);
+                m.add(propertyKey, timeSeries);
+            } else {
+                m.add(propertyKey, jsonPrimitive);
+            }
         });
     }
 

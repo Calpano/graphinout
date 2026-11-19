@@ -22,6 +22,15 @@ graphml-key-data--EXPECTED-Gml2Cj2Gml.graphml.xml ..tests.. GraphML -> Connected
 graphml-key-data--EXPECTED-Gml2Cj2Gml.graphml.xml ..content.. Single directed graph (id--graph) with comprehensive <key>/<data> coverage. Defines 22 <key> elements spanning every GraphML "for" domain (all/graphml/graph/node/edge/hyperedge/endpoint/port) and all attr.type values (string, boolean, int, long, float, double) with <default> values. Contains 6 nodes (some with <port> North/South), 2 <edge> (one plain, one with sourceport/targetport), and 2 <hyperedge> elements with multiple <endpoint> (types in/out/undir, one using a port). Exercises GraphML key/data attribute handling and type defaults.
 
 
+# --- File: graphml-1.1.graphml.xml ---
+
+graphml-1.1.graphml.xml ..kind.. synthetic
+graphml-1.1.graphml.xml ..format.. format:graphml
+graphml-1.1.graphml.xml ..authored by.. Calpano / graphinout project
+graphml-1.1.graphml.xml ..license.. not stated (public domain unless otherwise stated)
+graphml-1.1.graphml.xml ..tests.. GraphML 1.1 input (issue #92): read, validate, and GraphML -> ConnectedJson -> GraphML round-trip (Gml2Cj2Gml, GraphmlVersionTest).
+graphml-1.1.graphml.xml ..content.. Single directed graph with 2 nodes and 1 edge, declaring the GraphML 1.1 schema location. Uses all 1.1 additions over 1.0: a key for="graphml" with document-level <data>, keys with dynamic="true" / dynamic="false", and time-stamped <data time="..."> values on node a.
+
 # --- Subfolder: namespace/ ---
 # Both files are minimal GraphML documents (empty <graphml> root, no graph
 # content) used purely to test XML namespace declaration handling. They are

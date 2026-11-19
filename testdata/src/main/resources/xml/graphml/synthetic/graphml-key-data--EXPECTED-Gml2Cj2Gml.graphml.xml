@@ -30,8 +30,10 @@ false</default>
 <default>
 1000.99</default>
 </key>
-<key attr.name="name--key-graph-float" attr.type="double" for="node" id="node-name--key-graph-float"
-/>
+<key attr.name="name--key-graph-float" attr.type="double" for="node" id="id--key-graph-float">
+<default>
+100.99</default>
+</key>
 <key attr.name="name--key-graph-int" attr.type="int" for="node" id="id--key-graph-int">
 <default>
 1</default>
@@ -57,8 +59,6 @@ default--key-port-string</default>
 </key>
 <graph id="id--graph" edgedefault="directed">
 <node id="id--node1">
-<data key="node-name--key-graph-float">
-100.99</data>
 </node>
 <node id="id--node2">
 <data key="id--key-all-string">
@@ -79,7 +79,7 @@ value--key-node-string</data>
 value--key-edge-string</data>
 <data key="node-name--key-endpoint-string">
 value--key-endpoint-string</data>
-<data key="node-name--key-graph-float">
+<data key="id--key-graph-float">
 102.99</data>
 <data key="node-name--key-graphml-string">
 value--key-graphml-string</data>
@@ -89,24 +89,16 @@ value--key-hyperedge-string</data>
 value--key-port-string</data>
 </node>
 <node id="id--node3">
-<data key="node-name--key-graph-float">
-100.99</data>
 </node>
 <node id="id--node4">
-<data key="node-name--key-graph-float">
-100.99</data>
 <port name="North"/>
 <port name="South"/>
 </node>
 <node id="id--node5">
-<data key="node-name--key-graph-float">
-100.99</data>
 <port name="North"/>
 <port name="South"/>
 </node>
 <node id="id--node6">
-<data key="node-name--key-graph-float">
-100.99</data>
 <port name="North"/>
 <port name="South"/>
 </node>

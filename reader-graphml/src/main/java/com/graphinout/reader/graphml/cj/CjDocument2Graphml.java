@@ -544,6 +544,24 @@ public class CjDocument2Graphml {
             {
                 IGraphmlKey graphmlKey = graphmlSchema.findKeyByForAndAttrName(graphmlKeyForType(cjHasData.asCjElement().cjType()), propertyKey);
                 assert graphmlKey != null : "no key found for " + propertyKey + " in " + graphmlSchema;
+                if (GraphmlTimeValues.isTimeSeries(val)) {
+                    // GraphML 1.1: one <data time="..."> per value
+                    for (GraphmlTimeValues.Entry entry : GraphmlTimeValues.entries(val)) {
+                        GraphmlData timedData = toGraphmlData(graphmlKey, entry.value());
+                        String time = GraphmlTimeValues.timeAttribute(entry);
+                        if (time != null) timedData.addXmlAttributes(Map.of(GraphmlTimeValues.ATTRIBUTE_TIME, time));
+                        XmlFragmentString timedXml = timedData.xmlValue();
+                        if (timedXml != null && timedXml.xmlSpace() == XML.XmlSpace.preserve) {
+                            timedData.addXmlAttributes(Map.of(XML.XML_SPACE, XML.XML_SPACE__PRESERVE));
+                        }
+                        try {
+                            graphmlDataConsumer.accept(timedData);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    return;
+                }
                 GraphmlData graphmlData = toGraphmlData(graphmlKey, val);
 
                 //  avoid writing data which is identical to default value defined in KEY

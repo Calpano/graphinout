@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GraphML 1.1 input. Uses everything 1.1 added over 1.0: for="graphml" and dynamic on <key>, time on <data>. -->
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd">
+  <key id="author" for="graphml" attr.name="author" attr.type="string"/>
+  <key id="weight" for="node" attr.name="weight" attr.type="int" dynamic="true"/>
+  <key id="label" for="node" attr.name="label" attr.type="string" dynamic="false"/>
+  <data key="author">graphinout</data>
+  <graph id="G" edgedefault="directed">
+    <node id="a">
+      <data key="weight" time="1">1</data>
+      <data key="weight" time="2">3</data>
+      <data key="label">A</data>
+    </node>
+    <node id="b">
+      <data key="weight">5</data>
+    </node>
+    <edge id="e1" source="a" target="b"/>
+  </graph>
+</graphml>

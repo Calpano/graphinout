@@ -3,6 +3,7 @@ package com.graphinout.reader.graphml.cj;
 import com.graphinout.base.cj.data.CjDataProperty;
 import com.graphinout.base.cj.document.CjDataSchema;
 import com.graphinout.base.cj.document.CjDocuments;
+import com.graphinout.base.cj.document.CjType;
 import com.graphinout.base.cj.document.ICjData;
 import com.graphinout.base.cj.document.ICjDocument;
 import com.graphinout.base.cj.document.ICjEdge;
@@ -11,6 +12,7 @@ import com.graphinout.base.cj.document.ICjHasData;
 import com.graphinout.base.cj.document.ICjHasLabel;
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import com.graphinout.foundation.pure.json.document.IJsonPrimitive;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.foundation.pure.stream.PowerStreams;
 import com.graphinout.reader.graphml.elements.GraphmlDataType;
@@ -18,8 +20,13 @@ import com.graphinout.reader.graphml.elements.GraphmlKeyForType;
 import com.graphinout.reader.graphml.elements.IGraphmlKey;
 import com.graphinout.reader.graphml.elements.builder.GraphmlKeyBuilder;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
@@ -53,7 +60,11 @@ public class CjData2GraphmlKeyData {
         {
             CjDataSchema cjSchema = CjDocuments.calcEffectiveSchemaForData(cjDoc);
             GraphmlSchema graphmlSchemaFromCjData = toGraphmlSchema(cjSchema);
-            graphmlSchemaFromCjData.keys().forEach(key -> {
+            Map<String, GraphmlDataType> timeSeriesTypes = timeSeriesTypes(cjDoc);
+            graphmlSchemaFromCjData.keys().toList().forEach(computedKey -> {
+                // a time series is typed by its values, not as the array it is in CJ
+                GraphmlDataType timeSeriesType = timeSeriesTypes.get(computedKey.forType().value + "|" + computedKey.attrName());
+                IGraphmlKey key = timeSeriesType == null ? computedKey : withType(computedKey, timeSeriesType, true);
 
                 // if loadedSchema contains same 'for' (TODO or 'all') and 'attr.name', verify the type
                 IGraphmlKey existingKey = graphmlSchema.findKeyByForAndAttrName(key.forType(), key.attrName());
@@ -72,6 +83,9 @@ public class CjData2GraphmlKeyData {
                 // conflict or not present: use effectively used key instead
                 if (existingKey != null) {
                     graphmlSchema.removeKeyById(existingKey.id());
+                    // keep everything of the original key but its type: id, desc, default, extra attributes like
+                    // dynamic (issue #157)
+                    key = withType(existingKey, GraphmlDataType.fromString(key.attrType()), false);
                 }
                 graphmlSchema.addKey(key);
             });
@@ -136,6 +150,79 @@ public class CjData2GraphmlKeyData {
         return graphmlSchema;
     }
 
+    /**
+     * @param key     the key to copy
+     * @param type    the new attr.type
+     * @param dynamic true to mark the key as {@code dynamic="true"}, as it carries time-stamped values
+     * @return a copy of the key with another type, keeping id, desc, default and extra XML attributes
+     */
+    static IGraphmlKey withType(IGraphmlKey key, GraphmlDataType type, boolean dynamic) {
+        GraphmlKeyBuilder builder = IGraphmlKey.builder();
+        Map<String, String> attributes = new LinkedHashMap<>(key.customXmlAttributes());
+        if (dynamic) attributes.putIfAbsent(GraphmlTimeValues.ATTRIBUTE_DYNAMIC, "true");
+        builder.attributes(attributes);
+        builder.id(key.id_());
+        ifPresentAccept(key.attrName(), builder::attrName);
+        builder.attrType(type);
+        ifPresentAccept(key.forType(), builder::forType);
+        ifPresentAccept(key.defaultValue(), builder::defaultValue);
+        ifPresentAccept(key.desc(), builder::desc);
+        return builder.build();
+    }
+
+    /**
+     * For each property that holds a time series somewhere, the common GraphML type of all its values (time series
+     * entries and plain values), keyed by {@code for|attr.name}. A property that also holds other non-primitive values
+     * is left out: it is written as JSON anyway.
+     */
+    static Map<String, GraphmlDataType> timeSeriesTypes(ICjDocument cjDoc) {
+        Map<String, List<IJsonPrimitive>> values = new LinkedHashMap<>();
+        Set<String> withTimeSeries = new HashSet<>();
+        Set<String> withOther = new HashSet<>();
+        PowerStreams.filterMap(cjDoc.allElements(), ICjHasData.class).forEach(hasData -> {
+            IJsonValue data = hasData.data().jsonValue();
+            if (data == null || !data.isObject()) return;
+            GraphmlKeyForType forType;
+            try {
+                forType = keyForType(hasData.asCjElement().cjType());
+            } catch (IllegalStateException e) {
+                return;
+            }
+            data.asObject().properties().forEach(e -> {
+                if (e.getKey().startsWith("graphml:")) return;
+                String id = forType.value + "|" + e.getKey();
+                IJsonValue v = e.getValue();
+                List<IJsonPrimitive> list = values.computeIfAbsent(id, k -> new ArrayList<>());
+                if (GraphmlTimeValues.isTimeSeries(v)) {
+                    withTimeSeries.add(id);
+                    GraphmlTimeValues.entries(v).forEach(entry -> list.add(entry.value()));
+                } else if (v.isPrimitive()) {
+                    list.add(v.asPrimitive());
+                } else {
+                    withOther.add(id);
+                }
+            });
+        });
+        Map<String, GraphmlDataType> types = new LinkedHashMap<>();
+        for (String id : withTimeSeries) {
+            if (withOther.contains(id)) continue;
+            types.put(id, CjGraphmlMapping.commonTypeFor(values.get(id).stream()));
+        }
+        return types;
+    }
+
+    static GraphmlKeyForType keyForType(CjType cjType) {
+        return switch (cjType) {
+            case Edge -> GraphmlKeyForType.Edge;
+            case Node -> GraphmlKeyForType.Node;
+            case Graph -> GraphmlKeyForType.Graph;
+            case Port -> GraphmlKeyForType.Port;
+            case RootObject -> GraphmlKeyForType.Graphml;
+            case Endpoint -> GraphmlKeyForType.Endpoint;
+            default -> throw new IllegalStateException("Data on '" + cjType + "' cannot be represented in GraphML");
+        };
+    }
+
     static Stream<ICjData> findAllDatas(CjDocumentElement cjDoc) {
         return cjDoc.allElements().filter(e -> e instanceof ICjHasData).map(e -> ((ICjHasData) e).data()).filter(Objects::nonNull);
     }
@@ -145,21 +232,13 @@ public class CjData2GraphmlKeyData {
         IJsonObject o = value.asObject();
         // are all properties primitive values?
         return o.properties().filter(e -> !e.getKey().startsWith("graphml:")).map(Map.Entry::getValue) //
-                .allMatch(v -> IJsonValue.isPrimitive(v));
+                .allMatch(v -> IJsonValue.isPrimitive(v) || GraphmlTimeValues.isTimeSeries(v));
     }
 
     public static GraphmlSchema toGraphmlSchema(CjDataSchema cjSchema) {
         GraphmlSchema graphmlSchema = new GraphmlSchema();
         cjSchema.map().forEach((cjType, tree) -> {
-            GraphmlKeyForType keyForType = switch (cjType) {
-                case Edge -> GraphmlKeyForType.Edge;
-                case Node -> GraphmlKeyForType.Node;
-                case Graph -> GraphmlKeyForType.Graph;
-                case Port -> GraphmlKeyForType.Port;
-                case RootObject -> GraphmlKeyForType.Graphml;
-                case Endpoint -> GraphmlKeyForType.Endpoint;
-                default -> throw new IllegalStateException("Data on '" + cjType + "' cannot be represented in GraphML");
-            };
+            GraphmlKeyForType keyForType = keyForType(cjType);
             Map<String, GraphmlDataType> graphmlTypes = CjGraphmlMapping.toGraphmlDataTypes(tree);
             graphmlTypes.forEach((propertyKey, graphmlDataType) -> {
                 if (propertyKey.startsWith("graphml:")) {
