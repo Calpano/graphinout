@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
@@ -21,13 +22,13 @@ public class TextStyleNodeExtension extends OcifExtension implements IOcifNodeEx
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/textstyle";
     /** e.g., 12 */
-    private Double fontSizePx;
+    private @Nullable Double fontSizePx;
     /** e.g., sans-serif */
-    private String fontFamily;
+    private @Nullable String fontFamily;
     /** e.g., #000000 */
-    private OcifColor color;
+    private @Nullable OcifColor color;
     /** left|right|center|justify */
-    private String align;
+    private @Nullable String align;
     private boolean bold;
     private boolean italic;
 
@@ -47,11 +48,11 @@ public class TextStyleNodeExtension extends OcifExtension implements IOcifNodeEx
         return ext;
     }
 
-    public String align() {return align;}
+    public @Nullable String align() {return align;}
 
     public Boolean bold() {return bold;}
 
-    public OcifColor color() {return color;}
+    public @Nullable OcifColor color() {return color;}
 
     @Override
     public Set<String> definedKeys() {
@@ -60,13 +61,13 @@ public class TextStyleNodeExtension extends OcifExtension implements IOcifNodeEx
 
 
 
-    public String fontFamily() {return fontFamily;}
+    public @Nullable String fontFamily() {return fontFamily;}
 
-    public Double fontSizePx() {return fontSizePx;}
+    public @Nullable Double fontSizePx() {return fontSizePx;}
 
     public Boolean italic() {return italic;}
 
-    public TextStyleNodeExtension setAlign(String align) {
+    public TextStyleNodeExtension setAlign(@Nullable String align) {
         this.align = align;
         return this;
     }
@@ -76,17 +77,17 @@ public class TextStyleNodeExtension extends OcifExtension implements IOcifNodeEx
         return this;
     }
 
-    public TextStyleNodeExtension setColor(OcifColor color) {
+    public TextStyleNodeExtension setColor(@Nullable OcifColor color) {
         this.color = color;
         return this;
     }
 
-    public TextStyleNodeExtension setFontFamily(String fontFamily) {
+    public TextStyleNodeExtension setFontFamily(@Nullable String fontFamily) {
         this.fontFamily = fontFamily;
         return this;
     }
 
-    public TextStyleNodeExtension setFontSizePx(Double fontSizePx) {
+    public TextStyleNodeExtension setFontSizePx(@Nullable Double fontSizePx) {
         this.fontSizePx = fontSizePx;
         return this;
     }

@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.impl;
 
 import com.graphinout.reader.ocif.OCIF;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.reader.ocif.document.IOcifNodeMutable;
 import com.graphinout.reader.ocif.document.extension.node.IOcifNodeExtension;
 import com.graphinout.reader.ocif.document.types.OcifAngle;
@@ -15,19 +16,19 @@ public class OcifNode extends DecoratedJsonObject implements IOcifNodeMutable {
 
     private final List<IOcifNodeExtension> extensions = new ArrayList<>();
     private String id;
-    private String parent;
-    private Boolean deleteWithParent;
+    private @Nullable String parent;
+    private @Nullable Boolean deleteWithParent;
     /** (x,y) or (x,y,z) */
-    private OcifVector23D position;
+    private @Nullable OcifVector23D position;
     /** (w,h[,d]) */
-    private OcifVector23D size;
-    private String resource;
-    private ResourceFit resourceFit;
-    private OcifAngle rotation;
-    private OcifVector23D rotationAxis;
-    private OcifVector23D scale;
+    private @Nullable OcifVector23D size;
+    private @Nullable String resource;
+    private @Nullable ResourceFit resourceFit;
+    private @Nullable OcifAngle rotation;
+    private @Nullable OcifVector23D rotationAxis;
+    private @Nullable OcifVector23D scale;
     /** id of relation representing this node (rare) */
-    private String relation;
+    private @Nullable String relation;
 
     @Override
     public IOcifNodeMutable addNodeExtension(IOcifNodeExtension ext) {
@@ -44,10 +45,10 @@ public class OcifNode extends DecoratedJsonObject implements IOcifNodeMutable {
     public @NonNull List<IOcifNodeExtension> extensions() {return extensions;}
 
     @Override
-    public Boolean deleteWithParent() {return deleteWithParent;}
+    public @Nullable Boolean deleteWithParent() {return deleteWithParent;}
 
     @Override
-    public IOcifNodeMutable deleteWithParent(Boolean deleteWithParent) {
+    public IOcifNodeMutable deleteWithParent(@Nullable Boolean deleteWithParent) {
         this.deleteWithParent = deleteWithParent;
         return this;
     }
@@ -62,84 +63,84 @@ public class OcifNode extends DecoratedJsonObject implements IOcifNodeMutable {
     }
 
     @Override
-    public String parent() {return parent;}
+    public @Nullable String parent() {return parent;}
 
     @Override
-    public IOcifNodeMutable parent(String parent) {
+    public IOcifNodeMutable parent(@Nullable String parent) {
         this.parent = parent;
         return this;
     }
 
     @Override
-    public OcifVector23D position() {return position;}
+    public @Nullable OcifVector23D position() {return position;}
 
     @Override
-    public IOcifNodeMutable position(OcifVector23D position) {
+    public IOcifNodeMutable position(@Nullable OcifVector23D position) {
         this.position = position;
         return this;
     }
 
     @Override
-    public String relation() {return relation;}
+    public @Nullable String relation() {return relation;}
 
     @Override
-    public IOcifNodeMutable relation(String relation) {
+    public IOcifNodeMutable relation(@Nullable String relation) {
         this.relation = relation;
         return this;
     }
 
     @Override
-    public String resource() {return resource;}
+    public @Nullable String resource() {return resource;}
 
     @Override
-    public IOcifNodeMutable resource(String resource) {
+    public IOcifNodeMutable resource(@Nullable String resource) {
         this.resource = resource;
         return this;
     }
 
     @Override
-    public ResourceFit resourceFit() {return resourceFit;}
+    public @Nullable ResourceFit resourceFit() {return resourceFit;}
 
     @Override
-    public IOcifNodeMutable resourceFit(ResourceFit resourceFit) {
+    public IOcifNodeMutable resourceFit(@Nullable ResourceFit resourceFit) {
         this.resourceFit = resourceFit;
         return this;
     }
 
     @Override
-    public OcifAngle rotation() {return rotation;}
+    public @Nullable OcifAngle rotation() {return rotation;}
 
     @Override
-    public IOcifNodeMutable rotation(OcifAngle rotation) {
+    public IOcifNodeMutable rotation(@Nullable OcifAngle rotation) {
         this.rotation = rotation;
         return this;
     }
 
     @Override
-    public OcifVector23D rotationAxis() {return rotationAxis;}
+    public @Nullable OcifVector23D rotationAxis() {return rotationAxis;}
 
     @Override
-    public IOcifNodeMutable rotationAxis(OcifVector23D rotationAxis) {
+    public IOcifNodeMutable rotationAxis(@Nullable OcifVector23D rotationAxis) {
         this.rotationAxis = rotationAxis;
         return this;
     }
 
     @Override
-    public OcifVector23D scale() {return scale;}
+    public @Nullable OcifVector23D scale() {return scale;}
 
     @Override
-    public IOcifNodeMutable scale(OcifVector23D scale) {
+    public IOcifNodeMutable scale(@Nullable OcifVector23D scale) {
         this.scale = scale;
         return this;
     }
 
     @Override
-    public IOcifNodeMutable size(OcifVector23D size) {
+    public IOcifNodeMutable size(@Nullable OcifVector23D size) {
         this.size = size;
         return this;
     }
 
     @Override
-    public OcifVector23D size() {return size;}
+    public @Nullable OcifVector23D size() {return size;}
 
 }

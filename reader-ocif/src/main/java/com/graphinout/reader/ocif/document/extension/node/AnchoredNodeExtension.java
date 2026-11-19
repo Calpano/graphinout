@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
@@ -32,10 +33,10 @@ public class AnchoredNodeExtension extends OcifExtension implements IOcifNodeExt
     public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/anchored-node.json";
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/anchored";
-    private OcifVector23D topLeftAnchor;
-    private OcifVector23D bottomRightAnchor;
-    private OcifVector23D topLeftOffset;
-    private OcifVector23D bottomRightOffset;
+    private @Nullable OcifVector23D topLeftAnchor;
+    private @Nullable OcifVector23D bottomRightAnchor;
+    private @Nullable OcifVector23D topLeftOffset;
+    private @Nullable OcifVector23D bottomRightOffset;
 
     public AnchoredNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -55,38 +56,38 @@ public class AnchoredNodeExtension extends OcifExtension implements IOcifNodeExt
         return ext;
     }
 
-    public OcifVector23D bottomRightAnchor() {return bottomRightAnchor;}
+    public @Nullable OcifVector23D bottomRightAnchor() {return bottomRightAnchor;}
 
-    public OcifVector23D bottomRightOffset() {return bottomRightOffset;}
+    public @Nullable OcifVector23D bottomRightOffset() {return bottomRightOffset;}
 
     @Override
     public Set<String> definedKeys() {
         return Set.of(OCIF.Common.TOP_LEFT_ANCHOR, OCIF.Common.BOTTOM_RIGHT_ANCHOR, OCIF.Common.TOP_LEFT_OFFSET, OCIF.Common.BOTTOM_RIGHT_OFFSET);
     }
 
-    public AnchoredNodeExtension setBottomRightAnchor(OcifVector23D bottomRightAnchor) {
+    public AnchoredNodeExtension setBottomRightAnchor(@Nullable OcifVector23D bottomRightAnchor) {
         this.bottomRightAnchor = bottomRightAnchor;
         return this;
     }
 
-    public AnchoredNodeExtension setBottomRightOffset(OcifVector23D bottomRightOffset) {
+    public AnchoredNodeExtension setBottomRightOffset(@Nullable OcifVector23D bottomRightOffset) {
         this.bottomRightOffset = bottomRightOffset;
         return this;
     }
 
-    public AnchoredNodeExtension setTopLeftAnchor(OcifVector23D topLeftAnchor) {
+    public AnchoredNodeExtension setTopLeftAnchor(@Nullable OcifVector23D topLeftAnchor) {
         this.topLeftAnchor = topLeftAnchor;
         return this;
     }
 
-    public AnchoredNodeExtension setTopLeftOffset(OcifVector23D topLeftOffset) {
+    public AnchoredNodeExtension setTopLeftOffset(@Nullable OcifVector23D topLeftOffset) {
         this.topLeftOffset = topLeftOffset;
         return this;
     }
 
-    public OcifVector23D topLeftAnchor() {return topLeftAnchor;}
+    public @Nullable OcifVector23D topLeftAnchor() {return topLeftAnchor;}
 
-    public OcifVector23D topLeftOffset() {return topLeftOffset;}
+    public @Nullable OcifVector23D topLeftOffset() {return topLeftOffset;}
 
     @Override
     public @NonNull IJsonObject toJson() {

@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.json.document.IJsonArray;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
@@ -36,17 +37,17 @@ public class ArrowNodeExtension extends OcifExtension implements IOcifNodeExtens
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/arrow";
     /** default 1 */
-    private Double strokeWidth;
+    private @Nullable Double strokeWidth;
     /** default #FFFFFF */
-    private OcifColor strokeColor;
+    private @Nullable OcifColor strokeColor;
     /** [x,y,(z)] */
     private IJsonArray start;
     /** [x,y,(z)] */
     private IJsonArray end;
     /** none|arrowhead */
-    private String startMarker;
+    private @Nullable String startMarker;
     /** none|arrowhead */
-    private String endMarker;
+    private @Nullable String endMarker;
 
     public ArrowNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -78,14 +79,14 @@ public class ArrowNodeExtension extends OcifExtension implements IOcifNodeExtens
 
     public IJsonArray end() {return end;}
 
-    public String endMarker() {return endMarker;}
+    public @Nullable String endMarker() {return endMarker;}
 
     public ArrowNodeExtension setEnd(IJsonArray end) {
         this.end = end;
         return this;
     }
 
-    public ArrowNodeExtension setEndMarker(String endMarker) {
+    public ArrowNodeExtension setEndMarker(@Nullable String endMarker) {
         this.endMarker = endMarker;
         return this;
     }
@@ -95,28 +96,28 @@ public class ArrowNodeExtension extends OcifExtension implements IOcifNodeExtens
         return this;
     }
 
-    public ArrowNodeExtension setStartMarker(String startMarker) {
+    public ArrowNodeExtension setStartMarker(@Nullable String startMarker) {
         this.startMarker = startMarker;
         return this;
     }
 
-    public ArrowNodeExtension setStrokeColor(OcifColor strokeColor) {
+    public ArrowNodeExtension setStrokeColor(@Nullable OcifColor strokeColor) {
         this.strokeColor = strokeColor;
         return this;
     }
 
-    public ArrowNodeExtension setStrokeWidth(Double strokeWidth) {
+    public ArrowNodeExtension setStrokeWidth(@Nullable Double strokeWidth) {
         this.strokeWidth = strokeWidth;
         return this;
     }
 
     public IJsonArray start() {return start;}
 
-    public String startMarker() {return startMarker;}
+    public @Nullable String startMarker() {return startMarker;}
 
-    public OcifColor strokeColor() {return strokeColor;}
+    public @Nullable OcifColor strokeColor() {return strokeColor;}
 
-    public Double strokeWidth() {return strokeWidth;}
+    public @Nullable Double strokeWidth() {return strokeWidth;}
 
     @Override
     public @NonNull IJsonObject toJson() {

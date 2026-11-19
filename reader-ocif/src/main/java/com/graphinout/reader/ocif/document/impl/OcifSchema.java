@@ -31,9 +31,9 @@ public class OcifSchema implements IOcifSchemaMutable {
 
     private String uri;
     /** embedded JSON schema */
-    private IJsonObject schema;
-    private String location;
-    private String name;
+    private @Nullable IJsonObject schema;
+    private @Nullable String location;
+    private @Nullable String name;
 
     @Override
     public Set<String> definedKeys() {
@@ -44,7 +44,7 @@ public class OcifSchema implements IOcifSchemaMutable {
     public @Nullable String location() {return location;}
 
     @Override
-    public IOcifSchema location(String location) {
+    public IOcifSchema location(@Nullable String location) {
         this.location = location;
         return this;
     }
@@ -63,7 +63,7 @@ public class OcifSchema implements IOcifSchemaMutable {
     public @Nullable String name() {return name;}
 
     @Override
-    public IOcifSchema name(String name) {
+    public IOcifSchema name(@Nullable String name) {
         this.name = name;
         return this;
     }
@@ -72,7 +72,7 @@ public class OcifSchema implements IOcifSchemaMutable {
     public @Nullable IJsonObject schema() {return schema;}
 
     @Override
-    public IOcifSchema schema(IJsonObject schema) {
+    public IOcifSchema schema(@Nullable IJsonObject schema) {
         this.schema = schema;
         return this;
     }

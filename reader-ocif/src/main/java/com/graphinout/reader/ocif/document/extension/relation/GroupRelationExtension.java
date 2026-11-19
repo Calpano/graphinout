@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.relation;
 
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonArray;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
@@ -29,7 +30,7 @@ public class GroupRelationExtension extends OcifExtension implements IOcifRelati
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/rel/group";
     /** default app-dependent (spec suggests ability) */
-    private Boolean cascadeDelete;
+    private @Nullable Boolean cascadeDelete;
     /** array of string IDs */
     private List<String> members = new ArrayList<>();
 
@@ -46,7 +47,7 @@ public class GroupRelationExtension extends OcifExtension implements IOcifRelati
         return ext;
     }
 
-    public Boolean cascadeDelete() {return cascadeDelete;}
+    public @Nullable Boolean cascadeDelete() {return cascadeDelete;}
 
     @Override
     public Set<String> definedKeys() {
@@ -58,7 +59,7 @@ public class GroupRelationExtension extends OcifExtension implements IOcifRelati
 
     public void members(List<String> members) {this.members = members;}
 
-    public GroupRelationExtension setCascadeDelete(Boolean cascadeDelete) {
+    public GroupRelationExtension setCascadeDelete(@Nullable Boolean cascadeDelete) {
         this.cascadeDelete = cascadeDelete;
         return this;
     }

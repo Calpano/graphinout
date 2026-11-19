@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
@@ -37,13 +38,13 @@ public class NodeTransformsExtension extends OcifExtension implements IOcifNodeE
     public static final String TYPE_NAME = "@ocif/node/transforms";
     public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/transforms-node.json";
     /** number or array */
-    private OcifVector23D scale;
+    private @Nullable OcifVector23D scale;
     /** degrees */
-    private OcifAngle rotation;
+    private @Nullable OcifAngle rotation;
     /** [x,y,z] */
-    private OcifVector23D rotationAxis;
+    private @Nullable OcifVector23D rotationAxis;
     /** number or array */
-    private OcifVector23D offset;
+    private @Nullable OcifVector23D offset;
 
 
     public NodeTransformsExtension() {
@@ -75,30 +76,30 @@ public class NodeTransformsExtension extends OcifExtension implements IOcifNodeE
     }
 
 
-    public OcifVector23D offset() {return offset;}
+    public @Nullable OcifVector23D offset() {return offset;}
 
-    public OcifAngle rotation() {return rotation;}
+    public @Nullable OcifAngle rotation() {return rotation;}
 
-    public OcifVector23D rotationAxis() {return rotationAxis;}
+    public @Nullable OcifVector23D rotationAxis() {return rotationAxis;}
 
-    public OcifVector23D scale() {return scale;}
+    public @Nullable OcifVector23D scale() {return scale;}
 
-    public NodeTransformsExtension setOffset(OcifVector23D offset) {
+    public NodeTransformsExtension setOffset(@Nullable OcifVector23D offset) {
         this.offset = offset;
         return this;
     }
 
-    public NodeTransformsExtension setRotation(OcifAngle rotation) {
+    public NodeTransformsExtension setRotation(@Nullable OcifAngle rotation) {
         this.rotation = rotation;
         return this;
     }
 
-    public NodeTransformsExtension setRotationAxis(OcifVector23D rotationAxis) {
+    public NodeTransformsExtension setRotationAxis(@Nullable OcifVector23D rotationAxis) {
         this.rotationAxis = rotationAxis;
         return this;
     }
 
-    public NodeTransformsExtension setScale(OcifVector23D scale) {
+    public NodeTransformsExtension setScale(@Nullable OcifVector23D scale) {
         this.scale = scale;
         return this;
     }

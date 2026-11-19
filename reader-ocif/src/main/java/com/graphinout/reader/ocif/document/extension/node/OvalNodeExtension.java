@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
@@ -30,11 +31,11 @@ public class OvalNodeExtension extends OcifExtension implements IOcifNodeExtensi
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/oval";
     /** default 1 */
-    private Double strokeWidth;
+    private @Nullable Double strokeWidth;
     /** default #FFFFFF */
-    private OcifColor strokeColor;
+    private @Nullable OcifColor strokeColor;
     /** default none */
-    private OcifColor fillColor;
+    private @Nullable OcifColor fillColor;
 
     public OvalNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -54,26 +55,26 @@ public class OvalNodeExtension extends OcifExtension implements IOcifNodeExtensi
     }
 
 
-    public OcifColor fillColor() {return fillColor;}
+    public @Nullable OcifColor fillColor() {return fillColor;}
 
-    public OvalNodeExtension setFillColor(OcifColor fillColor) {
+    public OvalNodeExtension setFillColor(@Nullable OcifColor fillColor) {
         this.fillColor = fillColor;
         return this;
     }
 
-    public OvalNodeExtension setStrokeColor(OcifColor strokeColor) {
+    public OvalNodeExtension setStrokeColor(@Nullable OcifColor strokeColor) {
         this.strokeColor = strokeColor;
         return this;
     }
 
-    public OvalNodeExtension setStrokeWidth(Double strokeWidth) {
+    public OvalNodeExtension setStrokeWidth(@Nullable Double strokeWidth) {
         this.strokeWidth = strokeWidth;
         return this;
     }
 
-    public OcifColor strokeColor() {return strokeColor;}
+    public @Nullable OcifColor strokeColor() {return strokeColor;}
 
-    public Double strokeWidth() {return strokeWidth;}
+    public @Nullable Double strokeWidth() {return strokeWidth;}
 
     @Override
     public @NonNull IJsonObject toJson() {

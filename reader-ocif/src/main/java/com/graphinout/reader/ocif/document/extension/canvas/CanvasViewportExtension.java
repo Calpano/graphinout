@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.canvas;
 
 import com.graphinout.foundation.pure.json.document.IJsonObject;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
@@ -28,9 +29,9 @@ public class CanvasViewportExtension extends OcifExtension implements IOcifCanva
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/canvas/viewport";
 
     /** [x,y,(z)] position (number[2|3], required): top-left corner of the viewport */
-    private OcifVector23D position;
+    private @Nullable OcifVector23D position;
     /** [w,h,(d)] size (number[2|3], required): width/height(/depth) of the viewport */
-    private OcifVector23D size;
+    private @Nullable OcifVector23D size;
 
     public CanvasViewportExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -48,19 +49,19 @@ public class CanvasViewportExtension extends OcifExtension implements IOcifCanva
         return Set.of(OCIF.Node.POSITION, OCIF.Node.SIZE);
     }
 
-    public OcifVector23D position() {return position;}
+    public @Nullable OcifVector23D position() {return position;}
 
-    public CanvasViewportExtension setPosition(OcifVector23D position) {
+    public CanvasViewportExtension setPosition(@Nullable OcifVector23D position) {
         this.position = position;
         return this;
     }
 
-    public CanvasViewportExtension setSize(OcifVector23D size) {
+    public CanvasViewportExtension setSize(@Nullable OcifVector23D size) {
         this.size = size;
         return this;
     }
 
-    public OcifVector23D size() {return size;}
+    public @Nullable OcifVector23D size() {return size;}
 
     @Override
     public @NonNull IJsonObject toJson() {

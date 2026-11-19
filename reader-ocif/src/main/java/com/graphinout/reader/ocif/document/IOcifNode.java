@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document;
 
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
 import com.graphinout.reader.ocif.document.extension.node.IOcifNodeExtension;
@@ -61,24 +62,24 @@ public interface IOcifNode extends IOcifItem {
     /** Typed extensions parsed from the node's data array. */
     @NonNull List<IOcifNodeExtension> extensions();
 
-    Boolean deleteWithParent();
+    @Nullable Boolean deleteWithParent();
 
-    String parent();
+    @Nullable String parent();
 
-    OcifVector23D position();
+    @Nullable OcifVector23D position();
 
-    String relation();
+    @Nullable String relation();
 
-    String resource();
+    @Nullable String resource();
 
-    ResourceFit resourceFit();
+    @Nullable ResourceFit resourceFit();
 
-    OcifAngle rotation();
+    @Nullable OcifAngle rotation();
 
-    OcifVector23D rotationAxis();
+    @Nullable OcifVector23D rotationAxis();
 
-    OcifVector23D scale();
+    @Nullable OcifVector23D scale();
 
-    OcifVector23D size();
+    @Nullable OcifVector23D size();
 
 }

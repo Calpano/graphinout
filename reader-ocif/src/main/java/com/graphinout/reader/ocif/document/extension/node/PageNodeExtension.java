@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
@@ -37,7 +38,7 @@ public class PageNodeExtension extends OcifExtension implements IOcifNodeExtensi
     /** page order; first page typically 1 */
     private int pageNumber;
     /** optional label shown in UI */
-    private String label;
+    private @Nullable String label;
 
     public PageNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -55,11 +56,11 @@ public class PageNodeExtension extends OcifExtension implements IOcifNodeExtensi
         return Set.of(OCIF.Common.PAGE_NUMBER, OCIF.Common.LABEL);
     }
 
-    public String label() {return label;}
+    public @Nullable String label() {return label;}
 
     public int pageNumber() {return pageNumber;}
 
-    public PageNodeExtension setLabel(String label) {
+    public PageNodeExtension setLabel(@Nullable String label) {
         this.label = label;
         return this;
     }

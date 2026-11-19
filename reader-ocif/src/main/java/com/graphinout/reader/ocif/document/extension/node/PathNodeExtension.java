@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
@@ -40,11 +41,11 @@ public class PathNodeExtension extends OcifExtension implements IOcifNodeExtensi
     public static final String FILL_COLOR = "fillColor";
     public static final String PATH = "path";
     /** default 1 */
-    private Double strokeWidth;
+    private @Nullable Double strokeWidth;
     /** default #FFFFFF */
-    private OcifColor strokeColor;
+    private @Nullable OcifColor strokeColor;
     /** default none */
-    private OcifColor fillColor;
+    private @Nullable OcifColor fillColor;
     /** required */
     private String path;
 
@@ -70,11 +71,11 @@ public class PathNodeExtension extends OcifExtension implements IOcifNodeExtensi
         return Set.of(OCIF.Common.STROKE_WIDTH, OCIF.Common.STROKE_COLOR, OCIF.Common.FILL_COLOR, OCIF.Common.PATH);
     }
 
-    public OcifColor fillColor() {return fillColor;}
+    public @Nullable OcifColor fillColor() {return fillColor;}
 
     public String path() {return path;}
 
-    public PathNodeExtension setFillColor(OcifColor fillColor) {
+    public PathNodeExtension setFillColor(@Nullable OcifColor fillColor) {
         this.fillColor = fillColor;
         return this;
     }
@@ -84,19 +85,19 @@ public class PathNodeExtension extends OcifExtension implements IOcifNodeExtensi
         return this;
     }
 
-    public PathNodeExtension setStrokeColor(OcifColor strokeColor) {
+    public PathNodeExtension setStrokeColor(@Nullable OcifColor strokeColor) {
         this.strokeColor = strokeColor;
         return this;
     }
 
-    public PathNodeExtension setStrokeWidth(Double strokeWidth) {
+    public PathNodeExtension setStrokeWidth(@Nullable Double strokeWidth) {
         this.strokeWidth = strokeWidth;
         return this;
     }
 
-    public OcifColor strokeColor() {return strokeColor;}
+    public @Nullable OcifColor strokeColor() {return strokeColor;}
 
-    public Double strokeWidth() {return strokeWidth;}
+    public @Nullable Double strokeWidth() {return strokeWidth;}
 
     public Map<String, Object> toMap() {
         return JaJson.createMap()//

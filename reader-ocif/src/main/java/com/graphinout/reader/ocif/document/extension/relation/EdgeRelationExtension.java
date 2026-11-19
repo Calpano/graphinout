@@ -40,9 +40,9 @@ public class EdgeRelationExtension extends OcifExtension implements IOcifRelatio
     private String end;
     /** default true */
     private boolean directed;
-    private String rel;
+    private @Nullable String rel;
     /** a visual OCIF node representing this relation visually */
-    private String node;
+    private @Nullable String node;
 
     public EdgeRelationExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -91,14 +91,14 @@ public class EdgeRelationExtension extends OcifExtension implements IOcifRelatio
 
     public @Nullable String node() {return node;}
 
-    public EdgeRelationExtension node(String node) {
+    public EdgeRelationExtension node(@Nullable String node) {
         this.node = node;
         return this;
     }
 
     public @Nullable String rel() {return rel;}
 
-    public EdgeRelationExtension rel(String rel) {
+    public EdgeRelationExtension rel(@Nullable String rel) {
         this.rel = rel;
         return this;
     }

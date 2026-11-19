@@ -12,9 +12,9 @@ import java.util.Set;
 
 public class OcifRepresentation extends DecoratedJsonObject implements IOcifRepresentationMutable {
 
-    private final String location;
-    private final String mimeType;
-    private final String content;
+    private final @Nullable String location;
+    private final @Nullable String mimeType;
+    private final @Nullable String content;
     private final List<IOcifRepresentationExtension> extensions = new ArrayList<>();
 
     /** Either content or location MUST be present. */
@@ -34,7 +34,7 @@ public class OcifRepresentation extends DecoratedJsonObject implements IOcifRepr
     }
 
     @Override
-    public String content() {return content;}
+    public @Nullable String content() {return content;}
 
     @Override
     public Set<String> definedKeys() {
@@ -47,9 +47,9 @@ public class OcifRepresentation extends DecoratedJsonObject implements IOcifRepr
     }
 
     @Override
-    public String location() {return location;}
+    public @Nullable String location() {return location;}
 
     @Override
-    public String mimeType() {return mimeType;}
+    public @Nullable String mimeType() {return mimeType;}
 
 }

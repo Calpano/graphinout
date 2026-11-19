@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.relation;
 
 import com.graphinout.base.cj.document.CjDirection;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
@@ -29,16 +30,16 @@ public class HyperedgeRelationExtension extends OcifExtension implements IOcifRe
         /** ID of attached entity (node or relation) */
         private String id;
         /** in|out|undir */
-        private String direction;
+        private @Nullable String direction;
         /** optional */
-        private Double weight;
+        private @Nullable Double weight;
 
         /**
          * OCIF representation of a Connected JSON direction
          * @param direction
          * @return
          */
-        public static String ocifDirection(CjDirection direction) {
+        public static String ocifDirection(@Nullable CjDirection direction) {
             return switch (direction) {
                 case IN -> OCIF_IN;
                 case OUT -> OCIF_OUT;
@@ -56,11 +57,11 @@ public class HyperedgeRelationExtension extends OcifExtension implements IOcifRe
             };
         }
 
-        public String direction() {return direction;}
+        public @Nullable String direction() {return direction;}
 
         public String id() {return id;}
 
-        public Endpoint direction(String direction) {
+        public Endpoint direction(@Nullable String direction) {
             this.direction = direction;
             return this;
         }
@@ -70,12 +71,12 @@ public class HyperedgeRelationExtension extends OcifExtension implements IOcifRe
             return this;
         }
 
-        public Endpoint w(Double weight) {
+        public Endpoint w(@Nullable Double weight) {
             this.weight = weight;
             return this;
         }
 
-        public Double weight() {return weight;}
+        public @Nullable Double weight() {return weight;}
 
     }
 
@@ -85,9 +86,9 @@ public class HyperedgeRelationExtension extends OcifExtension implements IOcifRe
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/rel/hyperedge";
     private List<Endpoint> endpoints = new ArrayList<>();
     /** overall weight */
-    private Double weight;
+    private @Nullable Double weight;
     /** represented relation type */
-    private String rel;
+    private @Nullable String rel;
 
 
     public HyperedgeRelationExtension() {
@@ -125,24 +126,24 @@ public class HyperedgeRelationExtension extends OcifExtension implements IOcifRe
     public List<Endpoint> endpoints() {return endpoints;}
 
 
-    public String rel() {return rel;}
+    public @Nullable String rel() {return rel;}
 
     public HyperedgeRelationExtension setEndpoints(List<Endpoint> endpoints) {
         this.endpoints = endpoints;
         return this;
     }
 
-    public HyperedgeRelationExtension setRel(String rel) {
+    public HyperedgeRelationExtension setRel(@Nullable String rel) {
         this.rel = rel;
         return this;
     }
 
-    public HyperedgeRelationExtension setWeight(Double weight) {
+    public HyperedgeRelationExtension setWeight(@Nullable Double weight) {
         this.weight = weight;
         return this;
     }
 
-    public Double weight() {return weight;}
+    public @Nullable Double weight() {return weight;}
 
     @Override
     public @NonNull IJsonObject toJson() {

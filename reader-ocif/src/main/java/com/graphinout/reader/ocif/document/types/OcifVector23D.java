@@ -15,7 +15,7 @@ public class OcifVector23D extends OcifType {
     public static final OcifVector23D ZERO_2D = new OcifVector23D(new double[2]);
     private double x;
     private double y;
-    private Double z; // optional
+    private @Nullable Double z; // optional
 
     public OcifVector23D(double x, double y) {
         this.x = x;
@@ -74,9 +74,9 @@ public class OcifVector23D extends OcifType {
 
     public void y(double y) {this.y = y;}
 
-    public Double z() {return z;}
+    public @Nullable Double z() {return z;}
 
-    public void z(Double z) {this.z = z;}
+    public void z(@Nullable Double z) {this.z = z;}
 
 
 }

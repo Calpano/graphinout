@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document;
 
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.document.extension.representation.IOcifRepresentationExtension;
 import com.graphinout.reader.ocif.document.impl.OcifRepresentation;
@@ -39,7 +40,7 @@ public interface IOcifRepresentation extends IOcifEntity {
     }
 
     /** content (string): Inline content (e.g., base64 data or text). */
-    String content();
+    @Nullable String content();
 
     @NonNull List<IOcifRepresentationExtension> extensions();
 
@@ -47,7 +48,7 @@ public interface IOcifRepresentation extends IOcifEntity {
      * location (string): Storage location (relative/absolute TYPE_URI). If a data: TYPE_URI is used, content/mimeType
      * are implicit.
      */
-    String location();
+    @Nullable String location();
 
     /**
      * @param mimeTypeQuery case-insensitive prefix match
@@ -58,6 +59,6 @@ public interface IOcifRepresentation extends IOcifEntity {
     }
 
     /** mimeType (string): IANA MIME Type of the content. */
-    String mimeType();
+    @Nullable String mimeType();
 
 }

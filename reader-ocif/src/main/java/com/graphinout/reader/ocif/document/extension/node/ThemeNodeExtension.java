@@ -1,6 +1,7 @@
 package com.graphinout.reader.ocif.document.extension.node;
 
 import com.graphinout.foundation.pure.collections.jajson.JaJson;
+import org.jspecify.annotations.Nullable;
 import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
@@ -37,7 +38,7 @@ public class ThemeNodeExtension extends OcifExtension implements IOcifNodeExtens
     /** Map-like object holding top-level theme names as properties; each value typically contains a "data" array. */
     private Map<String, Object> themes = new HashMap<>();
     /** Optional: Name of the theme to select; null selects the default (no theme). Uses JSON key "select-theme". */
-    private String selectTheme;
+    private @Nullable String selectTheme;
 
     public ThemeNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -56,9 +57,9 @@ public class ThemeNodeExtension extends OcifExtension implements IOcifNodeExtens
     }
 
 
-    public String selectTheme() {return selectTheme;}
+    public @Nullable String selectTheme() {return selectTheme;}
 
-    public ThemeNodeExtension setSelectTheme(String selectTheme) {
+    public ThemeNodeExtension setSelectTheme(@Nullable String selectTheme) {
         this.selectTheme = selectTheme;
         return this;
     }

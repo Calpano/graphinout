@@ -39,11 +39,11 @@ public class RectangleNodeExtension extends OcifExtension implements IOcifNodeEx
     /** @deprecated v0.6 name kept for backward-compatible reading */
     @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/rect";
     /** default 1 */
-    private Double strokeWidth;
+    private @Nullable Double strokeWidth;
     /** default #FFFFFF */
-    private OcifColor strokeColor;
+    private @Nullable OcifColor strokeColor;
     /** default none */
-    private OcifColor fillColor;
+    private @Nullable OcifColor fillColor;
 
     public RectangleNodeExtension() {
         super(TYPE_URI, TYPE_NAME);
@@ -63,17 +63,17 @@ public class RectangleNodeExtension extends OcifExtension implements IOcifNodeEx
 
     public @Nullable OcifColor fillColor() {return fillColor;}
 
-    public RectangleNodeExtension setFillColor(OcifColor fillColor) {
+    public RectangleNodeExtension setFillColor(@Nullable OcifColor fillColor) {
         this.fillColor = fillColor;
         return this;
     }
 
-    public RectangleNodeExtension setStrokeColor(OcifColor strokeColor) {
+    public RectangleNodeExtension setStrokeColor(@Nullable OcifColor strokeColor) {
         this.strokeColor = strokeColor;
         return this;
     }
 
-    public RectangleNodeExtension setStrokeWidth(Double strokeWidth) {
+    public RectangleNodeExtension setStrokeWidth(@Nullable Double strokeWidth) {
         this.strokeWidth = strokeWidth;
         return this;
     }
