@@ -21,7 +21,6 @@ import com.graphinout.reader.graphml.cj.Graphml2CjWriter;
 import com.graphinout.reader.graphml.validation.ValidatingGraphMlWriter;
 import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
-import jdk.jfr.Description;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -122,7 +121,7 @@ public class Cj2GraphmlAndBackTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
-    @Description("Test JSON->CJ->Graphml->CjStream->CJ->JSON (all)")
+    @DisplayName("Test JSON->CJ->Graphml->CjStream->CJ->JSON (all)")
     void test_Json_Cj_Graphml_CjStream_Cj_Json(String displayName, Resource resource) throws IOException {
         // JSON -> CJ doc
         String jsonInput = resource.getContentAsString();

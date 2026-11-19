@@ -19,7 +19,7 @@ import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
-import jdk.jfr.Description;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -72,7 +72,7 @@ public class CjTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
-    @Description("JSON->CjDoc->Analysis")
+    @DisplayName("JSON->CjDoc->Analysis")
     void testCjAnalysis(String displayName, Resource resource) throws IOException {
         String json = resource.getContentAsString();
         ICjDocument doc = ConnectedJsonReader.readToDocument(json);
@@ -91,7 +91,7 @@ public class CjTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
-    @Description("Test JSON<->CJ<->JSON (all)")
+    @DisplayName("Test JSON<->CJ<->JSON (all)")
     void test_Json_Cj_Json(String displayName, Resource resource) throws IOException {
         String json = resource.getContentAsString();
 

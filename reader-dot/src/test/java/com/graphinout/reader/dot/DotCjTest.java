@@ -9,7 +9,7 @@ import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.base.text.TextReader;
 import com.graphinout.base.text.TextWriterOnStringBuilder;
 import io.github.classgraph.Resource;
-import jdk.jfr.Description;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -27,7 +27,7 @@ class DotCjTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.reader.dot.DotTests#dotResources")
-    @Description("Test DOT->CjDoc->DOT (all)")
+    @DisplayName("Test DOT->CjDoc->DOT (all)")
     void test_Dot_Cj_Dot(String displayName, Resource resource) throws IOException {
         // A --INVALIDdot fixture is rejected by the parser, so there is no CJ document to round-trip here.
         // An abort records a real skip with a reason; a bare `return` would report a PASS having asserted
@@ -58,7 +58,7 @@ class DotCjTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.reader.dot.DotTests#dotResources")
-    @Description("Test DOT->CjDoc->DOT (all)")
+    @DisplayName("Test DOT->CjDoc->DOT (all)")
     void test_Dot_Cj_Dot_Cj(String displayName, Resource resource) throws IOException {
         // A --INVALIDdot fixture is rejected by the parser, so there is no CJ document to round-trip here.
         // An abort records a real skip with a reason; a bare `return` would report a PASS having asserted

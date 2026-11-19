@@ -9,7 +9,7 @@ import com.graphinout.reader.graphml.elements.GraphmlDataType;
 import com.graphinout.testdata.TestFileProvider;
 import com.graphinout.foundation.pure.json.path.JsonTypeAnalysisTree;
 import com.graphinout.reader.cj.ConnectedJsonReader;
-import jdk.jfr.Description;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class GraphmlCjTest {
 
     @Test
-    @Description("1 file")
+    @DisplayName("1 file")
     void testDataSimple() throws IOException {
         TestFileProvider.TestResource tr = TestFileProvider.resourceByPath("json/connected-json/connected-json-7.0.0/custom-data-simple.cj.json");
         String json = tr.resource().getContentAsString();

@@ -15,7 +15,7 @@ import com.graphinout.reader.ocif.document.impl.OcifDocument;
 import com.graphinout.testdata.TestFileProvider;
 import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
-import jdk.jfr.Description;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ class OcifReaderTest extends AbstractReaderTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.base.cj.CjDocsTestData#cjTestDocs")
-    @Description("Test CJ doc->OCIF doc->CJ doc->OCIF doc (all)")
+    @DisplayName("Test CJ doc->OCIF doc->CJ doc->OCIF doc (all)")
     void cjDoc_ocifDoc_CjDoc_ocifDoc(String displayName, ICjDocument cjDoc) throws IOException {
         OcifDocument ocifDoc = CjDoc2OcifDoc.toOcifDocument(cjDoc, createErrorHandlerOnLog(log));
         assertThat(ocifDoc).isNotNull();
@@ -65,7 +65,7 @@ class OcifReaderTest extends AbstractReaderTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("ocifResources")
-    @Description("Test OCIF/json->OCIF/doc->CJ/doc->OCIF/doc->OCIF/json")
+    @DisplayName("Test OCIF/json->OCIF/doc->CJ/doc->OCIF/doc->OCIF/json")
     // No `if (isExpected(resource)) return;` here: TestFileProvider.getAllTestResources() already ends with
     // `.filter(tr -> !tr.isExpected())`, so --EXPECTED files never reach any provider. The guard that used
     // to sit here was dead code that read as a deliberate exclusion — verified by running this test against
@@ -126,7 +126,7 @@ class OcifReaderTest extends AbstractReaderTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("ocifResources")
-    @Description("Test JSON->OCIF (all)")
+    @DisplayName("Test JSON->OCIF (all)")
     void ocif_OcifDoc(String displayName, Resource resource) throws IOException {
         String ocifJson_in = resource.getContentAsString();
         IJsonValue jsonValue = JavaJsons.ofJsonString(ocifJson_in);
@@ -136,7 +136,7 @@ class OcifReaderTest extends AbstractReaderTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("ocifResources")
-    @Description("Test JSON->OCIF->JSON (all)")
+    @DisplayName("Test JSON->OCIF->JSON (all)")
     void ocif_OcifDoc_Ocif(String displayName, Resource resource) throws IOException {
         String ocifJson_in = resource.getContentAsString();
         IJsonValue jsonValue = JavaJsons.ofJsonString(ocifJson_in);

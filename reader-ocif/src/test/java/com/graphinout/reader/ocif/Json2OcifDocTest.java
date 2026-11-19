@@ -4,7 +4,7 @@ import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.reader.ocif.document.impl.OcifDocument;
 import com.graphinout.testdata.TestFileProvider;
 import io.github.classgraph.Resource;
-import jdk.jfr.Description;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -30,7 +30,7 @@ class Json2OcifDocTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("ocifResources")
-    @Description("Parse all OCIF files into an OcifDocument")
+    @DisplayName("Parse all OCIF files into an OcifDocument")
     void parse_all_ocif_into_document(String displayName, Resource resource) throws IOException {
         String json = resource.getContentAsString();
 
@@ -50,7 +50,7 @@ class Json2OcifDocTest {
     }
 
     @org.junit.jupiter.api.Test
-    @Description("v0.7.1: a node 'resource' given as an inline object is registered as a document resource")
+    @DisplayName("v0.7.1: a node 'resource' given as an inline object is registered as a document resource")
     void inline_resource_v0_7_1_is_registered_and_referenced() {
         String json = """
                 { "ocif": "https://canvasprotocol.org/ocif/v0.7.1",

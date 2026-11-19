@@ -14,7 +14,7 @@ import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import com.graphinout.base.json.JsonReaderImpl;
 import io.github.classgraph.Resource;
-import jdk.jfr.Description;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -24,7 +24,7 @@ public class CjStreamTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
-    @Description("Test JSON->CJ->JSON (all)")
+    @DisplayName("Test JSON->CJ->JSON (all)")
     void test_Json_Cj(String displayName, Resource resource) throws IOException {
         String json_in = resource.getContentAsString();
         SingleInputSourceOfString inputSource = SingleInputSourceOfString.of("test", json_in);
