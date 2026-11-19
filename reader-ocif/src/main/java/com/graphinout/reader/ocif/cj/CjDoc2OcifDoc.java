@@ -46,6 +46,7 @@ import com.graphinout.reader.ocif.document.impl.OcifResource;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -199,7 +200,7 @@ public class CjDoc2OcifDoc {
             // graphs nested inside this node
             var nested = n.graphs().map(child -> toGraphInfo(child, structure)).toList();
             if (!nested.isEmpty() && n.id() != null) {
-                structure.nodeGraphs().put(n.id(), new java.util.ArrayList<>(nested));
+                structure.nodeGraphs().put(n.id(), new ArrayList<>(nested));
             }
         });
         cjGraph.edges().forEach(e -> {

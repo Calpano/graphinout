@@ -16,8 +16,10 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
 
 public class TextStyleNodeExtension extends OcifExtension implements IOcifNodeExtension {
 
-    public static final String TYPE_NAME = "@ocif/node/textstyle";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/textstyle-node.json";
+    public static final String TYPE_NAME = "@ocif/textstyle";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/textstyle.json";
+    /** @deprecated v0.6 name kept for backward-compatible reading */
+    @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/textstyle";
     /** e.g., 12 */
     private Double fontSizePx;
     /** e.g., sans-serif */

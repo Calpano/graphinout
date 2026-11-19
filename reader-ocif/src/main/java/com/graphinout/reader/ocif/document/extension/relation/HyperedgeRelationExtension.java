@@ -19,7 +19,7 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
 /**
  * Hyperedge Relation Extension.
  */
-public class HyperedgeRelationExtension extends OcifExtension implements IOcifRelationExtension {
+public class HyperedgeRelationExtension extends OcifExtension implements IOcifRelationExtension, com.graphinout.reader.ocif.document.extension.node.IOcifNodeExtension {
 
     public static class Endpoint {
 
@@ -79,8 +79,10 @@ public class HyperedgeRelationExtension extends OcifExtension implements IOcifRe
 
     }
 
-    public static final String TYPE_NAME = "@ocif/rel/hyperedge";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/hyperedge-rel.json";
+    public static final String TYPE_NAME = "@ocif/hyperedge";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/hyperedge.json";
+    /** @deprecated v0.6 name kept for backward-compatible reading */
+    @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/rel/hyperedge";
     private List<Endpoint> endpoints = new ArrayList<>();
     /** overall weight */
     private Double weight;

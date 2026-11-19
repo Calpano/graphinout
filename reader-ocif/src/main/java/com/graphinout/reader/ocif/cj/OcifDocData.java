@@ -7,7 +7,6 @@ import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonObjectMutable;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.OCIF;
-import com.graphinout.reader.ocif.cj.OcifCj.CjInOcifData;
 import com.graphinout.reader.ocif.document.IOcifDocumentMutable;
 import com.graphinout.reader.ocif.document.IOcifResource;
 import com.graphinout.reader.ocif.document.IOcifSchema;

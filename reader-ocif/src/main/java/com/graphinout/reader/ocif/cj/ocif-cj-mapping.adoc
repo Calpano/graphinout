@@ -1,6 +1,6 @@
 = OCIF-CJ Mapping
 
-OCIF spec: /Users/maxvolkel/_data_/_git/GitHubOld/graphinout/reader-ocif/src/spec-v0.6/spec.md
+OCIF spec: link:../../../../../../../../spec-v0.7/spec.md[reader-ocif/src/spec-v0.7/spec.md]
 CJ spec: /Users/maxvolkel/_data_/_git/GitHubOld/graphinout/doc/COPY-spec-cj.adoc
 
 .OCIF Core Entities
@@ -11,7 +11,6 @@ hide circle
 
 class Document
 class Node
-class Relation
 class Resource
 class Representation
 class Schema
@@ -20,16 +19,15 @@ interface HasData
 
 HasData <|-- Document
 HasData <|-- Node
-HasData <|-- Relation
 HasData <|-- Resource
 HasData <|-- Representation
 HasData *-- "n" Data
 
 Document *-- "n" Node
-Document *-- "n" Relation
 Document *-- "n" Resource
 Document *-- "n" Schema
 Resource *-- "n" Representation
+Node --> "parent" Node
 ....
 
 .CJ Core Entities
@@ -74,8 +72,6 @@ Port -- Port
 | Document.data | Document.data
 | Node | Node
 | Node.data | Node.data
-| Relation | Edge
-| Relation.data | Edge.data
 | Resource | Document.data
 | Resource.data | Document.data
 | Representation | Node.label or Document.data
@@ -89,8 +85,7 @@ Port -- Port
 | OCIF | CJ
 
 | Document | Document
-| Node | Node
-| Relation | Edge
+| Node | Node or Edge
 | Resource | Document.data
 | Representation | Document.data
 | Schema | Document.data
@@ -103,7 +98,7 @@ Port -- Port
 | Document | Document
 | Graph | Node [synthetic]
 | Node | Node
-| Edge | Relation
+| Edge | Node (sometimes with Extension)
 | Port | Node > Port Extension
 | Label | Node.resource & Representation
 |===
@@ -143,13 +138,17 @@ Port -- Port
 |/nodes                                        | Array?      | List of nodes
 |/nodes/*                                      | Object      | A single node
 |/nodes/*/id                                   | string!     | Node id
+|/nodes/*/parent                               | string?     | ID of parent node
+|/nodes/*/deleteWithParent                     | boolean?    | Delete when parent deleted (default: true)
 |/nodes/*/position                             | Number[]?   | Node position (2D or 3D)
 |/nodes/*/size                                 | Number[]?   | Node size (2D or 3D)
 |/nodes/*/rotation                             | number?     | +/- 360 degrees
+|/nodes/*/rotationAxis                         | Number[]?   | Rotation axis (default: [0,0,1])
+|/nodes/*/scale                                | Number/?    | Scale factor (scalar or per-axis)
 |/nodes/*/resource                             | string?     | Reference to resource id
 |/nodes/*/resourceFit                          | string?     | none, containX, containY, contain, cover, fill, tile
-|/nodes/*/relation                             | string?     | ID of a relation (if this node visualizes a relation)
 |/nodes/*/data                                 | Array?      | Extended node data (extensions)
+|/nodes/*/comment                              | string?     | Human-readable annotation
 |/resources                                    | Array?      | List of resources
 |/resources/*                                  | Object      | A single resource
 |/resources/*/id                               | string!     | Resource id
@@ -158,11 +157,8 @@ Port -- Port
 |/resources/*/representations/*/mediaType      | string?     | Media type of representation
 |/resources/*/representations/*/content        | string?     | Data of representation (encoded as base64 for binary data)
 |/resources/*/representations/*/location       | string?     | Storage location (relative/absolute URI)
-|/relations                                    | Array?      | List of relations
-|/relations/*                                  | Object      | A single relation
-|/relations/*/id                               | string!     | Relation id
-|/relations/*/node                             | string?     | ID of a visual node representing this relation
-|/relations/*/data                             | Array?      | Additional data for the relation (extensions)
+|/resources/*/representations/*/data           | Array?      | Extended representation data
+|/resources/*/representations/*/comment        | string?     | Human-readable annotation
 |/schemas                                      | Array?      | List of schemas
 |/schemas/*                                    | Object      | A single schema
 |/schemas/*/uri                                | string!     | URI of the schema
@@ -173,45 +169,45 @@ Port -- Port
 
 == Canvas Extensions
 
-.Extension: @ocif/canvas/viewport
+.Extension: @ocif/canvas-viewport
 |===
 | OCIF Path                            | Type        | Comment
 
-|/data/*/type                                  | string!     | "@ocif/canvas/viewport"
+|/data/*/type                                  | string!     | "@ocif/canvas-viewport"
 |/data/*/position                              | Number[]!   | Top-left corner of viewport
 |/data/*/size                                  | Number[]!   | Size of viewport
 |===
 
 == Node Extensions
 
-.Extension: @ocif/node/rect
+.Extension: @ocif/rect
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/nodes/*/data/*/type                           | string!     | "@ocif/node/rect"
+|/nodes/*/data/*/type                           | string!     | "@ocif/rect"
 |/nodes/*/data/*/strokeWidth                   | number?     | Line width (default: 1)
 |/nodes/*/data/*/strokeColor                   | string?     | Stroke color (default: #FFFFFF)
 |/nodes/*/data/*/fillColor                     | string?     | Fill color (default: none)
 |===
 
-.Extension: @ocif/node/oval
+.Extension: @ocif/oval
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/nodes/*/data/*/type                          | string!     | "@ocif/node/oval"
+|/nodes/*/data/*/type                          | string!     | "@ocif/oval"
 |/nodes/*/data/*/strokeWidth                   | number?     | Line width (default: 1)
 |/nodes/*/data/*/strokeColor                   | string?     | Stroke color (default: #FFFFFF)
 |/nodes/*/data/*/fillColor                     | string?     | Fill color (default: none)
 |===
 
-.Extension: @ocif/node/arrow
+.Extension: @ocif/arrow
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/nodes/*/data/*/type                          | string!     | "@ocif/node/arrow"
+|/nodes/*/data/*/type                          | string!     | "@ocif/arrow"
 |/nodes/*/data/*/strokeWidth                   | number?     | Line width (default: 1)
 |/nodes/*/data/*/strokeColor                   | string?     | Stroke color (default: #FFFFFF)
 |/nodes/*/data/*/start                         | Number[]!   | Start point coordinates
@@ -220,136 +216,148 @@ Port -- Port
 |/nodes/*/data/*/endMarker                     | string?     | none, arrowhead
 |===
 
-.Extension: @ocif/node/path
+.Extension: @ocif/path
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/nodes/*/data/*/type                          | string!     | "@ocif/node/path"
+|/nodes/*/data/*/type                          | string!     | "@ocif/path"
 |/nodes/*/data/*/strokeWidth                   | number?     | Line width (default: 1)
 |/nodes/*/data/*/strokeColor                   | string?     | Stroke color (default: #FFFFFF)
 |/nodes/*/data/*/fillColor                     | string?     | Fill color (default: none)
 |/nodes/*/data/*/path                          | string!     | SVG path data
 |===
 
-.Extension: @ocif/node/ports
+.Extension: @ocif/ports
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/nodes/*/data/*/type                          | string!     | "@ocif/node/ports"
+|/nodes/*/data/*/type                          | string!     | "@ocif/ports"
 |/nodes/*/data/*/ports                         | string[]!   | List of node IDs acting as ports
 |===
 
-.Extension: @ocif/node/transforms
+.Extension: @ocif/global-positions
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/nodes/*/data/*/type                          | string!     | "@ocif/node/transforms"
-|/nodes/*/data/*/scale                         | Number/[]?  | Scale factor
-|/nodes/*/data/*/rotation                      | number?     | Rotation in degrees
-|/nodes/*/data/*/rotationAxis                  | Number[]?   | Rotation axis (default: [0,0,1])
-|/nodes/*/data/*/offset                        | Number/[]?  | Offset added to parent position
+|/nodes/*/data/*/type                          | string!     | "@ocif/global-positions"
+|/nodes/*/data/*/globalPosition                | Number[]!   | Absolute global position (2D or 3D)
+|/nodes/*/data/*/globalSize                    | Number[]!   | Absolute global size
+|/nodes/*/data/*/globalRotation                | number!     | Absolute global rotation in degrees
 |===
 
-.Extension: @ocif/node/anchored
+.Extension: @ocif/anchored-node
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/nodes/*/data/*/type                          | string!     | "@ocif/node/anchored"
+|/nodes/*/data/*/type                          | string!     | "@ocif/anchored-node"
 |/nodes/*/data/*/topLeftAnchor                 | Number[]?   | Top-left percentage anchor
 |/nodes/*/data/*/bottomRightAnchor             | Number[]?   | Bottom-right percentage anchor
 |/nodes/*/data/*/topLeftOffset                 | Number[]?   | Absolute offset for top-left
 |/nodes/*/data/*/bottomRightOffset             | Number[]?   | Absolute offset for bottom-right
 |===
 
-.Extension: @ocif/node/textstyle
+.Extension: @ocif/textstyle
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/nodes/*/data/*/type                          | string!     | "@ocif/node/textstyle"
-|/nodes/*/data/*/fontSizePx                    | number?     | Font size in pixels
-|/nodes/*/data/*/fontFamily                    | string?     | Font family
-|/nodes/*/data/*/color                         | string?     | Text color
+|/nodes/*/data/*/type                          | string!     | "@ocif/textstyle"
+|/nodes/*/data/*/fontSizePx                    | number?     | Font size in pixels (default: 12)
+|/nodes/*/data/*/fontFamily                    | string?     | Font family (default: sans-serif)
+|/nodes/*/data/*/color                         | string?     | Text color (default: #000000)
 |/nodes/*/data/*/align                         | string?     | left, right, center, justify
-|/nodes/*/data/*/bold                          | boolean?    | Is bold?
-|/nodes/*/data/*/italic                        | boolean?    | Is italic?
+|/nodes/*/data/*/bold                          | boolean?    | Is bold? (default: false)
+|/nodes/*/data/*/italic                        | boolean?    | Is italic? (default: false)
 |===
 
-.Extension: @ocif/node/theme
+.Extension: @ocif/theme-def
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/nodes/*/data/*/type                          | string!     | "@ocif/node/theme"
-|/nodes/*/data/*/select-theme                  | string?     | Name of the theme to select
-|/nodes/*/data/*                               | Object?     | Recursive definition for theme branches
+|/nodes/*/data/*/type                          | string!     | "@ocif/theme-def"
+|/nodes/*/data/*/<themeName>                   | Object?     | Named theme definition (dynamic key)
+|/nodes/*/data/*/<themeName>/data              | Array?      | Extensions applied when this theme is selected
 |===
 
-.Extension: @ocif/node/page
+.Extension: @ocif/theme-use
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/nodes/*/data/*/type                          | string!     | "@ocif/node/page"
-|/nodes/*/data/*/pageNumber                    | number?     | Page number
+|/nodes/*/data/*/type                          | string!     | "@ocif/theme-use"
+|/nodes/*/data/*/selectTheme                   | string?     | Name of theme to apply (null = no theme)
+|===
+
+.Extension: @ocif/inherit
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/inherit"
+|/nodes/*/data/*/inheritFrom                   | string?     | ID of the source node to inherit from
+|/nodes/*/data/*/include                       | string[]?   | Property keys to include (default: all)
+|/nodes/*/data/*/exclude                       | string[]?   | Property keys to exclude (default: none)
+|===
+
+.Extension: @ocif/page
+[cols="l,d,d"]
+|===
+| OCIF Path                            | Type        | Comment
+
+|/nodes/*/data/*/type                          | string!     | "@ocif/page"
+|/nodes/*/data/*/pageNumber                    | number?     | Page number (default: 1)
 |/nodes/*/data/*/label                         | string?     | Page label
 |===
 
-== Relation Extensions
-
-.Extension: @ocif/rel/group
+.Extension: @ocif/group
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/relations/*/data/*/type                      | string!     | "@ocif/rel/group"
-|/relations/*/data/*/members                   | string[]!   | IDs of group members
-|/relations/*/data/*/cascadeDelete             | boolean?    | Delete members when group is deleted?
+|/nodes/*/data/*/type                          | string!     | "@ocif/group"
+|/nodes/*/data/*/members                       | string[]!   | IDs of group members
+|/nodes/*/data/*/cascadeDelete                 | boolean?    | Delete members when group is deleted? (default: true)
 |===
 
-.Extension: @ocif/rel/edge
+.Extension: @ocif/edge
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/relations/*/data/*/type                      | string!     | "@ocif/rel/edge"
-|/relations/*/data/*/start                     | string!     | ID of source element
-|/relations/*/data/*/end                       | string!     | ID of target element
-|/relations/*/data/*/directed                  | boolean?    | Is directed? (default: true)
-|/relations/*/data/*/rel                       | string?     | Relation type URI (predicate)
-|/relations/*/data/*/node                      | string?     | ID of visual node
+|/nodes/*/data/*/type                          | string!     | "@ocif/edge"
+|/nodes/*/data/*/start                         | string!     | ID of source element
+|/nodes/*/data/*/end                           | string!     | ID of target element
+|/nodes/*/data/*/directed                      | boolean?    | Is directed? (default: true)
+|/nodes/*/data/*/rel                           | string?     | Relation type URI (predicate)
+|/nodes/*/data/*/node                          | string?     | ID of node visually representing the edge
 |===
 
-.Extension: @ocif/rel/parent-child
+.Extension: @ocif/hyperedge
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/relations/*/data/*/type                      | string!     | "@ocif/rel/parent-child"
-|/relations/*/data/*/parent                    | string?     | ID of parent (optional)
-|/relations/*/data/*/child                     | string!     | ID of child
-|/relations/*/data/*/inherit                   | boolean?    | Inherit properties? (default: false)
-|/relations/*/data/*/cascadeDelete             | boolean?    | Delete child when parent is deleted?
+|/nodes/*/data/*/type                          | string!     | "@ocif/hyperedge"
+|/nodes/*/data/*/weight                        | number?     | Edge weight (default: 1.0)
+|/nodes/*/data/*/rel                           | string?     | Relation type URI
+|/nodes/*/data/*/endpoints                     | Array!      | List of endpoints
+|/nodes/*/data/*/endpoints/*/id               | string!     | Entity ID
+|/nodes/*/data/*/endpoints/*/direction        | string?     | in, out, undir (default: undir)
+|/nodes/*/data/*/endpoints/*/weight           | number?     | Endpoint weight (default: 1.0)
 |===
 
-.Extension: @ocif/rel/hyperedge
+.Extension: @ocif/data
 [cols="l,d,d"]
 |===
 | OCIF Path                            | Type        | Comment
 
-|/relations/*/data/*/type                      | string!     | "@ocif/rel/hyperedge"
-|/relations/*/data/*/weight                    | number?     | Edge weight
-|/relations/*/data/*/rel                       | string?     | Relation type URI
-|/relations/*/data/*/endpoints                 | Array!      | List of endpoints
-|/relations/*/data/*/endpoints/*/id            | string!     | Entity ID
-|/relations/*/data/*/endpoints/*/direction     | string?     | in, out, undir
-|/relations/*/data/*/endpoints/*/weight        | number?     | Endpoint weight
+|/nodes/*/data/*/type                          | string!     | "@ocif/data"
 |===
-
 
 
 == CJ as Paths

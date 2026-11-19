@@ -17,7 +17,7 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
 /**
  * Edge Relation Extension.
  * <p>
- * Spec: reader-ocif/src/spec-v0.6/spec.md → "Relation Extensions → Edge Relation Extension" Name: @ocif/rel/edge
+ * Spec: https://github.com/ocwg/ocif-spec/blob/main/spec/v0.6/spec.md → "Relation Extensions → Edge Relation Extension" Name: @ocif/rel/edge
  * TYPE_URI:
  * <a href="https://spec.canvasprotocol.org/v0.6/extensions/edge-rel.json">spec</a>
  * <p>
@@ -29,10 +29,12 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
  * <li> node (ID, optional): visual node representing this relation
  * </p>
  */
-public class EdgeRelationExtension extends OcifExtension implements IOcifRelationExtension {
+public class EdgeRelationExtension extends OcifExtension implements IOcifRelationExtension, com.graphinout.reader.ocif.document.extension.node.IOcifNodeExtension {
 
-    public static final String TYPE_NAME = "@ocif/rel/edge";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/edge-rel.json";
+    public static final String TYPE_NAME = "@ocif/edge";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/edge.json";
+    /** @deprecated v0.6 name kept for backward-compatible reading */
+    @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/rel/edge";
 
     private String start;
     private String end;

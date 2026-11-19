@@ -10,16 +10,33 @@ public final class OCIF {
 
         public static final String V0_6 = "https://canvasprotocol.org/ocif/v0.6";
         public static final String V0_7_0 = "https://canvasprotocol.org/ocif/v0.7.0";
-        /** Assumed when an OCIF document declares no schema. Per the spec, OCIF files SHOULD declare one. */
-        public static final String DEFAULT = V0_7_0;
+        public static final String V0_7_1 = "https://canvasprotocol.org/ocif/v0.7.1";
+
+        /** The OCIF version this module targets and emits by default. */
+        public static final String DEFAULT = V0_7_1;
 
     }
 
+    /** Base URI for built-in extension schemas of the targeted spec version: {@code .../v0.7.1/extensions/}. */
+    public static final String EXTENSION_BASE = "https://spec.canvasprotocol.org/v0.7.1/extensions/";
+
     public static final class Type {
 
-        public static final String OCIF_REL_EDGE = "@ocif/rel/edge";
-        public static final String OCIF_REL_PARENT_CHILD = "@ocif/rel/parent-child";
-        public static final String OCIF_REL_HYPEREDGE = "@ocif/rel/hyperedge";
+        // v0.7.0 type names (short form, no namespace segment)
+        public static final String OCIF_EDGE = "@ocif/edge";
+        public static final String OCIF_GROUP = "@ocif/group";
+        public static final String OCIF_HYPEREDGE = "@ocif/hyperedge";
+        public static final String OCIF_INHERIT = "@ocif/inherit";
+
+        // v0.6 legacy type names kept for backward-compatible reading
+        /** @deprecated use {@link #OCIF_EDGE} */
+        @Deprecated public static final String OCIF_REL_EDGE = "@ocif/rel/edge";
+        /** @deprecated use {@link #OCIF_GROUP} */
+        @Deprecated public static final String OCIF_REL_GROUP = "@ocif/rel/group";
+        /** @deprecated replaced by node.parent + {@link #OCIF_INHERIT} */
+        @Deprecated public static final String OCIF_REL_PARENT_CHILD = "@ocif/rel/parent-child";
+        /** @deprecated use {@link #OCIF_HYPEREDGE} */
+        @Deprecated public static final String OCIF_REL_HYPEREDGE = "@ocif/rel/hyperedge";
 
     }
 
@@ -46,11 +63,15 @@ public final class OCIF {
 
         public static final String DATA = "data";
         public static final String ID = "id";
+        public static final String PARENT = "parent";
+        public static final String DELETE_WITH_PARENT = "deleteWithParent";
         public static final String POSITION = "position";
         public static final String RELATION = "relation";
         public static final String RESOURCE = "resource";
         public static final String RESOURCE_FIT = "resourceFit";
         public static final String ROTATION = "rotation";
+        public static final String ROTATION_AXIS = "rotationAxis";
+        public static final String SCALE = "scale";
         public static final String SIZE = "size";
 
     }
@@ -101,7 +122,9 @@ public final class OCIF {
         public static final String BOLD = "bold";
         public static final String ITALIC = "italic";
         public static final String THEMES = "themes";
-        public static final String SELECT_THEME = "select-theme";
+        public static final String SELECT_THEME = "selectTheme";
+        /** @deprecated v0.6 used kebab-case; replaced by {@link #SELECT_THEME} */
+        @Deprecated public static final String SELECT_THEME_LEGACY = "select-theme";
         public static final String PAGE_NUMBER = "pageNumber";
         public static final String LABEL = "label";
         public static final String ENDPOINTS = "endpoints";

@@ -8,7 +8,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Marker interface for OCIF extensions (canvas, node, and relation extensions).
  * <p>
- * See spec: reader-ocif/src/spec-v0.6/spec.md, sections:
+ * See spec: https://github.com/ocwg/ocif-spec/blob/main/spec/v0.6/spec.md, sections:
  * <li>Canvas Extensions
  * <li>Node Extensions
  * <li>Relation Extensions

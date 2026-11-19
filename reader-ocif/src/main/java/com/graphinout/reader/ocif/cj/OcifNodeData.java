@@ -29,9 +29,15 @@ public class OcifNodeData {
      */
     public static OcifNodeData ofOcifNode(IOcifNode ocifNode) {
         OcifNodeData ocifNodeData = new OcifNodeData(factory().createObjectMutable());
+        ifPresentAccept(ocifNode.parent(), ocifNodeData::parent);
+        if (Boolean.FALSE.equals(ocifNode.deleteWithParent())) {
+            ocifNodeData.deleteWithParent(false);
+        }
         ifPresentAccept(ocifNode.position(), ocifNodeData::position);
         ifPresentAccept(ocifNode.size(), ocifNodeData::size);
         ifPresentAccept(ocifNode.rotation(), ocifNodeData::rotation);
+        ifPresentAccept(ocifNode.rotationAxis(), ocifNodeData::rotationAxis);
+        ifPresentAccept(ocifNode.scale(), ocifNodeData::scale);
         ifPresentAccept(ocifNode.resource(), ocifNodeData::resource);
         ifPresentAccept(ocifNode.resourceFit(), ocifNodeData::resourceFit);
         ifPresentAccept(ocifNode.relation(), ocifNodeData::relation);
@@ -44,9 +50,13 @@ public class OcifNodeData {
     public static void toOcifNode(@Nullable IJsonValue jsonValue, IOcifNodeMutable ocifNode) {
         if (jsonValue == null) return;
         OcifNodeData d = new OcifNodeData(jsonValue.asObject().mutableCopy());
+        ifPresentAccept(d.parent(), ocifNode::parent);
+        ifPresentAccept(d.deleteWithParent(), ocifNode::deleteWithParent);
         ifPresentAccept(d.position(), ocifNode::position);
         ifPresentAccept(d.size(), ocifNode::size);
         ifPresentAccept(d.rotation(), OcifAngle::of, ocifNode::rotation);
+        ifPresentAccept(d.rotationAxis(), ocifNode::rotationAxis);
+        ifPresentAccept(d.scale(), ocifNode::scale);
         // map optional resource reference from CJ data if present
         ifPresentAccept(d.resource(), ocifNode::resource);
         ifPresentAccept(d.resourceFit(), ocifNode::resourceFit);
@@ -60,6 +70,22 @@ public class OcifNodeData {
 
     public IJsonObject jsonObject() {
         return o;
+    }
+
+    public void deleteWithParent(boolean v) {
+        o.add(OCIF.Node.DELETE_WITH_PARENT, v);
+    }
+
+    public Boolean deleteWithParent() {
+        return mapOrNull(o.get(OCIF.Node.DELETE_WITH_PARENT), IJsonValue::asBooleanOrNull);
+    }
+
+    public void parent(String parent) {
+        o.add(OCIF.Node.PARENT, parent);
+    }
+
+    public String parent() {
+        return o.getString(OCIF.Node.PARENT);
     }
 
     public void position(OcifVector23D vector23D) {
@@ -100,6 +126,22 @@ public class OcifNodeData {
 
     public Double rotation() {
         return mapOrNull(o.get(OCIF.Node.ROTATION), j -> j.asNumber().doubleValue());
+    }
+
+    public void rotationAxis(OcifVector23D v) {
+        o.add(OCIF.Node.ROTATION_AXIS, v.toJson());
+    }
+
+    public OcifVector23D rotationAxis() {
+        return mapOrNull(o.get(OCIF.Node.ROTATION_AXIS), OcifVector23D::of);
+    }
+
+    public void scale(OcifVector23D v) {
+        o.add(OCIF.Node.SCALE, v.toJson());
+    }
+
+    public OcifVector23D scale() {
+        return mapOrNull(o.get(OCIF.Node.SCALE), OcifVector23D::of);
     }
 
     public void size(OcifVector23D vector23D) {

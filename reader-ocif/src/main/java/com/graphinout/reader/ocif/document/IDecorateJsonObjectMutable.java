@@ -1,10 +1,8 @@
 package com.graphinout.reader.ocif.document;
 
-import com.graphinout.foundation.pure.json.document.IJsonObject;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 
 import java.util.Map;
-import java.util.Set;
 
 import static com.graphinout.reader.ocif.Ocifs.factory;
 

@@ -13,6 +13,7 @@ import com.graphinout.reader.ocif.document.IOcifNodeMutable;
 import com.graphinout.reader.ocif.document.IOcifRelation;
 import com.graphinout.reader.ocif.document.IOcifRelationMutable;
 import com.graphinout.reader.ocif.document.IOcifResource;
+import com.graphinout.reader.ocif.document.IOcifResourceMutable;
 import com.graphinout.reader.ocif.document.IOcifSchema;
 import com.graphinout.reader.ocif.document.extension.DataExtension;
 import com.graphinout.reader.ocif.document.extension.IOcifExtension;
@@ -114,46 +115,83 @@ public class Json2OcifDoc {
         if (typeNameOrUri == null) {
             throw new ContentErrorException(ErrorLevel.Error, "Invalid OCIF: missing type URI");
         }
-        // FIXME must look up schemas to resolve type names to URIs
-        return switch (typeNameOrUri) {
+        // Built-in extension schema URIs are versioned (v0.6 / v0.7.0 / v0.7.1). Normalize any such full URI to its
+        // short {@code @ocif/<name>} type name so the switch below recognizes it regardless of the spec version that
+        // produced the document. FIXME proper resolution would look up the document's schemas array.
+        String typeName = normalizeExtensionType(typeNameOrUri);
+        return switch (typeName) {
             // ALL
             case DataExtension.TYPE_URI, DataExtension.TYPE_NAME -> DataExtension.of(obj);
             // Canvas
-            case CanvasViewportExtension.TYPE_URI, CanvasViewportExtension.TYPE_NAME -> CanvasViewportExtension.of(obj);
+            case CanvasViewportExtension.TYPE_URI, CanvasViewportExtension.TYPE_NAME,
+                 CanvasViewportExtension.TYPE_NAME_V0_6 -> CanvasViewportExtension.of(obj);
+            // graphinout's own extensions for CJ -> OCIF -> CJ round-trips
             case CjGraphStructureCanvasExtension.TYPE_URI, CjGraphStructureCanvasExtension.TYPE_NAME ->
                     CjGraphStructureCanvasExtension.of(obj);
-            // Node extensions
-            case AnchoredNodeExtension.TYPE_URI, AnchoredNodeExtension.TYPE_NAME -> AnchoredNodeExtension.of(obj);
-            case ArrowNodeExtension.TYPE_URI, ArrowNodeExtension.TYPE_NAME -> ArrowNodeExtension.of(obj);
-            case NodeTransformsExtension.TYPE_URI, NodeTransformsExtension.TYPE_NAME -> NodeTransformsExtension.of(obj);
-            case OvalNodeExtension.TYPE_URI, OvalNodeExtension.TYPE_NAME -> OvalNodeExtension.of(obj);
-            case PageNodeExtension.TYPE_URI, PageNodeExtension.TYPE_NAME -> PageNodeExtension.of(obj);
-            case PathNodeExtension.TYPE_URI, PathNodeExtension.TYPE_NAME -> PathNodeExtension.of(obj);
-            case PortsNodeExtension.TYPE_URI, PortsNodeExtension.TYPE_NAME -> PortsNodeExtension.of(obj);
-            case RectangleNodeExtension.TYPE_URI, RectangleNodeExtension.TYPE_NAME -> RectangleNodeExtension.of(obj);
-            case TextStyleNodeExtension.TYPE_URI, TextStyleNodeExtension.TYPE_NAME -> TextStyleNodeExtension.of(obj);
-            case ThemeNodeExtension.TYPE_URI, ThemeNodeExtension.TYPE_NAME -> ThemeNodeExtension.of(obj);
-            // Relation extensions
-            case EdgeRelationExtension.TYPE_URI, EdgeRelationExtension.TYPE_NAME -> EdgeRelationExtension.of(obj);
-            case GroupRelationExtension.TYPE_URI, GroupRelationExtension.TYPE_NAME -> GroupRelationExtension.of(obj);
-            case HyperedgeRelationExtension.TYPE_URI, HyperedgeRelationExtension.TYPE_NAME ->
-                    HyperedgeRelationExtension.of(obj);
-            case ParentChildRelationExtension.TYPE_URI, ParentChildRelationExtension.TYPE_NAME ->
-                    ParentChildRelationExtension.of(obj);
             case CjLabelRelationExtension.TYPE_URI, CjLabelRelationExtension.TYPE_NAME ->
                     CjLabelRelationExtension.of(obj);
+            // Node extensions
+            case AnchoredNodeExtension.TYPE_URI, AnchoredNodeExtension.TYPE_NAME,
+                 AnchoredNodeExtension.TYPE_NAME_V0_6 -> AnchoredNodeExtension.of(obj);
+            case ArrowNodeExtension.TYPE_URI, ArrowNodeExtension.TYPE_NAME,
+                 ArrowNodeExtension.TYPE_NAME_V0_6 -> ArrowNodeExtension.of(obj);
+            case NodeTransformsExtension.TYPE_URI, NodeTransformsExtension.TYPE_NAME -> NodeTransformsExtension.of(obj);
+            case OvalNodeExtension.TYPE_URI, OvalNodeExtension.TYPE_NAME,
+                 OvalNodeExtension.TYPE_NAME_V0_6 -> OvalNodeExtension.of(obj);
+            case PageNodeExtension.TYPE_URI, PageNodeExtension.TYPE_NAME,
+                 PageNodeExtension.TYPE_NAME_V0_6 -> PageNodeExtension.of(obj);
+            case PathNodeExtension.TYPE_URI, PathNodeExtension.TYPE_NAME,
+                 PathNodeExtension.TYPE_NAME_V0_6 -> PathNodeExtension.of(obj);
+            case PortsNodeExtension.TYPE_URI, PortsNodeExtension.TYPE_NAME,
+                 PortsNodeExtension.TYPE_NAME_V0_6 -> PortsNodeExtension.of(obj);
+            case RectangleNodeExtension.TYPE_URI, RectangleNodeExtension.TYPE_NAME,
+                 RectangleNodeExtension.TYPE_NAME_V0_6 -> RectangleNodeExtension.of(obj);
+            case TextStyleNodeExtension.TYPE_URI, TextStyleNodeExtension.TYPE_NAME,
+                 TextStyleNodeExtension.TYPE_NAME_V0_6 -> TextStyleNodeExtension.of(obj);
+            case ThemeNodeExtension.TYPE_URI, ThemeNodeExtension.TYPE_NAME,
+                 ThemeNodeExtension.TYPE_NAME_V0_6 -> ThemeNodeExtension.of(obj);
+            // Edge/Group/Hyperedge: node extensions in v0.7, relation extensions in v0.6
+            case EdgeRelationExtension.TYPE_URI, EdgeRelationExtension.TYPE_NAME,
+                 EdgeRelationExtension.TYPE_NAME_V0_6 -> EdgeRelationExtension.of(obj);
+            case GroupRelationExtension.TYPE_URI, GroupRelationExtension.TYPE_NAME,
+                 GroupRelationExtension.TYPE_NAME_V0_6 -> GroupRelationExtension.of(obj);
+            case HyperedgeRelationExtension.TYPE_URI, HyperedgeRelationExtension.TYPE_NAME,
+                 HyperedgeRelationExtension.TYPE_NAME_V0_6 -> HyperedgeRelationExtension.of(obj);
+            // v0.6 only: ParentChild is superseded by node.parent in v0.7
+            case ParentChildRelationExtension.TYPE_URI, ParentChildRelationExtension.TYPE_NAME ->
+                    ParentChildRelationExtension.of(obj);
 
             // FIXME this looses the original type value
             default -> DataExtension.of(obj);
         };
     }
 
+    /**
+     * Maps a versioned built-in extension schema URI (e.g.
+     * {@code https://spec.canvasprotocol.org/v0.7.1/extensions/rect.json}) to its short {@code @ocif/<name>} type name.
+     * Any other string (a short type name, or a non-built-in URI) is returned unchanged.
+     */
+    static String normalizeExtensionType(String typeNameOrUri) {
+        java.util.regex.Matcher m = BUILTIN_EXTENSION_URI.matcher(typeNameOrUri);
+        return m.matches() ? "@ocif/" + m.group(1) : typeNameOrUri;
+    }
+
+    private static final java.util.regex.Pattern BUILTIN_EXTENSION_URI =
+            java.util.regex.Pattern.compile("^https?://spec\\.canvasprotocol\\.org/v[^/]+/extensions/(.+)\\.json$");
+
     public static IOcifNodeMutable toOcifNode(IJsonObject o, Consumer<ContentError> errorHandler) {
         IOcifNodeMutable ocifNode = new OcifNode();
         ifPresentAccept(o.get(Common.ID), IJsonValue::asString, ocifNode::id);
+        ifPresentAccept(o.get(OCIF.Node.PARENT), IJsonValue::asString, ocifNode::parent);
+        ifPresentAccept(o.get(OCIF.Node.DELETE_WITH_PARENT), IJsonValue::asBooleanOrNull, ocifNode::deleteWithParent);
         ifPresentAccept(o.get(OCIF.Node.POSITION), OcifVector23D::of, ocifNode::position);
         ifPresentAccept(o.get(OCIF.Node.SIZE), OcifVector23D::of, ocifNode::size);
-        ifPresentAccept(o.get(OCIF.Node.RESOURCE), IJsonValue::asString, ocifNode::resource);
+        // resource may be a string id (resolved here) or, since v0.7.1, an inline Resource object
+        // (handled by the document-level node loop, which can register the synthesized resource).
+        IJsonValue resourceValue = o.get(OCIF.Node.RESOURCE);
+        if (resourceValue != null && resourceValue.isString()) {
+            ocifNode.resource(resourceValue.asString());
+        }
         ifPresentAccept(o.get(OCIF.Node.RESOURCE_FIT), IJsonValue::asString, s -> //
                 ocifNode.resourceFit(IOcifNodeMutable.ResourceFit.valueOf(s)));
         ifPresentAccept(o.get(Common.DATA), data -> {
@@ -163,6 +201,8 @@ public class Json2OcifDoc {
             });
         });
         ifPresentAccept(o.get(OCIF.Node.ROTATION), OcifAngle::of, ocifNode::rotation);
+        ifPresentAccept(o.get(OCIF.Node.ROTATION_AXIS), OcifVector23D::of, ocifNode::rotationAxis);
+        ifPresentAccept(o.get(OCIF.Node.SCALE), OcifVector23D::of, ocifNode::scale);
         ifPresentAccept(o.get(OCIF.Node.RELATION), IJsonValue::asString, ocifNode::relation);
         return ocifNode;
     }
@@ -185,6 +225,24 @@ public class Json2OcifDoc {
         return r;
     }
 
+    /**
+     * v0.7.1: if a node's {@code resource} is an inline Resource object (a Resource without an {@code id}, scoped to
+     * the node), parse it, register it on the document under a synthesized id derived from the node id, and point the
+     * node at that id. This keeps the rest of the pipeline (which resolves resources by id) unchanged.
+     */
+    private static void registerInlineResourceIfPresent(IJsonObject nodeJson, IOcifNodeMutable node, OcifDocument doc,
+                                                        Consumer<ContentError> errorHandler) {
+        IJsonValue resourceValue = nodeJson.get(OCIF.Node.RESOURCE);
+        if (resourceValue == null || !resourceValue.isObject()) {
+            return;
+        }
+        String syntheticId = (node.id() != null ? node.id() : "node") + "/resource";
+        IOcifResourceMutable inlineResource =
+                IOcifResource.jsonToInlineOcifResource(resourceValue.asObject(), syntheticId, errorHandler);
+        doc.addResource(inlineResource);
+        node.resource(syntheticId);
+    }
+
     public @NonNull OcifDocument jsonObject2ocifDocument(@Nullable IJsonObject o, @NonNull Consumer<ContentError> errorHandler) throws ContentErrorException {
         OcifDocument doc = new OcifDocument();
         if (o == null) return doc;
@@ -202,8 +260,11 @@ public class Json2OcifDoc {
                 ifPresentAccept(v, w -> toOcifExtension(w, errorHandler), ext -> doc.addCanvasExtension((IOcifCanvasExtension) ext)));
 
         // nodes
-        ifPresentExpectArrayOfObjects(o, OCIF.Root.NODES, v -> //
-                ifPresentAccept(v, w -> toOcifNode(w, errorHandler), doc::addNode));
+        ifPresentExpectArrayOfObjects(o, OCIF.Root.NODES, nodeJson -> {
+            IOcifNodeMutable node = toOcifNode(nodeJson, errorHandler);
+            registerInlineResourceIfPresent(nodeJson, node, doc, errorHandler);
+            doc.addNode(node);
+        });
 
         // relations
         ifPresentExpectArrayOfObjects(o, OCIF.Root.RELATIONS, v -> //

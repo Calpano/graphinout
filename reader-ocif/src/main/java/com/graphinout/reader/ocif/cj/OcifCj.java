@@ -1,9 +1,5 @@
 package com.graphinout.reader.ocif.cj;
 
-import com.graphinout.foundation.pure.json.path.IJsonContainerNavigationStep;
-
-import java.util.List;
-
 public class OcifCj {
 
 

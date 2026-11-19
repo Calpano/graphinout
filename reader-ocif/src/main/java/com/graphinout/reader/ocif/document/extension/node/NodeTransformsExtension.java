@@ -18,7 +18,7 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
 /**
  * Node Transforms Extension.
  * <p>
- * Spec: reader-ocif/src/spec-v0.6/spec.md → "Node Extensions → Node Transforms Extension" Name: @ocif/node/transforms
+ * Spec: https://github.com/ocwg/ocif-spec/blob/main/spec/v0.6/spec.md → "Node Extensions → Node Transforms Extension" Name: @ocif/node/transforms
  * TYPE_URI: https://spec.canvasprotocol.org/v0.6/extensions/transforms-node.json
  * <p>
  * Properties:
@@ -27,7 +27,11 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
  * <li>rotationAxis (number[3])
  * <li>offset (number | number[2] | number[3])
  * </p>
+ *
+ * @deprecated v0.7.0: rotation, rotationAxis and scale are now core Node properties. Use {@code IOcifNode#rotation()},
+ * {@code IOcifNode#rotationAxis()} and {@code IOcifNode#scale()} instead.
  */
+@Deprecated
 public class NodeTransformsExtension extends OcifExtension implements IOcifNodeExtension {
 
     public static final String TYPE_NAME = "@ocif/node/transforms";

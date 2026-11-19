@@ -1,9 +1,0 @@
-{
-  "ocif": "https://canvasprotocol.org/ocif/v0.7.1",
-  "nodes": [
-    {"id": "bg", "label": "background", "zIndex": 0, "visible": true},
-    {"id": "mid", "label": "middle", "zIndex": 10, "visible": true},
-    {"id": "top", "label": "top", "zIndex": 100, "visible": false, "locked": true}
-  ],
-  "relations": []
-}

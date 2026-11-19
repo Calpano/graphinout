@@ -19,7 +19,7 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
 /**
  * Path Node Extension.
  * <p>
- * Spec: reader-ocif/src/spec-v0.6/spec.md → "Node Extensions → Path Extension" Name: @ocif/node/path TYPE_URI:
+ * Spec: https://github.com/ocwg/ocif-spec/blob/main/spec/v0.6/spec.md → "Node Extensions → Path Extension" Name: @ocif/node/path TYPE_URI:
  * https://spec.canvasprotocol.org/v0.6/extensions/path-node.json
  * <p>
  * Properties:
@@ -31,8 +31,10 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
  */
 public class PathNodeExtension extends OcifExtension implements IOcifNodeExtension {
 
-    public static final String TYPE_NAME = "@ocif/node/path";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/path-node.json";
+    public static final String TYPE_NAME = "@ocif/path";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/path.json";
+    /** @deprecated v0.6 name kept for backward-compatible reading */
+    @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/path";
     public static final String STROKE_WIDTH = "strokeWidth";
     public static final String STROKE_COLOR = "strokeColor";
     public static final String FILL_COLOR = "fillColor";

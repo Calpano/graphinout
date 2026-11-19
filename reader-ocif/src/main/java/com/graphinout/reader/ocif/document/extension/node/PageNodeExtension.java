@@ -18,7 +18,7 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
 /**
  * Page Node Extension.
  * <p>
- * Spec: reader-ocif/src/spec-v0.6/spec.md → "Node Extensions → Page Node Extension" Name: @ocif/node/page TYPE_URI:
+ * Spec: https://github.com/ocwg/ocif-spec/blob/main/spec/v0.6/spec.md → "Node Extensions → Page Node Extension" Name: @ocif/node/page TYPE_URI:
  * https://spec.canvasprotocol.org/v0.6/extensions/page-node.json
  * <p>
  * Properties:
@@ -28,8 +28,10 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
  */
 public class PageNodeExtension extends OcifExtension implements IOcifNodeExtension {
 
-    public static final String TYPE_NAME = "@ocif/node/page";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/page-node.json";
+    public static final String TYPE_NAME = "@ocif/page";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/page.json";
+    /** @deprecated v0.6 name kept for backward-compatible reading */
+    @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/page";
     public static final String PAGE_NUMBER = "pageNumber";
     public static final String LABEL = "label";
     /** page order; first page typically 1 */

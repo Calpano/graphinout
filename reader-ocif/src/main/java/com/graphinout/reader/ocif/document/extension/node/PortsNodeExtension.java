@@ -19,7 +19,7 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
 /**
  * Ports Node Extension.
  * <p>
- * Spec: reader-ocif/src/spec-v0.6/spec.md → "Node Extensions → Ports Node Extension" Name: @ocif/node/ports TYPE_URI:
+ * Spec: https://github.com/ocwg/ocif-spec/blob/main/spec/v0.6/spec.md → "Node Extensions → Ports Node Extension" Name: @ocif/node/ports TYPE_URI:
  * https://spec.canvasprotocol.org/v0.6/extensions/ports-node.json
  * <p>
  * Properties:
@@ -30,8 +30,10 @@ public class PortsNodeExtension extends OcifExtension implements IOcifNodeExtens
 
     public static final String PORTS = "ports";
 
-    public static final String TYPE_NAME = "@ocif/node/ports";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/ports-node.json";
+    public static final String TYPE_NAME = "@ocif/ports";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/ports.json";
+    /** @deprecated v0.6 name kept for backward-compatible reading */
+    @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/ports";
     /** array of string IDs */
     private List<String> ports = new ArrayList<>();
 

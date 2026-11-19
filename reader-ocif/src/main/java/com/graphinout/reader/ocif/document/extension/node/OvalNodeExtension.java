@@ -17,7 +17,7 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
 /**
  * Oval Node Extension.
  * <p>
- * Spec: reader-ocif/src/spec-v0.6/spec.md → "Node Extensions → Oval Extension" Name: @ocif/node/oval TYPE_URI:
+ * Spec: https://github.com/ocwg/ocif-spec/blob/main/spec/v0.6/spec.md → "Node Extensions → Oval Extension" Name: @ocif/node/oval TYPE_URI:
  * https://spec.canvasprotocol.org/v0.6/extensions/oval-node.json
  * <p>
  * Has the same properties as Rectangle; rendering differs (ellipse within bounding box).
@@ -25,8 +25,10 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
  */
 public class OvalNodeExtension extends OcifExtension implements IOcifNodeExtension {
 
-    public static final String TYPE_NAME = "@ocif/node/oval";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/oval-node.json";
+    public static final String TYPE_NAME = "@ocif/oval";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/oval.json";
+    /** @deprecated v0.6 name kept for backward-compatible reading */
+    @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/oval";
     /** default 1 */
     private Double strokeWidth;
     /** default #FFFFFF */

@@ -20,7 +20,7 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
 /**
  * Theme Node Extension.
  * <p>
- * Spec: reader-ocif/src/spec-v0.6/spec.md → "Node Extensions → Theme Node Extension" and "Theme Selection" Name:
+ * Spec: https://github.com/ocwg/ocif-spec/blob/main/spec/v0.6/spec.md → "Node Extensions → Theme Node Extension" and "Theme Selection" Name:
  *
  * @ocif/node/theme TYPE_URI: https://spec.canvasprotocol.org/v0.6/extensions/theme-node.json
  * <p>
@@ -30,8 +30,10 @@ import static com.graphinout.reader.ocif.Ocifs.factory;
  */
 public class ThemeNodeExtension extends OcifExtension implements IOcifNodeExtension {
 
-    public static final String TYPE_NAME = "@ocif/node/theme";
-    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.6/extensions/theme-node.json";
+    public static final String TYPE_NAME = "@ocif/theme-def";
+    public static final String TYPE_URI = "https://spec.canvasprotocol.org/v0.7.1/extensions/theme-def.json";
+    /** @deprecated v0.6 name kept for backward-compatible reading */
+    @Deprecated public static final String TYPE_NAME_V0_6 = "@ocif/node/theme";
     /** Map-like object holding top-level theme names as properties; each value typically contains a "data" array. */
     private Map<String, Object> themes = new HashMap<>();
     /** Optional: Name of the theme to select; null selects the default (no theme). Uses JSON key "select-theme". */

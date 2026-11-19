@@ -36,7 +36,10 @@ import com.graphinout.reader.ocif.document.impl.OcifDocument;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
@@ -165,11 +168,20 @@ public class OcifDoc2CjDoc {
         }
     }
 
+    private static void ocifDocument2cjGraph(OcifDocument ocifDocument, ICjGraphMutable cjGraph) {
+        for (IOcifNode ocifNode : ocifDocument.nodes()) {
+            cjGraph.addNode(cjNode -> ocifNode2cjNode(ocifDocument, ocifNode, cjNode));
+        }
+        for (IOcifRelation ocifRelation : ocifDocument.relations()) {
+            cjGraph.addEdge(cjEdge -> ocifRelation2cjEdge(ocifRelation, cjEdge));
+        }
+    }
+
     /** Lookup of OCIF nodes/relations by id, tracking which were already placed into a CJ graph. */
     private static final class NodeIndex {
-        final java.util.Map<String, IOcifNode> nodesById = new java.util.LinkedHashMap<>();
-        final java.util.Map<String, IOcifRelation> relationsById = new java.util.LinkedHashMap<>();
-        final java.util.List<IOcifRelation> relationsNoId = new java.util.ArrayList<>();
+        final Map<String, IOcifNode> nodesById = new LinkedHashMap<>();
+        final Map<String, IOcifRelation> relationsById = new LinkedHashMap<>();
+        final List<IOcifRelation> relationsNoId = new ArrayList<>();
 
         NodeIndex(OcifDocument doc) {
             for (IOcifNode n : doc.nodes()) {
@@ -196,7 +208,7 @@ public class OcifDoc2CjDoc {
             cjGraph.addNode(cjNode -> {
                 ocifNode2cjNode(ocifDocument, ocifNode, cjNode);
                 // graphs nested inside this node
-                java.util.List<CjGraphStructureCanvasExtension.GraphInfo> nested = structure.nodeGraphs().get(nodeId);
+                List<CjGraphStructureCanvasExtension.GraphInfo> nested = structure.nodeGraphs().get(nodeId);
                 if (nested != null) {
                     for (CjGraphStructureCanvasExtension.GraphInfo child : nested) {
                         cjNode.addGraph(childGraph -> buildCjGraph(ocifDocument, structure, index, child, childGraph));
@@ -211,15 +223,6 @@ public class OcifDoc2CjDoc {
         }
         for (CjGraphStructureCanvasExtension.GraphInfo child : gi.graphs) {
             cjGraph.addGraph(childGraph -> buildCjGraph(ocifDocument, structure, index, child, childGraph));
-        }
-    }
-
-    private static void ocifDocument2cjGraph(OcifDocument ocifDocument, ICjGraphMutable cjGraph) {
-        for (IOcifNode ocifNode : ocifDocument.nodes()) {
-            cjGraph.addNode(cjNode -> ocifNode2cjNode(ocifDocument, ocifNode, cjNode));
-        }
-        for (IOcifRelation ocifRelation : ocifDocument.relations()) {
-            cjGraph.addEdge(cjEdge -> ocifRelation2cjEdge(ocifRelation, cjEdge));
         }
     }
 
@@ -295,7 +298,7 @@ public class OcifDoc2CjDoc {
                         cjLabelRelation.label().entries().forEach(cjEntry -> //
                                 cjEdge.addLabel(cjEntry.value(), cjEntry.language()));
                 case EdgeRelationExtension edge -> {
-                    assert Objects.equals(edge.typeName(), OCIF.Type.OCIF_REL_EDGE);
+                    assert Objects.equals(edge.typeName(), OCIF.Type.OCIF_EDGE);
                     String startId = edge.start();
                     String endId = edge.end();
                     String[] s = splitEndpoint(startId);

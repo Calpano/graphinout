@@ -1,7 +1,6 @@
 package com.graphinout.reader.ocif.document.extension;
 
 import com.graphinout.foundation.pure.json.document.IJsonValue;
-import com.graphinout.reader.ocif.document.impl.DecoratedJsonObject;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 

@@ -44,7 +44,6 @@
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-mermaid</artifactId><version>0.2.4-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-neo4j</artifactId><version>0.2.4-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif</artifactId><version>0.2.4-SNAPSHOT</version></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif07</artifactId><version>0.2.4-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-pgformat</artifactId><version>0.2.4-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-plantuml</artifactId><version>0.2.4-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-rdf</artifactId><version>0.2.4-SNAPSHOT</version></dependency>
@@ -69,7 +68,6 @@
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-mermaid</artifactId><version>0.2.4-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-neo4j</artifactId><version>0.2.4-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif</artifactId><version>0.2.4-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>reader-ocif07</artifactId><version>0.2.4-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-pgformat</artifactId><version>0.2.4-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-plantuml</artifactId><version>0.2.4-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-rdf</artifactId><version>0.2.4-SNAPSHOT</version><type>test-jar</type><classifier>tests</classifier><scope>test</scope></dependency>
