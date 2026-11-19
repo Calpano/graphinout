@@ -35,6 +35,9 @@ java -jar cli/target/cli-<version>-cli.jar convert graph.tgf --to connected-json
 
 # Inspect a graph: node/edge counts and which model features it uses
 java -jar cli/target/cli-<version>-cli.jar analyze graph.graphml.xml
+
+# Which format is this file? Ranked candidates as JSON
+java -jar cli/target/cli-<version>-cli.jar detect mystery.txt
 ----
 
 == `gio` launcher
@@ -63,6 +66,7 @@ Pass extra JVM options via `GIO_JAVA_OPTS`, e.g. `GIO_JAVA_OPTS=-Xmx2g gio conve
 | `formats` | List supported input (readers) and output (writers) formats
 | `convert <input> [options]` | Convert a graph file to another format
 | `analyze <input> [--from <id>]` | Inspect a graph: graph/node/edge counts and the model features it uses
+| `detect <input>` | Probe all readers and print the ranked format candidates as JSON
 | `version` | Print the version
 | `help` | Show usage
 |===
@@ -122,3 +126,37 @@ The reported counts (`graphs`/`nodes`/`edges`) are recursive across all nesting 
 the slugs of the model features detected in the document, from the controlled vocabulary defined by the
 `com.graphinout.base.cj.analyze.CjFeature` enum (which mirrors the graph-format-registry feature catalog).
 The same analysis is available programmatically via `CjAnalyzer.analyze(ICjDocument)`.
+
+== `detect`
+
+Answers "which format is this file?".
+Every reader tries to parse the input, and the candidates are ranked by file name and extension, content
+kind (XML/JSON/text/binary), format vocabulary and how cleanly each reader parsed the input.
+`analyze` and `convert` pick _one_ reader; `detect` shows them _all_.
+
+It takes no options. The result is one line of JSON on `stdout`; pipe it through `jq` to read it:
+
+[source,shell]
+----
+gio detect mystery.txt | jq -c '{best, tier, top: [.candidates[:3][] | {format, outcome, confidence}]}'
+# {"best":"dot","tier":"CONFIDENT","top":[{"format":"dot","outcome":"RECOVERED","confidence":0.850}, ...]}
+----
+
+.Top-Level Fields
+`best`:: Format id of the highest-ranked candidate.
+`tier`:: How sure the result is: `CONFIDENT` (one strong candidate), `AMBIGUOUS` (several close ones) or `UNKNOWN` (nothing recovered).
+`contentKind`:: `XML`, `JSON`, `TEXT`, `BINARY` or `UNKNOWN`, determined before any reader runs.
+`deepAnalysisSkipped`:: `true` when no reader was run, e.g. for inputs over 1 MB or archives with several graphs. Ranking then rests on file name and content kind alone.
+`candidates`:: One entry per reader, best first.
+
+.Candidate Fields
+`format`, `label`:: The format id and its name.
+`outcome`:: `RECOVERED` (parsed into a real graph), `TRIVIAL` (parsed, but the graph is empty), `ELIMINATED` (parse failed) or `SKIPPED` (not attempted).
+`confidence`:: Score from 0 to 1.
+`stats`:: Graph, node and edge counts and the model features found, as in `analyze`.
+`signals`:: The evidence behind the score, each with a `kind`, `strength` and `reason`.
+`errors`:: Content errors the reader reported.
+`explanation`:: One-line summary.
+
+The same analysis is available programmatically via `GioInputAnalyzer`, see
+link:../doc/usage.adoc#detect[Using GraphInOut as a Java Library].
