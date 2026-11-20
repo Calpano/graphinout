@@ -50,6 +50,15 @@ Fixed::
   reported to the content error handler.
 * Neo4j APOC JSON reader: relationships were read backwards (`start` became the CJ target). `start` is now the source
   (direction `in`), `end` the target (`out`), matching the writer and the other readers.
+* GraphML reader: an edge or hyperedge endpoint that references an undeclared node is reported again as an Error
+  with line and column (`Edge 'e1' references a non-existent node ID: 'n4'`). GraphML ids are document-wide, so the
+  check runs at `</graphml>`.
+* `ValidatingCjStream` and `ValidatingCjWriter` check endpoint references against one document-wide id space, as CJ
+  specifies: an edge may reference a node in a nested or outer graph, or (edges on edges) another edge. Before, every
+  nested graph reset the known ids, and `ValidatingCjWriter` (used by `GioReader.isValid`) rejected such documents.
+* The generic reader test (`AbstractReaderTest`) could not fail: it swallowed every exception and mismatch, and it
+  located files with `ClassLoader.getSystemResource`, which misses resources inside jars. It now reports every
+  failing file with its root cause; expected errors are compared at Error level, warnings are logged.
 
 Removed::
 * `GraphmlReader` no longer validates input against the GraphML XSD (#115). Only 13 of 84 GraphML files in the test

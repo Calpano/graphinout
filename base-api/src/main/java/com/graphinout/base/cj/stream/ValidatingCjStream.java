@@ -21,8 +21,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Validates a CJ stream. Ids live in one document-wide space (an edge may reference a node of any graph, including a
+ * nested or an outer one, or — edges on edges — another edge), so endpoint references are checked at
+ * {@link #documentEnd()}. Duplicate node/edge ids are checked within each graph.
+ */
 public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStream {
 
+    /** node/edge ids of each open graph, innermost on top, for the per-graph duplicate check */
+    private final java.util.Deque<Set<String>> graphNodeIds = new java.util.ArrayDeque<>();
+    private final java.util.Deque<Set<String>> graphEdgeIds = new java.util.ArrayDeque<>();
     private final Set<String> nodeIds = new HashSet<>();
     private final Set<String> edgeIds = new HashSet<>();
     private final Set<String> portIds = new HashSet<>();
@@ -55,7 +63,15 @@ public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStrea
 
     @Override
     public void documentEnd() {
-        // no-op
+        // an endpoint may reference a node or, for edges on edges, another edge
+        Set<String> missingNodeIds = Utils.setsDifference(Utils.setsDifference(endpointNodeIds, nodeIds), edgeIds);
+        if (!missingNodeIds.isEmpty()) {
+            throw new IllegalStateException("Edge endpoint references non-existent node or edge ID(s): " + missingNodeIds);
+        }
+        Set<String> missingPortIds = Utils.setsDifference(endpointPortIds, portIds);
+        if (!missingPortIds.isEmpty()) {
+            throw new IllegalStateException("Edge endpoint references non-existent port ID(s): " + missingPortIds);
+        }
     }
 
     @Override
@@ -85,9 +101,10 @@ public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStrea
     public void edgeStart(ICjEdgeChunk edge) {
         @Nullable String id = edge.id();
         if (id != null) {
-            if (!edgeIds.add(id)) {
+            if (!currentGraph(graphEdgeIds).add(id)) {
                 throw new IllegalStateException("Duplicate edge ID: " + id);
             }
+            edgeIds.add(id);
         }
         // Remember referenced node/port ids from endpoints for validation at graphEnd
         edge.endpoints().forEach(this::collectEndpointRefs);
@@ -95,23 +112,16 @@ public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStrea
 
     @Override
     public void graphEnd() {
-        Set<String> missingNodeIds = Utils.setsDifference(endpointNodeIds, nodeIds);
-        if (!missingNodeIds.isEmpty()) {
-            throw new IllegalStateException("Edge endpoint references non-existent node ID(s): " + missingNodeIds);
-        }
-
-        Set<String> missingPortIds = Utils.setsDifference(endpointPortIds, portIds);
-        if (!missingPortIds.isEmpty()) {
-            throw new IllegalStateException("Edge endpoint references non-existent port ID(s): " + missingPortIds);
-        }
+        graphNodeIds.pop();
+        graphEdgeIds.pop();
     }
 
     // ========== ICjFactory delegation ==========
 
     @Override
     public void graphStart(ICjGraphChunk graph) {
-        // Each graph has its own id space for nodes/edges/ports
-        resetGraphScope();
+        graphNodeIds.push(new HashSet<>());
+        graphEdgeIds.push(new HashSet<>());
     }
 
     @Override
@@ -129,9 +139,10 @@ public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStrea
         // Track node id duplicates
         @Nullable String id = node.id();
         if (id != null) {
-            if (!nodeIds.add(id)) {
+            if (!currentGraph(graphNodeIds).add(id)) {
                 throw new IllegalStateException("Duplicate node ID: " + id);
             }
+            nodeIds.add(id);
         }
         // Collect port IDs recursively
         node.ports().forEach(this::collectPortIdsRecursively);
@@ -154,12 +165,9 @@ public class ValidatingCjStream extends ValidatingJsonWriter implements ICjStrea
         port.ports().forEach(this::collectPortIdsRecursively);
     }
 
-    private void resetGraphScope() {
-        nodeIds.clear();
-        edgeIds.clear();
-        portIds.clear();
-        endpointNodeIds.clear();
-        endpointPortIds.clear();
+    private static Set<String> currentGraph(java.util.Deque<Set<String>> perGraph) {
+        if (perGraph.isEmpty()) throw new IllegalStateException("node or edge outside of a graph");
+        return perGraph.peek();
     }
 
 }

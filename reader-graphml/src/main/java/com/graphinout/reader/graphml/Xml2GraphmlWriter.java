@@ -93,6 +93,12 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
     private final XmlParseContext elementStack = new XmlParseContext();
     /** XML is buffered during 'PCDATA' as in {@code <key><default>, <data>, and <desc>} elements. */
     private boolean isBufferingXml = false;
+    /** all node ids of the document; GraphML ids are document-wide and an edge may come before its nodes */
+    private final java.util.Set<String> nodeIds = new java.util.HashSet<>();
+    /** node references of edges/hyperedges, checked against {@link #nodeIds} at {@code </graphml>} */
+    private final java.util.List<NodeRef> nodeRefs = new java.util.ArrayList<>();
+
+    private record NodeRef(String element, String nodeId, Location location) {}
 
     /**
      * @param graphmlWriter downstream
@@ -348,7 +354,22 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
     }
 
     private void graphmlDocumentEnd() throws IOException {
+        reportDanglingNodeRefs();
         elementStack.pop(GRAPHML).writeEndTo(graphmlWriter);
+    }
+
+    /** Reports every edge/hyperedge endpoint that references a node id no {@code <node>} declares. */
+    private void reportDanglingNodeRefs() {
+        for (NodeRef ref : nodeRefs) {
+            if (!nodeIds.contains(ref.nodeId())) {
+                onContentError(new ContentError(ContentError.ErrorLevel.Error,
+                        ref.element() + " references a non-existent node ID: '" + ref.nodeId() + "'", ref.location()));
+            }
+        }
+    }
+
+    private void rememberNodeRef(String element, @Nullable String nodeId) {
+        if (nodeId != null) nodeRefs.add(new NodeRef(element, nodeId, Locator.locationOrNotAvailable(locator())));
     }
 
     private void graphmlDocumentStart(Map<String, String> attributes) {
@@ -370,6 +391,9 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
         GraphmlHyperEdgeBuilder builder = IGraphmlHyperEdge.builder();
         builder.attributes(attributes);
         ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
+        String edgeName = "Edge" + (attributes.get(ATTRIBUTE_ID) == null ? "" : " '" + attributes.get(ATTRIBUTE_ID) + "'");
+        rememberNodeRef(edgeName, attributes.get(IGraphmlEdge.ATTRIBUTE_SOURCE));
+        rememberNodeRef(edgeName, attributes.get(IGraphmlEdge.ATTRIBUTE_TARGET));
 
         // init from containing graph
         GraphmlGraphBuilder parentGraphElement = elementStack.findParentGraphElement();
@@ -408,6 +432,7 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
             assert parentContext.hyperEdgeBuilder() != null;
             GraphmlEndpoint graphmlEndpoint = context.endpointBuilder().build();
             parentContext.hyperEdgeBuilder().addEndpoint(graphmlEndpoint);
+            rememberNodeRef("Hyperedge endpoint", graphmlEndpoint.node());
         }
         // TODO else: parse warning
     }
@@ -537,6 +562,7 @@ public class Xml2GraphmlWriter extends BaseXmlHandler implements XmlWriter {
         GraphmlNodeBuilder builder = IGraphmlNode.builder();
         builder.attributes(attributes);
         ifAttributeNotNull(attributes, ATTRIBUTE_ID, builder::id);
+        ifAttributeNotNull(attributes, ATTRIBUTE_ID, nodeIds::add);
 
         elementStack.peek_(GRAPH).maybeWriteStartTo(graphmlWriter);
 

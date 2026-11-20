@@ -96,16 +96,24 @@ public class ValidatingCjWriter extends ValidatingJsonWriter implements ICjWrite
 
     @Override
     public void graphEnd() throws CjException {
-        Set<String> missingNodeIds = Utils.setsDifference(endpointNodeIds, nodeIds);
-        if (!missingNodeIds.isEmpty()) {
-            throw new IllegalStateException("Edge endpoint references non-existent node ID(s): " + missingNodeIds);
-        }
+        contextStack.pop();
+    }
 
+    /**
+     * Ids live in one document-wide space: an edge may reference a node of any graph (nested or outer, declared before
+     * or after it) or, for edges on edges, another edge. So references are checked once the document is complete.
+     */
+    @Override
+    public void documentEnd() {
+        super.documentEnd();
+        Set<String> missingNodeIds = Utils.setsDifference(Utils.setsDifference(endpointNodeIds, nodeIds), edgeIds);
+        if (!missingNodeIds.isEmpty()) {
+            throw new IllegalStateException("Edge endpoint references non-existent node or edge ID(s): " + missingNodeIds);
+        }
         Set<String> missingPortIds = Utils.setsDifference(endpointPortIds, portIds);
         if (!missingPortIds.isEmpty()) {
             throw new IllegalStateException("Edge endpoint references non-existent port ID(s): " + missingPortIds);
         }
-        contextStack.pop();
     }
 
     @Override

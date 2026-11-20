@@ -86,8 +86,63 @@ class ValidatingCjStreamTest {
         underTest.graphStart(graph);
         underTest.edgeStart(edge);
         underTest.edgeEnd();
+        underTest.graphEnd();
 
-        assertThrows(IllegalStateException.class, () -> underTest.graphEnd());
+        // ids are document-wide (a later graph could still declare the node): references are checked at documentEnd
+        assertThrows(IllegalStateException.class, () -> underTest.documentEnd());
+    }
+
+    @Test
+    void shouldAcceptEdgeInNestedGraphReferencingOuterNode() {
+        // CJ test plan 5.1: one document-wide id space; an inner edge may reference an outer node and vice versa
+        ICjNodeChunkMutable outer = underTest.createNodeChunk();
+        outer.id(NODE_ID_1);
+        ICjNodeChunkMutable inner = underTest.createNodeChunk();
+        inner.id(NODE_ID_2);
+        ICjEdgeChunkMutable innerEdge = underTest.createEdgeChunk();
+        innerEdge.addEndpoint(ep -> ep.node(NODE_ID_1));
+        innerEdge.addEndpoint(ep -> ep.node(NODE_ID_2));
+
+        underTest.documentStart(underTest.createDocumentChunk());
+        underTest.graphStart(underTest.createGraphChunk());
+        underTest.nodeStart(outer);
+        underTest.graphStart(underTest.createGraphChunk());
+        underTest.nodeStart(inner);
+        underTest.nodeEnd();
+        underTest.edgeStart(innerEdge);
+        underTest.edgeEnd();
+        underTest.graphEnd();
+        underTest.nodeEnd();
+        underTest.graphEnd();
+        underTest.documentEnd();
+    }
+
+    @Test
+    void shouldAcceptEdgeOnEdge() {
+        ICjNodeChunkMutable a = underTest.createNodeChunk();
+        a.id(NODE_ID_1);
+        ICjNodeChunkMutable b = underTest.createNodeChunk();
+        b.id(NODE_ID_2);
+        ICjEdgeChunkMutable base = underTest.createEdgeChunk();
+        base.id(EDGE_ID_1);
+        base.addEndpoint(ep -> ep.node(NODE_ID_1));
+        base.addEndpoint(ep -> ep.node(NODE_ID_2));
+        ICjEdgeChunkMutable meta = underTest.createEdgeChunk();
+        meta.addEndpoint(ep -> ep.node(NODE_ID_1));
+        meta.addEndpoint(ep -> ep.node(EDGE_ID_1));
+
+        underTest.documentStart(underTest.createDocumentChunk());
+        underTest.graphStart(underTest.createGraphChunk());
+        underTest.nodeStart(a);
+        underTest.nodeEnd();
+        underTest.nodeStart(b);
+        underTest.nodeEnd();
+        underTest.edgeStart(base);
+        underTest.edgeEnd();
+        underTest.edgeStart(meta);
+        underTest.edgeEnd();
+        underTest.graphEnd();
+        underTest.documentEnd();
     }
 
     @Test

@@ -34,8 +34,8 @@ public abstract class AbstractReaderTest {
                     Arrays.asList(
                             new ContentError(
                                     ContentError.ErrorLevel.Error,
-                                    "Edge [GraphmlEdge(id=e1, directed=true, sourceId=n0, targetId=n4, sourcePortId=null, targetPortId=null)] references to a non-existent node ID: 'n4'",
-                                    new Location(68, 11)
+                                    "Edge 'e1' references a non-existent node ID: 'n4'",
+                                    new Location(56, 43)
                             ));
 
         return Collections.emptyList();

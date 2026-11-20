@@ -68,11 +68,17 @@ public class ReaderTests {
     }
 
     public static List<ContentError> readResourceToSink(GioReader gioReader, Resource resource, OutputSink outputSink) throws IOException {
-        URL resourceUrl = ClassLoader.getSystemResource(resource.getPath());
+        return readResourceToSink(gioReader, resource, outputSink, true);
+    }
+
+    /** @param validateCj also check the CJ output (ids, endpoint references); off for input known to be broken */
+    public static List<ContentError> readResourceToSink(GioReader gioReader, Resource resource, OutputSink outputSink, boolean validateCj) throws IOException {
+        // the resource's own URL: ClassLoader.getSystemResource cannot see resources inside jars on surefire's classpath
+        URL resourceUrl = resource.getURL();
         log.info("Reading " + resourceUrl + " as " + gioReader.fileFormat());
         String content = TestFileUtil.readUtf8(resourceUrl);
         SingleInputSource inputSource = SingleInputSource.of(resource.getPath(), content);
-        return readTo(inputSource, gioReader, outputSink);
+        return readTo(inputSource, gioReader, outputSink, validateCj);
     }
 
 
@@ -84,9 +90,12 @@ public class ReaderTests {
      * @throws IOException
      */
     public static List<ContentError> readTo(SingleInputSource inputSource, GioReader gioReader, OutputSink outputSink) throws IOException {
+        return readTo(inputSource, gioReader, outputSink, true);
+    }
+
+    public static List<ContentError> readTo(SingleInputSource inputSource, GioReader gioReader, OutputSink outputSink, boolean validateCj) throws IOException {
         List<ContentError> contentErrors = new ArrayList<>();
         boolean validateJson = true;
-        boolean validateCj = true;
         ICjStream cjStream = ReaderTests.createCjStream(outputSink, validateJson, validateCj);
         gioReader.setContentErrorHandler(contentErrors::add);
         gioReader.read(inputSource, cjStream);
@@ -97,24 +106,60 @@ public class ReaderTests {
      * @param resource
      * @throws IOException
      */
+    /**
+     * Reads the resource and compares the content errors of level {@link ContentError.ErrorLevel#Error} with the
+     * expected ones. Warnings and infos describe how a reader leniently handled real-world input; they are logged, not
+     * asserted.
+     */
     public static void testReadResourceToGraph(GioReader gioReader, Resource resource, List<ContentError> expectedErrors) throws IOException {
         InMemoryOutputSink outputSink = new InMemoryOutputSink();
-        List<ContentError> contentErrors = readResourceToSink(gioReader, resource, outputSink);
-
-        Assertions.assertEquals(expectedErrors.toString(), contentErrors.toString(), "expected=" + expectedErrors + " actual=" + contentErrors);
-        Assertions.assertEquals(expectedErrors, contentErrors, "expected=" + expectedErrors + " actual=" + contentErrors);
+        // input expected to produce errors is broken by design (e.g. an edge to a missing node): the reader reports it,
+        // and its CJ output cannot pass reference validation
+        boolean validateCj = errorsOnly(expectedErrors).isEmpty();
+        List<ContentError> contentErrors = readResourceToSink(gioReader, resource, outputSink, validateCj);
+        contentErrors.stream().filter(e -> e.getLevel() != ContentError.ErrorLevel.Error)
+                .forEach(e -> log.debug("{}: {}", resource.getPath(), e));
+        List<ContentError> errors = errorsOnly(contentErrors);
+        List<ContentError> expected = errorsOnly(expectedErrors);
+        Assertions.assertEquals(expected.toString(), errors.toString(), "expected=" + expected + " actual=" + errors);
+        Assertions.assertEquals(expected, errors, "expected=" + expected + " actual=" + errors);
     }
 
+    private static List<ContentError> errorsOnly(List<ContentError> contentErrors) {
+        return contentErrors.stream().filter(e -> e.getLevel() == ContentError.ErrorLevel.Error).toList();
+    }
+
+    /**
+     * Reads every test resource whose file extension the reader claims and checks the reported content errors against
+     * {@code expectedErrorsFun}. Files tagged {@code --INVALID<marker>} (deliberately broken input) and expected-output
+     * files are skipped. Every other file must read without exception and with exactly the expected errors (warnings
+     * are not compared, see {@link #testReadResourceToGraph}); all failures are collected and reported together.
+     *
+     * @throws AssertionError listing each failing resource
+     */
     public static void testWithAllResource(GioReader gioReader, Function<Resource, List<ContentError>> expectedErrorsFun) {
-        forEachReadableResource(gioReader, resourcePath -> {
+        List<String> failures = new ArrayList<>();
+        int[] tested = {0};
+        forEachReadableResource(gioReader, resource -> {
+            if (TestFileUtil.isInvalid(resource, "") || TestFileUtil.isExpected(resource)) {
+                return;
+            }
+            tested[0]++;
             try {
-                testReadResourceToGraph(gioReader, resourcePath, expectedErrorsFun.apply(resourcePath));
+                testReadResourceToGraph(gioReader, resource, expectedErrorsFun.apply(resource));
             } catch (Throwable e) {
-                // Expected when probing readers against incompatible input and for negative tests — keep at DEBUG so
-                // it doesn't drown the real signal (raise with -Dgio.log.level=debug).
-                log.debug("Exception during parsing", e);
+                log.debug("Reading " + resource.getPath() + " failed", e);
+                Throwable root = e;
+                while (root.getCause() != null && root.getCause() != root) root = root.getCause();
+                String reason = (root == e ? "" : root.getClass().getSimpleName() + ": ") + String.valueOf(root.getMessage()).lines().findFirst().orElse("");
+                failures.add(resource.getPath() + ": " + (root == e ? e.getClass().getSimpleName() + ": " : "") + reason);
             }
         });
+        log.info("{} read {} test resource(s), {} failed", gioReader.fileFormat().id(), tested[0], failures.size());
+        if (!failures.isEmpty()) {
+            throw new AssertionError(gioReader.fileFormat().id() + ": " + failures.size() + " of " + tested[0]
+                    + " test resource(s) failed:\n  " + String.join("\n  ", failures));
+        }
     }
 
 
