@@ -137,6 +137,31 @@ class Neo4jRoundTripTest {
     }
 
     @Test
+    @DisplayName("Relationship start is the CJ source, end the CJ target, and the round trip keeps them")
+    void testRelationshipDirection() throws IOException {
+        String json = """
+                {"type":"node","id":"a","labels":["User"]}
+                {"type":"node","id":"b","labels":["User"]}
+                {"type":"relationship","id":"r1","label":"KNOWS","start":{"id":"a"},"end":{"id":"b"}}
+                """;
+        Neo4jReader reader = new Neo4jReader();
+        CjWriter2CjDocumentWriter cj2document = new CjWriter2CjDocumentWriter();
+        reader.read(SingleInputSource.of("direction", json), new CjStream2CjWriter(cj2document, true));
+        ICjDocument doc = cj2document.resultDoc();
+
+        // CJ direction is seen from the edge: source = direction "in", target = direction "out"
+        var edge = doc.graphs().findFirst().orElseThrow().edges().findFirst().orElseThrow();
+        assertEquals("a", edge.source().node());
+        assertEquals("b", edge.target().node());
+
+        InMemoryOutputSink sink = InMemoryOutputSink.create();
+        doc.fire(new CjWriter2CjStream(reader.createCjStream(sink)), false);
+        String out = sink.getBufferAsUtf8String();
+        assertTrue(out.replaceAll("\\s", "").contains("\"start\":{\"id\":\"a\"}"), out);
+        assertTrue(out.replaceAll("\\s", "").contains("\"end\":{\"id\":\"b\"}"), out);
+    }
+
+    @Test
     @DisplayName("Writer emits every node before any relationship, even for nested graphs")
     void testWriterEmitsAllNodesBeforeRelationships() throws IOException {
         // A Neo4j import resolves a relationship against nodes it has already created, so the export must

@@ -169,14 +169,15 @@ public class Neo4jReader implements GioReader, GioWriter {
 
             @SuppressWarnings("unchecked")
             Map<String, String> start = (Map<String, String>) relData.get("start");
+            // CJ direction is seen from the edge: it comes IN from its source (start), goes OUT to its target (end)
             if (start != null && start.get("id") != null) {
-                edge.addEndpointOutgoing(start.get("id"));
+                edge.addEndpointIncoming(start.get("id"));
             }
 
             @SuppressWarnings("unchecked")
             Map<String, String> end = (Map<String, String>) relData.get("end");
             if (end != null && end.get("id") != null) {
-                edge.addEndpointIncoming(end.get("id"));
+                edge.addEndpointOutgoing(end.get("id"));
             }
 
             @SuppressWarnings("unchecked")
