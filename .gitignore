@@ -10,5 +10,7 @@ tmp
 *.svg
 .vscode
 /.claude/
+# personal Claude Code settings, in any folder
+**/.claude/settings.local.json
 dependency-reduced-pom.xml
 .flattened-pom.xml
