@@ -9,6 +9,7 @@ import com.graphinout.base.cj.writer.Cj2JsonWriter;
 import com.graphinout.base.cj.writer.CjWriter2CjDocumentWriter;
 import com.graphinout.base.cj.writer.ICjWriter;
 import com.graphinout.base.cj.writer.Json2CjWriter;
+import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.base.json.JsonReaderImpl;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
@@ -18,6 +19,7 @@ import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.graphml.cj.Graphml2CjDocument;
 import com.graphinout.reader.graphml.cj.Graphml2CjWriter;
+import com.graphinout.reader.graphml.validation.GraphmlValidator;
 import com.graphinout.reader.graphml.validation.ValidatingGraphMlWriter;
 import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
@@ -28,9 +30,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.graphinout.base.TestFileUtil2.inputSource;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
 
@@ -151,6 +157,42 @@ public class Cj2GraphmlAndBackTest {
             log.info("----\nOutput CJ:\n" + jsonOut);
             CjAssert.xAssertThatIsSameCj(jsonOut, jsonInput, () -> {});
         });
+    }
+
+    /**
+     * Known writer gaps: CJ files whose GraphML output is not yet schema-valid, with the defect. The test asserts they
+     * still fail, so an entry must be removed the moment its fix lands.
+     */
+    static final Map<String, String> KNOWN_SCHEMA_INVALID = Map.of(
+            // GraphML ids are NMTOKENs; the writer copies CJ ids verbatim, and URIs ('/', '#') are no NMTOKEN
+            "baseuris.cj.json", "node ids are URIs, not NMTOKENs",
+            "example-cj-with-all-features.cj.json", "node ids are URIs, not NMTOKENs",
+            "full.cj.json", "node ids are URIs, not NMTOKENs",
+            "typed-edges.cj.json", "node ids are URIs, not NMTOKENs",
+            // the XSD allows neither <data> nor foreign attributes on <endpoint>
+            "hyperedge.cj.json", "endpoint data written as a cjData attribute on <endpoint>");
+
+    /**
+     * GraphML written from CJ has no foreign input to carry along, so it must validate against the GraphML 1.1 XSD.
+     * This is where the XSD earns its keep: we check what we write, not what we read (#115).
+     */
+    @ParameterizedTest(name = "{index}: {0}")
+    @MethodSource("com.graphinout.testdata.TestFileProvider#cjResourcesCanonical")
+    @DisplayName("JSON->CJ->GraphML is schema-valid (all)")
+    void test_Cj_Graphml_isSchemaValid(String displayName, Resource resource) throws IOException {
+        ICjDocument cjDoc = CjDocuments.parseCjJsonString(displayName, resource.getContentAsString());
+        Xml2StringWriter xmlWriter = new Xml2StringWriter();
+        CjDocument2Graphml.writeToGraphml(cjDoc, new Graphml2XmlWriter(xmlWriter));
+        String graphml = xmlWriter.resultString();
+        List<String> findings = GraphmlValidator.validate(SingleInputSource.of(displayName, graphml));
+        String fileName = displayName.substring(displayName.lastIndexOf('/') + 1);
+        String knownGap = KNOWN_SCHEMA_INVALID.get(fileName);
+        if (knownGap != null) {
+            assertFalse(findings.isEmpty(), () -> displayName + " is schema-valid now (was: " + knownGap
+                    + "); remove it from KNOWN_SCHEMA_INVALID");
+        } else {
+            assertTrue(findings.isEmpty(), () -> "written GraphML is not schema-valid: " + displayName + " " + findings + "\n" + graphml);
+        }
     }
 
     @ParameterizedTest(name = "{index}: {0}")

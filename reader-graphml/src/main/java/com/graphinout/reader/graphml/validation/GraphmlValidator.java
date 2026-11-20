@@ -26,6 +26,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -62,9 +64,9 @@ public class GraphmlValidator {
                 // resolve the GraphML sub-schemas (referenced by absolute graphdrawing.org URLs) to bundled local
                 // resources, so validation works offline (e.g. in CI) instead of fetching them over the network
                 // schemas come only from bundled resources (via the resolver below), never from files or the network
-        factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-        factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        factory.setResourceResolver(new BundledSchemaResolver());
+                factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+                factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+                factory.setResourceResolver(new BundledSchemaResolver());
                 Source schemaFile = new StreamSource(new StringReader(schemaAsString));
                 schema = factory.newSchema(schemaFile);
             } catch (IOException e) {
@@ -83,14 +85,26 @@ public class GraphmlValidator {
      * @param inputSource
      */
     public static boolean isValidGraphml(InputSource inputSource) throws IOException {
+        return validate(inputSource).isEmpty();
+    }
+
+    /**
+     * Validate with GraphML Schema 1.1 including parseInfo and attribute types extensions.
+     * <p>
+     * Meant for checking GraphML we write ourselves. Real-world input is rarely schema-valid (yEd extensions, ad-hoc
+     * {@code <data>} content), so the reader does not validate input against the XSD (see #115).
+     *
+     * @return one message per schema finding (warnings, errors and fatal errors), with line and column; empty if valid
+     */
+    public static List<String> validate(InputSource inputSource) throws IOException {
         if (inputSource.isMulti()) throw new IllegalArgumentException("can only handle SingleInputSource");
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
 
+        CollectingSaxErrorHandler errorHandler = new CollectingSaxErrorHandler();
         try {
             if (SchemaHolder.ERROR != null) {
                 throw SchemaHolder.ERROR;
             }
-            CountingSaxErrorHandler errorHandler = new CountingSaxErrorHandler();
             Validator validator = SchemaHolder.SCHEMA.newValidator();
             validator.setErrorHandler(errorHandler);
             // the input is untrusted: parse it with an XXE-hardened reader, and let the validator fetch nothing either
@@ -99,61 +113,58 @@ public class GraphmlValidator {
             XMLReader xmlReader = XmlFactory.hardenedSaxParserFactory().newSAXParser().getXMLReader();
             Source source = new SAXSource(xmlReader, new org.xml.sax.InputSource(singleInputSource.inputStream()));
             validator.validate(source);
-
-            boolean hasErrors = errorHandler.errors() > 0;
-            boolean hasFatals = errorHandler.fatals() > 0;
-            boolean hasWarnings = errorHandler.warnings() > 0;
-
-            return !hasErrors && !hasFatals && !hasWarnings;
+        } catch (SAXParseException e) {
+            // a fatal error is reported to the handler before it is thrown; anything else (e.g. a broken bundled
+            // schema) is not, and must not be lost
+            if (errorHandler.messages().isEmpty()) {
+                log.warn("SAX Exception", e);
+                errorHandler.add("Fatal", e.getMessage());
+            }
         } catch (SAXException e) {
             log.warn("SAX Exception", e);
-            return false;
+            errorHandler.add("Fatal", e.getMessage());
         } catch (ParserConfigurationException e) {
             throw new IllegalStateException("Cannot create a hardened XML parser", e);
         }
+        return errorHandler.messages();
     }
 
     /**
-     * Counts SAX validation findings so {@link #isValidGraphml(InputSource)} can return a boolean verdict, while
-     * logging them only at DEBUG. A schema-validation failure on the input is a content problem, not infrastructure
-     * noise: the production reader path surfaces such problems through the {@code ContentError} handler
-     * (see {@code Xml2GraphmlWriter}). This validator is a side-channel boolean check with no such handler, so it
-     * just keeps a quiet debug trail instead of logging at ERROR.
+     * Collects SAX validation findings, logging them only at DEBUG. A schema-validation failure on the input is a
+     * content problem, not infrastructure noise, and this validator reports it to its caller.
      */
-    private static final class CountingSaxErrorHandler implements ErrorHandler {
+    private static final class CollectingSaxErrorHandler implements ErrorHandler {
 
-        private int errors = 0;
-        private int fatals = 0;
-        private int warnings = 0;
+        private final List<String> messages = new ArrayList<>();
 
         @Override
         public void error(SAXParseException exception) {
             log.debug("SAX error", exception);
-            errors++;
+            add("Error", exception);
         }
 
         @Override
         public void fatalError(SAXParseException exception) {
             log.debug("SAX fatal error", exception);
-            fatals++;
+            add("Fatal", exception);
         }
 
         @Override
         public void warning(SAXParseException exception) {
             log.debug("SAX warning", exception);
-            warnings++;
+            add("Warning", exception);
         }
 
-        int errors() {
-            return errors;
+        private void add(String level, SAXParseException e) {
+            add(level, e.getLineNumber() + ":" + e.getColumnNumber() + " " + e.getMessage());
         }
 
-        int fatals() {
-            return fatals;
+        void add(String level, String message) {
+            messages.add(level + " " + message);
         }
 
-        int warnings() {
-            return warnings;
+        List<String> messages() {
+            return List.copyOf(messages);
         }
     }
 

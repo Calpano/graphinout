@@ -9,6 +9,21 @@ bumps and "minor/doc/WIP" commits are omitted.
 
 == Unreleased
 
+Added::
+* `GraphmlValidator.validate(InputSource)` returns the GraphML 1.1 XSD findings with line and column, not just a
+  boolean. Tests now check that GraphML written from CJ is schema-valid, and that schema-valid GraphML input stays
+  valid after a round trip. Known gaps: CJ ids that are URIs are written as GraphML ids, which must be NMTOKENs,
+  and endpoint data is written as a `cjData` attribute the XSD does not allow.
+
+Removed::
+* `GraphmlReader` no longer validates input against the GraphML XSD (#115). Only 13 of 84 GraphML files in the test
+  corpus are schema-valid (yEd elements in `<data>`, ad-hoc attributes), the findings only went to the log, and the
+  pass cost an extra parse plus a classpath scan. It also parsed without the HTML entity decoding `read()` uses, so
+  `isValid()` threw a `RuntimeException` on GraphML with entities like `&eacute;`. `isValid()` is now the default
+  (the input reads without errors or warnings), so such a file is reported as not valid, given the warning
+  `read()` issues for the auto-fixed entity, instead of throwing. Removed `GraphmlReader.getSchema`, `SchemaCache`, the unused yEd
+  schema copies, and the runtime dependency on ClassGraph.
+
 == 0.2.4 — 2026-11-19
 
 Added::

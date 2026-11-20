@@ -17,9 +17,10 @@
 
 
         <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
-        <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId></dependency>
 
         <!-- Test Dependencies -->
+        <!-- classgraph types appear in test signatures (TestFileProvider) -->
+        <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId>
             <classifier>tests</classifier><type>test-jar</type><scope>test</scope>

@@ -3,6 +3,7 @@ package com.graphinout.reader.graphml;
 
 import com.graphinout.base.cj.document.impl.CjDocumentElement;
 import com.graphinout.base.cj.writer.LoggingCjWriter;
+import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.xml.util.XmlTestTool;
 import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
@@ -11,6 +12,7 @@ import com.graphinout.base.xml.util.XmlTool;
 import com.graphinout.reader.graphml.cj.CjDocument2Graphml;
 import com.graphinout.reader.graphml.cj.Graphml2CjDocument;
 import com.graphinout.reader.graphml.cj.Graphml2CjWriter;
+import com.graphinout.reader.graphml.validation.GraphmlValidator;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +20,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -114,6 +119,14 @@ public class Graphml2CjAndBackTest {
         cjDocument2Graphml.writeDocumentToGraphml(cjDoc);
 
         String xml_out = xmlWriter.resultString();
+
+        // The writer must not turn schema-valid GraphML into invalid GraphML. Most real-world input is not
+        // schema-valid (yEd elements in <data>, foreign attributes, ids that are no NMTOKEN), and we round-trip that
+        // faithfully, so only valid input pins the output. The reader itself does not validate input (#115).
+        if (GraphmlValidator.isValidGraphml(SingleInputSource.of(displayPath, xml_in))) {
+            List<String> schemaFindings = GraphmlValidator.validate(SingleInputSource.of(displayPath, xml_out));
+            assertTrue(schemaFindings.isEmpty(), () -> "schema-valid input, but the written GraphML is not: " + schemaFindings + "\n" + xml_out);
+        }
 
         TestFileUtil.verifyOrRecord(xmlResource, TEST_ID, xml_out, xml_in, (actual, expected) -> {
             try {
