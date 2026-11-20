@@ -274,6 +274,10 @@ public class GioInputAnalyzer {
             "pg-json", List.of(
                     Pattern.compile("\"labels\"\\s*:\\s*\\["),
                     Pattern.compile("\"properties\"\\s*:\\s*\\{\\s*\"[^\"]*\"\\s*:\\s*\\[")),
+            // Neo4j APOC JSON export: objects typed "node"/"relationship", relationships with a start node reference
+            "neo4j-json", List.of(
+                    Pattern.compile("\"type\"\\s*:\\s*\"(node|relationship)\""),
+                    Pattern.compile("\"start\"\\s*:\\s*(\\{\\s*\"id\"|\\d)")),
             "ddot", List.of(Pattern.compile("(?m)^\\s*\\S+\\s*\\.\\.\\s*.*?\\.\\.\\s*\\S+\\s*$")),
             // DOT grammar (graphviz.org/doc/info/lang.html): a [strict] (graph|digraph) [id] { … } header, the
             // bracketed [attr=value] lists, and the -- / -> edge operators (spaced, so mermaid's --> does not match).

@@ -157,8 +157,9 @@ class Neo4jRoundTripTest {
         InMemoryOutputSink sink = InMemoryOutputSink.create();
         doc.fire(new CjWriter2CjStream(reader.createCjStream(sink)), false);
         String out = sink.getBufferAsUtf8String();
-        assertTrue(out.replaceAll("\\s", "").contains("\"start\":{\"id\":\"a\"}"), out);
-        assertTrue(out.replaceAll("\\s", "").contains("\"end\":{\"id\":\"b\"}"), out);
+        var rel = new tools.jackson.databind.ObjectMapper().readTree(out.lines().filter(l -> l.contains("relationship")).findFirst().orElseThrow());
+        assertEquals("a", rel.at("/start/id").asString(), out);
+        assertEquals("b", rel.at("/end/id").asString(), out);
     }
 
     @Test
@@ -271,25 +272,18 @@ class Neo4jRoundTripTest {
                     "Round-trip document should have at least one graph for " + res.getPath());
             }
 
-            // Compare node and edge counts
-            int originalNodeCount = originalCjDoc.graphs().mapToInt(g -> g.nodes() != null ? (int) g.nodes().count() : 0).sum();
-            int roundTripNodeCount = roundTripCjDoc.graphs().mapToInt(g -> g.nodes() != null ? (int) g.nodes().count() : 0).sum();
-
-            int originalEdgeCount = originalCjDoc.graphs().mapToInt(g -> g.edges() != null ? (int) g.edges().count() : 0).sum();
-            int roundTripEdgeCount = roundTripCjDoc.graphs().mapToInt(g -> g.edges() != null ? (int) g.edges().count() : 0).sum();
-
-            log.info("Round-trip comparison for {}: nodes {}->{}, edges {}->{}",
-                res.getPath(), originalNodeCount, roundTripNodeCount, originalEdgeCount, roundTripEdgeCount);
-
-            // Note: Some CJ files may have features that don't map cleanly to Neo4j JSON
-            // We log these but don't fail the test.
-            if (originalNodeCount != roundTripNodeCount) {
-                log.warn("Node count mismatch for {}: {} -> {} (may be due to implicit nodes in edges)",
-                    res.getPath(), originalNodeCount, roundTripNodeCount);
-            } else if (originalEdgeCount != roundTripEdgeCount) {
-                log.warn("Edge count mismatch for {}: {} -> {}",
-                    res.getPath(), originalEdgeCount, roundTripEdgeCount);
-            }
+            // Neo4j is one flat graph: every CJ node, at any nesting level, comes back. An edge comes back unless the
+            // writer reported an Error for it (fewer than two endpoints, or an endpoint that is an edge). Endpoints the
+            // reader had to create as nodes (CJ edges to undeclared nodes) are reported by the reader as a warning.
+            long originalNodes = originalCjDoc.nodesAll().count();
+            long originalEdges = originalCjDoc.edgesAll().count();
+            long skippedEdges = writeErrors.stream().filter(e -> e.getLevel() == com.graphinout.foundation.pure.input.ContentError.ErrorLevel.Error).count();
+            long roundTripNodes = roundTripCjDoc.nodesAll().count();
+            long roundTripEdges = roundTripCjDoc.edgesAll().count();
+            log.info("Round-trip comparison for {}: nodes {}->{}, edges {}->{} ({} not writable)",
+                    res.getPath(), originalNodes, roundTripNodes, originalEdges, roundTripEdges, skippedEdges);
+            assertTrue(roundTripNodes >= originalNodes, "nodes lost in " + res.getPath() + ": " + originalNodes + " -> " + roundTripNodes);
+            assertEquals(originalEdges - skippedEdges, roundTripEdges, "edges in " + res.getPath() + " (write errors: " + writeErrors + ")");
         }
     }
 }

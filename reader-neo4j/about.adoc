@@ -61,22 +61,49 @@ ICjDocument document = reader.readToCjDocument(inputSource);
 
 == Implementation Details
 
-The reader:
+The format id is `neo4j-json`; the engine finds the reader and writer via `Neo4jService`.
 
-* Parses JSON Lines format (one JSON object per line)
-* Converts Neo4j nodes to CJ nodes with labels
-* Converts Neo4j relationships to CJ edges
-* Maps Neo4j node IDs to CJ node IDs
-* Maps Neo4j relationship labels to CJ edge labels
-* Preserves all properties on nodes and relationships
-* Accepts `node` and `relationship` objects in any order. `apoc.export.json.query` emits them interleaved,
-  row by row, whereas CJ requires all nodes of a graph before its edges — so relationships are buffered
-  and streamed out after the last node (memory is O(number of relationships)).
+.Input shapes the reader accepts (mixed freely)
+* JSON Lines, one `node` or `relationship` object per line (`jsonFormat: JSON_LINES`, the default)
+* a JSON array of such objects (`ARRAY_JSON`)
+* `{"nodes":[..],"rels":[..]}` (`JSON`) and `{"nodes":{"0":{..}},"rels":{..}}` (`JSON_ID_AS_KEYS`)
+* query, path, list and map exports (`apoc.export.json.query`): node and relationship objects are found anywhere
+  in a row, e.g. `{"u":{node},"rel":{rel},"p":{"length":1,"rels":[..],"nodes":[..]}}`; a node repeated across rows
+  is read once
+* Memgraph's variant with scalar `"start": 1, "end": 2`
+* pretty-printed values spanning several lines; a BOM and blank lines
+
+.Mapping to CJ
+* `labels` become CJ label entries; a relationship's `label` (its type) becomes the edge label.
+* A relationship becomes an edge from `start` (CJ source, endpoint direction `in`) to `end` (target, `out`).
+* `properties` become CJ data. Lists, maps and points keep their JSON structure; numbers keep full precision
+  (64-bit and larger integers, exact decimals). `null` properties are dropped (Neo4j does not store them).
+* APOC numbers nodes and relationships separately, but CJ ids are one space: a relationship id that equals a node
+  id is prefixed with `rel:` (the writer removes the prefix again). This is reported as a warning.
+* A relationship endpoint that no node object declares becomes a node built from the `start`/`end` reference, which
+  carries the node's labels and properties in APOC exports (warning).
+* Relationships are held back until all nodes are read (CJ needs nodes before edges); memory is
+  O(number of relationships).
+
+.Content errors (with line number)
+* Error: malformed JSON (the line is skipped, reading continues), truncated values, a node without `id`, a
+  relationship without `start` or `end` (skipped), ids or labels of the wrong JSON type.
+* Warning: lenient reads (`"labels":"Person"`, `"type":"NODE"`), a node repeated with different content, lines
+  without any node or relationship, prefixed relationship ids, endpoints created as nodes.
 
 The writer:
 
-* Emits every node before any relationship, as a Neo4j import expects: `apoc.import.json` resolves a
-  relationship's `start`/`end` against nodes it has already created
+* Writes JSON Lines as `apoc.export.json.all` does: every node before any relationship (`apoc.import.json`
+  resolves a relationship's `start`/`end` against nodes it has already created), fields in APOC's order, and
+  `start`/`end` with the node's `labels`.
+* Nodes without id get a generated id (`node_0`, ...) that collides with no existing id (warning).
+* Label entries with a language are dropped if language-free entries exist; a relationship gets its first label,
+  else the CJ edge type, else `RELATED_TO` (warning).
+* Scalars, lists of scalars and points (objects with `crs`) are written as Neo4j properties; other maps and nested
+  lists become JSON strings (warning). Non-object CJ data, ports and endpoint data are dropped (warning).
+* Undirected edges are written from their first to their second endpoint, hyperedges from their first source to
+  their first target (warning). Edges with fewer than two endpoints or with an edge as endpoint are not written
+  (error).
 * Flattens the CJ graph hierarchy, see <<Limitations>>
 
 == Neo4j Export Procedures
@@ -102,7 +129,6 @@ CALL apoc.export.json.query(
 
 == Limitations
 
-* Currently supports JSON Lines format only (not array or nested JSON formats)
 * Requires APOC plugin to be installed in Neo4j for export functionality
 * A Neo4j property graph is one flat set of nodes and relationships. It has no notion of a subgraph, of a
   graph nested under a node (compound node), or of several graphs in one document. Writing such a CJ

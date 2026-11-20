@@ -18,6 +18,9 @@ Added::
   `IOException`. `getContentAsUtf8String()` now delegates to it and wraps failures in `UncheckedIOException`.
 * `devtools` tool `ThirdPartyLicenses` regenerates the dependency table in `THIRD_PARTY.adoc` and the license
   texts under `LICENSES/` from `mvn license:aggregate-add-third-party`; `how-to-release.adoc` runs it as Step 0b.
+* Neo4j APOC JSON (`neo4j-json`) is registered with the engine and the CLI (`Neo4jService`) and detected by content.
+  The reader now accepts every APOC export shape: JSON Lines, `ARRAY_JSON`, `JSON` and `JSON_ID_AS_KEYS` wrappers,
+  query/path/list/map exports and Memgraph's scalar `start`/`end`.
 * PG-JSON (`pg-json`, `.pg.json`, `.pgjson`) is registered with the engine and the CLI (`PgJsonService`) and
   detected by file name and by content (array-valued `properties`, `labels` arrays, `undirected`).
 
@@ -63,6 +66,16 @@ Fixed::
   `writers()` call. Readers keep per-use state (the content error handler), so the shared instances mixed up content
   errors between concurrent reads. `GioInputAnalyzer` takes a reader supplier (`new GioInputAnalyzer(engine::readers)`)
   so concurrent `analyze()` calls on one analyzer are safe; the list constructor still exists.
+* Neo4j reader: integers beyond 32 bits threw; `"labels":"Person"` looped until out of memory; `null` or wrongly
+  typed `properties`, `start`, `end`, `label` or `id` threw or desynced the parser (an object id became `"{"`, a
+  null id the id `"null"`); one malformed line aborted the whole read. List properties (e.g. `kids`), points and
+  maps were silently dropped; `JSON`/`JSON_ID_AS_KEYS` exports and query/path exports gave an empty graph.
+  Relationship ids colliding with node ids hid dangling edges. Nothing was ever reported: now every problem is a
+  content error with its line, reading continues after malformed lines, and undeclared endpoints become nodes.
+* Neo4j writer: undirected edges were written without `start`/`end`; lists and maps became strings; hyperedges,
+  edges with fewer than two endpoints, edges on edges, nodes without id, label languages and non-object data were
+  dropped or written invalidly without a word. Each is now mapped or reported; fields follow APOC's order and
+  `start`/`end` carry the node labels.
 * Thread safety: the HTML entity table shared by the GraphML and GEXF readers was initialized lazily without
   synchronization and marked ready before it was filled. Readers on other threads could see a missing or half-built
   table, so an entity like `&Eacute;` stayed undecoded, the XML parse failed and the read returned no document. The
