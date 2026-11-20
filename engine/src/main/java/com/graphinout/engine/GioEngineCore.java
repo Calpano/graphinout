@@ -42,13 +42,18 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Core engine implementation for GraphInOut, managing readers, writers, and format services.
+ * <p>
+ * Thread-safe: the engine can be shared across threads. Readers and writers are not — they hold per-use state such as
+ * the content error handler — so {@link #readers()}, {@link #writers()}, {@link #getReader(String)} and
+ * {@link #getWriter(String)} return <em>new instances on every call</em>, created by the {@link GioService}s. Use an
+ * instance for one read or write on one thread, and fetch a fresh one for the next.
  */
 public class GioEngineCore {
 
     private static final Logger log = getLogger(GioEngineCore.class);
-    private final List<GioReader> readers = new ArrayList<>();
-    private final List<GioWriter> writers = new ArrayList<>();
-    @SuppressWarnings("unused") private final Map<String, GioService> services = new HashMap<>();
+    /** loaded once, in ServiceLoader order; each call to a service's readers()/writers() creates fresh instances */
+    private final List<GioService> serviceList = new ArrayList<>();
+    private final Map<String, GioService> services = new LinkedHashMap<>();
 
     public GioEngineCore() {
         loadServices();
@@ -166,12 +171,12 @@ public class GioEngineCore {
         // keyed by format id to merge a reader and a writer of the same format (they are distinct instances)
         Map<String, GioFileFormat> formatById = new HashMap<>();
         Map<String, GioService.FormatSupport> supportById = new LinkedHashMap<>();
-        for (GioReader reader : readers) {
+        for (GioReader reader : readers()) {
             GioFileFormat ff = reader.fileFormat();
             formatById.putIfAbsent(ff.id(), ff);
             supportById.put(ff.id(), GioService.FormatSupport.Read);
         }
-        for (GioWriter writer : writers) {
+        for (GioWriter writer : writers()) {
             GioFileFormat ff = writer.fileFormat();
             formatById.putIfAbsent(ff.id(), ff);
             supportById.merge(ff.id(), GioService.FormatSupport.Write, (existing, added) ->
@@ -203,26 +208,28 @@ public class GioEngineCore {
      * Gets a writer by its file format ID.
      *
      * @param fileFormatId the ID of the file format.
-     * @return the corresponding writer, or null if not found.
+     * @return a new writer instance for that format, or null if not found.
      */
     public @Nullable GioWriter getWriter(String fileFormatId) {
-        return writers.stream().filter(writer -> writer.fileFormat().id().equals(fileFormatId)).findFirst().orElse(null);
+        return writers().stream().filter(writer -> writer.fileFormat().id().equals(fileFormatId)).findFirst().orElse(null);
     }
 
     /**
      * Gets a reader by its file format ID.
      *
      * @param fileFormatId the ID of the file format.
-     * @return the corresponding reader, or null if not found.
+     * @return a new reader instance for that format, or null if not found.
      */
     public @Nullable GioReader getReader(String fileFormatId) {
-        return readers.stream().filter(writer -> writer.fileFormat().id().equals(fileFormatId)).findFirst().orElse(null);
+        return readers().stream().filter(reader -> reader.fileFormat().id().equals(fileFormatId)).findFirst().orElse(null);
     }
 
     /**
-     * @return a list of all registered readers.
+     * @return new instances of all registered readers (a fresh list on every call; see the class comment).
      */
     public List<GioReader> readers() {
+        List<GioReader> readers = new ArrayList<>();
+        for (GioService service : serviceList) readers.addAll(service.readers());
         return readers;
     }
 
@@ -234,9 +241,11 @@ public class GioEngineCore {
     }
 
     /**
-     * @return a list of all registered writers.
+     * @return new instances of all registered writers (a fresh list on every call; see the class comment).
      */
     public List<GioWriter> writers() {
+        List<GioWriter> writers = new ArrayList<>();
+        for (GioService service : serviceList) writers.addAll(service.writers());
         return writers;
     }
 
@@ -246,12 +255,11 @@ public class GioEngineCore {
         for (GioService gioService : serviceLoader) {
             log.info("Found service '" + gioService.id() + "' in " + gioService.getClass().getCanonicalName());
             services.put(gioService.id(), gioService);
+            serviceList.add(gioService);
             for (GioReader reader : gioService.readers()) {
-                readers.add(reader);
                 log.info("  Found reader '" + reader.fileFormat().id() + "'");
             }
             for (GioWriter writer : gioService.writers()) {
-                writers.add(writer);
                 log.info("  Found writer '" + writer.fileFormat().id() + "'");
             }
         }
@@ -259,6 +267,7 @@ public class GioEngineCore {
 
     private List<GioReader> selectReaders(InputSource inputSource) throws IOException {
         List<GioReader> candidates = new ArrayList<>();
+        List<GioReader> readers = readers();
         // 1) based on file extension, if available, select possible readers
         for (GioReader r : readers) {
             if (r.fileFormat().matches(inputSource.name())) {

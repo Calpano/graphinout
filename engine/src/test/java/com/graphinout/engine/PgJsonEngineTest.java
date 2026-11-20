@@ -41,13 +41,13 @@ class PgJsonEngineTest {
 
     @Test
     void detectedByFileName() throws IOException {
-        GioInputAnalysis analysis = new GioInputAnalyzer(engine.readers()).analyze(SingleInputSource.of("graph.pg.json", PG_JSON));
+        GioInputAnalysis analysis = new GioInputAnalyzer(engine::readers).analyze(SingleInputSource.of("graph.pg.json", PG_JSON));
         assertThat(analysis.best().map(c -> c.format().id())).hasValue("pg-json");
     }
 
     @Test
     void detectedByContentAlone() throws IOException {
-        GioInputAnalysis analysis = new GioInputAnalyzer(engine.readers()).analyze(SingleInputSource.of("unknown.json", PG_JSON));
+        GioInputAnalysis analysis = new GioInputAnalyzer(engine::readers).analyze(SingleInputSource.of("unknown.json", PG_JSON));
         assertThat(analysis.best().map(c -> c.format().id())).hasValue("pg-json");
     }
 

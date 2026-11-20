@@ -102,7 +102,7 @@ class ApiUsageExamplesTest {
     void detectFormat() throws IOException {
         GioEngineCore engine = new GioEngineCore();
         // tag::detect[]
-        GioInputAnalyzer analyzer = new GioInputAnalyzer(engine.readers());
+        GioInputAnalyzer analyzer = new GioInputAnalyzer(engine::readers);
         GioInputAnalysis analysis = analyzer.analyze(SingleInputSource.of("unknown.txt", "digraph { a -> b }"));
 
         Optional<GioInputAnalysis.Candidate> best = analysis.best();

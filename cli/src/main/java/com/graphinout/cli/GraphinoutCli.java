@@ -501,7 +501,7 @@ public final class GraphinoutCli {
             return 1;
         }
         try (SingleInputSource inputSource = new FileSingleInputSource(inputFile)) {
-            GioInputAnalysis analysis = new GioInputAnalyzer(engine.readers()).analyze(inputSource);
+            GioInputAnalysis analysis = new GioInputAnalyzer(engine::readers).analyze(inputSource);
             out.println(GioInputAnalysisJson.toJson(analysis));
             out.flush();
             return 0;

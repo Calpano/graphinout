@@ -59,6 +59,10 @@ Fixed::
 * The generic reader test (`AbstractReaderTest`) could not fail: it swallowed every exception and mismatch, and it
   located files with `ClassLoader.getSystemResource`, which misses resources inside jars. It now reports every
   failing file with its root cause; expected errors are compared at Error level, warnings are logged.
+* `GioEngineCore` hands out a new reader or writer instance on every `getReader`, `getWriter`, `readers()` and
+  `writers()` call. Readers keep per-use state (the content error handler), so the shared instances mixed up content
+  errors between concurrent reads. `GioInputAnalyzer` takes a reader supplier (`new GioInputAnalyzer(engine::readers)`)
+  so concurrent `analyze()` calls on one analyzer are safe; the list constructor still exists.
 * Thread safety: the HTML entity table shared by the GraphML and GEXF readers was initialized lazily without
   synchronization and marked ready before it was filled. Readers on other threads could see a missing or half-built
   table, so an entity like `&Eacute;` stayed undecoded, the XML parse failed and the read returned no document. The

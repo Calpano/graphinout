@@ -16,7 +16,7 @@ import static com.google.common.truth.Truth.assertThat;
  */
 class GioInputAnalyzerTest {
 
-    private static final GioInputAnalyzer ANALYZER = new GioInputAnalyzer(new GioEngineCore().readers());
+    private static final GioInputAnalyzer ANALYZER = new GioInputAnalyzer(new GioEngineCore()::readers);
 
     private static final String GRAPHML = """
             <?xml version="1.0" encoding="UTF-8"?>

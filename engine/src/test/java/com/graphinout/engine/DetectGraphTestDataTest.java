@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 class DetectGraphTestDataTest {
 
     private static final GioEngineCore CORE = new GioEngineCore();
-    private static final GioInputAnalyzer ANALYZER = new GioInputAnalyzer(CORE.readers());
+    private static final GioInputAnalyzer ANALYZER = new GioInputAnalyzer(CORE::readers);
     private static final Set<String> READER_IDS =
             CORE.readers().stream().map(r -> r.fileFormat().id()).collect(Collectors.toSet());
 

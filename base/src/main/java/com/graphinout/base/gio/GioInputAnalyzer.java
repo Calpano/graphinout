@@ -54,13 +54,26 @@ public class GioInputAnalyzer {
     /** A clear winner needs to beat the runner-up by at least this confidence gap to be {@link ConfidenceTier#CONFIDENT}. */
     private static final double CONFIDENT_MARGIN = 0.2;
 
-    private final List<GioReader> readers;
+    private final java.util.function.Supplier<List<GioReader>> readerSupplier;
 
+    /**
+     * Thread-safe: every {@link #analyze} call probes freshly created readers (pass e.g. {@code engine::readers}),
+     * because a reader holds per-use state such as its content error handler.
+     */
+    public GioInputAnalyzer(java.util.function.Supplier<List<GioReader>> readerSupplier) {
+        this.readerSupplier = readerSupplier;
+    }
+
+    /**
+     * Probes the given reader instances. Not safe for concurrent {@link #analyze} calls (they would share the readers);
+     * prefer {@link #GioInputAnalyzer(java.util.function.Supplier)}.
+     */
     public GioInputAnalyzer(List<GioReader> readers) {
-        this.readers = readers;
+        this(() -> readers);
     }
 
     public GioInputAnalysis analyze(SingleInputSource input) throws IOException {
+        List<GioReader> readers = readerSupplier.get();
         String name = input.name();
         String content = input.getContentAsUtf8String();
         long sizeBytes = content.getBytes(StandardCharsets.UTF_8).length;

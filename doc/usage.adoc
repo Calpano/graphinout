@@ -62,6 +62,10 @@ String graphml = output.getBufferAsUtf8String();
 `getReader` and `getWriter` return `null` when no reader or writer is registered for that id.
 Use <<formats>> to see which ids exist.
 
+.Threads
+`GioEngineCore` can be shared across threads; readers and writers cannot, because they hold per-use state such as the content error handler.
+That is why `getReader`, `getWriter`, `readers()` and `writers()` return new instances on every call: fetch one per read or write.
+
 The `ICjDocument` is also useful on its own: inspect or change the graph before writing it, e.g. `cjDoc.nodesAll()`.
 
 [[stream]]
@@ -106,11 +110,12 @@ Writers report data the target format cannot represent (e.g. hyper-edges in a fo
 
 [[detect]]
 == Detect the Format
-When the format is unknown, `GioInputAnalyzer` tries every reader and ranks them by file name, content kind (JSON/XML/text), format vocabulary and how cleanly each reader parses the input:
+When the format is unknown, `GioInputAnalyzer` tries every reader and ranks them by file name, content kind (JSON/XML/text), format vocabulary and how cleanly each reader parses the input.
+Passing `engine::readers` gives every `analyze()` call fresh readers, so one analyzer can serve many threads:
 
 [source,java]
 ----
-GioInputAnalyzer analyzer = new GioInputAnalyzer(engine.readers());
+GioInputAnalyzer analyzer = new GioInputAnalyzer(engine::readers);
 GioInputAnalysis analysis = analyzer.analyze(SingleInputSource.of("unknown.txt", "digraph { a -> b }"));
 
 Optional<GioInputAnalysis.Candidate> best = analysis.best();
