@@ -14,6 +14,9 @@
     <dependencies>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base-api</artifactId></dependency>
+        <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></dependency>
 
         <!-- Test Dependencies -->
         <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>
@@ -23,6 +26,7 @@
 
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><scope>test</scope></dependency>
     </dependencies>
 
 </project>

@@ -13,32 +13,21 @@
 
     <dependencies>
         <!-- Main Dependencies -->
-        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base-api</artifactId></dependency>
 
         <!-- Test Dependencies -->
-        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>
-        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId>
-            <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
-        </dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId>
             <classifier>tests</classifier><type>test-jar</type><scope>test</scope>
         </dependency>
 
-        <dependency><groupId>org.jgrapht</groupId><artifactId>jgrapht-core</artifactId><version>1.5.3</version></dependency>
-        <dependency><groupId>org.jgrapht</groupId><artifactId>jgrapht-io</artifactId><version>1.5.3</version>
-            <exclusions>
-                <exclusion><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId></exclusion>
-            </exclusions>
-        </dependency>
-        <dependency><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId></dependency>
-
         <!-- Test Dependencies -->
-        <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
-        <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><scope>test</scope></dependency>
+        <!-- runtime-only: AbstractReaderTest (base test-jar) uses TestFileProvider -->
+        <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>
         <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
-
+        <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><scope>test</scope></dependency>
     </dependencies>
 
 </project>

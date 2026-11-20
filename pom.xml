@@ -122,7 +122,10 @@
         <dependencies>
             <!-- GraphInOut Dependencies -->
             <dependency><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId><version>0.2.5-SNAPSHOT</version></dependency>
-            <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId><version>0.2.5-SNAPSHOT</version></dependency>
+            <!-- foundation-emulation holds J2CL stand-ins for jspecify / jackson-annotations; JVM modules use the real ones -->
+            <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId><version>0.2.5-SNAPSHOT</version>
+                <exclusions><exclusion><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId></exclusion></exclusions>
+            </dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>foundation-pure</artifactId>
                 <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.5-SNAPSHOT</version>
             </dependency>
@@ -135,6 +138,7 @@
                 <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.5-SNAPSHOT</version>
             </dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.5-SNAPSHOT</version></dependency>
+            <dependency><groupId>com.graphinout</groupId><artifactId>base-api</artifactId><version>0.2.5-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId>
                 <classifier>tests</classifier><type>test-jar</type><scope>test</scope><version>0.2.5-SNAPSHOT</version>
             </dependency>
@@ -144,6 +148,8 @@
             </dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>base-http</artifactId><version>0.2.5-SNAPSHOT</version></dependency>
             <dependency><groupId>org.apache.httpcomponents.client5</groupId><artifactId>httpclient5</artifactId><version>5.6.4</version></dependency>
+            <!-- keep in line with the httpcore5 version httpclient5 depends on -->
+            <dependency><groupId>org.apache.httpcomponents.core5</groupId><artifactId>httpcore5</artifactId><version>5.4.3</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.2.5-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>reader-graphml</artifactId><version>0.2.5-SNAPSHOT</version></dependency>
             <dependency><groupId>com.graphinout</groupId><artifactId>reader-tripletext</artifactId><version>0.2.5-SNAPSHOT</version></dependency>
@@ -163,19 +169,16 @@
             <dependency><groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId><version>3.0.2</version></dependency>
             <!-- Truth should not use guava xxx-android ... but the xxx-jre variant -->
             <dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>33.8.0-jre</version></dependency>
-            <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><version>1.4.5</version><scope>test</scope>
-                <!-- Truth should not use guava xxx-android ... but the xxx-jre variant -->
-                <exclusions><exclusion><groupId>com.google.guava</groupId><artifactId>guava</artifactId></exclusion></exclusions>
-            </dependency>
+            <!-- Truth's API exposes Guava types; the managed guava entry above turns its -android variant into -jre -->
+            <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId><version>1.4.5</version><scope>test</scope></dependency>
             <dependency><groupId>com.networknt</groupId><artifactId>json-schema-validator</artifactId><version>3.0.9</version>
                 <exclusions><exclusion><groupId>tools.jackson.dataformat</groupId><artifactId>jackson-dataformat-yaml</artifactId></exclusion></exclusions>
             </dependency>
             <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><version>4.8.199</version></dependency>
-            <dependency><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId><version>1.15.0</version></dependency>
             <dependency><groupId>org.gwtproject.regexp</groupId><artifactId>gwt-regexp</artifactId><version>1.0.0-RC1</version></dependency>
+            <dependency><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId><version>1.15.0</version></dependency>
             <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId><version>1.0.1</version></dependency>
             <!-- Used to validate ECMA 262 regular expressions. Approx. 2 MB. JoniRegularExpressionFactory -->
-            <dependency><groupId>org.jruby.joni</groupId><artifactId>joni</artifactId><version>2.2.10</version></dependency>
             <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>${junit-jupiter.version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><version>${mockito-core-version}</version><scope>test</scope></dependency>
             <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><version>${mockito-junit-jupiter-version}</version><scope>test</scope></dependency>
@@ -193,12 +196,6 @@
             <dependency><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.5.1</version></dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-        <!-- No Runtime/Compile dependencies for all, due to foundation-pure staying pure -->
-        <!-- Test Scope -->
-        <dependency><groupId>com.google.truth</groupId><artifactId>truth</artifactId></dependency>
-    </dependencies>
 
     <build>
         <plugins>

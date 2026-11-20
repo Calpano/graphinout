@@ -18,6 +18,7 @@
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <!-- same version Structurizr already brings, so the distribution gains no new library -->
         <dependency><groupId>org.apache.httpcomponents.client5</groupId><artifactId>httpclient5</artifactId></dependency>
+        <dependency><groupId>org.apache.httpcomponents.core5</groupId><artifactId>httpcore5</artifactId></dependency>
 
         <!-- Test Dependencies -->
         <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><scope>test</scope></dependency>

@@ -18,6 +18,7 @@
         <!-- delegates GEF -> canonical CJ to the Connected JSON reader -->
         <dependency><groupId>com.graphinout</groupId><artifactId>reader-cj</artifactId><version>0.2.5-SNAPSHOT</version></dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
+        <dependency><groupId>com.graphinout</groupId><artifactId>base-api</artifactId></dependency>
 
         <!-- Test Dependencies -->
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>

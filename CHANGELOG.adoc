@@ -17,6 +17,17 @@ Added::
 * `SingleInputSource.readContentAsUtf8String()`: reads the whole input as UTF-8, closes the stream, and throws
   `IOException`. `getContentAsUtf8String()` now delegates to it and wraps failures in `UncheckedIOException`.
 
+Changed::
+* Module POMs declare what each module actually uses, checked with `mvn dependency:analyze` and against the
+  sources. Modules now declare `foundation-pure`, `base-api` and `slf4j-api` directly instead of getting them
+  through `base`; unused entries are gone (mostly `mockito-junit-jupiter` and test-jars nobody used); `testdata`
+  is test scope everywhere, so it no longer ships with `reader-cj`, `reader-neo4j`, `reader-pgformat`,
+  `reader-grale` and `engine`.
+* `foundation-emulation` (the J2CL stand-ins for the jspecify and Jackson annotations) is no longer on JVM
+  classpaths, where it shadowed the real annotations. The root POM excludes it from `foundation-pure`.
+* Truth is no longer added to every module from the root POM, and it now brings Guava (as `-jre`, via the managed
+  version) in test scope. Before, Truth users only compiled because `testdata` and `base` exported Guava.
+
 Fixed::
 * The CJ, CJ-GEF, D2, DDot, Mermaid, OCIF, Pajek, PlantUML, Structurizr DSL, adjacency-list, edge-list and TGF
   readers now close the input stream they read; before, each read leaked one stream.
@@ -31,6 +42,9 @@ Removed::
   schema copies, and the runtime dependency on ClassGraph.
 * The direct `commons-io` dependency. All our uses were replaced with JDK IO, and a `maven-enforcer-plugin` rule
   stops modules from declaring it again. It still comes in transitively with Jena (`reader-rdf`), which needs it.
+* Unused dependencies: JGraphT (`jgrapht-core`, `jgrapht-io`) and `commons-text` from `reader-jgrapht`, which reads
+  graph6, sparse6 and digraph6 itself; joni and Guava from `base`; Guava from `testdata`; joni from the root
+  dependency management.
 
 == 0.2.4 — 2026-11-19
 
