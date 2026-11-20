@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.graphinout.base.TestFileUtil2.inputSource;
@@ -77,14 +76,6 @@ class GraphmlReaderContentErrorTest {
      * check above them had already excluded. They are gone; asserting the rejection is what the invalid
      * fixtures are FOR.
      */
-    /**
-     * Untagged real-world fixtures with a known defect (the corpus is external, so the file cannot be renamed to
-     * {@code --INVALIDgraphml}): exactly these Error messages are expected, nothing more.
-     */
-    private static final Map<String, List<String>> KNOWN_ERRORS = Map.of(
-            // yEd export with an edge to a node that is not in the file
-            "xml/graphml/yworks/yed-3.12.2/graph1_test.graphml", List.of("Edge 'e1' references a non-existent node ID: 'n4'"));
-
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("com.graphinout.testdata.TestFileProvider#graphmlResources")
     void readAllGraphmlFiles(String displayName, Resource graphmlResource) throws Exception {
@@ -109,9 +100,7 @@ class GraphmlReaderContentErrorTest {
                     "fixture is tagged --INVALID but the reader accepted it without a single Error: "
                             + graphmlResource.getPath() + " (errors seen: " + contentErrors + ")");
         } else {
-            List<String> expected = KNOWN_ERRORS.getOrDefault(graphmlResource.getPath(), List.of());
-            assertEquals(expected, hardErrors.stream().map(ContentError::getMessage).toList(),
-                    "unexpected ERROR-level content errors: " + contentErrors);
+            assertEquals(0, hardErrors.size(), "unexpected ERROR-level content errors: " + contentErrors);
         }
     }
 

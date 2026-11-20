@@ -2,12 +2,10 @@ package com.graphinout.base;
 
 import com.graphinout.base.gio.GioReader;
 import com.graphinout.foundation.pure.input.ContentError;
-import com.graphinout.foundation.pure.input.Location;
 import io.github.classgraph.Resource;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -28,16 +26,11 @@ public abstract class AbstractReaderTest {
 
     private static final Logger log = getLogger(AbstractReaderTest.class);
 
-    protected List<ContentError> expectedErrors(Resource resourceName) {
-        if (resourceName.getPath().endsWith("graph1_test.graphml"))
-            return
-                    Arrays.asList(
-                            new ContentError(
-                                    ContentError.ErrorLevel.Error,
-                                    "Edge 'e1' references a non-existent node ID: 'n4'",
-                                    new Location(56, 43)
-                            ));
-
+    /**
+     * Error-level content errors a valid test resource is expected to produce; none by default. Deliberately broken
+     * fixtures are tagged {@code --INVALID<marker>} in their file name and are not read by this test.
+     */
+    protected List<ContentError> expectedErrors(Resource resource) {
         return Collections.emptyList();
     }
 
