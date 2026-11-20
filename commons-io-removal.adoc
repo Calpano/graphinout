@@ -1,0 +1,349 @@
+= Plan: Remove the commons-io Dependency
+:toc:
+
+Replace every use of `commons-io:commons-io` with plain JDK (Java 25) code, drop the
+dependency from all POMs, and keep it out with a build-time ban.
+
+[[goal]]
+== Goal and Non-Goals
+
+.Goals
+* No `org.apache.commons.io` import anywhere (main and test).
+* No `commons-io` declaration in any POM, including root `<dependencyManagement>`.
+* `commons-io` absent from `mvn dependency:tree` of every module that does not depend on Jena.
+* A build-time guard stops any module from declaring it again.
+* Behavior of all readers is unchanged (same strings, same exceptions), except one intended fix: input streams are now closed (see <<step-2>>).
+
+.Non-Goals
+* Honoring `SingleInputSource.encoding()` in readers. Today every reader hard-codes UTF-8; this plan keeps that. Tracked as a follow-up (<<follow-ups>>).
+* A general-purpose IO utility library. We add only what the call sites need.
+
+[[inventory]]
+== Inventory (as of 2026-11-20)
+
+Most modules get commons-io only through our own POMs. The exception is Jena: `jena-base` and `commons-csv`
+depend on it and call it at runtime (e.g. `org.apache.jena.atlas.io.IO`), so it stays on the classpath of
+`reader-rdf` and everything that depends on it (`engine`, `cli`).
+
+NOTE: The first inventory missed this. `reader-rdf` also declared commons-io directly, and `dependency:tree`
+shows only the nearest path, which hid the Jena one. The enforcer rule surfaced it.
+
+.API surface actually used
+* `IOUtils.toString(InputStream, UTF_8)` — 12 readers (main code)
+* `IOUtils.toString(URL, UTF_8)` — 5 tests
+* `IOUtils.resourceToString(String, UTF_8)` — 1 main (`GraphmlValidator`), 3 tests
+* `FileUtils.writeStringToFile(File, String, UTF_8)` — 2 in `testdata` (main code of a test-support module), 2 tests
+* `FileUtils.readFileToString(File, UTF_8)` — 2 tests
+* `FileUtils.writeByteArrayToFile(File, byte[])` — 1 test
+* `FileUtils.writeLines(File, Collection)` — 1 test
+* Unused import — `GraphmlReaderTest2`
+
+[[inventory-main]]
+.Main code call sites
+|===
+| Module | File | Call
+
+| reader-cj | `ConnectedJson5Reader.java:50` | `IOUtils.toString(sis.inputStream(), UTF_8)`
+| reader-cj-gef | `CjGefReader.java:50` | same
+| reader-d2 | `D2Reader.java:44` | same
+| reader-ddot | `DDotReader.java:239` | same
+| reader-mermaid | `MermaidReader.java:59` | same
+| reader-ocif | `OcifReader.java:89` | same (inside `try (sis)`)
+| reader-pajek | `PajekReader.java:55` | same
+| reader-plantuml | `PlantUmlReader.java:83` | same
+| reader-structurizr-dsl | `StructurizrDslReader.java:60` | same
+| reader-textbased | `AdjListReader.java:46`, `EdgeListReader.java:76` | same
+| reader-tgf | `TgfReader.java:66` | same
+| reader-graphml | `validation/GraphmlValidator.java:61` | `IOUtils.resourceToString(xmlSchemaResource, UTF_8)`
+| testdata | `TestFileUtil.java:344,354` | `FileUtils.writeStringToFile(f, s, UTF_8)`
+|===
+
+[[inventory-test]]
+.Test code call sites
+|===
+| Module | File | Call
+
+| base | `cj/CjElementsParsingTest.java:38`, `ReaderTests.java:74` | `IOUtils.toString(URL, UTF_8)`
+| base | `xml/util/XmlTestTool.java:33` | `FileUtils.readFileToString`
+| engine | `GioEngineCoreTest.java:136,155,163,190` | `writeByteArrayToFile`, `writeStringToFile`, `IOUtils.toString(URL)`, `writeLines`
+| foundation-pure | `json/json5/Json5ConvertLab.java:21,28` | `readFileToString`, `writeStringToFile`
+| reader-dot | `DotTextReaderTest.java:120,132` | `IOUtils.resourceToString`
+| reader-gexf | `GexfReaderTest.java:22` | `IOUtils.resourceToString`
+| reader-graphml | `GraphmlReaderTest2.java:13` | unused import
+| reader-textbased | `AdjListReaderTest.java:139`, `EdgeListReaderTest.java:66` | `IOUtils.toString(URL, UTF_8)`
+|===
+
+[[inventory-poms]]
+.POM declarations
+* Root `pom.xml:173` — `<dependencyManagement>` entry, version `2.22.0`.
+* *Declared and used:* testdata, base (compile scope, but used only in tests), reader-cj, reader-cj-gef, reader-d2, reader-ddot, reader-graphml, reader-mermaid, reader-pajek, reader-plantuml, reader-structurizr-dsl, reader-textbased, reader-tgf, reader-gexf (test).
+* *Declared but unused:* reader-rdf, reader-neo4j, reader-gml, reader-pgformat, reader-jgrapht (test).
+* *Used but not declared (leaks in transitively via `base` / `testdata`):* reader-ocif (main!), reader-dot (test), engine (test), foundation-pure (test).
+
+[[design]]
+== Design: Where the Replacement Lives
+
+Three small, targeted replacements instead of one `IoUtils` clone:
+
+Reading a reader's input::
+A new checked method on `SingleInputSource` in `base-api`. Every reader already holds a `SingleInputSource`,
+and there is already an unchecked sibling, `getContentAsUtf8String()`, used by six other call sites.
+
+Reading a bundled classpath resource in main code::
+Only one site (`GraphmlValidator`). Inline JDK code; no helper.
+
+Test-side file and resource IO::
+Static helpers on the existing `com.graphinout.testdata.TestFileUtil`. Every affected test module already
+depends on `testdata` (verified: base, engine, foundation-pure, reader-dot, reader-gexf, reader-graphml,
+reader-textbased). Where a JDK one-liner is equally clear (`Files.readString`, `Files.write`), call the JDK directly.
+
+Why not a shared `IoUtils` in `foundation-jvm`?::
+Main code needs just one method, which belongs on `SingleInputSource`. A general helper class would mostly
+serve tests and would invite a slow re-growth of commons-io. `foundation-pure` must also stay J2CL-compatible,
+so `java.nio.file` cannot go there.
+
+[[semantics]]
+== Semantic Equivalence Notes
+
+Things to keep in mind so the replacement is behavior-preserving.
+
+.commons-io vs. JDK
+* `IOUtils.toString(InputStream, UTF_8)` decodes with replacement of malformed input (U+FFFD) and does *not* strip a BOM.
+  `new String(in.readAllBytes(), UTF_8)` behaves identically on both counts.
+* `IOUtils.toString(InputStream, …)` does *not* close the stream. The readers never closed it either, so every
+  reader leaked one stream per read. The new method uses try-with-resources. `SingleInputSource.inputStream()`
+  hands out a fresh stream per call ("users need to close"), so closing is correct.
+* `FileUtils.readFileToString` replaces malformed input. `Files.readString` *throws* `MalformedInputException`.
+  Affected only test files (`XmlTestTool`, `Json5ConvertLab`) that read UTF-8 we wrote ourselves, so strict is fine;
+  use `new String(Files.readAllBytes(p), UTF_8)` if a test turns out to read foreign data.
+  Exception: `foundation-pure` (including its tests) compiles with `--release 8`, where `Files.readString` does
+  not exist, so `Json5ConvertLab` uses `new String(Files.readAllBytes(p), UTF_8)`.
+* `FileUtils.writeStringToFile` and `writeByteArrayToFile` *create missing parent directories*. `Files.writeString`
+  and `Files.write` do not. The `testdata` record modes (`RecordInitWithExpected`, `RecordTheActual`) rely on this
+  when a new `.expected` file lands in a fresh directory, so the helper must call `Files.createDirectories(parent)`.
+* `FileUtils.writeLines(File, Collection)` writes `toString()` of each line plus `System.lineSeparator()` after
+  every line (including the last), in the default charset. `Files.write(path, lines, UTF_8)` does the same with
+  an explicit UTF-8 charset. The default charset is UTF-8 on JDK 18+ (JEP 400) anyway.
+* `IOUtils.resourceToString(name, cs)` resolves `name` via `IOUtils.class.getResource(name)` and throws
+  `IOException` if it is missing. The replacement resolves via the *calling* class (absolute `/…` paths, so the
+  result is the same on our flat classpath) and must also throw `IOException` (not NPE) on a missing resource.
+  `GraphmlValidator` catches exceptions in its static holder; keep the exception type so error reporting is unchanged.
+* `IOUtils.toString(URL, cs)` opens `url.openStream()`. Test resources may live inside the `testdata` jar
+  (`jar:` URLs), so do *not* switch to `Path.of(url.toURI())`; keep `openStream()`.
+
+[[steps]]
+== Steps
+
+One commit per step; the build is green after each one.
+
+[[step-0]]
+=== Step 0: Land the Pending GraphML Work First
+
+The working tree has uncommitted changes in `reader-graphml/pom.xml` and `GraphmlValidator.java` (schema
+resource refactor). Commit or stash them before starting, so the commons-io diff in those files stays reviewable.
+
+[[step-1]]
+=== Step 1: Add `SingleInputSource.readContentAsUtf8String()`
+
+In `base-api/src/main/java/com/graphinout/base/input/SingleInputSource.java`:
+
+[source,java]
+----
+/**
+ * Reads the whole input as UTF-8 and closes the stream it opened.
+ * Malformed bytes are replaced with U+FFFD; a BOM is not stripped.
+ */
+default String readContentAsUtf8String() throws IOException {
+    try (InputStream is = inputStream()) {
+        return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+    }
+}
+
+default String getContentAsUtf8String() {
+    try {
+        return readContentAsUtf8String();
+    } catch (IOException e) {
+        throw new UncheckedIOException(e);
+    }
+}
+----
+
+The unchecked variant now wraps in `UncheckedIOException` instead of a bare `RuntimeException`. That is still a
+`RuntimeException`, so existing callers and catch blocks are unaffected.
+
+.Tests (base-api)
+* Round-trip of ASCII, multi-byte UTF-8, and an empty input.
+* Malformed bytes decode to U+FFFD.
+* A leading BOM is preserved.
+* The stream is closed afterward (wrap a `ByteArrayInputSource` subclass or a counting stream).
+* An `IOException` from `inputStream()` propagates from the checked variant and becomes `UncheckedIOException` in the unchecked one.
+
+[[step-2]]
+=== Step 2: Migrate the 12 Readers
+
+Replace in each file from the <<inventory-main,main call-site table>>:
+
+[source,java]
+----
+// before
+String content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
+// after
+String content = singleInputSource.readContentAsUtf8String();
+----
+
+Remove the `org.apache.commons.io.IOUtils` import and any `StandardCharsets` / `UTF_8` import that becomes
+unused. All `read(…)` methods already declare `throws IOException`, so signatures do not change.
+
+`OcifReader` keeps its `try (sis) { … }` block; only the inner call changes.
+
+[[step-3]]
+=== Step 3: Migrate `GraphmlValidator`
+
+[source,java]
+----
+String schemaAsString;
+try (InputStream in = GraphmlValidator.class.getResourceAsStream(xmlSchemaResource)) {
+    if (in == null) {
+        throw new IOException("Resource not found: " + xmlSchemaResource);
+    }
+    schemaAsString = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+}
+----
+
+Check how the surrounding static initializer handles `IOException` today and keep that path unchanged.
+Better still: if `StreamSource` can take the `InputStream` directly, skip the intermediate `String`.
+Do that only if the existing `GraphmlValidator` tests stay green; it is optional.
+
+[[step-4]]
+=== Step 4: Test Helpers in `testdata`, Then Migrate Tests
+
+Add to `com.graphinout.testdata.TestFileUtil`:
+
+[source,java]
+----
+/** Reads a URL (file: or jar:) as UTF-8. */
+public static String readUtf8(URL url) throws IOException {
+    try (InputStream in = url.openStream()) {
+        return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+    }
+}
+
+/** Reads an absolute classpath resource ("/…") relative to {@code anchor}'s class loader as UTF-8. */
+public static String readResourceUtf8(Class<?> anchor, String absolutePath) throws IOException {
+    try (InputStream in = anchor.getResourceAsStream(absolutePath)) {
+        if (in == null) throw new IOException("Resource not found: " + absolutePath);
+        return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+    }
+}
+
+/** Writes UTF-8, creating parent directories like commons-io FileUtils did. */
+public static void writeUtf8(Path file, String content) throws IOException {
+    Path parent = file.toAbsolutePath().getParent();
+    if (parent != null) Files.createDirectories(parent);
+    Files.writeString(file, content, StandardCharsets.UTF_8);
+}
+----
+
+.Migration map
+* `IOUtils.toString(url, UTF_8)` → `TestFileUtil.readUtf8(url)`
+* `IOUtils.resourceToString(p, UTF_8)` → `TestFileUtil.readResourceUtf8(getClass(), p)` (or `XxxTest.class` in static context)
+* `FileUtils.writeStringToFile(f, s, UTF_8)` → `TestFileUtil.writeUtf8(f.toPath(), s)` (also inside `TestFileUtil` itself, lines 344/354)
+* `FileUtils.readFileToString(f, UTF_8)` → `Files.readString(f.toPath())`
+* `FileUtils.writeByteArrayToFile(f, b)` → `Files.write(f.toPath(), b)` (parent already created by `mkdirs()` one line above)
+* `FileUtils.writeLines(f, lines)` → `Files.write(f.toPath(), lines, UTF_8)` (parent already created)
+* `GraphmlReaderTest2` → delete the unused import
+
+A short unit test for the three helpers goes into `testdata`. Cover reading from a `jar:` URL by using a
+resource that ships in a dependency jar, writing into a non-existent nested directory, and a missing resource
+that must raise `IOException`.
+
+[[step-5]]
+=== Step 5: Remove the Dependency from All POMs
+
+* Delete the `commons-io` line from root `pom.xml` `<dependencyManagement>` (line 173).
+* Delete the `<dependency>` from these 19 modules: testdata, base, reader-cj, reader-cj-gef, reader-d2,
+  reader-ddot, reader-graphml, reader-mermaid, reader-pajek, reader-plantuml, reader-structurizr-dsl,
+  reader-textbased, reader-tgf, reader-gexf, reader-rdf, reader-neo4j, reader-gml, reader-pgformat, reader-jgrapht.
+* No module needs a replacement dependency.
+
+[[step-6]]
+=== Step 6: Guard Against Re-Introduction
+
+Add `maven-enforcer-plugin` to the root `<build><plugins>` (not configured yet) with a `bannedDependencies` rule
+that checks *direct* dependencies only:
+
+[source,xml]
+----
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-enforcer-plugin</artifactId>
+  <version><!-- current release --></version>
+  <executions>
+    <execution>
+      <id>ban-commons-io</id>
+      <goals><goal>enforce</goal></goals>
+      <configuration>
+        <rules>
+          <bannedDependencies>
+            <excludes><exclude>commons-io:commons-io</exclude></excludes>
+            <searchTransitive>false</searchTransitive>
+            <message>commons-io was removed on purpose; use JDK IO (see commons-io-removal.adoc).</message>
+          </bannedDependencies>
+        </rules>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+----
+
+Transitive checking (the default) fails on Jena. Excluding commons-io from Jena would cause
+`NoClassDefFoundError` at runtime, so the rule bans only direct declarations. It does not stop code in Jena-using
+modules from importing commons-io classes that arrive transitively. Code review covers that, and the
+<<verification,grep check>> stays the reference.
+
+[[step-7]]
+=== Step 7: Docs
+
+* `CHANGELOG.adoc` → `== Unreleased`: "Removed the `commons-io` dependency; readers now close their input stream after reading."
+* `THIRD_PARTY.adoc`: keep the row and `LICENSES/commons-io-*` (it still ships via Jena), but drop the *Direct* mark.
+  The version column is stale (`2.20.0`); the next `mvn license:aggregate-add-third-party` run fixes it.
+* Optionally add a line to `doc/dependencies.adoc` saying commons-io is banned and why.
+
+[[verification]]
+== Verification
+
+.After the last step, all of these must hold
+* `grep -rn "org.apache.commons.io" --include='*.java' . | grep -v /target/` → no output.
+* `grep -rn "commons-io" --include=pom.xml .` → only the enforcer `<exclude>`.
+* `mvn -q dependency:tree -Dincludes=commons-io:commons-io` → matches only under `org.apache.jena:*`.
+* `mvn clean verify` → green, including the enforcer.
+* Golden-file tests in `testdata` and `ddot.it` produce no diffs. The decoded strings are byte-identical by construction (<<semantics>>), so any diff is a bug.
+* Manually run one record mode (`RecordInitWithExpected`) into a fresh directory to confirm parent directories still get created.
+
+[[risks]]
+== Risks
+
+|===
+| Risk | Mitigation
+
+| Missing parent-directory creation breaks record modes
+| `TestFileUtil.writeUtf8` creates parents; explicit test (<<step-4>>).
+
+| `Files.readString` is stricter than `readFileToString`
+| Only used on our own UTF-8 test files; fall back to `new String(readAllBytes, UTF_8)` if needed.
+
+| `jar:` resources fail when converted to `Path`
+| Helpers use `openStream()` / `getResourceAsStream()`, never `Path.of(uri)`.
+
+| Closing the stream now breaks a reader that reads twice
+| `inputStream()` returns a fresh stream per call; reader tests cover this. Watch `ByteArrayInputSource` close semantics in Step 1 tests.
+
+| Our code imports commons-io again in a Jena-using module (it is on that classpath)
+| The direct-only enforcer rule cannot catch this; the verification grep and review do.
+|===
+
+[[follow-ups]]
+== Follow-Ups (Out of Scope)
+
+* Honor `SingleInputSource.encoding()` instead of hard-coded UTF-8 (e.g. add `readContentAsString()` that uses `encoding().orElse(UTF_8)`), then migrate the readers.
+* Decide whether the remaining Apache Commons libraries (`commons-text`, a direct dependency) deserve the same treatment.

@@ -16,14 +16,13 @@ import com.graphinout.base.output.InMemoryOutputSink;
 import com.graphinout.base.output.OutputSink;
 import com.graphinout.foundation.pure.functional.ThrowingConsumer;
 import com.graphinout.testdata.TestFileProvider;
+import com.graphinout.testdata.TestFileUtil;
 import io.github.classgraph.Resource;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -71,7 +70,7 @@ public class ReaderTests {
     public static List<ContentError> readResourceToSink(GioReader gioReader, Resource resource, OutputSink outputSink) throws IOException {
         URL resourceUrl = ClassLoader.getSystemResource(resource.getPath());
         log.info("Reading " + resourceUrl + " as " + gioReader.fileFormat());
-        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
+        String content = TestFileUtil.readUtf8(resourceUrl);
         SingleInputSource inputSource = SingleInputSource.of(resource.getPath(), content);
         return readTo(inputSource, gioReader, outputSink);
     }

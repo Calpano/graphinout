@@ -17,13 +17,11 @@ import com.graphinout.foundation.pure.input.Location;
 import com.graphinout.foundation.pure.input.Locator;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.pure.value.IntRef;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jspecify.annotations.Nullable;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -63,7 +61,7 @@ public class TgfReader implements GioReader {
         }
 
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
-        String content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
+        String content = singleInputSource.readContentAsUtf8String();
 
         if (content.isEmpty()) {
             // Emit empty document (no graphs) for empty TGF content to allow exact empty roundtrip

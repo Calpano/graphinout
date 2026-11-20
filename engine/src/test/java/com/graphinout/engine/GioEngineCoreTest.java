@@ -5,10 +5,9 @@ import com.graphinout.base.gio.GioReader;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.ContentErrors;
 import com.graphinout.testdata.TestFileProvider;
+import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.output.InMemoryOutputSink;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -19,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -133,7 +133,7 @@ class GioEngineCoreTest {
                 File resultFile = new File(reportResultDir, gioReader.fileFormat().id() + "/" + resourcePath + ".graphml");
                 resultFile.getParentFile().mkdirs();
                 byte[] bytes = outputSink.getByteBuffer().toByteArray();
-                FileUtils.writeByteArrayToFile(resultFile, bytes);
+                Files.write(resultFile.toPath(), bytes);
                 if (!contentErrors.isEmpty()) {
                     writeContentErrorsFile(contentErrors, gioReader.fileFormat().id(), resourcePath);
                 }
@@ -152,7 +152,7 @@ class GioEngineCoreTest {
             e.printStackTrace(pw);
             String ex = sw.getBuffer().toString();
             b.append(ex);
-            FileUtils.writeStringToFile(resultFile, b.toString(), StandardCharsets.UTF_8);
+            Files.writeString(resultFile.toPath(), b.toString(), StandardCharsets.UTF_8);
         }
     }
 
@@ -160,7 +160,7 @@ class GioEngineCoreTest {
         if (gioEngineCore.canRead(tr.resource().getPath())) {
             log.info("Reading " + tr.resource().getURI() + " in memory");
             try {
-                String content = IOUtils.toString(tr.resource().getURL(), StandardCharsets.UTF_8);
+                String content = TestFileUtil.readUtf8(tr.resource().getURL());
                 SingleInputSource inputSource = SingleInputSource.of(tr.resource().getURL().toString(), content);
                 for (GioReader gioReader : gioEngineCore.readers()) {
                     if (gioReader.fileFormat().matches(tr.resource().getPath())) {
@@ -187,7 +187,7 @@ class GioEngineCoreTest {
         for (ContentError ce : contentErrors) {
             lines.add(ce.getLevel() + ": " + ce.getMessage() + " @" + ce.getLocation());
         }
-        FileUtils.writeLines(resultFile, lines);
+        Files.write(resultFile.toPath(), lines, StandardCharsets.UTF_8);
     }
 
 }

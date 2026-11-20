@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -61,7 +62,8 @@ class MermaidReaderTest {
     private AutoCloseable closeable;
     private MermaidReader underTest;
     @Mock private ICjStream mockCjStream;
-    @Mock private SingleInputSource mockInputSrc;
+    // real default methods (readContentAsUtf8String) run on top of the stubbed inputStream()
+    @Mock(answer = Answers.CALLS_REAL_METHODS) private SingleInputSource mockInputSrc;
 
     private static Stream<TestFileProvider.TestResource> mermaidResources() {
         return TestFileProvider.getAllTestResources().filter(res -> res.resource().getPath().endsWith(".mmd"));

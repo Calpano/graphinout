@@ -23,7 +23,6 @@
         -->
         <dependency><groupId>it.ddot</groupId><artifactId>ddotit-core</artifactId><version>0.3.1</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
-        <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
 
         <!-- Test Dependencies -->
         <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><scope>test</scope></dependency>

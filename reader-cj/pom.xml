@@ -16,7 +16,6 @@
         <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.5-SNAPSHOT</version></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId><version>0.2.5-SNAPSHOT</version></dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
-        <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
 
         <!-- Test Dependencies -->
         <dependency><groupId>com.graphinout</groupId><artifactId>testdata</artifactId><version>0.2.5-SNAPSHOT</version>

@@ -4,7 +4,6 @@ import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.xml.factory.XmlFactory;
 import com.graphinout.base.xml.sax.SaxErrors2Log;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
@@ -58,7 +57,13 @@ public class GraphmlValidator {
             Schema schema = null;
             SAXException error = null;
             try {
-                String schemaAsString = IOUtils.resourceToString(xmlSchemaResource, StandardCharsets.UTF_8);
+                String schemaAsString;
+                try (InputStream in = GraphmlValidator.class.getResourceAsStream(xmlSchemaResource)) {
+                    if (in == null) {
+                        throw new IOException("Resource not found: " + xmlSchemaResource);
+                    }
+                    schemaAsString = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                }
                 SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
                 factory.setErrorHandler(new SaxErrors2Log(log));
                 // resolve the GraphML sub-schemas (referenced by absolute graphdrawing.org URLs) to bundled local

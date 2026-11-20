@@ -3,10 +3,9 @@ package com.graphinout.base.xml.util;
 import com.graphinout.foundation.pure.xml.writer.Xml2AppendableWriter;
 import com.graphinout.foundation.pure.xml.writer.XmlWriter;
 import io.github.classgraph.Resource;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class XmlTestTool {
@@ -30,7 +29,7 @@ public class XmlTestTool {
     }
 
     public static void parseAndWriteXml(File xmlFile, XmlWriter xmlWriter) throws Exception {
-        String xmlString = FileUtils.readFileToString(xmlFile, StandardCharsets.UTF_8);
+        String xmlString = Files.readString(xmlFile.toPath());
         XmlTool.parseAndWriteXml(xmlFile.getAbsolutePath(), xmlString, xmlWriter);
     }
 

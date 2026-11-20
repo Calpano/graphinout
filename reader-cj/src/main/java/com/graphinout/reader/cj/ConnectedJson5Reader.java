@@ -8,12 +8,10 @@ import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.foundation.pure.json.json5.Json5Preprocessor;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 import static com.graphinout.base.input.SingleInputSourceOfString.inputSource;
@@ -47,7 +45,7 @@ public class ConnectedJson5Reader implements GioReader {
         }
 
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
-        String content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
+        String content = singleInputSource.readContentAsUtf8String();
 
         if (content.isEmpty()) {
             return;

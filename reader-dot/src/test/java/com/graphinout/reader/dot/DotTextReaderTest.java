@@ -10,7 +10,6 @@ import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
 import io.github.classgraph.Resource;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +17,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -117,7 +115,7 @@ class DotTextReaderTest {
     // fixed #112"
     void testSubgraph() throws IOException {
         String path = "/text/dot/synthetics/simple/simple-subgraph.dot";
-        String content = IOUtils.resourceToString(path, StandardCharsets.UTF_8);
+        String content = TestFileUtil.readResourceUtf8(DotTextReaderTest.class, path);
         SingleInputSource inputSource = SingleInputSource.of(path, content);
         underTest.read(inputSource, cjStream);
         // no further assertions in disabled test
@@ -129,7 +127,7 @@ class DotTextReaderTest {
     }
 
     private void testRead(String path) throws IOException {
-        String content = IOUtils.resourceToString(path, StandardCharsets.UTF_8);
+        String content = TestFileUtil.readResourceUtf8(DotTextReaderTest.class, path);
         SingleInputSource inputSource = SingleInputSource.of(path, content);
         underTest.read(inputSource, cjStream);
     }

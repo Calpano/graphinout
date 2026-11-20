@@ -16,7 +16,6 @@
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
 
 
-        <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
 
         <!-- Test Dependencies -->
         <!-- classgraph types appear in test signatures (TestFileProvider) -->

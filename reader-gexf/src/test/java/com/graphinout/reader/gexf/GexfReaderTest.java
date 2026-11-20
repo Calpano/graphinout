@@ -6,10 +6,9 @@ import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.json.writer.impl.Json2StringWriter;
-import org.apache.commons.io.IOUtils;
+import com.graphinout.testdata.TestFileUtil;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +18,7 @@ class GexfReaderTest {
 
     @Test
     void read() throws Exception {
-        String content = IOUtils.resourceToString("/xml/gexf/sample.gexf", StandardCharsets.UTF_8);
+        String content = TestFileUtil.readResourceUtf8(GexfReaderTest.class, "/xml/gexf/sample.gexf");
         InputSource inputSource = SingleInputSource.of("xml/gexf/sample.gexf", content);
 
         GexfReader reader = new GexfReader();

@@ -2,15 +2,17 @@ package com.graphinout.testdata;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
-import org.apache.commons.io.FileUtils;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Objects;
@@ -341,7 +343,7 @@ public class TestFileUtil {
                 if (expectedString != null) {
                     File f = TestFileUtil.expectedFile(resource, testId);
                     String expectedNorm = normalizerFun.apply(expectedString);
-                    FileUtils.writeStringToFile(f, expectedNorm, StandardCharsets.UTF_8);
+                    writeUtf8(f.toPath(), expectedNorm);
                     log.info(EMOJI_VIDEOCASSETTE + " Wrote expected to {}", f.getAbsolutePath());
                 }
             }
@@ -351,7 +353,7 @@ public class TestFileUtil {
                 // Test passes.
                 File f = TestFileUtil.expectedFile(resource, testId);
                 String actualNorm = normalizerFun.apply(actualString);
-                FileUtils.writeStringToFile(f, actualNorm, StandardCharsets.UTF_8);
+                writeUtf8(f.toPath(), actualNorm);
                 log.info(EMOJI_VIDEOCASSETTE + " Wrote actual {}", f.getAbsolutePath());
             }
         }
@@ -378,5 +380,38 @@ public class TestFileUtil {
         }
     }
 
+    /**
+     * Reads a URL ({@code file:} or {@code jar:}) as UTF-8.
+     */
+    public static String readUtf8(URL url) throws IOException {
+        try (InputStream in = url.openStream()) {
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    /**
+     * Reads a classpath resource as UTF-8, resolved via {@code anchor} (use absolute paths, starting with '/').
+     *
+     * @throws IOException if the resource does not exist
+     */
+    public static String readResourceUtf8(Class<?> anchor, String absolutePath) throws IOException {
+        try (InputStream in = anchor.getResourceAsStream(absolutePath)) {
+            if (in == null) {
+                throw new IOException("Resource not found: " + absolutePath);
+            }
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    /**
+     * Writes {@code content} as UTF-8, creating missing parent directories.
+     */
+    public static void writeUtf8(Path file, String content) throws IOException {
+        Path parent = file.toAbsolutePath().getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
+        Files.writeString(file, content, StandardCharsets.UTF_8);
+    }
 
 }

@@ -10,11 +10,9 @@ import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.foundation.pure.functional.Nullables;
 import com.graphinout.foundation.pure.input.ContentError;
-import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 public class D2Reader implements GioReader {
@@ -41,7 +39,7 @@ public class D2Reader implements GioReader {
     public void read(InputSource inputSource, ICjStream writer) throws IOException {
         if (inputSource.isMulti()) throw new IllegalArgumentException("Cannot handle multi-sources");
         SingleInputSource sis = (SingleInputSource) inputSource;
-        String content = IOUtils.toString(sis.inputStream(), StandardCharsets.UTF_8);
+        String content = sis.readContentAsUtf8String();
 
         if (content.isBlank()) {
             Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content is empty"));

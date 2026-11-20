@@ -14,6 +14,12 @@ Added::
   boolean. Tests now check that GraphML written from CJ is schema-valid, and that schema-valid GraphML input stays
   valid after a round trip. Known gaps: CJ ids that are URIs are written as GraphML ids, which must be NMTOKENs,
   and endpoint data is written as a `cjData` attribute the XSD does not allow.
+* `SingleInputSource.readContentAsUtf8String()`: reads the whole input as UTF-8, closes the stream, and throws
+  `IOException`. `getContentAsUtf8String()` now delegates to it and wraps failures in `UncheckedIOException`.
+
+Fixed::
+* The CJ, CJ-GEF, D2, DDot, Mermaid, OCIF, Pajek, PlantUML, Structurizr DSL, adjacency-list, edge-list and TGF
+  readers now close the input stream they read; before, each read leaked one stream.
 
 Removed::
 * `GraphmlReader` no longer validates input against the GraphML XSD (#115). Only 13 of 84 GraphML files in the test
@@ -23,6 +29,8 @@ Removed::
   (the input reads without errors or warnings), so such a file is reported as not valid, given the warning
   `read()` issues for the auto-fixed entity, instead of throwing. Removed `GraphmlReader.getSchema`, `SchemaCache`, the unused yEd
   schema copies, and the runtime dependency on ClassGraph.
+* The direct `commons-io` dependency. All our uses were replaced with JDK IO, and a `maven-enforcer-plugin` rule
+  stops modules from declaring it again. It still comes in transitively with Jena (`reader-rdf`), which needs it.
 
 == 0.2.4 — 2026-11-19
 

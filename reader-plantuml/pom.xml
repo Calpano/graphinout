@@ -16,7 +16,6 @@
         <!-- Main Dependencies -->
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
-        <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
         <!-- PlantUML parser, MIT-licensed variant (the plain `plantuml` artifact is GPL) -->
         <dependency><groupId>net.sourceforge.plantuml</groupId><artifactId>plantuml-mit</artifactId><version>1.2026.10</version></dependency>
 

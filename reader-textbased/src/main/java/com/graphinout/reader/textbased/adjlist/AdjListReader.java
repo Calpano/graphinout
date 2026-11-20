@@ -7,13 +7,11 @@ import com.graphinout.base.gio.GioFileFormat;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jspecify.annotations.Nullable;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -43,7 +41,7 @@ public class AdjListReader implements GioReader {
         }
 
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
-        String content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
+        String content = singleInputSource.readContentAsUtf8String();
 
         if (content.isEmpty()) {
             return;

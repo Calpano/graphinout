@@ -20,7 +20,6 @@
         <!-- Logging API only. Consumers (e.g. the IntelliJ plugin) supply the binding;
              logback is a test-scope binding below, never imposed on downstream. -->
         <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></dependency>
-        <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
         <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
         <dependency><groupId>org.gwtproject.regexp</groupId><artifactId>gwt-regexp</artifactId></dependency>
         <dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId></dependency>

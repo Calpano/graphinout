@@ -3,6 +3,7 @@ package com.graphinout.base.input;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -31,11 +32,16 @@ public interface SingleInputSource extends InputSource {
      */
     Optional<Charset> encoding();
 
+    /**
+     * Unchecked variant of {@link #readContentAsUtf8String()}.
+     *
+     * @throws UncheckedIOException if reading fails
+     */
     default String getContentAsUtf8String() {
-        try (InputStream is = inputStream()) {
-            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        try {
+            return readContentAsUtf8String();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -45,6 +51,16 @@ public interface SingleInputSource extends InputSource {
      * @return a new {@link InputStream} on the underlying data
      */
     InputStream inputStream() throws IOException;
+
+    /**
+     * Reads the whole input as UTF-8 and closes the stream it opened. Malformed bytes are replaced with U+FFFD; a
+     * BOM is not stripped.
+     */
+    default String readContentAsUtf8String() throws IOException {
+        try (InputStream is = inputStream()) {
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
 
     default boolean isSingle() {
         return true;

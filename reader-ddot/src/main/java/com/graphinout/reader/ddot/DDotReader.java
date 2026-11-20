@@ -28,11 +28,9 @@ import it.ddot.core.event.IMeta;
 import it.ddot.core.event.IMetaPair;
 import it.ddot.core.io.DdotParser;
 import it.ddot.core.token.Commands;
-import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
@@ -236,7 +234,7 @@ public class DDotReader implements GioReader {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
-        String content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
+        String content = singleInputSource.readContentAsUtf8String();
 
         if (content.isEmpty()) {
             Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content is empty"));

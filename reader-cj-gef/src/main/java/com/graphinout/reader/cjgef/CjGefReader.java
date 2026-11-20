@@ -9,11 +9,9 @@ import com.graphinout.base.input.SingleInputSourceOfString;
 import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.reader.cj.ConnectedJsonReader;
 import com.graphinout.foundation.pure.input.ContentError;
-import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 /**
@@ -47,7 +45,7 @@ public class CjGefReader implements GioReader {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
-        String content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
+        String content = singleInputSource.readContentAsUtf8String();
         if (content.isBlank()) {
             return;
         }

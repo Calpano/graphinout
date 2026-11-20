@@ -170,7 +170,6 @@
             <dependency><groupId>com.networknt</groupId><artifactId>json-schema-validator</artifactId><version>3.0.9</version>
                 <exclusions><exclusion><groupId>tools.jackson.dataformat</groupId><artifactId>jackson-dataformat-yaml</artifactId></exclusion></exclusions>
             </dependency>
-            <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.22.0</version></dependency>
             <dependency><groupId>io.github.classgraph</groupId><artifactId>classgraph</artifactId><version>4.8.199</version></dependency>
             <dependency><groupId>org.apache.commons</groupId><artifactId>commons-text</artifactId><version>1.15.0</version></dependency>
             <dependency><groupId>org.gwtproject.regexp</groupId><artifactId>gwt-regexp</artifactId><version>1.0.0-RC1</version></dependency>
@@ -203,6 +202,28 @@
 
     <build>
         <plugins>
+            <plugin>
+                <!-- commons-io was replaced by plain JDK IO; no module may declare it again (see commons-io-removal.adoc) -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.6.2</version>
+                <executions>
+                    <execution>
+                        <id>ban-commons-io</id>
+                        <goals><goal>enforce</goal></goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes><exclude>commons-io:commons-io</exclude></excludes>
+                                    <!-- direct only: Jena (jena-base, commons-csv) still needs it at runtime -->
+                                    <searchTransitive>false</searchTransitive>
+                                    <message>commons-io was removed on purpose; use JDK IO (see commons-io-removal.adoc).</message>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

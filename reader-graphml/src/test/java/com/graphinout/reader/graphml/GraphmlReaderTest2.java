@@ -10,7 +10,6 @@ import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.output.InMemoryOutputSink;
 import io.github.classgraph.Resource;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

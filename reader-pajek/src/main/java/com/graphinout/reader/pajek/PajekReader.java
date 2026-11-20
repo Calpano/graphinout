@@ -16,11 +16,9 @@ import com.graphinout.foundation.pure.input.ContentError;
 import com.graphinout.foundation.pure.input.Location;
 import com.graphinout.foundation.pure.input.Locator;
 import com.graphinout.foundation.pure.value.IntRef;
-import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 import static com.graphinout.foundation.pure.value.IntRef.intRef;
@@ -52,7 +50,7 @@ public class PajekReader implements GioReader {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
-        String content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
+        String content = singleInputSource.readContentAsUtf8String();
 
         if (content.isBlank()) {
             Nullables.ifConsumerPresentAccept(errorHandler, ContentError.of(ContentError.ErrorLevel.Warn, "Content is empty"));

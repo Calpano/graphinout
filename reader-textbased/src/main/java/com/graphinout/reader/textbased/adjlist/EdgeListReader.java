@@ -9,11 +9,9 @@ import com.graphinout.base.input.InputSource;
 import com.graphinout.base.input.SingleInputSource;
 import com.graphinout.base.text.ITextWriter;
 import com.graphinout.base.text.TextReader;
-import org.apache.commons.io.IOUtils;
 
 import org.jspecify.annotations.Nullable;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -73,7 +71,7 @@ public class EdgeListReader implements GioReader, ITextWriter {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
         SingleInputSource singleInputSource = (SingleInputSource) inputSource;
-        String content = IOUtils.toString(singleInputSource.inputStream(), StandardCharsets.UTF_8);
+        String content = singleInputSource.readContentAsUtf8String();
 
         if (content.isEmpty()) {
             return;

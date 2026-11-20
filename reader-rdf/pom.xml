@@ -18,7 +18,6 @@
         <dependency><groupId>com.graphinout</groupId><artifactId>base</artifactId></dependency>
         <!-- fetches remote JSON-LD contexts from public addresses only -->
         <dependency><groupId>com.graphinout</groupId><artifactId>base-http</artifactId></dependency>
-        <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId></dependency>
         <dependency><groupId>org.apache.jena</groupId><artifactId>jena-core</artifactId><version>6.2.0</version></dependency>
         <dependency><groupId>org.apache.jena</groupId><artifactId>jena-arq</artifactId><version>6.2.0</version></dependency>
         <!-- JSON-LD processor used by Jena; we plug in our allowlisting document loader. Version as managed by Jena 6.2.0. -->

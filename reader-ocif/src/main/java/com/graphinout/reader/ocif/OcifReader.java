@@ -16,7 +16,6 @@ import com.graphinout.foundation.pure.input.ContentErrors;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.reader.ocif.cj.OcifDoc2CjDoc;
 import com.graphinout.reader.ocif.document.impl.OcifDocument;
-import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -26,7 +25,6 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 import static com.graphinout.foundation.pure.functional.Nullables.ifPresentAccept;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 @QualityOK
 public class OcifReader implements GioReader {
@@ -86,7 +84,7 @@ public class OcifReader implements GioReader {
 
         String json;
         try (sis) {
-            json = IOUtils.toString(sis.inputStream(), UTF_8);
+            json = sis.readContentAsUtf8String();
         }
 
         parseOcifJsonString2CjStream(json, cjStream, errorHandler);

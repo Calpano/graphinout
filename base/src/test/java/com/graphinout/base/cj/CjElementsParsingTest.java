@@ -17,13 +17,11 @@ import com.graphinout.base.json.JsonReaderImpl;
 import com.graphinout.foundation.pure.json.writer.impl.LoggingJsonWriter;
 import com.graphinout.foundation.pure.json.document.IJsonValue;
 import com.graphinout.testdata.TestFileUtil;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -35,7 +33,7 @@ public class CjElementsParsingTest {
         io.github.classgraph.Resource resource = TestFileUtil.resource(resourceName);
         assertThat(resource).isNotNull();
         java.net.URL resourceUrl = resource.getURL();
-        String content = IOUtils.toString(resourceUrl, StandardCharsets.UTF_8);
+        String content = TestFileUtil.readUtf8(resourceUrl);
 
         CjWriter2CjDocumentWriter cj2elements = new CjWriter2CjDocumentWriter();
         DelegatingCjWriter cjWriter = new DelegatingCjWriter(cj2elements);

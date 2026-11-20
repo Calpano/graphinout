@@ -16,11 +16,9 @@ import com.structurizr.model.Container;
 import com.structurizr.model.Element;
 import com.structurizr.model.Model;
 import com.structurizr.model.Relationship;
-import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -57,7 +55,7 @@ public class StructurizrDslReader implements GioReader {
             throw new IllegalArgumentException("Cannot handle multi-sources");
         }
         SingleInputSource sis = (SingleInputSource) inputSource;
-        String content = IOUtils.toString(sis.inputStream(), StandardCharsets.UTF_8);
+        String content = sis.readContentAsUtf8String();
         if (content.isBlank()) {
             return;
         }
