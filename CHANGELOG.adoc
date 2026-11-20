@@ -59,6 +59,11 @@ Fixed::
 * The generic reader test (`AbstractReaderTest`) could not fail: it swallowed every exception and mismatch, and it
   located files with `ClassLoader.getSystemResource`, which misses resources inside jars. It now reports every
   failing file with its root cause; expected errors are compared at Error level, warnings are logged.
+* Thread safety: the HTML entity table shared by the GraphML and GEXF readers was initialized lazily without
+  synchronization and marked ready before it was filled. Readers on other threads could see a missing or half-built
+  table, so an entity like `&Eacute;` stayed undecoded, the XML parse failed and the read returned no document. The
+  table is now built once at class initialization and immutable. `foundation-pure`'s `LoggerFactory` (a `HashMap`
+  filled from any thread) is synchronized. New tests read concurrently on 8 and 16 threads.
 
 Removed::
 * `GraphmlReader` no longer validates input against the GraphML XSD (#115). Only 13 of 84 GraphML files in the test

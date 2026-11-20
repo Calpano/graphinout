@@ -26,31 +26,34 @@ public class Graphml {
     public static final String XSI_SCHEMA_LOCATION_1_0 = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
     /** "xsi:schemaLocation" 1.1 */
     public static final String XSI_SCHEMA_LOCATION_1_1 = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd";
-    static Map<String, Set<String>> parent_child;
+    /** immutable after class initialization, so safe to read from any thread */
+    static final Map<String, Set<String>> parent_child;
 
     /** http://www.yworks.com/xml/schema/graphml/1.1 */
     public static final String XSI_SCHEMA_LOCATION_YWORKS_1_1 = "http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd";
     public static final String XSI_SCHEMA_LOCATION_YWORKS_1_0= "http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.0/ygraphml.xsd";public static final String XSI_SCHEMA_LOCATION_YWORKS_1_0b= "http://graphml.graphdrawing.org/xmlns/graphml http://www.yworks.com/xml/schema/graphml/1.0/ygraphml.xsd";
 
     static {
-        parent_child = new HashMap<>();
-        parent_child.computeIfAbsent("graphml", k -> new HashSet<>()).add("graph");
-        parent_child.computeIfAbsent("graphml", k -> new HashSet<>()).add("data");
-        parent_child.computeIfAbsent("graphml", k -> new HashSet<>()).add("key");
-        parent_child.computeIfAbsent("graph", k -> new HashSet<>()).add("data");
-        parent_child.computeIfAbsent("graph", k -> new HashSet<>()).add("node");
-        parent_child.computeIfAbsent("graph", k -> new HashSet<>()).add("edge");
-        parent_child.computeIfAbsent("graph", k -> new HashSet<>()).add("hyperedge");
-        parent_child.computeIfAbsent("node", k -> new HashSet<>()).add("data");
-        parent_child.computeIfAbsent("node", k -> new HashSet<>()).add("port");
-        parent_child.computeIfAbsent("node", k -> new HashSet<>()).add("graph");
-        parent_child.computeIfAbsent("port", k -> new HashSet<>()).add("data");
-        parent_child.computeIfAbsent("port", k -> new HashSet<>()).add("port");
-        parent_child.computeIfAbsent("edge", k -> new HashSet<>()).add("data");
-        parent_child.computeIfAbsent("edge", k -> new HashSet<>()).add("graph");
-        parent_child.computeIfAbsent("hyperedge", k -> new HashSet<>()).add("data");
-        parent_child.computeIfAbsent("hyperedge", k -> new HashSet<>()).add("endpoint");
-        parent_child.computeIfAbsent("hyperedge", k -> new HashSet<>()).add("graph");
+        Map<String, Set<String>> map = new HashMap<>();
+        map.computeIfAbsent("graphml", k -> new HashSet<>()).add("graph");
+        map.computeIfAbsent("graphml", k -> new HashSet<>()).add("data");
+        map.computeIfAbsent("graphml", k -> new HashSet<>()).add("key");
+        map.computeIfAbsent("graph", k -> new HashSet<>()).add("data");
+        map.computeIfAbsent("graph", k -> new HashSet<>()).add("node");
+        map.computeIfAbsent("graph", k -> new HashSet<>()).add("edge");
+        map.computeIfAbsent("graph", k -> new HashSet<>()).add("hyperedge");
+        map.computeIfAbsent("node", k -> new HashSet<>()).add("data");
+        map.computeIfAbsent("node", k -> new HashSet<>()).add("port");
+        map.computeIfAbsent("node", k -> new HashSet<>()).add("graph");
+        map.computeIfAbsent("port", k -> new HashSet<>()).add("data");
+        map.computeIfAbsent("port", k -> new HashSet<>()).add("port");
+        map.computeIfAbsent("edge", k -> new HashSet<>()).add("data");
+        map.computeIfAbsent("edge", k -> new HashSet<>()).add("graph");
+        map.computeIfAbsent("hyperedge", k -> new HashSet<>()).add("data");
+        map.computeIfAbsent("hyperedge", k -> new HashSet<>()).add("endpoint");
+        map.computeIfAbsent("hyperedge", k -> new HashSet<>()).add("graph");
+        map.replaceAll((k, v) -> Set.copyOf(v));
+        parent_child = Map.copyOf(map);
     }
 
     public static boolean isXmlChildElementWithIndependentGioWriterCall(String parent, String child) {
