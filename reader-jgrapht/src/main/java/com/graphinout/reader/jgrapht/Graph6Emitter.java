@@ -67,8 +67,10 @@ final class Graph6Emitter {
         for (Graph6Codec.Edge edge : graph.edges()) {
             ICjEdgeChunkMutable edgeChunk = cjStream.createEdgeChunk();
             if (directed) {
-                edgeChunk.addEndpointOutgoing(Integer.toString(edge.from()));
-                edgeChunk.addEndpointIncoming(Integer.toString(edge.to()));
+                // digraph6 arc from -> to. CJ direction is seen from the edge: it comes IN from its source and goes
+                // OUT to its target
+                edgeChunk.addEndpointIncoming(Integer.toString(edge.from()));
+                edgeChunk.addEndpointOutgoing(Integer.toString(edge.to()));
             } else {
                 edgeChunk.addEndpointUndirected(Integer.toString(edge.from()));
                 edgeChunk.addEndpointUndirected(Integer.toString(edge.to()));
