@@ -27,7 +27,7 @@ public class ArchitectureParser {
     private static final Pattern CONN = Pattern.compile(
             "^(?<left>[A-Za-z0-9_]+)(?::(?<lside>[A-Za-z]+))?" +
             "\\s*(?<arrow>-->|<-->|--)\\s*" +
-            "(?<right>[A-Za-z0-9_]+)(?::(?<rside>[A-Za-z]+))?" +
+            "(?:(?<rside>[LRTB]):)?(?<right>[A-Za-z0-9_]+)" +
             "(?:\\s*\\[(?<label>[^\\]]*)\\])?\\s*$"
     );
 

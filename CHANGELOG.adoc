@@ -51,6 +51,8 @@ Fixed::
   invented for unlabeled elements; generated node ids no longer collide with existing ones; edges with fewer than
   two endpoints are no longer written without `from`/`to`. Merged graphs, hyperedges and non-object data are
   reported to the content error handler.
+* Mermaid reader: architecture connections read the right-hand side hint in the Mermaid order `db:L -- R:server`;
+  `R:server` was taken as an edge to a node `R`.
 * digraph6 reader: arcs were read backwards (the arc i -> j became a CJ edge from j to i). The adjacency bit at row
   i, column j is now the CJ source i (direction `in`) and target j (`out`).
 * Neo4j APOC JSON reader: relationships were read backwards (`start` became the CJ target). `start` is now the source
