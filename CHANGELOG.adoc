@@ -16,6 +16,8 @@ Added::
   and endpoint data is written as a `cjData` attribute the XSD does not allow.
 * `SingleInputSource.readContentAsUtf8String()`: reads the whole input as UTF-8, closes the stream, and throws
   `IOException`. `getContentAsUtf8String()` now delegates to it and wraps failures in `UncheckedIOException`.
+* `devtools` tool `ThirdPartyLicenses` regenerates the dependency table in `THIRD_PARTY.adoc` and the license
+  texts under `LICENSES/` from `mvn license:aggregate-add-third-party`; `how-to-release.adoc` runs it as Step 0b.
 
 Changed::
 * Module POMs declare what each module actually uses, checked with `mvn dependency:analyze` and against the
@@ -27,6 +29,8 @@ Changed::
   classpaths, where it shadowed the real annotations. The root POM excludes it from `foundation-pure`.
 * Truth is no longer added to every module from the root POM, and it now brings Guava (as `-jre`, via the managed
   version) in test scope. Before, Truth users only compiled because `testdata` and `base` exported Guava.
+* `THIRD_PARTY.adoc` and `LICENSES/` regenerated: versions match the build again (e.g. JUnit 6.1.3, Jena 6.2.0,
+  logback 1.6.7), 11 libraries that are no longer used are gone, and `ddotit-core` and Jackson 3 are listed.
 
 Fixed::
 * The CJ, CJ-GEF, D2, DDot, Mermaid, OCIF, Pajek, PlantUML, Structurizr DSL, adjacency-list, edge-list and TGF

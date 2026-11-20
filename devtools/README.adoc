@@ -50,6 +50,39 @@ java -cp devtools/target/classes com.graphinout.devtools.LogbackLoggerCheck /pat
 `LogbackLoggerCheckTest` runs the same check and fails the build (listing the offending file → logger name) if any
 stale `com.graphinout` logger name is found.
 
+=== ThirdPartyLicenses
+
+Regenerates the dependency table in `THIRD_PARTY.adoc` and the license texts under `LICENSES/` from the output of
+the license-maven-plugin.
+
+How it works:
+
+* reads `target/generated-sources/license/THIRD-PARTY.txt` (all resolved third-party dependencies, direct and
+  transitive; internal `com.graphinout:*` modules are skipped);
+* keeps the curated library link, license label and *Original* link of rows that already exist;
+* for a new version, takes the license text from the artifact's own jar (`META-INF/LICENSE*`, `NOTICE*`) and links
+  that jar as *Original*; if the jar ships none, carries over the previous version's folder;
+* marks *Direct* every artifact declared in a module POM's own `<dependencies>`;
+* deletes `LICENSES/` folders that no row references any more;
+* prints new, changed and removed dependencies, and the distinct license types (compare them with the summary list
+  at the top of `THIRD_PARTY.adoc`, which it does not rewrite).
+
+It exits non-zero when a dependency has no license text anywhere or a license name it cannot map. Fix those by hand:
+add the text under `LICENSES/<artifactId>-<version>/`, or extend `ThirdPartyLicenses.spdx`.
+
+==== Run it
+
+[source,shell]
+----
+mvn install -DskipTests
+mvn org.codehaus.mojo:license-maven-plugin:aggregate-add-third-party
+mvn -pl devtools -o compile
+java -cp devtools/target/classes com.graphinout.devtools.ThirdPartyLicenses --dry-run   # report only
+java -cp devtools/target/classes com.graphinout.devtools.ThirdPartyLicenses             # write
+----
+
+Run it before a release, or after changing dependencies. Running it twice in a row changes nothing.
+
 == Adding a tool
 
 Add a class under `src/main/java/com/graphinout/devtools/` (a `main` method makes it runnable), and — if it should

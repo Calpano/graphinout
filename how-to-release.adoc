@@ -47,6 +47,22 @@ Fixed::
 ----
 ====
 
+.Step 0b: Regenerate `THIRD_PARTY.adoc` and `LICENSES/`
+----
+mvn install -DskipTests
+mvn org.codehaus.mojo:license-maven-plugin:aggregate-add-third-party
+mvn -pl devtools -o compile
+java -cp devtools/target/classes com.graphinout.devtools.ThirdPartyLicenses
+----
+The release ships with the dependencies it actually resolves, so their license list must match. The tool rewrites
+the dependency table and the license texts (see link:devtools/README.adoc[devtools/README.adoc]):
+
+* If it exits non-zero, fix what it lists: add the missing text under `LICENSES/<artifactId>-<version>/`, or
+  extend `ThirdPartyLicenses.spdx` for an unknown license name. Then run it again.
+* Compare the license types it prints with the summary list at the top of `THIRD_PARTY.adoc`, and update that
+  list by hand if a type was added or dropped.
+* Commit `THIRD_PARTY.adoc` and `LICENSES/` together with the CHANGELOG, *before* Step 1.
+
 .Step 1: Prepare the release with
 ----
 mvn release:prepare -DpushChanges=false -P central-deploy,sign-for-sonar
