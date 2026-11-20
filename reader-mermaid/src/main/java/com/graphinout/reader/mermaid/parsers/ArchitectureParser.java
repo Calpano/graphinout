@@ -26,7 +26,7 @@ public class ArchitectureParser {
 
     private static final Pattern CONN = Pattern.compile(
             "^(?<left>[A-Za-z0-9_]+)(?::(?<lside>[A-Za-z]+))?" +
-            "\\s*(?<arrow>-->|<-->|--)\\s*" +
+            "\\s*(?<arrow>-->|<-->|<--|--)\\s*" +
             "(?:(?<rside>[LRTB]):)?(?<right>[A-Za-z0-9_]+)" +
             "(?:\\s*\\[(?<label>[^\\]]*)\\])?\\s*$"
     );
@@ -49,7 +49,11 @@ public class ArchitectureParser {
             // Conn syntax also matches "a:R -- L:b". Try reordering side hints into the conn matcher above.
             Matcher cm = CONN.matcher(line.replace(" -- ", "--").replace("-- ", "--").replace(" --", "--"));
             if (cm.matches()) {
-                ctx.addEdge(cm.group("left"), cm.group("right"), cm.group("label"));
+                if ("<--".equals(cm.group("arrow"))) {
+                    ctx.addEdge(cm.group("right"), cm.group("left"), cm.group("label"));
+                } else {
+                    ctx.addEdge(cm.group("left"), cm.group("right"), cm.group("label"));
+                }
             }
         }
     }

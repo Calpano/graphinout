@@ -71,11 +71,27 @@ public class ClassDiagramParser {
                 String label = rm.group("label");
                 ctx.ensureNode(left);
                 ctx.ensureNode(right);
-                ctx.addEdge(left, right, label);
+                if (pointsLeft(rm.group("rel"))) {
+                    ctx.addEdge(right, left, label);
+                } else {
+                    ctx.addEdge(left, right, label);
+                }
                 continue;
             }
             // Otherwise silently ignore (notes etc.)
         }
+    }
+
+    /**
+     * Whether the relation is oriented from the right class to the left one, following the UML convention also used by
+     * the PlantUML reader: the arrowhead or inheritance triangle marks the target ({@code A <|-- B} is {@code B -> A}),
+     * the composition/aggregation diamond marks the source, the whole ({@code A --* B} is {@code B -> A}).
+     */
+    static boolean pointsLeft(String rel) {
+        return switch (rel) {
+            case "<|--", "<--", "<..", "--*", "--o" -> true;
+            default -> false;
+        };
     }
 
     private static String stripBrackets(String s) {

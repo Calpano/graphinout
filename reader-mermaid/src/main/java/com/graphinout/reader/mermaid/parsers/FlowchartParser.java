@@ -130,7 +130,11 @@ public class FlowchartParser {
             EdgeRef edge = (EdgeRef) eTok;
             NodeRef next = (NodeRef) nTok;
             ctx.ensureNode(next.id, next.label);
-            ctx.addEdge(prev.id, next.id, edge.label, edge.directed);
+            if (edge.reversed) {
+                ctx.addEdge(next.id, prev.id, edge.label, edge.directed);
+            } else {
+                ctx.addEdge(prev.id, next.id, edge.label, edge.directed);
+            }
             prev = next;
         }
     }
@@ -149,7 +153,7 @@ public class FlowchartParser {
             if (midM.lookingAt()) {
                 String txt = midM.group("text");
                 boolean directed = isDirected(midM.group("lead") + midM.group("trail"));
-                out.add(new EdgeRef(txt, directed));
+                out.add(new EdgeRef(txt, directed, false));
                 pos = midM.end();
                 // Optional immediate "|label|"
                 Matcher pl = PIPE_LABEL.matcher(line).region(pos, n);
@@ -164,7 +168,8 @@ public class FlowchartParser {
             // Try plain arrow token: --, -->, ===, ==>, ---x, --o, -.-, -.->
             Matcher arrM = EDGE_TOKEN.matcher(line).region(pos, n);
             if (arrM.lookingAt()) {
-                EdgeRef edge = new EdgeRef(null, isDirected(arrM.group("arrow")));
+                String arrow = arrM.group("arrow");
+                EdgeRef edge = new EdgeRef(null, isDirected(arrow), isReversed(arrow));
                 out.add(edge);
                 pos = arrM.end();
                 // Optional immediate "|label|"
@@ -238,7 +243,18 @@ public class FlowchartParser {
     private static final class EdgeRef {
         @Nullable String label;
         final boolean directed;
-        EdgeRef(@Nullable String label, boolean directed) {this.label = label; this.directed = directed;}
+        /** The arrowhead is only on the left ({@code A <-- B}): the edge goes from the right node to the left one. */
+        final boolean reversed;
+        EdgeRef(@Nullable String label, boolean directed, boolean reversed) {
+            this.label = label;
+            this.directed = directed;
+            this.reversed = reversed;
+        }
+    }
+
+    /** An arrow with a head only on its left end, e.g. {@code <--} or {@code <==}, points from right to left. */
+    static boolean isReversed(String arrow) {
+        return arrow.startsWith("<") && !arrow.endsWith(">");
     }
 
     /**

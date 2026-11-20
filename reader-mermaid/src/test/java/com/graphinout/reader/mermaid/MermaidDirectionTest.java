@@ -25,6 +25,41 @@ class MermaidDirectionTest {
     }
 
     @Test
+    void classDiagramInheritance() throws IOException {
+        // Dog inherits from Animal, written both ways
+        assertEquals(List.of("Dog->Animal"), edges("classDiagram\n    Animal <|-- Dog"));
+        assertEquals(List.of("Dog->Animal"), edges("classDiagram\n    Dog --|> Animal"));
+    }
+
+    @Test
+    void classDiagramArrows() throws IOException {
+        assertEquals(List.of("B->A"), edges("classDiagram\n    A <-- B"));
+        assertEquals(List.of("A->B"), edges("classDiagram\n    A --> B"));
+        assertEquals(List.of("B->A"), edges("classDiagram\n    A <.. B"));
+        assertEquals(List.of("A->B"), edges("classDiagram\n    A ..> B"));
+    }
+
+    @Test
+    void classDiagramDiamondMarksTheWhole() throws IOException {
+        assertEquals(List.of("Car->Wheel"), edges("classDiagram\n    Car *-- Wheel"));
+        assertEquals(List.of("Car->Wheel"), edges("classDiagram\n    Wheel --* Car"));
+        assertEquals(List.of("Pond->Duck"), edges("classDiagram\n    Pond o-- Duck"));
+        assertEquals(List.of("Pond->Duck"), edges("classDiagram\n    Duck --o Pond"));
+    }
+
+    @Test
+    void flowchartLeftArrow() throws IOException {
+        assertEquals(List.of("A->B"), edges("flowchart LR\n    A --> B"));
+        assertEquals(List.of("B->A"), edges("flowchart LR\n    A <-- B"));
+    }
+
+    @Test
+    void architectureLeftArrow() throws IOException {
+        assertEquals(List.of("a->b"), edges("architecture-beta\n    service a\n    service b\n    a:R --> L:b"));
+        assertEquals(List.of("b->a"), edges("architecture-beta\n    service a\n    service b\n    a:R <-- L:b"));
+    }
+
+    @Test
     void architectureSideHintBeforeRightId() throws IOException {
         // the side hint of the right service precedes its id: "R:server" is the service "server", not a node "R"
         assertEquals(List.of("db->server"), edges("architecture-beta\n    service db\n    service server\n    db:L -- R:server"));
