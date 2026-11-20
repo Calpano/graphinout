@@ -49,6 +49,16 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.graphinout.cli.GraphinoutCli</mainClass>
                                 </transformer>
+                                <!-- META-INF/LICENSE of the uber-jar is GraphInOut's own (BSD-3-Clause). Drop every
+                                     jar's copy (incl. dependencies' and our modules') and add the root LICENSE
+                                     explicitly, instead of relying on shade's first-copy-wins order. -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resource>META-INF/LICENSE</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                                    <resource>META-INF/LICENSE</resource>
+                                    <file>${maven.multiModuleProjectDirectory}/LICENSE</file>
+                                </transformer>
                             </transformers>
                             <filters>
                                 <filter>

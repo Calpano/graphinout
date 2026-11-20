@@ -52,6 +52,12 @@
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
             </resource>
+            <!-- these <resources> replace the parent's: repeat its LICENSE entry (ships META-INF/LICENSE;
+                 the parent stages the root LICENSE into target/license/META-INF/) -->
+            <resource>
+                <directory>${project.build.directory}/license</directory>
+                <filtering>false</filtering>
+            </resource>
         </resources>
         <plugins>
                 <plugin>

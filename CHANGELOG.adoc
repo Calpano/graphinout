@@ -35,6 +35,9 @@ Changed::
 Fixed::
 * The CJ, CJ-GEF, D2, DDot, Mermaid, OCIF, Pajek, PlantUML, Structurizr DSL, adjacency-list, edge-list and TGF
   readers now close the input stream they read; before, each read leaked one stream.
+* Every jar (main, `-sources`, `-tests`, `-javadoc`, and the `cli` uber-jar) now ships GraphInOut's
+  BSD-3-Clause license as `META-INF/LICENSE`, as clause 2 requires for binary redistributions. Before, no
+  jar contained it; the `cli` uber-jar's `META-INF/LICENSE` came from whichever dependency shade saw first.
 
 Removed::
 * `GraphmlReader` no longer validates input against the GraphML XSD (#115). Only 13 of 84 GraphML files in the test

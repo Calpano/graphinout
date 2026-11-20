@@ -198,6 +198,23 @@
     </dependencyManagement>
 
     <build>
+        <!-- Ship the BSD-3-Clause LICENSE inside every jar as META-INF/LICENSE: clause 2 requires binary
+             redistributions to reproduce it, and META-INF is where tools and users look for it.
+             The root LICENSE is first staged into target/license/META-INF/ (see maven-resources-plugin below), and
+             that staging dir is the resource dir. Not the reactor root itself: the j2cl plugin (foundation-emulation,
+             foundation-pure) compiles every resource dir as a source root and ignores <includes>, so the root would
+             pull in all modules' Java sources; IDEs would also import the root as a resource folder of every module.
+             foundation-emulation/-pure/-shared declare their own <resources> (which replace these): keep them in sync. -->
+        <resources>
+            <!-- keep the default resources: declaring <resources> replaces them -->
+            <resource><directory>src/main/resources</directory></resource>
+            <resource><directory>${project.build.directory}/license</directory></resource>
+        </resources>
+        <testResources>
+            <!-- keep the default test resources: declaring <testResources> replaces them -->
+            <testResource><directory>src/test/resources</directory></testResource>
+            <testResource><directory>${project.build.directory}/license</directory></testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <!-- commons-io was replaced by plain JDK IO; no module may declare it again (see commons-io-removal.adoc) -->
@@ -217,6 +234,47 @@
                                     <message>commons-io was removed on purpose; use JDK IO (see commons-io-removal.adoc).</message>
                                 </bannedDependencies>
                             </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <!-- Stage the root LICENSE for the <resources> above (main, sources and tests jars).
+                             In a module, ${project.basedir} is the module dir; maven.multiModuleProjectDirectory is
+                             the reactor root (anchored by the .mvn/ dir). -->
+                        <id>stage-license</id>
+                        <phase>generate-resources</phase>
+                        <goals><goal>copy-resources</goal></goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/license/META-INF</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${maven.multiModuleProjectDirectory}</directory>
+                                    <includes><include>LICENSE</include></includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- The javadoc jar ignores <resources>: copy LICENSE into the javadoc output before it is
+                             jarred. maven-javadoc-plugin 3.12.0 jars target/reports/apidocs (NOT target/apidocs);
+                             recheck this path after upgrading the javadoc plugin. -->
+                        <id>license-into-javadoc</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>copy-resources</goal></goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/reports/apidocs/META-INF</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${maven.multiModuleProjectDirectory}</directory>
+                                    <includes><include>LICENSE</include></includes>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
