@@ -18,6 +18,8 @@ Added::
   `IOException`. `getContentAsUtf8String()` now delegates to it and wraps failures in `UncheckedIOException`.
 * `devtools` tool `ThirdPartyLicenses` regenerates the dependency table in `THIRD_PARTY.adoc` and the license
   texts under `LICENSES/` from `mvn license:aggregate-add-third-party`; `how-to-release.adoc` runs it as Step 0b.
+* PG-JSON (`pg-json`, `.pg.json`, `.pgjson`) is registered with the engine and the CLI (`PgJsonService`) and
+  detected by file name and by content (array-valued `properties`, `labels` arrays, `undirected`).
 
 Changed::
 * Module POMs declare what each module actually uses, checked with `mvn dependency:analyze` and against the
@@ -38,6 +40,14 @@ Fixed::
 * Every jar (main, `-sources`, `-tests`, `-javadoc`, and the `cli` uber-jar) now ships GraphInOut's
   BSD-3-Clause license as `META-INF/LICENSE`, as clause 2 requires for binary redistributions. Before, no
   jar contained it; the `cli` uber-jar's `META-INF/LICENSE` came from whichever dependency shade saw first.
+* PG-JSON reader: directed edges were read backwards (`from` became the CJ target); integers beyond 32 bits threw;
+  edges kept only their first label and properties only their first value (now a JSON array); a scalar or nested
+  property value made the parser skip the following properties; `edges` before `nodes` threw; a `null` id became
+  the id `"null"`. Spec violations are now read leniently where possible and reported with line and column.
+* PG-JSON writer: CJ arrays become multiple property values instead of a JSON string; no `Node`/`Edge` label is
+  invented for unlabeled elements; generated node ids no longer collide with existing ones; edges with fewer than
+  two endpoints are no longer written without `from`/`to`. Merged graphs, hyperedges and non-object data are
+  reported to the content error handler.
 
 Removed::
 * `GraphmlReader` no longer validates input against the GraphML XSD (#115). Only 13 of 84 GraphML files in the test

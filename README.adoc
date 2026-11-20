@@ -12,6 +12,7 @@
 - GraphML, GEXF, GXL, GML (Graph Modelling Language)
 - Graphviz DOT, D2, Mermaid, PlantUML (class diagrams), https://ddot.it[DDot]
 - OCIF (Open Canvas Interchange Format)
+- https://pg-format.github.io/specification/[PG-JSON] (property graphs)
 - graph6
 - RDF: Turtle, RDF/XML, N-Triples, N-Quads, TriG, TriX, RDF/JSON, JSON-LD
 - Adjacency list (NetworkX), edge list, Trivial Graph Format (TGF), Pajek

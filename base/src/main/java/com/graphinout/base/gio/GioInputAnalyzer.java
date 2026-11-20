@@ -246,7 +246,8 @@ public class GioInputAnalyzer {
             Map.entry("mermaid", List.of("flowchart", "graph td", "sequencediagram", "statediagram")),
             Map.entry("plantuml", List.of("@startuml")),
             Map.entry("structurizr-dsl", List.of("workspace", "!identifiers")),
-            Map.entry("ocif", List.of("ocif", "ocwg")));
+            Map.entry("ocif", List.of("ocif", "ocwg")),
+            Map.entry("pg-json", List.of("\"undirected\"")));
 
     /**
      * Regex vocabulary for formats whose signature is a line shape rather than a fixed keyword. ddot's {@code subject
@@ -255,6 +256,11 @@ public class GioInputAnalyzer {
      * fabricates extra nodes out of the dots.
      */
     private static final Map<String, List<Pattern>> VOCABULARY_PATTERNS = Map.of(
+            // PG-JSON (pg-format.github.io): every node/edge has a "labels" array, and property values are ARRAYS
+            // of scalars — the second sets it apart from other node/edge JSON (e.g. Neo4j APOC, scalar values).
+            "pg-json", List.of(
+                    Pattern.compile("\"labels\"\\s*:\\s*\\["),
+                    Pattern.compile("\"properties\"\\s*:\\s*\\{\\s*\"[^\"]*\"\\s*:\\s*\\[")),
             "ddot", List.of(Pattern.compile("(?m)^\\s*\\S+\\s*\\.\\.\\s*.*?\\.\\.\\s*\\S+\\s*$")),
             // DOT grammar (graphviz.org/doc/info/lang.html): a [strict] (graph|digraph) [id] { … } header, the
             // bracketed [attr=value] lists, and the -- / -> edge operators (spaced, so mermaid's --> does not match).

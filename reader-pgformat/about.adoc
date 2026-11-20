@@ -98,29 +98,43 @@ ICjStream stream = writer.createCjStream(sink);
 String pgJson = sink.getBufferAsUtf8String();
 ----
 
-== Implementation Details
+== Mapping to CJ
 
-The reader/writer:
+The format id is `pg-json`; the engine finds the reader and writer via `PgJsonService`.
 
-* Converts PG-JSON nodes to CJ nodes with labels
-* Converts PG-JSON edges to CJ edges with proper direction handling
-* Maps PG-JSON properties (which are arrays) to CJ data properties (taking first value)
-* Supports both directed and undirected edges
-* Preserves node and edge IDs
-* Handles multiple labels on nodes and edges
+.Reading PG-JSON
+* Node and edge `labels` become CJ label entries, all of them, in order.
+* A property with one value becomes a scalar CJ data property; a property with several values becomes a JSON array.
+  Numbers keep their full range and precision (`long`, `BigInteger`, `double`).
+* An edge `from -> to` becomes a CJ edge with `from` as source (endpoint direction `in`) and `to` as target
+  (direction `out`). CJ direction is seen from the edge. `"undirected": true` gives two undirected endpoints.
+* `nodes` and `edges` may come in either order.
 
-== Key Features
+.Lenient reading, reported as content errors
+* A scalar property value instead of an array is read as one value (warning).
+* A numeric `id`, `from` or `to` is read as its text (warning).
+* `null`, nested objects and nested arrays inside a value array are skipped; the other values and properties are kept.
+* A node without `id` is read without one (error); an edge without `from` or `to` is skipped (error).
+* Duplicate node ids and edges that reference unknown nodes are reported (warning).
+* Malformed JSON fails with an `IOException` that names line and column.
 
-* **Bidirectional conversion**: Full round-trip support between PG-JSON and CJ formats
-* **Property arrays**: PG-JSON properties are arrays of values; the reader takes the first value for CJ
-* **Direction support**: Properly handles directed and undirected edges
-* **Multiple labels**: Supports multiple labels on both nodes and edges
+.Writing PG-JSON
+* CJ labels become `labels`. An element without labels gets an empty array; no label is invented.
+* An object-valued CJ data property becomes a property: arrays of scalars become multiple values, a scalar becomes a
+  one-element array. Nested objects or arrays are written as a JSON string (warning).
+* Nodes without an id get a generated id (`node_0`, `node_1`, …) that does not collide with existing ids.
 
 == Limitations
 
-* When converting from CJ to PG-JSON, properties with array values will be converted to single-element arrays
-* If a node or edge has no labels in CJ, a default label ("Node" or "Edge") will be added in PG-JSON
-* If a node has no ID in CJ, an auto-generated ID will be assigned
+PG-JSON is one flat property graph whose edges connect exactly two nodes. Writing reports what it cannot represent
+to the content error handler:
+
+* Nested graphs and multiple CJ graphs are merged into one graph (warning).
+* An edge with more than two endpoints is written from its first source to its first target (warning); an edge with
+  fewer than two endpoints is not written (error).
+* CJ data that is not a JSON object (e.g. a plain string) has no place in PG properties and is not written (warning).
+* Label languages are dropped: a multilingual CJ label becomes several PG labels.
+* CJ treats labels and data keys as unordered, so a round trip may reorder them.
 
 == References
 
