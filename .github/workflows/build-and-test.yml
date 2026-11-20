@@ -34,7 +34,7 @@ jobs:
           # Pin for reproducible CI; bump when data changes. Was 546f3bf (2026-06-17, 225 files) while the
           # corpus had grown to ~1000 - so CI silently tested against a fifth of the fixtures, and nothing
           # said so until ExternalCorpusPresenceTest started failing the build on a truncated corpus.
-          ref: 3daa9e4e707d672116e7a293beae1b3566572f45 # 2026-07-10, ~1008 files
+          ref: d5196fb27793b5e190112903d8c8a6a1dbfe9741 # 2026-11-20, ~1006 files (graph1_test tagged --INVALIDgraphml)
           path: graph-test-data
 
       - name: ☕ Setup Java JDK and Authenticate with GitHub Packages
