@@ -13,6 +13,7 @@
 - Graphviz DOT, D2, Mermaid, PlantUML (class diagrams), https://ddot.it[DDot]
 - OCIF (Open Canvas Interchange Format)
 - https://pg-format.github.io/specification/[PG-JSON] (property graphs)
+- https://neo4j.com/docs/apoc/current/export/json/[Neo4j APOC JSON] export (JSON Lines, array, `nodes`/`rels` and query/path exports)
 - graph6
 - RDF: Turtle, RDF/XML, N-Triples, N-Quads, TriG, TriX, RDF/JSON, JSON-LD
 - Adjacency list (NetworkX), edge list, Trivial Graph Format (TGF), Pajek
