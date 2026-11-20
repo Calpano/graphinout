@@ -456,6 +456,21 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <!-- Publish a -SNAPSHOT to Maven Central's snapshot repository instead of GitHub Packages (the default
+           snapshotRepository, which CI deploys to on every push to main). The central-publishing plugin uploads
+           snapshots to https://central.sonatype.com/repository/maven-snapshots/ with the 'central' credentials,
+           but reads the existing snapshot metadata through the snapshotRepository below.
+           Usage: mvn deploy -P central-deploy,sign-for-sonar,central-snapshots (see how-to-release.adoc) -->
+      <id>central-snapshots</id>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>central</id>
+          <name>Maven Central snapshots</name>
+          <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
 </profiles>
 
 </project>

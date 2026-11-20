@@ -91,6 +91,27 @@ The workflow can also be run manually (workflow_dispatch) against an existing ta
 ** from https://central.sonatype.com/publishing/deployments[] -- requires credentials.
 ** https://central.sonatype.com/[]
 
+== Snapshot to Maven Central
+
+`main` always carries a `-SNAPSHOT` version. CI deploys it to GitHub Packages on every push to `main` (the default
+`snapshotRepository`). To publish the current snapshot to Maven Central's snapshot repository instead
+(`https://central.sonatype.com/repository/maven-snapshots/`, enabled for the `com.graphinout` namespace):
+
+----
+mvn clean deploy -P central-deploy,sign-for-sonar,central-snapshots -Dmaven.repository.credentialScope=id
+----
+
+* The `central-snapshots` profile points the `snapshotRepository` at Central. The central-publishing plugin uploads
+  snapshots with the `central` server credentials, but reads the existing snapshot metadata through that repository;
+  without the profile it asks GitHub Packages and fails with HTTP 401.
+* Maven 3.10 sends a server's credentials only to that server's declared origins. For the id `central` that is
+  `https://repo.maven.apache.org`, so the upload to `central.sonatype.com` goes out anonymously: HTTP 401.
+  `-Dmaven.repository.credentialScope=id` restores the old id-only matching. The permanent fix is to add
+  `https://central.sonatype.com` to `<repositoryOrigins>` of the `central` server in `~/.m2/settings.xml`; then the
+  flag is not needed.
+* `cli` and `devtools` are excluded, as for releases. Check the result:
+  `https://central.sonatype.com/repository/maven-snapshots/com/graphinout/engine/<version>-SNAPSHOT/maven-metadata.xml`.
+
 == Release tags
 
 The Maven Release Plugin tags each release `graphinout-<version>` — the default
