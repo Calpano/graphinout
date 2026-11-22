@@ -34,7 +34,10 @@ class Step {
         List<Result> result = new ArrayList<>(list.size());
         for (int i = 0; i < list.size(); i++) {
             Object value = list.get(i);
-            result.add(Result.ofStep("[" + i + "]", value));
+            // skip null elements, like list1, map1 and mapAll do; Result.ofStep rejects null
+            if (value != null) {
+                result.add(Result.ofStep("[" + i + "]", value));
+            }
         }
         return result;
     }

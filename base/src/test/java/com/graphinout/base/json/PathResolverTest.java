@@ -95,6 +95,20 @@ class PathResolverTest {
     }
 
     @Test
+    void testListAllSkipsNullElements() {
+        List<Object> list = new java.util.ArrayList<>();
+        list.add("a");
+        list.add(null);
+        list.add("c");
+        PathResolver resolver = new PathResolver();
+        List<Result> results = resolver.resolveAll(list, List.of("[*]"));
+        assertThat(results).hasSize(2);
+        assertThat(results.get(0).path()).containsExactly("[0]");
+        assertThat(results.get(1).path()).containsExactly("[2]");
+        assertThat(results.get(1).value()).isEqualTo("c");
+    }
+
+    @Test
     void testNonExistentPath() throws IOException {
         String json = """
                 { "a": { "b": "c" } }
