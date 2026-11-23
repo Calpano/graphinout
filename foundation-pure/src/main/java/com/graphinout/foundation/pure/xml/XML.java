@@ -82,6 +82,43 @@ public interface XML {
      */
     Set<Integer> WHITE_SPACE_CHARACTERS = Java9.Set.of(0x20, 0x09, 0x0D, 0x0A);
 
+    /**
+     * Encode a plain attribute value for writing between double quotes, following XML 1.0 (5th ed.):
+     * <ul>
+     *     <li>'&amp;', '&lt;' and '"' MUST be escaped (production [10] AttValue, section 2.4).</li>
+     *     <li>Tab, LF and CR are written as character references. A parser replaces literal ones by a space
+     *     (section 3.3.3 Attribute-Value Normalization), so only references keep the value as it was.</li>
+     *     <li>'&gt;' and "'" need no escaping and are written as they are.</li>
+     * </ul>
+     *
+     * @param value the plain value, as an application sees it after parsing; never already encoded
+     * @return the text to write between the quotes
+     */
+    static String xmlEncodeAttributeValue(String value) {
+        StringBuilder b = null;
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            String replacement;
+            switch (c) {
+                case '&': replacement = "&amp;"; break;
+                case '<': replacement = "&lt;"; break;
+                case '"': replacement = "&quot;"; break;
+                case '\t': replacement = "&#x9;"; break;
+                case '\n': replacement = "&#xA;"; break;
+                case '\r': replacement = "&#xD;"; break;
+                default: replacement = null;
+            }
+            if (replacement != null && b == null) {
+                b = new StringBuilder(value.length() + 16).append(value, 0, i);
+            }
+            if (b != null) {
+                if (replacement != null) b.append(replacement);
+                else b.append(c);
+            }
+        }
+        return b == null ? value : b.toString();
+    }
+
     @Deprecated
     static String ampEncode(String raw) {
         return raw.replace("&", "&amp;");

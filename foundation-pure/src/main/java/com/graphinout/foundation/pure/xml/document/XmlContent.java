@@ -35,7 +35,15 @@ public class XmlContent implements IXmlContent {
         return this.children;
     }
 
-    // FIXME escaping? raw?
+    /**
+     * The children as an XML fragment (no XML declaration), so that parsing the result gives back this content:
+     * <ul>
+     *     <li>{@link XmlText} is escaped ({@code & < > " '}); its CDATA sections are written as CDATA, unescaped.</li>
+     *     <li>{@link XmlRaw} is written as-is, without any check. It must already be well-formed XML.</li>
+     *     <li>{@link XmlElement}s are written with attributes sorted by name (see {@link Xml2StringWriter#Xml2StringWriter()}).</li>
+     * </ul>
+     * Tested in {@code XmlContentTest}.
+     */
     public String contentAsXml() {
         Xml2StringWriter w = new Xml2StringWriter();
         for (IXmlNode x : children) {

@@ -16,14 +16,14 @@ class XmlFormatterTest {
 
     @Test
     void testEAcute() {
-        // NOTE undeclared HTML entities are not allowed
+        // NOTE undeclared HTML entities are not allowed in XML; preprocessing turns them into numeric references
         String inContent = "&Eacute;";
         String outContent = XmlTool.normaliseLikeEntityPreprocessingThenSaxParsing(inContent);
         String outXml = XmlTests.wrapInRoot(outContent);
         // what would SAX have in memory?
         assertThat(outXml).isEqualTo("""
             <?xml version="1.0" encoding="UTF-8"?>
-            <root>&Eacute;</root>""");
+            <root>\u00c9</root>""");
     }
 
     @Test

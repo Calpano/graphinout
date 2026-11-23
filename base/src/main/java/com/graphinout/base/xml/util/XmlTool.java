@@ -63,8 +63,8 @@ public class XmlTool {
     }
 
     /**
-     * Simulate what Preprocessing plus SAX parsing gets in memory. Normalize (1) HTML entities to amp-encoded, (2) line
-     * endings to LF, (3) numerical entities to Unicode.
+     * Simulate what Preprocessing plus SAX parsing gets in memory. Normalize (1) HTML entities to numeric character
+     * references, (2) line endings to LF, (3) numerical entities to Unicode.
      *
      * <h2>XML Entities</h2>
      * A SAX parser decodes all 5 XML entities. When writing back, we encode them all.
@@ -72,8 +72,9 @@ public class XmlTool {
      * So we normalise '{@code "}' to '{@code &quot;}'.
      *
      * <h2>Other (HTML) Named Entities</h2>
-     * SAX cannot handle them, so before running the SAX parser we amp-escape the '{@code &foo;'} to
-     * '{@code &amp;foo;}'.
+     * SAX cannot handle them, so before running the SAX parser we replace a known '{@code &eacute;'} by its numeric
+     * character reference '{@code &#233;}', like {@link com.graphinout.base.xml.HtmlEntityDecodingReader} does for the
+     * format readers. The application then gets the character itself ('é'). Unknown names stay as they are.
      *
      * <h2>Line Breaks</h2>
      * XML parsers are required to normalize line endings, so CR and CRLF sequences are all turned into LF (CR=x0D,
@@ -87,7 +88,7 @@ public class XmlTool {
      */
     public static String normaliseLikeEntityPreprocessingThenSaxParsing(String xml) {
         // before SAX parsing
-        String preprocessed = NamedEntities.htmlEntitiesToAmpEncoded(xml);
+        String preprocessed = NamedEntities.htmlEntitiesToDecimalEntities(xml);
         // simulate SAX parsing
         String decoded = XML.xmlDecode(preprocessed);
         // normalize CR LF to LF and similar;
@@ -140,7 +141,7 @@ public class XmlTool {
 
     public static void parseAndWriteXml(String inputName, String xmlString, XmlWriter xmlWriter) throws Exception {
         // preprocessing HTML named entities
-        String xmlStringPreprocessed = NamedEntities.htmlEntitiesToAmpEncoded(xmlString);
+        String xmlStringPreprocessed = NamedEntities.htmlEntitiesToDecimalEntities(xmlString);
         StringReader sr = new StringReader(xmlStringPreprocessed);
         InputSource inputSource = new InputSource("INPUT." + inputName);
         inputSource.setCharacterStream(sr);
@@ -149,7 +150,7 @@ public class XmlTool {
     }
 
     public static void parseAndWriteXml(String xmlString, XmlWriter xmlWriter) throws Exception {
-        String xmlStringPreprocessed = NamedEntities.htmlEntitiesToAmpEncoded(xmlString);
+        String xmlStringPreprocessed = NamedEntities.htmlEntitiesToDecimalEntities(xmlString);
         StringReader sr = new StringReader(xmlStringPreprocessed);
         InputSource inputSource = new InputSource(sr);
 

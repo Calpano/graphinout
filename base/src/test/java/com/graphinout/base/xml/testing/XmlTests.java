@@ -102,8 +102,8 @@ public class XmlTests {
                 // TEXT CR CR     -> TEXT LF LF
 
                 // == other issues
-                // "&Eacute;" -preprocessing-> "&amp;Eacute;" -parsing-> "&Eacute;"
-                input_expected("&Eacute;", "&Eacute;"), //
+                // "&Eacute;" -preprocessing-> "&#201;" -parsing-> "\u00c9"
+                input_expected("&Eacute;", "\u00c9"), //
                 input_expected("aaa", "aaa"), //
                 input_expected("äää", "äää"), //
                 input_expected("a\nb", "a\nb"), //

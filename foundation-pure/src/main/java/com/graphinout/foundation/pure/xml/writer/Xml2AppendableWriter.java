@@ -14,9 +14,13 @@ import static java.util.Map.Entry.comparingByKey;
 
 
 /**
- * Simple XmlWriter implementation that writes to a StringWriter.
+ * Simple XmlWriter implementation that writes to an {@link Appendable}.
  * <p>
- * TODOuse XmlSpace to maybe normalize
+ * Characters are written exactly as given, also under {@code xml:space="default"}. That attribute allows an
+ * application to apply its own whitespace handling; it doesn't ask a serializer to change content. Whitespace handling
+ * per {@link XML.XmlSpace} belongs to the format layer (e.g. GraphML data values).
+ * <p>
+ * Attribute values must be plain (not already encoded); they are encoded with {@link XML#xmlEncodeAttributeValue}.
  */
 public class Xml2AppendableWriter extends XmlCharacter2AppendableWriter implements XmlWriter {
 
@@ -110,8 +114,7 @@ public class Xml2AppendableWriter extends XmlCharacter2AppendableWriter implemen
             appendable.append(" ");
             appendable.append(entry.getKey());
             appendable.append("=\"");
-            // only XML encode the double quote character
-            appendable.append(entry.getValue().replace("\"", "&quot;"));
+            appendable.append(XML.xmlEncodeAttributeValue(entry.getValue()));
             appendable.append("\"");
         }
         // note we didnt write the '>' or '/>' yet
