@@ -14,6 +14,8 @@
 
 package com.graphinout.foundation.pure.xml.escape;
 
+import com.graphinout.foundation.pure.annotations.GwtCompatible;
+
 
 import java.util.Collections;
 import java.util.Map;

@@ -14,6 +14,8 @@
 
 package com.graphinout.foundation.pure.xml.escape;
 
+import com.graphinout.foundation.pure.annotations.GwtCompatible;
+
 import org.jspecify.annotations.Nullable;
 
 import static com.graphinout.foundation.pure.xml.escape.Preconditions.checkNotNull;
@@ -49,7 +51,6 @@ public final class Escapers {
         @Override
         @Nullable
         protected char[] escape(char c) {
-          // TODO: Fix tests not to call this directly and make it throw an error.
           return null;
         }
       };

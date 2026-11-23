@@ -14,6 +14,8 @@
 
 package com.graphinout.foundation.pure.xml.escape;
 
+import com.graphinout.foundation.pure.annotations.GwtCompatible;
+
 
 import java.util.function.Function;
 
@@ -52,7 +54,6 @@ import java.util.function.Function;
  */
 @GwtCompatible
 public abstract class Escaper {
-    // TODO(dbeaumont): evaluate custom implementations, considering package private constructor.
 
     private final Function<String, String> asFunction = this::escape;
 

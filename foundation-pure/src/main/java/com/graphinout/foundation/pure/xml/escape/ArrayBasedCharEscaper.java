@@ -143,6 +143,5 @@ public abstract class ArrayBasedCharEscaper extends CharEscaper {
    * @param c the character to escape
    * @return the replacement characters, or {@code null} if no escaping was required
    */
-  // TODO(dbeaumont,cpovirk): Rename this something better once refactoring done
   protected abstract char[] escapeUnsafe(char c);
 }

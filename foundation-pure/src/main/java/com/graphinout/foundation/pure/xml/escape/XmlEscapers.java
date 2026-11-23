@@ -14,6 +14,8 @@
 
 package com.graphinout.foundation.pure.xml.escape;
 
+import com.graphinout.foundation.pure.annotations.GwtCompatible;
+
 
 /**
  * {@code Escaper} instances suitable for strings to be included in XML attribute values and

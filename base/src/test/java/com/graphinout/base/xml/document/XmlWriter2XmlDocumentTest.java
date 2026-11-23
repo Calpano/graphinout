@@ -3,7 +3,6 @@ package com.graphinout.base.xml.document;
 import com.graphinout.base.xml.util.XmlTestTool;
 import com.graphinout.testdata.TestFileUtil;
 import com.graphinout.foundation.pure.xml.XML;
-import com.graphinout.foundation.pure.xml.writer.Xml2StringWriter;
 import com.graphinout.base.xml.XmlAssert;
 import com.graphinout.base.xml.util.XmlTool;
 import com.graphinout.base.xml.Xml2DocumentWriter;
@@ -44,7 +43,7 @@ class XmlWriter2XmlDocumentTest {
             }
         }
         XmlDocument xmlDoc = xml2doc.resultDoc();
-        String xml_out = Xml2StringWriter.toXmlString(xmlDoc);
+        String xml_out = xmlDoc.toXmlDocumentString();
         // XML parsing enforces HTML entity normalisation, otherwise the SAX parser dies
         // so we must adapt out expectations, too
         //xml_in = XmlTool.htmlEntitiesToDecimalEntities(xml_in);
@@ -64,7 +63,7 @@ class XmlWriter2XmlDocumentTest {
         XmlTool.parseAndWriteXml(xml, xml2doc);
         XmlDocument xmlDoc = xml2doc.resultDoc();
         // normal XML encoding happens here
-        String xml_out = Xml2StringWriter.toXmlString(xmlDoc);
+        String xml_out = xmlDoc.toXmlDocumentString();
         assertThat(xml_out).isEqualTo(XML.XML_VERSION_1_0_ENCODING_UTF_8 + "\n" + xml);
     }
 

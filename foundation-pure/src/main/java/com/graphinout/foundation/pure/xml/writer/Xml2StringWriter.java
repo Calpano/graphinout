@@ -20,13 +20,15 @@ public class Xml2StringWriter extends Xml2AppendableWriter {
         this.onDone = onDone;
     }
 
-    // TODO move to XmlDocument
+    /**
+     * @deprecated use {@link XmlDocument#toXmlDocumentString()}
+     */
+    @Deprecated
     public static String toXmlString(XmlDocument xmlDoc) throws IOException {
-        Xml2StringWriter xmlWriter = new Xml2StringWriter();
-        if (xmlDoc != null) {
-            xmlDoc.fire(xmlWriter);
+        if (xmlDoc == null) {
+            return "";
         }
-        return xmlWriter.resultString();
+        return xmlDoc.toXmlDocumentString();
     }
 
     @Override
