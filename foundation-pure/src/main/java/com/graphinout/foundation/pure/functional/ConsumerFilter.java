@@ -25,17 +25,27 @@ public interface ConsumerFilter<T> extends Consumer<T>, Predicate<T> {
 
     @Override
     default void accept(T t) {
-        acceptAndContinue(t);
+        acceptAndFilter(t);
     }
 
     /**
+     * Same name as {@link BiConsumerFilter#acceptAndFilter(Object, Object)}.
+     *
      * @return true if another element should be sent
      */
-    // TODO rename to acceptAndFilter like in BiConsumerFilter
-    boolean acceptAndContinue(T t);
+    boolean acceptAndFilter(T t);
+
+    /**
+     * @return true if another element should be sent
+     * @deprecated use {@link #acceptAndFilter(Object)}
+     */
+    @Deprecated
+    default boolean acceptAndContinue(T t) {
+        return acceptAndFilter(t);
+    }
 
     @Override
     default boolean test(T t) {
-        return acceptAndContinue(t);
+        return acceptAndFilter(t);
     }
 }

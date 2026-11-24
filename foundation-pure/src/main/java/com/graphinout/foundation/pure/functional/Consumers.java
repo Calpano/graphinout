@@ -166,7 +166,7 @@ public class Consumers {
     }
 
     public static <A, B> void project_1_filter(Consumer<BiConsumerFilter<A, B>> biSource, ConsumerFilter<A> component1consumer) {
-        biSource.accept((a, b) -> component1consumer.acceptAndContinue(a));
+        biSource.accept((a, b) -> component1consumer.acceptAndFilter(a));
     }
 
     public static <A, B> void project_1_filter(Consumer<BiConsumerFilter<A, B>> biSource, Consumer<A> component1consumer) {
@@ -197,7 +197,7 @@ public class Consumers {
      * @param <B>                component 2 type
      */
     public static <A, B> void project_2_filter(Consumer<BiConsumerFilter<A, B>> biSource, ConsumerFilter<B> component2consumer) {
-        biSource.accept((a, b) -> component2consumer.acceptAndContinue(b));
+        biSource.accept((a, b) -> component2consumer.acceptAndFilter(b));
     }
 
     public static <A, B> void project_2_filter(Consumer<BiConsumerFilter<A, B>> biSource, Consumer<B> component2consumer) {

@@ -55,7 +55,7 @@ public class Functions {
     }
 
     public static <A, B> BiConsumerFilter<A, B> project_1(ConsumerFilter<A> aConsumer) {
-        return (a, b) -> aConsumer.acceptAndContinue(a);
+        return (a, b) -> aConsumer.acceptAndFilter(a);
     }
 
     public static <A, B> BiConsumerFilter<A, B> project_1_noFilter(Consumer<A> aConsumer) {
@@ -74,7 +74,7 @@ public class Functions {
     }
 
     public static <A, B> BiConsumerFilter<A, B> project_2(ConsumerFilter<B> bConsumer) {
-        return (a, b) -> bConsumer.acceptAndContinue(b);
+        return (a, b) -> bConsumer.acceptAndFilter(b);
     }
 
     /**

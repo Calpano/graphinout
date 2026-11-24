@@ -302,7 +302,14 @@ public class Nullables {
     }
 
 
-    /** TODO Does this work in J2CL? */
+    /**
+     * Like {@link #mapOrThrow(Object, Function)}, but throws the exception from exceptionSupplier.
+     * <p>
+     * Works in j2cl: the generic thrown type erases to {@link Throwable}, and j2cl casts the supplied exception to
+     * {@code Throwable} and throws it like any other exception (checked in the transpiled JS, 2026-11-22).
+     *
+     * @throws E if input is null
+     */
     @QualityUnchecked
     public static <I, O, E extends Throwable> @Nullable O mapOrThrow(@Nullable I input, //
                                                                      @NonNull Function<@NonNull I, @Nullable O> mapFun, //
