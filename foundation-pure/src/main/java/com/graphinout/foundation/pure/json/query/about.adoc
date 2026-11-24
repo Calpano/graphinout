@@ -11,8 +11,8 @@ This is a *matcher, not an extractor*.
 The engine never returns the values it visited, so it suits format detection, validation and dispatch rather than data retrieval.
 To read a value out of a document, use the sibling xref:../path/about.adoc[`path` package] instead.
 
-IMPORTANT: The package is currently unused and has no tests.
-Everything below was verified by running the compiled code, but nothing in the repository depends on it yet, so the semantics described in <<semantics>> have not been pinned down by a test suite.
+NOTE: Nothing in graphinout itself uses this package, but other projects do (see `downstream.ddot` in the repo root; git-ignored, generated locally).
+The semantics described in <<semantics>> are pinned down by `JsonQueryEngineTest` in this module.
 
 [[types]]
 == Types

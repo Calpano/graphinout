@@ -1,5 +1,7 @@
 package com.graphinout.foundation.pure.json.json5;
 
+import java.math.BigInteger;
+
 public class Json5Preprocessor {
 
     /** Quote unquoted object keys: {@code {key:} / ,key:} -> {@code {"key":} / ,"key":}. */
@@ -98,12 +100,58 @@ public class Json5Preprocessor {
         return sb.toString();
     }
 
+    /**
+     * Convert JSON5 hex numbers ({@code 0x1F}, {@code -0XfF}) to decimal. A sign stays where it is. Hex inside
+     * identifiers such as {@code a0x1} is left alone. Uses no regex, so it works the same under j2cl.
+     *
+     * @param s non-string JSON5 content
+     */
+    static String hexToDecimal(String s) {
+        if (s.indexOf('x') < 0 && s.indexOf('X') < 0) {
+            return s;
+        }
+        StringBuilder out = new StringBuilder(s.length());
+        int i = 0;
+        while (i < s.length()) {
+            char c = s.charAt(i);
+            boolean startsHex = c == '0' && i + 2 < s.length() //
+                    && (s.charAt(i + 1) == 'x' || s.charAt(i + 1) == 'X') //
+                    && isHexDigit(s.charAt(i + 2)) //
+                    && (i == 0 || !isIdentifierOrNumberChar(s.charAt(i - 1)));
+            if (!startsHex) {
+                out.append(c);
+                i++;
+                continue;
+            }
+            int end = i + 2;
+            while (end < s.length() && isHexDigit(s.charAt(end))) {
+                end++;
+            }
+            if (end < s.length() && isIdentifierOrNumberChar(s.charAt(end))) {
+                // e.g. 0x1g: not a hex number, keep it as it is
+                out.append(s, i, end);
+            } else {
+                out.append(new BigInteger(s.substring(i + 2, end), 16).toString());
+            }
+            i = end;
+        }
+        return out.toString();
+    }
+
+    private static boolean isHexDigit(char c) {
+        return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+    }
+
+    private static boolean isIdentifierOrNumberChar(char c) {
+        return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || c == '.';
+    }
+
     /** Normalize a run of non-string JSON5 content and append it to {@code sb}, then reset {@code chunk}. */
     private static void flushChunk(StringBuilder sb, StringBuilder chunk) {
         if (chunk.length() == 0) {
             return;
         }
-        String normalized = chunk.toString()
+        String normalized = hexToDecimal(chunk.toString())
                 .replaceAll(UNQUOTED_KEY, "$1\"$2\":")
                 .replaceAll(TRAILING_COMMA, "$1");
         sb.append(normalized);

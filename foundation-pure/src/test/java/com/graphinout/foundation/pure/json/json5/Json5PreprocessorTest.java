@@ -87,6 +87,20 @@ class Json5PreprocessorTest {
     }
 
     @Test
+    @DisplayName("Hex numbers are converted to decimal")
+    void testHexNumbers() {
+        assertEquals("{ \"a\": 31, \"b\": -255, \"c\": [0, 10] }", Json5Preprocessor.toJson("{ a: 0x1F, b: -0XfF, c: [0x0, 0xa] }"));
+        assertEquals("{ \"big\": 18446744073709551615 }", Json5Preprocessor.toJson("{ big: 0xFFFFFFFFFFFFFFFF }"));
+    }
+
+    @Test
+    @DisplayName("Hex-like text in strings, keys and other numbers is kept")
+    void testHexLikeTextIsKept() {
+        assertEquals("{ \"s\": \"0x1F\", \"t\": \"0x10\" }", Json5Preprocessor.toJson("{ s: '0x1F', t: \"0x10\" }"));
+        assertEquals("{ \"a0x1\": 10.0, \"k\": 0x1g }", Json5Preprocessor.toJson("{ a0x1: 10.0, k: 0x1g }"));
+    }
+
+    @Test
     @DisplayName("Test that URLs with backslashes are preserved")
     void testUrlWithBackslashes() {
         String json5 = "{ \"url\": \"https://example.com/path\\with\\backslashes\" }";
@@ -113,7 +127,8 @@ class Json5PreprocessorTest {
                 .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_TRAILING_DECIMAL_POINT_FOR_NUMBERS)
                 .enable(tools.jackson.core.json.JsonReadFeature.ALLOW_NON_NUMERIC_NUMBERS)
                 .build();
-        // TODO allow hex numbers, see https://github.com/FasterXML/jackson-core/issues/707
+        // Jackson can't parse JSON5 hex numbers (https://github.com/FasterXML/jackson-core/issues/707),
+        // which is fine: Json5Preprocessor converts them to decimal before this check.
 
         objectMapper.readTree(json); // This will throw JacksonException if JSON is invalid
     }

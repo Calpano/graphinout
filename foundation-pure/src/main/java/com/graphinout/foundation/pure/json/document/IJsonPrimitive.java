@@ -6,8 +6,6 @@ import com.graphinout.foundation.pure.json.path.IJsonNavigationPath;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
 import org.jspecify.annotations.Nullable;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.function.BiConsumer;
 
 /**
@@ -40,27 +38,8 @@ public interface IJsonPrimitive extends IJsonValue {
             case XmlString:
                 castTo(IJsonXmlString.class).fire(jsonWriter);
                 break;
-            case Number:// TODO use same Number to primitive code as elsewhere
-                Object base = base();
-                if (base instanceof Long) {
-                    long v = (long) base;
-                    jsonWriter.onLong(v);
-                } else if (base instanceof Integer) {
-                    int v = (int) base;
-                    jsonWriter.onInteger(v);
-                } else if (base instanceof Double) {
-                    double v = (double) base;
-                    jsonWriter.onDouble(v);
-                } else if (base instanceof Float) {
-                    float v = (float) base;
-                    jsonWriter.onFloat(v);
-                } else if (base instanceof BigInteger) {
-                    BigInteger v = (BigInteger) base;
-                    jsonWriter.onBigInteger(v);
-                } else if (base instanceof BigDecimal) {
-                    BigDecimal v = (BigDecimal) base;
-                    jsonWriter.onBigDecimal(v);
-                }
+            case Number:
+                jsonWriter.onNumber((Number) base());
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + jsonType());

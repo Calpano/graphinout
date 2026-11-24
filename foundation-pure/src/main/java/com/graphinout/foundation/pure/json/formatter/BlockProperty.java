@@ -15,14 +15,17 @@ class BlockProperty extends Block {
         this.value = value;
     }
 
+    /**
+     * @param forceMultiLine if true, the value is not put on the key line and is itself rendered multi-line. The same
+     *                       happens for keys in {@link FormatterConfig#forceMultiLineKeys()}.
+     */
     @Override
     public Tile toTile(FormatterConfig config, boolean forceMultiLine) {
-        // TODO respect forceMultiLine for key - value
         String keyLine = "\"" + JSON.jsonEscape(key) + "\":";
         int valueTileMaxWidth = config.maxWidth() - keyLine.length()
                 // reserve a SPACE
                 - 1;
-        boolean forceMultiLineValue = config.forceMultiLineKeys().contains(key);
+        boolean forceMultiLineValue = forceMultiLine || config.forceMultiLineKeys().contains(key);
         if (!forceMultiLineValue) {
             FormatterConfig valueConfig = config.withMaxWidth(valueTileMaxWidth);
             Tile valueTile = value.toTile(valueConfig, false);

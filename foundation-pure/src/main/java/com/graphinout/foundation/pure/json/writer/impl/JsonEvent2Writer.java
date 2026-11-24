@@ -3,8 +3,6 @@ package com.graphinout.foundation.pure.json.writer.impl;
 import com.graphinout.foundation.pure.json.JsonEvent;
 import com.graphinout.foundation.pure.json.writer.JsonWriter;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.function.Consumer;
 
 public class JsonEvent2Writer implements Consumer<JsonEvent> {
@@ -43,18 +41,10 @@ public class JsonEvent2Writer implements Consumer<JsonEvent> {
                     jsonWriter.onNull();
                 } else if (o instanceof String) {
                     jsonWriter.onString((String) o);
-                } else if (o instanceof BigInteger) {
-                    jsonWriter.onBigInteger((BigInteger) o);
-                } else if (o instanceof BigDecimal) {
-                    jsonWriter.onBigDecimal((BigDecimal) o);
+                } else if (o instanceof Number) {
+                    jsonWriter.onNumber((Number) o);
                 } else if (o instanceof Boolean) {
                     jsonWriter.onBoolean((Boolean) o);
-                } else if (o instanceof Double) {
-                    jsonWriter.onDouble((Double) o);
-                } else if (o instanceof Long) {
-                    jsonWriter.onLong((Long) o);
-                } else if (o instanceof Integer) {
-                    jsonWriter.onInteger((Integer) o);
                 } else {
                     throw new IllegalStateException("Unexpected value: " + o.getClass());
                 }

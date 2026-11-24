@@ -48,10 +48,23 @@ public final class JsonParser implements Locator {
         return jsonWriter.resultJsonRootObject();
     }
 
+    /**
+     * The current position as 1-based line and column. Lines end at {@code \n}, {@code \r\n} or {@code \r}.
+     * Computed on demand (only errors need it), so parsing itself doesn't track lines.
+     */
     @Override
     public Location location() {
-        // TODO use line numbers
-        return Location.of(0, pos);
+        int line = 1;
+        int lineStart = 0;
+        int end = Math.min(pos, s.length());
+        for (int i = 0; i < end; i++) {
+            char c = s.charAt(i);
+            if (c == '\n' || (c == '\r' && (i + 1 >= s.length() || s.charAt(i + 1) != '\n'))) {
+                line++;
+                lineStart = i + 1;
+            }
+        }
+        return Location.of(line, end - lineStart + 1);
     }
 
     public int pos() {
