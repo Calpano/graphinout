@@ -13,12 +13,10 @@
     <description>
         Foundation is in general a dependency-free base layer for Java projects.
         Foundation has four layers: 'emulation', 'pure', 'shared', 'jvm'.
-
-        ⚪️Emulation: Stripped down annotations (jspecify, Jackson). For 2cl-compiler. Java 8 syntax and JRE.
+        ⚪️Emulation: Stripped down annotations (jspecify, Jackson). For j2cl-compiler. Java 8 syntax and JRE.
         ⚪️Pure: No dependencies (except on 'emulation'), only classes from the j2cl compatible fragment. Java 8 syntax.
-        ⚪️Shared: Only j2cl-dependencies allowed (e.g. elements). Java 8 syntax and JRE.
+        ⚪️Shared: Only j2cl-dependencies allowed (e.g. gwt-regexp). Java 8 syntax and JRE.
         ⚪️JVM: This code cannot j2cl-compile. Any java syntax.
-
         See foundation-pure/README.adoc for details.
     </description>
 

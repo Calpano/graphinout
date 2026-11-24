@@ -12,14 +12,12 @@
     <name>foundation-pure</name>
     <description>
         Foundation is in general a dependency-free base layer for Java projects.
-        Foundation has four layers: pure, shared, jvm and client.
-
-        ⚪️Pure: No dependencies, only classes from the j2cl compatible fragment. Java 11+ (maybe up to 21) syntax.
-        Exception: Annotations are allowed, e.g., jspecify or Jackson.
-        ⚪️Shared: Only j2cl-dependencies allowed (e.g. elements). Java 11+ (maybe up to 21) syntax.
-        ⚪️Client: This code runs only j2cl-compiled in the client. It may have dependencies to j2cl DOM libraries.
-        Java 11+ (maybe up to 21) syntax. Graphinout does not need 'client' code.
+        Foundation has four layers: 'emulation', 'pure', 'shared', 'jvm'.
+        ⚪️Emulation: Stripped down annotations (jspecify, Jackson). For j2cl-compiler. Java 8 syntax and JRE.
+        ⚪️Pure: No dependencies (except on 'emulation'), only classes from the j2cl compatible fragment. Java 8 syntax.
+        ⚪️Shared: Only j2cl-dependencies allowed (e.g. gwt-regexp). Java 8 syntax and JRE.
         ⚪️JVM: This code cannot j2cl-compile. Any java syntax.
+        See foundation-pure/README.adoc for details.
     </description>
 
     <properties>
@@ -30,7 +28,9 @@
     </properties>
 
     <dependencies>
-        <dependency><groupId>org.jspecify</groupId><artifactId>jspecify</artifactId></dependency>
+        <!-- jspecify + Jackson annotations come from foundation-emulation (j2cl-compatible copies).
+             Do not add org.jspecify:jspecify here: it is Java 9+ (ElementType.MODULE) and would shadow the copies.
+             JVM consumers exclude foundation-emulation and add the real artifacts (see foundation-jvm). -->
         <dependency><groupId>com.graphinout</groupId><artifactId>foundation-emulation</artifactId></dependency>
 
         <!-- Test Dependencies -->
