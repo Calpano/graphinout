@@ -12,6 +12,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.ObjIntConsumer;
 
+/**
+ * @deprecated use {@link com.graphinout.foundation.pure.iterators.IteratorsFoundation} (same methods). Kept because
+ * downstream projects still import this one.
+ */
+@Deprecated
 public class IteratorsFoundation {
 
     public static <E> void addAll(final Iterable<E> sourceIterable, final Collection<E> targetCollection) {

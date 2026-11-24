@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 
 
 /**
- * TODO kill processes on JVM exit
+ * Runs an external process. Processes still running when the JVM exits are killed by a shutdown hook.
  *
  * @author xamde
  */

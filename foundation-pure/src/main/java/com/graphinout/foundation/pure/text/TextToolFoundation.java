@@ -19,51 +19,53 @@ public class TextToolFoundation {
     }
 
     /**
-     * Format a string s so that it has the desired length. Do this by prefixing the string with copies of a padding
-     * string.
+     * Prefix s with copies of padding until it has exactly desiredTotalLength chars. The last copy is cut short if
+     * needed, e.g. {@code padLeft("ab", "x", 4)} is {@code "abax"}.
      * <p>
      * Result "00000 x"
-     * <p>
-     * TODO weird behavior depending on length of padding string
      *
-     * @param padding
-     * @param s
-     * @param desiredTotalLength
-     * @return
+     * @param padding non-empty padding string
+     * @param s input
+     * @param desiredTotalLength minimum length of the result
+     * @return s, if it is already long enough; otherwise padding + s with exactly desiredTotalLength chars
+     * @throws IllegalArgumentException if padding is empty and s is too short
      */
     public static String padLeft(final String padding, final String s, final int desiredTotalLength) {
         if (s.length() >= desiredTotalLength) {
             return s;
         }
-        final int missing = desiredTotalLength - s.length();
-        final int adding = missing / padding.length();
-        final StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < adding; i++) {
-            buf.append(padding);
-        }
-        buf.append(s);
-        return buf.toString();
+        return padding(padding, desiredTotalLength - s.length()) + s;
     }
 
     /**
+     * Append copies of padding to s until it has exactly desiredTotalLength chars. The last copy is cut short if
+     * needed, e.g. {@code padRight("ab", "x", 4)} is {@code "xaba"}.
+     * <p>
      * Result " x 00000"
      *
-     * @param padding
-     * @param s
-     * @param desiredTotalLength (minimum)
-     * @return
+     * @param padding non-empty padding string
+     * @param s input
+     * @param desiredTotalLength minimum length of the result
+     * @return s, if it is already long enough; otherwise s + padding with exactly desiredTotalLength chars
+     * @throws IllegalArgumentException if padding is empty and s is too short
      */
     public static String padRight(final String padding, final String s, final int desiredTotalLength) {
         if (s.length() >= desiredTotalLength) {
             return s;
         }
-        final int missing = desiredTotalLength - s.length();
-        final int adding = missing / padding.length();
-        final StringBuilder buf = new StringBuilder();
-        buf.append(s);
-        for (int i = 0; i < adding; i++) {
+        return s + padding(padding, desiredTotalLength - s.length());
+    }
+
+    /** @return exactly length chars of repeated padding */
+    private static String padding(final String padding, final int length) {
+        if (padding.isEmpty()) {
+            throw new IllegalArgumentException("Padding must not be empty");
+        }
+        final StringBuilder buf = new StringBuilder(length + padding.length());
+        while (buf.length() < length) {
             buf.append(padding);
         }
+        buf.setLength(length);
         return buf.toString();
     }
 
