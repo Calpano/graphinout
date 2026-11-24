@@ -15,3 +15,11 @@ How to evolve the CJ spec:
 - Update the schema validation code in `CjSchemaValidator`.
 - Update the schema validation tests in `CjSchemaValidatorTest`.
 
+
+
+## Changing foundation-* APIs
+Other projects use the foundation modules, and the build here doesn't check them. They are listed in `downstream.ddot`
+(repo root, git-ignored, regenerate with `python3 ../_play/downstream.py`).
+Before removing, renaming, moving or changing the behavior of public foundation API, follow
+`foundation-pure/README.adoc#downstream`: look up the package in `downstream.ddot`, grep the projects that use it, and
+keep `@Deprecated` delegates.
