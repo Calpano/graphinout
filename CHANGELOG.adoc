@@ -9,6 +9,8 @@ bumps and "minor/doc/WIP" commits are omitted.
 
 == Unreleased
 
+== 0.2.5 — 2026-11-24
+
 Added::
 * `GraphmlValidator.validate(InputSource)` returns the GraphML 1.1 XSD findings with line and column, not just a
   boolean. Tests now check that GraphML written from CJ is schema-valid, and that schema-valid GraphML input stays
