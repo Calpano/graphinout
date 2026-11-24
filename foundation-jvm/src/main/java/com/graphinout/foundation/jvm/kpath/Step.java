@@ -8,7 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A NAME resolves an object property. A '$'+NAME resolves all members of an array element.
+ * One step of a path. See path-resolver.adoc for the syntax.
+ * <p>
+ * A quoted step ({@code 'key'}, see {@link KPaths}) is always a literal map key ({@link Kind#Map1}).
  */
 class Step {
 
@@ -17,9 +19,28 @@ class Step {
     }
 
     private final String step;
+    /** only for {@link Kind#List1} steps, else -1 */
+    private final int index;
 
+    /**
+     * @throws IllegalArgumentException if the step is a list index ({@code [...]}) whose content is not a
+     *                                  non-negative integer, e.g. {@code [x]}, {@code []} or {@code [-1]}
+     */
     public Step(String step) {
         this.step = step;
+        this.index = kind() == Kind.List1 ? parseIndex(step) : -1;
+    }
+
+    private static int parseIndex(String step) {
+        String s = step.substring(1, step.length() - 1);
+        if (s.isEmpty() || !s.chars().allMatch(c -> c >= '0' && c <= '9')) {
+            throw new IllegalArgumentException("Invalid list index step '" + step + "': expected [n] with n >= 0, [*] or [$...]. Quote it ('" + step + "') to use it as a map key.");
+        }
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid list index step '" + step + "': index too large", e);
+        }
     }
 
     private static List<Result> list1(IListLike list, int index) {
@@ -59,14 +80,20 @@ class Step {
         return result;
     }
 
-    /** strip first and last char */
+    /** @return the index of a {@link Kind#List1} step, e.g. 7 for {@code [7]} */
     public int asIndex() {
-        String s = this.step.substring(1, this.step.length() - 1);
-        return Integer.parseInt(s);
+        return index;
+    }
+
+    /** @return the map key for {@link Kind#Map1} steps, with quotes removed if the step is quoted */
+    public String key() {
+        return KPaths.isQuoted(step) ? KPaths.unquote(step) : step;
     }
 
     public Kind kind() {
-        if (step.equals("..")) {
+        if (KPaths.isQuoted(step)) {
+            return Kind.Map1;
+        } else if (step.equals("..")) {
             return Kind.Any;
         } else if (step.startsWith("[") && step.endsWith("]")) {
             if (step.startsWith("[$") || step.equals("[*]")) {
@@ -84,33 +111,40 @@ class Step {
         }
     }
 
-    public List<Result> resolve(PathResolver pr, Object root) {
-        assert root != null;
+    /**
+     * Applies this step to one earlier result.
+     *
+     * @param from the result to continue from; its {@link Result#value()} is navigated
+     * @return the matches, each extending {@code from} by the keys/indexes taken and the values passed
+     */
+    public List<Result> resolve(PathResolver pr, Result from) {
+        if (kind() == Kind.Any) {
+            return pr.descendantsOrSelf(from);
+        }
+        return Result.concatResults(from, resolveRelative(pr, from.value()));
+    }
+
+    /** @return results relative to {@code value}: one step in the path, the matched value in the values */
+    private List<Result> resolveRelative(PathResolver pr, Object value) {
+        assert value != null;
         switch (kind()) {
             case List1 -> {
-                // must convert to list
-                IListLike list = pr.typeAdapters().adaptTo(root, IListLike.class);
+                IListLike list = pr.typeAdapters().adaptTo(value, IListLike.class);
                 return list == null ? Collections.emptyList() : list1(list, asIndex());
             }
             case ListAll -> {
-                // must convert to list
-                IListLike list = pr.typeAdapters().adaptTo(root, IListLike.class);
+                IListLike list = pr.typeAdapters().adaptTo(value, IListLike.class);
                 return list == null ? Collections.emptyList() : listAll(list);
             }
             case Map1 -> {
-                // must convert to map
-                IMapLike map = pr.typeAdapters().adaptTo(root, IMapLike.class);
-                return map == null ? Collections.emptyList() : map1(map, step);
+                IMapLike map = pr.typeAdapters().adaptTo(value, IMapLike.class);
+                return map == null ? Collections.emptyList() : map1(map, key());
             }
             case MapAll -> {
-                // must convert to map
-                IMapLike map = pr.typeAdapters().adaptTo(root, IMapLike.class);
+                IMapLike map = pr.typeAdapters().adaptTo(value, IMapLike.class);
                 return map == null ? Collections.emptyList() : mapAll(map);
             }
-            case Any -> {
-                return pr.resolveAny(root);
-            }
-            default -> throw new IllegalArgumentException("Unknown step kind: " + kind());
+            default -> throw new IllegalStateException("Unexpected step kind: " + kind());
         }
     }
 

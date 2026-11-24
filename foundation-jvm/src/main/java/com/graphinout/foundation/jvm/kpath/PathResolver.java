@@ -47,84 +47,59 @@ public class PathResolver {
         return new PathResolver();
     }
 
-    static List<Object> getDirectChildrenOf1(ITypeAdapters typeAdapters, Object root) {
-        assert root != null;
-        List<Object> results = new ArrayList<>();
-        // must convert to map or list
-        @Nullable ITypeAdapter<Object, IMapLike> mapAdapter = typeAdapters.findAdapterFromTo(root.getClass(), IMapLike.class, false);
-        if (mapAdapter != null) {
-            IMapLike adapted = mapAdapter.toAdapted(root);
-            adapted.keys().forEach(key -> {
-                Object child = adapted.get(key);
-                if (child != null)
-                    results.add(child);
-            });
-        }
-        ITypeAdapter<Object, IListLike> listAdapter = typeAdapters.findAdapterFromTo(root.getClass(), IListLike.class, false);
-        if (listAdapter != null) {
-            IListLike adapted = listAdapter.toAdapted(root);
-            for (int i = 0; i < adapted.size(); i++) {
-                Object child = adapted.get(i);
-                if (child != null)
-                    results.add(child);
-            }
-        }
-        return results;
-    }
-
-    static List<Object> getDirectChildrenOfList(ITypeAdapters typeAdapters, List<Object> roots) {
-        List<Object> results = new ArrayList<>();
-        for (Object root : roots) {
-            assert root != null;
-            List<Object> directChildren = getDirectChildrenOf1(typeAdapters, root);
-            results.addAll(directChildren);
-        }
-        return results;
-    }
-
-    static List<Result> resolveDirectChildren(ITypeAdapters typeAdapters, Object root) {
+    /**
+     * @return the direct children of {@code value}, relative to it: one step (key or {@code [i]}) per result. A value
+     * that is both map-like and list-like contributes both kinds of children.
+     */
+    static List<Result> resolveDirectChildren(ITypeAdapters typeAdapters, Object value) {
         List<Result> results = new ArrayList<>();
-        // must convert to map or list
-        @Nullable ITypeAdapter<Object, IMapLike> mapAdapter = typeAdapters.findAdapterFromTo(root.getClass(), IMapLike.class, false);
+        @Nullable ITypeAdapter<Object, IMapLike> mapAdapter = typeAdapters.findAdapterFromTo(value.getClass(), IMapLike.class, false);
         if (mapAdapter != null) {
-            IMapLike adapted = mapAdapter.toAdapted(root);
-            results.addAll(Step.mapAll(adapted));
+            results.addAll(Step.mapAll(mapAdapter.toAdapted(value)));
         }
-        @Nullable ITypeAdapter<Object, IListLike> listAdapter = typeAdapters.findAdapterFromTo(root.getClass(), IListLike.class, false);
+        @Nullable ITypeAdapter<Object, IListLike> listAdapter = typeAdapters.findAdapterFromTo(value.getClass(), IListLike.class, false);
         if (listAdapter != null) {
-            IListLike adapted = listAdapter.toAdapted(root);
-            results.addAll(Step.listAll(adapted));
+            results.addAll(Step.listAll(listAdapter.toAdapted(value)));
         }
         return results;
+    }
+
+    /** @return true if the value of result is (by identity) also one of its ancestors */
+    private static boolean isOnPathTo(Result result) {
+        List<Object> values = result.values();
+        Object value = values.get(values.size() - 1);
+        for (int i = 0; i < values.size() - 1; i++) {
+            if (values.get(i) == value) return true;
+        }
+        return false;
     }
 
     /**
-     * Recursively navigates through all children of the given roots, collecting all possible results. This is
-     * equivalent to a deep traversal of the object graph.
+     * The {@code ..} step: {@code from} itself, then all its descendants, breadth-first. Each descendant's result
+     * extends {@code from} by the actual keys and indexes taken, and by every value passed on the way down.
+     * <p>
+     * Cycles are cut: a value that is (by identity) already on its own path is not visited again. A value reachable
+     * by several paths that don't form a cycle is reported once per path.
      *
-     * @param root for starting {@link Result}s.
-     * @return a list containing the initial roots plus all their descendants.
+     * @param from where to start
+     * @return {@code from} followed by one result per descendant
      */
-    public List<Result> addAnyChild(Object root) {
-        // each any-child is ONE STEP (..) derived from roots.
-        List<Result> anyChildFull = new ArrayList<>();
-
-        assert root != null;
-        // each root itself is a .. child of itself
-        Result rootChildFull = Result.ofStep("..", root);
-        anyChildFull.add(rootChildFull);
-
-        // breadth-first search through the tree of maps/lists
-        List<Object> current = List.of(root);
+    List<Result> descendantsOrSelf(Result from) {
+        List<Result> all = new ArrayList<>();
+        all.add(from);
+        List<Result> current = List.of(from);
         while (!current.isEmpty()) {
-            current = getDirectChildrenOfList(typeAdapters(), current);
-            for (Object child : current) {
-                Result childFull = Result.ofStep("..", child);
-                anyChildFull.add(childFull);
+            List<Result> next = new ArrayList<>();
+            for (Result result : current) {
+                for (Result child : Result.concatResults(result, resolveDirectChildren(typeAdapters(), result.value()))) {
+                    // a value that is already on its own path is a cycle: don't visit it again
+                    if (!isOnPathTo(child)) next.add(child);
+                }
             }
+            all.addAll(next);
+            current = next;
         }
-
-        return anyChildFull;
+        return all;
     }
 
     /**
@@ -156,15 +131,16 @@ public class PathResolver {
     /**
      * Resolves a single path step against a root object.
      * <p>
-     * This may result in multiple results if the step is a wildcard (e.g., "*").
+     * This may result in multiple results if the step is a wildcard (e.g., "*"). Same as
+     * {@code resolveAll(root, List.of(step))}: each result's values start with {@code root}.
      *
      * @param root the object from which to start resolution.
      * @param step the path step to resolve.
      * @return a list of {@link Result} objects matching the step.
+     * @throws IllegalArgumentException if the step is not valid, e.g. {@code [x]}
      */
     public List<Result> resolve1(Object root, String step) {
-        Step s = new Step(step);
-        return s.resolve(this, root);
+        return new Step(step).resolve(this, Result.ofRoot(root));
     }
 
     /**
@@ -176,11 +152,10 @@ public class PathResolver {
      * @param root the starting {@link Result}.
      * @param step the path step to resolve.
      * @return a list of {@link Result} objects.
+     * @throws IllegalArgumentException if the step is not valid, e.g. {@code [x]}
      */
     public List<Result> resolve1(Result root, String step) {
-        List<Result> rootResults = resolve1(root.value(), step);
-        // concat root results with child results
-        return Result.concatResults(root, rootResults);
+        return resolveStep(root, new Step(step));
     }
 
     /**
@@ -189,13 +164,10 @@ public class PathResolver {
      * @param roots the list of starting {@link Result}s.
      * @param step  the path step to resolve.
      * @return a flattened list of all resolved {@link Result} objects.
+     * @throws IllegalArgumentException if the step is not valid, e.g. {@code [x]}, even if {@code roots} is empty
      */
     public List<Result> resolve1(List<Result> roots, String step) {
-        List<Result> rootResults = new ArrayList<>();
-        for (Result root : roots) {
-            rootResults.addAll(resolve1(root, step));
-        }
-        return rootResults;
+        return resolveStep(roots, new Step(step));
     }
 
     /**
@@ -207,6 +179,7 @@ public class PathResolver {
      * @param root at which to resolve the path.
      * @param path a list of strings representing the path steps.
      * @return a list of all matching {@link Result} objects; may be empty.
+     * @throws IllegalArgumentException if any step is not valid, e.g. {@code [x]}
      */
     public List<Result> resolveAll(Object root, List<String> path) {
         List<Result> roots = List.of(Result.ofRoot(root));
@@ -219,23 +192,42 @@ public class PathResolver {
      * @param roots the list of starting {@link Result}s.
      * @param path  a list of strings representing the path steps.
      * @return a list of all matching {@link Result} objects; may be empty.
+     * @throws IllegalArgumentException if any step is not valid, e.g. {@code [x]}; all steps are checked before
+     *                                  resolving, so this does not depend on the data
      */
     public List<Result> resolveAll(List<Result> roots, List<String> path) {
-        List<Result> current = roots;
+        // parse all steps first, so invalid steps fail regardless of whether data reaches them
+        List<Step> steps = new ArrayList<>(path.size());
         for (String step : path) {
-            current = resolve1(current, step);
+            steps.add(new Step(step));
+        }
+        List<Result> current = roots;
+        for (Step step : steps) {
+            current = resolveStep(current, step);
         }
         return current;
     }
 
+    private List<Result> resolveStep(Result root, Step step) {
+        return step.resolve(this, root);
+    }
+
+    private List<Result> resolveStep(List<Result> roots, Step step) {
+        List<Result> results = new ArrayList<>();
+        for (Result root : roots) {
+            results.addAll(resolveStep(root, step));
+        }
+        return results;
+    }
+
     /**
-     * Resolves all descendants of a root object.
+     * Resolves the {@code ..} step: the root itself, then all its descendants, breadth-first.
      *
      * @param root the object from which to start resolution.
-     * @return a list of all {@link Result}s found under the root.
+     * @return the root's result (empty path) followed by one result per descendant, with the full path to it.
      */
     public List<Result> resolveAny(Object root) {
-        return addAnyChild(root);
+        return resolve1(root, "..");
     }
 
     /**

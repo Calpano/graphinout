@@ -60,6 +60,7 @@ import com.graphinout.reader.graphml.elements.IGraphmlPort;
 import com.graphinout.reader.graphml.elements.impl.GraphmlKey;
 import org.slf4j.Logger;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -428,15 +429,24 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
         });
 
         // == Remove synthetic nodes and put their graph as direct child of parent graph
-        // FIND [../graphs/nodes/*/data] WHERE [./syntheticNode = true]
+        // FIND [../graphs/[$graph]/nodes/[$node]/data] WHERE [./syntheticNode = true]
+        // '..' reaches every graph at any depth: graphs are exposed below the document, graphs and nodes.
         List<String> path = KPaths.of("../graphs/[$graph]/nodes/[$node]/data");
         PathResolver pathResolver = PathResolver.create();
         pathResolver.registerMap(ICjDocument.class, value -> //
                 IMapLike.ofProperty("graphs", () -> value.graphs().toList()));
         pathResolver.registerMap(ICjGraph.class, value -> //
-                IMapLike.ofProperty("nodes", () -> value.nodes().toList()));
+                IMapLike.of(List.of("nodes", "graphs"), key -> switch (key) {
+                    case "nodes" -> value.nodes().toList();
+                    case "graphs" -> value.graphs().toList();
+                    default -> null;
+                }));
         pathResolver.registerMap(ICjNode.class, value -> //
-                IMapLike.ofProperty("data", value::data));
+                IMapLike.of(List.of("data", "graphs"), key -> switch (key) {
+                    case "data" -> value.data();
+                    case "graphs" -> value.graphs().toList();
+                    default -> null;
+                }));
         pathResolver.registerMap(ICjDataMutable.class, value -> {
             IJsonValue jsonValue = value.jsonValue();
             if (jsonValue == null || !jsonValue.isObject()) {
@@ -445,27 +455,24 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
             return IMapLike.ofMap(jsonValue.asObject().toJaJsonMap());
         });
 
-        List<Result> graph_node_data = pathResolver.resolveAll(cjDoc, path);
+        List<Result> graph_node_data = pathResolver.resolveAll(cjDoc, path).stream()
+                // '..' also descends into JSON data, where keys like 'graphs' or 'nodes' may occur: keep only CJ matches
+                .filter(Graphml2CjDocument::isGraphNodeData).toList();
         List<Result> data_with_syntheticNode = graph_node_data.stream().filter(o -> {
             List<Result> list = pathResolver.resolve1(o.value(), SyntheticNode.cjPropertyKey);
             if (list.isEmpty()) return false;
             assert list.size() == 1 : "Exactly one result for 'syntheticNode' in " + o.value() + ". Got " + list.size();
             assert list.getFirst().value() instanceof Boolean;
             return (Boolean) list.getFirst().value();
-        }).toList();
+        })
+                // deepest first, so a synthetic node is unwrapped before the graph containing it is moved
+                .sorted(Comparator.comparingInt((Result r) -> r.values().size()).reversed()).toList();
 
         for (Result data : data_with_syntheticNode) {
-            // FIXME we might be nested deeper
-            assert data.values().size() == 7;
-            assert data.values().get(0) instanceof ICjDocument : "root is always at 0";
-            assert data.values().get(1) instanceof ICjDocument : "reached via '..'  step as well";
-            assert data.values().get(2) instanceof List : "array of graphs";
-            assert data.values().get(3) instanceof ICjGraph : "reached via 'graphs' step";
-            assert data.values().get(4) instanceof List : "array of nodes";
-            assert data.values().get(5) instanceof ICjNode : "reached via 'nodes' step";
-            assert data.values().get(6) instanceof ICjData : "reached via 'data' step";
-            CjGraphElement graph = (CjGraphElement) data.values().get(3);
-            CjNodeElement syntheticNode = (CjNodeElement) data.values().get(5);
+            // values end with: ..., graph, [nodes], node, data
+            List<Object> values = data.values();
+            CjGraphElement graph = (CjGraphElement) values.get(values.size() - 4);
+            CjNodeElement syntheticNode = (CjNodeElement) values.get(values.size() - 2);
 
             List<ICjGraph> subGraphs = syntheticNode.graphs().toList();
             assert subGraphs.size() == 1;
@@ -476,5 +483,15 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
         }
     }
 
+    /** @return true if the result's values end with: CJ graph, list of nodes, CJ node, CJ data */
+    private static boolean isGraphNodeData(Result result) {
+        List<Object> values = result.values();
+        int n = values.size();
+        return n >= 5 //
+                && values.get(n - 1) instanceof ICjData //
+                && values.get(n - 2) instanceof CjNodeElement //
+                && values.get(n - 3) instanceof List //
+                && values.get(n - 4) instanceof CjGraphElement;
+    }
 
 }

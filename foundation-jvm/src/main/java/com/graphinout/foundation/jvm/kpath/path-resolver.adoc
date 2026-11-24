@@ -1,131 +1,322 @@
-= Path Resolver
+= Path Resolver (`kpath`)
 :toc:
 
-This document describes the path-resolver library, which allows navigating hierarchical data structures using a simple path language.
+`kpath` finds values in nested data (maps, lists, JSON documents and your own types) using a short path language.
+A path can contain wildcards, so it can match several values; each match is returned as a `Result`.
 
-== Core Concepts
+It is used to query CJ documents (`base-api`: `PathResolverCj`) and in the GraphML reader (`Graphml2CjDocument`).
 
-The path resolver is designed to be extensible, allowing it to navigate any data structure as long as appropriate adapters are registered. The core components are:
-
-* `PathResolver`: The main entry point for resolving paths.
-* `Step`: Represents a single segment of a path.
-* `GraphmlResult`: Encapsulates the result of a path resolution.
-* `IMapLike` and `IListLike`: Interfaces that abstract over map-like and list-like data structures.
-* `ITypeAdapter` and `TypeAdapters`: A mechanism for converting custom types into `IMapLike` or `IListLike`.
-
-== `PathResolver`
-
-The `PathResolver` class is the primary entry point for path resolution. It is instantiated using `PathResolver.create()`.
+[[quick-start]]
+== Quick start
 
 [source,java]
 ----
-PathResolver pathResolver = PathResolver.create();
+PathResolver resolver = PathResolver.create();
+
+// {"x": ["a", "b"], "y": {"z": 1}}
+List<Result> results = resolver.resolveAll(data, KPaths.of("x/[1]"));
+
+results.get(0).value();   // "b"
+results.get(0).path();    // ["x", "[1]"]
+results.get(0).values();  // [data, ["a", "b"], "b"]
 ----
 
-The `PathResolver` comes with pre-configured adapters for `java.util.Map`, `java.util.List`, `IJsonObject`, and `IJsonArray`. You can register custom adapters for your own data types.
+[[path-syntax]]
+== Path syntax
+A path is a `List<String>`, one string per *step*.
+`KPaths.of("a/b/c")` splits a string on `/` into `["a", "b", "c"]`.
+A single leading `/` is ignored, so `/a/b/c` gives the same steps.
 
-=== Resolving Paths
+Each step is applied to every result of the previous step.
+A step that doesn't fit the current value (e.g. a map key on a list) returns nothing; it is not an error.
+An invalid step (`[x]`, `[]`, `[-1]`) throws an `IllegalArgumentException`.
+All steps are checked before any data is read, so this happens even if no data reaches the invalid step.
 
-The main methods for resolving paths are:
-
-* `resolveAll(Object root, List<String> path)`: Resolves a complete path against a root object.
-* `resolve1(Object root, String step)`: Resolves a single step.
-* `resolveAny(Object root)`: Returns all possible results from a root object.
-
-== Path Syntax
-
-A path is a list of strings, where each string is a "step". The syntax for a step depends on the type of the object being navigated.
-
-* **Map Property:** To access a property of a map-like object, use the property name as the step.
-[source,java]
-----
-// Given a map {"foo": "bar"}
-List<Result> results = pathResolver.resolve1(map, "foo");
-// results will contain one result with the value "bar"
-----
-
-* **List Index:** To access an element of a list-like object, use the index enclosed in square brackets, e.g., `[1]`.
-[source,java]
-----
-// Given a list ["a", "b", "c"]
-List<Result> results = pathResolver.resolve1(list, "[1]");
-// results will contain one result with the value "b"
-----
-
-* **Wildcards:**
-    ** `[*]` or `[$]` for lists: Access all elements of a list.
-    ** `*` or `$` for maps: Access all values of a map.
-    ** `..`: The "any child" operator, which recursively resolves all children of the current object.
-
-== `Step`
-
-The `Step` class parses a single path segment and determines the action to take based on its syntax (e.g., map access, list access, wildcard). It has a `kind()` method that returns a `Step.Kind` enum, which can be one of:
-
-[cols="2h,^1m,8"]
+[[step-kinds]]
+.Step kinds, decided by `Step.kind()` in this order
+[cols="1h,2m,6",options="header"]
 |===
-| Name | Syntax | Description
+| Kind | Syntax | Result
 
-| Any | .. | All child-nodes in the collection, recursively. Includes root.
-| List 1 | [7] | Get the element at index 7 from array-like. If not an array, return nothing.
-| List All | [*] | Get all elements from array-like. If not an array, return nothing.
-| Map 1 | foo | Get the value associated with key `annotations` from map-like. If not a map, return nothing.
-| Map All | * | All child-nodes in the map. Does not include the map itself.
-If not a map, return nothing.
+| `Map1` (quoted)
+| 'foo/bar'
+| The value of the key between the quotes, taken literally. See <<quoting>>.
+
+| `Any`
+| ..
+| The current value and all its descendants, breadth-first. See <<any-step>>.
+
+| `ListAll`
+| [*] +
+[$…]
+| Every element of a list that isn't `null`, with its original index. Any text after `[$` is ignored, so `[$]` and `[$items]` behave like `[*]`.
+
+| `List1`
+| [7]
+| The element at index 7. The index must be a non-negative integer, or an `IllegalArgumentException` is thrown. An index past the end, or a `null` element, returns nothing.
+
+| `MapAll`
+| * +
+$…
+| Every value of a map whose value isn't `null`. Any text after `$` is ignored, so `$` and `$name` behave like `*`.
+
+| `Map1`
+| foo
+| The value of key `foo`; nothing if the key is missing or its value is `null`.
+Any step that doesn't match one of the rows above is treated as a key.
 |===
 
-== `Result`
+[[step-examples]]
+.Examples on `{"x": ["a", "b"], "y": {"z": 1}}`
+[cols="2m,4m",options="header"]
+|===
+| Path | Matched values
+| x/[1] | "b"
+| x/[*] | "a", "b"
+| * | ["a","b"], {"z":1}
+| */* | 1
+| y/.. | {"z":1}, 1
+| .. | root, ["a","b"], {"z":1}, "a", "b", 1
+|===
 
-The `GraphmlResult` class holds the outcome of a resolution. It contains:
+[[quoting]]
+=== Quoted steps
+To address a map key that contains `/` or `'`, or that would otherwise be read as a wildcard (`*`, `..`, `$x`, `[0]`), put it in single quotes.
+A quoted step is always a literal map key.
 
-* `path()`: The path taken to reach the result.
-* `values()`: A list of all objects traversed to reach the result, with the final value being the last element.
-* `value()`: The final value of the resolution.
+* Inside quotes, `''` stands for one `'`.
+* A step is quoted only if it *starts* with `'`. A `'` inside an unquoted step (`it's`) is an ordinary character.
+* In `KPaths.of`, a quoted step ends at the next `'` that is followed by `/` or the end of the path. `KPaths.of` throws an `IllegalArgumentException` if the quote isn't closed or the closing quote is followed by other text.
+* Quotes also work in step lists you build yourself: `List.of("'*'")`.
+* `KPaths.quote(key)` turns any key into a quoted step.
+* `Result.path()` contains the key without quotes.
 
-== Adapters
+.Quoted step examples
+[cols="3m,3m,3",options="header"]
+|===
+| Path string | Steps | Map keys addressed
+| /foo/'bar/baz'/boingo | foo, 'bar/baz', boingo | `foo`, `bar/baz`, `boingo`
+| foo/'*' | foo, '*' | `foo`, `*` (not the wildcard)
+| 'it''s' | 'it''s' | `it's`
+| '' | '' | the empty key
+|===
 
-To make the `PathResolver` work with your own data structures, you need to provide adapters that convert your objects into `IMapLike` or `IListLike`.
+[[any-step]]
+=== The `..` step
+`..` returns the current value itself, then all its descendants, breadth-first (like XPath's `descendant-or-self`).
+Primitive leaf values count as descendants.
+Values that are both map-like and list-like contribute their map children and their list children.
 
-=== `IMapLike` and `IListLike`
+Each `..` result records the actual keys and indexes on the way down, and every value it passed.
+`..` never appears in `path()`.
+The match on the current value itself adds no step.
 
-* `IMapLike`: An interface for objects that behave like a `Map<String, Object>`. It has `keys()` and `get(String key)` methods.
-* `IListLike`: An interface for objects that behave like a `List<Object>`. It has `size()` and `get(int index)` methods.
+.`../[1]` on `{"x": ["a", "b"], "y": {"z": 1}}`
+* `value()`: `"b"`
+* `path()`: `["x", "[1]"]`
+* `values()`: `[root, ["a", "b"], "b"]`
 
-Static helper methods are provided to easily create instances for common cases, like wrapping a `java.util.Map` or `java.util.List`.
+NOTE: `..` cuts cycles.
+A value that is (by identity) already on its own path is not visited again, so an object graph that contains itself is still traversed only once.
+A value that several paths reach without a cycle is returned once per path.
 
-=== `ITypeAdapter` and `TypeAdapters`
+[[results]]
+== Results
+`Result` describes one match:
 
-* `ITypeAdapter`: A functional interface that converts an object of type `I` to an adapted type `O`.
-* `TypeAdapters`: A registry for `ITypeAdapter`s. The `PathResolver` uses a `TypeAdapters` instance to find the correct adapter for a given object.
+`value()`:: the matched value
+`path()`:: the keys and `[i]` indexes that lead from the root to the match. Wildcards and `..` are replaced by the actual keys and indexes taken; quoted keys appear without quotes.
+`values()`:: the root, then one value per entry of `path()`, so `values()` is always one element longer than `path()` and `value()` is its last element
 
-You can register your own adapters on the `PathResolver`:
+Because `values()` holds every value passed, the parent of a match is `values().get(values().size() - 2)`.
+Read positions from the end: after a `..` step, the distance from the root varies.
+
+[[adapters]]
+== Navigating your own types
+The resolver doesn't navigate objects directly.
+It looks up a *type adapter* that turns a value into one of two views (both in link:../../../../../../../../../foundation-pure/README.adoc#pkg-collections[`foundation-pure` collections]):
+
+`IMapLike`:: `List<String> keys()` and `Object get(String key)`
+`IListLike`:: `int size()` and `Object get(int index)`
+
+Adapters for these types are registered by default:
+
+.Default adapters
+* `java.util.Map` → `IMapLike` (keys must be `String`)
+* `java.util.List` → `IListLike`
+* `IJsonObject` → `IMapLike`
+* `IJsonArray` → `IListLike`
+
+Register more with `registerMap` or `registerList`.
+`IMapLike` and `IListLike` have factory methods for the common cases (`of(…)`, `ofMap`, `ofList`, `ofProperty`):
 
 [source,java]
 ----
-class MyCustomType {
-    // ...
+// MyNode and MyRow stand in for your own types
+resolver.registerMap(MyNode.class, node ->
+        IMapLike.of(List.of("id", "children"), key -> switch (key) {
+            case "id" -> node.id();
+            case "children" -> node.children(); // a List, navigable with [*]
+            default -> null;
+        }));
+
+resolver.registerList(MyRow.class, row -> IListLike.of(row.size(), row::cell));
+----
+
+[[adapter-lookup]]
+=== How an adapter is found
+`TypeAdapters` searches in this order and uses the first adapter it finds:
+
+. The exact class of the value
+. All interfaces of that class, including inherited interfaces.
+If several of them have an adapter, an interface wins over the interfaces it extends.
+If that still leaves more than one, the lookup throws an `IllegalStateException` that names the interfaces.
+Register an adapter for the class itself to resolve it.
+. The superclass, searched the same way, then its superclass, and so on
+
+If no adapter is found, the step returns nothing.
+`TypeAdapters.adaptOrThrow` is the only method that throws an exception when no adapter is found.
+
+[[example-usage]]
+== Example Usage
+The examples use this document (as `java.util.Map`/`List`, or as an `IJsonValue`; both work with the default adapters):
+
+[source,json]
+----
+{ "graphs": [ { "id": "g1",
+    "nodes": [ { "id": "a", "label": "Alice" }, { "id": "b" } ],
+    "graphs": [ { "id": "g2",
+      "nodes": [ { "id": "c", "label": "Carol" } ] } ] } ],
+  "a/b": "slash" }
+----
+
+[[example-wildcards]]
+=== Wildcards over lists
+[source,java]
+----
+PathResolver resolver = PathResolver.create();
+
+// node ids of the top-level graphs only
+resolver.resolveAll(doc, KPaths.of("graphs/[*]/nodes/[*]/id"));
+// -> "a"  path [graphs, [0], nodes, [0], id]
+// -> "b"  path [graphs, [0], nodes, [1], id]
+----
+
+[[example-any-depth]]
+=== Searching at any depth
+`..` followed by a key finds that key everywhere, however deeply nested:
+
+[source,java]
+----
+// node ids in all graphs, including nested ones
+resolver.resolveAll(doc, KPaths.of("../nodes/[*]/id"));
+// -> "a", "b", "c"
+// "c" has path [graphs, [0], graphs, [0], nodes, [0], id]
+----
+
+[[example-parent]]
+=== Using the values on the way
+`values()` holds every value passed, so you can read the parent of a match, or any other ancestor:
+
+[source,java]
+----
+for (Result label : resolver.resolveAll(doc, KPaths.of("../label"))) {
+    List<Object> values = label.values();
+    Object node = values.get(values.size() - 2); // {id=a, label=Alice}, then {id=c, label=Carol}
 }
-
-pathResolver.registerMap(MyCustomType.class, myCustomType -> {
-    // return an IMapLike view of myCustomType
-    return IMapLike.ofProperty("someProperty", "someValue");
-});
 ----
 
-The `TypeAdapters` class will automatically look for adapters for super-classes and interfaces if no direct adapter is found for a given class.
-
-== `KPaths`
-
-A simple utility class with a static method `of(String pathString)` that splits a `/`-delimited string into a `List<String>` representing a path.
+[[example-continue]]
+=== Continuing from earlier results
+Results can be the starting point for further paths; the new results extend the old paths:
 
 [source,java]
 ----
-List<String> path = KPaths.of("a/b/c");
-// returns ["a", "b", "c"]
+List<Result> graphs = resolver.resolveAll(doc, KPaths.of("../graphs/[*]")); // g1, g2
+for (Result graph : graphs) {
+    Object id = resolver.resolve1(graph, "id").get(0).value();          // "g1", then "g2"
+    List<Result> nodeIds = resolver.resolveAll(List.of(graph), KPaths.of("nodes/[*]/id"));
+    // g1 -> "a", "b"; g2 -> "c" with path [graphs, [0], graphs, [0], nodes, [0], id]
+}
 ----
 
+[[example-quoted]]
+=== Keys with special characters
+[source,java]
+----
+resolver.resolveAll(doc, KPaths.of("'a/b'"));      // -> "slash", path [a/b]
+resolver.resolveAll(doc, List.of(KPaths.quote(key))); // any key, whatever it contains
+----
 
+[[example-custom-types]]
+=== Querying your own object model
+The GraphML reader (`Graphml2CjDocument`) finds synthetic nodes in a CJ document at any depth by exposing only the properties it needs:
 
+[source,java]
+----
+PathResolver resolver = PathResolver.create();
+resolver.registerMap(ICjDocument.class, doc ->
+        IMapLike.ofProperty("graphs", () -> doc.graphs().toList()));
+resolver.registerMap(ICjGraph.class, graph ->
+        IMapLike.of(List.of("nodes", "graphs"), key -> switch (key) {
+            case "nodes" -> graph.nodes().toList();
+            case "graphs" -> graph.graphs().toList();
+            default -> null;
+        }));
+resolver.registerMap(ICjNode.class, node ->
+        IMapLike.of(List.of("data", "graphs"), key -> switch (key) {
+            case "data" -> node.data();
+            case "graphs" -> node.graphs().toList();
+            default -> null;
+        }));
 
+for (Result data : resolver.resolveAll(cjDoc, KPaths.of("../graphs/[$graph]/nodes/[$node]/data"))) {
+    List<Object> values = data.values();
+    // values end with: ..., graph, [nodes], node, data
+    ICjGraph graph = (ICjGraph) values.get(values.size() - 4);
+    ICjNode node = (ICjNode) values.get(values.size() - 2);
+}
+----
+
+`[$graph]` and `[$node]` behave like `[*]`; the names only document what is matched.
+
+[[example-errors]]
+=== Invalid paths
+[source,java]
+----
+resolver.resolveAll(doc, KPaths.of("graphs/[first]"));
+// IllegalArgumentException: Invalid list index step '[first]': expected [n] with n >= 0, [*] or [$...].
+//   Quote it ('[first]') to use it as a map key.
+----
+
+[[api]]
+== API
+.`PathResolver`
+`create()` / `new PathResolver()`:: Creates a resolver with the <<adapters,default adapters>>.
+`resolveAll(Object root, List<String> path)`:: Resolves a full path. The main entry point.
+`resolveAll(List<Result> roots, List<String> path)`:: Continues from earlier results.
+`resolve1(Object root, String step)`:: Resolves one step. Same as `resolveAll(root, List.of(step))`.
+`resolve1(Result root, String step)`, `resolve1(List<Result> roots, String step)`:: Resolve one step and add it to existing results.
+`resolveAny(Object root)`:: Same as `resolve1(root, "..")`: the root and all its descendants.
+`registerMap(Class<T>, ITypeAdapter<T, IMapLike>)`, `registerList(Class<T>, ITypeAdapter<T, IListLike>)`:: Add adapters. Both return the resolver, so calls can be chained.
+`typeAdapters()`:: The adapter registry (`ITypeAdapters`, from link:../../../../../../../../../foundation-pure/README.adoc#pkg-types[`foundation-pure` types]).
+
+.`KPaths`
+`of(String)`:: Splits a path string on `/`, keeping <<quoting,quoted steps>> together.
+`quote(String key)`:: Turns a key into a quoted step, e.g. `it's` into `'it''s'`.
+
+`Step` is package-private; use step strings instead.
+
+[[limitations]]
+== Limitations and known issues
+.Limitations
+* Only map keys can be quoted. List indexes and wildcards are always unquoted.
+* `[x]`, `[]`, `[-1]` and `[+1]` throw an `IllegalArgumentException`. To use such text as a map key, quote it: `'[x]'`.
+* If a class implements several unrelated interfaces that each have an adapter, the lookup throws (see <<adapter-lookup>>).
+* `TypeAdapters` uses reflection (`getInterfaces`), so `kpath` is JVM-only.
+* `null` values are never returned: every step skips them.
+
+[[architecture]]
 == Architecture
 .Architecture
 [plantuml]
@@ -133,35 +324,41 @@ List<String> path = KPaths.of("a/b/c");
 hide empty members
 hide circle
 
-class Result
-Result *-- "n" String : steps
-Result *-- "n" Object : values
-
-class PathResolver
-PathResolver *-- TypeAdapters : registers\nIMapLike,\nIListLike
-
-Step ..> PathResolver : steps
-
-PathResolver .. IMapLike : uses
-PathResolver .. IListLike : uses
-
+class PathResolver {
+    resolveAll(root, path) : List<Result>
+    resolve1(root, step) : List<Result>
+    registerMap(type, adapter)
+    registerList(type, adapter)
+}
+class Step {
+    kind() : Kind
+}
+class Result {
+    path() : List<Object>
+    values() : List<Object>
+    value() : Object
+}
 class TypeAdapters
-TypeAdapters *-- MapMap
+interface ITypeAdapters
+interface ITypeAdapter {
+    toAdapted(value)
+}
 interface IMapLike {
-    List<String> keys()
-    Object get(String key)
+    keys() : List<String>
+    get(key) : Object
 }
 interface IListLike {
-    int size()
-    Object get(int index)
+    size() : int
+    get(index) : Object
 }
-interface ITypeAdapter
-TypeAdapters *-- ITypeAdapter
 
-class resultList as "List<Result>"
-resultList *-- Result
-
-PathResolver ..> resultList
+PathResolver ..> Step : parses each step
+Step ..> Result : creates
+PathResolver *-- TypeAdapters
+TypeAdapters ..|> ITypeAdapters
+TypeAdapters *-- "n" ITypeAdapter : by (source class, target view)
+ITypeAdapter ..> IMapLike : produces
+ITypeAdapter ..> IListLike : produces
+Step ..> IMapLike : navigates
+Step ..> IListLike : navigates
 ....
-
-== Usage

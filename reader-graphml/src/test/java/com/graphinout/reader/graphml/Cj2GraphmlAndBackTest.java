@@ -83,6 +83,55 @@ public class Cj2GraphmlAndBackTest {
         CjAssert.verifySameCjOrRecord(resource, "Cj2Gml2Cj", jsonOut, jsonIn, null);
     }
 
+    /** Renders the graph tree (graph ids, node ids, nested graphs) as an indented string. */
+    private static void graphTree(com.graphinout.base.cj.document.ICjHasGraphs parent, String indent, StringBuilder sb) {
+        parent.graphs().forEach(g -> {
+            sb.append(indent).append("graph ").append(g.id()).append('\n');
+            g.nodes().forEach(n -> {
+                sb.append(indent).append("  node ").append(n.id()).append('\n');
+                graphTree(n, indent + "    ", sb);
+            });
+            graphTree(g, indent + "  ", sb);
+        });
+    }
+
+    private static String graphTree(ICjDocument doc) {
+        StringBuilder sb = new StringBuilder();
+        graphTree(doc, "", sb);
+        return sb.toString();
+    }
+
+    /**
+     * GraphML has no graph-in-graph, so CJ subgraphs are wrapped in synthetic nodes, which the reader removes again.
+     * This must also work for graphs nested several levels deep, and for graph-in-graph inside a node's graph.
+     */
+    @Test
+    @DisplayName("graph-in-graph nested several levels survives the GraphML round trip")
+    void testDeeplyNestedGraphsRoundTrip() throws IOException {
+        String jsonIn = """
+                { "$schema": "https://j-s-o-n.org/schema/cj-8.0.0.json",
+                  "graphs": [ { "id": "world",
+                    "nodes": [ { "id": "usa",
+                      "graphs": [ { "id": "usa_inner",
+                        "nodes": [ { "id": "texas" } ],
+                        "graphs": [ { "id": "usa_inner_sub", "nodes": [ { "id": "austin" } ] } ] } ] } ],
+                    "graphs": [ { "id": "europe",
+                      "nodes": [ { "id": "germany" } ],
+                      "graphs": [ { "id": "dach",
+                        "nodes": [ { "id": "austria" } ],
+                        "graphs": [ { "id": "alps", "nodes": [ { "id": "zugspitze" } ] } ] } ] } ] } ] }
+                """;
+        ICjDocument cjDoc = CjDocuments.parseCjJsonString("nested", jsonIn);
+
+        Json2StringWriter json2StringWriter = new Json2StringWriter();
+        Graphml2CjDocument graphml2CjWriter = new Graphml2CjWriter(new Cj2JsonWriter(json2StringWriter));
+        new CjDocument2Graphml(graphml2CjWriter).writeDocumentToGraphml(cjDoc);
+        ICjDocument cjDocOut = CjDocuments.parseCjJsonString("nested-out", json2StringWriter.jsonString());
+
+        assertThat(graphTree(cjDocOut)).isEqualTo(graphTree(cjDoc));
+        assertFalse(CjDocument2Graphml.containsSyntheticNodes(cjDocOut));
+    }
+
     /**
      * Issue #137: an edge declared in a subgraph but referencing a node from an ancestor graph must be written into the
      * lowest common ancestor graph, otherwise the GraphML is invalid (the edge would reference a node not visible in or

@@ -9,7 +9,10 @@ import com.graphinout.foundation.pure.types.ITypeAdapters;
 import org.slf4j.Logger;
 
 import org.jspecify.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -74,14 +77,19 @@ public class TypeAdapters implements ITypeAdapters {
         tried.add(refinedSourceType);
 
         //try interfaces of sourceType
+        List<Class<?>> matchingInterfaces = new ArrayList<>();
         for (Class<?> interfaceType : allInterfacesOf(refinedSourceType)) {
-            adapter = exactAdapterFromTo(interfaceType, targetType);
-            if (adapter != null) {
-                log.trace("FOUND interface adapter from {} ({}) to {}", interfaceType.getSimpleName(), originalSourceType.getSimpleName(), targetType.getSimpleName());
-                return adapter;
+            if (exactAdapterFromTo(interfaceType, targetType) != null) {
+                matchingInterfaces.add(interfaceType);
+            } else {
+                tried.add(interfaceType);
+                log.trace("No interface adapter from {} ({}) to {}", interfaceType.getSimpleName(), originalSourceType.getSimpleName(), targetType.getSimpleName());
             }
-            tried.add(interfaceType);
-            log.trace("No interface adapter from {} ({}) to {}", interfaceType.getSimpleName(), originalSourceType.getSimpleName(), targetType.getSimpleName());
+        }
+        if (!matchingInterfaces.isEmpty()) {
+            Class<?> interfaceType = mostSpecific(originalSourceType, refinedSourceType, targetType, matchingInterfaces);
+            log.trace("FOUND interface adapter from {} ({}) to {}", interfaceType.getSimpleName(), originalSourceType.getSimpleName(), targetType.getSimpleName());
+            return exactAdapterFromTo(interfaceType, targetType);
         }
         // try super-types
         Class<?> superType = refinedSourceType.getSuperclass();
@@ -93,6 +101,36 @@ public class TypeAdapters implements ITypeAdapters {
             return null;
         }
         return _findAdapterFromTo(originalSourceType, superType, targetType, tried, warnIfNoneFound);
+    }
+
+    /**
+     * Picks the interface adapter to use when several interfaces of a class have one. An interface wins over the
+     * interfaces it extends. If that leaves more than one, the choice would be arbitrary, so this throws.
+     *
+     * @throws IllegalStateException if several unrelated interfaces have an adapter to targetType
+     */
+    private static Class<?> mostSpecific(Class<?> originalSourceType, Class<?> refinedSourceType, Class<?> targetType, List<Class<?>> candidates) {
+        List<Class<?>> mostSpecific = new ArrayList<>();
+        for (Class<?> candidate : candidates) {
+            boolean hasMoreSpecific = false;
+            for (Class<?> other : candidates) {
+                if (other != candidate && candidate.isAssignableFrom(other)) {
+                    hasMoreSpecific = true;
+                    break;
+                }
+            }
+            if (!hasMoreSpecific) mostSpecific.add(candidate);
+        }
+        if (mostSpecific.size() > 1) {
+            List<String> names = new ArrayList<>();
+            for (Class<?> c : mostSpecific) names.add(c.getName());
+            Collections.sort(names);
+            throw new IllegalStateException("Ambiguous adapters from " + originalSourceType.getName() //
+                    + (refinedSourceType == originalSourceType ? "" : " (via super-class " + refinedSourceType.getName() + ")") //
+                    + " to " + targetType.getSimpleName() + ": interfaces " + names + " all have one. " //
+                    + "Register an adapter for " + originalSourceType.getSimpleName() + " itself.");
+        }
+        return mostSpecific.get(0);
     }
 
     /**
