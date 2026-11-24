@@ -23,6 +23,14 @@ Added::
   query/path/list/map exports and Memgraph's scalar `start`/`end`.
 * PG-JSON (`pg-json`, `.pg.json`, `.pgjson`) is registered with the engine and the CLI (`PgJsonService`) and
   detected by file name and by content (array-valued `properties`, `labels` arrays, `undirected`).
+* kpath (`PathResolver`): quoted steps such as `'bar/baz'` address map keys literally (`''` stands for one quote);
+  `KPaths.quote` builds them.
+* `XML.xmlEncodeAttributeValue` encodes a plain attribute value as the XML spec requires.
+  `XmlDocument.toXmlDocumentString()` writes a whole document.
+* `JsonPrimitiveWriter.onNumber(Number)` dispatches any supported Java number type to the typed callbacks.
+* `Json5Preprocessor` converts JSON5 hex numbers (`0x1F`) to decimal.
+* Maven profile `central-snapshots` publishes the current snapshot to Maven Central's snapshot repository, see
+  `how-to-release.adoc`.
 
 Changed::
 * Module POMs declare what each module actually uses, checked with `mvn dependency:analyze` and against the
@@ -36,6 +44,24 @@ Changed::
   version) in test scope. Before, Truth users only compiled because `testdata` and `base` exported Guava.
 * `THIRD_PARTY.adoc` and `LICENSES/` regenerated: versions match the build again (e.g. JUnit 6.1.3, Jena 6.2.0,
   logback 1.6.7), 11 libraries that are no longer used are gone, and `ddotit-core` and Jackson 3 are listed.
+* `foundation-pure` no longer depends on `org.jspecify:jspecify`, which shadowed the j2cl-compatible copies in
+  `foundation-emulation`. JVM projects that exclude `foundation-emulation` must declare jspecify themselves.
+  `foundation-shared` compiles as Java 8, like `foundation-pure`.
+* `ConsumerFilter.acceptAndContinue` is renamed to `acceptAndFilter`, as in `BiConsumerFilter`. The old name remains
+  as a deprecated default method, so callers and lambdas still compile; classes that implement it must rename it.
+* kpath: results of `..` carry the actual keys and indexes as path and every value passed on the way, instead of a
+  single `..` step. `resolve1(root, step)` results start with `root`, like those of `resolveAll`. A single leading `/`
+  is ignored, and a trailing `/` adds an empty step (before, it was the other way round). An invalid list index such as
+  `[x]` or `[-1]` throws `IllegalArgumentException`, whether or not the data reaches it.
+  If several unrelated interfaces of a class have an adapter, the lookup throws `IllegalStateException` instead of
+  picking one; a sub-interface wins over the interfaces it extends.
+* Numbers of an unsupported type (e.g. `AtomicLong`) now make `IJsonPrimitive.fire` and `JsonEvent2Writer` throw
+  `IllegalArgumentException`. Before, `fire` wrote nothing and `JsonEvent2Writer` threw `IllegalStateException`.
+* `TextToolFoundation.padLeft` and `padRight` throw `IllegalArgumentException` if the padding is empty and needed.
+
+Deprecated::
+* `Xml2StringWriter.toXmlString(XmlDocument)`: use `XmlDocument.toXmlDocumentString()`.
+* `collections.IteratorsFoundation` (`foundation-pure`): use `iterators.IteratorsFoundation`.
 
 Fixed::
 * The CJ, CJ-GEF, D2, DDot, Mermaid, OCIF, Pajek, PlantUML, Structurizr DSL, adjacency-list, edge-list and TGF
@@ -89,6 +115,20 @@ Fixed::
   table, so an entity like `&Eacute;` stayed undecoded, the XML parse failed and the read returned no document. The
   table is now built once at class initialization and immutable. `foundation-pure`'s `LoggerFactory` (a `HashMap`
   filled from any thread) is synchronized. New tests read concurrently on 8 and 16 threads.
+* XML output: `Xml2AppendableWriter` escaped only `"` in attribute values, so a raw `&` or `<` gave invalid XML, and tab,
+  LF and CR came back as spaces. It now escapes `&`, `<` and `"` and writes tab, LF and CR as character references, so
+  values survive a round trip. Callers must pass plain values, not already encoded ones.
+* `XmlTool.parseAndWriteXml` (also behind `Xml2DocumentWriter.parseToDoc`) delivers an HTML entity such as `&eacute;` as
+  its character `é`, as the GraphML and GEXF readers do. Before, the application got the text `&eacute;`.
+* GraphML reader: CJ graph-in-graph is restored at any nesting depth. Before, the synthetic nodes that wrap subgraphs
+  in GraphML were removed only in top-level graphs.
+* kpath: `[*]` threw a `NullPointerException` on lists with null elements; they are now skipped. `..` no longer loops
+  forever on cyclic data: a value already on its own path is not visited again.
+* `JsonParser` errors report the line and column instead of line 0 and the character offset.
+* `IJsonPrimitive.fire` silently wrote nothing for `Short` and `Byte`, and `JsonEvent2Writer` threw on `Float`, `Short`
+  and `Byte`. Both now write them.
+* `TextToolFoundation.padLeft` and `padRight` pad to exactly the requested length when the padding has several
+  characters. Before, the result could be too short.
 
 Removed::
 * `GraphmlReader` no longer validates input against the GraphML XSD (#115). Only 13 of 84 GraphML files in the test
@@ -103,6 +143,8 @@ Removed::
 * Unused dependencies: JGraphT (`jgrapht-core`, `jgrapht-io`) and `commons-text` from `reader-jgrapht`, which reads
   graph6, sparse6 and digraph6 itself; joni and Guava from `base`; Guava from `testdata`; joni from the root
   dependency management.
+* `PathResolver.addAnyChild` (kpath).
+* `GwtCompatible` and `GwtIncompatible` in `foundation-pure`'s `xml.escape`: duplicates of the ones in `annotations`.
 
 == 0.2.4 — 2026-11-19
 
