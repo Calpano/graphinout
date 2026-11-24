@@ -1,0 +1,32 @@
+= Foundation JVM
+:toc:
+
+`foundation-jvm` is the foundation layer for JVM-only code.
+
+== Why
+Some base utilities need JVM-only APIs (process execution, `java.util.regex`, reflection) or libraries (SLF4J).
+They can't live in the j2cl-compatible layers, so they go here.
+This module also swaps the j2cl annotation copies in `foundation-emulation` for the real `jspecify` and `jackson-annotations` artifacts.
+
+== Where to find more
+* link:../foundation-pure/README.adoc#foundation-layers[Foundation layers] – how the foundation modules depend on each other
+* link:src/main/java/com/graphinout/foundation/jvm/kpath/path-resolver.adoc[Path Resolver] – the `kpath` path language
+
+== What is in here
+All packages are below `com.graphinout.foundation.jvm`.
+The module also publishes a test-jar.
+
+[[pkg-exec]]
+=== `exec`
+`Exec`: runs an external process with arguments, environment variables and a working directory, and collects its output.
+
+[[pkg-kpath]]
+=== `kpath`
+`PathResolver`: finds values in nested maps, lists, JSON documents and your own types using a short path language (`a/[0]/*/..`).
+Your own types can be navigated by registering adapters to link:../foundation-pure/README.adoc#pkg-collections[`IMapLike`/`IListLike`] (adapters from link:../foundation-pure/README.adoc#pkg-types[`types`]).
+See link:src/main/java/com/graphinout/foundation/jvm/kpath/path-resolver.adoc[path-resolver.adoc].
+
+[[pkg-xml]]
+=== `xml`
+`XmlFoundation`: a regex that normalizes XML line endings (CR, CRLF, `&#13;`) to LF.
+It complements link:../foundation-pure/README.adoc#pkg-xml[`foundation-pure` xml].

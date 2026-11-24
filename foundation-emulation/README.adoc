@@ -1,10 +1,32 @@
 = Foundation Emulation
 :toc:
 
-This project provides annotations from 3rd party suppliers which were
+`foundation-emulation` holds cut-down copies of third-party annotations that j2cl can compile.
 
-- copied
-- modified for j2cl compability
-- used in `foundation-pure`
+== Why
+`foundation-pure` uses jspecify and Jackson annotations, but their upstream jars don't compile under j2cl:
 
-See link:../foundation-pure/README.adoc[]
+* jspecify uses the Java 9 `MODULE` element type, and j2cl rejects `@NullMarked` unless static analysis is enabled.
+* Jackson annotation sources pull in non-j2cl types (reflection, `UUID`, `Locale`/`TimeZone`).
+
+So the annotations are copied here and edited until they compile with Java 8 and j2cl.
+JVM consumers should exclude this artifact and depend on the real `org.jspecify:jspecify` and `jackson-annotations` (see `foundation-jvm/pom.xml`).
+
+== Where to find more
+* link:../foundation-pure/README.adoc#foundation-layers[Foundation layers] – how the foundation modules depend on each other
+* link:../foundation-pure/j2cl.adoc[] – j2cl background
+
+== What is in here
+
+[[pkg-jspecify-annotations]]
+=== `org.jspecify.annotations`
+The jspecify nullness annotations `@NonNull`, `@Nullable`, `@NullMarked` and `@NullUnmarked`, without the `MODULE` target.
+Don't use `@NullMarked` in code that j2cl compiles.
+Details: link:src/main/java/org/jspecify/annotations/README.adoc[jspecify notes].
+
+[[pkg-jackson-annotation]]
+=== `com.fasterxml.jackson.annotation`
+The Jackson annotations (`@JsonProperty`, `@JsonCreator`, `@JsonIgnore`, `@JsonTypeInfo`, `@JsonSubTypes`, …), so that model classes in link:../foundation-pure/README.adoc[`foundation-pure`] can carry Jackson mappings.
+Removed: `ObjectIdGenerators` (uses `UUID`), `JsonFormat` (`Locale`/`TimeZone`) and `JsonAutoDetect` (reflection).
+`Hack` replaces `String.format`, which j2cl doesn't have.
+Details: link:src/main/java/com/fasterxml/jackson/annotation/README.adoc[Jackson notes].

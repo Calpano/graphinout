@@ -1,0 +1,18 @@
+= Foundation Shared
+:toc:
+
+`foundation-shared` is the foundation layer for code that runs on the JVM and under j2cl and may use j2cl-compatible third-party libraries.
+
+== Why
+Some shared code needs more than `foundation-pure` allows, e.g. regular expressions: `java.util.regex` isn't available under j2cl.
+This layer allows j2cl-compatible libraries such as `gwt-regexp`, while `foundation-pure` stays dependency-free.
+Like `foundation-pure`, it compiles as Java 8 and packages its `.java` sources into the main jar for j2cl.
+
+== Where to find more
+* link:../foundation-pure/README.adoc#foundation-layers[Foundation layers] – how the foundation modules depend on each other
+* link:../foundation-pure/j2cl.adoc[] – j2cl background
+
+== What is in here
+Currently no packages.
+The module only declares its dependencies (`foundation-pure`, `gwt-regexp`), and `foundation-jvm` and other downstream modules depend on it.
+When you add a package, add a `[[pkg-…]]` section for it here.

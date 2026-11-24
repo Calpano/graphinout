@@ -1,22 +1,267 @@
-= Foundation
+= Foundation Pure
 :toc:
 
-The foundation projects comprise in general a dependency-free base layer for Java projects.
+`foundation-pure` is the main foundation layer: plain Java utilities with no runtime dependencies, written so they can also be transpiled to JavaScript with j2cl.
+This file also describes <<foundation-layers,all foundation layers>>.
 
-== Foundation Layers
-Foundation has four technical layers: pure, shared, jvm and client.
+== Why
+graphinout (and other Java projects) need a common base of JSON/XML handling, collections and functional helpers.
+That base must work in standard Java *and* under j2cl in the browser, so it can't depend on JVM-only libraries.
+On the JVM, its performance must not suffer just to stay j2cl-compatible.
 
-`foundation-pure`:: No dependencies, only classes from the j2cl compatible fragment. Java 8 syntax.
+== Where to find more
+* link:j2cl.adoc[] – j2cl, its JRE emulation and which Java language level is safe to use (Java 8)
+* link:../foundation-emulation/README.adoc[foundation-emulation] – the bundled jspecify and Jackson annotations
+* link:../README.adoc[graphinout README] – the overall project
+* <<downstream>> – which other projects use the foundation APIs, and what to check before changing them
 
-CAUTION: Due to `jspecify` using Java9 annotations (`MODULE`), we supply the jspecify annotations within `foundation-pure`.
+== What is in here
+All packages are below `com.graphinout.foundation.pure`.
 
-This project is aimed as a widely usable base layer for many Java projects, including j2cl-using ones (See link:j2cl.adoc[] for details on j2cl).
-It provides and uses `@Gwt(In)Compatible` annotations, but those cause no issues in standard Java.
-Sometimes j2cl emulation is used (see `VARY` pattern). Within `foundation-pure` the JVM-version of code may not be performance degraded.
+[[pkg-annotations]]
+=== `annotations`
+Marker annotations for documentation and tooling:
 
-`foundation-shared`:: Only j2cl-able dependencies allowed (e.g. https://github.com/google/elemental2[elemental2]). Java 8 syntax.
+* j2cl/GWT compatibility: `@GwtCompatible`, `@GwtIncompatible`
+* API status: `@Beta`, `@Since`, `@Until`, `@VisibleForTesting`
+* Thread safety: `@ThreadSafe`, `@NotThreadSafe`
+* Kind of operation: `@ReadOperation`, `@CreateOperation`, `@ModificationOperation`
+* `@NativeCode`: the type contains native C or JavaScript code
 
-`foundation-jvm`:: This code cannot j2cl-compile. Any java syntax.
+[[pkg-annotations-license]]
+=== `annotations.license`
+`@LicenseApache`, `@LicenseBSD3Clause`, `@LicenseLGPL`, `@LicenseMIT` and `@LicenseMPL` mark code under a third-party license.
+
+[[pkg-annotations-quality]]
+=== `annotations.quality`
+`@QualityOK`, `@QualitySuboptimal`, `@QualityUnfinished`, `@QualityUnchecked`, `@QualityUnused` and `@QualityPerformance…Bad` mark how mature a piece of code is.
+
+[[pkg-assertions]]
+=== `assertions`
+`Assertions`: runtime checks (`assertNonNull`, …).
+On the JVM and under j2cl they are implemented differently via the `VARY` pattern (see <<pkg-bridge>>).
+
+[[pkg-bridge]]
+=== `bridge`
+Hides differences between the JVM and j2cl.
+
+* `JavaPlatform`: platform-specific operations, like casting a value to a class without reflection, implemented differently via the `VARY` pattern.
+* `Java9`: selected Java 9 APIs backported to Java 8.
+
+[[pkg-collections]]
+=== `collections`
+Collection types and helpers:
+
+* Nested and scored maps: `MapMap`, `MapSet`, `MapCount`, `MapScore`, `MapMapScore`, `Maps`
+* `IMapLike` and `IListLike`: map and list views over arbitrary objects, used by link:../foundation-jvm/README.adoc#pkg-kpath[`kpath`]
+* Stacks that check what they pop: `PowerStackEnum`, `PowerStackOnClasses`
+* `ILimitedSet`: sets with a size limit
+* `IdFactory`: generates unique string ids
+
+Naming conventions: link:src/main/java/com/graphinout/foundation/pure/collections/README.adoc[collections guidelines].
+
+[[pkg-collections-bi]]
+=== `collections.bi`
+Tuples: `IPair`/`Pair` hold two values of different types, `ICouple`/`Couple` two values of the same type.
+
+[[pkg-collections-jajson]]
+=== `collections.jajson`
+"JaJson": JSON mapped directly to plain Java `Map`, `List`, `String`, `Number` and `Boolean`.
+Includes a small hand-written JSON parser (`JaJsonParser`, `JsonParser`), a writer, a map builder, and bridges from the <<pkg-json-writer,JSON writer API>>.
+See link:src/main/java/com/graphinout/foundation/pure/collections/jajson/jajson.adoc[jajson.adoc].
+
+[[pkg-functional]]
+=== `functional`
+Functional building blocks beyond `java.util.function`:
+
+* Functional interfaces with 3 to 8 parameters (`TriFunction`, `QuadConsumer`, … `OctConsumer`) and filtering variants
+* `Throwing…` variants of `Consumer`, `Function`, `Runnable` and `Supplier`
+* `Lazy`, `Caching`, `Final`, `Property`
+* Helpers: `Functions`, `Consumers`, `Suppliers`, `Optionals`, `Nullables`, `Logic`
+
+[[pkg-input]]
+=== `input`
+Error reporting for parsers:
+
+* `ContentError`: an error with a severity, a message and a `Location` (line and column)
+* `IHandleContentErrors`, `ContentErrorAware`, `BaseOutput`: pass errors on to a handler
+* `Locator`, `LocationAware`: tell a component where in the input it currently is
+
+[[pkg-iterators]]
+=== `iterators`
+`IteratorsFoundation`: helpers for `Iterator` and `Iterable` (`addAll`, `forEach` with index, `toSet`, …).
+It duplicates the class of the same name in <<pkg-collections>>.
+
+[[pkg-json]]
+=== `json`
+Shared JSON definitions:
+
+* `JsonType`: the kinds of JSON value
+* `JsonEvent`: one event of a JSON event stream
+* `JSON`: string escaping and the `XmlSpace` handling for XML strings inside JSON
+* `JsonTransformer`, `JsonConstants`, `JsonException`
+
+An overview of the JSON API is in link:src/main/java/com/graphinout/foundation/pure/json/json-api.adoc[json-api.adoc].
+
+[[pkg-json-document]]
+=== `json.document`
+The JSON document model as interfaces:
+
+* `IJsonValue`, `IJsonObject`, `IJsonArray`, `IJsonPrimitive`: read-only views
+* `…Appendable` and `…Mutable` variants for building and changing documents
+* `IJsonFactory`: creates values (implemented in <<pkg-json-value-java>>)
+* `IJsonXmlString`: graphinout's JSON extension for strings that already contain XML and must not be escaped again
+
+[[pkg-json-formatter]]
+=== `json.formatter`
+`JsonCompactFormatter`: pretty-prints JSON compactly within a maximum line length.
+See link:src/main/java/com/graphinout/foundation/pure/json/formatter/json-compact-format.adoc[json-compact-format.adoc].
+Usually called via `JsonFormatting` in <<pkg-text>>.
+
+[[pkg-json-json5]]
+=== `json.json5`
+`Json5Preprocessor`: converts JSON5 text (comments, trailing commas, …) to plain JSON.
+
+[[pkg-json-path]]
+=== `json.path`
+Paths without wildcards that address exactly one entry in an <<pkg-json-document,`IJsonValue`>> by property keys and array indexes.
+`JsonTypeAnalysisTree` collects the JSON types found at each path.
+See link:src/main/java/com/graphinout/foundation/pure/json/path/about.adoc[path/about.adoc].
+For wildcard matching, use <<pkg-json-query>>.
+
+[[pkg-json-query]]
+=== `json.query`
+Checks whether a JSON document meets a set of expectations.
+Each `JsonPath` (wildcards allowed) is paired with an `IJsonExpect`, and `JsonQueryEngine` returns a `boolean`.
+It only answers yes or no and doesn't return values; to read a value, use <<pkg-json-path>>.
+Nothing in graphinout uses it, but other projects do (see <<downstream>>).
+See link:src/main/java/com/graphinout/foundation/pure/json/query/about.adoc[query/about.adoc].
+
+[[pkg-json-value]]
+=== `json.value`
+`JsonTypes`: number range constants and helpers that pick the smallest Java number type for a JSON number.
+
+[[pkg-json-value-java]]
+=== `json.value.java`
+The default in-memory implementation of <<pkg-json-document>>: `JavaJsonFactory` (`JavaJsonFactory.INSTANCE`), `JavaJsonObject`, `JavaJsonArray`, `JavaJsonPrimitive`.
+
+[[pkg-json-writer]]
+=== `json.writer`
+A streaming JSON API inspired by SAX: `JsonWriter` plus the narrower `JsonValueWriter`, `JsonObjectWriter`, `JsonArrayWriter`, `JsonPrimitiveWriter` and `JsonPropertyWriter`.
+Readers emit events through it, and writers turn the events into text or documents.
+
+[[pkg-json-writer-impl]]
+=== `json.writer.impl`
+Implementations of <<pkg-json-writer>>:
+
+* Output to text: `Json2StringWriter`, `AppendableJsonWriter`, `StringBuilderJsonWriter`
+* Output to a document: `Json2JavaJsonWriter`, which builds <<pkg-json-value-java>> values
+* Conversion between events and writer calls: `Json2EventWriter`, `JsonEvent2Writer`
+* Wrappers: `ValidatingJsonWriter`, `LoggingJsonWriter`, `DelegatingJsonWriter`, `NoopJsonWriter`
+
+[[pkg-log]]
+=== `log`
+A tiny logger with no dependencies (`Logger`, `LoggerFactory`).
+It logs only when a log sink has been registered.
+
+[[pkg-stream]]
+=== `stream`
+`PowerStreams`: `Stream` helpers such as `filterMap`, `findOne`/`findOneOrNull` and `forEach` with throwing consumers.
+
+[[pkg-text]]
+=== `text`
+String utilities:
+
+* `Texts`, `TextToolFoundation`, `StringFormatter`: common prefix, truncation, log message templates, Unicode escapes
+* `UnicodesFoundation`, `Emoji`: Unicode and emoji constants
+* `JsonFormatting`: formats JSON text, even if it is invalid (uses <<pkg-json-formatter>>)
+* `TextTestTool`: string helpers for tests
+
+[[pkg-types]]
+=== `types`
+`ITypeAdapter` converts a value from one type to another; `ITypeAdapters` is a registry of them.
+link:../foundation-jvm/README.adoc#pkg-kpath[`kpath`] uses them.
+
+[[pkg-util]]
+=== `util`
+Small helpers that j2cl can compile:
+
+* `UUID`: UUID generation (replaces `java.util.UUID`)
+* `XRandom`: random numbers with a fixed default seed (42) for reproducible results
+* `NanoClock`: a named stopwatch
+* `Comparables`: comparison helpers
+
+[[pkg-value]]
+=== `value`
+Mutable holders for a single value (`IntRef`, `LongRef`, `DoubleRef`, `BooleanRef`, `StringRef`, `BigDecimalRef`, `ObjectRef`), e.g. for changing a variable inside a lambda.
+
+[[pkg-vector]]
+=== `vector`
+Sparse vectors that map keys to doubles: `ISparseVec`, `IMutableSparseVec`, `SparseVecFast` (always normalized to 1) and `SparseVecFlex`.
+
+[[pkg-xml]]
+=== `xml`
+Shared XML definitions:
+
+* `XML`: constants, `xml:space` values and XML whitespace characters
+* `XmlName`/`IXmlName`: qualified names
+* `CharactersKind`: the kinds of character data
+* `XmlFragmentString`: an XML fragment as a plain string
+* `XmlSerializer`: writes the <<pkg-xml-document>> model as text
+* `BaseXmlHandler`: base class for SAX-style handlers, with <<pkg-input,error reporting>>
+
+[[pkg-xml-document]]
+=== `xml.document`
+An in-memory XML tree: `XmlDocument`, `XmlElement`, `XmlText`, `XmlRaw` and `XmlDocumentFragment`, with `IXmlNode` and `IXmlContent` for walking it.
+
+[[pkg-xml-escape]]
+=== `xml.escape`
+Escapers for XML text and attribute values (`XmlEscapers`, `Escaper`, `CharEscaper`, `EscaperBuilder`), adapted from Guava so that j2cl can compile them.
+
+It uses `@GwtCompatible` from <<pkg-annotations>> and has its own small copy of Guava's `Preconditions`, so it doesn't depend on Guava.
+
+[[pkg-xml-writer]]
+=== `xml.writer`
+Streaming XML output without namespace support:
+
+* `XmlWriter` is the interface; `XmlCharacterWriter` handles character data such as text and CDATA.
+* Output to text: `Xml2StringWriter`, `Xml2AppendableWriter`
+* Wrappers: `ValidatingXmlWriter`, `DelegatingXmlWriter`
+
+[[downstream]]
+== Downstream users: check before changing an API
+The foundation modules are used well beyond graphinout. A number of other projects depend on them, directly or transitively.
+Their builds are not part of this one, so the graphinout build doesn't notice when a change breaks them.
+
+`downstream.ddot` in the repo root records that usage. It is a local, git-ignored file:
+
+* `com.graphinout:foundation-pure ..maven:used in.. org.example:my-app` – Maven dependency edges, followed transitively
+* `com.graphinout.foundation.pure.text ..java package:used in.. org.example.text` – package imports in those projects' sources (`,, ..scope.. test` if only test code uses it)
+
+Regenerate it with `python3 ../_play/downstream.py`. That also writes a `downstream.ddot` into each downstream project.
+
+Before you remove, rename or move a public class or method, or change its behavior:
+
+. Look up its package in `downstream.ddot`.
+. If other projects import it, find the actual uses, e.g. `grep -rn 'TextToolFoundation\.padLeft' --include='*.java' ../<project>`.
+. Keep removed or renamed API as a `@Deprecated` delegate, as with `ConsumerFilter.acceptAndContinue` and `collections.IteratorsFoundation`. Make behavior changes compatible for the calls you found.
+. Note "unused" findings as "unused in graphinout" unless you checked the downstream projects.
+
+[[foundation-layers]]
+== Foundation layers
+The foundation projects are a dependency-free base layer for Java projects.
+They are split into four layers by how strictly they have to stay j2cl-compatible.
+
+`foundation-emulation`:: Cut-down copies of third-party annotations (jspecify, Jackson) that j2cl can compile. Java 8.
+`foundation-pure`:: No dependencies except `foundation-emulation`; only JRE classes that j2cl emulates. Java 8.
+`foundation-shared`:: May also depend on j2cl-compatible libraries (currently `gwt-regexp`). Meant to use Java 8. Currently it contains no code.
+`foundation-jvm`:: JVM-only code that j2cl can't compile. Any Java version and any dependency.
+
+CAUTION: Upstream `jspecify` sources use the Java 9 `MODULE` element type, which j2cl can't compile.
+That is why `foundation-emulation` bundles its own copy of the jspecify annotations.
+JVM consumers (e.g. `foundation-jvm`, `base-api`) exclude `foundation-emulation` and use the real `jspecify` and `jackson-annotations` artifacts.
+
+`foundation-pure` and `foundation-shared` package their `.java` sources into the main jar, so j2cl can compile them in downstream projects.
 
 .Dependencies
 [plantuml]
@@ -25,9 +270,10 @@ hide empty members
 hide circle
 
 package Foundation {
-    class pure as "foundation-pure" {
-        no dependencies
+    class emulation as "foundation-emulation" {
+        jspecify + Jackson annotations
     }
+    class pure as "foundation-pure"
     class shared as "foundation-shared"
     class jvm as "foundation-jvm" {
         Does not j2cl compile
@@ -37,8 +283,9 @@ class J2cl as "j2cl libraries" {
     Third party
 }
 
-shared ..> J2cl
+pure ..> emulation
 shared ..> pure
+shared ..> J2cl
 jvm ..> shared
+jvm ..> pure
 ....
-
