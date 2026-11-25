@@ -129,7 +129,8 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
         String propName = key.attrName();
         assert propName != null : "Key '" + graphmlKey + "' has no attrName?";
         XmlFragmentString xmlValue = graphmlData.xmlValue();
-        String graphmlDataValue = xmlValue.rawXml();
+        // labels, types and JSON are plain text in CJ, so decode the XML
+        String graphmlDataValue = xmlValue.toPlainText();
 
         // interpret GraphMl <data> and map (back to) CJ
         if (key.is(GraphmlDataElement.Label)) {
@@ -306,7 +307,13 @@ public class Graphml2CjDocument extends BaseOutput implements IGraphmlWriter {
                 // use correct JSON type for graphml type
                 GraphmlDataType type = GraphmlDataType.fromString(key.attrType());
                 JsonType desiredType = type.jsonType();
-                IJsonPrimitive jsonValue = m.factory().createPrimitiveFromString(desiredType, defaultValue.rawXml(), defaultValue.xmlSpace() == XML.XmlSpace.preserve);
+                IJsonPrimitive jsonValue;
+                if (desiredType == JsonType.String && XML.decodeText(defaultValue.rawXml()) == null) {
+                    // has elements, keep as XML
+                    jsonValue = defaultValue.toJsonXmlString(m.factory());
+                } else {
+                    jsonValue = m.factory().createPrimitiveFromString(desiredType, defaultValue.toPlainText(), defaultValue.xmlSpace() == XML.XmlSpace.preserve);
+                }
                 m.add(key.attrName(), jsonValue);
             }
         });

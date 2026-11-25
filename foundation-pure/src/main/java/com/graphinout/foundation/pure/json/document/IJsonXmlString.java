@@ -82,8 +82,9 @@ public interface IJsonXmlString extends IJsonPrimitive {
         }
     }
 
+    /** @param plainTextString plain text, never already XML-encoded; it is encoded here */
     static IJsonXmlString ofPlainString(IJsonFactory factory, String plainTextString) {
-        return of(factory, plainTextString, XML_SPACE_DEFAULT);
+        return of(factory, XmlFragmentString.ofPlainText(plainTextString).rawXml(), XML_SPACE_DEFAULT);
     }
 
     static void writeTo(IJsonXmlString xmlString, JsonValueWriter jsonValueWriter) {

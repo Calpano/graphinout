@@ -16,7 +16,11 @@ public interface IGraphmlDescription extends IGraphmlElement {
         return new GraphmlDescriptionBuilder();
     }
 
-    /** Use {@link #builder()} to also set custom attributes */
+    /**
+     * Use {@link #builder()} to also set custom attributes
+     *
+     * @param value plain text, never already XML-encoded
+     */
     static IGraphmlDescription of(String value) {
         return of(XmlFragmentString.ofPlainText(value));
     }

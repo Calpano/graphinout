@@ -9,6 +9,21 @@ bumps and "minor/doc/WIP" commits are omitted.
 
 == Unreleased
 
+Added::
+* `XmlFragmentString.toPlainText()` and `XML.decodeText` decode predefined entities, numeric character references and
+  CDATA sections.
+
+Changed::
+* `XmlFragmentString.ofPlainText` and `IJsonXmlString.ofPlainString` XML-encode the given text. They used to store it
+  unchanged as raw XML. Callers must not pass already encoded text.
+
+Fixed::
+* GraphML writer: labels, descriptions, string data and JSON data with `&` or `<` are encoded. The output was not
+  well-formed XML.
+* GraphML reader: CJ labels, types and JSON data, and node `<default>` values, are decoded. A label `A &amp; B` was
+  read as the literal text `A &amp; B`.
+* D2, ddot, Mermaid and TGF writers: a description used as label is decoded.
+
 == 0.2.5 — 2026-11-24
 
 Added::

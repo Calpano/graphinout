@@ -60,7 +60,7 @@ public class GraphmlSchema {
 
                     ifPresentAccept(keyObject.get(GraphmlElements.DESC),
                             // could be a typed JSON string with XML content
-                            IJsonXmlString::ofJsonValue, IJsonXmlString::rawXmlString, IGraphmlDescription::of, builder::desc);
+                            IJsonXmlString::ofJsonValue, JsonXml::toXmlFragmentString, IGraphmlDescription::of, builder::desc);
 
                     ifPresentAccept(keyObject.get(CjMappedProperties.XML_ATTRIBUTES), xmlAtts -> {
                         if (!xmlAtts.isObject()) {

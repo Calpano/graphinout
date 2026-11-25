@@ -91,7 +91,7 @@ public class DDotOutput {
         if (json != null && json.isObject()) {
             IJsonValue desc = json.resolve(CjDataProperty.Description.cjPropertyKey);
             if (desc != null) {
-                String s = desc.toXmlFragmentString().rawXml();
+                String s = desc.toXmlFragmentString().toPlainText();
                 if (s != null && !s.isEmpty()) return s;
             }
         }

@@ -124,6 +124,65 @@ public interface XML {
         return raw.replace("&", "&amp;");
     }
 
+    /**
+     * Decode XML character data: predefined entities, numeric character references, and CDATA sections. Unknown or
+     * malformed references are kept as they are.
+     *
+     * @param xml XML element content
+     * @return the plain text, or null if the content has other markup (elements, comments, processing instructions)
+     */
+    static @Nullable String decodeText(String xml) {
+        if (xml.indexOf('<') < 0 && xml.indexOf('&') < 0) return xml;
+        StringBuilder b = new StringBuilder(xml.length());
+        int i = 0;
+        while (i < xml.length()) {
+            char c = xml.charAt(i);
+            if (c == '<') {
+                if (!xml.startsWith(CDATA_START, i)) return null;
+                int end = xml.indexOf(CDATA_END, i + CDATA_START.length());
+                if (end < 0) return null;
+                b.append(xml, i + CDATA_START.length(), end);
+                i = end + CDATA_END.length();
+            } else if (c == '&') {
+                int end = xml.indexOf(';', i);
+                String decoded = end < 0 ? null : decodeReference(xml.substring(i + 1, end));
+                if (decoded == null) {
+                    b.append(c);
+                    i++;
+                } else {
+                    b.append(decoded);
+                    i = end + 1;
+                }
+            } else {
+                b.append(c);
+                i++;
+            }
+        }
+        return b.toString();
+    }
+
+    /**
+     * @param name between '&amp;' and ';', e.g. {@code lt}, {@code #233} or {@code #xE9}
+     * @return null if it is neither a predefined entity nor a valid numeric character reference
+     */
+    static @Nullable String decodeReference(String name) {
+        switch (name) {
+            case "amp": return "&";
+            case "lt": return "<";
+            case "gt": return ">";
+            case "quot": return "\"";
+            case "apos": return "'";
+            default:
+        }
+        if (!name.startsWith("#")) return null;
+        try {
+            int codePoint = name.startsWith("#x") ? Integer.parseInt(name.substring(2), 16) : Integer.parseInt(name.substring(1));
+            return Character.isValidCodePoint(codePoint) ? new String(Character.toChars(codePoint)) : null;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     /** XML whitespace: SPACE, TAB, CR, LF */
     static boolean isWhitespace(int codePoint) {
         switch (codePoint) {
